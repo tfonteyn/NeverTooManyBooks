@@ -514,11 +514,6 @@ public class BooksOnBookshelfViewModel
         mBooklist.setAllNodes(topLevel, expand);
     }
 
-    @NonNull
-    ArrayList<Long> getCurrentBookIdList() {
-        Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
-        return mBooklist.getCurrentBookIdList();
-    }
 
     @Nullable
     BooklistNode getNextBookWithoutCover(final long rowId) {
@@ -602,36 +597,36 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    ArrayList<Long> getBookIdsByAuthor(@IntRange(from = 1) final long authorId,
-                                       final boolean justThisShelf) {
-        if (justThisShelf) {
-            Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
-            return ServiceLocator.getInstance().getAuthorDao()
-                                 .getBookIds(authorId, mBookshelf.getId());
+    ArrayList<Long> getBookIdsByAuthor(@NonNull final String nodeKey,
+                                       final boolean onlyThisShelf,
+                                       @IntRange(from = 0) final long authorId) {
+        if (onlyThisShelf || authorId == 0) {
+            Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
+            return mBooklist.getBookIdsForNodeKey(nodeKey);
         } else {
             return ServiceLocator.getInstance().getAuthorDao().getBookIds(authorId);
         }
     }
 
     @NonNull
-    ArrayList<Long> getBookIdsBySeries(@IntRange(from = 1) final long seriesId,
-                                       final boolean justThisShelf) {
-        if (justThisShelf) {
-            Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
-            return ServiceLocator.getInstance().getSeriesDao()
-                                 .getBookIds(seriesId, mBookshelf.getId());
+    ArrayList<Long> getBookIdsBySeries(@NonNull final String nodeKey,
+                                       final boolean onlyThisShelf,
+                                       @IntRange(from = 0) final long seriesId) {
+        if (onlyThisShelf || seriesId == 0) {
+            Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
+            return mBooklist.getBookIdsForNodeKey(nodeKey);
         } else {
             return ServiceLocator.getInstance().getSeriesDao().getBookIds(seriesId);
         }
     }
 
     @NonNull
-    ArrayList<Long> getBookIdsByPublisher(@IntRange(from = 1) final long publisherId,
-                                          final boolean justThisShelf) {
-        if (justThisShelf) {
-            Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
-            return ServiceLocator.getInstance().getPublisherDao()
-                                 .getBookIds(publisherId, mBookshelf.getId());
+    ArrayList<Long> getBookIdsByPublisher(@NonNull final String nodeKey,
+                                          final boolean onlyThisShelf,
+                                          @IntRange(from = 0) final long publisherId) {
+        if (onlyThisShelf || publisherId == 0) {
+            Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
+            return mBooklist.getBookIdsForNodeKey(nodeKey);
         } else {
             return ServiceLocator.getInstance().getPublisherDao().getBookIds(publisherId);
         }

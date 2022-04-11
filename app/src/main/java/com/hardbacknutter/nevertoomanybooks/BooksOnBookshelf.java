@@ -905,12 +905,23 @@ public class BooksOnBookshelf
                     menu.findItem(R.id.MENU_SERIES_SET_INCOMPLETE).setVisible(complete);
 
                     mVm.getAmazonHandler().onPrepareMenu(menu, rowData);
+
+                } else {
+                    menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
+                             getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
+                             R.string.menu_update_books)
+                        .setIcon(R.drawable.ic_baseline_cloud_download_24);
                 }
                 break;
             }
             case BooklistGroup.PUBLISHER: {
                 if (rowData.getLong(DBKey.FK_PUBLISHER) != 0) {
                     getMenuInflater().inflate(R.menu.publisher, menu);
+                } else {
+                    menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
+                             getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
+                             R.string.menu_update_books)
+                        .setIcon(R.drawable.ic_baseline_cloud_download_24);
                 }
                 break;
             }
@@ -1096,21 +1107,10 @@ public class BooksOnBookshelf
             if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
                 final Book book = DataHolderUtils.requireBook(rowData);
                 mUpdateBookLauncher.launch(book);
-                return true;
+            } else {
+                // Show the sub menu
+                updateBooksFromInternetData(position, rowData);
             }
-
-            // Show the sub menu
-            updateBooksFromInternetData(position, rowData);
-            return true;
-
-        } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_THIS_SHELF_ONLY) {
-            // selection from R.id.MENU_UPDATE_FROM_INTERNET sub menu
-            updateBooksFromInternetData(rowData, true);
-            return true;
-
-        } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_ALL_SHELVES) {
-            // selection from R.id.MENU_UPDATE_FROM_INTERNET sub menu
-            updateBooksFromInternetData(rowData, false);
             return true;
 
             /* ********************************************************************************** */
@@ -1207,8 +1207,7 @@ public class BooksOnBookshelf
 
         } else if (itemId == R.id.MENU_LANGUAGE_EDIT) {
             EditLanguageDialogFragment.launch(getSupportFragmentManager(),
-                                              this, rowData.getString(DBKey.KEY_LANGUAGE)
-                                             );
+                                              this, rowData.getString(DBKey.KEY_LANGUAGE));
             return true;
 
         } else if (itemId == R.id.MENU_LOCATION_EDIT) {
@@ -1304,7 +1303,10 @@ public class BooksOnBookshelf
                                              @NonNull final DataHolder rowData) {
         final int groupId = rowData.getInt(DBKey.KEY_BL_NODE_GROUP);
 
+        // will be 'null' if the group is a "no series" etc... type
+        @Nullable
         final String message;
+
         switch (groupId) {
             case BooklistGroup.AUTHOR: {
                 message = rowData.getString(DBKey.KEY_AUTHOR_FORMATTED);
@@ -1336,36 +1338,68 @@ public class BooksOnBookshelf
                 .inflate(R.menu.update_books)
                 .setTitle(title)
                 .setMessage(message)
-                .showAsDropDown(anchor, menuItem -> onMenuItemSelected(menuItem, position));
+                .showAsDropDown(anchor, menuItem -> {
+                    final int itemId = menuItem.getItemId();
+                    if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_THIS_SHELF_ONLY) {
+                        updateBooksFromInternetData(rowData, true);
+                        return true;
+
+                    } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_ALL_SHELVES) {
+                        updateBooksFromInternetData(rowData, false);
+                        return true;
+                    }
+
+                    return false;
+                });
     }
 
     private void updateBooksFromInternetData(@NonNull final DataHolder rowData,
-                                             final boolean justThisBookshelf) {
+                                             final boolean onlyThisShelf) {
+
         final int groupId = rowData.getInt(DBKey.KEY_BL_NODE_GROUP);
+        final String nodeKey = rowData.getString(DBKey.KEY_BL_NODE_KEY);
 
         switch (groupId) {
             case BooklistGroup.AUTHOR: {
                 final long id = rowData.getLong(DBKey.FK_AUTHOR);
-                final String name = rowData.getString(DBKey.KEY_AUTHOR_FORMATTED);
+                final ArrayList<Long> books = mVm.getBookIdsByAuthor(nodeKey, onlyThisShelf, id);
+                final String name = id != 0 ? rowData.getString(DBKey.KEY_AUTHOR_FORMATTED)
+                                            : getString(R.string.bob_empty_author);
+
                 mUpdateBookListLauncher.launch(new UpdateBooklistContract.Input(
-                        mVm.getBookIdsByAuthor(id, justThisBookshelf),
-                        getString(R.string.lbl_author), name));
+                        books, getString(R.string.name_colon_value,
+                                         getString(R.string.lbl_author), name),
+                        getString(R.string.name_colon_value,
+                                  getString(R.string.lbl_books),
+                                  String.valueOf(books.size()))));
                 break;
             }
             case BooklistGroup.SERIES: {
                 final long id = rowData.getLong(DBKey.FK_SERIES);
-                final String name = rowData.getString(DBKey.KEY_SERIES_TITLE);
+                final ArrayList<Long> books = mVm.getBookIdsBySeries(nodeKey, onlyThisShelf, id);
+                final String name = id != 0 ? rowData.getString(DBKey.KEY_SERIES_TITLE)
+                                            : getString(R.string.bob_empty_series);
+
                 mUpdateBookListLauncher.launch(new UpdateBooklistContract.Input(
-                        mVm.getBookIdsBySeries(id, justThisBookshelf),
-                        getString(R.string.lbl_series), name));
+                        books, getString(R.string.name_colon_value,
+                                         getString(R.string.lbl_series), name),
+                        getString(R.string.name_colon_value,
+                                  getString(R.string.lbl_books),
+                                  String.valueOf(books.size()))));
                 break;
             }
             case BooklistGroup.PUBLISHER: {
                 final long id = rowData.getLong(DBKey.FK_PUBLISHER);
-                final String name = rowData.getString(DBKey.KEY_PUBLISHER_NAME);
+                final ArrayList<Long> books = mVm.getBookIdsByPublisher(nodeKey, onlyThisShelf, id);
+                final String name = id != 0 ? rowData.getString(DBKey.KEY_PUBLISHER_NAME)
+                                            : getString(R.string.bob_empty_publisher);
+
                 mUpdateBookListLauncher.launch(new UpdateBooklistContract.Input(
-                        mVm.getBookIdsByPublisher(id, justThisBookshelf),
-                        getString(R.string.lbl_publisher), name));
+                        books, getString(R.string.name_colon_value,
+                                         getString(R.string.lbl_publisher), name),
+                        getString(R.string.name_colon_value,
+                                  getString(R.string.lbl_books),
+                                  String.valueOf(books.size()))));
                 break;
             }
             default: {
@@ -1962,15 +1996,6 @@ public class BooksOnBookshelf
 
             } else if (itemId == R.id.MENU_LEVEL_COLLAPSE) {
                 expandAllNodes(1, false);
-                return true;
-
-            } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                // IMPORTANT: this is from the options menu selection.
-                // We pass the book ID's for the currently displayed list.
-                //TODO: add a fitting screen subtitle
-                //FIXME: currently disabled in the menu xml file.
-                mUpdateBookListLauncher.launch(new UpdateBooklistContract.Input(
-                        mVm.getCurrentBookIdList(), null, null));
                 return true;
             }
 
