@@ -35,6 +35,9 @@
         <item name="colorSecondary">@color/teal_600</item>
         <item name="colorOnSecondary">@color/teal_200</item>
 
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="android:navigationBarColor">?attr/colorPrimary</item>
+
         <item name="android:colorBackground">@color/grey_900</item>
 
         <!-- Application specific -->

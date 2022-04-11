@@ -56,6 +56,9 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
         <item name="colorSecondary">@color/teal_300</item>
         <item name="colorOnSecondary">@color/white</item>
 
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="android:navigationBarColor">?attr/colorPrimary</item>
+
         <item name="android:colorBackground">@color/grey_25</item>
 
         <!-- Application specific -->
@@ -75,8 +78,7 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 
     <!-- Base theme - used by both Day and Night themes. -->
     <style name="Base.Theme.App" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:statusBarColor">?attr/colorPrimary</item>
-
+        <!-- Material3 style attributes -->
         <item name="chipGroupStyle">@style/App.ChipGroup</item>
         <item name="tabStyle">@style/App.TabBar</item>
         <item name="snackbarTextViewStyle">@style/App.SnackbarTextViewStyle</item>
@@ -86,10 +88,6 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
         <!-- Chip styles as attributes makes it easy to add chips from code -->
         <item name="appChipFilterStyle">@style/Widget.Material3.Chip.Filter</item>
         <item name="appChipInputStyle">@style/Widget.Material3.Chip.Input</item>
-
-        <!-- The colors used by the color selectors -->
-        <!--        <item name="colorOnContainer">?attr/colorPrimary</item>-->
-        <!--        <item name="colorContainer">@android:color/transparent</item>-->
     </style>
 
     <!-- ThemeOverlay - used by both Day and Night themes. -->
