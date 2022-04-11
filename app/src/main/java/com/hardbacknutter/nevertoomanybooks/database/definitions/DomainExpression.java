@@ -72,10 +72,19 @@ public class DomainExpression
      * @param expression to use for fetching the data
      */
     public DomainExpression(@NonNull final Domain domain,
-                            @NonNull final String expression) {
-        mDomain = domain;
-        mExpression = expression;
-        mSorted = SORT_UNSORTED;
+                            @Nullable final String expression) {
+        this(domain, expression, SORT_UNSORTED);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param domain underlying domain
+     * @param sorted flag
+     */
+    public DomainExpression(@NonNull final Domain domain,
+                            @Sorting final int sorted) {
+        this(domain, null, sorted);
     }
 
     /**
@@ -99,9 +108,7 @@ public class DomainExpression
      * @param that to copy from
      */
     public DomainExpression(@NonNull final DomainExpression that) {
-        mDomain = that.mDomain;
-        mExpression = that.mExpression;
-        mSorted = that.mSorted;
+        this(that.mDomain, that.mExpression, that.mSorted);
     }
 
     /**

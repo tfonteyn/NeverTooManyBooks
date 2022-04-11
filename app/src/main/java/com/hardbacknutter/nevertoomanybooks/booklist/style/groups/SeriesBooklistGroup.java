@@ -46,8 +46,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_SERIES_TIT
  * Specialized BooklistGroup representing a {@link Series} group.
  * Includes extra attributes based on preferences.
  * <p>
- * {@link #getDisplayDomain()} returns a customized display domain
- * {@link #getGroupDomains} adds the group/sorted domain based on the OB column.
+ * {@link #getDisplayDomainExpression()} returns a customized display domain
+ * {@link #getGroupDomainExpressions} adds the group/sorted domain based on the OB column.
  */
 public class SeriesBooklistGroup
         extends AbstractLinkedTableBooklistGroup {
@@ -103,7 +103,7 @@ public class SeriesBooklistGroup
     @NonNull
     public GroupKey createGroupKey() {
         // We use the foreign ID to create the key domain.
-        // We override the display domain in #createDisplayDomain.
+        // We override the display domain in #createDisplayDomainExpression.
         return new GroupKey(R.string.lbl_series, "s",
                             DOM_FK_SERIES, TBL_SERIES.dot(DBKey.PK_ID),
                             DomainExpression.SORT_UNSORTED)
@@ -142,7 +142,7 @@ public class SeriesBooklistGroup
 
     @Override
     @NonNull
-    protected DomainExpression createDisplayDomain() {
+    protected DomainExpression createDisplayDomainExpression() {
         // Not sorted; we sort on the OB domain as defined in #createGroupKey.
         return new DomainExpression(DBDefinitions.DOM_SERIES_TITLE,
                                     DBDefinitions.TBL_SERIES.dot(DBKey.KEY_SERIES_TITLE));

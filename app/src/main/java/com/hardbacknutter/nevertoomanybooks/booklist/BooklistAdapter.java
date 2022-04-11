@@ -681,7 +681,8 @@ public class BooklistAdapter
                 // it's a group; use the display domain as the text
                 final BooklistGroup group = mStyle.getGroups().getGroupByLevel(level);
                 //noinspection ConstantConditions
-                final String value = mNodeData.getString(group.getDisplayDomain().getName());
+                final String value = mNodeData.getString(
+                        group.getDisplayDomainExpression().getName());
                 if (!value.isEmpty()) {
                     return format(mInflater.getContext(), group.getId(), value, null);
                 }
@@ -1247,7 +1248,7 @@ public class BooklistAdapter
         RatingHolder(@NonNull final View itemView,
                      @NonNull final BooklistGroup group) {
             super(itemView);
-            mKey = group.getDisplayDomain().getName();
+            mKey = group.getDisplayDomainExpression().getName();
             mRatingBar = itemView.findViewById(R.id.rating);
         }
 
@@ -1303,7 +1304,7 @@ public class BooklistAdapter
             super(itemView);
             mAdapter = adapter;
             mGroupKeyId = group.getId();
-            mKey = group.getDisplayDomain().getName();
+            mKey = group.getDisplayDomainExpression().getName();
             mTextView = itemView.findViewById(mTextViewId);
         }
 

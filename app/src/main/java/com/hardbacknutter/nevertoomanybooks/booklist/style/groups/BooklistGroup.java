@@ -147,19 +147,19 @@ public class BooklistGroup {
     // Date based groups have to sort on the full date for cases
     // where we don't have all separate year,month,day fields.
     private static final DomainExpression DATE_PUBLISHED =
-            new DomainExpression(DOM_BOOK_DATE_PUBLISHED, null, DomainExpression.SORT_DESC);
+            new DomainExpression(DOM_BOOK_DATE_PUBLISHED, DomainExpression.SORT_DESC);
     private static final DomainExpression DATE_FIRST_PUBLICATION =
-            new DomainExpression(DOM_DATE_FIRST_PUBLICATION, null, DomainExpression.SORT_DESC);
+            new DomainExpression(DOM_DATE_FIRST_PUBLICATION, DomainExpression.SORT_DESC);
     private static final DomainExpression BOOK_IS_READ =
-            new DomainExpression(DOM_BOOK_READ, null, DomainExpression.SORT_DESC);
+            new DomainExpression(DOM_BOOK_READ, DomainExpression.SORT_DESC);
     private static final DomainExpression DATE_READ_END =
-            new DomainExpression(DOM_BOOK_DATE_READ_END, null, DomainExpression.SORT_DESC);
+            new DomainExpression(DOM_BOOK_DATE_READ_END, DomainExpression.SORT_DESC);
     private static final DomainExpression DATE_ADDED =
-            new DomainExpression(DOM_UTC_ADDED, null, DomainExpression.SORT_DESC);
+            new DomainExpression(DOM_UTC_ADDED, DomainExpression.SORT_DESC);
     private static final DomainExpression DATE_LAST_UPDATED =
-            new DomainExpression(DOM_UTC_LAST_UPDATED, null, DomainExpression.SORT_DESC);
+            new DomainExpression(DOM_UTC_LAST_UPDATED, DomainExpression.SORT_DESC);
     private static final DomainExpression DATE_ACQUIRED =
-            new DomainExpression(DOM_BOOK_DATE_ACQUIRED, null, DomainExpression.SORT_DESC);
+            new DomainExpression(DOM_BOOK_DATE_ACQUIRED, DomainExpression.SORT_DESC);
 
     private static final String CASE_WHEN_ = "CASE WHEN ";
     private static final String _WHEN_ = " WHEN ";
@@ -738,8 +738,8 @@ public class BooklistGroup {
      * @return domain to display
      */
     @NonNull
-    public DomainExpression getDisplayDomain() {
-        return mGroupKey.getKeyDomain();
+    public DomainExpression getDisplayDomainExpression() {
+        return mGroupKey.getKeyDomainExpression();
     }
 
     /**
@@ -751,8 +751,8 @@ public class BooklistGroup {
      * @return list
      */
     @NonNull
-    public ArrayList<DomainExpression> getGroupDomains() {
-        return mGroupKey.getGroupDomains();
+    public ArrayList<DomainExpression> getGroupDomainExpressions() {
+        return mGroupKey.getGroupDomainExpressions();
     }
 
     /**
@@ -764,8 +764,8 @@ public class BooklistGroup {
      * @return list
      */
     @NonNull
-    public ArrayList<DomainExpression> getBaseDomains() {
-        return mGroupKey.getBaseDomains();
+    public ArrayList<DomainExpression> getBaseDomainExpressions() {
+        return mGroupKey.getBaseDomainExpressions();
     }
 
     /**
@@ -886,7 +886,7 @@ public class BooklistGroup {
              DATE_ACQUIRED_YEAR,
              DATE_ACQUIRED_MONTH,
              DATE_ACQUIRED_DAY
-            })
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Id {
 
@@ -924,18 +924,18 @@ public class BooklistGroup {
          *
          * @param labelId    User displayable label resource id
          * @param keyPrefix  the key prefix (as short as possible) to use for the compound key
-         * @param domain     the domain to get the actual data from the Cursor
+         * @param keyDomain  the domain to get the actual data from the Cursor
          * @param expression sql column expression for constructing the Cursor
          * @param sorted     optional sorting
          */
         GroupKey(@StringRes final int labelId,
                  @NonNull final String keyPrefix,
-                 @NonNull final Domain domain,
+                 @NonNull final Domain keyDomain,
                  @NonNull final String expression,
                  @DomainExpression.Sorting final int sorted) {
             mLabelId = labelId;
             mKeyPrefix = keyPrefix;
-            mKeyDomain = new DomainExpression(domain, expression, sorted);
+            mKeyDomain = new DomainExpression(keyDomain, expression, sorted);
         }
 
         @NonNull
@@ -985,7 +985,7 @@ public class BooklistGroup {
          * @return the key domain
          */
         @NonNull
-        DomainExpression getKeyDomain() {
+        DomainExpression getKeyDomainExpression() {
             return mKeyDomain;
         }
 
@@ -997,7 +997,7 @@ public class BooklistGroup {
          * @return the list, can be empty.
          */
         @NonNull
-        ArrayList<DomainExpression> getGroupDomains() {
+        ArrayList<DomainExpression> getGroupDomainExpressions() {
             return mGroupDomains;
         }
 
@@ -1009,7 +1009,7 @@ public class BooklistGroup {
          * @return the list, can be empty.
          */
         @NonNull
-        ArrayList<DomainExpression> getBaseDomains() {
+        ArrayList<DomainExpression> getBaseDomainExpressions() {
             return mBaseDomains;
         }
 

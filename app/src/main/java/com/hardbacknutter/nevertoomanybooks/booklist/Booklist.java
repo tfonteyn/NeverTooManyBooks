@@ -140,9 +140,9 @@ public class Booklist
     @SuppressWarnings("FieldNotUsedInToString")
     private String mSqlGetNodeByRowId;
 
-    /** {@link #getCurrentBookIdList}. */
+    /** {@link #getBookIdsForNodeKey}. */
     @SuppressWarnings("FieldNotUsedInToString")
-    private String mSqlGetCurrentBookIdList;
+    private String mSqlGetBookIdListForNodeKey;
 
     /** {@link #getNextBookWithoutCover(long)}. */
     @SuppressWarnings("FieldNotUsedInToString")
@@ -552,23 +552,24 @@ public class Booklist
     }
 
     /**
-     * Get the full list of all Books (their id only) which are currently in the list table.
+     * Get the ids of all Books for the given node key.
+     *
+     * @param nodeKey to use
      *
      * @return list of book ID's
      */
     @NonNull
-    public ArrayList<Long> getCurrentBookIdList() {
-        if (mSqlGetCurrentBookIdList == null) {
-            mSqlGetCurrentBookIdList =
+    public ArrayList<Long> getBookIdsForNodeKey(@NonNull final String nodeKey) {
+        if (mSqlGetBookIdListForNodeKey == null) {
+            mSqlGetBookIdListForNodeKey =
                     SELECT_ + DBKey.FK_BOOK
                     + _FROM_ + mListTable.getName()
-                    + _WHERE_ + DBKey.KEY_BL_NODE_GROUP + "=?"
+                    + _WHERE_ + DBKey.KEY_BL_NODE_KEY + "=?"
+                    + _AND_ + DBKey.KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK
                     + _ORDER_BY_ + DBKey.FK_BOOK;
         }
 
-        try (Cursor cursor = mDb.rawQuery(mSqlGetCurrentBookIdList, new String[]{
-                String.valueOf(BooklistGroup.BOOK)})) {
-
+        try (Cursor cursor = mDb.rawQuery(mSqlGetBookIdListForNodeKey, new String[]{nodeKey})) {
             if (cursor.moveToFirst()) {
                 final ArrayList<Long> rows = new ArrayList<>(cursor.getCount());
                 do {

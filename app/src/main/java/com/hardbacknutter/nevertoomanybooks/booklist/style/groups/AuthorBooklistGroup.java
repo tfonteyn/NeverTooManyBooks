@@ -51,8 +51,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
  * Specialized BooklistGroup representing an {@link Author} group.
  * Includes extra attributes based on preferences.
  * <p>
- * {@link #getDisplayDomain()} returns a customized display domain
- * {@link #getGroupDomains} adds the group/sorted domain based on the OB column.
+ * {@link #getDisplayDomainExpression()} returns a customized display domain
+ * {@link #getGroupDomainExpressions} adds the group/sorted domain based on the OB column.
  */
 public class AuthorBooklistGroup
         extends AbstractLinkedTableBooklistGroup {
@@ -76,7 +76,7 @@ public class AuthorBooklistGroup
 
     /** DomainExpression for sorting the data - depends on the style used. */
     @NonNull
-    private final DomainExpression mSortedDomain;
+    private final DomainExpression mSortingDomainExpression;
     /** The primary author type the user prefers. */
     private final PBitmask mPrimaryType;
 
@@ -89,7 +89,7 @@ public class AuthorBooklistGroup
     AuthorBooklistGroup(final boolean isPersistent,
                         @NonNull final ListStyle style) {
         super(AUTHOR, isPersistent, style, PK_SHOW_BOOKS_UNDER_EACH);
-        mSortedDomain = createSortDomain();
+        mSortingDomainExpression = createSortingDomainExpression();
 
         mPrimaryType = new PBitmask(mPersisted, mPersistenceLayer, PK_PRIMARY_TYPE,
                                     Author.TYPE_UNKNOWN, Author.TYPE_BITMASK_ALL);
@@ -106,7 +106,7 @@ public class AuthorBooklistGroup
                         @NonNull final ListStyle style,
                         @NonNull final AuthorBooklistGroup group) {
         super(isPersistent, style, group);
-        mSortedDomain = createSortDomain();
+        mSortingDomainExpression = createSortingDomainExpression();
 
         mPrimaryType = new PBitmask(mPersisted, mPersistenceLayer, group.mPrimaryType);
     }
@@ -134,8 +134,8 @@ public class AuthorBooklistGroup
     @NonNull
     public GroupKey createGroupKey() {
         // We use the foreign ID to create the key domain.
-        // We override the display domain in #createDisplayDomain.
-        // We do not sort on the key domain but add the OB column in #createSortDomain
+        // We override the display domain in #createDisplayDomainExpression.
+        // We do not sort on the key domain but add the OB column in #createSortingDomainExpression
         return new GroupKey(R.string.lbl_author, "a",
                             DOM_FK_AUTHOR, TBL_AUTHORS.dot(DBKey.PK_ID),
                             DomainExpression.SORT_UNSORTED)
@@ -153,13 +153,13 @@ public class AuthorBooklistGroup
 
     @Override
     @NonNull
-    protected DomainExpression createDisplayDomain() {
-        // Not sorted; sort as defined in #createSortDomain
+    protected DomainExpression createDisplayDomainExpression() {
+        // Not sorted; sort as defined in #createSortingDomainExpression
         return AuthorDaoImpl.createDisplayDomainExpression(mStyle.isShowAuthorByGivenName());
     }
 
     @NonNull
-    private DomainExpression createSortDomain() {
+    private DomainExpression createSortingDomainExpression() {
         // Sorting depends on user preference
         return new DomainExpression(DOM_SORTING,
                                     AuthorDaoImpl.getSortAuthor(mStyle.isSortAuthorByGivenName()),
@@ -168,11 +168,11 @@ public class AuthorBooklistGroup
 
     @Override
     @NonNull
-    public ArrayList<DomainExpression> getGroupDomains() {
+    public ArrayList<DomainExpression> getGroupDomainExpressions() {
         // We inject the mSortedDomain as first in the list.
         final ArrayList<DomainExpression> list = new ArrayList<>();
-        list.add(0, mSortedDomain);
-        list.addAll(super.getGroupDomains());
+        list.add(0, mSortingDomainExpression);
+        list.addAll(super.getGroupDomainExpressions());
         return list;
     }
 
@@ -212,13 +212,13 @@ public class AuthorBooklistGroup
             return false;
         }
         final AuthorBooklistGroup that = (AuthorBooklistGroup) o;
-        return Objects.equals(mSortedDomain, that.mSortedDomain)
+        return Objects.equals(mSortingDomainExpression, that.mSortingDomainExpression)
                && Objects.equals(mPrimaryType, that.mPrimaryType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), mSortedDomain, mPrimaryType);
+        return Objects.hash(super.hashCode(), mSortingDomainExpression, mPrimaryType);
     }
 
     @Override
@@ -226,7 +226,7 @@ public class AuthorBooklistGroup
     public String toString() {
         return "AuthorBooklistGroup{"
                + super.toString()
-               + ", mSortedDomain=" + mSortedDomain
+               + ", mSortedDomain=" + mSortingDomainExpression
                + ", mPrimaryType=" + mPrimaryType
                + '}';
     }

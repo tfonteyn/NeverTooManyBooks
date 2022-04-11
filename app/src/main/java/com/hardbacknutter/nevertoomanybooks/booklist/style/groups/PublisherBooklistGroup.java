@@ -42,8 +42,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_PUBLISHER_
  * Specialized BooklistGroup representing a {@link Publisher} group.
  * Includes extra attributes based on preferences.
  * <p>
- * {@link #getDisplayDomain()} returns a customized display domain
- * {@link #getGroupDomains} adds the group/sorted domain based on the OB column.
+ * {@link #getDisplayDomainExpression()} returns a customized display domain
+ * {@link #getGroupDomainExpressions} adds the group/sorted domain based on the OB column.
  */
 public class PublisherBooklistGroup
         extends AbstractLinkedTableBooklistGroup {
@@ -98,7 +98,7 @@ public class PublisherBooklistGroup
     @NonNull
     public GroupKey createGroupKey() {
         // We use the foreign ID to create the key domain.
-        // We override the display domain in #createDisplayDomain.
+        // We override the display domain in #createDisplayDomainExpression.
         return new GroupKey(R.string.lbl_publisher, "p",
                             DOM_FK_PUBLISHER, TBL_PUBLISHERS.dot(DBKey.PK_ID),
                             DomainExpression.SORT_UNSORTED)
@@ -116,7 +116,7 @@ public class PublisherBooklistGroup
 
     @Override
     @NonNull
-    protected DomainExpression createDisplayDomain() {
+    protected DomainExpression createDisplayDomainExpression() {
         // Not sorted; we sort on the OB domain as defined in #createGroupKey.
         return new DomainExpression(DBDefinitions.DOM_PUBLISHER_NAME,
                                     DBDefinitions.TBL_PUBLISHERS.dot(DBKey.KEY_PUBLISHER_NAME));

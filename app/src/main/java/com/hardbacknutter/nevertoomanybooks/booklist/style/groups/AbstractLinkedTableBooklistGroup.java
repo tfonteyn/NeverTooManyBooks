@@ -39,7 +39,7 @@ public abstract class AbstractLinkedTableBooklistGroup
 
     /** DomainExpression for displaying the data. */
     @NonNull
-    private final DomainExpression mDisplayDomain;
+    private final DomainExpression mDisplayDomainExpression;
 
     /** Show a book under each item it is linked to. */
     @NonNull
@@ -50,7 +50,7 @@ public abstract class AbstractLinkedTableBooklistGroup
                                      @NonNull final ListStyle style,
                                      @NonNull final String pkUnderEach) {
         super(id, isPersistent, style);
-        mDisplayDomain = createDisplayDomain();
+        mDisplayDomainExpression = createDisplayDomainExpression();
 
         mUnderEach = new PBoolean(mPersisted, mPersistenceLayer, pkUnderEach, false);
     }
@@ -59,18 +59,18 @@ public abstract class AbstractLinkedTableBooklistGroup
                                      @NonNull final ListStyle style,
                                      @NonNull final AbstractLinkedTableBooklistGroup group) {
         super(isPersistent, style, group);
-        mDisplayDomain = createDisplayDomain();
+        mDisplayDomainExpression = createDisplayDomainExpression();
 
         mUnderEach = new PBoolean(mPersisted, mPersistenceLayer, group.mUnderEach);
     }
 
     @NonNull
-    protected abstract DomainExpression createDisplayDomain();
+    protected abstract DomainExpression createDisplayDomainExpression();
 
     @Override
     @NonNull
-    public DomainExpression getDisplayDomain() {
-        return mDisplayDomain;
+    public DomainExpression getDisplayDomainExpression() {
+        return mDisplayDomainExpression;
     }
 
     /**
@@ -97,20 +97,20 @@ public abstract class AbstractLinkedTableBooklistGroup
             return false;
         }
         final AbstractLinkedTableBooklistGroup that = (AbstractLinkedTableBooklistGroup) o;
-        return Objects.equals(mDisplayDomain, that.mDisplayDomain)
+        return Objects.equals(mDisplayDomainExpression, that.mDisplayDomainExpression)
                && Objects.equals(mUnderEach, that.mUnderEach);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), mDisplayDomain, mUnderEach);
+        return Objects.hash(super.hashCode(), mDisplayDomainExpression, mUnderEach);
     }
 
     @Override
     @NonNull
     public String toString() {
         return super.toString()
-               + ", mDisplayDomain=" + mDisplayDomain
+               + ", mDisplayDomainExpression=" + mDisplayDomainExpression
                + ", mUnderEach=" + mUnderEach;
     }
 }
