@@ -896,6 +896,7 @@ public class DBHelper
                          .remove("goodreads.AccessToken.Secret")
                          .remove("librarything.dev_key")
                          .remove("scanner.preferred")
+                         .remove("search.form.advanced")
                          .remove("search.site.goodreads.data.enabled")
                          .remove("search.site.goodreads.covers.enabled")
                          .remove("startup.lastVersion")
