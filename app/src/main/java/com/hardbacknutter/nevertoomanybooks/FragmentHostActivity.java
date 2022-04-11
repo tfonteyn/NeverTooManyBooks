@@ -32,19 +32,15 @@ import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
-
 /**
  * Hosting activity for generic fragments.
- *
- * @see SettingsHostActivity
  */
 public class FragmentHostActivity
         extends BaseActivity {
 
     private static final String TAG = "FragmentHostActivity";
-    protected static final String BKEY_ACTIVITY = TAG + ":a";
-    protected static final String BKEY_FRAGMENT_CLASS = TAG + ":f";
+    private static final String BKEY_ACTIVITY = TAG + ":a";
+    private static final String BKEY_FRAGMENT_CLASS = TAG + ":f";
 
     public static Intent createIntent(@NonNull final Context context,
                                       @NonNull final Class<? extends Fragment> fragmentClass) {

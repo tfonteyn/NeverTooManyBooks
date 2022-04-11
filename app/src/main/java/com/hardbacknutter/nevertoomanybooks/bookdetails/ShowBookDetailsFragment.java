@@ -61,6 +61,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.MenuHelper;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
@@ -77,7 +78,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
@@ -627,7 +627,7 @@ public class ShowBookDetailsFragment
 
             } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
                 //noinspection ConstantConditions
-                final Intent intent = SettingsHostActivity
+                final Intent intent = FragmentHostActivity
                         .createIntent(context, CalibrePreferencesFragment.class);
                 startActivity(intent);
                 return true;

@@ -121,7 +121,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
@@ -774,8 +773,9 @@ public class BooksOnBookshelf
     public void onResume() {
         super.onResume();
 
+        //URGENT: add "isRecreating()"
         // don't build the list needlessly
-        if (isRecreating() || isFinishing() || isDestroyed()) {
+        if (isFinishing() || isDestroyed() || isChangingConfigurations()) {
             return;
         }
 
@@ -1078,7 +1078,7 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
         } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
-            final Intent intent = SettingsHostActivity
+            final Intent intent = FragmentHostActivity
                     .createIntent(this, CalibrePreferencesFragment.class);
             startActivity(intent);
             return true;

@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -275,7 +274,7 @@ public class StartupActivity
                         case 2:
                         default: {
                             // take user to the settings screen
-                            final Intent intent = SettingsHostActivity
+                            final Intent intent = FragmentHostActivity
                                     .createIntent(this, SettingsFragment.class)
                                     .putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY,
                                               Prefs.pk_storage_volume)

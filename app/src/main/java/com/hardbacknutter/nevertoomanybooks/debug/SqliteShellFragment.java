@@ -42,13 +42,13 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSqliteShellBinding;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 
 /**
  * A crude sql shell.
@@ -246,7 +246,7 @@ public class SqliteShellFragment
 
             } else if (itemId == R.id.MENU_DEBUG_SQ_SHELL_EDIT_MAX_LINES) {
                 //noinspection ConstantConditions
-                final Intent intent = SettingsHostActivity
+                final Intent intent = FragmentHostActivity
                         .createIntent(getContext(), SqlitePreferenceFragment.class);
                 startActivity(intent);
                 return true;

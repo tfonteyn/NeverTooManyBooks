@@ -29,10 +29,10 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 
 public class SettingsContract
         extends ActivityResultContract<String, Boolean> {
@@ -51,7 +51,7 @@ public class SettingsContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @Nullable final String scrollToKey) {
-        final Intent intent = SettingsHostActivity.createIntent(context, SettingsFragment.class);
+        final Intent intent = FragmentHostActivity.createIntent(context, SettingsFragment.class);
         if (scrollToKey != null) {
             intent.putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY, scrollToKey);
         }

@@ -129,10 +129,6 @@
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
         <activity
-            android:name=".settings.SettingsHostActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-
-        <activity
             android:name=".covers.CropImageActivity"
             android:theme="@style/Theme.App.FullScreen" />
 

@@ -35,9 +35,9 @@ import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
 
 public class EditStyleContract
@@ -79,7 +79,7 @@ public class EditStyleContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Input input) {
-        return SettingsHostActivity
+        return FragmentHostActivity
                 .createIntent(context, StyleFragment.class)
                 .putExtra(BKEY_ACTION, input.action)
                 .putExtra(ListStyle.BKEY_UUID, input.uuid)
