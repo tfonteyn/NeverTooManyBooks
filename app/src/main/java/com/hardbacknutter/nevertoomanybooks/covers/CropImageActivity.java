@@ -63,6 +63,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityCropimageBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -104,6 +105,12 @@ public class CropImageActivity
 
     /** View Binding. */
     private ActivityCropimageBinding mVb;
+
+    @Override
+    protected void attachBaseContext(@NonNull final Context base) {
+        final Context localizedContext = ServiceLocator.getInstance().getAppLocale().apply(base);
+        super.attachBaseContext(localizedContext);
+    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
