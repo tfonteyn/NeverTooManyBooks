@@ -68,7 +68,7 @@ public class FieldVisibilityPreferenceFragment
         // Changing ANY field visibility will usually require recreating the activity which
         // was active when the prefs screen was called.
         // TODO: make this fine-grained
-        mVm.setRequiresActivityRecreation();
+        mVm.setOnBackRequiresActivityRecreation();
 
         super.onSharedPreferenceChanged(preferences, key);
     }

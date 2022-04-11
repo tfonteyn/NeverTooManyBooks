@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,72 +37,46 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.preference.PreferenceManager;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 
 /**
  * Base class for all Activity's (except the startup and the crop activity).
- * <p>
- * Fragments should implement:
- * <pre>
- *     {@code
- *          @Override
- *          @CallSuper
- *          public void onResume() {
- *              super.onResume();
- *              if (getActivity() instanceof BaseActivity) {
- *                  BaseActivity activity = (BaseActivity) getActivity();
- *                  if (activity.maybeRecreate()) {
- *                      return;
- *                  }
- *              }
- *
- *              // do stuff here
- *          }
- *     }
- * </pre>
  */
 public abstract class BaseActivity
         extends AppCompatActivity {
 
-    /** Used by {@link #showError} Snackbar.LENGTH_LONG is 2750 ms. */
+    /**
+     * Used to create a delay when leaving an Activity, showing a Message, ...
+     * Snackbar.LENGTH_LONG is 2750 ms.
+     */
     public static final int ERROR_DELAY_MS = 3000;
 
-    /**
-     * internal; Stage of Activity  doing/needing setIsRecreating() action.
-     * See {@link #onResume()}.
-     * <p>
-     * Note this is a static!
-     */
-    @NonNull
-    private static Recreating sActivityRecreateStatus = Recreating.No;
 
     private final ActivityResultLauncher<Long> mManageBookshelvesBaseLauncher =
             registerForActivityResult(new EditBookshelvesContract(),
                                       bookshelfId -> {
                                       });
+
+    @SuppressWarnings("WeakerAccess")
+    protected RecreateViewModel mRecreateVm;
+
     private final ActivityResultLauncher<String> mSettingsLauncher =
             registerForActivityResult(new SettingsContract(), recreateActivity -> {
                 if (recreateActivity) {
-                    sActivityRecreateStatus = Recreating.Required;
+                    mRecreateVm.setRecreationRequired();
                 }
             });
+
     /** Optional - The side/navigation panel. */
     @Nullable
     DrawerLayout mDrawerLayout;
-    /** Locale at {@link #onCreate} time. */
-    private String mInitialLocaleSpec;
-    /** Night-mode at {@link #onCreate} time. */
-    private NightMode.Mode mInitialNightModeId;
     /** Optional - The side/navigation menu. */
     @Nullable
     private NavigationView mNavigationView;
@@ -124,31 +97,21 @@ public abstract class BaseActivity
     @NonNull
     public Toolbar getToolbar() {
         if (mToolbar == null) {
-            mToolbar = Objects.requireNonNull((Toolbar) findViewById(R.id.toolbar),
-                                              "R.id.toolbar");
+            mToolbar = Objects.requireNonNull((Toolbar) findViewById(R.id.toolbar), "R.id.toolbar");
         }
         return mToolbar;
     }
 
     @Override
     protected void attachBaseContext(@NonNull final Context base) {
-        final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
-        // apply the user-preferred Locale before onCreate is called.
-        final Context localizedContext = appLocale.apply(base);
-
+        final Context localizedContext = ServiceLocator.getInstance().getAppLocale().apply(base);
         super.attachBaseContext(localizedContext);
-
-        // preserve, so we can check for changes in onResume.
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(localizedContext);
-        mInitialLocaleSpec = appLocale.getPersistedLocaleSpec(global);
     }
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        // apply the user-preferred Theme before super.onCreate is called.
-        // We preserve it, so we can check for changes in onResume.
-        mInitialNightModeId = NightMode.getInstance().apply(this);
+        mRecreateVm = new ViewModelProvider(this).get(RecreateViewModel.class);
+        mRecreateVm.onCreate();
 
         super.onCreate(savedInstanceState);
     }
@@ -205,30 +168,11 @@ public abstract class BaseActivity
 
     /**
      * Trigger a recreate() on the Activity if needed.
-     *
-     * @return {@code true} if a recreate was triggered.
      */
-    @SuppressWarnings("UnusedReturnValue")
-    protected boolean recreateIfNeeded() {
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
-
-        if (sActivityRecreateStatus == Recreating.Required
-            || ServiceLocator.getInstance().getAppLocale().isChanged(global, mInitialLocaleSpec)
-            || NightMode.getInstance().isChanged(global, mInitialNightModeId)) {
-
-            sActivityRecreateStatus = Recreating.Yes;
+    protected void recreateIfNeeded() {
+        if (mRecreateVm.isRecreationRequired()) {
             recreate();
-            return true;
-
-        } else {
-            sActivityRecreateStatus = Recreating.No;
         }
-
-        return false;
-    }
-
-    boolean isRecreating() {
-        return sActivityRecreateStatus == Recreating.Yes;
     }
 
     /**
@@ -293,27 +237,4 @@ public abstract class BaseActivity
             mDrawerLayout.closeDrawer(GravityCompat.START);
         }
     }
-
-    /**
-     * Show an error text on the given view.
-     * It will automatically be removed after {@link #ERROR_DELAY_MS}.
-     *
-     * @param view  on which to set the error
-     * @param error text to set
-     */
-    protected void showError(@NonNull final TextInputLayout view,
-                             @NonNull final CharSequence error) {
-        view.setError(error);
-        view.postDelayed(() -> view.setError(null), ERROR_DELAY_MS);
-    }
-
-    private enum Recreating {
-        /** Situation normal. */
-        No,
-        /** Activity is in need of recreating. */
-        Required,
-        /** A {@link #recreate()} action has been triggered. */
-        Yes
-    }
-
 }

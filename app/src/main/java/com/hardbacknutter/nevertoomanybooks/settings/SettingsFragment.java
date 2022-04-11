@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -337,14 +338,26 @@ public class SettingsFragment
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
                                           @NonNull final String key) {
         switch (key) {
-            case Prefs.pk_ui_locale:
-            case Prefs.pk_ui_theme:
+            case Prefs.pk_ui_theme: {
+                // recreation of ALL activities is automatic!
+                //noinspection ConstantConditions
+                NightMode.apply(getContext());
+                break;
+            }
+            case Prefs.pk_ui_locale: {
+                // Set the activity result so our caller will recreate itself
+                mVm.setOnBackRequiresActivityRecreation();
+                //noinspection ConstantConditions
+                getActivity().recreate();
+                break;
+            }
             case Prefs.pk_sort_title_reordered:
             case Prefs.pk_show_title_reordered:
-            case Prefs.pk_booklist_fastscroller_overlay:
-                mVm.setRequiresActivityRecreation();
+            case Prefs.pk_booklist_fastscroller_overlay: {
+                // Set the activity result so our caller will recreate itself
+                mVm.setOnBackRequiresActivityRecreation();
                 break;
-
+            }
             default:
                 break;
         }

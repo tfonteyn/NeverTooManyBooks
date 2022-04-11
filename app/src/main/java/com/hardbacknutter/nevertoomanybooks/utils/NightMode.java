@@ -25,136 +25,40 @@ import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.math.MathUtils;
 import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
-/** Singleton. */
 public final class NightMode {
-
-    /** Singleton. */
-    private static NightMode sInstance;
-
-    /**
-     * Cache the User-specified theme currently in use.
-     * {@link Mode#NotSet} to force an update at App startup.
-     */
-    @NonNull
-    private Mode mCurrentMode = Mode.NotSet;
-
-    /**
-     * Constructor. Use {@link #getInstance()}.
-     */
-    private NightMode() {
-    }
-
-    /**
-     * Get/create the singleton instance.
-     *
-     * @return instance
-     */
-    @NonNull
-    public static NightMode getInstance() {
-        synchronized (NightMode.class) {
-            if (sInstance == null) {
-                sInstance = new NightMode();
-            }
-            return sInstance;
-        }
-    }
-
-    /**
-     * Apply the user's preferred NightMode.
-     * <p>
-     * The one and only place where this should get called is in {@code Activity.onCreate}
-     * <pre>
-     * {@code
-     *    public void onCreate(@Nullable final Bundle savedInstanceState) {
-     *        NightMode.getInstance().apply(this);
-     *        super.onCreate(savedInstanceState);
-     *    }
-     * }
-     * </pre>
-     *
-     * @param context Current context
-     *
-     * @return the applied mode
-     */
-    @NonNull
-    public Mode apply(@NonNull final Context context) {
-        // Always read from prefs.
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        mCurrentMode = Mode.getMode(global);
-        mCurrentMode.apply();
-        return mCurrentMode;
-    }
-
-    public boolean isChanged(@NonNull final SharedPreferences global,
-                             @NonNull final Mode mode) {
-        mCurrentMode = Mode.getMode(global);
-        return mode != mCurrentMode;
-    }
 
     /**
      * We're not using the actual {@link AppCompatDelegate} mode constants
      * due to 'day-night' being different depending on the OS version.
      */
-    public enum Mode {
-        NotSet(-1),
-        DayNight(0),
-        Light(1),
-        Dark(2);
+    private static final int[] NIGHT_MODES = {
+            // day-night
+            Build.VERSION.SDK_INT >= 29 ? AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                                        : AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY,
+            // light
+            AppCompatDelegate.MODE_NIGHT_NO,
+            // dark
+            AppCompatDelegate.MODE_NIGHT_YES
+    };
 
-        private final int value;
+    private NightMode() {
+    }
 
-        Mode(final int value) {
-            this.value = value;
-        }
+    /**
+     * Apply the user's preferred NightMode.
+     *
+     * @param context Current context
+     */
+    public static void apply(@NonNull final Context context) {
+        final SharedPreferences global = PreferenceManager
+                .getDefaultSharedPreferences(context);
 
-        /**
-         * Get the mode to use.
-         *
-         * @param global Global preferences
-         *
-         * @return mode
-         */
-        @NonNull
-        public static Mode getMode(@NonNull final SharedPreferences global) {
-            final int value = Prefs.getIntListPref(global, Prefs.pk_ui_theme, DayNight.value);
-            switch (value) {
-                case 2:
-                    return Dark;
-                case 1:
-                    return Light;
-                case 0:
-                    return DayNight;
-                default:
-                    return NotSet;
-            }
-        }
-
-        public void apply() {
-            final int dnMode;
-            switch (this) {
-                case NotSet:
-                case DayNight:
-                    if (Build.VERSION.SDK_INT >= 29) {
-                        dnMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
-                    } else {
-                        dnMode = AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY;
-                    }
-                    break;
-
-                case Dark:
-                    dnMode = AppCompatDelegate.MODE_NIGHT_YES;
-                    break;
-
-                case Light:
-                default:
-                    dnMode = AppCompatDelegate.MODE_NIGHT_NO;
-                    break;
-            }
-            AppCompatDelegate.setDefaultNightMode(dnMode);
-        }
+        final int mode = Prefs.getIntListPref(global, Prefs.pk_ui_theme, 0);
+        AppCompatDelegate.setDefaultNightMode(NIGHT_MODES[MathUtils.clamp(mode, 0, 2)]);
     }
 }

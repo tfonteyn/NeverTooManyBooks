@@ -773,9 +773,8 @@ public class BooksOnBookshelf
     public void onResume() {
         super.onResume();
 
-        //URGENT: add "isRecreating()"
         // don't build the list needlessly
-        if (isFinishing() || isDestroyed() || isChangingConfigurations()) {
+        if (mRecreateVm.isRecreating() || isFinishing() || isDestroyed()) {
             return;
         }
 

@@ -96,7 +96,7 @@ public class App
             ServiceLocator.create(getApplicationContext());
             SearchEngineRegistry.create(getApplicationContext());
 
-            NightMode.getInstance().apply(this);
+            NightMode.apply(this);
         }
     }
 

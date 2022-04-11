@@ -47,7 +47,7 @@ public class SettingsViewModel
         return mRequiresActivityRecreation;
     }
 
-    void setRequiresActivityRecreation() {
+    void setOnBackRequiresActivityRecreation() {
         mRequiresActivityRecreation = true;
     }
 
