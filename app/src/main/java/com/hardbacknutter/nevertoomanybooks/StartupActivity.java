@@ -79,15 +79,12 @@ public class StartupActivity
 
     @Override
     protected void attachBaseContext(@NonNull final Context base) {
-        // apply the user-preferred Locale before onCreate is called.
-        super.attachBaseContext(ServiceLocator.getInstance().getAppLocale().apply(base));
+        final Context localizedContext = ServiceLocator.getInstance().getAppLocale().apply(base);
+        super.attachBaseContext(localizedContext);
     }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        // apply the user-preferred Theme before super.onCreate is called.
-//        NightMode.getInstance().apply(this);
-
         super.onCreate(savedInstanceState);
 
         // Are we going through a hot/warm start ?
