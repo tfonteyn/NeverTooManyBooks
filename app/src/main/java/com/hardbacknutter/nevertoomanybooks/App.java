@@ -39,6 +39,7 @@ import org.acra.file.Directory;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
 public class App
@@ -94,6 +95,8 @@ public class App
         if (!ACRA.isACRASenderServiceProcess()) {
             ServiceLocator.create(getApplicationContext());
             SearchEngineRegistry.create(getApplicationContext());
+
+            NightMode.getInstance().apply(this);
         }
     }
 
