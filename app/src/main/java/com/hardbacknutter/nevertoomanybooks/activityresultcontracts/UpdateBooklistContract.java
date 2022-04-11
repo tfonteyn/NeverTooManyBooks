@@ -53,6 +53,9 @@ public class UpdateBooklistContract
                 .createIntent(context, SearchBookUpdatesFragment.class)
                 .putExtra(Book.BKEY_BOOK_ID_LIST, ParcelUtils.wrap(input.bookIdList));
 
+        if (input.title != null) {
+            intent.putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_TITLE, input.title);
+        }
         if (input.subTitle != null) {
             intent.putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_SUBTITLE, input.subTitle);
         }
