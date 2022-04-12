@@ -231,7 +231,7 @@
         <item name="android:layout_marginStart">4dp</item>
         <item name="android:padding">4dp</item>
         <item name="android:background">@android:color/transparent</item>
-        <item name="android:src">@drawable/ic_outline_info_24</item>
+        <item name="android:src">@drawable/ic_baseline_info_24</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -290,7 +290,7 @@
     <!-- *************************************************************************************** -->
 
     <!-- Global theme attribute "chipGroupStyle" -->
-    <style name="App.ChipGroup" parent="Widget.Material3.ChipGroup">
+    <style name="App.chipGroupStyle" parent="Widget.Material3.ChipGroup">
         <!-- There is a label above the group. -->
         <item name="android:layout_marginTop">4dp</item>
         <!-- the default is 8dp. -->
@@ -298,13 +298,15 @@
     </style>
 
     <!-- Global theme attribute "tabStyle" -->
-    <style name="App.TabBar" parent="Widget.Material3.TabLayout">
+    <style name="App.tabStyle" parent="Widget.Material3.TabLayout">
         <item name="tabMode">scrollable</item>
-        <item name="tabTextColor">@color/tab_text_color</item>
+        <!-- Both indicator and text color are set to colorSecondary. -->
+        <item name="tabIndicatorColor">?attr/colorSecondary</item>
+        <item name="tabTextColor">@color/tabs_text_color</item>
     </style>
 
     <!-- Global theme attribute "circularProgressIndicatorStyle" -->
-    <style name="App.Progress.Circle" parent="Widget.Material3.CircularProgressIndicator">
+    <style name="App.circularProgressIndicatorStyle" parent="Widget.Material3.CircularProgressIndicator">
         <item name="android:clickable">true</item>
         <item name="android:alpha">0.8</item>
         <item name="android:elevation">@dimen/progress_z</item>
@@ -314,18 +316,18 @@
     </style>
 
     <!--  Global theme attribute "snackbarTextViewStyle" -->
-    <style name="App.SnackbarTextViewStyle" parent="Widget.Material3.Snackbar.TextView">
+    <style name="App.snackbarTextViewStyle" parent="Widget.Material3.Snackbar.TextView">
         <item name="android:maxLines">2</item>
     </style>
 
     <!-- Global theme attribute "materialCalendarHeaderLayout"
     We want the full screen calendar widget to use the same header style as all our edit-screens. -->
-    <style name="App.MaterialCalendar.HeaderLayout" parent="Widget.Material3.MaterialCalendar.HeaderLayout">
+    <style name="App.materialCalendarHeaderLayout" parent="Widget.Material3.MaterialCalendar.HeaderLayout">
         <item name="android:background">?attr/colorPrimary</item>
     </style>
 
     <!-- Global theme attribute "materialCalendarHeaderConfirmButton" -->
-    <style name="App.MaterialCalendar.HeaderConfirmButton" parent="Widget.Material3.Button.TextButton">
+    <style name="App.materialCalendarHeaderConfirmButton" parent="Widget.Material3.Button.TextButton">
         <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:backgroundTint">?attr/colorButtonNormal</item>
     </style>

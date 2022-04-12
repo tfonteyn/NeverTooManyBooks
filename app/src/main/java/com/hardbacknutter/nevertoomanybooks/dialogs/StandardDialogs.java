@@ -79,7 +79,7 @@ public final class StandardDialogs {
         final PopupWindow popup = new PopupWindow(context);
         popup.setContentView(root);
         // make the rounded corners transparent
-        popup.setBackgroundDrawable(context.getDrawable(R.drawable.bg_popup));
+        popup.setBackgroundDrawable(context.getDrawable(R.drawable.bg_info_popup));
         popup.setFocusable(true);
         popup.showAsDropDown(anchor, xoff, yoff);
     }

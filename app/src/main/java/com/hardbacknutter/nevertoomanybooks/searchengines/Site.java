@@ -580,6 +580,7 @@ public final class Site
             //    <boolean name="search.site.openlibrary.data.enabled" value="false" />
             //    <boolean name="search.site.stripinfo.data.enabled" value="false" />
             //
+            //  The order includes both enabled and disabled sites!
             //    <string name="search.siteOrder.alted">4,16</string>
             //    <string name="search.siteOrder.covers">2,16,32</string>
             //    <string name="search.siteOrder.data">16,2,128,1,256,32</string>

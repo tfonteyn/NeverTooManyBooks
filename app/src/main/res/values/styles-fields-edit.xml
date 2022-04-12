@@ -22,7 +22,6 @@
 <!--
     Edit fields;
     'TIL'      == com.google.android.material.textfield.TextInputLayout
-
     'TIE'      == com.google.android.material.textfield.TextInputEditText
     'TIA'      == com.google.android.material.textfield.MaterialAutoCompleteTextView
 -->
@@ -84,7 +83,7 @@
     <style name="TIL.Isbn">
         <item name="android:hint">@string/lbl_isbn</item>
         <item name="startIconDrawable">@drawable/ic_baseline_check_24</item>
-        <item name="startIconTint">?attr/colorControlActivated</item>
+        <item name="startIconTint">?attr/colorSecondary</item>
     </style>
 
     <!-- An ISBN field with a barcode-scan button as end-icon. -->

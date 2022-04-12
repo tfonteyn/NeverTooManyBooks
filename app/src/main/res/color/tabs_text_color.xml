@@ -19,14 +19,16 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- copied from 'm3_tabs_icon_color.xml' -->
+<!-- copied from "res/color/m3_tabs_icon_color.xml" -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Disabled -->
     <item android:alpha="@dimen/material_emphasis_disabled"
-        android:color="?attr/colorOnSurface"
-        android:state_enabled="false" />
+          android:color="?attr/colorOnSurface"
+          android:state_enabled="false" />
 
     <!-- Selected -->
-    <item android:color="?attr/colorSecondary" android:state_selected="true" />
+    <item android:color="?attr/colorSecondary"
+          android:state_selected="true" />
 
     <!-- Not selected -->
     <item android:color="?attr/colorOnSurfaceVariant" />

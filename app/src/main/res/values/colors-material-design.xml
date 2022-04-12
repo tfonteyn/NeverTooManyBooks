@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -20,10 +20,58 @@
   -->
 
 <resources>
+    <color name="black">#ff000000</color>
+    <color name="white">#ffffffff</color>
 
-    <!-- Material Design - Color Palette -->
-    <!-- Date: 1/15/2015 -->
-    <!-- http://www.google.com/design/spec/style/color.html#color-color-palette -->
+    <!-- M3 defaults
+         https://m3.material.io/libraries/mdc-android/color-theming
+    -->
+    <color name="m3grey_dark_outline">@color/m3grey_500</color>
+    <color name="m3grey_dark_background">@color/m3grey_900</color>
+    <color name="m3grey_dark_on_background">@color/m3grey_300</color>
+    <color name="m3grey_dark_surface">@color/m3grey_900</color>
+    <color name="m3grey_dark_on_surface">@color/m3grey_300</color>
+    <color name="m3grey_dark_surface_variant">@color/m3grey_700</color>
+    <color name="m3grey_dark_on_surface_variant">@color/m3grey_400</color>
+    <color name="m3grey_dark_surface_inverse">@color/m3grey_300</color>
+    <color name="m3grey_dark_on_surface_inverse">@color/m3grey_800</color>
+
+    <color name="m3grey_light_outline">@color/m3grey_600</color>
+    <color name="m3grey_light_background">@color/m3grey_50</color>
+    <color name="m3grey_light_on_background">@color/m3grey_900</color>
+    <color name="m3grey_light_surface">@color/m3grey_50</color>
+    <color name="m3grey_light_on_surface">@color/m3grey_900</color>
+    <color name="m3grey_light_surface_variant">@color/m3grey_200</color>
+    <color name="m3grey_light_on_surface_variant">@color/m3grey_700</color>
+    <color name="m3grey_light_surface_inverse">@color/m3grey_800</color>
+    <color name="m3grey_light_on_surface_inverse">@color/m3grey_100</color>
+
+    <!-- the M3 default greys retrofitted to use M2 color numbers 50..900 for ease of transitioning -->
+    <color name="m3grey_50">#fffffbfe</color>
+    <color name="m3grey_100">#fff4eff4</color>
+    <color name="m3grey_200">#ffe7e0ec</color>
+    <color name="m3grey_300">#ffe6e1e5</color>
+    <color name="m3grey_400">#ffcac4d0</color>
+    <color name="m3grey_500">#ff938f99</color>
+    <color name="m3grey_600">#ff79747e</color>
+    <color name="m3grey_700">#ff49454f</color>
+    <color name="m3grey_800">#ff313033</color>
+    <color name="m3grey_900">#ff1c1b1f</color>
+
+    <color name="m3blue_grey_50">#ffE0B09</color>
+    <color name="m3blue_grey_100">#ffCED2DB</color>
+    <color name="m3blue_grey_200">#ffA9B0C3</color>
+    <color name="m3blue_grey_300">#ff503C32</color>
+    <color name="m3blue_grey_400">#ff8597AF</color>
+    <color name="m3blue_grey_500">#ff556E86</color>
+    <color name="m3blue_grey_600">#ff586D83</color>
+    <color name="m3blue_grey_700">#ff2D3E52</color>
+    <color name="m3blue_grey_800">#ff263540</color>
+    <color name="m3blue_grey_900">#ff212C36</color>
+
+    <!-- Material Design 2:
+         http://www.google.com/design/spec/style/color.html#color-color-palette
+     -->
 
     <!-- Red -->
     <color name="red_50">#FFEBEE</color>
@@ -336,12 +384,5 @@
     <color name="blue_grey_900">#263238</color>
     <!-- Blue Grey -->
 
-    <!-- Black -->
-    <color name="black">#FF000000</color>
-    <!-- Black -->
-
-    <!-- White -->
-    <color name="white">#FFFFFFFF</color>
-    <!-- White -->
 
 </resources>

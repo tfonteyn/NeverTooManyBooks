@@ -20,17 +20,14 @@
   -->
 
 <!--
-These are the standard attributes that make up a complete theme.
-https://developer.android.com/reference/android/R.styleable.html#Theme
+    These are the standard attributes that make up a complete theme.
+    https://developer.android.com/reference/android/R.styleable.html#Theme
 
-Material styles etc.
-https://medium.com/androiddevelopers/migrating-to-material-components-for-android-ec6757795351
+    Material styles etc.
+    https://medium.com/androiddevelopers/migrating-to-material-components-for-android-ec6757795351
 
-https://m3.material.io/libraries/mdc-android/color-theming
-
-Full color list:
-https://material.io/design/material-theming/implementing-your-theme.html#color
-
+    Using The Color Theming System:
+    https://m3.material.io/libraries/mdc-android/color-theming
 -->
 <resources>
     <!-- Top level Theme for the startup activity so it looks like a dialog as intended. -->
@@ -50,16 +47,31 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 
     <!-- Top level Theme to be used in AndroidManifest.xml-->
     <style name="Theme.App" parent="Base.Theme.App">
+        <!-- Reminder: never set this to colorPrimary! -->
+        <item name="android:statusBarColor">@color/blue_grey_300</item>
+
         <!-- Material color attributes -->
         <item name="colorPrimary">@color/blue_grey_300</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/teal_300</item>
+        <item name="colorSecondary">@color/teal_400</item>
         <item name="colorOnSecondary">@color/white</item>
 
-        <item name="android:statusBarColor">?attr/colorPrimary</item>
-        <item name="android:navigationBarColor">?attr/colorPrimary</item>
 
-        <item name="android:colorBackground">@color/grey_25</item>
+        <item name="colorOutline">@color/m3grey_600</item>
+
+        <item name="android:colorBackground">@color/m3grey_50</item>
+        <item name="colorOnBackground">@color/m3grey_900</item>
+
+        <item name="colorSurface">@color/m3grey_50</item>
+        <item name="colorOnSurface">@color/m3grey_900</item>
+        <item name="colorSurfaceVariant">@color/m3grey_200</item>
+        <item name="colorOnSurfaceVariant">@color/m3grey_700</item>
+        <item name="colorSurfaceInverse">@color/m3grey_800</item>
+        <item name="colorOnSurfaceInverse">@color/m3grey_100</item>
+
+
+        <!--        <item name="android:navigationBarColor">?attr/colorPrimary</item>-->
+
 
         <!-- Application specific -->
         <item name="appToolbarBackground">@color/blue_grey_200</item>
@@ -79,11 +91,11 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
     <!-- Base theme - used by both Day and Night themes. -->
     <style name="Base.Theme.App" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Material3 style attributes -->
-        <item name="chipGroupStyle">@style/App.ChipGroup</item>
-        <item name="tabStyle">@style/App.TabBar</item>
-        <item name="snackbarTextViewStyle">@style/App.SnackbarTextViewStyle</item>
-        <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.App.MaterialCalendar</item>
-        <item name="circularProgressIndicatorStyle">@style/App.Progress.Circle</item>
+        <item name="chipGroupStyle">@style/App.chipGroupStyle</item>
+        <item name="tabStyle">@style/App.tabStyle</item>
+        <item name="snackbarTextViewStyle">@style/App.snackbarTextViewStyle</item>
+        <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.App.materialCalendarFullscreenTheme</item>
+        <item name="circularProgressIndicatorStyle">@style/App.circularProgressIndicatorStyle</item>
 
         <!-- Chip styles as attributes makes it easy to add chips from code -->
         <item name="appChipFilterStyle">@style/Widget.Material3.Chip.Filter</item>
@@ -91,8 +103,9 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
     </style>
 
     <!-- ThemeOverlay - used by both Day and Night themes. -->
-    <style name="ThemeOverlay.App.MaterialCalendar" parent="ThemeOverlay.Material3.MaterialCalendar.Fullscreen">
-        <item name="materialCalendarHeaderLayout">@style/App.MaterialCalendar.HeaderLayout</item>
-        <item name="materialCalendarHeaderConfirmButton">@style/App.MaterialCalendar.HeaderConfirmButton</item>
+    <style name="ThemeOverlay.App.materialCalendarFullscreenTheme"
+           parent="ThemeOverlay.Material3.MaterialCalendar.Fullscreen">
+        <item name="materialCalendarHeaderLayout">@style/App.materialCalendarHeaderLayout</item>
+        <item name="materialCalendarHeaderConfirmButton">@style/App.materialCalendarHeaderConfirmButton</item>
     </style>
 </resources>

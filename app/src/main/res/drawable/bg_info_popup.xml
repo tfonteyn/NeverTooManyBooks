@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
@@ -19,15 +19,11 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+       android:shape="rectangle">
 
-    <item android:drawable="@drawable/ic_baseline_check_box_24"
-        android:state_checked="true" />
-
-    <item android:drawable="@drawable/ic_baseline_check_box_outline_blank_24"
-        android:state_checked="false" />
-
-    <item
-        android:drawable="@drawable/ic_baseline_check_box_outline_blank_24" />
-
-</selector>
+    <solid
+        android:color="?attr/colorSurfaceInverse" />
+    <corners
+        android:radius="8dp" />
+</shape>

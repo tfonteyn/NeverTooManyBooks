@@ -44,16 +44,12 @@
         <item name="android:contentDescription">@string/hint_btn_drag_handle</item>
     </style>
 
-    <!-- CheckBox - with custom icon -->
+    <!-- CheckBox -->
     <style name="RowEditor.Button.Checkable" parent="Widget.Material3.CompoundButton.CheckBox">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <!-- don't want it to close to the edge of the screen. -->
         <item name="android:layout_marginStart">12dp</item>
-        <!-- larger icon, without box.
-             In Studio preview, it does not look centered,
-             but it IS FINE when the app is running for real. -->
-        <item name="android:button">?android:attr/textCheckMark</item>
         <item name="android:contentDescription">@string/action_select</item>
     </style>
 

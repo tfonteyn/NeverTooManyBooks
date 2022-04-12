@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/progress_margin_top"
-        android:background="@drawable/bg_progress"
+        android:background="@drawable/bg_progress_dialog"
         android:elevation="@dimen/progress_z"
         >
 
@@ -54,7 +54,6 @@
             android:elevation="4dp"
             android:padding="@dimen/progress_padding"
             android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:textColor="?android:attr/textColorPrimary"
             android:textIsSelectable="true"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"

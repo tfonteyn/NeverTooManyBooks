@@ -208,7 +208,7 @@ public class CoverHandler {
             view.setBackground(null);
         } else {
             mImageLoader.placeholder(view, R.drawable.ic_baseline_add_a_photo_24);
-            view.setBackgroundResource(R.drawable.bg_outline_rounded);
+            view.setBackgroundResource(R.drawable.bg_cover_not_set);
         }
     }
 

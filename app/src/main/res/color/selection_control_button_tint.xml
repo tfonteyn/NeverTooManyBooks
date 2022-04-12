@@ -18,14 +18,18 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:tint="?attr/colorControlNormal"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-    <!--suppress LongLine -->
-    <path
-        android:fillColor="@android:color/white"
-        android:pathData="M20,2L4,2c-1.1,0 -2,0.9 -2,2v18l4,-4h14c1.1,0 2,-0.9 2,-2L22,4c0,-1.1 -0.9,-2 -2,-2zM20,16L6,16l-2,2L4,4h16v12z" />
-</vector>
+<!-- copied from "res/color/m3_selection_control_button_tint" -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Disabled -->
+    <item android:alpha="@dimen/material_emphasis_disabled"
+          android:color="?attr/colorOnSurface"
+          android:state_enabled="false" />
+
+    <!-- Unchecked -->
+    <item android:color="?attr/colorOnSurface" android:state_checked="false" />
+
+    <!-- Checked : default was colorPrimary -->
+    <item android:color="?attr/colorPrimary" android:state_checked="true" />
+
+
+</selector>

@@ -58,12 +58,12 @@
         <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
     </style>
 
-    <!-- A field which CAN be user-changed - used as a very quick edit to avoid editing a whole book. -->
+    <!-- Provides a very quick edit to avoid editing a whole book. -->
     <style name="Field.Checkable" parent="Widget.Material3.CompoundButton.CheckBox">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">@dimen/field_margin_top</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
+        <item name="android:layout_marginTop">@dimen/field_margin_top</item>
     </style>
 
     <!-- Book personal notes. -->
@@ -77,7 +77,7 @@
     <!-- Book Description. -->
     <style name="Field.Description">
         <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
-        <item name="android:background">@drawable/bg_outline_rounded</item>
+        <item name="android:background">@drawable/bg_large_text_field</item>
         <!-- serves as it's own label. -->
         <item name="android:layout_marginTop">@dimen/field_margin_top</item>
         <!-- A bigger text field just looks nicer with these start/end margins. -->

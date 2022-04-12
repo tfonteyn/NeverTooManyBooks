@@ -52,7 +52,7 @@
 
         <CheckBox
             android:id="@+id/cbx_books"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:checked="true"
@@ -92,7 +92,7 @@
 
         <CheckBox
             android:id="@+id/cbx_covers"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:checked="true"
@@ -113,7 +113,7 @@
 
         <CheckBox
             android:id="@+id/cbx_delete_removed_books"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:checked="false"
