@@ -767,7 +767,7 @@ class BooklistBuilder {
                      .map(Domain::getName)
                      .forEach(domainName -> {
                          listColumns.append(',').append(domainName);
-                         listValues.append(", NEW.").append(domainName);
+                         listValues.append(",NEW.").append(domainName);
 
                          // Only add to the where-clause if the group is part of the SORT list
                          if (sortedDomainNames.contains(domainName)) {
@@ -799,6 +799,42 @@ class BooklistBuilder {
                         + "\n END";
 
                 db.execSQL(levelTgSql);
+                // for references, these look somewhat like this:
+                // Level 2 is a "Series", level 1 uses "Title 1st letter"
+                //
+                // CREATE TEMPORARY TRIGGER tmp_book_list_1_TG_LEVEL_2
+                //          BEFORE INSERT ON tmp_book_list_1 FOR EACH ROW
+                //     WHEN NEW.node_level=3 AND NOT EXISTS(
+                //          SELECT 1 FROM tmp_book_list_1_th AS tht
+                //          WHERE COALESCE(tht.blg_tit_let,'')=COALESCE(NEW.blg_tit_let,'')
+                //              COLLATE LOCALIZED
+                //          AND COALESCE(tht.bl_ser_sort,'')=COALESCE(NEW.bl_ser_sort,'')
+                //              COLLATE LOCALIZED
+                //          )
+                //     BEGIN
+                //      INSERT INTO tmp_book_list_1
+                //          (node_level,node_group,node_key,node_expanded,node_visible,
+                //              blg_tit_let,
+                //              series_name,bl_ser_sort,series_id,series_complete)
+                //          VALUES(2,2,NEW.node_key,0,0,
+                //              NEW.blg_tit_let,
+                //              NEW.series_name,NEW.bl_ser_sort,NEW.series_id,NEW.series_complete);
+                //     END
+                //
+                // CREATE TEMPORARY TRIGGER tmp_book_list_1_TG_LEVEL_1
+                //          BEFORE INSERT ON tmp_book_list_1 FOR EACH ROW
+                //     WHEN NEW.node_level=2 AND NOT EXISTS(
+                //          SELECT 1 FROM tmp_book_list_1_th AS tht
+                //          WHERE COALESCE(tht.blg_tit_let,'')=COALESCE(NEW.blg_tit_let,'')
+                //              COLLATE LOCALIZED
+                //          )
+                //     BEGIN
+                //      INSERT INTO tmp_book_list_1
+                //          (node_level,node_group,node_key,node_expanded,node_visible,
+                //              blg_tit_let)
+                //          VALUES(1,9,NEW.node_key,0,1,
+                //              NEW.blg_tit_let);
+                //     END
             }
 
             // Create a trigger to maintain the 'current' value
