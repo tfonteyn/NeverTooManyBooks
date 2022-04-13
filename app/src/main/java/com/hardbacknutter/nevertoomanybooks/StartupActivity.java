@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -139,9 +138,10 @@ public class StartupActivity
 
             case 4:
             default: {
-                mVb.getRoot().setVisibility(View.GONE);
                 // Remove the static self-reference
-                sStartupActivity.clear();
+                if (sStartupActivity != null) {
+                    sStartupActivity.clear();
+                }
                 // Any future hot start will skip the startup tasks
                 ((App) getApplication()).setHotStart();
                 // and hand over to the real main activity
