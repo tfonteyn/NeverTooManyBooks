@@ -32,10 +32,7 @@
 <resources>
     <!-- Top level Theme for the startup activity so it looks like a dialog as intended. -->
     <style name="Theme.App.Startup" parent="Theme.Material3.DayNight.Dialog">
-        <item name="colorPrimary">@color/blue_grey_300</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/teal_300</item>
-        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:colorBackground">@color/m3grey_50</item>
     </style>
 
     <!-- Top level Theme for full screen usage. -->
@@ -48,14 +45,14 @@
     <!-- Top level Theme to be used in AndroidManifest.xml-->
     <style name="Theme.App" parent="Base.Theme.App">
         <!-- Reminder: never set this to colorPrimary! -->
-        <item name="android:statusBarColor">@color/blue_grey_300</item>
+        <item name="android:statusBarColor">@color/m3grey_700</item>
+        <!-- <item name="android:navigationBarColor">@color/m3grey_700</item>-->
 
         <!-- Material color attributes -->
-        <item name="colorPrimary">@color/blue_grey_300</item>
+        <item name="colorPrimary">@color/m3grey_400</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorSecondary">@color/teal_400</item>
         <item name="colorOnSecondary">@color/white</item>
-
 
         <item name="colorOutline">@color/m3grey_600</item>
 
@@ -64,20 +61,13 @@
 
         <item name="colorSurface">@color/m3grey_50</item>
         <item name="colorOnSurface">@color/m3grey_900</item>
-        <item name="colorSurfaceVariant">@color/m3grey_200</item>
+        <item name="colorSurfaceVariant">@color/m3grey_100</item>
         <item name="colorOnSurfaceVariant">@color/m3grey_700</item>
         <item name="colorSurfaceInverse">@color/m3grey_800</item>
         <item name="colorOnSurfaceInverse">@color/m3grey_100</item>
 
-
-        <!--        <item name="android:navigationBarColor">?attr/colorPrimary</item>-->
-
-
         <!-- Application specific -->
-        <item name="appToolbarBackground">@color/blue_grey_200</item>
-        <item name="appBobListHeaderBackground">@color/blue_grey_100</item>
-        <item name="appBobCardBackgroundColor">@color/grey_50</item>
-        <item name="appProgressCircleBackgroundColor">@color/grey_50</item>
+        <item name="appToolbarBackground">?attr/colorPrimary</item>
 
         <item name="appPreferenceAlertColor">@color/deep_orange_900</item>
 
@@ -96,6 +86,7 @@
         <item name="snackbarTextViewStyle">@style/App.snackbarTextViewStyle</item>
         <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.App.materialCalendarFullscreenTheme</item>
         <item name="circularProgressIndicatorStyle">@style/App.circularProgressIndicatorStyle</item>
+        <item name="linearProgressIndicatorStyle">@style/App.linearProgressIndicatorStyle</item>
 
         <!-- Chip styles as attributes makes it easy to add chips from code -->
         <item name="appChipFilterStyle">@style/Widget.Material3.Chip.Filter</item>

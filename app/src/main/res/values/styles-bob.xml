@@ -26,7 +26,7 @@
     <style name="BoB.Header.Container" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">?attr/appBobListHeaderBackground</item>
+        <item name="android:background">?attr/colorSurfaceVariant</item>
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
     </style>
 
@@ -108,7 +108,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_margin">@dimen/bob_book_card_margin</item>
         <item name="contentPadding">@dimen/bob_book_card_content_padding</item>
-        <item name="cardBackgroundColor">?attr/appBobCardBackgroundColor</item>
+        <item name="cardBackgroundColor">?attr/colorSurface</item>
     </style>
 
     <!-- *************************************************************************************** -->

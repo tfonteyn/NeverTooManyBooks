@@ -30,6 +30,7 @@
     android:minWidth="320dp"
     android:padding="16dp"
     android:windowNoTitle="true"
+    android:background="?android:attr/colorBackground"
     tools:context=".StartupActivity"
     >
 

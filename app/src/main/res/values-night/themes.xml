@@ -22,25 +22,23 @@
 <resources>
 
     <style name="Theme.App.Startup" parent="Theme.Material3.DayNight.Dialog">
-        <item name="colorPrimary">@color/blue_grey_700</item>
-        <item name="colorOnPrimary">@color/blue_grey_200</item>
-        <item name="colorSecondary">@color/teal_800</item>
-        <item name="colorOnSecondary">@color/teal_200</item>
+        <item name="android:colorBackground">@color/m3grey_800</item>
     </style>
 
     <style name="Theme.App" parent="Base.Theme.App">
         <!-- Reminder: never set this to colorPrimary! -->
-        <item name="android:statusBarColor">@color/blue_grey_800</item>
+        <item name="android:statusBarColor">@color/m3grey_900</item>
+        <!--          <item name="android:navigationBarColor">@color/m3grey_900</item>-->
 
         <!-- Material color attributes -->
-        <item name="colorPrimary">@color/blue_grey_400</item>
-        <item name="colorOnPrimary">@color/blue_grey_200</item>
+        <item name="colorPrimary">@color/m3grey_700</item>
+        <item name="colorOnPrimary">@color/m3grey_200</item>
         <item name="colorSecondary">@color/teal_500</item>
         <item name="colorOnSecondary">@color/teal_300</item>
 
         <item name="colorOutline">@color/m3grey_500</item>
 
-        <item name="android:colorBackground">@color/m3grey_900</item>
+        <item name="android:colorBackground">@color/m3grey_800</item>
         <item name="colorOnBackground">@color/m3grey_300</item>
 
         <item name="colorSurface">@color/m3grey_900</item>
@@ -50,15 +48,8 @@
         <item name="colorSurfaceInverse">@color/m3grey_300</item>
         <item name="colorOnSurfaceInverse">@color/m3grey_800</item>
 
-
-        <!--        <item name="android:navigationBarColor">?attr/colorPrimary</item>-->
-
-
         <!-- Application specific -->
-        <item name="appToolbarBackground">@color/blue_grey_800</item>
-        <item name="appBobListHeaderBackground">@color/blue_grey_700</item>
-        <item name="appBobCardBackgroundColor">@color/grey_800</item>
-        <item name="appProgressCircleBackgroundColor">@color/grey_800</item>
+        <item name="appToolbarBackground">?attr/colorPrimary</item>
 
         <item name="appPreferenceAlertColor">@color/red_500</item>
 

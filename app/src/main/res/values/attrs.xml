@@ -28,13 +28,6 @@
     <!-- Background(!) for Activity and Dialog toolbars. -->
     <attr name="appToolbarBackground" format="reference|color" />
 
-    <!-- Background(!) for the header above the booklist; where style/filter/nr-of-books/... is displayed -->
-    <attr name="appBobListHeaderBackground" format="reference|color" />
-    <!-- Background color for the CardView for books on the booklist (bob)   -->
-    <attr name="appBobCardBackgroundColor" format="reference|color" />
-
-    <attr name="appProgressCircleBackgroundColor" format="reference|color" />
-
     <!-- Color gradient used in the Navigation side bar. -->
     <attr name="appNavBarColorStart" format="reference|color" />
     <attr name="appNavBarColorCenter" format="reference|color" />

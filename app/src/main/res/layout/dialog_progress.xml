@@ -82,7 +82,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:max="100"
-            android:padding="@dimen/progress_padding"
             android:progress="0"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
