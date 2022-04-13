@@ -58,16 +58,16 @@
     <color name="m3grey_800">#ff313033</color>
     <color name="m3grey_900">#ff1c1b1f</color>
 
-    <color name="m3blue_grey_50">#ffE0B09</color>
-    <color name="m3blue_grey_100">#ffCED2DB</color>
-    <color name="m3blue_grey_200">#ffA9B0C3</color>
-    <color name="m3blue_grey_300">#ff503C32</color>
-    <color name="m3blue_grey_400">#ff8597AF</color>
-    <color name="m3blue_grey_500">#ff556E86</color>
-    <color name="m3blue_grey_600">#ff586D83</color>
-    <color name="m3blue_grey_700">#ff2D3E52</color>
+    <color name="m3blue_grey_50">#fff1f0f5</color>
+    <color name="m3blue_grey_100">#ffced2db</color>
+    <color name="m3blue_grey_200">#ffa9b0c3</color>
+    <color name="m3blue_grey_300">#ff503c32</color>
+    <color name="m3blue_grey_400">#ff8597af</color>
+    <color name="m3blue_grey_500">#ff556e86</color>
+    <color name="m3blue_grey_600">#ff586d83</color>
+    <color name="m3blue_grey_700">#ff2d3e52</color>
     <color name="m3blue_grey_800">#ff263540</color>
-    <color name="m3blue_grey_900">#ff212C36</color>
+    <color name="m3blue_grey_900">#ff212c36</color>
 
     <!-- Material Design 2:
          http://www.google.com/design/spec/style/color.html#color-color-palette

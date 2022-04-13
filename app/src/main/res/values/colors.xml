@@ -25,7 +25,4 @@
     <color name="cropper_focus">@color/grey_600</color>
     <color name="cropper_outline_rectangle">@color/orange_600</color>
 
-    <!-- 25 is not official... derived by taking 'grey_50' and adding '020202' -->
-    <color name="grey_25">#FCFCFC</color>
-
 </resources>

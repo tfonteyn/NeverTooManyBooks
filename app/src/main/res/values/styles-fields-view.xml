@@ -88,7 +88,6 @@
     <!-- Lend out to X. -->
     <style name="Field.LendOutToBar">
         <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
-        <!-- https://github.com/material-components/material-components-android/issues/2538 -->
         <item name="android:background">?attr/colorSurfaceInverse</item>
         <item name="android:textColor">?android:attr/textColorPrimaryInverse</item>
         <!-- Background/text is inverse, so use padding instead of margins -->
