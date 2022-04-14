@@ -146,18 +146,17 @@
     <TextView
         android:id="@+id/lbl_contacts"
         style="@style/Text.Header"
-        android:text="@string/lbl_about_contact"
         android:layout_marginTop="24dp"
+        android:text="@string/lbl_about_contact"
+        app:layout_constraintStart_toStartOf="@id/btn_sourcecode_url"
         app:layout_constraintTop_toBottomOf="@id/barrier_header_bottom"
-        app:layout_constraintEnd_toStartOf="@id/btn_sourcecode_url"
         />
 
     <Button
         android:id="@+id/btn_sourcecode_url"
-        style="@style/Button.Url"
-        android:text="@string/lbl_sourcecode_url"
+        style="@style/Button.Url.GitHub"
+        app:layout_constraintTop_toBottomOf="@id/lbl_contacts"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBaseline_toBaselineOf="@id/lbl_contacts"
         />
 
     <TextView

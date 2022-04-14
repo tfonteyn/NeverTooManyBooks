@@ -212,16 +212,6 @@
         <item name="android:contentDescription">@string/btn_show_toc_long</item>
     </style>
 
-    <!-- A button which will take the user to an external website. -->
-    <style name="Button.Url" parent="Widget.Material3.Button.TonalButton">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
-        <item name="android:textAllCaps">false</item>
-        <item name="icon">@drawable/ic_baseline_link_24</item>
-        <item name="iconGravity">textStart</item>
-    </style>
-
     <!-- ImageButton -->
     <style name="Button.InfoPopup" parent="">
         <item name="android:layout_width">wrap_content</item>
@@ -230,6 +220,22 @@
         <item name="android:padding">4dp</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:src">@drawable/ic_baseline_info_24</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
+
+    <!-- A button which will take the user to an external website. -->
+    <style name="Button.Url" parent="Widget.Material3.Button.TonalButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="icon">@drawable/ic_baseline_link_24</item>
+        <item name="iconGravity">textStart</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="Button.Url.GitHub">
+        <item name="android:text">@string/lbl_sourcecode_url</item>
+        <item name="icon">@drawable/ic_github_24px</item>
     </style>
 
     <!-- *************************************************************************************** -->

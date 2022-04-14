@@ -146,8 +146,8 @@
     <TextView
         android:id="@+id/lbl_contacts"
         style="@style/Text.Header"
-        android:layout_marginTop="24dp"
         android:layout_marginStart="@dimen/field_margin_start"
+        android:layout_marginTop="32dp"
         android:text="@string/lbl_about_contact"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_publishers"
@@ -155,10 +155,10 @@
 
     <Button
         android:id="@+id/btn_sourcecode_url"
-        style="@style/Button.Url"
-        android:text="@string/lbl_sourcecode_url"
+        style="@style/Button.Url.GitHub"
+        android:layout_marginStart="@dimen/field_margin_start"
         app:layout_constraintBaseline_toBaselineOf="@id/lbl_contacts"
-        app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
+        app:layout_constraintStart_toEndOf="@id/lbl_contacts"
         />
 
     <TextView
