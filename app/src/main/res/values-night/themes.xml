@@ -26,15 +26,33 @@
     </style>
 
     <style name="Theme.App" parent="Base.Theme.App">
-        <!-- Reminder: never set this to colorPrimary! -->
+        <!-- The system status bar at the very top of a screen.
+             Reminder: never set this to colorPrimary! -->
         <item name="android:statusBarColor">@color/m3grey_900</item>
-        <!--          <item name="android:navigationBarColor">@color/m3grey_900</item>-->
+        <!-- All toolbars and dialog title bars use this as the background color. -->
+        <item name="appToolbarBackground">@color/m3grey_700</item>
+
+        <!-- <item name="android:navigationBarColor">@color/m3grey_900</item>-->
 
         <!-- Material color attributes -->
-        <item name="colorPrimary">@color/m3grey_700</item>
+        <!-- Reminder colorPrimary
+            - CheckBox: 'checked' status
+        -->
+        <item name="colorPrimary">@color/m3grey_300</item>
         <item name="colorOnPrimary">@color/m3grey_200</item>
+        <item name="colorPrimaryContainer">#ff4f378b</item>
+        <item name="colorOnPrimaryContainer">#ffeaddff</item>
+        <item name="colorPrimaryInverse">#ff6750a4</item>
+
         <item name="colorSecondary">@color/teal_500</item>
         <item name="colorOnSecondary">@color/teal_300</item>
+        <item name="colorSecondaryContainer">#ff4a4458</item>
+        <item name="colorOnSecondaryContainer">#ffe8def8</item>
+
+        <item name="colorError">@color/m3_dark_error</item>
+        <item name="colorOnError">@color/m3_dark_on_error</item>
+        <item name="colorErrorContainer">@color/m3_dark_error_container</item>
+        <item name="colorOnErrorContainer">@color/m3_dark_on_error_container</item>
 
         <item name="colorOutline">@color/m3grey_500</item>
 
@@ -42,6 +60,9 @@
         <item name="colorOnBackground">@color/m3grey_300</item>
 
         <item name="colorSurface">@color/m3grey_900</item>
+        <!-- Reminder colorOnSurface
+            - CheckBox: 'unchecked' status
+        -->
         <item name="colorOnSurface">@color/m3grey_300</item>
         <item name="colorSurfaceVariant">@color/m3grey_700</item>
         <item name="colorOnSurfaceVariant">@color/m3grey_400</item>
@@ -49,13 +70,12 @@
         <item name="colorOnSurfaceInverse">@color/m3grey_800</item>
 
         <!-- Application specific -->
-        <item name="appToolbarBackground">?attr/colorPrimary</item>
-
+        <item name="appDropdownIconColor">?attr/colorOnSurface</item>
         <item name="appPreferenceAlertColor">@color/red_500</item>
 
         <!-- gradient used in the Navigation side bar. -->
         <item name="appNavBarColorStart">@color/blue_grey_800</item>
         <item name="appNavBarColorCenter">@color/blue_grey_600</item>
-        <item name="appNavBarColorEnd">@color/blue_grey_400</item>
+        <item name="appNavBarColorEnd">@color/blue_grey_500</item>
     </style>
 </resources>

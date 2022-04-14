@@ -25,16 +25,19 @@
     <attr name="appChipFilterStyle" format="reference" />
     <attr name="appChipInputStyle" format="reference" />
 
-    <!-- Background(!) for Activity and Dialog toolbars. -->
+    <!-- Background for Activity and Dialog toolbars. -->
     <attr name="appToolbarBackground" format="reference|color" />
+    <!-- Color used for the drop-down icon in ExposedDropdownMenu.
+         Overrides the default to make it better visible. -->
+    <attr name="appDropdownIconColor" format="reference|color" />
+
+    <!-- Color to give (the icon) of certain preferences a visual indicator. -->
+    <attr name="appPreferenceAlertColor" format="reference|color" />
 
     <!-- Color gradient used in the Navigation side bar. -->
     <attr name="appNavBarColorStart" format="reference|color" />
     <attr name="appNavBarColorCenter" format="reference|color" />
     <attr name="appNavBarColorEnd" format="reference|color" />
-
-    <!-- the color to give certain preferences a visual indicator. -->
-    <attr name="appPreferenceAlertColor" format="reference|color" />
 
     <declare-styleable name="ExtGroup">
         <attr name="groupApply">

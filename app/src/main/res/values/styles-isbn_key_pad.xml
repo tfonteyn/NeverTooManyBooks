@@ -29,6 +29,8 @@
         <item name="android:layout_height">@dimen/isbn_keypad_key_height</item>
         <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>
         <item name="android:layout_marginEnd">@dimen/isbn_keypad_key_margin</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
     </style>
 
     <!-- 0..9 and X -->
@@ -42,6 +44,7 @@
         <item name="android:scaleX">1.5</item>
         <item name="android:scaleY">1.5</item>
         <item name="icon">@drawable/ic_baseline_backspace_24</item>
+        <item name="iconTint">?attr/colorOnSurfaceVariant</item>
         <item name="android:contentDescription">@string/action_delete</item>
     </style>
 
@@ -58,7 +61,11 @@
         <item name="android:layout_marginEnd">@dimen/isbn_keypad_key_margin</item>
         <item name="android:layout_marginTop">@dimen/section_margin_top</item>
         <item name="android:textAppearance">?attr/textAppearanceButton</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
+        <item name="android:textAllCaps">false</item>
         <item name="iconGravity">end</item>
         <item name="icon">@drawable/ic_baseline_cancel_24</item>
+        <item name="iconTint">?attr/colorOnSurfaceVariant</item>
     </style>
 </resources>

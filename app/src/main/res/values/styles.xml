@@ -166,8 +166,7 @@
     <style name="Button.DropdownMenu" parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <!-- make the drop down arrow better visible. -->
-        <item name="endIconTint">?attr/colorOnSurface</item>
+        <item name="endIconTint">?attr/appDropdownIconColor</item>
     </style>
 
     <!-- A button in a list of action-options. -->
@@ -214,14 +213,13 @@
     </style>
 
     <!-- A button which will take the user to an external website. -->
-    <style name="Button.Url" parent="Widget.Material3.Button.TextButton">
+    <style name="Button.Url" parent="Widget.Material3.Button.TonalButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
-        <item name="android:textColor">?android:attr/textColorLink</item>
         <item name="android:textAllCaps">false</item>
         <item name="icon">@drawable/ic_baseline_link_24</item>
-        <item name="iconGravity">textEnd</item>
+        <item name="iconGravity">textStart</item>
     </style>
 
     <!-- ImageButton -->
@@ -327,7 +325,7 @@
     <!-- Global theme attribute "materialCalendarHeaderLayout"
     We want the full screen calendar widget to use the same header style as all our edit-screens. -->
     <style name="App.materialCalendarHeaderLayout" parent="Widget.Material3.MaterialCalendar.HeaderLayout">
-        <item name="android:background">?attr/colorPrimary</item>
+        <item name="android:background">?attr/appToolbarBackground</item>
     </style>
 
     <!-- Global theme attribute "materialCalendarHeaderConfirmButton" -->

@@ -111,7 +111,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_external_id"
-            style="@style/TIL.ExternalId"
+            style="@style/TIL.Text.ExternalId"
             android:hint="@string/lbl_site_book_id"
             android:layout_marginTop="@dimen/section_margin_top"
             app:layout_constraintStart_toStartOf="parent"

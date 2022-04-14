@@ -87,8 +87,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/lbl_title"
-                    style="@style/TIL"
-                    android:hint="@string/lbl_title"
+                    style="@style/TIL.Text.Title"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/lbl_author"
@@ -105,7 +104,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/lbl_first_publication"
-                    style="@style/TIL.Year"
+                    style="@style/TIL.Text.Year"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/lbl_title"
                     >

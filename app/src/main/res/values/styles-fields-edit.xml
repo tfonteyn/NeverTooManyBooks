@@ -27,7 +27,7 @@
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- generic input field with clear-text icon at the end. -->
+    <!-- Base style; not to be used directly in layouts. -->
     <style name="TIL" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
@@ -36,7 +36,6 @@
         <item name="android:layout_marginBottom">@dimen/til_margin</item>
         <item name="android:layout_marginStart">@dimen/til_margin</item>
         <item name="android:layout_marginEnd">@dimen/til_margin</item>
-        <item name="endIconMode">clear_text</item>
     </style>
 
     <!-- See "TIE.ReadOnly" -->
@@ -44,6 +43,22 @@
         <item name="endIconMode">none</item>
         <item name="android:focusable">false</item>
         <item name="android:focusableInTouchMode">false</item>
+    </style>
+
+    <!-- URGENT: clear text icon not visible
+         https://github.com/material-components/material-components-android/pull/2025
+         generic input field with clear-text icon at the end. -->
+    <style name="TIL.Text">
+        <item name="endIconMode">clear_text</item>
+        <!--        <item name="endIconDrawable">@drawable/ic_baseline_cancel_24</item>-->
+    </style>
+
+    <style name="TIL.Text.Title">
+        <item name="android:hint">@string/lbl_title</item>
+    </style>
+
+    <!-- A multi-line note/description field. -->
+    <style name="TIL.Text.Note">
     </style>
 
     <!-- Brings up a dialog/screen to let the user pick item(s) from a list -->
@@ -63,51 +78,37 @@
     </style>
 
     <!-- a fixed width box for an external id field. -->
-    <style name="TIL.ExternalId">
+    <style name="TIL.Text.ExternalId">
         <item name="android:layout_width">@dimen/til_fixed_width_external_id</item>
     </style>
 
     <!-- a fixed width box for a 4-digit year. -->
-    <style name="TIL.Year">
+    <style name="TIL.Text.Year">
         <item name="android:hint">@string/lbl_year</item>
         <item name="android:layout_width">@dimen/til_fixed_width_year</item>
     </style>
 
     <!-- a fixed width box for a books number in a series. -->
-    <style name="TIL.SeriesNum">
+    <style name="TIL.Text.SeriesNum">
         <item name="android:hint">@string/lbl_series_num</item>
         <item name="android:layout_width">@dimen/til_fixed_width_series_num</item>
     </style>
 
     <!-- An ISBN field - a TextWatcher handles the start-icon. -->
-    <style name="TIL.Isbn">
+    <style name="TIL.Text.Isbn">
         <item name="android:hint">@string/lbl_isbn</item>
         <item name="startIconDrawable">@drawable/ic_baseline_check_24</item>
         <item name="startIconTint">?attr/colorSecondary</item>
     </style>
 
     <!-- An ISBN field with a barcode-scan button as end-icon. -->
-    <style name="TIL.Isbn.Scan">
+    <style name="TIL.Text.Isbn.Scan">
         <item name="endIconMode">custom</item>
         <item name="endIconDrawable">@drawable/ic_barcode</item>
     </style>
 
-    <!-- A multi-line note/description field. -->
-    <style name="TIL.Note">
-    </style>
-
-    <style name="TIL.Price">
+    <style name="TIL.Text.Price">
         <item name="android:layout_width">@dimen/til_fixed_width_price</item>
-    </style>
-
-    <style name="TIL.Currency" parent="TIL.AutoCompleteTextView">
-        <item name="android:hint">@string/lbl_currency</item>
-        <item name="android:layout_width">@dimen/til_fixed_width_currency</item>
-    </style>
-
-    <style name="TIL.Language" parent="TIL.AutoCompleteTextView">
-        <item name="android:hint">@string/lbl_language</item>
-        <item name="android:layout_width">@dimen/til_fixed_width_language</item>
     </style>
 
     <!-- A TextInputLayout style specific for fields where the inner field is a (Material)AutoCompleteTextView.
@@ -120,7 +121,7 @@
         https://blog.usejournal.com/there-is-no-material-design-spinner-for-android-3261b7c77da8
     -->
     <style name="TIL.AutoCompleteTextView"
-        parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+           parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <!-- 4x so we can override individually (is this another Android bug?) -->
@@ -128,17 +129,25 @@
         <item name="android:layout_marginBottom">@dimen/til_margin</item>
         <item name="android:layout_marginStart">@dimen/til_margin</item>
         <item name="android:layout_marginEnd">@dimen/til_margin</item>
-        <!-- make the drop down arrow better visible. -->
-        <item name="endIconTint">?attr/colorOnSurface</item>
+        <item name="endIconTint">?attr/appDropdownIconColor</item>
+    </style>
+
+    <style name="TIL.Currency" parent="TIL.AutoCompleteTextView">
+        <item name="android:hint">@string/lbl_currency</item>
+        <item name="android:layout_width">@dimen/til_fixed_width_currency</item>
+    </style>
+
+    <style name="TIL.Language" parent="TIL.AutoCompleteTextView">
+        <item name="android:hint">@string/lbl_language</item>
+        <item name="android:layout_width">@dimen/til_fixed_width_language</item>
     </style>
 
     <!-- The TextInputLayout view for a NON-editable AutoCompleteTextView; equivalent of a Spinner. -->
     <style name="TIL.ExposedDropdownMenu"
-        parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+           parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <!-- make the drop down arrow better visible. -->
-        <item name="endIconTint">?attr/colorOnSurface</item>
+        <item name="endIconTint">?attr/appDropdownIconColor</item>
         <item name="android:paddingTop">0dp</item>
         <item name="android:paddingBottom">0dp</item>
         <!-- 4x so we can override individually (is this another Android bug?) -->

@@ -95,8 +95,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_title"
-            style="@style/TIL"
-            android:hint="@string/lbl_title"
+            style="@style/TIL.Text.Title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_author"
@@ -131,7 +130,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_isbn"
-            style="@style/TIL.Isbn.Scan"
+            style="@style/TIL.Text.Isbn.Scan"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_language"
@@ -202,7 +201,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_description"
-            style="@style/TIL.Note"
+            style="@style/TIL.Text.Note"
             android:hint="@string/lbl_description"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

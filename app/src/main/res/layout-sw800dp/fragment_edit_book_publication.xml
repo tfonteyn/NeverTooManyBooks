@@ -132,7 +132,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_pages"
-            style="@style/TIL"
+            style="@style/TIL.Text"
             android:hint="@string/lbl_pages"
             app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
@@ -168,7 +168,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_price_listed"
-            style="@style/TIL.Price"
+            style="@style/TIL.Text.Price"
             android:hint="@string/lbl_price_listed"
             app:layout_constraintStart_toEndOf="@id/lbl_price_listed_currency"
             app:layout_constraintTop_toBottomOf="@id/lbl_pages"
@@ -186,7 +186,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_print_run"
-            style="@style/TIL"
+            style="@style/TIL.Text"
             android:hint="@string/lbl_print_run"
             app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
@@ -301,7 +301,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_price_paid"
-            style="@style/TIL.Price"
+            style="@style/TIL.Text.Price"
             android:hint="@string/lbl_price_paid"
             app:layout_constraintStart_toEndOf="@id/lbl_price_paid_currency"
             app:layout_constraintTop_toBottomOf="@id/lbl_date_acquired"
@@ -438,7 +438,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_personal_notes"
-            style="@style/TIL.Note"
+            style="@style/TIL.Text.Note"
             android:hint="@string/lbl_personal_notes"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
