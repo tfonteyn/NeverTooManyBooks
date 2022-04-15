@@ -104,72 +104,73 @@ public class App
      * Initialize ACRA reporting.
      */
     private void initAcra() {
-        final CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this)
-                .withBuildConfigClass(BuildConfig.class)
-                .withReportFormat(StringFormat.JSON)
-                .withReportSendFailureToast(getString(R.string.error_email_failed))
-                .withApplicationLogFileDir(Directory.FILES)
-                .withApplicationLogFile(APPLICATION_LOG_FILE)
-                .withApplicationLogFileLines(ACRA_LOGFILE_LINES)
-                .withExcludeMatchingSharedPreferencesKeys(".*password.*")
-                .withReportContent(
-                        // Device
-                        ReportField.PHONE_MODEL,
-                        ReportField.BRAND,
-                        // ReportField.PRODUCT,
-                        // ReportField.DEVICE_FEATURES,
-                        ReportField.DISPLAY,
-                        ReportField.ANDROID_VERSION,
-                        ReportField.BUILD,
-                        // ReportField.ENVIRONMENT,
-                        ReportField.TOTAL_MEM_SIZE,
-                        ReportField.AVAILABLE_MEM_SIZE,
+        ACRA.init(this, new CoreConfigurationBuilder()
+                          .withBuildConfigClass(BuildConfig.class)
+                          .withReportFormat(StringFormat.JSON)
+                          .withReportSendFailureToast(getString(R.string.error_email_failed))
+                          .withApplicationLogFileDir(Directory.FILES)
+                          .withApplicationLogFile(APPLICATION_LOG_FILE)
+                          .withApplicationLogFileLines(ACRA_LOGFILE_LINES)
+                          .withExcludeMatchingSharedPreferencesKeys(".*password.*")
+                          .withReportContent(
+                                  // Device
+                                  ReportField.PHONE_MODEL,
+                                  ReportField.BRAND,
+                                  // ReportField.PRODUCT,
+                                  // ReportField.DEVICE_FEATURES,
+                                  ReportField.DISPLAY,
+                                  ReportField.ANDROID_VERSION,
+                                  ReportField.BUILD,
+                                  // ReportField.ENVIRONMENT,
+                                  ReportField.TOTAL_MEM_SIZE,
+                                  ReportField.AVAILABLE_MEM_SIZE,
 
-                        // Privacy: do not use ReportField.DEVICE_ID,
-                        ReportField.INSTALLATION_ID,
-                        ReportField.REPORT_ID,
+                                  // Privacy: do not use ReportField.DEVICE_ID,
+                                  ReportField.INSTALLATION_ID,
+                                  ReportField.REPORT_ID,
 
-                        // Application
-                        ReportField.APP_VERSION_CODE,
-                        ReportField.BUILD_CONFIG,
-                        ReportField.FILE_PATH,
+                                  // Application
+                                  ReportField.APP_VERSION_CODE,
+                                  ReportField.BUILD_CONFIG,
+                                  ReportField.FILE_PATH,
 
-                        ReportField.APPLICATION_LOG,
-                        ReportField.SHARED_PREFERENCES,
-                        ReportField.INITIAL_CONFIGURATION,
-                        ReportField.CRASH_CONFIGURATION,
-                        ReportField.STACK_TRACE,
-                        ReportField.STACK_TRACE_HASH,
-                        ReportField.THREAD_DETAILS,
+                                  ReportField.APPLICATION_LOG,
+                                  ReportField.SHARED_PREFERENCES,
+                                  ReportField.INITIAL_CONFIGURATION,
+                                  ReportField.CRASH_CONFIGURATION,
+                                  ReportField.STACK_TRACE,
+                                  ReportField.STACK_TRACE_HASH,
+                                  ReportField.THREAD_DETAILS,
 
-                        ReportField.CUSTOM_DATA,
+                                  ReportField.CUSTOM_DATA,
 
-                        ReportField.USER_APP_START_DATE,
-                        ReportField.USER_CRASH_DATE,
+                                  ReportField.USER_APP_START_DATE,
+                                  ReportField.USER_CRASH_DATE,
 
-                        ReportField.USER_COMMENT);
+                                  ReportField.USER_COMMENT)
 
-        builder.getPluginConfigurationBuilder(MailSenderConfigurationBuilder.class)
-               .withMailTo(BuildConfig.EMAIL_ACRA)
-               .withReportFileName(EMAIL_ACRA_ATTACHMENTS)
-               .withEnabled(true);
-
-        // Optional, displayed as soon as the crash occurs,
-        // before collecting data which can take a few seconds
-        builder.getPluginConfigurationBuilder(ToastConfigurationBuilder.class)
-               .withText(getString(R.string.acra_resToastText))
-               .withEnabled(true);
-
-        builder.getPluginConfigurationBuilder(DialogConfigurationBuilder.class)
-               .withText(getString(R.string.acra_resDialogText))
-               .withTitle(getString(R.string.app_name))
-               .withCommentPrompt(getString(R.string.acra_resDialogCommentPrompt))
-               .withResTheme(R.style.Theme_App)
-               .withResIcon(R.drawable.ic_baseline_warning_24)
-               .withEnabled(true);
-
-
-        ACRA.init(this, builder);
+                          .withPluginConfigurations(
+                                  new MailSenderConfigurationBuilder()
+                                          .withMailTo(BuildConfig.EMAIL_ACRA)
+                                          .withReportFileName(EMAIL_ACRA_ATTACHMENTS)
+                                          .withEnabled(true)
+                                          .build(),
+                                  // Optional, displayed as soon as the crash occurs,
+                                  // before collecting data which can take a few seconds
+                                  new ToastConfigurationBuilder()
+                                          .withText(getString(R.string.acra_resToastText))
+                                          .withEnabled(true)
+                                          .build(),
+                                  new DialogConfigurationBuilder()
+                                          .withText(getString(R.string.acra_resDialogText))
+                                          .withTitle(getString(R.string.app_name))
+                                          .withCommentPrompt(getString(R.string.acra_resDialogCommentPrompt))
+                                          .withResTheme(R.style.Theme_App)
+                                          .withResIcon(R.drawable.ic_baseline_warning_24)
+                                          .withEnabled(true)
+                                          .build()
+                                                   )
+                 );
 
         ACRA.getErrorReporter().putCustomData("Signed-By", PackageInfoWrapper
                 .createWithSignatures(this).getSignedBy());
