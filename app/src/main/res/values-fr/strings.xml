@@ -704,5 +704,6 @@
     <string name="error_file_not_found">Fichier non trouvé: %1$s</string>
     <string name="disabled">Désactivé</string>
     <string name="error_unsupported_version_v">Version non prise en charge: %1$d</string>
+    <string name="cd_clear_text_end_icon">Effacer le texte</string>
 
 </resources>

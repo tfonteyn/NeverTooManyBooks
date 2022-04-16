@@ -702,4 +702,5 @@
     <string name="lbl_local_search">Ricerca locale</string>
     <string name="disabled">Spento</string>
     <string name="error_unsupported_version_v">Versione non supportata: %1$d</string>
+    <string name="cd_clear_text_end_icon">Cancella testo</string>
 </resources>

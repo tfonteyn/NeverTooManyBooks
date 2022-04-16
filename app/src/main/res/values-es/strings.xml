@@ -703,4 +703,5 @@
     <string name="lbl_local_search">Busqueda local</string>
     <string name="disabled">Apagado</string>
     <string name="error_unsupported_version_v">Versión no compatible: %1$d</string>
+    <string name="cd_clear_text_end_icon">Borrar texto</string>
 </resources>

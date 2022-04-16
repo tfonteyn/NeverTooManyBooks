@@ -701,4 +701,5 @@
     <string name="lbl_local_search">Bölgesel arama</string>
     <string name="disabled">Kapalı</string>
     <string name="error_unsupported_version_v">Desteklenmeyen sürüm: %1$d</string>
+    <string name="cd_clear_text_end_icon">Metni temizle</string>
 </resources>

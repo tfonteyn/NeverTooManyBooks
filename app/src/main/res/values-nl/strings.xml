@@ -700,4 +700,5 @@
     <string name="lbl_local_search">Lokaal zoeken</string>
     <string name="disabled">Uitgeschakeld</string>
     <string name="error_unsupported_version_v">Niet-ondersteunde versie: %1$d</string>
+    <string name="cd_clear_text_end_icon">Tekst wissen</string>
 </resources>

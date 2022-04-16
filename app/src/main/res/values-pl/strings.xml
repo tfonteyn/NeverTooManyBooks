@@ -700,4 +700,5 @@
     <string name="lbl_local_search">Wyszukiwanie lokalne</string>
     <string name="disabled">Wyłączony</string>
     <string name="error_unsupported_version_v">Nieobsługiwana wersja: %1$d</string>
+    <string name="cd_clear_text_end_icon">Wyczyść tekst</string>
 </resources>

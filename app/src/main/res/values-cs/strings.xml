@@ -700,4 +700,5 @@
     <string name="lbl_local_search">Místní vyhledávání</string>
     <string name="disabled">Vypnutý</string>
     <string name="error_unsupported_version_v">Nepodporovaná verze: %1$d</string>
+    <string name="cd_clear_text_end_icon">Vymazat text</string>
 </resources>

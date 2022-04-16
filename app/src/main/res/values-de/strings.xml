@@ -703,5 +703,6 @@
     <string name="lbl_local_search">Lokale Suche</string>
     <string name="disabled">Deaktiviert</string>
     <string name="error_unsupported_version_v">Nicht unterstützte Version: %1$d</string>
+    <string name="cd_clear_text_end_icon">Text löschen</string>
 
 </resources>

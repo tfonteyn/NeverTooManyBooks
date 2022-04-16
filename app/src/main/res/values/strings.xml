@@ -291,6 +291,9 @@
 
     <string name="txt_rebuild_scheduled">Rebuild scheduled</string>
 
+    <string name="info_moving_covers_from_x_to_y">Move all covers from “%1$s” to “%2$s”</string>
+
+
     <!-- ####################################################################################### -->
     <!-- ========== authorization/authentication messages ========== -->
     <!-- ####################################################################################### -->
@@ -431,6 +434,7 @@
         -->
     <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d created, %3$d updated, %4$d skipped</string>
 
+    <string name="progress_msg_cleaning_up">Cleaning up…</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Tips which are shown in some places on how to use a screen ========== -->
@@ -1025,6 +1029,9 @@
     <string name="X_action_previous">Prev</string>
     <!-- [VERIFIED] -->
     <string name="action_done">Done</string>
+
+    <!-- [VERIFIED] - Title of wizard button prompting user to start data migration [CHAR LIMIT=32] -->
+    <string name="action_move">Move</string>
     <!-- [VERIFIED] -->
     <string name="X_action_execute">Execute</string>
 
@@ -1541,8 +1548,31 @@
 
     <!-- [VERIFIED] - heading/titles for settings/preference screens. -->
     <string name="lbl_settings">Settings</string>
+    <string name="lbl_edit_settings">Edit settings</string>
 
     <string name="lbl_websites">Websites</string>
+
+    <string name="lbl_storage_volume">Storage volume</string>
+    <string name="lbl_storage_quit_and_reinsert_sdcard">Quit and reinsert the correct SD CARD</string>
+    <string name="lbl_storage_select">Use “%1$s”</string>
+    <!-- [VERIFIED] -->
+    <string name="lbl_folder">Folder</string>
+    <!-- [VERIFIED] - Notification title when moving data to external storage [CHAR LIMIT=32] -->
+    <string name="lbl_moving_data">Moving data</string>
+
+    <string name="lbl_login_to_search">Login to search</string>
+
+    <string name="lbl_calibre_content_server_extension_info">Calibre content server extension is not installed.</string>
+
+    <string name="lbl_connection_timeout">Connection timeout (seconds)</string>
+    <string name="lbl_read_timeout">Read timeout (seconds)</string>
+
+    <string name="lbl_timeouts">Timeouts</string>
+    <string name="lbl_website_address">Site address (URL)</string>
+
+    <string name="lbl_sql_query">SQL query</string>
+    <string name="lbl_book_detail_screen">Book details page</string>
+
 
     <!-- [VERIFIED] Admin advanced - collect debug information and prepare an email to the developers -->
     <string name="lbl_send_debug">Bug report</string>
@@ -1633,40 +1663,14 @@
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
 
 
-    <!-- [VERIFIED] -->
-    <string name="lbl_folder">Folder</string>
-    <!-- [VERIFIED] - Notification title when moving data to external storage [CHAR LIMIT=32] -->
-    <string name="lbl_moving_data">Moving data</string>
-    <!-- [VERIFIED] - Title of wizard button prompting user to start data migration [CHAR LIMIT=32] -->
-    <string name="action_move">Move</string>
-
-
-    <string name="lbl_login_to_search">Login to search</string>
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Wishlist mapped bookshelf</string>
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>
 
-    <string name="lbl_storage_volume">Storage volume</string>
-
-    <string name="info_moving_covers_from_x_to_y">Move all covers from “%1$s” to “%2$s”</string>
-
-    <string name="lbl_storage_quit_and_reinsert_sdcard">Quit and reinsert the correct SD CARD</string>
-    <string name="lbl_storage_select">Use “%1$s”</string>
-    <string name="lbl_edit_settings">Edit settings</string>
-
-    <string name="progress_msg_cleaning_up">Cleaning up…</string>
-    <string name="lbl_calibre_content_server_extension_info">Calibre content server extension is not installed.</string>
-
-    <string name="lbl_connection_timeout">Connection timeout (seconds)</string>
-    <string name="lbl_read_timeout">Read timeout (seconds)</string>
-
-    <string name="lbl_timeouts">Timeouts</string>
-    <string name="lbl_website_address">Site address (URL)</string>
-
-    <string name="lbl_sql_query">SQL query</string>
-    <string name="lbl_book_detail_screen">Book details page</string>
-
     <string name="menu_book_sync_list_with_details">Synchronize/scroll the list</string>
     <string name="warning_no_site_supports_this_method">WARNING: none of the currently selected sites supports searching by %1$s. Please use the site menu to enable alternative sites, or use a different search method.</string>
+
+    <!-- [VERIFIED] -->
+    <string name="cd_clear_text_end_icon">Clear text</string>
 
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
