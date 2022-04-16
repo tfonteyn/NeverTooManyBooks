@@ -68,6 +68,7 @@
     <!-- *************************************************************************************** -->
     <!-- FAB buttons -->
     <!-- *************************************************************************************** -->
+    <!-- Main FAB; contains an icon, no text-->
     <style name="FAB" parent="Widget.Material3.FloatingActionButton.Primary">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -75,7 +76,8 @@
         <item name="android:layout_margin">@dimen/fab_margin</item>
     </style>
 
-    <!-- FAB buttons that appear as a menu above the actual FAB button. -->
+    <!-- FAB buttons that appear as a menu above the actual FAB button.
+        These contain a text + an icon -->
     <style name="FABMenu" parent="Widget.Material3.ExtendedFloatingActionButton.Primary">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -293,6 +295,12 @@
 
     <!-- *************************************************************************************** -->
 
+    <!-- Global theme attribute
+         Used by both "materialAlertDialogTheme" and our custom dialogs -->
+    <style name="App.buttonBarButtonStyle" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+
     <!-- Global theme attribute "chipGroupStyle" -->
     <style name="App.chipGroupStyle" parent="Widget.Material3.ChipGroup">
         <!-- There is a label above the group. -->
@@ -316,7 +324,7 @@
         <item name="android:elevation">@dimen/progress_z</item>
         <item name="android:indeterminate">true</item>
         <item name="indicatorSize">96dp</item>
-        <item name="android:background">?attr/colorSurface</item>
+        <!--        <item name="android:background">?attr/colorSurface</item>-->
     </style>
 
     <style name="App.linearProgressIndicatorStyle" parent="Widget.Material3.LinearProgressIndicator">

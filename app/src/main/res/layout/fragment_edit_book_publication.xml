@@ -123,8 +123,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_pages"
-            style="@style/TIL.Text"
-            android:hint="@string/lbl_pages"
+            style="@style/TIL.Text.Pages"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_date_published"
@@ -177,8 +176,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_print_run"
-            style="@style/TIL.Text"
-            android:hint="@string/lbl_print_run"
+            style="@style/TIL.Text.PrintRun"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_price_listed"

@@ -24,6 +24,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/buttonPanel"
+    style="?attr/buttonBarStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="12dp"
@@ -32,16 +33,12 @@
     android:paddingBottom="4dp"
     tools:viewBindingIgnore="true"
     >
-
-    <!-- not sure if using colorSecondary is the "right" thing to do...
-        but the styles textColor(selector) is hardly visible? -->
     <Button
         android:id="@+id/btn_cancel"
         style="?attr/buttonBarNegativeButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/floating_dialogs_button_height"
         android:text="@android:string/cancel"
-        android:textColor="?attr/colorSecondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btn_ok"
         />
@@ -52,7 +49,6 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/floating_dialogs_button_height"
         android:text="@android:string/ok"
-        android:textColor="?attr/colorSecondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         />

@@ -45,36 +45,24 @@
         <item name="android:focusableInTouchMode">false</item>
     </style>
 
-    <!-- URGENT: clear text icon not visible
-         https://github.com/material-components/material-components-android/pull/2025
-         generic input field with clear-text icon at the end. -->
     <style name="TIL.Text">
-        <item name="endIconMode">clear_text</item>
-        <!--        <item name="endIconDrawable">@drawable/ic_baseline_cancel_24</item>-->
+        <item name="endIconMode">custom</item>
     </style>
 
     <style name="TIL.Text.Title">
         <item name="android:hint">@string/lbl_title</item>
     </style>
 
+    <style name="TIL.Text.Pages">
+        <item name="android:hint">@string/lbl_pages</item>
+    </style>
+
+    <style name="TIL.Text.PrintRun">
+        <item name="android:hint">@string/lbl_print_run</item>
+    </style>
+
     <!-- A multi-line note/description field. -->
     <style name="TIL.Text.Note">
-    </style>
-
-    <!-- Brings up a dialog/screen to let the user pick item(s) from a list -->
-    <style name="TIL.ListPicker">
-        <item name="endIconMode">custom</item>
-        <item name="endIconDrawable">@drawable/ic_baseline_edit_24</item>
-        <item name="android:focusable">false</item>
-        <item name="android:focusableInTouchMode">false</item>
-    </style>
-
-    <!-- Brings up a dialog/screen to let the user pick a date; the end-icon clears the field -->
-    <style name="TIL.DatePicker">
-        <item name="endIconMode">custom</item>
-        <item name="endIconDrawable">@drawable/ic_baseline_cancel_24</item>
-        <item name="android:focusable">false</item>
-        <item name="android:focusableInTouchMode">false</item>
     </style>
 
     <!-- a fixed width box for an external id field. -->
@@ -94,6 +82,10 @@
         <item name="android:layout_width">@dimen/til_fixed_width_series_num</item>
     </style>
 
+    <style name="TIL.Text.Price">
+        <item name="android:layout_width">@dimen/til_fixed_width_price</item>
+    </style>
+
     <!-- An ISBN field - a TextWatcher handles the start-icon. -->
     <style name="TIL.Text.Isbn">
         <item name="android:hint">@string/lbl_isbn</item>
@@ -107,8 +99,20 @@
         <item name="endIconDrawable">@drawable/ic_barcode</item>
     </style>
 
-    <style name="TIL.Text.Price">
-        <item name="android:layout_width">@dimen/til_fixed_width_price</item>
+    <!-- Brings up a dialog/screen to let the user pick item(s) from a list -->
+    <style name="TIL.ListPicker">
+        <item name="endIconMode">custom</item>
+        <item name="endIconDrawable">@drawable/ic_baseline_edit_24</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+    </style>
+
+    <!-- Brings up a dialog/screen to let the user pick a date; the end-icon clears the field -->
+    <style name="TIL.DatePicker">
+        <item name="endIconMode">custom</item>
+        <item name="endIconDrawable">@drawable/ic_baseline_cancel_24</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
     </style>
 
     <!-- A TextInputLayout style specific for fields where the inner field is a (Material)AutoCompleteTextView.

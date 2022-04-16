@@ -62,7 +62,7 @@
         <item name="colorOnPrimaryContainer">#ff21005d</item>
         <item name="colorPrimaryInverse">#ffd0bcff</item>
 
-        <item name="colorSecondary">@color/teal_400</item>
+        <item name="colorSecondary">@color/teal_700</item>
         <item name="colorOnSecondary">@color/white</item>
         <item name="colorSecondaryContainer">#ffe8def8</item>
         <item name="colorOnSecondaryContainer">#ff1d192b</item>
@@ -105,9 +105,19 @@
         <item name="chipGroupStyle">@style/App.chipGroupStyle</item>
         <item name="tabStyle">@style/App.tabStyle</item>
         <item name="snackbarTextViewStyle">@style/App.snackbarTextViewStyle</item>
-        <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.App.materialCalendarFullscreenTheme</item>
+
         <item name="circularProgressIndicatorStyle">@style/App.circularProgressIndicatorStyle</item>
         <item name="linearProgressIndicatorStyle">@style/App.linearProgressIndicatorStyle</item>
+
+        <!-- See note with "ThemeOverlay.App.MaterialAlertDialog". Doing the same here for consistency. -->
+        <item name="buttonBarButtonStyle">@style/App.buttonBarButtonStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/App.buttonBarButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/App.buttonBarButtonStyle</item>
+        <item name="buttonBarNeutralButtonStyle">@style/App.buttonBarButtonStyle</item>
+
+        <!-- Material3 theme overlays -->
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.App.materialCalendarFullscreenTheme</item>
 
         <!-- Chip styles as attributes makes it easy to add chips from code -->
         <item name="appChipFilterStyle">@style/Widget.Material3.Chip.Filter</item>
@@ -119,5 +129,15 @@
            parent="ThemeOverlay.Material3.MaterialCalendar.Fullscreen">
         <item name="materialCalendarHeaderLayout">@style/App.materialCalendarHeaderLayout</item>
         <item name="materialCalendarHeaderConfirmButton">@style/App.materialCalendarHeaderConfirmButton</item>
+    </style>
+
+    <!-- ThemeOverlay - used by both Day and Night themes. -->
+    <style name="ThemeOverlay.App.MaterialAlertDialog"
+           parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <!-- We MUST set the styles separately! Just setting the common buttonBarButtonStyle is NOT enough -->
+        <item name="buttonBarButtonStyle">@style/App.buttonBarButtonStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/App.buttonBarButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/App.buttonBarButtonStyle</item>
+        <item name="buttonBarNeutralButtonStyle">@style/App.buttonBarButtonStyle</item>
     </style>
 </resources>

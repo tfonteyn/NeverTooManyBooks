@@ -218,7 +218,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_personal_notes"
+            android:id="@+id/lbl_notes"
             style="@style/TIL.Text.Note"
             android:hint="@string/lbl_personal_notes"
             app:layout_constraintEnd_toEndOf="parent"
