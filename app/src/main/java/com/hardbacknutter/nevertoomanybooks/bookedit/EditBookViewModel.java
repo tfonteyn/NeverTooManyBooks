@@ -826,8 +826,8 @@ public class EditBookViewModel
         mFields.add(new EditFieldBuilder<>(R.id.author, Book.BKEY_AUTHOR_LIST,
                                            new TextViewAccessor<>(mNormalDetailListFormatter))
                             .setFragmentId(fragmentId)
+                            .setTextInputLayout(R.id.lbl_author)
                             .setEntityKey(DBKey.FK_AUTHOR)
-                            .setErrorViewId(R.id.lbl_author)
                             .setFieldValidator(field -> field.setErrorIfEmpty(
                                     mNonBlankRequiredString))
                             .build());
@@ -835,14 +835,14 @@ public class EditBookViewModel
         mFields.add(new EditFieldBuilder<>(R.id.series_title, Book.BKEY_SERIES_LIST,
                                            new TextViewAccessor<>(mNormalDetailListFormatter))
                             .setFragmentId(fragmentId)
+                            .setTextInputLayout(R.id.lbl_series)
                             .setEntityKey(DBKey.KEY_SERIES_TITLE)
-                            .setRelatedFields(R.id.lbl_series)
                             .build());
 
         mFields.add(new EditFieldBuilder<>(R.id.title, DBKey.KEY_TITLE,
                                            new EditTextAccessor<>())
                             .setFragmentId(fragmentId)
-                            .setErrorViewId(R.id.lbl_title)
+                            .setTextInputLayout(R.id.lbl_title)
                             .setFieldValidator(field -> field.setErrorIfEmpty(
                                     mNonBlankRequiredString))
                             .build());
@@ -850,7 +850,7 @@ public class EditBookViewModel
         mFields.add(new EditFieldBuilder<>(R.id.description, DBKey.KEY_DESCRIPTION,
                                            new EditTextAccessor<>())
                             .setFragmentId(fragmentId)
-                            .setRelatedFields(R.id.lbl_description)
+                            .setTextInputLayout(R.id.lbl_description)
                             .build());
 
         // Not using a EditIsbn custom View, as we want to be able to enter invalid codes here.
@@ -858,14 +858,14 @@ public class EditBookViewModel
         mFields.add(new EditFieldBuilder<>(R.id.isbn, DBKey.KEY_ISBN,
                                            new EditTextAccessor<>())
                             .setFragmentId(fragmentId)
-                            .setRelatedFields(R.id.lbl_isbn)
+                            .setTextInputLayout(R.id.lbl_isbn)
                             .build());
 
         mFields.add(new EditFieldBuilder<>(R.id.language, DBKey.KEY_LANGUAGE,
                                            new AutoCompleteTextAccessor(mLanguageFormatter, true,
                                                                         this::getAllLanguagesCodes))
                             .setFragmentId(fragmentId)
-                            .setErrorViewId(R.id.lbl_language)
+                            .setTextInputLayout(R.id.lbl_language)
                             .setFieldValidator(field -> field.setErrorIfEmpty(
                                     mNonBlankRequiredString))
                             .build());
@@ -873,7 +873,7 @@ public class EditBookViewModel
         mFields.add(new EditFieldBuilder<>(R.id.genre, DBKey.KEY_GENRE,
                                            new AutoCompleteTextAccessor(this::getAllGenres))
                             .setFragmentId(fragmentId)
-                            .setRelatedFields(R.id.lbl_genre)
+                            .setTextInputLayout(R.id.lbl_genre)
                             .build());
 
         // Personal fields
@@ -883,42 +883,30 @@ public class EditBookViewModel
         mFields.add(new EditFieldBuilder<>(R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
                                            new EditTextAccessor<>(mNormalDetailListFormatter, true))
                             .setFragmentId(fragmentId)
+                            .setTextInputLayout(R.id.lbl_bookshelves)
                             .setEntityKey(DBKey.FK_BOOKSHELF)
-                            .setRelatedFields(R.id.lbl_bookshelves)
                             .build());
     }
 
     private void initFieldsPublication(@NonNull final FragmentId fragmentId) {
 
-        mFields.add(new EditFieldBuilder<>(R.id.pages, DBKey.KEY_PAGES,
-                                           new EditTextAccessor<>())
-                            .setFragmentId(fragmentId)
-                            .setRelatedFields(R.id.lbl_pages)
-                            .build());
-
         mFields.add(new EditFieldBuilder<>(R.id.format, DBKey.KEY_FORMAT,
                                            new AutoCompleteTextAccessor(this::getAllFormats))
                             .setFragmentId(fragmentId)
-                            .setRelatedFields(R.id.lbl_format)
+                            .setTextInputLayout(R.id.lbl_format)
                             .build());
 
         mFields.add(new EditFieldBuilder<>(R.id.color, DBKey.KEY_COLOR,
                                            new AutoCompleteTextAccessor(this::getAllColors))
                             .setFragmentId(fragmentId)
-                            .setRelatedFields(R.id.lbl_color)
+                            .setTextInputLayout(R.id.lbl_color)
                             .build());
 
         mFields.add(new EditFieldBuilder<>(R.id.publisher, Book.BKEY_PUBLISHER_LIST,
                                            new TextViewAccessor<>(mNormalDetailListFormatter))
                             .setFragmentId(fragmentId)
                             .setEntityKey(DBKey.KEY_PUBLISHER_NAME)
-                            .setRelatedFields(R.id.lbl_publisher)
-                            .build());
-
-        mFields.add(new EditFieldBuilder<>(R.id.date_published, DBKey.DATE_BOOK_PUBLICATION,
-                                           new TextViewAccessor<>(mDateFormatter))
-                            .setFragmentId(fragmentId)
-                            .setTextInputLayout(R.id.lbl_date_published)
+                            .setTextInputLayout(R.id.lbl_publisher)
                             .build());
 
         mFields.add(new EditFieldBuilder<>(R.id.first_publication, DBKey.DATE_FIRST_PUBLICATION,
@@ -927,26 +915,39 @@ public class EditBookViewModel
                             .setTextInputLayout(R.id.lbl_first_publication)
                             .build());
 
-        // MUST be defined before the currency field is defined.
+        mFields.add(new EditFieldBuilder<>(R.id.date_published, DBKey.DATE_BOOK_PUBLICATION,
+                                           new TextViewAccessor<>(mDateFormatter))
+                            .setFragmentId(fragmentId)
+                            .setTextInputLayout(R.id.lbl_date_published)
+                            .build());
 
+        mFields.add(new EditFieldBuilder<>(R.id.pages, DBKey.KEY_PAGES,
+                                           new EditTextAccessor<>())
+                            .setFragmentId(fragmentId)
+                            .setTextInputLayout(R.id.lbl_pages)
+                            .build());
+
+
+        // MUST be defined before the currency field is defined.
         mFields.add(new EditFieldBuilder<>(R.id.price_listed, DBKey.PRICE_LISTED,
                                            new DecimalEditTextAccessor(mDoubleNumberFormatter))
                             .setFragmentId(fragmentId)
+                            .setTextInputLayout(R.id.lbl_price_listed)
                             .build());
 
         mFields.add(new EditFieldBuilder<>(R.id.price_listed_currency, DBKey.PRICE_LISTED_CURRENCY,
                                            new AutoCompleteTextAccessor(
                                                    this::getAllListPriceCurrencyCodes))
                             .setFragmentId(fragmentId)
+                            .setTextInputLayout(R.id.lbl_price_listed_currency)
                             .setRelatedFields(R.id.lbl_price_listed,
-                                              R.id.lbl_price_listed_currency,
                                               R.id.price_listed_currency)
                             .build());
 
         mFields.add(new EditFieldBuilder<>(R.id.print_run, DBKey.KEY_PRINT_RUN,
                                            new EditTextAccessor<>())
                             .setFragmentId(fragmentId)
-                            .setRelatedFields(R.id.lbl_print_run)
+                            .setTextInputLayout(R.id.lbl_print_run)
                             .build());
 
         mFields.add(new EditFieldBuilder<>(R.id.edition, DBKey.BITMASK_EDITION,
@@ -978,30 +979,30 @@ public class EditBookViewModel
         mFields.add(new EditFieldBuilder<>(R.id.notes, DBKey.KEY_PRIVATE_NOTES,
                                            new EditTextAccessor<>())
                             .setFragmentId(fragmentId)
-                            .setRelatedFields(R.id.lbl_notes)
+                            .setTextInputLayout(R.id.lbl_notes)
                             .build());
 
         // MUST be defined before the currency.
         mFields.add(new EditFieldBuilder<>(R.id.price_paid, DBKey.PRICE_PAID,
                                            new DecimalEditTextAccessor(mDoubleNumberFormatter))
                             .setFragmentId(fragmentId)
+                            .setTextInputLayout(R.id.lbl_price_paid)
                             .build());
 
-        mFields.add(
-                new EditFieldBuilder<>(R.id.price_paid_currency, DBKey.PRICE_PAID_CURRENCY,
-                                       new AutoCompleteTextAccessor(
-                                               this::getAllPricePaidCurrencyCodes))
-                        .setFragmentId(fragmentId)
-                        .setRelatedFields(R.id.lbl_price_paid,
-                                          R.id.lbl_price_paid_currency,
-                                          R.id.price_paid_currency)
-                        .build());
+        mFields.add(new EditFieldBuilder<>(R.id.price_paid_currency, DBKey.PRICE_PAID_CURRENCY,
+                                           new AutoCompleteTextAccessor(
+                                                   this::getAllPricePaidCurrencyCodes))
+                            .setFragmentId(fragmentId)
+                            .setTextInputLayout(R.id.lbl_price_paid_currency)
+                            .setRelatedFields(R.id.lbl_price_paid,
+                                              R.id.price_paid_currency)
+                            .build());
 
         mFields.add(new EditFieldBuilder<>(R.id.condition, DBKey.KEY_BOOK_CONDITION,
                                            new ExposedDropDownMenuAccessor(
                                                    context, R.array.conditions_book, true))
                             .setFragmentId(fragmentId)
-                            .setRelatedFields(R.id.lbl_condition)
+                            .setTextInputLayout(R.id.lbl_condition)
                             .build());
 
         mFields.add(new EditFieldBuilder<>(R.id.condition_cover, DBKey.KEY_BOOK_CONDITION_COVER,
@@ -1009,13 +1010,13 @@ public class EditBookViewModel
                                                    context, R.array.conditions_dust_cover,
                                                    true))
                             .setFragmentId(fragmentId)
-                            .setRelatedFields(R.id.lbl_condition_cover)
+                            .setTextInputLayout(R.id.lbl_condition_cover)
                             .build());
 
         mFields.add(new EditFieldBuilder<>(R.id.location, DBKey.KEY_LOCATION,
                                            new AutoCompleteTextAccessor(this::getAllLocations))
                             .setFragmentId(fragmentId)
-                            .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long)
+                            .setTextInputLayout(R.id.lbl_location)
                             .build());
 
         mFields.add(new EditFieldBuilder<>(R.id.date_acquired, DBKey.DATE_ACQUIRED,
@@ -1078,31 +1079,31 @@ public class EditBookViewModel
         mFields.add(new EditFieldBuilder<>(R.id.site_goodreads, DBKey.SID_GOODREADS_BOOK,
                                            new EditTextAccessor<>(longNumberFormatter, true))
                             .setFragmentId(fragmentId)
-                            .setRelatedFields(R.id.lbl_site_goodreads)
+                            .setTextInputLayout(R.id.lbl_site_goodreads)
                             .build());
 
         mFields.add(new EditFieldBuilder<>(R.id.site_isfdb, DBKey.SID_ISFDB,
                                            new EditTextAccessor<>(longNumberFormatter, true))
                             .setFragmentId(fragmentId)
-                            .setRelatedFields(R.id.lbl_site_isfdb)
+                            .setTextInputLayout(R.id.lbl_site_isfdb)
                             .build());
 
         mFields.add(new EditFieldBuilder<>(R.id.site_library_thing, DBKey.SID_LIBRARY_THING,
                                            new EditTextAccessor<>(longNumberFormatter, true))
                             .setFragmentId(fragmentId)
-                            .setRelatedFields(R.id.lbl_site_library_thing)
+                            .setTextInputLayout(R.id.lbl_site_library_thing)
                             .build());
 
         mFields.add(new EditFieldBuilder<>(R.id.site_strip_info_be, DBKey.SID_STRIP_INFO,
                                            new EditTextAccessor<>(longNumberFormatter, true))
                             .setFragmentId(fragmentId)
-                            .setRelatedFields(R.id.lbl_site_strip_info_be)
+                            .setTextInputLayout(R.id.lbl_site_strip_info_be)
                             .build());
 
         mFields.add(new EditFieldBuilder<>(R.id.site_open_library, DBKey.SID_OPEN_LIBRARY,
                                            new EditTextAccessor<>())
                             .setFragmentId(fragmentId)
-                            .setRelatedFields(R.id.lbl_site_open_library)
+                            .setTextInputLayout(R.id.lbl_site_open_library)
                             .build());
     }
 
