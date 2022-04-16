@@ -32,6 +32,7 @@ import androidx.annotation.Nullable;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.ref.WeakReference;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
@@ -40,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.accessors.FieldViewAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
+import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtEndIconDelegate;
 
 /**
  * Field definition contains all information and methods necessary
@@ -119,6 +121,10 @@ class EditFieldImpl<T, V extends View>
     @IdRes
     private int mTextInputLayoutId;
 
+    private boolean mHasCustomClearTextEndIcon;
+    @SuppressWarnings({"FieldCanBeLocal", "FieldNotUsedInToString"})
+    private ExtEndIconDelegate mExtEndIconDelegate;
+
     /**
      * Constructor.
      *
@@ -150,6 +156,10 @@ class EditFieldImpl<T, V extends View>
         mTextInputLayoutId = viewId;
         mErrorViewId = viewId;
         mRelatedFields.add(viewId);
+    }
+
+    void setHasCustomClearTextEndIcon(final boolean hasCustomClearTextEndIcon) {
+        mHasCustomClearTextEndIcon = hasCustomClearTextEndIcon;
     }
 
     /**
@@ -188,8 +198,24 @@ class EditFieldImpl<T, V extends View>
             }
             if (mTextInputLayoutId != 0) {
                 final TextInputLayout til = parent.findViewById(mTextInputLayoutId);
+                // sanity/typo check
+                Objects.requireNonNull(til, "missing TIL for field key=" + mKey);
+
                 if (til.getEndIconMode() == TextInputLayout.END_ICON_CLEAR_TEXT) {
-                    til.setEndIconOnClickListener(v -> mFieldViewAccessor.setValue(null));
+                    til.setEndIconOnClickListener(v -> {
+                        mFieldViewAccessor.setValue(null);
+                        onChanged();
+                    });
+
+                } else if (til.getEndIconMode() == TextInputLayout.END_ICON_CUSTOM
+                           && mHasCustomClearTextEndIcon) {
+
+                    mExtEndIconDelegate = new ExtEndIconDelegate(til);
+                    mExtEndIconDelegate.setEndIconOnClickConsumer(v -> {
+                        mFieldViewAccessor.setValue(null);
+                        onChanged();
+                    });
+                    mExtEndIconDelegate.initialize();
                 }
             }
         }
@@ -263,6 +289,7 @@ class EditFieldImpl<T, V extends View>
     public String toString() {
         return "EditFieldImpl{"
                + super.toString()
+               + ", mHasCustomClearTextEndIcon=" + mHasCustomClearTextEndIcon
                + ", mFieldViewAccessor=" + mFieldViewAccessor
                + ", mValidator=" + mValidator
                + '}';
