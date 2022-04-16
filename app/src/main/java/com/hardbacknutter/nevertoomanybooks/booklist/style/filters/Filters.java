@@ -60,19 +60,22 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
  */
 public class Filters {
 
-    /** Booklist Filter - ListPreference. */
-    public static final String PK_FILTER_READ = "style.booklist.filter.read";
-    /** Booklist Filter - ListPreference. */
-    public static final String PK_FILTER_ISBN = "style.booklist.filter.isbn";
-    /** Booklist Filter - ListPreference. */
-    public static final String PK_FILTER_SIGNED = "style.booklist.filter.signed";
-    /** Booklist Filter - ListPreference. */
+    /** Booklist BooleanFilter - ListPreference. */
+    public static final String PK_FILTER_READ = "style.booklist.filter." + DBKey.BOOL_READ;
+    /** Booklist BooleanFilter - ListPreference. */
+    public static final String PK_FILTER_SIGNED = "style.booklist.filter." + DBKey.BOOL_SIGNED;
+    /** Booklist BooleanFilter - ListPreference. */
+    public static final String PK_FILTER_TOC_BITMASK = "style.booklist.filter." + DBKey.BITMASK_TOC;
+    /** Booklist BooleanFilter - ListPreference. */
     public static final String PK_FILTER_LOANEE = "style.booklist.filter.lending";
-    /** Booklist Filter - ListPreference. */
-    public static final String PK_FILTER_TOC_BITMASK = "style.booklist.filter.anthology";
-    /** Booklist Filter - MultiSelectListPreference. */
+
+    /** Booklist NotEmptyFilter - ListPreference. */
+    public static final String PK_FILTER_ISBN = "style.booklist.filter." + DBKey.KEY_ISBN;
+
+    /** Booklist BitmaskFilter - MultiSelectListPreference. */
     public static final String PK_FILTER_EDITION_BITMASK = "style.booklist.filter.editions";
-    /** Booklist Filter - MultiSelectListPreference. */
+
+    /** Booklist IntListFilter - MultiSelectListPreference. */
     public static final String PK_FILTER_BOOKSHELVES = "style.booklist.filter.bookshelves";
 
     /**
