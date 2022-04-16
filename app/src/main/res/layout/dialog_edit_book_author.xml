@@ -119,13 +119,10 @@
                 app:constraint_referenced_ids="cbx_author_type_artist,cbx_author_type_translator,cbx_author_type_contributor,cbx_author_type_editor,cbx_author_type_narrator,cbx_author_type_cover_colorist,cbx_author_type_inking,cbx_author_type_intro,cbx_author_type_writer,cbx_author_type_colorist,cbx_author_type_cover_artist,cbx_author_type_cover_inking,cbx_author_type_cover_colorist"
                 />
 
-            <View
+            <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/barrier_types_top"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:background="?attr/dividerHorizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/btn_use_author_type"
                 />
 

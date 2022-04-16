@@ -149,13 +149,10 @@
                 app:layout_constraintTop_toBottomOf="@id/lbl_family_name"
                 />
 
-            <View
+            <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/barrier_types_top"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:background="?attr/dividerHorizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/btn_use_author_type"
                 />
 

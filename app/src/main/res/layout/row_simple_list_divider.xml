@@ -36,9 +36,8 @@
     tools:viewBindingIgnore="true"
     >
 
-    <View
+    <com.google.android.material.divider.MaterialDivider
         android:layout_width="320dp"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
+        android:layout_height="wrap_content"
         />
 </LinearLayout>
