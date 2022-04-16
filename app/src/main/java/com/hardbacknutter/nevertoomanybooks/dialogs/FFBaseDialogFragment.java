@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -162,6 +163,8 @@ public abstract class FFBaseDialogFragment
             setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
 
         } else {
+//            setStyle(DialogFragment.STYLE_NO_FRAME, 0);
+
             if (mWidthDimenResId == USE_DEFAULT) {
                 mWidthDimenResId = R.dimen.floating_dialogs_width;
             }
@@ -172,6 +175,21 @@ public abstract class FFBaseDialogFragment
                 mMarginBottomDimenResId = AttrUtils.getResId(context, R.attr.actionBarSize);
             }
         }
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        final View v = super.onCreateView(inflater, container, savedInstanceState);
+//        if (!mFullscreen) {
+//            //noinspection ConstantConditions
+//            v.setBackground(v.getContext().getDrawable(R.drawable.bg_floating_dialog));
+//            v.setClipToOutline(true);
+//        }
+        return v;
     }
 
     /**
