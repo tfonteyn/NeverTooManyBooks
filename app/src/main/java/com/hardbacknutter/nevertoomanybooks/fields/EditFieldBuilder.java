@@ -43,6 +43,8 @@ public class EditFieldBuilder<T, V extends View>
     @Nullable
     private FieldValidator<T, V> mValidator;
 
+    private boolean mHasCustomClearTextEndIcon;
+
     public EditFieldBuilder(@IdRes final int id,
                             @NonNull final String key,
                             @NonNull final FieldViewAccessor<T, V> accessor) {
@@ -118,6 +120,12 @@ public class EditFieldBuilder<T, V extends View>
     }
 
     @NonNull
+    public EditFieldBuilder<T, V> setUseCustomClearTextEndIcon(final boolean use) {
+        mHasCustomClearTextEndIcon = use;
+        return this;
+    }
+
+    @NonNull
     public EditField<T, V> build() {
         Objects.requireNonNull(mAccessor, "Missing FieldViewAccessor");
         SanityCheck.requireValue(mKey, "mKey");
@@ -139,6 +147,7 @@ public class EditFieldBuilder<T, V extends View>
         if (mValidator != null) {
             field.setFieldValidator(mValidator);
         }
+        field.setHasCustomClearTextEndIcon(mHasCustomClearTextEndIcon);
         return field;
     }
 }
