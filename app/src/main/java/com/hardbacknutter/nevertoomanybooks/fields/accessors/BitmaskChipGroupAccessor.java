@@ -61,15 +61,16 @@ public class BitmaskChipGroupAccessor
         mValuesSupplier = supplier;
 
         mEditChipListener = view -> {
-            final Integer current = (Integer) view.getTag();
+            final Integer previous = mRawValue;
+            final Integer bit = (Integer) view.getTag();
             if (((Checkable) view).isChecked()) {
                 // add
-                mRawValue |= current;
+                mRawValue |= bit;
             } else {
                 // remove
-                mRawValue &= ~current;
+                mRawValue &= ~bit;
             }
-            broadcastChange();
+            notifyIfChanged(previous);
         };
     }
 
@@ -109,7 +110,8 @@ public class BitmaskChipGroupAccessor
 
     @Override
     public void setInitialValue(@NonNull final DataManager source) {
-        setInitialValue(source.getInt(mField.getKey()));
+        mInitialValue = source.getInt(mField.getKey());
+        setValue(mInitialValue);
     }
 
     @Override
@@ -117,17 +119,7 @@ public class BitmaskChipGroupAccessor
         target.putLong(mField.getKey(), getValue());
     }
 
-    @Override
-    public boolean isChanged() {
-        final Integer value = getValue();
-        if ((mInitialValue == null || mInitialValue == 0) && value == 0) {
-            return false;
-        }
-        return !value.equals(mInitialValue);
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return getValue() == 0;
+    public boolean isEmpty(@Nullable final Integer value) {
+        return value == null || value == 0;
     }
 }

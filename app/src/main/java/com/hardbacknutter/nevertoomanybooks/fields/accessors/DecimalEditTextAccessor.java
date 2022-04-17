@@ -30,7 +30,6 @@ import androidx.annotation.Nullable;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
@@ -60,21 +59,9 @@ public class DecimalEditTextAccessor
         view.addTextChangedListener(new DecimalTextWatcher(view));
     }
 
-    @Override
-    public boolean isChanged() {
-        final Number value = getValue();
-        if ((mInitialValue == null || mInitialValue.doubleValue() == 0.0d)
-            && (value == null || value.doubleValue() == 0.0d)) {
-            return false;
-        }
-        return !Objects.equals(mInitialValue, value);
-    }
-
-    public boolean isEmpty() {
-        final Number value = getValue();
+    public boolean isEmpty(@Nullable final Number value) {
         return value == null || value.doubleValue() == 0.0d;
     }
-
 
     /**
      * TextWatcher for TextView fields. Sets the Field value after each change.

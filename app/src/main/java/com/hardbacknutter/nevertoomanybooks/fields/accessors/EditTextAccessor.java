@@ -19,16 +19,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 
+import android.content.Context;
 import android.text.Editable;
-import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.fields.EditField;
@@ -43,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
  */
 public class EditTextAccessor<T, V extends EditText>
         extends TextAccessor<T, V>
-        implements ExtTextWatcher, View.OnFocusChangeListener {
+        implements ExtTextWatcher {
 
     private static final String TAG = "EditTextAccessor";
 
@@ -79,37 +76,13 @@ public class EditTextAccessor<T, V extends EditText>
     @Override
     public void setView(@NonNull final V view) {
         super.setView(view);
-        // the TextChangedListener takes care of reformatting when needed
         view.addTextChangedListener(this);
-        // the FocusChangeListener will broadcast any changes
-        view.setOnFocusChangeListener(this);
     }
 
     @Nullable
     @Override
     public T getValue() {
-        final V view = getView();
-        if (view != null) {
-            final String text = view.getText().toString().trim();
-
-            if (mFormatter instanceof EditFieldFormatter) {
-                return ((EditFieldFormatter<T>) mFormatter).extract(view.getContext(), text);
-
-            } else if (mFormatter != null) {
-                // otherwise use the locale variable
-                return mRawValue;
-            } else {
-                // Without a formatter, we MUST assume <T> to be a String,
-                // and SHOULD just get the value from the field as-is.
-                // This DOES mean that an original null value is returned as the empty String.
-                // If we get an Exception here then the developer made a boo-boo.
-                //noinspection unchecked
-                return (T) text;
-            }
-
-        } else {
-            return mRawValue;
-        }
+        return mRawValue;
     }
 
     @Override
@@ -133,24 +106,22 @@ public class EditTextAccessor<T, V extends EditText>
                 }
             }
 
-            // No formatter, or ClassCastException.
+            // No formatter, or ClassCastException? just stringify the value.
             if (text == null) {
                 text = mRawValue != null ? String.valueOf(mRawValue) : "";
             }
 
             // Second step set the view but ...
-
-            // Disable the ChangedTextWatcher.
+            // ... disable the ChangedTextWatcher.
             view.removeTextChangedListener(this);
-
             if (view instanceof AutoCompleteTextView) {
-                // prevent auto-completion to kick in / stop the dropdown from opening.
+                // ... prevent auto-completion to kick in / stop the dropdown from opening.
                 ((AutoCompleteTextView) view).setText(text, false);
             } else {
+                // ... or set as is
                 view.setText(text);
             }
-
-            // finally re-enable the watcher
+            // ... finally re-enable the watcher
             view.addTextChangedListener(this);
         }
     }
@@ -159,61 +130,55 @@ public class EditTextAccessor<T, V extends EditText>
      * TextWatcher for TextView fields.
      *
      * <ol>
-     *      <li>Re-formats if allowed and needed</li>
+     *     <li>Update the current in-memory value</li>
      *      <li>clears any previous error</li>
+     *      <li>Re-formats if allowed and needed</li>
+     *      <li>notify listeners of any change</li>
      * </ol>
      * <p>
      * {@inheritDoc}
      */
     @Override
     public void afterTextChanged(@NonNull final Editable editable) {
-        // reformat if allowed and needed
-        if (mEnableReformat && System.currentTimeMillis() - mLastChange > REFORMAT_DELAY_MS) {
-            // the view will never be null here.
-            final TextView view = getView();
-            // We have mEnableReformat, hence we can access the EditFieldFormatter directly.
-            //noinspection ConstantConditions
-            final T value = ((EditFieldFormatter<T>) mFormatter)
-                    .extract(view.getContext(), view.getText().toString().trim());
-            final String formatted = mFormatter.format(view.getContext(), value);
+        final T previous = mRawValue;
 
-            // if the new text *can* be formatted and is different
-            if (!editable.toString().trim().equalsIgnoreCase(formatted)) {
-                view.removeTextChangedListener(this);
-                // replace the coded value with the formatted value.
-                editable.replace(0, editable.length(), formatted);
-                view.addTextChangedListener(this);
+        final V view = getView();
+
+        //noinspection ConstantConditions
+        final Context context = view.getContext();
+
+        final String text = editable.toString().trim();
+        // Update the actual value
+        if (mFormatter instanceof EditFieldFormatter) {
+            mRawValue = ((EditFieldFormatter<T>) mFormatter).extract(context, text);
+        } else {
+            // Without a formatter, we MUST assume <T> to be a String.
+            // Make sure NOT to replace a 'null' value with an empty string
+            if (mRawValue != null || !text.isEmpty()) {
+                // If we get an Exception here then the developer made a boo-boo.
+                //noinspection unchecked
+                mRawValue = (T) text;
             }
         }
-
         // Clear any previous error. The new content will be re-checked at validation time.
         if (mField instanceof EditField) {
             ((EditField<T, V>) (mField)).setError(null);
         }
 
-        mLastChange = System.currentTimeMillis();
-    }
-
-    @Override
-    public void onFocusChange(@NonNull final View view,
-                              final boolean hasFocus) {
-        if (!hasFocus) {
-            broadcastChange();
+        if (mEnableReformat) {
+            if (System.currentTimeMillis() - mLastChange > REFORMAT_DELAY_MS) {
+                //noinspection ConstantConditions
+                final String formatted = mFormatter.format(context, mRawValue);
+                // If different, replace the encoded value with the formatted value.
+                if (!text.equalsIgnoreCase(formatted)) {
+                    view.removeTextChangedListener(this);
+                    editable.replace(0, editable.length(), formatted);
+                    view.addTextChangedListener(this);
+                }
+            }
+            mLastChange = System.currentTimeMillis();
         }
-    }
 
-    @Override
-    public boolean isChanged() {
-        // We don't know the type of the value
-        final T value = getValue();
-        if (isEmpty(mInitialValue) && isEmpty(value)) {
-            return false;
-        }
-        return !Objects.equals(mInitialValue, value);
-    }
-
-    public boolean isEmpty() {
-        // We don't know the type of the value
-        return isEmpty(getValue());
+        notifyIfChanged(previous);
     }
 }

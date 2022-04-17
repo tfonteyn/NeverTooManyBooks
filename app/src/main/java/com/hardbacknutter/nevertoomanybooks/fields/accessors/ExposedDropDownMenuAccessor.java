@@ -70,8 +70,9 @@ public class ExposedDropDownMenuAccessor
         view.setAdapter(mAdapter);
         if (mIsEditable) {
             view.setOnItemClickListener((parent, v, position, id) -> {
+                final Integer previous = mRawValue;
                 mRawValue = position;
-                broadcastChange();
+                notifyIfChanged(previous);
             });
         }
     }
@@ -98,7 +99,8 @@ public class ExposedDropDownMenuAccessor
 
     @Override
     public void setInitialValue(@NonNull final DataManager source) {
-        setInitialValue(source.getInt(mField.getKey()));
+        mInitialValue = source.getInt(mField.getKey());
+        setValue(mInitialValue);
     }
 
     @Override
@@ -107,13 +109,7 @@ public class ExposedDropDownMenuAccessor
     }
 
     @Override
-    public boolean isChanged() {
-        return !getValue().equals(mInitialValue);
-    }
-
-    @Override
-    public boolean isEmpty() {
-        // Our spinner is never empty by design.
-        return false;
+    public boolean isEmpty(@Nullable final Integer value) {
+        return value == null || value == 0;
     }
 }

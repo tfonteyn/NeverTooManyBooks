@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 
 import android.view.View;
-import android.widget.Checkable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -29,12 +28,10 @@ import androidx.annotation.Nullable;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.ref.WeakReference;
-import java.util.Collection;
+import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.fields.EditField;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
-import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
  * Base implementation.
@@ -45,10 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
 public abstract class BaseFieldViewAccessor<T, V extends View>
         implements FieldViewAccessor<T, V> {
 
-    /**
-     * The value as originally loaded from the database
-     * by {@link #setInitialValue(DataManager)}.
-     */
+    /** The value as originally loaded from the database. */
     @Nullable
     T mInitialValue;
 
@@ -63,7 +57,6 @@ public abstract class BaseFieldViewAccessor<T, V extends View>
     @Nullable
     T mRawValue;
 
-
     /** Allows callbacks to the Field. */
     Field<T, V> mField;
 
@@ -77,34 +70,6 @@ public abstract class BaseFieldViewAccessor<T, V extends View>
 
     @Nullable
     private String mErrorText;
-
-    /**
-     * Check if the given value is considered to be 'empty'.
-     * The encapsulated type decides what 'empty' means.
-     * <p>
-     * An Object is considered to be empty if:
-     * <ul>
-     *      <li>{@code null}</li>
-     *      <li>{@code Money.isZero()}</li>
-     *      <li>{@code Number.doubleValue() == 0.0d}</li>
-     *      <li>{@code Boolean == false}</li>
-     *      <li>{@code Collection.isEmpty}</li>
-     *      <li>{@code !Checkable.isChecked()}</li>
-     *      <li>{@code String.isEmpty()}</li>
-     * </ul>
-     *
-     * @return {@code true} if empty.
-     */
-    public static boolean isEmpty(@Nullable final Object o) {
-        //noinspection rawtypes
-        return o == null
-               || o instanceof Money && ((Money) o).isZero()
-               || o instanceof Number && ((Number) o).doubleValue() == 0.0d
-               || o instanceof Boolean && !(Boolean) o
-               || o instanceof Collection && ((Collection) o).isEmpty()
-               || o instanceof Checkable && !((Checkable) o).isChecked()
-               || o.toString().isEmpty();
-    }
 
     @Override
     public void setField(@NonNull final Field<T, V> field) {
@@ -167,19 +132,23 @@ public abstract class BaseFieldViewAccessor<T, V extends View>
         }
     }
 
-    public void setInitialValue(@Nullable final T value) {
-        mInitialValue = value;
-        setValue(value);
-    }
-
     /**
-     * Call back to the field letting it know the value was changed.
-     * <p>
-     * FIXME: "initial" -(1)-> "new" -(2)-> "initial"; step (1) is broadcast; step (2) is NOT !
+     * Notify an {@link EditField} if the value was changed compared
+     * to the initial and/or previous.
      */
-    void broadcastChange() {
-        if (isChanged() && mField instanceof EditField) {
-            ((EditField<T, V>) (mField)).onChanged();
+    void notifyIfChanged(@Nullable final T previous) {
+        if (mField instanceof EditField) {
+            final T currentValue = getValue();
+            final boolean allEqual =
+                    // all empty
+                    (isEmpty(mInitialValue) && isEmpty(previous) && isEmpty(currentValue))
+                    // or all equal?
+                    || (Objects.equals(mInitialValue, previous)
+                        && Objects.equals(previous, currentValue));
+
+            if (!allEqual) {
+                ((EditField<T, V>) (mField)).onChanged();
+            }
         }
     }
 

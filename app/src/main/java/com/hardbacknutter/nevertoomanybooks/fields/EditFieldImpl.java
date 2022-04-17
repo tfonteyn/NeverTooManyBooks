@@ -91,7 +91,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.endicon.ExtEndIconDelegate;
  *          {@link FieldViewAccessor#getValue(DataManager)}</li>
  *      <li>OUT (with formatter):
  *          View ->
- *          {@link EditFieldFormatter#extract} ->
+ *          {@link EditFieldFormatter#extract(Context, String)} ->
  *          {@link FieldViewAccessor#getValue()} ->
  *          {@link FieldViewAccessor#getValue(DataManager)}</li>
  * </ul>

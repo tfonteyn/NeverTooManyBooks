@@ -55,8 +55,9 @@ public class CompoundButtonAccessor
         super.setView(view);
         if (mIsEditable) {
             view.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                final Boolean previous = mRawValue;
                 mRawValue = isChecked;
-                broadcastChange();
+                notifyIfChanged(previous);
             });
         }
     }
@@ -79,7 +80,8 @@ public class CompoundButtonAccessor
 
     @Override
     public void setInitialValue(@NonNull final DataManager source) {
-        setInitialValue(source.getBoolean(mField.getKey()));
+        mInitialValue = source.getBoolean(mField.getKey());
+        setValue(mInitialValue);
     }
 
     @Override
@@ -87,13 +89,7 @@ public class CompoundButtonAccessor
         target.putBoolean(mField.getKey(), getValue());
     }
 
-    @Override
-    public boolean isChanged() {
-        return (mInitialValue != null && mInitialValue) != getValue();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return !getValue();
+    public boolean isEmpty(@Nullable final Boolean value) {
+        return value == null || !value;
     }
 }

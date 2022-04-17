@@ -19,13 +19,17 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 
+import android.widget.Checkable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Collection;
+
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
  * Base implementation for {@link TextViewAccessor} and {@link EditTextAccessor}.
@@ -57,7 +61,8 @@ public abstract class TextAccessor<T, V extends TextView>
         final Object obj = source.get(mField.getKey());
         if (obj != null) {
             //noinspection unchecked
-            setInitialValue((T) obj);
+            mInitialValue = (T) obj;
+            setValue(mInitialValue);
         }
     }
 
@@ -67,4 +72,33 @@ public abstract class TextAccessor<T, V extends TextView>
         // It will be the original rawValue.
         target.put(mField.getKey(), getValue());
     }
+
+    /**
+     * Check if the given value is considered to be 'empty'.
+     * The encapsulated type decides what 'empty' means.
+     * <p>
+     * An Object is considered to be empty if:
+     * <ul>
+     *      <li>{@code null}</li>
+     *      <li>{@code Money.isZero()}</li>
+     *      <li>{@code Number.doubleValue() == 0.0d}</li>
+     *      <li>{@code Boolean == false}</li>
+     *      <li>{@code Collection.isEmpty}</li>
+     *      <li>{@code !Checkable.isChecked()}</li>
+     *      <li>{@code String.isEmpty()}</li>
+     * </ul>
+     *
+     * @return {@code true} if empty.
+     */
+    public boolean isEmpty(@Nullable final T o) {
+        //noinspection rawtypes
+        return o == null
+               || o instanceof Money && ((Money) o).isZero()
+               || o instanceof Number && ((Number) o).doubleValue() == 0.0d
+               || o instanceof Boolean && !(Boolean) o
+               || o instanceof Collection && ((Collection) o).isEmpty()
+               || o instanceof Checkable && !((Checkable) o).isChecked()
+               || o.toString().isEmpty();
+    }
+
 }

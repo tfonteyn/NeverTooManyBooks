@@ -59,7 +59,8 @@ public class BooleanIndicatorAccessor
 
     @Override
     public void setInitialValue(@NonNull final DataManager source) {
-        setInitialValue(source.getBoolean(mField.getKey()));
+        mInitialValue = source.getBoolean(mField.getKey());
+        setValue(mInitialValue);
     }
 
     @Override
@@ -67,13 +68,7 @@ public class BooleanIndicatorAccessor
         target.putBoolean(mField.getKey(), getValue());
     }
 
-    @Override
-    public boolean isChanged() {
-        return (mInitialValue != null && mInitialValue) != getValue();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return !getValue();
+    public boolean isEmpty(@Nullable final Boolean value) {
+        return value == null || !value;
     }
 }

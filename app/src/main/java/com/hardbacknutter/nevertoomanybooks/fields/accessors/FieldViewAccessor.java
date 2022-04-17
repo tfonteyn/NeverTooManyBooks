@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
 
 /**
- * Handles interactions between the value and the View (with optional {@link FieldFormatter}).
+ * Handles interactions between the Field and the View (with optional {@link FieldFormatter}).
  *
  * @param <T> type of Field value.
  * @param <V> type of Field View.
@@ -55,6 +55,16 @@ public interface FieldViewAccessor<T, V extends View> {
     V getView();
 
     /**
+     * Hook up the view. Reminder: do <strong>NOT</strong> set the view in the constructor.
+     * <strong>Implementation note</strong>: we don't provide an onCreateViewHolder()
+     * method on purpose.
+     * Using that would need to deal with {@code null} values.
+     *
+     * @param view to use
+     */
+    void setView(@NonNull V view);
+
+    /**
      * Get the previously set view.
      *
      * @return view
@@ -65,16 +75,6 @@ public interface FieldViewAccessor<T, V extends View> {
     default V requireView() {
         return Objects.requireNonNull(getView());
     }
-
-    /**
-     * Hook up the view. Reminder: do <strong>NOT</strong> set the view in the constructor.
-     * <strong>Implementation note</strong>: we don't provide a onCreateViewHolder()
-     * method on purpose.
-     * Using that would need to deal with {@code null} values.
-     *
-     * @param view to use
-     */
-    void setView(@NonNull V view);
 
     /**
      * Set a view for displaying an error.
@@ -91,10 +91,7 @@ public interface FieldViewAccessor<T, V extends View> {
     void setError(@Nullable String errorText);
 
     /**
-     * Get the value from the view associated with the Field and return it as an Object.
-     * <p>
-     * If the view is available, return the current value.
-     * Otherwise, return the raw value if applicable.
+     * Get the value from the view associated with the Field.
      *
      * @return the value
      */
@@ -127,27 +124,26 @@ public interface FieldViewAccessor<T, V extends View> {
      * <p>
      * This is used for the <strong>INITIAL LOAD</strong>, i.e. the value as stored
      * in the database.
-     * <p>
-     * We pass in the {@link DataManager} so that implementations can fetch multiple items
-     * from it as needed or coerce the type(s), and not just the main value.
      *
      * @param source {@link DataManager} to load the Field value from
      */
     void setInitialValue(@NonNull DataManager source);
 
     /**
-     * Check if the current value is different from the initial value.
-     *
-     * @return {@code true} if different
-     */
-    boolean isChanged();
-
-    /**
-     * Check if this field is considered to be 'empty'.
+     * Check if the given value is considered to be 'empty'.
      *
      * @return {@code true} if empty.
      */
-    boolean isEmpty();
+    boolean isEmpty(@Nullable T value);
+
+    /**
+     * Convenience method to check if the current value is considered to be 'empty'.
+     *
+     * @return {@code true} if empty.
+     */
+    default boolean isEmpty() {
+        return isEmpty(getValue());
+    }
 
     /**
      * Convenience method to facilitate creating a non-empty {@link FieldValidator}.

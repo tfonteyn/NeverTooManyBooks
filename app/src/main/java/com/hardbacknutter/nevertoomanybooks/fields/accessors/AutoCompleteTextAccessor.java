@@ -22,9 +22,9 @@ package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.fields.FieldArrayAdapter;
@@ -72,18 +72,7 @@ public class AutoCompleteTextAccessor
         view.setAdapter(new FieldArrayAdapter(view.getContext(), mListSupplier.get(), mFormatter));
     }
 
-    @Override
-    public boolean isChanged() {
-        final String value = getValue();
-        if ((mInitialValue == null || mInitialValue.isEmpty())
-            && (value == null || value.isEmpty())) {
-            return false;
-        }
-        return !Objects.equals(mInitialValue, value);
-    }
-
-    public boolean isEmpty() {
-        final String value = getValue();
+    public boolean isEmpty(@Nullable final String value) {
         return value == null || value.isEmpty();
     }
 }

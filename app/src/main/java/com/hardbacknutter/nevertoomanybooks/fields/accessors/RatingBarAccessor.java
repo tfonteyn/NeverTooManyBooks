@@ -47,8 +47,9 @@ public class RatingBarAccessor
         if (mIsEditable) {
             view.setOnRatingBarChangeListener((ratingBar, rating, fromUser) -> {
                 if (fromUser) {
+                    final Float previous = mRawValue;
                     mRawValue = rating;
-                    broadcastChange();
+                    notifyIfChanged(previous);
                 }
             });
         }
@@ -72,7 +73,8 @@ public class RatingBarAccessor
 
     @Override
     public void setInitialValue(@NonNull final DataManager source) {
-        setInitialValue(source.getFloat(mField.getKey()));
+        mInitialValue = source.getFloat(mField.getKey());
+        setValue(mInitialValue);
     }
 
     @Override
@@ -80,17 +82,7 @@ public class RatingBarAccessor
         target.putFloat(mField.getKey(), getValue());
     }
 
-    @Override
-    public boolean isChanged() {
-        final Float value = getValue();
-        if ((mInitialValue == null || mInitialValue == 0f) && value == 0f) {
-            return false;
-        }
-        return !value.equals(mInitialValue);
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return getValue().equals(0f);
+    public boolean isEmpty(@Nullable final Float value) {
+        return value == null || value == 0f;
     }
 }

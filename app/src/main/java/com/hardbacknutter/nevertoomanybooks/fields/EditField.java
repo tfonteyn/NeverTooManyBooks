@@ -79,7 +79,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  *          {@link FieldViewAccessor#getValue(DataManager)}</li>
  *      <li>OUT (with formatter):
  *          View ->
- *          {@link EditFieldFormatter#extract} ->
+ *          {@link EditFieldFormatter#extract(Context, String)} ->
  *          {@link FieldViewAccessor#getValue()} ->
  *          {@link FieldViewAccessor#getValue(DataManager)}</li>
  * </ul>

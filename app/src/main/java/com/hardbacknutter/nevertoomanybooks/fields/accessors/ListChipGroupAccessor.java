@@ -62,16 +62,16 @@ public class ListChipGroupAccessor<T extends ParcelableEntity>
         mListSupplier = listSupplier;
 
         mEditChipListener = view -> {
+            //noinspection ConstantConditions
+            final ArrayList<T> previous = new ArrayList<>(mRawValue);
             //noinspection unchecked
             final T current = (T) view.getTag();
             if (((Checkable) view).isChecked()) {
-                //noinspection ConstantConditions
                 mRawValue.add(current);
             } else {
-                //noinspection ConstantConditions
                 mRawValue.remove(current);
             }
-            broadcastChange();
+            notifyIfChanged(previous);
         };
     }
 
@@ -110,7 +110,8 @@ public class ListChipGroupAccessor<T extends ParcelableEntity>
 
     @Override
     public void setInitialValue(@NonNull final DataManager source) {
-        setInitialValue(new ArrayList<>(source.getParcelableArrayList(mField.getKey())));
+        mInitialValue = new ArrayList<>(source.getParcelableArrayList(mField.getKey()));
+        setValue(mInitialValue);
     }
 
     @Override
@@ -119,16 +120,7 @@ public class ListChipGroupAccessor<T extends ParcelableEntity>
     }
 
     @Override
-    public boolean isChanged() {
-        final ArrayList<T> value = getValue();
-        if ((mInitialValue == null || mInitialValue.isEmpty()) && value.isEmpty()) {
-            return false;
-        }
-        return !value.equals(mInitialValue);
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return getValue().isEmpty();
+    public boolean isEmpty(@Nullable final ArrayList<T> value) {
+        return value == null || value.isEmpty();
     }
 }

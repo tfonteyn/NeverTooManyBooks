@@ -24,8 +24,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Objects;
-
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 
@@ -88,20 +86,5 @@ public class TextViewAccessor<T>
             // No formatter, or ClassCastException.
             view.setText(mRawValue != null ? String.valueOf(mRawValue) : "");
         }
-    }
-
-    @Override
-    public boolean isChanged() {
-        // We don't know the type of the value
-        final T value = getValue();
-        if (isEmpty(mInitialValue) && isEmpty(value)) {
-            return false;
-        }
-        return !Objects.equals(mInitialValue, value);
-    }
-
-    public boolean isEmpty() {
-        // We don't know the type of the value
-        return isEmpty(getValue());
     }
 }
