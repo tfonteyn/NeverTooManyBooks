@@ -49,8 +49,8 @@ public class LanguageFormatter
         mLocale = locale;
     }
 
-    @NonNull
     @Override
+    @NonNull
     public String format(@NonNull final Context context,
                          @Nullable final String rawValue) {
         if (rawValue == null || rawValue.isEmpty()) {
@@ -66,8 +66,8 @@ public class LanguageFormatter
      *
      * @return the ISO3 code for the language
      */
-    @NonNull
     @Override
+    @NonNull
     public String extract(@NonNull final Context context,
                           @NonNull final String text) {
         return ServiceLocator.getInstance().getLanguages()

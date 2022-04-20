@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.tasks;
 
-import android.annotation.SuppressLint;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -83,7 +82,6 @@ public final class ASyncExecutor {
     private static ThreadPoolExecutor sBackupExecutor;
     private static final RejectedExecutionHandler sRunOnSerialPolicy =
             new RejectedExecutionHandler() {
-                @SuppressLint("SyntheticAccessor")
                 public void rejectedExecution(@NonNull final Runnable r,
                                               @NonNull final ThreadPoolExecutor e) {
                     Log.w(TAG, "Exceeded ThreadPoolExecutor pool size");

@@ -176,8 +176,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_sync_date"
-            style="@style/TIL.ReadOnly"
-            android:hint="@string/lbl_sync_date"
+            style="@style/TIL.ReadOnly.SyncDate"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="@id/cbx_books"
             app:layout_constraintTop_toBottomOf="@id/inf_sync_date"

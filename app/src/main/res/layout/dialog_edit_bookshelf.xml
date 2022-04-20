@@ -60,6 +60,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/lbl_bookshelf"
                     style="@style/TIL.Text"
+                    app:endIconMode="clear_text"
                     android:hint="@string/lbl_bookshelf"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

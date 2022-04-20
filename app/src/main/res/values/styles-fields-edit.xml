@@ -115,6 +115,12 @@
         <item name="android:focusableInTouchMode">false</item>
     </style>
 
+    <style name="TIL.ReadOnly.SyncDate">
+        <item name="android:hint">@string/lbl_sync_date</item>
+        <item name="endIconMode">custom</item>
+        <item name="endIconDrawable">@drawable/ic_baseline_edit_24</item>
+    </style>
+
     <!-- A TextInputLayout style specific for fields where the inner field is a (Material)AutoCompleteTextView.
 
       Reminder:
@@ -133,6 +139,7 @@
         <item name="android:layout_marginBottom">@dimen/til_margin</item>
         <item name="android:layout_marginStart">@dimen/til_margin</item>
         <item name="android:layout_marginEnd">@dimen/til_margin</item>
+        <!-- override to make it better visible. -->
         <item name="endIconTint">?attr/appDropdownIconColor</item>
     </style>
 
@@ -151,7 +158,6 @@
            parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="endIconTint">?attr/appDropdownIconColor</item>
         <item name="android:paddingTop">0dp</item>
         <item name="android:paddingBottom">0dp</item>
         <!-- 4x so we can override individually (is this another Android bug?) -->
@@ -159,6 +165,8 @@
         <item name="android:layout_marginBottom">@dimen/til_margin</item>
         <item name="android:layout_marginStart">@dimen/til_margin</item>
         <item name="android:layout_marginEnd">@dimen/til_margin</item>
+        <!-- override to make it better visible. -->
+        <item name="endIconTint">?attr/appDropdownIconColor</item>
     </style>
 
     <!-- *************************************************************************************** -->

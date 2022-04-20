@@ -60,8 +60,8 @@ public class MoneyFormatter
         mLocale = locale;
     }
 
-    @NonNull
     @Override
+    @NonNull
     public String format(@NonNull final Context context,
                          @Nullable final Money rawValue) {
 

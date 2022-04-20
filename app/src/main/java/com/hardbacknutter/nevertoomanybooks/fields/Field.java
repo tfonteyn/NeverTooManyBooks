@@ -19,15 +19,73 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+import com.google.android.material.textfield.TextInputLayout;
 
+import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+
+/**
+ * Field definition contains all information and methods necessary
+ * to manage display and extraction of data in a view.
+ *
+ * <ul>Features provides are:
+ *      <li>Handling of visibility via preferences / 'mIsUsedKey' property of a field.</li>
+ *      <li>Understanding of kinds of views (setting a Checkbox (Checkable) value to 'true'
+ *          will work as expected as will setting the value of an ExposedDropDownMenu).
+ *          As new view types are added, it will be necessary to add new {@link Field}
+ *          implementations.</li>
+ *      <li>Data formatters to provide application-specific data rules.</li>
+ *      <li>Simplified extraction of data.</li>
+ * </ul>
+ * <p>
+ * Formatters
+ * <p>
+ * A Formatter can be set on {@link android.widget.TextView}
+ * and any class extending {@link EditTextField}
+ * i.e. for TextView and EditText elements.
+ * Formatters should implement {@link FieldFormatter#format(Context, Object)} where the Object
+ * is transformed to a String - DO NOT CHANGE class variables while doing this.
+ * In contrast {@link FieldFormatter#apply} CAN change class variables
+ * but should leave the real formatter to the format method.
+ * <p>
+ * This way, other code can access {@link FieldFormatter#format(Context, Object)}
+ * without side-effects.
+ * <p>
+ * <ul>Data flows to and from a view as follows:
+ *      <li>IN  (no formatter ):<br>
+ *          {@link Field#setInitialValue(DataManager)} ->
+ *          {@link Field#setValue(Object)} ->
+ *          populates the View.</li>
+ *      <li>IN  (with FieldFormatter):<br>
+ *          {@link Field#setInitialValue(DataManager)} ->
+ *          {@link Field#setValue(Object)} ->
+ *          {@link FieldFormatter#apply} ->
+ *          populates the View.</li>
+ *
+ *       <li>OUT (no formatter ):
+ *          View ->
+ *          {@link Field#getValue()} ->
+ *          {@link Field#putValue(DataManager)}</li>
+ *      <li>OUT (with EditFieldFormatter):
+ *          View ->
+ *          {@link EditFieldFormatter#extract(Context, String)} ->
+ *          {@link Field#getValue()} ->
+ *          {@link Field#putValue(DataManager)}</li>
+ * </ul>
+ *
+ * @param <T> type of Field value.
+ * @param <V> type of View for this field
+ */
 public interface Field<T, V extends View> {
 
     /**
@@ -38,25 +96,26 @@ public interface Field<T, V extends View> {
     @NonNull
     FragmentId getFragmentId();
 
+    /**
+     * Get the id for the Field view.
+     *
+     * @return view id
+     */
     @IdRes
-    int getId();
+    int getFieldViewId();
 
     /**
-     * Set the View for the field.
-     * <p>
-     * Unused fields (as configured in the user preferences) will be hidden after this step.
+     * Hook up the views.
+     * Reminder: do <strong>NOT</strong> set the view in the constructor.
+     * <strong>Implementation note</strong>: we don't provide an onCreateViewHolder()
+     * method on purpose.
+     * Using that would need to deal with {@code null} values.
      *
+     * @param parent to use
      * @param global Global preferences
-     * @param parent of the field View
      */
-    void setParentView(@NonNull SharedPreferences global,
-                       @NonNull View parent);
-
-    @Nullable
-    V getView();
-
-    @NonNull
-    V requireView();
+    void setParentView(@NonNull final View parent,
+                       @NonNull final SharedPreferences global);
 
     /**
      * <strong>Conditionally</strong> set the visibility for the field and its related fields.
@@ -66,19 +125,37 @@ public interface Field<T, V extends View> {
      *                               Use {@code true} when displaying;
      *                               and {@code false} when editing.
      * @param keepHiddenFieldsHidden keep a field hidden if it's already hidden
-     *                               (even when it has content)
      */
-    void setVisibility(@NonNull SharedPreferences global,
-                       @NonNull View parent,
+    void setVisibility(@NonNull View parent,
+                       @NonNull SharedPreferences global,
                        boolean hideEmptyFields,
                        boolean keepHiddenFieldsHidden);
 
     /**
-     * Set the value directly. (e.g. upon another field changing... etc...)
+     * Get the previously set view.
      *
-     * @param value to set
+     * @return view
+     *
+     * @throws NullPointerException if the View is not set
      */
-    void setValue(@Nullable T value);
+    @NonNull
+    V requireView();
+
+    /**
+     * Is the field in use; i.e. is it enabled in the user-preferences.
+     *
+     * @param global Global preferences
+     *
+     * @return {@code true} if the field *can* be visible
+     */
+    boolean isUsed(@NonNull final SharedPreferences global);
+
+    /**
+     * Check if this field can be automatically populated.
+     *
+     * @return {@code true} if it can
+     */
+    boolean isAutoPopulated();
 
 
     /**
@@ -91,22 +168,85 @@ public interface Field<T, V extends View> {
      */
     void setInitialValue(@NonNull DataManager source);
 
-    @NonNull
-    String getKey();
+    /**
+     * Get the value from the view associated with the Field.
+     *
+     * @return the value
+     */
+    @Nullable
+    T getValue();
 
     /**
-     * Is the field in use; i.e. is it enabled in the user-preferences.
+     * Set the value directly. (e.g. upon another field changing... etc...)
+     * <p>
+     * If {@code null} is passed in, the implementation should set the widget to
+     * its native default value. (e.g. string -> "", number -> 0, etc)
+     * <p>
+     * If the View is not available, the implementation should silently ignore this,
+     * <strong>but should still set the raw value if applicable.</strong>
      *
-     * @param global Global preferences
-     *
-     * @return {@code true} if the field *can* be visible
+     * @param value to set.
      */
-    boolean isUsed(@NonNull SharedPreferences global);
+    void setValue(@Nullable T value);
 
     /**
-     * Check if this field can be automatically populated.
+     * Put the <strong>native typed value</strong> in the passed {@link DataManager}.
      *
-     * @return {@code true} if it can
+     * @param target {@link DataManager} to save the Field value into.
      */
-    boolean isAutoPopulated();
+    void putValue(@NonNull DataManager target);
+
+    /**
+     * Check if the current value is considered to be 'empty'.
+     *
+     * @return {@code true} if empty.
+     */
+    boolean isEmpty();
+
+
+    /**
+     * Propagate the fact that this field was changed to the {@link AfterChangedListener}.
+     */
+    void notifyIfChanged(@Nullable final T previous);
+
+    void setAfterFieldChangeListener(@Nullable AfterChangedListener listener);
+
+    /**
+     * Display an error message in the previously set error view.
+     * <p>
+     * Supports setting the text on an {@link TextInputLayout} or {@link TextView}.
+     * Fails silently if the view is not present.
+     *
+     * @param errorText to show
+     */
+    void setError(@Nullable String errorText);
+
+    /**
+     * Convenience method to facilitate creating a non-empty {@link Validator}.
+     *
+     * @param errorText to display if the field is empty.
+     */
+    default void setErrorIfEmpty(@NonNull final String errorText) {
+        setError(isEmpty() ? errorText : null);
+    }
+
+    @FunctionalInterface
+    interface AfterChangedListener {
+
+        void onAfterChanged(@NonNull Field<?, ? extends View> field);
+    }
+
+    /**
+     * Interface for all field-level validators.
+     */
+    @FunctionalInterface
+    interface Validator<T, V extends View> {
+
+        /**
+         * Validation method.
+         *
+         * @param field to validate
+         */
+        void validate(@NonNull Field<T, V> field);
+    }
 }

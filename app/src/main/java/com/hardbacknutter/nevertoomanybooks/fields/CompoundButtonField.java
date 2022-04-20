@@ -17,10 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.fields.accessors;
+package com.hardbacknutter.nevertoomanybooks.fields;
 
+import android.content.SharedPreferences;
+import android.view.View;
 import android.widget.CompoundButton;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -40,21 +43,26 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  * <p>
  * NOT covered is {@code CheckedTextView extends TextView}'
  */
-public class CompoundButtonAccessor
-        extends BaseFieldViewAccessor<Boolean, CompoundButton> {
+public class CompoundButtonField
+        extends BaseField<Boolean, CompoundButton> {
 
     /** Are we viewing {@code false} or editing {@code true} a Field. */
     private final boolean mIsEditable;
 
-    public CompoundButtonAccessor(final boolean isEditable) {
+    public CompoundButtonField(@NonNull final FragmentId fragmentId,
+                               @IdRes final int fieldViewId,
+                               @NonNull final String fieldKey,
+                               final boolean isEditable) {
+        super(fragmentId, fieldViewId, fieldKey, fieldKey);
         mIsEditable = isEditable;
     }
 
     @Override
-    public void setView(@NonNull final CompoundButton view) {
-        super.setView(view);
+    public void setParentView(@NonNull final View parent,
+                              @NonNull final SharedPreferences global) {
+        super.setParentView(parent, global);
         if (mIsEditable) {
-            view.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            requireView().setOnCheckedChangeListener((buttonView, isChecked) -> {
                 final Boolean previous = mRawValue;
                 mRawValue = isChecked;
                 notifyIfChanged(previous);
@@ -62,15 +70,15 @@ public class CompoundButtonAccessor
         }
     }
 
-    @NonNull
     @Override
+    @NonNull
     public Boolean getValue() {
         return mRawValue != null ? mRawValue : false;
     }
 
     @Override
     public void setValue(@Nullable final Boolean value) {
-        mRawValue = value != null ? value : false;
+        super.setValue(value != null ? value : false);
 
         final CompoundButton view = getView();
         if (view != null) {
@@ -80,16 +88,17 @@ public class CompoundButtonAccessor
 
     @Override
     public void setInitialValue(@NonNull final DataManager source) {
-        mInitialValue = source.getBoolean(mField.getKey());
+        mInitialValue = source.getBoolean(mFieldKey);
         setValue(mInitialValue);
     }
 
     @Override
-    public void getValue(@NonNull final DataManager target) {
-        target.putBoolean(mField.getKey(), getValue());
+    void internalPutValue(@NonNull final DataManager target) {
+        target.putBoolean(mFieldKey, getValue());
     }
 
-    public boolean isEmpty(@Nullable final Boolean value) {
+    @Override
+    boolean isEmpty(@Nullable final Boolean value) {
         return value == null || !value;
     }
 }

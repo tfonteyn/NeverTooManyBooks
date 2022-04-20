@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookFieldsBi
 import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.fields.EditField;
+import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -77,11 +77,11 @@ public class EditBookFieldsFragment
                 @Override
                 public void onResult(@IdRes final int fieldId,
                                      @NonNull final ArrayList<Bookshelf> selectedItems) {
-                    final EditField<List<Bookshelf>, TextView> field =
-                            mVm.requireField(fieldId);
-                    mVm.getBook().putParcelableArrayList(field.getKey(), selectedItems);
+                    final Field<List<Bookshelf>, TextView> field = mVm.requireField(fieldId);
+                    final List<Bookshelf> previous = field.getValue();
+                    mVm.getBook().putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, selectedItems);
                     field.setValue(selectedItems);
-                    field.onChanged();
+                    field.notifyIfChanged(previous);
                 }
             };
 
@@ -215,7 +215,7 @@ public class EditBookFieldsFragment
     }
 
     @Override
-    void onPopulateViews(@NonNull final List<EditField<?, ? extends View>> fields,
+    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
         //noinspection ConstantConditions
         mVm.getBook().pruneAuthors(getContext(), true);
@@ -238,7 +238,7 @@ public class EditBookFieldsFragment
                 .getDefaultSharedPreferences(getContext());
 
         //noinspection ConstantConditions
-        fields.forEach(field -> field.setVisibility(global, getView(), false, false));
+        fields.forEach(field -> field.setVisibility(getView(), global, false, false));
     }
 
     @Override

@@ -63,7 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragm
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
-import com.hardbacknutter.nevertoomanybooks.fields.EditField;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
@@ -99,7 +98,7 @@ public abstract class EditBookBaseFragment
     private DateParser mDateParser;
     private MenuHandlersMenuProvider mMenuHandlersMenuProvider;
     /** Listener for all field changes. MUST keep strong reference. */
-    private final EditField.AfterFieldChangeListener mAfterFieldChangeListener =
+    private final Field.AfterChangedListener mAfterChangedListener =
             this::onAfterFieldChange;
 
     @Override
@@ -147,10 +146,10 @@ public abstract class EditBookBaseFragment
         }
 
         // update the Fields for THIS fragment with their current View instances
-        final List<EditField<?, ? extends View>> fields = mVm.getFields(getFragmentId());
+        final List<Field<?, ? extends View>> fields = mVm.getFields(getFragmentId());
         fields.forEach(field -> {
             //noinspection ConstantConditions
-            field.setParentView(global, getView());
+            field.setParentView(getView(), global);
             field.setAfterFieldChangeListener(null);
         });
 
@@ -162,7 +161,7 @@ public abstract class EditBookBaseFragment
         book.unlockStage();
 
         // Dev note: DO NOT use a 'this' reference directly
-        fields.forEach(field -> field.setAfterFieldChangeListener(mAfterFieldChangeListener));
+        fields.forEach(field -> field.setAfterFieldChangeListener(mAfterChangedListener));
 
         // All views should now have proper visibility set, so fix their focus order.
         //noinspection ConstantConditions
@@ -192,14 +191,14 @@ public abstract class EditBookBaseFragment
      * The base class (this one) manages all the actual fields, but 'special' fields can/should
      * be handled in overrides, calling super as the first step.
      * <p>
-     * The {@link EditField.AfterFieldChangeListener} is disabled and
+     * The {@link Field.AfterChangedListener} is disabled and
      * the book is locked during this call.
      *
      * @param fields current field collection
      * @param book   loaded book
      */
     @CallSuper
-    void onPopulateViews(@NonNull final List<EditField<?, ? extends View>> fields,
+    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
         //noinspection ConstantConditions
         final SharedPreferences global = PreferenceManager
@@ -219,7 +218,7 @@ public abstract class EditBookBaseFragment
 
         // Bulk load the data into the Views.
 
-        // do NOT call onChanged, as this is the initial load
+        // do NOT call notifyIfChanged, as this is the initial load
         fields.stream()
               .filter(Field::isAutoPopulated)
               .forEach(field -> field.setInitialValue(book));
@@ -255,7 +254,7 @@ public abstract class EditBookBaseFragment
 
     /** Listener for all field changes. */
     @CallSuper
-    public void onAfterFieldChange(@NonNull final EditField<?, ? extends View> field) {
+    public void onAfterFieldChange(@NonNull final Field<?, ? extends View> field) {
         final Book book = mVm.getBook();
 
         book.setStage(EntityStage.Stage.Dirty);
@@ -263,29 +262,27 @@ public abstract class EditBookBaseFragment
         // For new books, we copy a number of fields as appropriate by default.
         // These fields might not be initialized, so use the 'Optional' returning method.
         if (book.isNew()) {
-            if (field.getId() == R.id.price_listed_currency) {
-                mVm.getField(R.id.price_paid_currency).ifPresent(
-                        paidField -> {
-                            if (!field.isEmpty() && paidField.isEmpty()) {
-                                final String value = (String) field.getValue();
-                                //noinspection ConstantConditions
-                                mVm.getBook().putString(DBKey.PRICE_PAID_CURRENCY, value);
-                                //noinspection unchecked
-                                ((Field<String, ? extends View>) paidField).setValue(value);
-                            }
-                        });
+            if (field.getFieldViewId() == R.id.price_listed_currency) {
+                mVm.getField(R.id.price_paid_currency).ifPresent(paidField -> {
+                    if (!field.isEmpty() && paidField.isEmpty()) {
+                        final String value = (String) field.getValue();
+                        //noinspection ConstantConditions
+                        mVm.getBook().putString(DBKey.PRICE_PAID_CURRENCY, value);
+                        //noinspection unchecked
+                        ((Field<String, ? extends View>) paidField).setValue(value);
+                    }
+                });
 
-            } else if (field.getId() == R.id.price_listed) {
-                mVm.getField(R.id.price_paid).ifPresent(
-                        paidField -> {
-                            if (!field.isEmpty() && paidField.isEmpty()) {
-                                // Normally its always a double; but technically it might not be.
-                                final Double value = ParseUtils.toDouble(field.getValue(), null);
-                                mVm.getBook().put(DBKey.PRICE_PAID, value);
-                                //noinspection unchecked
-                                ((Field<Double, ? extends View>) paidField).setValue(value);
-                            }
-                        });
+            } else if (field.getFieldViewId() == R.id.price_listed) {
+                mVm.getField(R.id.price_paid).ifPresent(paidField -> {
+                    if (!field.isEmpty() && paidField.isEmpty()) {
+                        // Normally its always a double; but technically it might not be.
+                        final Double value = ParseUtils.toDouble(field.getValue(), null);
+                        mVm.getBook().put(DBKey.PRICE_PAID, value);
+                        //noinspection unchecked
+                        ((Field<Double, ? extends View>) paidField).setValue(value);
+                    }
+                });
             }
         }
 
@@ -296,7 +293,6 @@ public abstract class EditBookBaseFragment
     @CallSuper
     public void onPause() {
         mVm.setUnfinishedEdits(getFragmentId(), hasUnfinishedEdits());
-
         if (mVm.getBook().getStage() == EntityStage.Stage.Dirty) {
             onSaveFields(mVm.getBook());
         }
@@ -325,17 +321,15 @@ public abstract class EditBookBaseFragment
      * When user checks 'read', set the read-end date to today (unless set before)
      */
     private void addReadCheckboxOnClickListener() {
-        mVm.requireField(R.id.cbx_read)
-           .requireView().setOnClickListener(v -> {
-               if (((Checkable) v).isChecked()) {
-                   final EditField<String, TextView> readEnd = mVm.requireField(R.id.read_end);
-                   if (readEnd.isEmpty()) {
-                       readEnd.setValue(
-                               LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-                       readEnd.onChanged();
-                   }
-               }
-           });
+        mVm.requireField(R.id.cbx_read).requireView().setOnClickListener(v -> {
+            if (((Checkable) v).isChecked()) {
+                final Field<String, TextView> readEnd = mVm.requireField(R.id.read_end);
+                if (readEnd.isEmpty()) {
+                    readEnd.setValue(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+                    readEnd.notifyIfChanged("");
+                }
+            }
+        });
     }
 
     /**
@@ -364,8 +358,8 @@ public abstract class EditBookBaseFragment
                                     @IdRes final int lblEndFieldId,
                                     @IdRes final int endFieldId) {
 
-        final EditField<String, TextView> startField = mVm.requireField(startFieldId);
-        final EditField<String, TextView> endField = mVm.requireField(endFieldId);
+        final Field<String, TextView> startField = mVm.requireField(startFieldId);
+        final Field<String, TextView> endField = mVm.requireField(endFieldId);
 
         if (startField.isUsed(global)) {
             // Always a single date picker for the start-date
@@ -410,7 +404,7 @@ public abstract class EditBookBaseFragment
                                @IdRes final int lblFieldId,
                                @IdRes final int fieldId) {
 
-        final EditField<String, TextView> field = mVm.requireField(fieldId);
+        final Field<String, TextView> field = mVm.requireField(fieldId);
         if (field.isUsed(global)) {
             final SingleDatePicker dp = new SingleDatePicker(getChildFragmentManager(),
                                                              pickerTitleId, fieldId);
@@ -438,10 +432,10 @@ public abstract class EditBookBaseFragment
                                       @StringRes final int pickerTitleId,
                                       @IdRes final int lblFieldId,
                                       @IdRes final int fieldId) {
-        final EditField<String, TextView> field = mVm.requireField(fieldId);
+        final Field<String, TextView> field = mVm.requireField(fieldId);
         if (field.isUsed(global)) {
             field.requireView().setOnClickListener(v -> mPartialDatePickerLauncher
-                    .launch(pickerTitleId, field.getId(), field.getValue(), false));
+                    .launch(pickerTitleId, field.getFieldViewId(), field.getValue(), false));
 
             //noinspection ConstantConditions
             ((TextInputLayout) getView().findViewById(lblFieldId))
@@ -465,9 +459,10 @@ public abstract class EditBookBaseFragment
     private void onDateSet(@IdRes final int fieldId,
                            @NonNull final String dateStr) {
 
-        final EditField<String, TextView> field = mVm.requireField(fieldId);
+        final Field<String, TextView> field = mVm.requireField(fieldId);
+        final String previous = field.getValue();
         field.setValue(dateStr);
-        field.onChanged();
+        field.notifyIfChanged(previous);
 
         // special case, if a read-end date is set, then obviously we must set the read-flag
         if (fieldId == R.id.read_end) {

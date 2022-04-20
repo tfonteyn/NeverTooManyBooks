@@ -17,17 +17,19 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.fields.accessors;
+package com.hardbacknutter.nevertoomanybooks.fields;
 
+import android.content.SharedPreferences;
+import android.view.View;
 import android.widget.AutoCompleteTextView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.fields.FieldArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 
 
@@ -36,8 +38,8 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  * <p>
  * A {@code null} value is always handled as {@code ""}.
  */
-public class AutoCompleteTextAccessor
-        extends EditTextAccessor<String, AutoCompleteTextView> {
+public class AutoCompleteTextField
+        extends EditTextField<String, AutoCompleteTextView> {
 
     /** The list for the adapter. */
     @NonNull
@@ -48,7 +50,11 @@ public class AutoCompleteTextAccessor
      *
      * @param listSupplier Supplier with auto complete values
      */
-    public AutoCompleteTextAccessor(@NonNull final Supplier<List<String>> listSupplier) {
+    public AutoCompleteTextField(@NonNull final FragmentId fragmentId,
+                                 @IdRes final int fieldViewId,
+                                 @NonNull final String fieldKey,
+                                 @NonNull final Supplier<List<String>> listSupplier) {
+        super(fragmentId, fieldViewId, fieldKey);
         mListSupplier = listSupplier;
     }
 
@@ -59,20 +65,26 @@ public class AutoCompleteTextAccessor
      * @param enableReformat flag: reformat after every user-change.
      * @param listSupplier   Supplier with auto complete values
      */
-    public AutoCompleteTextAccessor(@NonNull final FieldFormatter<String> formatter,
-                                    final boolean enableReformat,
-                                    @NonNull final Supplier<List<String>> listSupplier) {
-        super(formatter, enableReformat);
+    public AutoCompleteTextField(@NonNull final FragmentId fragmentId,
+                                 @IdRes final int fieldViewId,
+                                 @NonNull final String fieldKey,
+                                 @NonNull final FieldFormatter<String> formatter,
+                                 final boolean enableReformat,
+                                 @NonNull final Supplier<List<String>> listSupplier) {
+        super(fragmentId, fieldViewId, fieldKey, formatter, enableReformat);
         mListSupplier = listSupplier;
     }
 
     @Override
-    public void setView(@NonNull final AutoCompleteTextView view) {
-        super.setView(view);
-        view.setAdapter(new FieldArrayAdapter(view.getContext(), mListSupplier.get(), mFormatter));
+    public void setParentView(@NonNull final View parent,
+                              @NonNull final SharedPreferences global) {
+        super.setParentView(parent, global);
+        requireView().setAdapter(new FieldArrayAdapter(parent.getContext(),
+                                                       mListSupplier.get(), mFormatter));
     }
 
-    public boolean isEmpty(@Nullable final String value) {
+    @Override
+    boolean isEmpty(@Nullable final String value) {
         return value == null || value.isEmpty();
     }
 }

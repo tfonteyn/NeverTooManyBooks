@@ -17,36 +17,39 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.fields.accessors;
+package com.hardbacknutter.nevertoomanybooks.fields;
 
 import android.content.Context;
 import android.view.View;
 import android.widget.Checkable;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
-import java.util.Map;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+import com.hardbacknutter.nevertoomanybooks.entities.ParcelableEntity;
 
 /**
- * A {@link ChipGroup} where each {@link Chip} represents one bit in a bitmask.
+ * A {@link ChipGroup} where each {@link Chip} represents one {@link ParcelableEntity} in a list.
  * <p>
- * A {@code null} value is always handled as {@code 0}.
+ * A {@code null} value is always handled as an empty {@link ArrayList}.
  * <p>
  * Relies on {@link R.attr#appChipFilterStyle}
  */
-public class BitmaskChipGroupAccessor
-        extends BaseFieldViewAccessor<Integer, ChipGroup> {
+public class ListChipGroupField<T extends ParcelableEntity>
+        extends BaseField<ArrayList<T>, ChipGroup> {
 
     @NonNull
-    private final Function<Context, Map<Integer, String>> mValuesSupplier;
+    private final Supplier<List<T>> mListSupplier;
 
     @Nullable
     private final View.OnClickListener mEditChipListener;
@@ -54,35 +57,38 @@ public class BitmaskChipGroupAccessor
     /**
      * Constructor.
      *
-     * @param supplier for a Map with all <strong>possible</strong> values
+     * @param listSupplier for a list with all <strong>possible</strong> values
      */
-    public BitmaskChipGroupAccessor(@NonNull final
-                                    Function<Context, Map<Integer, String>> supplier) {
-        mValuesSupplier = supplier;
+    public ListChipGroupField(@NonNull final FragmentId fragmentId,
+                              @IdRes final int fieldViewId,
+                              @NonNull final String fieldKey,
+                              @NonNull final Supplier<List<T>> listSupplier) {
+        super(fragmentId, fieldViewId, fieldKey, fieldKey);
+        mListSupplier = listSupplier;
 
         mEditChipListener = view -> {
-            final Integer previous = mRawValue;
-            final Integer bit = (Integer) view.getTag();
+            //noinspection ConstantConditions
+            final ArrayList<T> previous = new ArrayList<>(mRawValue);
+            //noinspection unchecked
+            final T current = (T) view.getTag();
             if (((Checkable) view).isChecked()) {
-                // add
-                mRawValue |= bit;
+                mRawValue.add(current);
             } else {
-                // remove
-                mRawValue &= ~bit;
+                mRawValue.remove(current);
             }
             notifyIfChanged(previous);
         };
     }
 
-    @NonNull
     @Override
-    public Integer getValue() {
-        return mRawValue != null ? mRawValue : 0;
+    @NonNull
+    public ArrayList<T> getValue() {
+        return mRawValue != null ? mRawValue : new ArrayList<>();
     }
 
     @Override
-    public void setValue(@Nullable final Integer value) {
-        mRawValue = value != null ? value : 0;
+    public void setValue(@Nullable final ArrayList<T> value) {
+        super.setValue(value != null ? value : new ArrayList<>());
 
         final ChipGroup chipGroup = getView();
         if (chipGroup != null) {
@@ -90,18 +96,17 @@ public class BitmaskChipGroupAccessor
 
             final Context context = chipGroup.getContext();
 
-            for (final Map.Entry<Integer, String> entry :
-                    mValuesSupplier.apply(context).entrySet()) {
+            for (final T entity : mListSupplier.get()) {
 
                 final Chip chip = new Chip(context, null, R.attr.appChipFilterStyle);
-                chip.setChecked((entry.getKey() & mRawValue) != 0);
+                chip.setChecked(mRawValue.contains(entity));
                 chip.setOnClickListener(mEditChipListener);
 
                 // RTL-friendly Chip Layout
                 chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
 
-                chip.setTag(entry.getKey());
-                chip.setText(entry.getValue());
+                chip.setTag(entity);
+                chip.setText(entity.getLabel(context));
 
                 chipGroup.addView(chip);
             }
@@ -110,16 +115,17 @@ public class BitmaskChipGroupAccessor
 
     @Override
     public void setInitialValue(@NonNull final DataManager source) {
-        mInitialValue = source.getInt(mField.getKey());
+        mInitialValue = new ArrayList<>(source.getParcelableArrayList(mFieldKey));
         setValue(mInitialValue);
     }
 
     @Override
-    public void getValue(@NonNull final DataManager target) {
-        target.putLong(mField.getKey(), getValue());
+    void internalPutValue(@NonNull final DataManager target) {
+        target.putParcelableArrayList(mFieldKey, getValue());
     }
 
-    public boolean isEmpty(@Nullable final Integer value) {
-        return value == null || value == 0;
+    @Override
+    boolean isEmpty(@Nullable final ArrayList<T> value) {
+        return value == null || value.isEmpty();
     }
 }

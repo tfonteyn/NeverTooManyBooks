@@ -39,8 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 public class DoubleNumberFormatter
         implements EditFieldFormatter<Number> {
 
-    @NonNull
     @Override
+    @NonNull
     public String format(@NonNull final Context context,
                          @Nullable final Number rawValue) {
 
@@ -63,8 +63,8 @@ public class DoubleNumberFormatter
         }
     }
 
-    @NonNull
     @Override
+    @NonNull
     public Number extract(@NonNull final Context context,
                           @NonNull final String text) {
         if (text.isEmpty()) {

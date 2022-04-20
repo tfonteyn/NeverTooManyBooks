@@ -17,41 +17,37 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.fields.formatters;
+package com.hardbacknutter.nevertoomanybooks.fields.endicon;
 
-import android.content.Context;
+import android.view.View;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.entities.Details;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
+import com.google.android.material.textfield.TextInputLayout;
 
-/**
- * <ul>
- *      <li>Multiple fields: <strong>no</strong></li>
- * </ul>
- */
-public class EntityFormatter<T extends Entity>
-        extends HtmlFormatter<T> {
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.function.Consumer;
 
-    /** how much details to show. */
-    @NonNull
-    private final Details mDetails;
+public interface ExtEndIconDelegate {
 
-    /**
-     * Constructor.
-     *
-     * @param details how much details to show
-     */
-    public EntityFormatter(@NonNull final Details details) {
-        mDetails = details;
-    }
+    void setOnClickConsumer(@Nullable Consumer<View> endIconOnClickConsumer);
 
-    @Override
-    @NonNull
-    public String format(@NonNull final Context context,
-                         @Nullable final T entity) {
-        return entity == null ? "" : entity.getLabel(context, mDetails);
+    void setTextInputLayout(@NonNull TextInputLayout parent);
+
+    void updateEndIcon();
+
+    @IntDef({
+            TextInputLayout.END_ICON_CUSTOM,
+            TextInputLayout.END_ICON_NONE,
+            TextInputLayout.END_ICON_PASSWORD_TOGGLE,
+            TextInputLayout.END_ICON_CLEAR_TEXT,
+            TextInputLayout.END_ICON_DROPDOWN_MENU
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface EndIconMode {
+
     }
 }

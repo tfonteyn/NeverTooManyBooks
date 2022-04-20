@@ -17,11 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.fields.accessors;
+package com.hardbacknutter.nevertoomanybooks.fields;
 
+import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.Checkable;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -33,18 +35,33 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  * <p>
  * A {@code null} value is always handled as {@code false}.
  */
-public class BooleanIndicatorAccessor
-        extends BaseFieldViewAccessor<Boolean, View> {
+public class BooleanIndicatorField
+        extends BaseField<Boolean, View> {
 
-    @NonNull
+    public BooleanIndicatorField(@NonNull final FragmentId fragmentId,
+                                 @IdRes final int fieldViewId,
+                                 @NonNull final String fieldKey) {
+        super(fragmentId, fieldViewId, fieldKey, fieldKey);
+    }
+
     @Override
+    public void setVisibility(@NonNull final View parent,
+                              @NonNull final SharedPreferences global,
+                              final boolean hideEmptyFields,
+                              final boolean keepHiddenFieldsHidden) {
+        // The field view is handled when the value is set.
+        setRelatedViewsVisibility(parent, requireView().getVisibility());
+    }
+
+    @Override
+    @NonNull
     public Boolean getValue() {
         return mRawValue != null ? mRawValue : false;
     }
 
     @Override
     public void setValue(@Nullable final Boolean value) {
-        mRawValue = value != null ? value : false;
+        super.setValue(value != null ? value : false);
 
         final View view = getView();
         if (view != null) {
@@ -59,16 +76,17 @@ public class BooleanIndicatorAccessor
 
     @Override
     public void setInitialValue(@NonNull final DataManager source) {
-        mInitialValue = source.getBoolean(mField.getKey());
+        mInitialValue = source.getBoolean(mFieldKey);
         setValue(mInitialValue);
     }
 
     @Override
-    public void getValue(@NonNull final DataManager target) {
-        target.putBoolean(mField.getKey(), getValue());
+    void internalPutValue(@NonNull final DataManager target) {
+        target.putBoolean(mFieldKey, getValue());
     }
 
-    public boolean isEmpty(@Nullable final Boolean value) {
+    @Override
+    boolean isEmpty(@Nullable final Boolean value) {
         return value == null || !value;
     }
 }

@@ -17,12 +17,15 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.fields.accessors;
+package com.hardbacknutter.nevertoomanybooks.fields;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.view.View;
 import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.ArrayRes;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -36,8 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
  * <p>
  * A {@code null} value is always handled as {@code 0}.
  */
-public class ExposedDropDownMenuAccessor
-        extends BaseFieldViewAccessor<Integer, AutoCompleteTextView> {
+public class ExposedDropDownMenuField
+        extends BaseField<Integer, AutoCompleteTextView> {
 
     @NonNull
     private final ExtArrayAdapter<CharSequence> mAdapter;
@@ -51,10 +54,13 @@ public class ExposedDropDownMenuAccessor
      * @param context    Current context
      * @param arrayResId to use; the array <strong>must not</strong> be empty
      */
-    public ExposedDropDownMenuAccessor(@NonNull final Context context,
-                                       @ArrayRes final int arrayResId,
-                                       final boolean isEditable) {
-
+    public ExposedDropDownMenuField(@NonNull final FragmentId fragmentId,
+                                    @IdRes final int fieldViewId,
+                                    @NonNull final String fieldKey,
+                                    @NonNull final Context context,
+                                    @ArrayRes final int arrayResId,
+                                    final boolean isEditable) {
+        super(fragmentId, fieldViewId, fieldKey, fieldKey);
         mAdapter = ExtArrayAdapter.createFromResource(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Passthrough, arrayResId);
@@ -64,12 +70,19 @@ public class ExposedDropDownMenuAccessor
         SanityCheck.requirePositiveValue(mAdapter.getCount(), "mAdapter.getCount()");
     }
 
+    @NonNull
+    public ExposedDropDownMenuField setTextInputLayoutId(@IdRes final int viewId) {
+        addRelatedViews(viewId);
+        return this;
+    }
+
     @Override
-    public void setView(@NonNull final AutoCompleteTextView view) {
-        super.setView(view);
-        view.setAdapter(mAdapter);
+    public void setParentView(@NonNull final View parent,
+                              @NonNull final SharedPreferences global) {
+        super.setParentView(parent, global);
+        requireView().setAdapter(mAdapter);
         if (mIsEditable) {
-            view.setOnItemClickListener((parent, v, position, id) -> {
+            requireView().setOnItemClickListener((p, v, position, id) -> {
                 final Integer previous = mRawValue;
                 mRawValue = position;
                 notifyIfChanged(previous);
@@ -85,7 +98,7 @@ public class ExposedDropDownMenuAccessor
 
     @Override
     public void setValue(@Nullable final Integer value) {
-        mRawValue = value != null ? value : 0;
+        super.setValue(value != null ? value : 0);
 
         final AutoCompleteTextView view = getView();
         if (view != null) {
@@ -99,17 +112,17 @@ public class ExposedDropDownMenuAccessor
 
     @Override
     public void setInitialValue(@NonNull final DataManager source) {
-        mInitialValue = source.getInt(mField.getKey());
+        mInitialValue = source.getInt(mFieldKey);
         setValue(mInitialValue);
     }
 
     @Override
-    public void getValue(@NonNull final DataManager target) {
-        target.putInt(mField.getKey(), getValue());
+    void internalPutValue(@NonNull final DataManager target) {
+        target.putInt(mFieldKey, getValue());
     }
 
     @Override
-    public boolean isEmpty(@Nullable final Integer value) {
+    boolean isEmpty(@Nullable final Integer value) {
         return value == null || value == 0;
     }
 }

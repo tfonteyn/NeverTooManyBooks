@@ -262,7 +262,8 @@ public abstract class BooklistStyle
     }
 
     /**
-     * Accessor.
+     * Get the id.
+     *
      * <ul>
      *      <li>Positive ID's: user-defined styles</li>
      *      <li>Negative ID's: builtin styles</li>

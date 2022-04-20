@@ -61,8 +61,7 @@ public class TopLevelItemDecoration
             return;
         }
 
-        //noinspection rawtypes
-        final RecyclerView.Adapter adapter = parent.getAdapter();
+        final RecyclerView.Adapter<?> adapter = parent.getAdapter();
         if (!(adapter instanceof BooklistAdapter)) {
             return;
         }

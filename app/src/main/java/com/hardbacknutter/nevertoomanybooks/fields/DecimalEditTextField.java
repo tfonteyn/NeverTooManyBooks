@@ -17,13 +17,16 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.fields.accessors;
+package com.hardbacknutter.nevertoomanybooks.fields;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.method.DigitsKeyListener;
+import android.view.View;
 import android.widget.EditText;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -40,26 +43,31 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
  * <p>
  * A {@code null} or {@code 0} value is always displayed as an empty {@code String}.
  */
-public class DecimalEditTextAccessor
-        extends EditTextAccessor<Number, EditText> {
+public class DecimalEditTextField
+        extends EditTextField<Number, EditText> {
 
     /**
      * Constructor.
      *
      * @param formatter to use
      */
-    public DecimalEditTextAccessor(@NonNull final FieldFormatter<Number> formatter) {
-        super(formatter, false);
+    public DecimalEditTextField(@NonNull final FragmentId fragmentId,
+                                @IdRes final int fieldViewId,
+                                @NonNull final String fieldKey,
+                                @NonNull final FieldFormatter<Number> formatter) {
+        super(fragmentId, fieldViewId, fieldKey, formatter, false);
     }
 
     @Override
-    public void setView(@NonNull final EditText view) {
-        super.setView(view);
+    public void setParentView(@NonNull final View parent,
+                              @NonNull final SharedPreferences global) {
+        super.setParentView(parent, global);
         // do not keep a strong reference to the watcher
-        view.addTextChangedListener(new DecimalTextWatcher(view));
+        requireView().addTextChangedListener(new DecimalTextWatcher(requireView()));
     }
 
-    public boolean isEmpty(@Nullable final Number value) {
+    @Override
+    boolean isEmpty(@Nullable final Number value) {
         return value == null || value.doubleValue() == 0.0d;
     }
 

@@ -34,7 +34,7 @@ public class FieldArrayAdapter
         extends ExtArrayAdapter<String> {
 
     /** The formatter to apply on each line item. */
-    @Nullable
+    @NonNull
     private final FieldFormatter<String> mFormatter;
 
     /**
@@ -44,9 +44,9 @@ public class FieldArrayAdapter
      * @param objects   The objects to represent in the list view
      * @param formatter to use
      */
-    public FieldArrayAdapter(@NonNull final Context context,
-                             @NonNull final List<String> objects,
-                             @Nullable final FieldFormatter<String> formatter) {
+    FieldArrayAdapter(@NonNull final Context context,
+                      @NonNull final List<String> objects,
+                      @NonNull final FieldFormatter<String> formatter) {
         super(context, R.layout.popup_dropdown_menu_item, FilterType.Diacritic, objects);
         mFormatter = formatter;
     }
@@ -54,10 +54,6 @@ public class FieldArrayAdapter
     @NonNull
     @Override
     protected CharSequence getItemText(@Nullable final String item) {
-        if (mFormatter != null) {
-            return mFormatter.format(getContext(), item);
-        } else {
-            return super.getItemText(item);
-        }
+        return mFormatter.format(getContext(), item);
     }
 }

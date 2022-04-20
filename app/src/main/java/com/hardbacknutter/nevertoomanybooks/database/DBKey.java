@@ -348,7 +348,7 @@ public final class DBKey {
             BITMASK_TOC
     })
     @Retention(RetentionPolicy.SOURCE)
-    private @interface UserSelectedDomain {
+    public @interface UserSelectedDomain {
 
     }
 }

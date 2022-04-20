@@ -17,35 +17,43 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.fields.accessors;
+package com.hardbacknutter.nevertoomanybooks.fields;
 
+import android.content.SharedPreferences;
+import android.view.View;
 import android.widget.RatingBar;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
- * RatingBar accessor.
+ * RatingBar.
  * <p>
  * A {@code null} value is always handled as {@code 0}.
  */
-public class RatingBarAccessor
-        extends BaseFieldViewAccessor<Float, RatingBar> {
+public class RatingBarField
+        extends BaseField<Float, RatingBar> {
 
     /** Are we viewing {@code false} or editing {@code true} a Field. */
     private final boolean mIsEditable;
 
-    public RatingBarAccessor(final boolean isEditable) {
+    public RatingBarField(@NonNull final FragmentId fragmentId,
+                          @IdRes final int fieldViewId,
+                          @NonNull final String fieldKey,
+                          final boolean isEditable) {
+        super(fragmentId, fieldViewId, fieldKey, fieldKey);
         mIsEditable = isEditable;
     }
 
     @Override
-    public void setView(@NonNull final RatingBar view) {
-        super.setView(view);
+    public void setParentView(@NonNull final View parent,
+                              @NonNull final SharedPreferences global) {
+        super.setParentView(parent, global);
         if (mIsEditable) {
-            view.setOnRatingBarChangeListener((ratingBar, rating, fromUser) -> {
+            requireView().setOnRatingBarChangeListener((ratingBar, rating, fromUser) -> {
                 if (fromUser) {
                     final Float previous = mRawValue;
                     mRawValue = rating;
@@ -55,15 +63,15 @@ public class RatingBarAccessor
         }
     }
 
-    @NonNull
     @Override
+    @NonNull
     public Float getValue() {
         return mRawValue != null ? mRawValue : 0f;
     }
 
     @Override
     public void setValue(@Nullable final Float value) {
-        mRawValue = value != null ? value : 0f;
+        super.setValue(value != null ? value : 0f);
 
         final RatingBar view = getView();
         if (view != null) {
@@ -73,16 +81,17 @@ public class RatingBarAccessor
 
     @Override
     public void setInitialValue(@NonNull final DataManager source) {
-        mInitialValue = source.getFloat(mField.getKey());
+        mInitialValue = source.getFloat(mFieldKey);
         setValue(mInitialValue);
     }
 
     @Override
-    public void getValue(@NonNull final DataManager target) {
-        target.putFloat(mField.getKey(), getValue());
+    void internalPutValue(@NonNull final DataManager target) {
+        target.putFloat(mFieldKey, getValue());
     }
 
-    public boolean isEmpty(@Nullable final Float value) {
+    @Override
+    boolean isEmpty(@Nullable final Float value) {
         return value == null || value == 0f;
     }
 }

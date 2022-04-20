@@ -130,6 +130,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_external_id"
             style="@style/TIL.Text.ExternalId"
+            app:endIconMode="clear_text"
             android:layout_marginTop="@dimen/section_margin_top"
             android:hint="@string/lbl_site_book_id"
             app:layout_constraintEnd_toEndOf="parent"

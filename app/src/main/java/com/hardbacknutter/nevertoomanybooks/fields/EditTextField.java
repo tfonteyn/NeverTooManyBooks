@@ -17,18 +17,21 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.fields.accessors;
+package com.hardbacknutter.nevertoomanybooks.fields;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.Editable;
+import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.fields.EditField;
+import com.hardbacknutter.nevertoomanybooks.fields.endicon.ExtEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
@@ -38,11 +41,11 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
  *
  * @param <T> type of Field value.
  */
-public class EditTextAccessor<T, V extends EditText>
-        extends TextAccessor<T, V>
+public class EditTextField<T, V extends EditText>
+        extends BaseTextField<T, V>
         implements ExtTextWatcher {
 
-    private static final String TAG = "EditTextAccessor";
+    private static final String TAG = "EditTextField";
 
     /** Reformat only every 0.5 seconds: this is good enough and easier on the user. */
     private static final int REFORMAT_DELAY_MS = 500;
@@ -56,8 +59,10 @@ public class EditTextAccessor<T, V extends EditText>
     /**
      * Constructor.
      */
-    public EditTextAccessor() {
-        super(null);
+    public EditTextField(@NonNull final FragmentId fragmentId,
+                         @IdRes final int fieldViewId,
+                         @NonNull final String fieldKey) {
+        super(fragmentId, fieldViewId, fieldKey, fieldKey, null);
         mEnableReformat = false;
     }
 
@@ -67,47 +72,80 @@ public class EditTextAccessor<T, V extends EditText>
      * @param formatter      to use
      * @param enableReformat flag: reformat after every user-change.
      */
-    public EditTextAccessor(@NonNull final FieldFormatter<T> formatter,
-                            final boolean enableReformat) {
-        super(formatter);
+    public EditTextField(@NonNull final FragmentId fragmentId,
+                         @IdRes final int fieldViewId,
+                         @NonNull final String fieldKey,
+                         @NonNull final FieldFormatter<T> formatter,
+                         final boolean enableReformat) {
+        super(fragmentId, fieldViewId, fieldKey, fieldKey, formatter);
         mEnableReformat = enableReformat && formatter instanceof EditFieldFormatter;
     }
 
-    @Override
-    public void setView(@NonNull final V view) {
-        super.setView(view);
-        view.addTextChangedListener(this);
+    public EditTextField(@NonNull final FragmentId fragmentId,
+                         @IdRes final int fieldViewId,
+                         @NonNull final String fieldKey,
+                         @NonNull final String prefKey,
+                         @NonNull final FieldFormatter<T> formatter,
+                         final boolean enableReformat) {
+        super(fragmentId, fieldViewId, fieldKey, prefKey, formatter);
+        mEnableReformat = enableReformat && formatter instanceof EditFieldFormatter;
     }
 
-    @Nullable
+    /**
+     * Set the id for the surrounding TextInputLayout (if this field has one).
+     *
+     * @param viewId view id
+     */
+    @NonNull
+    public EditTextField<T, V> setTextInputLayoutId(@IdRes final int viewId) {
+        mTextInputLayoutId = viewId;
+        setErrorViewId(viewId);
+        return this;
+    }
+
+    @NonNull
+    public EditTextField<T, V> setEndIconMode(
+            @ExtEndIconDelegate.EndIconMode final int endIconMode) {
+        mEndIconMode = endIconMode;
+        return this;
+    }
+
+    @NonNull
+    public EditTextField<T, V> setFormatter(@NonNull final FieldFormatter<T> formatter) {
+        mFormatter = formatter;
+        return this;
+    }
+
     @Override
+    public void setParentView(@NonNull final View parent,
+                              @NonNull final SharedPreferences global) {
+        super.setParentView(parent, global);
+        requireView().addTextChangedListener(this);
+    }
+
+    @Override
+    @Nullable
     public T getValue() {
         return mRawValue;
     }
 
     @Override
     public void setValue(@Nullable final T value) {
-        mRawValue = value;
+        super.setValue(value);
 
         final V view = getView();
         if (view != null) {
             // We need to do this in two steps. First format the value as normal.
-            String text = null;
-            if (mFormatter != null) {
-                try {
-                    text = mFormatter.format(view.getContext(), mRawValue);
+            String text;
+            try {
+                text = mFormatter.format(view.getContext(), mRawValue);
 
-                } catch (@NonNull final ClassCastException e) {
-                    // Due to the way a Book loads data from the database,
-                    // it's possible that it gets the column type wrong.
-                    // See {@link TypedCursor} class docs.
-                    // Also see {@link SearchCoordinator#accumulateStringData}
-                    Logger.error(TAG, e, value);
-                }
-            }
-
-            // No formatter, or ClassCastException? just stringify the value.
-            if (text == null) {
+            } catch (@NonNull final ClassCastException e) {
+                // Due to the way a Book loads data from the database,
+                // it's possible that it gets the column type wrong.
+                // See {@link TypedCursor} class docs.
+                // Also see {@link SearchCoordinator#accumulateStringData}
+                Logger.error(TAG, e, value);
                 text = mRawValue != null ? String.valueOf(mRawValue) : "";
             }
 
@@ -161,13 +199,10 @@ public class EditTextAccessor<T, V extends EditText>
             }
         }
         // Clear any previous error. The new content will be re-checked at validation time.
-        if (mField instanceof EditField) {
-            ((EditField<T, V>) (mField)).setError(null);
-        }
+        setError(null);
 
         if (mEnableReformat) {
             if (System.currentTimeMillis() - mLastChange > REFORMAT_DELAY_MS) {
-                //noinspection ConstantConditions
                 final String formatted = mFormatter.format(context, mRawValue);
                 // If different, replace the encoded value with the formatted value.
                 if (!text.equalsIgnoreCase(formatted)) {

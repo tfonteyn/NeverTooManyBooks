@@ -39,6 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 public class ListFormatter<T extends Entity>
         extends HtmlFormatter<List<T>> {
 
+    private static final String DEFAULT_DELIMITER = "; ";
+
     @NonNull
     private final Details mDetails;
 
@@ -47,29 +49,11 @@ public class ListFormatter<T extends Entity>
 
     /**
      * Constructor.
-     * <p>
-     * Use {@link Details#Normal} with {@code "; "} as delimiter.
-     */
-    public ListFormatter() {
-        this(Details.Normal, "; ");
-    }
-
-    /**
-     * Constructor.
      *
      * @param details how much details to show
      */
     public ListFormatter(@NonNull final Details details) {
-        this(details, "; ");
-    }
-
-    /**
-     * Use {@link Details#Normal} with the given delimiter.
-     *
-     * @param delimiter to use
-     */
-    public ListFormatter(@NonNull final String delimiter) {
-        this(Details.Normal, delimiter);
+        this(details, DEFAULT_DELIMITER);
     }
 
     /**
@@ -85,8 +69,8 @@ public class ListFormatter<T extends Entity>
         mDelimiter = delimiter;
     }
 
-    @NonNull
     @Override
+    @NonNull
     public String format(@NonNull final Context context,
                          @Nullable final List<T> rawValue) {
         if (rawValue == null || rawValue.isEmpty()) {

@@ -67,7 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.fields.EditField;
+import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.Edition;
@@ -287,7 +287,7 @@ public class EditBookTocFragment
     }
 
     @Override
-    void onPopulateViews(@NonNull final List<EditField<?, ? extends View>> fields,
+    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
         super.onPopulateViews(fields, book);
 
@@ -298,7 +298,7 @@ public class EditBookTocFragment
                 .getDefaultSharedPreferences(getContext());
 
         //noinspection ConstantConditions
-        fields.forEach(field -> field.setVisibility(global, getView(), false, false));
+        fields.forEach(field -> field.setVisibility(getView(), global, false, false));
     }
 
     private void populateTocBits(@NonNull final Book.ContentType contentType) {

@@ -57,15 +57,16 @@
  *      </li>
  *
  *      <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.Site.Type} :
- *          There are 3 types of {@link com.hardbacknutter.nevertoomanybooks.searchengines.Site} lists.
- *          <ol>
- *              <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.Site.Type#Data} :
- *                  search for book data (and cover)</li>
- *              <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.Site.Type#Covers} :
- *                  search for book covers only</li>
- *              <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.Site.Type#AltEditions} :
- *                  search for alternative editions of a book.</li>
- *          </ol>
+ *        There are 3 types of
+ *        {@link com.hardbacknutter.nevertoomanybooks.searchengines.Site} lists.
+ *        <ol>
+ *          <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.Site.Type#Data} :
+ *              search for book data (and cover)</li>
+ *          <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.Site.Type#Covers} :
+ *              search for book covers only</li>
+ *          <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.Site.Type#AltEditions} :
+ *              search for alternative editions of a book.</li>
+ *        </ol>
  *      </li>
  * *
  *      <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator} and

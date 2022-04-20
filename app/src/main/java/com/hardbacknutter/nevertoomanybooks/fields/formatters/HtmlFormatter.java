@@ -57,8 +57,7 @@ public class HtmlFormatter<T>
     /**
      * Constructor.
      */
-    @SuppressWarnings("WeakerAccess")
-    public HtmlFormatter() {
+    HtmlFormatter() {
         mEnableLinks = false;
         mConvertLineFeeds = false;
     }
@@ -115,8 +114,8 @@ public class HtmlFormatter<T>
         return buffer;
     }
 
-    @NonNull
     @Override
+    @NonNull
     public String format(@NonNull final Context context,
                          @Nullable final T rawValue) {
         if (rawValue != null) {

@@ -34,6 +34,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_author"
             style="@style/TIL.Text"
+            app:endIconMode="clear_text"
             android:hint="@string/lbl_author"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -53,6 +54,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_title"
             style="@style/TIL.Text.Title"
+            app:endIconMode="clear_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_author"
@@ -71,6 +73,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_series"
             style="@style/TIL.Text"
+            app:endIconMode="clear_text"
             android:hint="@string/lbl_series"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -90,6 +93,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_publisher"
             style="@style/TIL.Text"
+            app:endIconMode="clear_text"
             android:hint="@string/lbl_publisher"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -109,6 +113,7 @@
         <!--    <com.google.android.material.textfield.TextInputLayout-->
         <!--        android:id="@+id/lbl_lend_out_to"-->
         <!--        style="@style/TIL.Text"-->
+        <!--        app:endIconMode="clear_text"-->
         <!--        android:hint="@string/lbl_lend_out"-->
         <!--        app:layout_constraintEnd_toEndOf="parent"-->
         <!--        app:layout_constraintStart_toStartOf="parent"-->
@@ -128,6 +133,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_keywords"
             style="@style/TIL.Text"
+            app:endIconMode="clear_text"
             android:hint="@string/lbl_keywords"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

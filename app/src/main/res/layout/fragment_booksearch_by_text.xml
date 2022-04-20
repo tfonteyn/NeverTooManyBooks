@@ -63,6 +63,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_title"
             style="@style/TIL.Text.Title"
+            app:endIconMode="clear_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_author"

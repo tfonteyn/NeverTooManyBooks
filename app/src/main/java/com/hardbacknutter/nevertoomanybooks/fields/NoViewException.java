@@ -17,24 +17,16 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.fields.validators;
-
-import android.view.View;
+package com.hardbacknutter.nevertoomanybooks.fields;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.fields.EditField;
+class NoViewException
+        extends RuntimeException {
 
-/**
- * Interface for all field-level validators.
- */
-@FunctionalInterface
-public interface FieldValidator<T, V extends View> {
+    private static final long serialVersionUID = -7501110352359786502L;
 
-    /**
-     * Validation method.
-     *
-     * @param field to validate
-     */
-    void validate(@NonNull EditField<T, V> field);
+    NoViewException(@NonNull final String message) {
+        super(message);
+    }
 }

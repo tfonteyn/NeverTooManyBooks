@@ -205,7 +205,7 @@ public class ShowBookDetailsFragment
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
 
         // update all Fields with their current View instances
-        mAVm.getFields().forEach(field -> field.setParentView(global, view));
+        mAVm.getFields().forEach(field -> field.setParentView(view, global));
 
         // Popup the search widget when the user starts to type.
         //noinspection ConstantConditions
@@ -317,16 +317,18 @@ public class ShowBookDetailsFragment
 
         mAVm.requireField(R.id.read).setValue(read);
 
-        mAVm.getField(R.id.read_end).ifPresent(field -> {
+        mAVm.getField(R.id.read_end).ifPresent(f -> {
+            //noinspection unchecked
+            final Field<String, TextView> field = (Field<String, TextView>) (f);
+
             final String date = mVm.getBook().getString(DBKey.DATE_READ_END);
             //noinspection ConstantConditions
             final SharedPreferences global = PreferenceManager
                     .getDefaultSharedPreferences(getContext());
-            //noinspection unchecked
-            final Field<String, TextView> f = (Field<String, TextView>) (field);
-            f.setValue(date);
+
+            field.setValue(date);
             //noinspection ConstantConditions
-            f.setVisibility(global, getView(), true, false);
+            field.setVisibility(getView(), global, true, false);
         });
 
         mToolbarMenuProvider.updateMenuReadOptions(getToolbar().getMenu());
@@ -363,7 +365,7 @@ public class ShowBookDetailsFragment
 
         final List<Field<?, ? extends View>> fields = mAVm.getFields();
 
-        // do NOT call onChanged, as this is the initial load
+        // do NOT call notifyIfChanged, as this is the initial load
         fields.stream()
               .filter(Field::isAutoPopulated)
               .forEach(field -> field.setInitialValue(book));
@@ -376,7 +378,7 @@ public class ShowBookDetailsFragment
         final SharedPreferences global = PreferenceManager
                 .getDefaultSharedPreferences(getContext());
         //noinspection ConstantConditions
-        fields.forEach(field -> field.setVisibility(global, getView(), true, false));
+        fields.forEach(field -> field.setVisibility(getView(), global, true, false));
 
         // Hide the 'Edition' label if neither edition chips or print-run fields are shown
         setSectionVisibility(R.id.lbl_edition,

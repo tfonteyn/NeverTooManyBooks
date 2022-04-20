@@ -17,38 +17,37 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.fields.accessors;
+package com.hardbacknutter.nevertoomanybooks.fields;
 
 import android.content.Context;
 import android.view.View;
 import android.widget.Checkable;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
+import java.util.Map;
+import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.entities.ParcelableEntity;
 
 /**
- * A {@link ChipGroup} where each {@link Chip} represents one {@link ParcelableEntity} in a list.
+ * A {@link ChipGroup} where each {@link Chip} represents one bit in a bitmask.
  * <p>
- * A {@code null} value is always handled as an empty {@link ArrayList}.
+ * A {@code null} value is always handled as {@code 0}.
  * <p>
  * Relies on {@link R.attr#appChipFilterStyle}
  */
-public class ListChipGroupAccessor<T extends ParcelableEntity>
-        extends BaseFieldViewAccessor<ArrayList<T>, ChipGroup> {
+public class BitmaskChipGroupField
+        extends BaseField<Integer, ChipGroup> {
 
     @NonNull
-    private final Supplier<List<T>> mListSupplier;
+    private final Function<Context, Map<Integer, String>> mValuesSupplier;
 
     @Nullable
     private final View.OnClickListener mEditChipListener;
@@ -56,34 +55,38 @@ public class ListChipGroupAccessor<T extends ParcelableEntity>
     /**
      * Constructor.
      *
-     * @param listSupplier for a list with all <strong>possible</strong> values
+     * @param supplier for a Map with all <strong>possible</strong> values
      */
-    public ListChipGroupAccessor(@NonNull final Supplier<List<T>> listSupplier) {
-        mListSupplier = listSupplier;
+    public BitmaskChipGroupField(@NonNull final FragmentId fragmentId,
+                                 @IdRes final int fieldViewId,
+                                 @NonNull final String fieldKey,
+                                 @NonNull final Function<Context, Map<Integer, String>> supplier) {
+        super(fragmentId, fieldViewId, fieldKey, fieldKey);
+        mValuesSupplier = supplier;
 
         mEditChipListener = view -> {
-            //noinspection ConstantConditions
-            final ArrayList<T> previous = new ArrayList<>(mRawValue);
-            //noinspection unchecked
-            final T current = (T) view.getTag();
+            final Integer previous = mRawValue;
+            final Integer bit = (Integer) view.getTag();
             if (((Checkable) view).isChecked()) {
-                mRawValue.add(current);
+                // add
+                mRawValue |= bit;
             } else {
-                mRawValue.remove(current);
+                // remove
+                mRawValue &= ~bit;
             }
             notifyIfChanged(previous);
         };
     }
 
-    @NonNull
     @Override
-    public ArrayList<T> getValue() {
-        return mRawValue != null ? mRawValue : new ArrayList<>();
+    @NonNull
+    public Integer getValue() {
+        return mRawValue != null ? mRawValue : 0;
     }
 
     @Override
-    public void setValue(@Nullable final ArrayList<T> value) {
-        mRawValue = value != null ? value : new ArrayList<>();
+    public void setValue(@Nullable final Integer value) {
+        super.setValue(value != null ? value : 0);
 
         final ChipGroup chipGroup = getView();
         if (chipGroup != null) {
@@ -91,17 +94,18 @@ public class ListChipGroupAccessor<T extends ParcelableEntity>
 
             final Context context = chipGroup.getContext();
 
-            for (final T entity : mListSupplier.get()) {
+            for (final Map.Entry<Integer, String> entry :
+                    mValuesSupplier.apply(context).entrySet()) {
 
                 final Chip chip = new Chip(context, null, R.attr.appChipFilterStyle);
-                chip.setChecked(mRawValue.contains(entity));
+                chip.setChecked((entry.getKey() & mRawValue) != 0);
                 chip.setOnClickListener(mEditChipListener);
 
                 // RTL-friendly Chip Layout
                 chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
 
-                chip.setTag(entity);
-                chip.setText(entity.getLabel(context));
+                chip.setTag(entry.getKey());
+                chip.setText(entry.getValue());
 
                 chipGroup.addView(chip);
             }
@@ -110,17 +114,17 @@ public class ListChipGroupAccessor<T extends ParcelableEntity>
 
     @Override
     public void setInitialValue(@NonNull final DataManager source) {
-        mInitialValue = new ArrayList<>(source.getParcelableArrayList(mField.getKey()));
+        mInitialValue = source.getInt(mFieldKey);
         setValue(mInitialValue);
     }
 
     @Override
-    public void getValue(@NonNull final DataManager target) {
-        target.putParcelableArrayList(mField.getKey(), getValue());
+    void internalPutValue(@NonNull final DataManager target) {
+        target.putLong(mFieldKey, getValue());
     }
 
     @Override
-    public boolean isEmpty(@Nullable final ArrayList<T> value) {
-        return value == null || value.isEmpty();
+    boolean isEmpty(@Nullable final Integer value) {
+        return value == null || value == 0;
     }
 }

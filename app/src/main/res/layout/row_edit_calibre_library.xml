@@ -38,6 +38,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_library_name"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+            app:endIconMode="clear_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/field_margin_inline"

@@ -17,20 +17,20 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.widgets.endicon;
+package com.hardbacknutter.nevertoomanybooks.fields.endicon;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
+import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.EditText;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
@@ -38,19 +38,21 @@ import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 import com.google.android.material.internal.CheckableImageButton;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.fields.Field;
 
 /**
- * URGENT: ExtEndIconDelegate used because standard clear text icon not visible when required
  * https://github.com/material-components/material-components-android/pull/2025
  * generic input field with clear-text icon at the end. -
  * <p>
  * Most of the code in this class was copied from:
- * com.google.android.material.textfield.CustomEndIconDelegate
+ * com.google.android.material.textfield.ClearTextEndIconDelegate
  */
-public class ExtEndIconDelegate {
+public class ExtClearTextEndIconDelegate
+        implements ExtEndIconDelegate {
 
     private static final TimeInterpolator LINEAR_INTERPOLATOR = new LinearInterpolator();
     private static final TimeInterpolator LINEAR_OUT_SLOW_IN_INTERPOLATOR =
@@ -58,36 +60,35 @@ public class ExtEndIconDelegate {
     private static final int ANIMATION_FADE_DURATION = 100;
     private static final int ANIMATION_SCALE_DURATION = 150;
     private static final float ANIMATION_SCALE_FROM_VALUE = 0.8f;
-    @DrawableRes
-    private final int customEndIcon;
-    private final TextInputLayout textInputLayout;
-    private final CheckableImageButton endIconView;
+
+    private TextInputLayout textInputLayout;
+    private final TextWatcher clearTextEndIconTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(final CharSequence s,
+                                      final int start,
+                                      final int count,
+                                      final int after) {
+        }
+
+        @Override
+        public void onTextChanged(final CharSequence s,
+                                  final int start,
+                                  final int before,
+                                  final int count) {
+        }
+
+        @Override
+        public void afterTextChanged(@NonNull final Editable s) {
+            if (textInputLayout.getSuffixText() != null) {
+                return;
+            }
+            animateIcon(shouldBeVisible());
+        }
+    };
     private AnimatorSet iconInAnim;
     private ValueAnimator iconOutAnim;
-    private final TextWatcher clearTextEndIconTextWatcher =
-            new TextWatcher() {
-                @Override
-                public void beforeTextChanged(final CharSequence s,
-                                              final int start,
-                                              final int count,
-                                              final int after) {
-                }
+    private CheckableImageButton endIconView;
 
-                @Override
-                public void onTextChanged(final CharSequence s,
-                                          final int start,
-                                          final int before,
-                                          final int count) {
-                }
-
-                @Override
-                public void afterTextChanged(@NonNull final Editable s) {
-                    if (textInputLayout.getSuffixText() != null) {
-                        return;
-                    }
-                    animateIcon(shouldBeVisible());
-                }
-            };
     private final View.OnFocusChangeListener onFocusChangeListener =
             (v, hasFocus) -> animateIcon(shouldBeVisible());
 
@@ -105,6 +106,7 @@ public class ExtEndIconDelegate {
                     editText.addTextChangedListener(clearTextEndIconTextWatcher);
                 }
             };
+
     private final TextInputLayout.OnEndIconChangedListener endIconChangedListener =
             new TextInputLayout.OnEndIconChangedListener() {
                 @Override
@@ -129,35 +131,30 @@ public class ExtEndIconDelegate {
                 }
             };
     @Nullable
-    private Consumer<View> mEndIconOnClickConsumer;
+    private Consumer<View> endIconOnClickConsumer;
 
-    public ExtEndIconDelegate(@NonNull final TextInputLayout textInputLayout) {
-        this.textInputLayout = textInputLayout;
+    @Override
+    public void setOnClickConsumer(@Nullable final Consumer<View> endIconOnClickConsumer) {
+        this.endIconOnClickConsumer = endIconOnClickConsumer;
+    }
+
+    /** Called from {@link Field#setParentView(View, SharedPreferences)} */
+    @Override
+    public void setTextInputLayout(@NonNull final TextInputLayout til) {
+        textInputLayout = til;
         endIconView = textInputLayout.findViewById(R.id.text_input_end_icon);
-        this.customEndIcon = 0;
-    }
+        Objects.requireNonNull(endIconView, "NOT FOUND: R.id.text_input_end_icon");
 
-    public ExtEndIconDelegate(@NonNull final TextInputLayout textInputLayout,
-                              @DrawableRes final int customEndIcon) {
-        this.textInputLayout = textInputLayout;
-        endIconView = textInputLayout.findViewById(R.id.text_input_end_icon);
-        this.customEndIcon = customEndIcon;
-    }
-
-    public void setEndIconOnClickConsumer(@Nullable final Consumer<View> endIconOnClickConsumer) {
-        mEndIconOnClickConsumer = endIconOnClickConsumer;
-    }
-
-    public void initialize() {
-        textInputLayout.setEndIconDrawable(
-                customEndIcon == 0 ? R.drawable.ic_baseline_cancel_24 : customEndIcon);
+        textInputLayout.setEndIconMode(TextInputLayout.END_ICON_CUSTOM);
+        if (textInputLayout.getEndIconDrawable() == null) {
+            textInputLayout.setEndIconDrawable(R.drawable.ic_baseline_cancel_24);
+        }
         textInputLayout.setEndIconContentDescription(
-                textInputLayout.getResources()
-                               .getText(R.string.cd_clear_text_end_icon));
+                textInputLayout.getResources().getText(R.string.cd_clear_text_end_icon));
         textInputLayout.setEndIconCheckable(false);
         textInputLayout.setEndIconOnClickListener(v -> {
-            if (mEndIconOnClickConsumer != null) {
-                mEndIconOnClickConsumer.accept(v);
+            if (endIconOnClickConsumer != null) {
+                endIconOnClickConsumer.accept(v);
             } else {
                 //noinspection ConstantConditions
                 final Editable text = textInputLayout.getEditText().getText();
@@ -169,7 +166,14 @@ public class ExtEndIconDelegate {
         });
         textInputLayout.addOnEditTextAttachedListener(clearTextOnEditTextAttachedListener);
         textInputLayout.addOnEndIconChangedListener(endIconChangedListener);
+
         initAnimators();
+    }
+
+    /** Called from {@link Field#setValue(Object)} */
+    @Override
+    public void updateEndIcon() {
+        textInputLayout.setEndIconVisible(shouldBeVisible());
     }
 
     private void initAnimators() {
@@ -211,6 +215,7 @@ public class ExtEndIconDelegate {
         }
     }
 
+    @NonNull
     private ValueAnimator getAlphaAnimator(final float... values) {
         final ValueAnimator animator = ValueAnimator.ofFloat(values);
         animator.setInterpolator(LINEAR_INTERPOLATOR);
@@ -223,16 +228,16 @@ public class ExtEndIconDelegate {
         return animator;
     }
 
+    @NonNull
     private ValueAnimator getScaleAnimator() {
         final ValueAnimator animator = ValueAnimator.ofFloat(ANIMATION_SCALE_FROM_VALUE, 1);
         animator.setInterpolator(LINEAR_OUT_SLOW_IN_INTERPOLATOR);
         animator.setDuration(ANIMATION_SCALE_DURATION);
-        animator.addUpdateListener(
-                animation -> {
-                    final float scale = (float) animation.getAnimatedValue();
-                    endIconView.setScaleX(scale);
-                    endIconView.setScaleY(scale);
-                });
+        animator.addUpdateListener(animation -> {
+            final float scale = (float) animation.getAnimatedValue();
+            endIconView.setScaleX(scale);
+            endIconView.setScaleY(scale);
+        });
         return animator;
     }
 
@@ -240,4 +245,5 @@ public class ExtEndIconDelegate {
         final EditText editText = textInputLayout.getEditText();
         return editText != null && editText.getText().length() > 0;
     }
+
 }

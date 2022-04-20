@@ -34,8 +34,8 @@ import androidx.annotation.Nullable;
 public class LongNumberFormatter
         implements EditFieldFormatter<Number> {
 
-    @NonNull
     @Override
+    @NonNull
     public String format(@NonNull final Context context,
                          @Nullable final Number rawValue) {
 
@@ -51,8 +51,8 @@ public class LongNumberFormatter
         return String.valueOf(value);
     }
 
-    @NonNull
     @Override
+    @NonNull
     public Number extract(@NonNull final Context context,
                           @NonNull final String text) {
         if (text.isEmpty()) {
