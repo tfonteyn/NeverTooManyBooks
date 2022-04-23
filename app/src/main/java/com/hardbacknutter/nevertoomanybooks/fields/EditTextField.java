@@ -110,23 +110,11 @@ public class EditTextField<T, V extends EditText>
         return this;
     }
 
-    @NonNull
-    public EditTextField<T, V> setFormatter(@NonNull final FieldFormatter<T> formatter) {
-        mFormatter = formatter;
-        return this;
-    }
-
     @Override
     public void setParentView(@NonNull final View parent,
                               @NonNull final SharedPreferences global) {
         super.setParentView(parent, global);
         requireView().addTextChangedListener(this);
-    }
-
-    @Override
-    @Nullable
-    public T getValue() {
-        return mRawValue;
     }
 
     @Override

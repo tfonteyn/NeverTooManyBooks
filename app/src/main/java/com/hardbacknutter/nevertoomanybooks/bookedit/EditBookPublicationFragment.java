@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.util.List;
 
@@ -75,9 +74,8 @@ public class EditBookPublicationFragment
             mVm.initFields(context, FragmentId.Publication, FieldGroup.Notes);
         }
 
-        mVm.onPublisherList().observe(getViewLifecycleOwner(),
-                                      publishers -> mVm.requireField(R.id.publisher)
-                                                       .setValue(publishers));
+        mVm.onPublisherList().observe(getViewLifecycleOwner(), publishers ->
+                mVm.requireField(R.id.publisher).setValue(publishers));
 
         // Publisher editor (screen)
         // no listener/callback. We share the book view model in the Activity scope
@@ -91,15 +89,13 @@ public class EditBookPublicationFragment
 
 
     @Override
-    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
+    void onPopulateViews(@NonNull final SharedPreferences global,
+                         @NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
         //noinspection ConstantConditions
         mVm.getBook().prunePublishers(getContext(), true);
 
-        super.onPopulateViews(fields, book);
-
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
+        super.onPopulateViews(global, fields, book);
 
         //noinspection ConstantConditions
         fields.forEach(field -> field.setVisibility(getView(), global, false, false));

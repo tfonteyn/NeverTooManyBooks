@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.fields.endicon.ExtEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 
 /**
@@ -76,15 +77,10 @@ public class TextViewField<T>
     }
 
     @NonNull
-    public TextViewField<T> setFormatter(@NonNull final FieldFormatter<T> formatter) {
-        mFormatter = formatter;
+    public TextViewField<T> setEndIconMode(
+            @ExtEndIconDelegate.EndIconMode final int endIconMode) {
+        mEndIconMode = endIconMode;
         return this;
-    }
-
-    @Override
-    @Nullable
-    public T getValue() {
-        return mRawValue;
     }
 
     @Override

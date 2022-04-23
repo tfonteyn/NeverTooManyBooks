@@ -42,8 +42,6 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
-import com.google.android.material.textfield.TextInputLayout;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -155,8 +153,9 @@ public abstract class EditBookBaseFragment
 
         // Load all Views from the book while preserving the stage of the book.
         book.lockStage();
-        // make it so! Child classes can override this method.
-        onPopulateViews(fields, book);
+        // make it so! Child classes should override this method,
+        // and run 'field.setVisibility' with the flags they need
+        onPopulateViews(global, fields, book);
 
         book.unlockStage();
 
@@ -198,12 +197,9 @@ public abstract class EditBookBaseFragment
      * @param book   loaded book
      */
     @CallSuper
-    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
+    void onPopulateViews(@NonNull final SharedPreferences global,
+                         @NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
-        //noinspection ConstantConditions
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
-
         if (book.isNew()) {
             if (mVm.handlesField(getFragmentId(), R.id.date_acquired)) {
                 book.putString(DBKey.DATE_ACQUIRED, SqlEncode.date(LocalDateTime.now()));
@@ -227,24 +223,21 @@ public abstract class EditBookBaseFragment
         // which rely on fields having valid views
 
         if (mVm.handlesField(getFragmentId(), R.id.date_published)) {
-            addPartialDatePicker(global, R.string.lbl_date_published,
-                                 R.id.lbl_date_published, R.id.date_published);
+            addPartialDatePicker(global, R.string.lbl_date_published, R.id.date_published);
         }
 
         if (mVm.handlesField(getFragmentId(), R.id.first_publication)) {
-            addPartialDatePicker(global, R.string.lbl_first_publication,
-                                 R.id.lbl_first_publication, R.id.first_publication);
+            addPartialDatePicker(global, R.string.lbl_first_publication, R.id.first_publication);
         }
 
         if (mVm.handlesField(getFragmentId(), R.id.date_acquired)) {
-            addDatePicker(global, R.string.lbl_date_acquired,
-                          R.id.lbl_date_acquired, R.id.date_acquired);
+            addDatePicker(global, R.string.lbl_date_acquired, R.id.date_acquired);
         }
 
         if (mVm.handlesField(getFragmentId(), R.id.read_end)) {
             addDateRangePicker(global, R.string.lbl_read,
-                               R.string.lbl_read_start, R.id.lbl_read_start, R.id.read_start,
-                               R.string.lbl_read_end, R.id.lbl_read_end, R.id.read_end);
+                               R.string.lbl_read_start, R.id.read_start,
+                               R.string.lbl_read_end, R.id.read_end);
         }
 
         if (mVm.handlesField(getFragmentId(), R.id.cbx_read)) {
@@ -349,44 +342,34 @@ public abstract class EditBookBaseFragment
      */
     private void addDateRangePicker(@NonNull final SharedPreferences global,
                                     @StringRes final int titleId,
-
                                     final int startTitleId,
-                                    @IdRes final int lblStartFieldId,
                                     @IdRes final int startFieldId,
-
                                     final int endTitleId,
-                                    @IdRes final int lblEndFieldId,
                                     @IdRes final int endFieldId) {
 
         final Field<String, TextView> startField = mVm.requireField(startFieldId);
+        final boolean startFieldIsUsed = startField.isUsed(global);
         final Field<String, TextView> endField = mVm.requireField(endFieldId);
+        final boolean endFieldIsUsed = endField.isUsed(global);
 
-        if (startField.isUsed(global)) {
+        if (startFieldIsUsed) {
             // Always a single date picker for the start-date
-            addDatePicker(global, startTitleId, lblStartFieldId, startFieldId);
+            addDatePicker(global, startTitleId, startFieldId);
         }
 
-        if (endField.isUsed(global)) {
+        if (endFieldIsUsed) {
             // If read+end fields are active; use a date-span picker for the end-date
-            if (startField.isUsed(global)) {
-                final DateRangePicker dp =
-                        new DateRangePicker(getChildFragmentManager(),
-                                            titleId,
-                                            startFieldId, endFieldId);
+            if (startFieldIsUsed) {
+                final DateRangePicker dp = new DateRangePicker(getChildFragmentManager(),
+                                                               titleId, startFieldId, endFieldId);
                 dp.setDateParser(mDateParser, true);
                 dp.onResume(mDatePickerListener);
 
-                endField.requireView().setOnClickListener(
-                        v -> dp.launch(startField.getValue(), endField.getValue(),
-                                       mDatePickerListener));
-
-                //noinspection ConstantConditions
-                ((TextInputLayout) getView().findViewById(lblEndFieldId))
-                        .setEndIconOnClickListener(v -> endField.setValue(""));
-
+                endField.requireView().setOnClickListener(v -> dp
+                        .launch(startField.getValue(), endField.getValue(), mDatePickerListener));
             } else {
                 // without using a start-date, single date picker for the end-date
-                addDatePicker(global, endTitleId, lblEndFieldId, endFieldId);
+                addDatePicker(global, endTitleId, endFieldId);
             }
         }
     }
@@ -396,12 +379,10 @@ public abstract class EditBookBaseFragment
      *
      * @param global        Global preferences
      * @param pickerTitleId title for the picker window
-     * @param lblFieldId    the label view for the field with the end-icon to clear the field
      * @param fieldId       the field to hookup
      */
     private void addDatePicker(@NonNull final SharedPreferences global,
                                @StringRes final int pickerTitleId,
-                               @IdRes final int lblFieldId,
                                @IdRes final int fieldId) {
 
         final Field<String, TextView> field = mVm.requireField(fieldId);
@@ -411,12 +392,8 @@ public abstract class EditBookBaseFragment
             dp.setDateParser(mDateParser, true);
             dp.onResume(mDatePickerListener);
 
-            field.requireView().setOnClickListener(
-                    v -> dp.launch(field.getValue(), mDatePickerListener));
-
-            //noinspection ConstantConditions
-            ((TextInputLayout) getView().findViewById(lblFieldId))
-                    .setEndIconOnClickListener(v -> field.setValue(""));
+            field.requireView().setOnClickListener(v -> dp
+                    .launch(field.getValue(), mDatePickerListener));
         }
     }
 
@@ -425,21 +402,15 @@ public abstract class EditBookBaseFragment
      *
      * @param global        Global preferences
      * @param pickerTitleId title for the picker window
-     * @param lblFieldId    the label view for the field with the end-icon to clear the field
      * @param fieldId       the field to hookup
      */
     private void addPartialDatePicker(@NonNull final SharedPreferences global,
                                       @StringRes final int pickerTitleId,
-                                      @IdRes final int lblFieldId,
                                       @IdRes final int fieldId) {
         final Field<String, TextView> field = mVm.requireField(fieldId);
         if (field.isUsed(global)) {
             field.requireView().setOnClickListener(v -> mPartialDatePickerLauncher
                     .launch(pickerTitleId, field.getFieldViewId(), field.getValue(), false));
-
-            //noinspection ConstantConditions
-            ((TextInputLayout) getView().findViewById(lblFieldId))
-                    .setEndIconOnClickListener(v -> field.setValue(""));
         }
     }
 

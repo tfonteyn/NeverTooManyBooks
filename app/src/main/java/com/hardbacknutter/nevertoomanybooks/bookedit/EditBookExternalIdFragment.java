@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -28,7 +27,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.util.List;
 
@@ -65,22 +63,16 @@ public class EditBookExternalIdFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Context context = getContext();
         //noinspection ConstantConditions
-        mVm.initFields(context, FragmentId.ExternalId, FieldGroup.ExternalId);
+        mVm.initFields(getContext(), FragmentId.ExternalId, FieldGroup.ExternalId);
     }
 
     @Override
-    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
+    void onPopulateViews(@NonNull final SharedPreferences global,
+                         @NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
-        super.onPopulateViews(fields, book);
+        super.onPopulateViews(global, fields, book);
 
-
-        //noinspection ConstantConditions
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
-
-        // hide unwanted fields
         // Force hidden fields to stay hidden; this will allow us to temporarily remove
         // some sites without removing the data.
         //noinspection ConstantConditions

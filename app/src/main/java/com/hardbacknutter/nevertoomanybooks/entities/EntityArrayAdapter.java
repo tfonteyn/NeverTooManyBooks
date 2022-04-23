@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
 
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -33,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 /**
  * An ArrayAdapter for using an {@link Entity}
  * with an {@link android.widget.AutoCompleteTextView}.
+ * i.e. a Material Exposed dropdown menu.
  *
  * @param <T> type of list item
  */
@@ -40,7 +40,7 @@ public class EntityArrayAdapter<T extends Entity>
         extends ExtArrayAdapter<T> {
 
     /**
-     * Constructor for creating a Material Exposed dropdown menu.
+     * Constructor.
      *
      * @param context Current context
      * @param list    of entities to choose from
@@ -52,23 +52,7 @@ public class EntityArrayAdapter<T extends Entity>
     }
 
     /**
-     * Generic constructor.
-     *
-     * @param context    Current context
-     * @param resource   The resource ID for a layout file containing a TextView to use when
-     *                   instantiating views. (i.e. the static, displayed view)
-     * @param filterType to use
-     * @param list       of entities
-     */
-    public EntityArrayAdapter(@NonNull final Context context,
-                              @LayoutRes final int resource,
-                              @NonNull final FilterType filterType,
-                              @NonNull final List<T> list) {
-        super(context, resource, filterType, list);
-    }
-
-    /**
-     * Return the id of the ParcelableEntity.
+     * Return the id of the {@link Entity}.
      *
      * @param position of the item
      *
@@ -81,7 +65,7 @@ public class EntityArrayAdapter<T extends Entity>
     }
 
     /**
-     * Return the label of the ParcelableEntity.
+     * Return the label of the {@link Entity}.
      *
      * @param item to use
      *

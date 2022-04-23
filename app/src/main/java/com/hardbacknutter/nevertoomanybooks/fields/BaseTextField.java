@@ -61,6 +61,7 @@ public abstract class BaseTextField<T, V extends TextView>
     @SuppressWarnings("FieldNotUsedInToString")
     @IdRes
     int mTextInputLayoutId;
+
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private ExtEndIconDelegate mExtEndIconDelegate;
@@ -132,6 +133,12 @@ public abstract class BaseTextField<T, V extends TextView>
         if (mExtEndIconDelegate != null) {
             mExtEndIconDelegate.updateEndIcon();
         }
+    }
+
+    @Override
+    @Nullable
+    public T getValue() {
+        return mRawValue;
     }
 
     @Override

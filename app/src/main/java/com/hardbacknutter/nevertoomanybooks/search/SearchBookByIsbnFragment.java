@@ -176,7 +176,6 @@ public class SearchBookByIsbnFragment
             mVb.queueGroup.setVisibility(View.GONE);
         });
 
-        //noinspection VariableNotUsedInsideIf
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             Site.promptToRegister(getContext(), mCoordinator.getSiteList(),

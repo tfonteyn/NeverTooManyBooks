@@ -50,7 +50,7 @@ public class BooleanIndicatorField
                               final boolean hideEmptyFields,
                               final boolean keepHiddenFieldsHidden) {
         // The field view is handled when the value is set.
-        setRelatedViewsVisibility(parent, requireView().getVisibility());
+        setRelatedViewsVisibility(parent);
     }
 
     @Override

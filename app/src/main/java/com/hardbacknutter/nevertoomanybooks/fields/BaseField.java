@@ -232,11 +232,20 @@ public abstract class BaseField<T, V extends View>
     /**
      * Set the visibility for the related views.
      *
+     * @param parent parent view for all related fields.
+     */
+    void setRelatedViewsVisibility(@NonNull final View parent) {
+        setRelatedViewsVisibility(parent, requireView().getVisibility());
+    }
+
+    /**
+     * Set the visibility for the related views.
+     *
      * @param parent     parent view for all related fields.
      * @param visibility to use
      */
-    void setRelatedViewsVisibility(@NonNull final View parent,
-                                   final int visibility) {
+    private void setRelatedViewsVisibility(@NonNull final View parent,
+                                           final int visibility) {
         for (final int viewId : mRelatedViews) {
             final View view = parent.findViewById(viewId);
             if (view != null) {
@@ -251,13 +260,14 @@ public abstract class BaseField<T, V extends View>
                               final boolean hideEmptyFields,
                               final boolean keepHiddenFieldsHidden) {
         final View view = requireView();
+        final int currentVisibility = view.getVisibility();
 
         if ((view instanceof ImageView)
-            || (view.getVisibility() == View.GONE && keepHiddenFieldsHidden)) {
+            || (keepHiddenFieldsHidden && currentVisibility == View.GONE)) {
             // An ImageView always keeps its current visibility.
             // When 'keepHiddenFieldsHidden' is set, hidden fields stay hidden.
             // Either way, the related views follow the main view
-            setRelatedViewsVisibility(parent, view.getVisibility());
+            setRelatedViewsVisibility(parent, currentVisibility);
 
         } else {
             if (hideEmptyFields && isEmpty()) {
@@ -295,6 +305,7 @@ public abstract class BaseField<T, V extends View>
                               @NonNull final SharedPreferences global) {
 
         mViewReference = new WeakReference<>(parent.findViewById(mFieldViewId));
+        // Unused fields are hidden here BEFORE they are displayed at all.
         if (!isUsed(global)) {
             requireView().setVisibility(View.GONE);
             setRelatedViewsVisibility(parent, View.GONE);

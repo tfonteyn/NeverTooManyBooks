@@ -148,9 +148,8 @@ public class EditBookFieldsFragment
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         createCoverDelegates(global);
 
-        mVm.onAuthorList().observe(getViewLifecycleOwner(),
-                                   authors -> mVm.requireField(R.id.author)
-                                                 .setValue(authors));
+        mVm.onAuthorList().observe(getViewLifecycleOwner(), authors ->
+                mVm.requireField(R.id.author).setValue(authors));
 
         // Author editor (screen)
         // no listener/callback. We share the book view model in the Activity scope
@@ -158,9 +157,8 @@ public class EditBookFieldsFragment
         mVb.author.setOnClickListener(v -> editAuthor());
 
         if (DBKey.isUsed(global, DBKey.KEY_SERIES_TITLE)) {
-            mVm.onSeriesList().observe(getViewLifecycleOwner(),
-                                       series -> mVm.requireField(R.id.series_title)
-                                                    .setValue(series));
+            mVm.onSeriesList().observe(getViewLifecycleOwner(), series ->
+                    mVm.requireField(R.id.series_title).setValue(series));
             // Series editor (screen)
             // no listener/callback. We share the book view model in the Activity scope
             mVb.lblSeries.setEndIconOnClickListener(v -> editSeries());
@@ -215,13 +213,14 @@ public class EditBookFieldsFragment
     }
 
     @Override
-    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
+    void onPopulateViews(@NonNull final SharedPreferences global,
+                         @NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
         //noinspection ConstantConditions
         mVm.getBook().pruneAuthors(getContext(), true);
         mVm.getBook().pruneSeries(getContext(), true);
 
-        super.onPopulateViews(fields, book);
+        super.onPopulateViews(global, fields, book);
 
         if (mCoverHandler[0] != null) {
             mCoverHandler[0].onBindView(mVb.coverImage0);
@@ -232,10 +231,6 @@ public class EditBookFieldsFragment
             mCoverHandler[1].onBindView(mVb.coverImage1);
             mCoverHandler[1].attachOnClickListeners(getChildFragmentManager(), mVb.coverImage1);
         }
-
-
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
 
         //noinspection ConstantConditions
         fields.forEach(field -> field.setVisibility(getView(), global, false, false));
