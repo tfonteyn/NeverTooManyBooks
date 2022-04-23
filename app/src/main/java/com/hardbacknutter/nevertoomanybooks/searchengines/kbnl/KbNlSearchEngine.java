@@ -42,7 +42,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
-import com.hardbacknutter.nevertoomanybooks.debug.XmlDumpParser;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -84,25 +83,19 @@ public class KbNlSearchEngine
 
     /**
      * Response with Dutch or English labels.
-     * /LNG=NE
+     * /LNG=NE (default)
      * /LNG=EN
-     * <p>
-     * param 1: isb
      */
-//    private static final String BOOK_URL =
-//            "/DB=1/SET=1/TTL=1/LNG=NE/CMD?"
-//            + "ACT=SRCHA&"
-//            + "IKT=1007&"
-//            + "SRT=YOP&"
-//            + "TRM=%1$s";
-
-    // 2021-04 new url:
-    // https://opc-kb.oclc.org/DB=1/SET=4/TTL=1/CMD?ACT=SRCHA&IKT=1007&SRT=YOP&TRM=9020612476
+    // https://opc-kb.oclc.org/DB=1/SET=1/TTL=1/CMD?ACT=SRCHA&IKT=1007&SRT=YOP&TRM=9020612476
     private static final String BOOK_URL =
-            "/DB=1/SET=4/TTL=1/CMD?"
+            "/DB=1/SET=1/TTL=1/CMD?"
             + "ACT=SRCHA&"
             + "IKT=1007&"
-            + "SRT=YOP&"
+            // Year of publication, newest edition first.
+            // "SRT=YOP&"
+            // "selection date"... *seems* to be give us the oldest publication first.
+            + "SRT=LST_dtay&"
+            // param 1: isbn
             + "TRM=%1$s";
 
     /**
@@ -157,8 +150,7 @@ public class KbNlSearchEngine
         final String url = getSiteUrl() + String.format(BOOK_URL, validIsbn);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
-//        final DefaultHandler handler = new KbNlBookHandler(bookData);
-        final DefaultHandler handler = new XmlDumpParser();
+        final DefaultHandler handler = new KbNlBookHandler(bookData);
 
         try {
             final SAXParser parser = factory.newSAXParser();

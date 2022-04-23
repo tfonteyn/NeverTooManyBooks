@@ -68,6 +68,8 @@ class KbNlBookHandler
 
     @Override
     public void endDocument() {
+        super.endDocument();
+
         if (!mAuthors.isEmpty()) {
             mBookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
         }

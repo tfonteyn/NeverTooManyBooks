@@ -26,10 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.helpers.DefaultHandler;
+
+import com.hardbacknutter.nevertoomanybooks.debug.XmlDumpParser;
 
 abstract class KbNlHandlerBase
-        extends DefaultHandler {
+        extends XmlDumpParser {
 
     /** XML tags. */
     private static final String XML_LABEL = "psi:labelledLabel";
@@ -59,7 +60,6 @@ abstract class KbNlHandlerBase
      *
      * @return stripped string
      */
-    @SuppressWarnings("SameParameterValue")
     @Nullable
     String digits(@Nullable final CharSequence s,
                   final boolean isIsbn) {
@@ -83,6 +83,8 @@ abstract class KbNlHandlerBase
                              @NonNull final String localName,
                              @NonNull final String qName,
                              @NonNull final Attributes attributes) {
+        super.startElement(uri, localName, qName, attributes);
+
         switch (qName) {
             case XML_LABEL:
                 mCurrentLabel = null;
@@ -112,6 +114,8 @@ abstract class KbNlHandlerBase
     public void endElement(@NonNull final String uri,
                            @NonNull final String localName,
                            @NonNull final String qName) {
+        super.endElement(uri, localName, qName);
+
         switch (qName) {
             case XML_LABEL:
                 inLabel = false;
@@ -147,6 +151,8 @@ abstract class KbNlHandlerBase
     public void characters(final char[] ch,
                            final int start,
                            final int length) {
+        super.characters(ch, start, length);
+
         mBuilder.append(ch, start, length);
     }
 }

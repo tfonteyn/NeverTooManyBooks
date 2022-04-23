@@ -22,6 +22,8 @@ package com.hardbacknutter.nevertoomanybooks.debug;
 import android.annotation.SuppressLint;
 import android.util.Log;
 
+import androidx.annotation.CallSuper;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.helpers.DefaultHandler;
@@ -45,17 +47,21 @@ public class XmlDumpParser
     @SuppressWarnings("FieldCanBeLocal")
     private Locator mLocator;
 
+    @CallSuper
     public void setDocumentLocator(final Locator locator) {
         this.mLocator = locator;
     }
 
+    @CallSuper
     public void startDocument() {
         Log.d(TAG, "<?xml version=\"1.0\"?>");
     }
 
+    @CallSuper
     public void endDocument() {
     }
 
+    @CallSuper
     public void startPrefixMapping(final String prefix,
                                    final String uri) {
         mNamespaceBegin = true;
@@ -63,10 +69,12 @@ public class XmlDumpParser
         mCurrentNamespaceUri = uri;
     }
 
+    @CallSuper
     public void endPrefixMapping(final String prefix) {
     }
 
 
+    @CallSuper
     public void startElement(final String namespaceURI,
                              final String localName,
                              final String qName,
@@ -86,12 +94,14 @@ public class XmlDumpParser
         Log.d(TAG, sb.toString());
     }
 
+    @CallSuper
     public void endElement(final String namespaceURI,
                            final String localName,
                            final String qName) {
         Log.d(TAG, "</" + qName + ">");
     }
 
+    @CallSuper
     public void characters(final char[] ch,
                            final int start,
                            final int length) {
@@ -102,6 +112,7 @@ public class XmlDumpParser
         Log.d(TAG, sb.toString());
     }
 
+    @CallSuper
     public void ignorableWhitespace(final char[] ch,
                                     final int start,
                                     final int length) {
@@ -112,11 +123,13 @@ public class XmlDumpParser
         Log.d(TAG, sb.toString());
     }
 
+    @CallSuper
     public void processingInstruction(final String target,
                                       final String data) {
         Log.d(TAG, "<?" + target + " " + data + "?>");
     }
 
+    @CallSuper
     public void skippedEntity(final String name) {
         Log.d(TAG, "&" + name + ";");
     }
