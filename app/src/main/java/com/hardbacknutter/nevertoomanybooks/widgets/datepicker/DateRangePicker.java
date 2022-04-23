@@ -34,6 +34,9 @@ import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 
+/**
+ * Uses a {@link MaterialDatePicker} to let the user pick a date range.
+ */
 public class DateRangePicker
         extends DatePickerBase<Pair<Long, Long>> {
 
@@ -87,7 +90,7 @@ public class DateRangePicker
                     .build();
             picker.show(mFragmentManager, mFragmentTag);
         }
-        // clear first in case of screen rotation
+        // remove any dead listener, then set the current one
         picker.clearOnPositiveButtonClickListeners();
         picker.addOnPositiveButtonClickListener(this);
     }

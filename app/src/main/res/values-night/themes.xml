@@ -38,7 +38,7 @@
         <!-- Reminder colorPrimary
             - CheckBox: 'checked' status
         -->
-        <item name="colorPrimary">@color/m3grey_300</item>
+        <item name="colorPrimary">@color/m3grey_700</item>
         <item name="colorOnPrimary">@color/m3grey_200</item>
         <item name="colorPrimaryContainer">#ff4f378b</item>
         <item name="colorOnPrimaryContainer">#ffeaddff</item>

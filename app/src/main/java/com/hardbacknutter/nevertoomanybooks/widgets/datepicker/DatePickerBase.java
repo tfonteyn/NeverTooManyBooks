@@ -22,6 +22,8 @@ package com.hardbacknutter.nevertoomanybooks.widgets.datepicker;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -43,13 +45,18 @@ abstract class DatePickerBase<S>
     @NonNull
     final String mFragmentTag;
 
+    @StringRes
     final int mTitleId;
+
     @IdRes
     @NonNull
     final int[] mFieldIds;
+
     boolean mTodayIfNone;
+
     @Nullable
     WeakReference<DatePickerListener> mListener;
+
     private DateParser mDateParser;
 
     /**
@@ -59,8 +66,8 @@ abstract class DatePickerBase<S>
      * @param fieldIds field this dialog is bound to
      */
     DatePickerBase(@NonNull final FragmentManager fragmentManager,
-                   final int titleId,
-                   @NonNull final int... fieldIds) {
+                   @StringRes final int titleId,
+                   @IdRes @NonNull final int... fieldIds) {
         mFragmentManager = fragmentManager;
         mTitleId = titleId;
         mFieldIds = fieldIds;
@@ -74,6 +81,13 @@ abstract class DatePickerBase<S>
         mTodayIfNone = todayIfNone;
     }
 
+    /**
+     * This <strong>MUST</strong> be called from {@link Fragment#onResume()}.
+     * <p>
+     * Developer note: yes, BOTH the {@link #mListener} and the underlying
+     * {@link MaterialDatePicker} listener must be set here AND at launch
+     * time to ensure their validity after a screen rotation.
+     */
     public void onResume(@NonNull final DatePickerListener listener) {
         mListener = new WeakReference<>(listener);
 
@@ -81,7 +95,7 @@ abstract class DatePickerBase<S>
         final MaterialDatePicker<S> picker = (MaterialDatePicker<S>)
                 mFragmentManager.findFragmentByTag(mFragmentTag);
         if (picker != null) {
-            // clear first in case of screen rotation
+            // remove any dead listener, then set the current one
             picker.clearOnPositiveButtonClickListeners();
             picker.addOnPositiveButtonClickListener(this);
         }

@@ -51,6 +51,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="SpeakableTextPresentCheck"
+            tools:rating="2.5"
             />
 
         <androidx.constraintlayout.widget.Barrier
@@ -196,7 +197,6 @@
             android:text="@string/lbl_signed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_condition_cover"
-            tools:checked="true"
             />
 
         <com.google.android.material.textfield.TextInputLayout

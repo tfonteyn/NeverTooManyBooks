@@ -28,6 +28,10 @@
 
     Using The Color Theming System:
     https://m3.material.io/libraries/mdc-android/color-theming
+
+
+    Note that the "buttonBar*Style" attributes must be added at several places, as they don't seem
+    to be inherited from the main Theme.
 -->
 <resources>
     <!-- Top level Theme for the startup activity so it looks like a dialog as intended. -->
@@ -98,18 +102,21 @@
         <item name="appNavBarColorEnd">@color/blue_grey_50</item>
     </style>
 
+    <!-- *************************************************************************************** -->
 
     <!-- Base theme - used by both Day and Night themes. -->
     <style name="Base.Theme.App" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Material3 style attributes -->
+        <item name="checkboxStyle">@style/App.checkboxStyle</item>
         <item name="chipGroupStyle">@style/App.chipGroupStyle</item>
-        <item name="tabStyle">@style/App.tabStyle</item>
         <item name="snackbarTextViewStyle">@style/App.snackbarTextViewStyle</item>
+        <item name="switchStyle">@style/App.switchStyle</item>
+        <item name="tabStyle">@style/App.tabStyle</item>
 
         <item name="circularProgressIndicatorStyle">@style/App.circularProgressIndicatorStyle</item>
         <item name="linearProgressIndicatorStyle">@style/App.linearProgressIndicatorStyle</item>
 
-        <!-- See note with "ThemeOverlay.App.MaterialAlertDialog". Doing the same here for consistency. -->
+        <!-- We MUST set the styles separately! Just setting the common buttonBarButtonStyle is NOT enough -->
         <item name="buttonBarButtonStyle">@style/App.buttonBarButtonStyle</item>
         <item name="buttonBarPositiveButtonStyle">@style/App.buttonBarButtonStyle</item>
         <item name="buttonBarNegativeButtonStyle">@style/App.buttonBarButtonStyle</item>
@@ -117,6 +124,7 @@
 
         <!-- Material3 theme overlays -->
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="materialCalendarTheme">@style/ThemeOverlay.App.materialCalendarTheme</item>
         <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.App.materialCalendarFullscreenTheme</item>
 
         <!-- Chip styles as attributes makes it easy to add chips from code -->
@@ -124,20 +132,95 @@
         <item name="appChipInputStyle">@style/Widget.Material3.Chip.Input</item>
     </style>
 
-    <!-- ThemeOverlay - used by both Day and Night themes. -->
-    <style name="ThemeOverlay.App.materialCalendarFullscreenTheme"
-           parent="ThemeOverlay.Material3.MaterialCalendar.Fullscreen">
-        <item name="materialCalendarHeaderLayout">@style/App.materialCalendarHeaderLayout</item>
-        <item name="materialCalendarHeaderConfirmButton">@style/App.materialCalendarHeaderConfirmButton</item>
-    </style>
-
-    <!-- ThemeOverlay - used by both Day and Night themes. -->
     <style name="ThemeOverlay.App.MaterialAlertDialog"
            parent="ThemeOverlay.Material3.MaterialAlertDialog">
+
         <!-- We MUST set the styles separately! Just setting the common buttonBarButtonStyle is NOT enough -->
         <item name="buttonBarButtonStyle">@style/App.buttonBarButtonStyle</item>
         <item name="buttonBarPositiveButtonStyle">@style/App.buttonBarButtonStyle</item>
         <item name="buttonBarNegativeButtonStyle">@style/App.buttonBarButtonStyle</item>
         <item name="buttonBarNeutralButtonStyle">@style/App.buttonBarButtonStyle</item>
     </style>
+
+    <style name="ThemeOverlay.App.materialCalendarTheme"
+           parent="@style/ThemeOverlay.Material3.MaterialCalendar">
+
+        <!-- We MUST set the styles separately! Just setting the common buttonBarButtonStyle is NOT enough -->
+        <item name="buttonBarButtonStyle">@style/App.buttonBarButtonStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/App.buttonBarButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/App.buttonBarButtonStyle</item>
+        <item name="buttonBarNeutralButtonStyle">@style/App.buttonBarButtonStyle</item>
+    </style>
+
+    <style name="ThemeOverlay.App.materialCalendarFullscreenTheme"
+           parent="ThemeOverlay.Material3.MaterialCalendar.Fullscreen">
+
+        <item name="materialCalendarHeaderLayout">@style/App.materialCalendarHeaderLayout</item>
+        <item name="materialCalendarHeaderConfirmButton">@style/App.materialCalendarHeaderConfirmButton</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
+
+    <style name="App.checkboxStyle" parent="Widget.Material3.CompoundButton.CheckBox">
+        <item name="buttonTint">@color/compound_button_tint</item>
+    </style>
+
+    <style name="App.switchStyle" parent="Widget.Material3.CompoundButton.Switch">
+        <item name="trackTint">@color/compound_button_tint</item>
+    </style>
+
+    <style name="App.chipGroupStyle" parent="Widget.Material3.ChipGroup">
+        <!-- the default was 8dp. -->
+        <item name="chipSpacingVertical">4dp</item>
+    </style>
+
+    <style name="App.tabStyle" parent="Widget.Material3.TabLayout">
+        <item name="tabMode">scrollable</item>
+        <!-- Both indicator and text color are set to colorSecondary. -->
+        <item name="tabIndicatorColor">?attr/colorSecondary</item>
+        <item name="tabTextColor">@color/tabs_text_color</item>
+    </style>
+
+    <style name="App.snackbarTextViewStyle" parent="Widget.Material3.Snackbar.TextView">
+        <item name="android:maxLines">2</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
+
+    <style name="App.circularProgressIndicatorStyle" parent="Widget.Material3.CircularProgressIndicator">
+        <item name="android:clickable">true</item>
+        <item name="android:alpha">0.8</item>
+        <item name="android:elevation">@dimen/progress_z</item>
+        <item name="android:indeterminate">true</item>
+        <item name="indicatorSize">96dp</item>
+        <!--   <item name="android:background">?attr/colorSurface</item>-->
+    </style>
+
+    <style name="App.linearProgressIndicatorStyle" parent="Widget.Material3.LinearProgressIndicator">
+        <item name="android:padding">@dimen/progress_padding</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
+
+    <style name="App.buttonBarButtonStyle" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
+
+    <!-- Global theme attribute "materialCalendarHeaderLayout"
+         We want the full screen calendar widget to use the same header style (toolbar)
+         as all our edit-screens. -->
+    <style name="App.materialCalendarHeaderLayout" parent="Widget.Material3.MaterialCalendar.HeaderLayout">
+        <item name="android:background">?attr/appToolbarBackground</item>
+    </style>
+
+    <!-- Global theme attribute "materialCalendarHeaderConfirmButton"
+         The "Save" button in the header (toolbar).-->
+    <style name="App.materialCalendarHeaderConfirmButton" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:backgroundTint">?attr/colorButtonNormal</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
 </resources>

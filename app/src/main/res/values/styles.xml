@@ -45,7 +45,7 @@
     <style name="Text.Header" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginTop">@dimen/section_margin_top</item>
         <item name="android:textColor">?android:attr/textColorSecondary</item>
         <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
     </style>
@@ -243,30 +243,35 @@
 
     <!-- *************************************************************************************** -->
 
-    <style name="About.AppName" parent="Widget.MaterialComponents.TextView">
+    <style name="About" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="About.AppName">
         <item name="android:fontFamily">cursive</item>
         <item name="android:textAppearance">?attr/textAppearanceHeadlineMedium</item>
     </style>
 
-    <style name="About.Version" parent="Widget.MaterialComponents.TextView">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+    <style name="About.Version">
         <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
     </style>
 
-    <style name="About.Statistic" parent="Widget.MaterialComponents.TextView">
+    <style name="About.Statistic.Label">
+        <item name="android:layout_marginTop">@dimen/field_margin_top</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
+        <item name="android:textIsSelectable">true</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
+    </style>
+
+    <style name="About.Statistic">
         <item name="android:layout_width">60dp</item>
-        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
         <item name="android:gravity">end</item>
         <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
     </style>
 
-    <style name="About.DebugVersion" parent="Widget.MaterialComponents.TextView">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+    <style name="About.DebugVersion">
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
         <item name="android:layout_marginBottom">@dimen/section_margin_top</item>
         <item name="android:textIsSelectable">true</item>
@@ -293,62 +298,5 @@
         <item name="android:minWidth">@dimen/top_centered_min_width</item>
         <item name="android:maxWidth">@dimen/top_centered_max_width</item>
     </style>
-
-    <!-- *************************************************************************************** -->
-
-    <!-- Global theme attribute
-         Used by both "materialAlertDialogTheme" and our custom dialogs -->
-    <style name="App.buttonBarButtonStyle" parent="Widget.Material3.Button.TextButton.Dialog">
-        <item name="android:textColor">?attr/colorSecondary</item>
-    </style>
-
-    <!-- Global theme attribute "chipGroupStyle" -->
-    <style name="App.chipGroupStyle" parent="Widget.Material3.ChipGroup">
-        <!-- There is a label above the group. -->
-        <item name="android:layout_marginTop">4dp</item>
-        <!-- the default is 8dp. -->
-        <item name="chipSpacingVertical">4dp</item>
-    </style>
-
-    <!-- Global theme attribute "tabStyle" -->
-    <style name="App.tabStyle" parent="Widget.Material3.TabLayout">
-        <item name="tabMode">scrollable</item>
-        <!-- Both indicator and text color are set to colorSecondary. -->
-        <item name="tabIndicatorColor">?attr/colorSecondary</item>
-        <item name="tabTextColor">@color/tabs_text_color</item>
-    </style>
-
-    <!-- Global theme attribute "circularProgressIndicatorStyle" -->
-    <style name="App.circularProgressIndicatorStyle" parent="Widget.Material3.CircularProgressIndicator">
-        <item name="android:clickable">true</item>
-        <item name="android:alpha">0.8</item>
-        <item name="android:elevation">@dimen/progress_z</item>
-        <item name="android:indeterminate">true</item>
-        <item name="indicatorSize">96dp</item>
-        <!--        <item name="android:background">?attr/colorSurface</item>-->
-    </style>
-
-    <style name="App.linearProgressIndicatorStyle" parent="Widget.Material3.LinearProgressIndicator">
-        <item name="android:padding">@dimen/progress_padding</item>
-    </style>
-
-    <!--  Global theme attribute "snackbarTextViewStyle" -->
-    <style name="App.snackbarTextViewStyle" parent="Widget.Material3.Snackbar.TextView">
-        <item name="android:maxLines">2</item>
-    </style>
-
-    <!-- Global theme attribute "materialCalendarHeaderLayout"
-    We want the full screen calendar widget to use the same header style as all our edit-screens. -->
-    <style name="App.materialCalendarHeaderLayout" parent="Widget.Material3.MaterialCalendar.HeaderLayout">
-        <item name="android:background">?attr/appToolbarBackground</item>
-    </style>
-
-    <!-- Global theme attribute "materialCalendarHeaderConfirmButton" -->
-    <style name="App.materialCalendarHeaderConfirmButton" parent="Widget.Material3.Button.TextButton">
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
-        <item name="android:backgroundTint">?attr/colorButtonNormal</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
 
 </resources>

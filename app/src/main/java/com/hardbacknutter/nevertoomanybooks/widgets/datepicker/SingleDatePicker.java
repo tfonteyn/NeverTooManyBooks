@@ -35,6 +35,9 @@ import java.time.ZoneOffset;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 
+/**
+ * Uses a {@link MaterialDatePicker} to let the user pick a single/exact date.
+ */
 public class SingleDatePicker
         extends DatePickerBase<Long> {
 
@@ -75,6 +78,7 @@ public class SingleDatePicker
     private void launch(@Nullable final Long selection,
                         @NonNull final DatePickerListener listener) {
         mListener = new WeakReference<>(listener);
+
         //noinspection unchecked
         MaterialDatePicker<Long> picker = (MaterialDatePicker<Long>)
                 mFragmentManager.findFragmentByTag(mFragmentTag);
@@ -86,7 +90,8 @@ public class SingleDatePicker
                     .build();
             picker.show(mFragmentManager, mFragmentTag);
         }
-        // clear first in case of screen rotation
+
+        // remove any dead listener, then set the current one
         picker.clearOnPositiveButtonClickListeners();
         picker.addOnPositiveButtonClickListener(this);
     }
