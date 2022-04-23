@@ -43,7 +43,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -62,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -75,7 +73,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
@@ -101,6 +98,7 @@ public class EditBookTocFragment
     private static final String RK_EDIT_TOC = TAG + ":rk:" + EditTocEntryDialogFragment.TAG;
     /** FragmentResultListener request key. */
     private static final String RK_CONFIRM_TOC = TAG + ":rk:" + ConfirmTocDialogFragment.TAG;
+    private static final int POS_NEW_ENTRY = -1;
 
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
@@ -124,24 +122,22 @@ public class EditBookTocFragment
     private FragmentEditBookTocBinding mVb;
     /** The adapter for the list. */
     private TocListEditAdapter mListAdapter;
-    /** Drag and drop support for the list view. */
-    private ItemTouchHelper mItemTouchHelper;
-    private ExtArrayAdapter<String> mAuthorAdapter;
-    /**
-     * Stores the item position in the list while we're editing that item.
-     * Editing is done using a dialog, so no need to store it more permanently.
-     */
-    @Nullable
-    private Integer mEditPosition;
+
     /** Listen for the results of the entry edit-dialog. */
     private final EditTocEntryDialogFragment.Launcher mEditTocEntryLauncher =
             new EditTocEntryDialogFragment.Launcher(RK_EDIT_TOC) {
                 @Override
                 public void onResult(@NonNull final TocEntry tocEntry,
+                                     final int position,
                                      final boolean isAnthology) {
-                    onEntryUpdated(tocEntry, isAnthology);
+                    onEntryUpdated(tocEntry, position, isAnthology);
                 }
             };
+
+    /** Drag and drop support for the list view. */
+    private ItemTouchHelper mItemTouchHelper;
+
+    /** Handles the ISFDB lookup tasks. */
     private EditBookTocViewModel mEditTocVm;
     private final ConfirmTocDialogFragment.Launcher mConfirmTocResultsLauncher =
             new ConfirmTocDialogFragment.Launcher(RK_CONFIRM_TOC) {
@@ -156,6 +152,7 @@ public class EditBookTocFragment
                     searchIsfdb();
                 }
             };
+
     private ExtPopupMenu mContextMenu;
 
     @NonNull
@@ -234,18 +231,9 @@ public class EditBookTocFragment
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mVb.tocList);
 
-        mVb.rbIsCollection.setOnClickListener(v -> {
-            mVm.getBook().setStage(EntityStage.Stage.Dirty);
-            updateAnthology();
-        });
-        mVb.rbIsAnthology.setOnClickListener(v -> {
-            mVm.getBook().setStage(EntityStage.Stage.Dirty);
-            updateAnthology();
-        });
-        mVb.rbIsNeither.setOnClickListener(v -> {
-            mVm.getBook().setStage(EntityStage.Stage.Dirty);
-            updateAnthology();
-        });
+        mVb.rbIsCollection.setOnClickListener(v -> mVm.getBook().setStage(EntityStage.Stage.Dirty));
+        mVb.rbIsAnthology.setOnClickListener(v -> mVm.getBook().setStage(EntityStage.Stage.Dirty));
+        mVb.rbIsNeither.setOnClickListener(v -> mVm.getBook().setStage(EntityStage.Stage.Dirty));
 
         mVb.btnAdd.setOnClickListener(v -> onAdd());
 
@@ -258,44 +246,46 @@ public class EditBookTocFragment
         menu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
                  R.string.action_delete)
             .setIcon(R.drawable.ic_baseline_delete_24);
-
-        // ready for user input
-        if (mVb.author.getVisibility() == View.VISIBLE) {
-            mVb.author.requestFocus();
-        } else {
-            mVb.title.requestFocus();
-        }
     }
 
     private void onEntryUpdated(@NonNull final TocEntry tocEntry,
+                                final int position,
                                 final boolean isAnthology) {
         if (isAnthology) {
             mVb.rbIsAnthology.setChecked(true);
         }
-        updateAnthology();
 
-        if (mEditPosition == null) {
-            // It's a new entry for the list.
-            addNewEntry(tocEntry);
+        if (position == POS_NEW_ENTRY) {
+            // see if it already exists
+            //noinspection ConstantConditions
+            mVm.fixId(getContext(), tocEntry);
+            // and check it's not already in the list.
+            if (mList.contains(tocEntry)) {
+                Snackbar.make(mVb.getRoot(), R.string.warning_already_in_list,
+                              Snackbar.LENGTH_LONG).show();
+            } else {
+                // It's a new entry, add it to the end and scroll it into view
+                mList.add(tocEntry);
+                mListAdapter.notifyItemInserted(mList.size() - 1);
+                mVb.tocList.scrollToPosition(mListAdapter.getItemCount() - 1);
+            }
 
         } else {
             // It's an existing entry in the list, find it and update with the new data
-            final TocEntry original = mList.get(mEditPosition);
+            final TocEntry original = mList.get(position);
             original.copyFrom(tocEntry);
-            mListAdapter.notifyItemChanged(mEditPosition);
+            mListAdapter.notifyItemChanged(position);
+            mVb.tocList.scrollToPosition(position);
         }
     }
 
     @Override
-    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
+    void onPopulateViews(@NonNull final SharedPreferences global,
+                         @NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
-        super.onPopulateViews(fields, book);
+        super.onPopulateViews(global, fields, book);
 
         populateTocBits(book.getContentType());
-
-        //noinspection ConstantConditions
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
 
         //noinspection ConstantConditions
         fields.forEach(field -> field.setVisibility(getView(), global, false, false));
@@ -316,8 +306,6 @@ public class EditBookTocFragment
                 mVb.rbIsNeither.setChecked(true);
                 break;
         }
-
-        updateAnthology();
     }
 
     @Override
@@ -331,13 +319,6 @@ public class EditBookTocFragment
         } else {
             book.setContentType(Book.ContentType.Book);
         }
-    }
-
-    @Override
-    public boolean hasUnfinishedEdits() {
-        // We only check the title field; disregarding the author and first-publication fields.
-        //noinspection ConstantConditions
-        return !mVb.title.getText().toString().isEmpty();
     }
 
     /**
@@ -369,10 +350,9 @@ public class EditBookTocFragment
      * @param position the position of the item
      */
     private void editEntry(final int position) {
-        mEditPosition = position;
-
         final TocEntry tocEntry = mList.get(position);
-        mEditTocEntryLauncher.launch(mVm.getBook(), tocEntry, mVb.rbIsAnthology.isChecked());
+        mEditTocEntryLauncher.launch(mVm.getBook(), position, tocEntry,
+                                     mVb.rbIsAnthology.isChecked());
     }
 
     /**
@@ -442,90 +422,11 @@ public class EditBookTocFragment
         }
     }
 
-    /**
-     * If the radiobutton 'anthology' is on, then we need to show the Author field.
-     * Otherwise, hide it.
-     */
-    private void updateAnthology() {
-        if (mVb.rbIsAnthology.isChecked()) {
-            if (mAuthorAdapter == null) {
-                //noinspection ConstantConditions
-                mAuthorAdapter = new ExtArrayAdapter<>(
-                        getContext(), R.layout.popup_dropdown_menu_item,
-                        ExtArrayAdapter.FilterType.Diacritic, mVm.getAllAuthorNames());
-                mVb.author.setAdapter(mAuthorAdapter);
-            }
-
-            //noinspection ConstantConditions
-            final Author author = mVm.getPrimaryAuthor(getContext());
-            mVb.author.setText(author.getLabel(getContext()));
-            mVb.author.selectAll();
-            mVb.lblAuthor.setVisibility(View.VISIBLE);
-            mVb.author.setVisibility(View.VISIBLE);
-            mVb.author.requestFocus();
-        } else {
-            mVb.lblAuthor.setVisibility(View.GONE);
-            mVb.author.setVisibility(View.GONE);
-            mVb.title.requestFocus();
-        }
-    }
-
-    /**
-     * Add a new entry to the list based on the on-screen fields. (i.e. not from the edit-dialog).
-     */
     private void onAdd() {
-        // clear any previous error
-        mVb.lblTitle.setError(null);
-
         //noinspection ConstantConditions
-        final String title = mVb.title.getText().toString().trim();
-        if (title.isEmpty()) {
-            mVb.title.setError(getString(R.string.vldt_non_blank_required));
-            return;
-        }
-
-        final Author author;
-        if (mVb.rbIsAnthology.isChecked()) {
-            author = Author.from(mVb.author.getText().toString().trim());
-        } else {
-            //noinspection ConstantConditions
-            author = mVm.getPrimaryAuthor(getContext());
-        }
-        //noinspection ConstantConditions
-        final TocEntry newTocEntry = new TocEntry(author, mVb.title.getText().toString().trim(),
-                                                  mVb.firstPublication.getText().toString().trim()
-        );
-        addNewEntry(newTocEntry);
-    }
-
-    /**
-     * Add a new entry to the list.
-     * Called either by {@link #onAdd} or from the edit-dialog listener.
-     *
-     * @param tocEntry to add
-     */
-    private void addNewEntry(@NonNull final TocEntry tocEntry) {
-        // see if it already exists
-        //noinspection ConstantConditions
-        mVm.fixId(getContext(), tocEntry);
-        // and check it's not already in the list.
-        if (mList.contains(tocEntry)) {
-            mVb.lblTitle.setError(getString(R.string.warning_already_in_list));
-        } else {
-            mList.add(tocEntry);
-            // clear the form for next entry and scroll to the new item
-            if (mVb.rbIsAnthology.isChecked()) {
-                final Author author = mVm.getPrimaryAuthor(getContext());
-                mVb.author.setText(author.getLabel(getContext()));
-                mVb.author.selectAll();
-            }
-            mVb.title.setText("");
-            mVb.firstPublication.setText("");
-            mVb.title.requestFocus();
-
-            mListAdapter.notifyItemInserted(mList.size() - 1);
-            mVb.tocList.scrollToPosition(mListAdapter.getItemCount() - 1);
-        }
+        final TocEntry tocEntry = new TocEntry(mVm.getPrimaryAuthor(getContext()), "");
+        mEditTocEntryLauncher.launch(mVm.getBook(), POS_NEW_ENTRY, tocEntry,
+                                     mVb.rbIsAnthology.isChecked());
     }
 
     /**

@@ -28,6 +28,7 @@ import android.util.Log;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import java.io.File;
@@ -699,7 +700,7 @@ public class Book
      * @return The persisted file
      *
      * @throws StorageException The covers directory is not available
-     * @throws IOException           on other failures
+     * @throws IOException      on other failures
      * @see #getPersistedCoverFile(int)
      */
     @NonNull
@@ -859,7 +860,7 @@ public class Book
      * @return the File after processing (either original, or a renamed/moved file)
      *
      * @throws StorageException The covers directory is not available
-     * @throws IOException           on failure
+     * @throws IOException      on failure
      */
     @SuppressWarnings("UnusedReturnValue")
     @Nullable
@@ -1207,21 +1208,26 @@ public class Book
      * It's an enum because there are only 3 possible bit combinations.
      * The db field should probably just be an int instead of a bitmask.
      */
-    public enum ContentType {
+    public enum ContentType
+            implements Entity {
         /** Single work. One or more authors. */
-        Book(0b000),
+        Book(0b000, R.string.lbl_book),
         /** Multiple works, all by a single Author. */
-        Collection(0b001),
+        Collection(0b001, R.string.lbl_collection),
         /** Multiple works, multiple Authors. */
-        Anthology(0b011);
+        Anthology(0b011, R.string.lbl_anthology);
 
         private static final int BIT_MULTIPLE_WORKS = 1;
         private static final int BIT_MULTIPLE_AUTHORS = 1 << 1;
 
         public final int value;
+        @StringRes
+        public final int labelResId;
 
-        ContentType(final int value) {
+        ContentType(final int value,
+                    @StringRes final int labelResId) {
             this.value = value;
+            this.labelResId = labelResId;
         }
 
         @NonNull
@@ -1235,6 +1241,17 @@ public class Book
             } else {
                 return Anthology;
             }
+        }
+
+        @Override
+        public long getId() {
+            return value;
+        }
+
+        @NonNull
+        @Override
+        public String getLabel(@NonNull final Context context) {
+            return context.getString(labelResId);
         }
     }
 

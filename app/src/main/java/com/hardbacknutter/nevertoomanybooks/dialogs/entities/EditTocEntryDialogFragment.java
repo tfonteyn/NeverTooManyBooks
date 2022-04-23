@@ -52,6 +52,7 @@ public class EditTocEntryDialogFragment
     public static final String TAG = "EditTocEntryDialogFrag";
     private static final String BKEY_HAS_MULTIPLE_AUTHORS = TAG + ":hasMultipleAuthors";
     private static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
+    private static final String BKEY_POSITION = TAG + ":pos";
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     private String mRequestKey;
@@ -66,6 +67,8 @@ public class EditTocEntryDialogFragment
 
     /** The one we're editing. */
     private TocEntry mTocEntry;
+    /** the position of the tocEntry in the TOC list. */
+    private int mEditPosition;
 
     /** Current edit. */
     private String mTitle;
@@ -92,6 +95,7 @@ public class EditTocEntryDialogFragment
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
         mBookTitle = args.getString(DBKey.KEY_TITLE);
         mTocEntry = Objects.requireNonNull(args.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY);
+        mEditPosition = args.getInt(BKEY_POSITION, 0);
 
         if (savedInstanceState == null) {
             mTitle = mTocEntry.getTitle();
@@ -121,9 +125,8 @@ public class EditTocEntryDialogFragment
 
         mVb.title.setText(mTitle);
 
-        mFirstPublicationDate.ifPresent(date ->
-                                                mVb.firstPublication.setText(
-                                                        String.valueOf(date.getYearValue())));
+        mFirstPublicationDate.ifPresent(date -> mVb.firstPublication.setText(
+                String.valueOf(date.getYearValue())));
 
         updateMultiAuthor(mHasMultipleAuthors);
         mVb.cbxIsAnthology.setOnCheckedChangeListener(
@@ -190,7 +193,8 @@ public class EditTocEntryDialogFragment
 
         // We don't update/insert to the database here, but just send the data back.
         // TOCs are updated in bulk/list per Book
-        Launcher.setResult(this, mRequestKey, mTocEntry, mHasMultipleAuthors);
+        Launcher.setResult(this, mRequestKey, mTocEntry, mEditPosition,
+                           mHasMultipleAuthors);
         return true;
     }
 
@@ -229,10 +233,12 @@ public class EditTocEntryDialogFragment
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
                               @NonNull final TocEntry tocEntry,
+                              final int position,
                               final boolean hasMultipleAuthors) {
 
-            final Bundle result = new Bundle(2);
+            final Bundle result = new Bundle(3);
             result.putParcelable(BKEY_TOC_ENTRY, tocEntry);
+            result.putInt(BKEY_POSITION, position);
             result.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, hasMultipleAuthors);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
@@ -241,17 +247,20 @@ public class EditTocEntryDialogFragment
          * Constructor.
          *
          * @param book               the entry belongs to
+         * @param position           of the tocEntry in the list
          * @param tocEntry           to edit.
          * @param hasMultipleAuthors Flag that will enable/disable the author edit field
          */
         public void launch(@NonNull final Book book,
+                           final int position,
                            @NonNull final TocEntry tocEntry,
                            final boolean hasMultipleAuthors) {
 
-            final Bundle args = new Bundle(4);
+            final Bundle args = new Bundle(5);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
             args.putString(DBKey.KEY_TITLE, book.getTitle());
             args.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, hasMultipleAuthors);
+            args.putInt(BKEY_POSITION, position);
             args.putParcelable(BKEY_TOC_ENTRY, tocEntry);
 
             final DialogFragment frag = new EditTocEntryDialogFragment();
@@ -263,6 +272,7 @@ public class EditTocEntryDialogFragment
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
             onResult(Objects.requireNonNull(result.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY),
+                     result.getInt(BKEY_POSITION),
                      result.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS));
         }
 
@@ -273,6 +283,7 @@ public class EditTocEntryDialogFragment
          * @param hasMultipleAuthors flag as set by the user
          */
         public abstract void onResult(@NonNull TocEntry tocEntry,
+                                      final int position,
                                       boolean hasMultipleAuthors);
     }
 }
