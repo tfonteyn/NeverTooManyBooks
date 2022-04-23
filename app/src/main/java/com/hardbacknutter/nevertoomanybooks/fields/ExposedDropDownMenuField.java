@@ -45,9 +45,6 @@ public class ExposedDropDownMenuField
     @NonNull
     private final ExtArrayAdapter<CharSequence> mAdapter;
 
-    /** Are we viewing {@code false} or editing {@code true} a Field. */
-    private final boolean mIsEditable;
-
     /**
      * Constructor.
      *
@@ -58,14 +55,11 @@ public class ExposedDropDownMenuField
                                     @IdRes final int fieldViewId,
                                     @NonNull final String fieldKey,
                                     @NonNull final Context context,
-                                    @ArrayRes final int arrayResId,
-                                    final boolean isEditable) {
+                                    @ArrayRes final int arrayResId) {
         super(fragmentId, fieldViewId, fieldKey, fieldKey);
         mAdapter = ExtArrayAdapter.createFromResource(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Passthrough, arrayResId);
-
-        mIsEditable = isEditable;
 
         SanityCheck.requirePositiveValue(mAdapter.getCount(), "mAdapter.getCount()");
     }
@@ -81,13 +75,11 @@ public class ExposedDropDownMenuField
                               @NonNull final SharedPreferences global) {
         super.setParentView(parent, global);
         requireView().setAdapter(mAdapter);
-        if (mIsEditable) {
-            requireView().setOnItemClickListener((p, v, position, id) -> {
-                final Integer previous = mRawValue;
-                mRawValue = position;
-                notifyIfChanged(previous);
-            });
-        }
+        requireView().setOnItemClickListener((p, v, position, id) -> {
+            final Integer previous = mRawValue;
+            mRawValue = position;
+            notifyIfChanged(previous);
+        });
     }
 
     @Override
