@@ -1192,33 +1192,16 @@ public class Book
 
     /**
      * Database representation of column {@link DBKey#BITMASK_TOC}
-     * <p>
-     * 0b001 = indicates if a book has one (bit unset) or multiple (bit set) works
-     * 0b010 = indicates if a book has one (bit unset) or multiple (bit set) authors.
-     * <p>
-     * or in other words:
-     * 0b000 = contains one 'work' and is written by a single author.
-     * 0b001 = multiple 'work' and is written by a single author (collection from ONE author)
-     * 0b010 = multiple authors cooperating on a single 'work'
-     * 0b011 = multiple authors and multiple 'work's (it's an anthology from multiple author)
-     * <p>
-     * Bit 0b010 should not actually occur, as this is a simple case of
-     * collaborating authors on a single 'work' which is covered without the use of this field.
-     * <p>
-     * It's an enum because there are only 3 possible bit combinations.
-     * The db field should probably just be an int instead of a bitmask.
      */
     public enum ContentType
             implements Entity {
         /** Single work. One or more authors. */
-        Book(0b000, R.string.lbl_book),
+        Book(0, R.string.lbl_book),
         /** Multiple works, all by a single Author. */
-        Collection(0b001, R.string.lbl_collection),
+        Collection(1, R.string.lbl_collection),
+        // value 2 not in use.
         /** Multiple works, multiple Authors. */
-        Anthology(0b011, R.string.lbl_anthology);
-
-        private static final int BIT_MULTIPLE_WORKS = 1;
-        private static final int BIT_MULTIPLE_AUTHORS = 1 << 1;
+        Anthology(3, R.string.lbl_anthology);
 
         public final int value;
         @StringRes
@@ -1232,14 +1215,14 @@ public class Book
 
         @NonNull
         public static ContentType getType(final long value) {
-            if ((value & BIT_MULTIPLE_WORKS) == 0) {
-                return Book;
-            }
-
-            if ((value & BIT_MULTIPLE_AUTHORS) == 0) {
-                return Collection;
-            } else {
-                return Anthology;
+            switch ((int) value) {
+                case 3:
+                    return Anthology;
+                case 1:
+                    return Collection;
+                case 0:
+                default:
+                    return Book;
             }
         }
 
