@@ -62,6 +62,13 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             />
 
+        <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton
+            android:id="@+id/fab"
+            style="@style/FAB"
+            android:visibility="invisible"
+            tools:visibility="visible"
+            />
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.navigation.NavigationView

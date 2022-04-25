@@ -48,6 +48,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -128,9 +129,8 @@ public class EditBookTocFragment
             new EditTocEntryDialogFragment.Launcher(RK_EDIT_TOC) {
                 @Override
                 public void onResult(@NonNull final TocEntry tocEntry,
-                                     final int position,
-                                     final boolean isAnthology) {
-                    onEntryUpdated(tocEntry, position, isAnthology);
+                                     final int position) {
+                    onEntryUpdated(tocEntry, position);
                 }
             };
 
@@ -187,6 +187,13 @@ public class EditBookTocFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        final FloatingActionButton fab = getFab();
+        fab.setImageResource(R.drawable.ic_baseline_add_24);
+
+        //noinspection ConstantConditions
+        fab.setOnClickListener(v -> editEntry(
+                new TocEntry(mVm.getPrimaryAuthor(getContext()), ""), POS_NEW_ENTRY));
+
         final Toolbar toolbar = getToolbar();
         mToolbarMenuProvider = new ToolbarMenuProvider();
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner(),
@@ -231,12 +238,6 @@ public class EditBookTocFragment
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mVb.tocList);
 
-        mVb.rbIsCollection.setOnClickListener(v -> mVm.getBook().setStage(EntityStage.Stage.Dirty));
-        mVb.rbIsAnthology.setOnClickListener(v -> mVm.getBook().setStage(EntityStage.Stage.Dirty));
-        mVb.rbIsNeither.setOnClickListener(v -> mVm.getBook().setStage(EntityStage.Stage.Dirty));
-
-        mVb.btnAdd.setOnClickListener(v -> onAdd());
-
         mContextMenu = new ExtPopupMenu(context);
         final Resources res = getResources();
         final Menu menu = mContextMenu.getMenu();
@@ -249,12 +250,7 @@ public class EditBookTocFragment
     }
 
     private void onEntryUpdated(@NonNull final TocEntry tocEntry,
-                                final int position,
-                                final boolean isAnthology) {
-        if (isAnthology) {
-            mVb.rbIsAnthology.setChecked(true);
-        }
-
+                                final int position) {
         if (position == POS_NEW_ENTRY) {
             // see if it already exists
             //noinspection ConstantConditions
@@ -285,40 +281,10 @@ public class EditBookTocFragment
                          @NonNull final Book book) {
         super.onPopulateViews(global, fields, book);
 
-        populateTocBits(book.getContentType());
+        getFab().setVisibility(View.VISIBLE);
 
         //noinspection ConstantConditions
         fields.forEach(field -> field.setVisibility(getView(), global, false, false));
-    }
-
-    private void populateTocBits(@NonNull final Book.ContentType contentType) {
-        switch (contentType) {
-            case Collection:
-                mVb.rbIsCollection.setChecked(true);
-                break;
-
-            case Anthology:
-                mVb.rbIsAnthology.setChecked(true);
-                break;
-
-            case Book:
-            default:
-                mVb.rbIsNeither.setChecked(true);
-                break;
-        }
-    }
-
-    @Override
-    public void onSaveFields(@NonNull final Book book) {
-        super.onSaveFields(book);
-
-        if (mVb.rbIsCollection.isChecked()) {
-            book.setContentType(Book.ContentType.Collection);
-        } else if (mVb.rbIsAnthology.isChecked()) {
-            book.setContentType(Book.ContentType.Anthology);
-        } else {
-            book.setContentType(Book.ContentType.Book);
-        }
     }
 
     /**
@@ -334,7 +300,7 @@ public class EditBookTocFragment
         final int itemId = menuItem.getItemId();
 
         if (itemId == R.id.MENU_EDIT) {
-            editEntry(position);
+            editEntry(mList.get(position), position);
             return true;
 
         } else if (itemId == R.id.MENU_DELETE) {
@@ -342,17 +308,6 @@ public class EditBookTocFragment
             return true;
         }
         return false;
-    }
-
-    /**
-     * Start the fragment dialog to edit an entry.
-     *
-     * @param position the position of the item
-     */
-    private void editEntry(final int position) {
-        final TocEntry tocEntry = mList.get(position);
-        mEditTocEntryLauncher.launch(mVm.getBook(), position, tocEntry,
-                                     mVb.rbIsAnthology.isChecked());
     }
 
     /**
@@ -422,11 +377,18 @@ public class EditBookTocFragment
         }
     }
 
-    private void onAdd() {
+    /**
+     * Start the fragment dialog to edit an entry.
+     *
+     * @param tocEntry to edit
+     * @param position the position of the item; use {@link #POS_NEW_ENTRY} for a new entry.
+     */
+    private void editEntry(@NonNull final TocEntry tocEntry,
+                           final int position) {
+        final Field<Long, View> typeField = mVm.requireField(R.id.book_type);
         //noinspection ConstantConditions
-        final TocEntry tocEntry = new TocEntry(mVm.getPrimaryAuthor(getContext()), "");
-        mEditTocEntryLauncher.launch(mVm.getBook(), POS_NEW_ENTRY, tocEntry,
-                                     mVb.rbIsAnthology.isChecked());
+        final boolean multipleAuthors = typeField.getValue() == Book.ContentType.Anthology.value;
+        mEditTocEntryLauncher.launch(mVm.getBook(), position, tocEntry, multipleAuthors);
     }
 
     /**
@@ -488,9 +450,7 @@ public class EditBookTocFragment
     private void onIsfdbDataConfirmed(@NonNull final Book.ContentType contentType,
                                       @NonNull final Collection<TocEntry> tocEntries) {
         if (contentType != Book.ContentType.Book) {
-            final Book book = mVm.getBook();
-            book.setContentType(contentType);
-            populateTocBits(book.getContentType());
+            mVm.requireField(R.id.book_type).setValue(contentType);
         }
 
         // append the new data
@@ -528,7 +488,7 @@ public class EditBookTocFragment
         /** FragmentResultListener request key to use for our response. */
         private String mRequestKey;
         private boolean mHasOtherEditions;
-        private Book.ContentType mTocBitMask;
+        private Book.ContentType mBookTocType;
         private ArrayList<TocEntry> mTocEntries;
 
         @Override
@@ -537,11 +497,11 @@ public class EditBookTocFragment
 
             final Bundle args = requireArguments();
             mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                                 "BKEY_REQUEST_KEY");
+                                                 BKEY_REQUEST_KEY);
             mTocEntries = Objects.requireNonNull(args.getParcelableArrayList(Book.BKEY_TOC_LIST),
-                                                 "BKEY_TOC_LIST");
+                                                 Book.BKEY_TOC_LIST);
 
-            mTocBitMask = Book.ContentType.getType(args.getLong(DBKey.BITMASK_TOC));
+            mBookTocType = Book.ContentType.getType(args.getLong(DBKey.BITMASK_TOC));
             mHasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS, false);
         }
 
@@ -578,7 +538,7 @@ public class EditBookTocFragment
             if (hasToc) {
                 dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
                                  (d, which) -> Launcher.setResult(this, mRequestKey,
-                                                                  mTocBitMask, mTocEntries));
+                                                                  mBookTocType, mTocEntries));
             }
 
             // if we found multiple editions, allow a re-try with the next edition
@@ -714,7 +674,10 @@ public class EditBookTocFragment
 
             // click -> edit
             holder.rowDetailsView.setOnClickListener(
-                    v -> editEntry(holder.getBindingAdapterPosition()));
+                    v -> {
+                        final int position = holder.getBindingAdapterPosition();
+                        editEntry(mList.get(position), position);
+                    });
 
             holder.rowDetailsView.setOnLongClickListener(v -> {
                 mContextMenu.showAsDropDown(v, menuItem ->

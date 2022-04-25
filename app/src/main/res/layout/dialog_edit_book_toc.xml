@@ -57,23 +57,13 @@
                 style="@style/Dialog.Body"
                 >
 
-                <CheckBox
-                    android:id="@+id/cbx_is_anthology"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/lbl_anthology"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:checked="true"
-                    />
-
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/lbl_author"
                     style="@style/TIL.AutoCompleteTextView"
                     android:hint="@string/lbl_author"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/cbx_is_anthology"
+                    app:layout_constraintTop_toTopOf="parent"
                     >
 
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView

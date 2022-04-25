@@ -63,8 +63,6 @@ public class EditTocEntryDialogFragment
     @Nullable
     private String mBookTitle;
 
-    private ExtArrayAdapter<String> mAuthorAdapter;
-
     /** The one we're editing. */
     private TocEntry mTocEntry;
     /** the position of the tocEntry in the TOC list. */
@@ -94,6 +92,7 @@ public class EditTocEntryDialogFragment
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
         mBookTitle = args.getString(DBKey.KEY_TITLE);
+        mHasMultipleAuthors = args.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
         mTocEntry = Objects.requireNonNull(args.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY);
         mEditPosition = args.getInt(BKEY_POSITION, 0);
 
@@ -109,8 +108,6 @@ public class EditTocEntryDialogFragment
             mFirstPublicationDate = savedInstanceState.getParcelable(DBKey.DATE_FIRST_PUBLICATION);
             //noinspection ConstantConditions
             mAuthorName = savedInstanceState.getString(DBKey.KEY_AUTHOR_FORMATTED);
-
-            mHasMultipleAuthors = args.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
         }
     }
 
@@ -128,9 +125,27 @@ public class EditTocEntryDialogFragment
         mFirstPublicationDate.ifPresent(date -> mVb.firstPublication.setText(
                 String.valueOf(date.getYearValue())));
 
-        updateMultiAuthor(mHasMultipleAuthors);
-        mVb.cbxIsAnthology.setOnCheckedChangeListener(
-                (v, isChecked) -> updateMultiAuthor(isChecked));
+        if (mHasMultipleAuthors) {
+            //noinspection ConstantConditions
+            final ExtArrayAdapter<String> authorAdapter = new ExtArrayAdapter<>(
+                    getContext(), R.layout.popup_dropdown_menu_item,
+                    ExtArrayAdapter.FilterType.Diacritic,
+                    ServiceLocator.getInstance().getAuthorDao()
+                                  .getNames(DBKey.KEY_AUTHOR_FORMATTED));
+            mVb.author.setAdapter(authorAdapter);
+            mVb.author.setText(mAuthorName);
+            mVb.author.selectAll();
+            mVb.author.requestFocus();
+
+            mVb.lblAuthor.setVisibility(View.VISIBLE);
+            mVb.author.setVisibility(View.VISIBLE);
+
+        } else {
+            mVb.title.requestFocus();
+
+            mVb.lblAuthor.setVisibility(View.GONE);
+            mVb.author.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -142,31 +157,6 @@ public class EditTocEntryDialogFragment
             return true;
         }
         return false;
-    }
-
-    private void updateMultiAuthor(final boolean isChecked) {
-        mHasMultipleAuthors = isChecked;
-        mVb.cbxIsAnthology.setChecked(mHasMultipleAuthors);
-
-        if (mHasMultipleAuthors) {
-            if (mAuthorAdapter == null) {
-                //noinspection ConstantConditions
-                mAuthorAdapter = new ExtArrayAdapter<>(
-                        getContext(), R.layout.popup_dropdown_menu_item,
-                        ExtArrayAdapter.FilterType.Diacritic,
-                        ServiceLocator.getInstance().getAuthorDao()
-                                      .getNames(DBKey.KEY_AUTHOR_FORMATTED));
-                mVb.author.setAdapter(mAuthorAdapter);
-            }
-
-            mVb.author.setText(mAuthorName);
-            mVb.author.selectAll();
-            mVb.lblAuthor.setVisibility(View.VISIBLE);
-            mVb.author.setVisibility(View.VISIBLE);
-        } else {
-            mVb.lblAuthor.setVisibility(View.GONE);
-            mVb.author.setVisibility(View.GONE);
-        }
     }
 
     private boolean saveChanges() {
@@ -193,8 +183,7 @@ public class EditTocEntryDialogFragment
 
         // We don't update/insert to the database here, but just send the data back.
         // TOCs are updated in bulk/list per Book
-        Launcher.setResult(this, mRequestKey, mTocEntry, mEditPosition,
-                           mHasMultipleAuthors);
+        Launcher.setResult(this, mRequestKey, mTocEntry, mEditPosition);
         return true;
     }
 
@@ -214,7 +203,6 @@ public class EditTocEntryDialogFragment
         outState.putString(DBKey.KEY_TITLE, mTitle);
         outState.putParcelable(DBKey.DATE_FIRST_PUBLICATION, mFirstPublicationDate);
         outState.putString(DBKey.KEY_AUTHOR_FORMATTED, mAuthorName);
-        outState.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, mHasMultipleAuthors);
     }
 
     @Override
@@ -233,13 +221,11 @@ public class EditTocEntryDialogFragment
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
                               @NonNull final TocEntry tocEntry,
-                              final int position,
-                              final boolean hasMultipleAuthors) {
+                              final int position) {
 
-            final Bundle result = new Bundle(3);
+            final Bundle result = new Bundle(2);
             result.putParcelable(BKEY_TOC_ENTRY, tocEntry);
             result.putInt(BKEY_POSITION, position);
-            result.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, hasMultipleAuthors);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
@@ -272,18 +258,15 @@ public class EditTocEntryDialogFragment
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
             onResult(Objects.requireNonNull(result.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY),
-                     result.getInt(BKEY_POSITION),
-                     result.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS));
+                     result.getInt(BKEY_POSITION));
         }
 
         /**
          * Callback handler.
          *
-         * @param tocEntry           the modified entry
-         * @param hasMultipleAuthors flag as set by the user
+         * @param tocEntry the modified entry
          */
         public abstract void onResult(@NonNull TocEntry tocEntry,
-                                      final int position,
-                                      boolean hasMultipleAuthors);
+                                      final int position);
     }
 }

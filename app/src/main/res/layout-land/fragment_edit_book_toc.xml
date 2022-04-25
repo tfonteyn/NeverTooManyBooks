@@ -38,51 +38,30 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.8"
+            app:layout_constraintGuide_percent="0.75"
             />
 
 
-        <RadioGroup
-            android:id="@+id/rg_book_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/field_margin_start"
-            android:layout_marginTop="@dimen/field_margin_top"
-            android:orientation="vertical"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_book_type"
+            style="@style/TIL.ExposedDropdownMenu"
+            android:hint="@string/lbl_book_type"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:materialThemeOverlay="@style/ThemeOverlay.Material3.AutoCompleteTextView.OutlinedBox.Dense"
             app:layout_constraintStart_toStartOf="@id/col1"
             app:layout_constraintTop_toTopOf="parent"
             >
 
-            <RadioButton
-                android:id="@+id/rb_is_collection"
-                android:layout_width="wrap_content"
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/book_type"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/lbl_collection"
+                android:inputType="none"
+                tools:ignore="LabelFor"
+                tools:text="@string/lbl_collection"
                 />
 
-            <RadioButton
-                android:id="@+id/rb_is_anthology"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/lbl_anthology"
-                />
-
-            <RadioButton
-                android:id="@+id/rb_is_neither"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/neither"
-                />
-        </RadioGroup>
-
-        <Button
-            android:id="@+id/btn_add"
-            style="@style/Button.Action.Submit"
-            android:layout_marginTop="@dimen/field_margin_top"
-            android:text="@string/action_add"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/rg_book_type"
-            />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tocList"

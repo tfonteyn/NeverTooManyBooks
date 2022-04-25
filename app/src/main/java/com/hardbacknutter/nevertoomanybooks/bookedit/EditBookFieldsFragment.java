@@ -62,6 +62,10 @@ import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
+/**
+ * Note that the 'pick-list' fields are stored directly in the Book as well as the field.
+ * i.e. Authors, Series, Bookshelves
+ */
 public class EditBookFieldsFragment
         extends EditBookBaseFragment
         implements CoverHandler.CoverHandlerOwner {
@@ -231,6 +235,8 @@ public class EditBookFieldsFragment
             mCoverHandler[1].onBindView(mVb.coverImage1);
             mCoverHandler[1].attachOnClickListeners(getChildFragmentManager(), mVb.coverImage1);
         }
+
+        getFab().setVisibility(View.INVISIBLE);
 
         //noinspection ConstantConditions
         fields.forEach(field -> field.setVisibility(getView(), global, false, false));

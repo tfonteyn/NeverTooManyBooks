@@ -81,16 +81,6 @@ public class EditTextField<T, V extends EditText>
         mEnableReformat = enableReformat && formatter instanceof EditFieldFormatter;
     }
 
-    public EditTextField(@NonNull final FragmentId fragmentId,
-                         @IdRes final int fieldViewId,
-                         @NonNull final String fieldKey,
-                         @NonNull final String prefKey,
-                         @NonNull final FieldFormatter<T> formatter,
-                         final boolean enableReformat) {
-        super(fragmentId, fieldViewId, fieldKey, prefKey, formatter);
-        mEnableReformat = enableReformat && formatter instanceof EditFieldFormatter;
-    }
-
     /**
      * Set the id for the surrounding TextInputLayout (if this field has one).
      *

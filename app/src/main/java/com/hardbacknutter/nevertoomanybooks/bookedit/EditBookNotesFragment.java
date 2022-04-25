@@ -69,6 +69,8 @@ public class EditBookNotesFragment
 
         super.onPopulateViews(global, fields, book);
 
+        getFab().setVisibility(View.INVISIBLE);
+
         //noinspection ConstantConditions
         fields.forEach(field -> field.setVisibility(getView(), global, false, false));
     }

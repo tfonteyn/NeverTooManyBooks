@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields;
 
-import android.content.SharedPreferences;
-import android.view.View;
 import android.widget.RatingBar;
 
 import androidx.annotation.IdRes;
@@ -37,30 +35,10 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 public class RatingBarField
         extends BaseField<Float, RatingBar> {
 
-    /** Are we viewing {@code false} or editing {@code true} a Field. */
-    private final boolean mIsEditable;
-
     public RatingBarField(@NonNull final FragmentId fragmentId,
                           @IdRes final int fieldViewId,
-                          @NonNull final String fieldKey,
-                          final boolean isEditable) {
+                          @NonNull final String fieldKey) {
         super(fragmentId, fieldViewId, fieldKey, fieldKey);
-        mIsEditable = isEditable;
-    }
-
-    @Override
-    public void setParentView(@NonNull final View parent,
-                              @NonNull final SharedPreferences global) {
-        super.setParentView(parent, global);
-        if (mIsEditable) {
-            requireView().setOnRatingBarChangeListener((ratingBar, rating, fromUser) -> {
-                if (fromUser) {
-                    final Float previous = mRawValue;
-                    mRawValue = rating;
-                    notifyIfChanged(previous);
-                }
-            });
-        }
     }
 
     @Override

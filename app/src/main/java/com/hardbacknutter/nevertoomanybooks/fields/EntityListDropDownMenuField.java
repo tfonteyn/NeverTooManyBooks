@@ -24,48 +24,47 @@ import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 
-import androidx.annotation.ArrayRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.R;
+import java.util.List;
+
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 
 /**
- * The value is expected to be the list position.
- * <p>
- * A {@code null} value is always handled as {@code 0}.
+ * A {@code null} value is always handled as the 0'th element in the list.
  */
-public class ExposedDropDownMenuField
-        extends BaseField<Integer, AutoCompleteTextView> {
+public class EntityListDropDownMenuField<T extends Entity>
+        extends BaseField<Long, AutoCompleteTextView> {
 
     @NonNull
-    private final ExtArrayAdapter<CharSequence> mAdapter;
+    private final EntityArrayAdapter<T> mAdapter;
+    @NonNull
+    private final List<T> mItems;
 
     /**
      * Constructor.
      *
-     * @param context    Current context
-     * @param arrayResId to use; the array <strong>must not</strong> be empty
+     * @param context Current context
      */
-    public ExposedDropDownMenuField(@NonNull final FragmentId fragmentId,
-                                    @IdRes final int fieldViewId,
-                                    @NonNull final String fieldKey,
-                                    @NonNull final Context context,
-                                    @ArrayRes final int arrayResId) {
+    public EntityListDropDownMenuField(@NonNull final FragmentId fragmentId,
+                                       @IdRes final int fieldViewId,
+                                       @NonNull final String fieldKey,
+                                       @NonNull final Context context,
+                                       @NonNull final List<T> items) {
         super(fragmentId, fieldViewId, fieldKey, fieldKey);
-        mAdapter = ExtArrayAdapter.createFromResource(
-                context, R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Passthrough, arrayResId);
+        mItems = items;
+        mAdapter = new EntityArrayAdapter<>(context, items);
 
         SanityCheck.requirePositiveValue(mAdapter.getCount(), "mAdapter.getCount()");
     }
 
     @NonNull
-    public ExposedDropDownMenuField setTextInputLayoutId(@IdRes final int viewId) {
+    public EntityListDropDownMenuField<T> setTextInputLayoutId(@IdRes final int viewId) {
         addRelatedViews(viewId);
         return this;
     }
@@ -74,47 +73,50 @@ public class ExposedDropDownMenuField
     public void setParentView(@NonNull final View parent,
                               @NonNull final SharedPreferences global) {
         super.setParentView(parent, global);
-        requireView().setAdapter(mAdapter);
-        requireView().setOnItemClickListener((p, v, position, id) -> {
-            final Integer previous = mRawValue;
-            mRawValue = position;
+
+        final AutoCompleteTextView view = requireView();
+        view.setAdapter(mAdapter);
+        view.setOnItemClickListener((p, v, position, id) -> {
+            final Long previous = mRawValue;
+            mRawValue = mItems.get(position).getId();
             notifyIfChanged(previous);
         });
     }
 
     @Override
     @NonNull
-    public Integer getValue() {
-        return mRawValue != null ? mRawValue : 0;
+    public Long getValue() {
+        return mRawValue != null ? mRawValue : mItems.get(0).getId();
     }
 
     @Override
-    public void setValue(@Nullable final Integer value) {
-        super.setValue(value != null ? value : 0);
+    public void setValue(@Nullable final Long value) {
+        super.setValue(value != null ? value : mItems.get(0).getId());
 
         final AutoCompleteTextView view = getView();
         if (view != null) {
-            if (mRawValue >= 0 && mRawValue < mAdapter.getCount()) {
-                view.setText(mAdapter.getItem(mRawValue), false);
-            } else {
-                view.setText(mAdapter.getItem(0), false);
-            }
+            //noinspection ConstantConditions
+            final T current = mItems.stream()
+                                    .filter(item -> item.getId() == mRawValue)
+                                    .findFirst()
+                                    .orElse(mItems.get(0));
+            view.setText(current.getLabel(view.getContext()), false);
         }
     }
 
     @Override
     public void setInitialValue(@NonNull final DataManager source) {
-        mInitialValue = source.getInt(mFieldKey);
+        mInitialValue = source.getLong(mFieldKey);
         setValue(mInitialValue);
     }
 
     @Override
     void internalPutValue(@NonNull final DataManager target) {
-        target.putInt(mFieldKey, getValue());
+        target.putLong(mFieldKey, getValue());
     }
 
     @Override
-    boolean isEmpty(@Nullable final Integer value) {
-        return value == null || value == 0;
+    boolean isEmpty(@Nullable final Long value) {
+        return value == null || value == mItems.get(0).getId();
     }
 }

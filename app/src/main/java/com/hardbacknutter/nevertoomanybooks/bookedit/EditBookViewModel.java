@@ -36,6 +36,7 @@ import androidx.lifecycle.ViewModel;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
@@ -65,11 +66,12 @@ import com.hardbacknutter.nevertoomanybooks.fields.BitmaskChipGroupField;
 import com.hardbacknutter.nevertoomanybooks.fields.CompoundButtonField;
 import com.hardbacknutter.nevertoomanybooks.fields.DecimalEditTextField;
 import com.hardbacknutter.nevertoomanybooks.fields.EditTextField;
-import com.hardbacknutter.nevertoomanybooks.fields.ExposedDropDownMenuField;
+import com.hardbacknutter.nevertoomanybooks.fields.EntityListDropDownMenuField;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
-import com.hardbacknutter.nevertoomanybooks.fields.RatingBarField;
+import com.hardbacknutter.nevertoomanybooks.fields.RatingBarEditField;
+import com.hardbacknutter.nevertoomanybooks.fields.StringArrayDropDownMenuField;
 import com.hardbacknutter.nevertoomanybooks.fields.TextViewField;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormatter;
@@ -819,7 +821,7 @@ public class EditBookViewModel
                 initFieldsNotes(context, fragmentId);
                 break;
             case Toc:
-                // no fields in this group
+                initFieldsToc(context, fragmentId);
                 break;
             case ExternalId:
                 initFieldsExternalId(fragmentId);
@@ -852,11 +854,10 @@ public class EditBookViewModel
                             .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         // Not using a EditIsbn custom View, as we want to be able to enter invalid codes here.
-
         mFields.add(new EditTextField<>(fragmentId, R.id.isbn, DBKey.KEY_ISBN)
                             .setTextInputLayoutId(R.id.lbl_isbn));
         // don't do this for now. There is a scan icon as end-icon.
-//                            .setCustomEndIcon(TextInputLayout.END_ICON_CLEAR_TEXT)
+        //                  .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
 
         mFields.add(new AutoCompleteTextField(fragmentId, R.id.language, DBKey.KEY_LANGUAGE,
                                               mLanguageFormatter, true,
@@ -871,12 +872,12 @@ public class EditBookViewModel
 
         // Personal fields
 
-        // The Bookshelves are a read-only text field. A click will bring up an editor.
-        // Note how we combine an {@link EditTextField} with a (non Edit) FieldFormatter
-        mFields.add(new EditTextField<>(fragmentId, R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
+        mFields.add(new TextViewField<>(fragmentId, R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
                                         DBKey.FK_BOOKSHELF,
-                                        mNormalDetailListFormatter, true)
-                            .setTextInputLayoutId(R.id.lbl_bookshelves));
+                                        mNormalDetailListFormatter)
+                            .setTextInputLayoutId(R.id.lbl_bookshelves)
+                            .setValidator(field -> field.setErrorIfEmpty(
+                                    mErrStrNonBlankRequired)));
     }
 
     private void initFieldsPublication(@NonNull final FragmentId fragmentId) {
@@ -897,12 +898,14 @@ public class EditBookViewModel
         mFields.add(new TextViewField<>(fragmentId, R.id.first_publication,
                                         DBKey.DATE_FIRST_PUBLICATION,
                                         mDateFormatter)
-                            .setTextInputLayoutId(R.id.lbl_first_publication));
+                            .setTextInputLayoutId(R.id.lbl_first_publication)
+                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         mFields.add(new TextViewField<>(fragmentId, R.id.date_published,
                                         DBKey.DATE_BOOK_PUBLICATION,
                                         mDateFormatter)
-                            .setTextInputLayoutId(R.id.lbl_date_published));
+                            .setTextInputLayoutId(R.id.lbl_date_published)
+                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         mFields.add(new EditTextField<>(fragmentId, R.id.pages, DBKey.KEY_PAGES)
                             .setTextInputLayoutId(R.id.lbl_pages)
@@ -932,11 +935,11 @@ public class EditBookViewModel
 
     private void initFieldsNotes(@NonNull final Context context,
                                  @NonNull final FragmentId fragmentId) {
-        mFields.add(new CompoundButtonField(fragmentId, R.id.cbx_read, DBKey.BOOL_READ, true));
+        mFields.add(new CompoundButtonField(fragmentId, R.id.cbx_read, DBKey.BOOL_READ));
 
-        mFields.add(new CompoundButtonField(fragmentId, R.id.cbx_signed, DBKey.BOOL_SIGNED, true));
+        mFields.add(new CompoundButtonField(fragmentId, R.id.cbx_signed, DBKey.BOOL_SIGNED));
 
-        mFields.add(new RatingBarField(fragmentId, R.id.rating, DBKey.KEY_RATING, true));
+        mFields.add(new RatingBarEditField(fragmentId, R.id.rating, DBKey.KEY_RATING));
 
         mFields.add(new EditTextField<>(fragmentId, R.id.notes, DBKey.KEY_PRIVATE_NOTES)
                             .setTextInputLayoutId(R.id.lbl_notes)
@@ -954,14 +957,14 @@ public class EditBookViewModel
                             .setTextInputLayoutId(R.id.lbl_price_paid_currency)
                             .addRelatedViews(R.id.lbl_price_paid, R.id.price_paid_currency));
 
-        mFields.add(new ExposedDropDownMenuField(fragmentId, R.id.condition,
-                                                 DBKey.KEY_BOOK_CONDITION,
-                                                 context, R.array.conditions_book, true)
+        mFields.add(new StringArrayDropDownMenuField(fragmentId, R.id.condition,
+                                                     DBKey.KEY_BOOK_CONDITION,
+                                                     context, R.array.conditions_book)
                             .setTextInputLayoutId(R.id.lbl_condition));
 
-        mFields.add(new ExposedDropDownMenuField(fragmentId, R.id.condition_cover,
-                                                 DBKey.KEY_BOOK_CONDITION_COVER,
-                                                 context, R.array.conditions_dust_cover, true)
+        mFields.add(new StringArrayDropDownMenuField(fragmentId, R.id.condition_cover,
+                                                     DBKey.KEY_BOOK_CONDITION_COVER,
+                                                     context, R.array.conditions_dust_cover)
                             .setTextInputLayoutId(R.id.lbl_condition_cover));
 
         mFields.add(new AutoCompleteTextField(fragmentId, R.id.location, DBKey.KEY_LOCATION,
@@ -970,16 +973,19 @@ public class EditBookViewModel
 
         mFields.add(new TextViewField<>(fragmentId, R.id.date_acquired, DBKey.DATE_ACQUIRED,
                                         mDateFormatter)
-                            .setTextInputLayoutId(R.id.lbl_date_acquired));
+                            .setTextInputLayoutId(R.id.lbl_date_acquired)
+                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         mFields.add(new TextViewField<>(fragmentId, R.id.read_start, DBKey.DATE_READ_START,
                                         mDateFormatter)
                             .setTextInputLayoutId(R.id.lbl_read_start)
+                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
                             .setValidator(this::validateReadStartAndEndFields));
 
         mFields.add(new TextViewField<>(fragmentId, R.id.read_end, DBKey.DATE_READ_END,
                                         mDateFormatter)
                             .setTextInputLayoutId(R.id.lbl_read_end)
+                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
                             .setValidator(this::validateReadStartAndEndFields));
     }
 
@@ -1010,6 +1016,15 @@ public class EditBookViewModel
             startField.setError(null);
             endField.setError(null);
         }
+    }
+
+    private void initFieldsToc(@NonNull final Context context,
+                               @NonNull final FragmentId fragmentId) {
+        mFields.add(new EntityListDropDownMenuField<>(fragmentId, R.id.book_type,
+                                                      DBKey.BITMASK_TOC,
+                                                      context,
+                                                      Arrays.asList(Book.ContentType.values()))
+                            .setTextInputLayoutId(R.id.lbl_book_type));
     }
 
     private void initFieldsExternalId(@NonNull final FragmentId fragmentId) {

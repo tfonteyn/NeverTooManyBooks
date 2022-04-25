@@ -63,6 +63,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
 /**
  * Contains data in the <strong>Activity</strong> scope;
  * i.e. shared between all fragments in the {@link ShowBookPagerFragment} pager adapter.
+ * <p>
+ * This means that we save cpu-cycles as we don't have to create the field definitions
+ * for each page change, but also means we cannot display more then one page at a time.
  */
 public class ShowBookDetailsActivityViewModel
         extends ViewModel {
@@ -270,8 +273,7 @@ public class ShowBookDetailsActivityViewModel
         mFields.add(new TextViewField<>(FragmentId.Main, R.id.location, DBKey.KEY_LOCATION)
                             .addRelatedViews(R.id.lbl_location, R.id.lbl_location_long));
 
-        mFields.add(new RatingBarField(FragmentId.Main, R.id.rating, DBKey.KEY_RATING,
-                                       false));
+        mFields.add(new RatingBarField(FragmentId.Main, R.id.rating, DBKey.KEY_RATING));
 
         mFields.add(new TextViewField<>(FragmentId.Main, R.id.condition, DBKey.KEY_BOOK_CONDITION,
                                         new StringArrayResFormatter(

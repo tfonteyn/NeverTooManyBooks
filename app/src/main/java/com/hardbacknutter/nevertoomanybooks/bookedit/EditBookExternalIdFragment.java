@@ -73,6 +73,8 @@ public class EditBookExternalIdFragment
                          @NonNull final Book book) {
         super.onPopulateViews(global, fields, book);
 
+        getFab().setVisibility(View.INVISIBLE);
+
         // Force hidden fields to stay hidden; this will allow us to temporarily remove
         // some sites without removing the data.
         //noinspection ConstantConditions

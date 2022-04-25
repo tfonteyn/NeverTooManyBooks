@@ -46,28 +46,21 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 public class CompoundButtonField
         extends BaseField<Boolean, CompoundButton> {
 
-    /** Are we viewing {@code false} or editing {@code true} a Field. */
-    private final boolean mIsEditable;
-
     public CompoundButtonField(@NonNull final FragmentId fragmentId,
                                @IdRes final int fieldViewId,
-                               @NonNull final String fieldKey,
-                               final boolean isEditable) {
+                               @NonNull final String fieldKey) {
         super(fragmentId, fieldViewId, fieldKey, fieldKey);
-        mIsEditable = isEditable;
     }
 
     @Override
     public void setParentView(@NonNull final View parent,
                               @NonNull final SharedPreferences global) {
         super.setParentView(parent, global);
-        if (mIsEditable) {
-            requireView().setOnCheckedChangeListener((buttonView, isChecked) -> {
-                final Boolean previous = mRawValue;
-                mRawValue = isChecked;
-                notifyIfChanged(previous);
-            });
-        }
+        requireView().setOnCheckedChangeListener((buttonView, isChecked) -> {
+            final Boolean previous = mRawValue;
+            mRawValue = isChecked;
+            notifyIfChanged(previous);
+        });
     }
 
     @Override
