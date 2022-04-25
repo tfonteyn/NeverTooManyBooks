@@ -51,6 +51,7 @@
         <!-- don't want it to close to the edge of the screen. -->
         <item name="android:layout_marginStart">12dp</item>
         <item name="android:contentDescription">@string/action_select</item>
+        <item name="buttonTint">@color/compound_button_tint</item>
     </style>
 
 
@@ -63,7 +64,7 @@
     </style>
 
     <!-- a row inside a list details row; not to be used directly in layouts -->
-    <style name="Base.RowEditor.Text" parent="">
+    <style name="Base.RowEditor.Text" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:ellipsize">marquee</item>

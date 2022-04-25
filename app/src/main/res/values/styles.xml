@@ -215,7 +215,7 @@
         <item name="android:contentDescription">@string/btn_show_toc_long</item>
     </style>
 
-    <!-- ImageButton -->
+    <!-- ImageButton - using no-parent is easier then adjusting "Widget.Material3.Button.IconButton" -->
     <style name="Button.InfoPopup" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

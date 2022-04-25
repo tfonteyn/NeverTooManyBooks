@@ -23,7 +23,7 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Base style; not to be used directly in layouts. -->
-    <style name="Field">
+    <style name="Field" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textIsSelectable">true</item>
@@ -56,14 +56,6 @@
 
     <style name="Field.Isbn">
         <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
-    </style>
-
-    <!-- Provides a very quick edit to avoid editing a whole book. -->
-    <style name="Field.Checkable" parent="Widget.Material3.CompoundButton.CheckBox">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
-        <item name="android:layout_marginTop">@dimen/field_margin_top</item>
     </style>
 
     <!-- Book personal notes. -->
@@ -102,5 +94,13 @@
         <item name="android:layout_marginEnd">0dp</item>
     </style>
 
+
+    <style name="Field.Checkable" parent="Widget.Material3.CompoundButton.CheckBox">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
+        <item name="android:layout_marginTop">@dimen/field_margin_top</item>
+        <item name="buttonTint">@color/compound_button_tint</item>
+    </style>
 
 </resources>
