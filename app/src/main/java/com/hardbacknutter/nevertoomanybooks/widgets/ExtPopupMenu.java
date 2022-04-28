@@ -337,7 +337,7 @@ public class ExtPopupMenu {
                @NonNull final View itemView) {
             super(itemView);
 
-            if (viewType == MenuItemListAdapter.MENU_ITEM) {
+            if (viewType == R.layout.row_simple_list_item) {
                 textView = itemView.findViewById(R.id.menu_item);
             } else {
                 textView = null;
@@ -347,11 +347,6 @@ public class ExtPopupMenu {
 
     private class MenuItemListAdapter
             extends RecyclerView.Adapter<Holder> {
-
-        /** ViewType. */
-        static final int MENU_DIVIDER = 0;
-        /** ViewType. */
-        static final int MENU_ITEM = 1;
 
         @NonNull
         private final Drawable mSubMenuPointer;
@@ -416,9 +411,9 @@ public class ExtPopupMenu {
         @Override
         public int getItemViewType(final int position) {
             if (mList.get(position).getItemId() == R.id.MENU_DIVIDER) {
-                return MENU_DIVIDER;
+                return R.layout.row_simple_list_divider;
             } else {
-                return MENU_ITEM;
+                return R.layout.row_simple_list_item;
             }
         }
 
@@ -426,12 +421,8 @@ public class ExtPopupMenu {
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final View root;
-            if (viewType == MENU_ITEM) {
-                root = mInflater.inflate(R.layout.row_simple_list_item, parent, false);
-            } else {
-                root = mInflater.inflate(R.layout.row_simple_list_divider, parent, false);
-            }
+            final View root = mInflater.inflate(viewType, parent, false);
+
             final Holder holder = new Holder(viewType, root);
             if (holder.textView != null) {
                 holder.textView.setOnClickListener(v -> onItemClicked(holder));
