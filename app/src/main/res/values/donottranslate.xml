@@ -183,46 +183,47 @@
     <!-- ListPreference - Booklist Filter -->
     <string-array name="pe_bob_filter_read">
         <item>@string/btn_all_books</item>
-        <item>@string/pe_bob_filter_read_yes</item>
         <item>@string/pe_bob_filter_read_no</item>
+        <item>@string/pe_bob_filter_read_yes</item>
     </string-array>
 
     <!-- ListPreference - Booklist Filter -->
     <string-array name="pe_bob_filter_signed">
         <item>@string/btn_all_books</item>
-        <item>@string/pe_bob_filter_signed_yes</item>
         <item>@string/pe_bob_filter_signed_no</item>
+        <item>@string/pe_bob_filter_signed_yes</item>
     </string-array>
 
     <!-- ListPreference - Booklist Filter -->
     <string-array name="pe_bob_filter_anthology">
         <item>@string/btn_all_books</item>
-        <item>@string/pe_bob_filter_anthology_yes</item>
         <item>@string/pe_bob_filter_anthology_no</item>
+        <item>@string/pe_bob_filter_anthology_yes</item>
     </string-array>
 
     <!-- ListPreference - Booklist Filter -->
     <string-array name="pe_bob_filter_lending">
         <item>@string/btn_all_books</item>
-        <item>@string/pe_bob_filter_lend_out_yes</item>
         <item>@string/pe_bob_filter_lend_out_no</item>
+        <item>@string/pe_bob_filter_lend_out_yes</item>
     </string-array>
 
     <!-- ListPreference - Booklist Filter -->
     <string-array name="pe_bob_filter_isbn">
         <item>@string/btn_all_books</item>
-        <item>@string/pe_bob_filter_isbn_yes</item>
         <item>@string/pe_bob_filter_isbn_no</item>
+        <item>@string/pe_bob_filter_isbn_yes</item>
     </string-array>
 
     <!-- shared for all Boolean Filters:
          don't-use-filter (-1),
+         filter-false (0)
          filter-true (1),
-         filter-false (0) -->
+    -->
     <string-array name="pv_bob_filter_values">
         <item>-1</item>
-        <item>1</item>
         <item>0</item>
+        <item>1</item>
     </string-array>
 
     <!-- this is a multi-select, i.e. each item is a checkbox, the user can select any/all
