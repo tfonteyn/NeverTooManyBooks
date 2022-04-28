@@ -36,7 +36,8 @@ import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 public abstract class RowChangedListener
         extends FragmentLauncherBase {
 
-    public static final String REQUEST_KEY = "rk:RowChangedListener";
+    private static final String TAG = "RowChangedListener";
+    public static final String REQUEST_KEY = TAG + ":rk";
     private static final String KEY = "key";
     private static final String ITEM_ID = "item";
 
