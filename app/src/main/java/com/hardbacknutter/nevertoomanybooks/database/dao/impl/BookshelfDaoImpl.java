@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -157,8 +158,8 @@ public class BookshelfDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<Bookshelf> getAll() {
-        final ArrayList<Bookshelf> list = new ArrayList<>();
+    public List<Bookshelf> getAll() {
+        final List<Bookshelf> list = new ArrayList<>();
         try (Cursor cursor = fetchAllUserShelves()) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {

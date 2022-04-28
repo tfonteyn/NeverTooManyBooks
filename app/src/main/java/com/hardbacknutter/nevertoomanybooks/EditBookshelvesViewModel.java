@@ -29,7 +29,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -43,7 +43,7 @@ public class EditBookshelvesViewModel
     private int mSelectedPosition = RecyclerView.NO_POSITION;
 
     /** The list we're editing. */
-    private ArrayList<Bookshelf> mList;
+    private List<Bookshelf> mList;
 
     /**
      * Pseudo constructor.
@@ -79,7 +79,7 @@ public class EditBookshelvesViewModel
     }
 
     @NonNull
-    ArrayList<Bookshelf> getList() {
+    List<Bookshelf> getList() {
         return mList;
     }
 

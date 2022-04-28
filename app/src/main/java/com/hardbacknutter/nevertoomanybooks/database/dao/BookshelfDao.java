@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -72,7 +73,7 @@ public interface BookshelfDao {
      * @return a list of all bookshelves in the database.
      */
     @NonNull
-    ArrayList<Bookshelf> getAll();
+    List<Bookshelf> getAll();
 
     /**
      * Get all Bookshelves; mainly for the purpose of exports.

@@ -29,7 +29,7 @@ import androidx.core.util.Pair;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -95,8 +95,7 @@ public class StripInfoBePreferencesFragment
      */
     @NonNull
     private Pair<CharSequence[], CharSequence[]> getBookshelves() {
-        final ArrayList<Bookshelf> all;
-        all = ServiceLocator.getInstance().getBookshelfDao().getAll();
+        final List<Bookshelf> all = ServiceLocator.getInstance().getBookshelfDao().getAll();
         final CharSequence[] entries = new CharSequence[all.size()];
         final CharSequence[] entryValues = new CharSequence[all.size()];
 

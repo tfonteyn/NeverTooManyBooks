@@ -30,6 +30,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -112,8 +113,7 @@ public class StyleViewModel
      */
     @NonNull
     Pair<CharSequence[], CharSequence[]> getBookshelves() {
-        final ArrayList<Bookshelf> all;
-        all = ServiceLocator.getInstance().getBookshelfDao().getAll();
+        final List<Bookshelf> all = ServiceLocator.getInstance().getBookshelfDao().getAll();
         final CharSequence[] entries = new CharSequence[all.size()];
         final CharSequence[] entryValues = new CharSequence[all.size()];
 
