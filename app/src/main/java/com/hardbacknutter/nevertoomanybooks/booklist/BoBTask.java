@@ -36,10 +36,13 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.FtsMatchFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
@@ -47,6 +50,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 
 /**
  * Logic flow is as follows.
@@ -171,117 +178,46 @@ public class BoBTask
                 builder.addDomain(domainDetails);
             }
 
-            // Add Calibre bridging data ?
             if (CalibreHandler.isSyncEnabled(global)) {
                 addCalibreDomains(builder);
             }
 
-            // Add the conditional domains; global level.
-
-            if (DBKey.isUsed(global, DBKey.BITMASK_EDITION)) {
-                // The edition bitmask
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_BOOK_EDITION_BITMASK,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.BITMASK_EDITION)));
-            }
-
-            if (DBKey.isUsed(global, DBKey.BOOL_SIGNED)) {
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_BOOK_SIGNED,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.BOOL_SIGNED)));
-            }
-
-            if (DBKey.isUsed(global, DBKey.KEY_BOOK_CONDITION)) {
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_BOOK_CONDITION,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_BOOK_CONDITION)));
-            }
-
-            if (DBKey.isUsed(global, DBKey.KEY_LOANEE)) {
-                // Used to display/hide the 'lend' icon for each book.
-                builder.addLeftOuterJoin(DBDefinitions.TBL_BOOK_LOANEE);
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_LOANEE,
-                        DBDefinitions.TBL_BOOK_LOANEE.dot(DBKey.KEY_LOANEE)));
-            }
-
-            // Add the conditional domains; style level.
-            final ListScreenBookFields bookFields = style.getListScreenBookFields();
-
-            if (bookFields.isShowField(global, ListScreenBookFields.PK_BOOKSHELVES)) {
-                // This collects a CSV list of the bookshelves the book is on.
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_BOOKSHELF_NAME_CSV,
-                        BooklistBuilder.EXP_BOOKSHELF_NAME_CSV));
-            }
-
-            // we fetch ONLY the primary author to show on the Book level
-            if (bookFields.isShowField(global, ListScreenBookFields.PK_AUTHOR)) {
-                builder.addDomain(AuthorDaoImpl.createDisplayDomainExpression(
-                        style.isShowAuthorByGivenName()));
-            }
-
-            // for now, don't get the author type.
-//              if (bookFields.isShowField(context, ListScreenBookFields.PK_AUTHOR_TYPE)) {
-//                  builder.addDomain(new DomainExpression(
-//                          DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
-//                          DBDefinitions.TBL_BOOK_AUTHOR
-//                          .dot(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)));
-//              }
-
-            if (bookFields.isShowField(global, ListScreenBookFields.PK_PUBLISHER)) {
-                // Collect a CSV list of the publishers of the book
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_PUBLISHER_NAME_CSV,
-                        BooklistBuilder.EXP_PUBLISHER_NAME_CSV));
-            }
-
-            if (bookFields.isShowField(global, ListScreenBookFields.PK_PUB_DATE)) {
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.DATE_BOOK_PUBLICATION)));
-            }
-
-            if (bookFields.isShowField(global, ListScreenBookFields.PK_FORMAT)) {
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_BOOK_FORMAT,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_FORMAT)));
-            }
-
-            if (bookFields.isShowField(global, ListScreenBookFields.PK_LOCATION)) {
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_BOOK_LOCATION,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_LOCATION)));
-            }
-
-            if (bookFields.isShowField(global, ListScreenBookFields.PK_RATING)) {
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_BOOK_RATING,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_RATING)));
-            }
+            addConditionalGlobalDomains(builder, global);
+            addConditionalStyleDomains(builder, global, style);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
                 Log.d(TAG, "mSearchCriteria=" + mSearchCriteria);
             }
 
-            // if we have a list of ID's, ignore other criteria
-            if (mSearchCriteria.getBookIdList().isEmpty()) {
-                // Criteria supported by FTS
-                builder.addFilterOnKeywords(mSearchCriteria.getFtsBookTitle(),
-                                            mSearchCriteria.getFtsSeriesTitle(),
-                                            mSearchCriteria.getFtsAuthor(),
-                                            mSearchCriteria.getFtsPublisher(),
-                                            mSearchCriteria.getFtsKeywords());
-
-                builder.addFilterOnLoanee(mSearchCriteria.getLoanee());
-            } else {
-                builder.addFilterOnBookIdList(mSearchCriteria.getBookIdList());
-            }
-
-            // if we have any criteria set at all, the build should expand the book list.
             if (!mSearchCriteria.isEmpty()) {
+                // if we have a list of ID's, we'll ignore other criteria
+                if (mSearchCriteria.getBookIdList().isEmpty()) {
+                    // Criteria supported by FTS
+                    final String query = mSearchCriteria.getFtsMatchQuery();
+                    if (!query.isEmpty()) {
+                        builder.addFilter(new FtsMatchFilter(query));
+                    }
+
+                    // Add a filter to retrieve only books lend to the given person (exact name).
+                    final String loanee = mSearchCriteria.getLoanee();
+                    if (loanee != null && !loanee.trim().isEmpty()) {
+                        builder.addFilter(c -> "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
+                                               + " WHERE " + TBL_BOOK_LOANEE.dot(DBKey.KEY_LOANEE)
+                                               + "='" + SqlEncode.string(loanee) + '\''
+                                               + " AND " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS)
+                                               + ')');
+                    }
+                } else {
+                    // Add a where clause for: "AND books._id IN (list)".
+                    builder.addFilter(new NumberListFilter<>(
+                            new DomainExpression(DOM_PK_ID, TBL_BOOKS.dot(DBKey.PK_ID)),
+                            mSearchCriteria.getBookIdList()));
+                }
+
+                // when criteria are used, the build should expand the book list.
                 builder.setRebuildMode(RebuildBooklist.Expanded);
             }
+
 
             // Build the underlying data
             booklist = builder.build(context);
@@ -301,6 +237,94 @@ public class BoBTask
                 booklist.close();
             }
             throw e;
+        }
+    }
+
+    private void addConditionalGlobalDomains(final BooklistBuilder builder,
+                                             final SharedPreferences global) {
+        if (DBKey.isUsed(global, DBKey.BITMASK_EDITION)) {
+            // The edition bitmask
+            builder.addDomain(new DomainExpression(
+                    DBDefinitions.DOM_BOOK_EDITION_BITMASK,
+                    DBDefinitions.TBL_BOOKS.dot(DBKey.BITMASK_EDITION)));
+        }
+
+        if (DBKey.isUsed(global, DBKey.BOOL_SIGNED)) {
+            builder.addDomain(new DomainExpression(
+                    DBDefinitions.DOM_BOOK_SIGNED,
+                    DBDefinitions.TBL_BOOKS.dot(DBKey.BOOL_SIGNED)));
+        }
+
+        if (DBKey.isUsed(global, DBKey.KEY_BOOK_CONDITION)) {
+            builder.addDomain(new DomainExpression(
+                    DBDefinitions.DOM_BOOK_CONDITION,
+                    DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_BOOK_CONDITION)));
+        }
+
+        if (DBKey.isUsed(global, DBKey.KEY_LOANEE)) {
+            // Used to display/hide the 'lend' icon for each book.
+            builder.addLeftOuterJoin(DBDefinitions.TBL_BOOK_LOANEE);
+            builder.addDomain(new DomainExpression(
+                    DBDefinitions.DOM_LOANEE,
+                    DBDefinitions.TBL_BOOK_LOANEE.dot(DBKey.KEY_LOANEE)));
+        }
+    }
+
+    private void addConditionalStyleDomains(@NonNull final BooklistBuilder builder,
+                                            @NonNull final SharedPreferences global,
+                                            @NonNull final ListStyle style) {
+        final ListScreenBookFields bookFields = style.getListScreenBookFields();
+
+        if (bookFields.isShowField(global, ListScreenBookFields.PK_BOOKSHELVES)) {
+            // This collects a CSV list of the bookshelves the book is on.
+            builder.addDomain(new DomainExpression(
+                    DBDefinitions.DOM_BOOKSHELF_NAME_CSV,
+                    BooklistBuilder.EXP_BOOKSHELF_NAME_CSV));
+        }
+
+        // we fetch ONLY the primary author to show on the Book level
+        if (bookFields.isShowField(global, ListScreenBookFields.PK_AUTHOR)) {
+            builder.addDomain(AuthorDaoImpl.createDisplayDomainExpression(
+                    style.isShowAuthorByGivenName()));
+        }
+
+        // for now, don't get the author type.
+//              if (bookFields.isShowField(context, ListScreenBookFields.PK_AUTHOR_TYPE)) {
+//                  builder.addDomain(new DomainExpression(
+//                          DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
+//                          DBDefinitions.TBL_BOOK_AUTHOR
+//                          .dot(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)));
+//              }
+
+        if (bookFields.isShowField(global, ListScreenBookFields.PK_PUBLISHER)) {
+            // Collect a CSV list of the publishers of the book
+            builder.addDomain(new DomainExpression(
+                    DBDefinitions.DOM_PUBLISHER_NAME_CSV,
+                    BooklistBuilder.EXP_PUBLISHER_NAME_CSV));
+        }
+
+        if (bookFields.isShowField(global, ListScreenBookFields.PK_PUB_DATE)) {
+            builder.addDomain(new DomainExpression(
+                    DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
+                    DBDefinitions.TBL_BOOKS.dot(DBKey.DATE_BOOK_PUBLICATION)));
+        }
+
+        if (bookFields.isShowField(global, ListScreenBookFields.PK_FORMAT)) {
+            builder.addDomain(new DomainExpression(
+                    DBDefinitions.DOM_BOOK_FORMAT,
+                    DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_FORMAT)));
+        }
+
+        if (bookFields.isShowField(global, ListScreenBookFields.PK_LOCATION)) {
+            builder.addDomain(new DomainExpression(
+                    DBDefinitions.DOM_BOOK_LOCATION,
+                    DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_LOCATION)));
+        }
+
+        if (bookFields.isShowField(global, ListScreenBookFields.PK_RATING)) {
+            builder.addDomain(new DomainExpression(
+                    DBDefinitions.DOM_BOOK_RATING,
+                    DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_RATING)));
         }
     }
 

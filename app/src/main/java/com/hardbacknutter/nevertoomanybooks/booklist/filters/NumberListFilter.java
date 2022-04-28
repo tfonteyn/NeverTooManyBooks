@@ -26,56 +26,48 @@ import androidx.annotation.NonNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 
 /**
  * an SQL WHERE clause (column IN (a,b,c,...)
+ *
+ * @param <T> type of the elements of the 'IN' list.
  */
-public class NumberListFilter
+public class NumberListFilter<T extends Number>
         implements Filter {
 
     @NonNull
-    private final TableDefinition mTable;
-    @NonNull
-    private final String mDomainKey;
+    private final DomainExpression mDomainExpression;
 
-    /** CSV list of (escaped) values. */
     @NonNull
-    private final String mCriteria;
+    private final List<T> mList;
 
     /**
      * Constructor.
      *
-     * @param table     to use by the expression
-     * @param domainKey to use by the expression
-     * @param list      of values
-     * @param <T>       type the elements of the 'IN' list.
+     * @param domainExpression to use by the expression
+     * @param list             of values
      */
-    public <T extends Number> NumberListFilter(@NonNull final TableDefinition table,
-                                               @NonNull final String domainKey,
-                                               @NonNull final List<T> list) {
-        mTable = table;
-        mDomainKey = domainKey;
-        mCriteria = list.stream()
-                        .map(String::valueOf)
-                        .collect(Collectors.joining(","));
-    }
+    public NumberListFilter(@NonNull final DomainExpression domainExpression,
+                            @NonNull final List<T> list) {
 
-    /**
-     * Copy constructor.
-     *
-     * @param filter to copy from
-     */
-    public NumberListFilter(@NonNull final NumberListFilter filter) {
-        mTable = filter.mTable;
-        mDomainKey = filter.mDomainKey;
-        mCriteria = filter.mCriteria;
+        mDomainExpression = domainExpression;
+        mList = list;
     }
 
     @Override
     @NonNull
     public String getExpression(@NonNull final Context context) {
-        return '(' + mTable.dot(mDomainKey) + " IN (" + mCriteria + "))";
+        // micro? optimization...
+        if (mList.size() == 1) {
+            return '(' + mDomainExpression.getExpression() + '=' + mList.get(0) + ')';
+        } else {
+            return '(' + mDomainExpression.getExpression() + " IN ("
+                   + mList.stream()
+                          .map(String::valueOf)
+                          .collect(Collectors.joining(","))
+                   + "))";
+        }
     }
 
     @Override
@@ -87,9 +79,8 @@ public class NumberListFilter
     @NonNull
     public String toString() {
         return "NumberListFilter{"
-               + "mTable=" + mTable.getName()
-               + ", mDomain=" + mDomainKey
-               + ", mCriteria=`" + mCriteria + '`'
+               + "mDomainExpression=" + mDomainExpression
+               + ", mList=`" + mList + '`'
                + '}';
     }
 }

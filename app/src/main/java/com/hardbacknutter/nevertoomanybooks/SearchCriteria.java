@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
 
@@ -176,6 +177,15 @@ public class SearchCriteria
         if (bookIdList != null) {
             mBookIdList.addAll(bookIdList);
         }
+    }
+
+    @NonNull
+    public String getFtsMatchQuery() {
+        return FtsDao.createMatchString(mFtsBookTitle,
+                                        mFtsSeriesTitle,
+                                        mFtsAuthor,
+                                        mFtsPublisher,
+                                        mFtsKeywords);
     }
 
     @Nullable
