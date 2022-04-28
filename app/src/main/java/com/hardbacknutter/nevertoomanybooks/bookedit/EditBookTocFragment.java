@@ -589,7 +589,7 @@ public class EditBookTocFragment
             public void launch(@NonNull final Bundle bookData,
                                final boolean hasOtherEditions) {
 
-                bookData.putString(BKEY_REQUEST_KEY, RK_CONFIRM_TOC);
+                bookData.putString(BKEY_REQUEST_KEY, mRequestKey);
                 bookData.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
 
                 final DialogFragment fragment = new ConfirmTocDialogFragment();
