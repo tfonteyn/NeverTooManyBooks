@@ -32,7 +32,7 @@ import androidx.annotation.Nullable;
 public interface Filter {
 
     /**
-     * A Filter must implement this method.
+     * A Filter must implement this method and return a valid WHERE clause expression.
      *
      * @param context Current context
      *
