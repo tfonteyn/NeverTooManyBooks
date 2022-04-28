@@ -66,7 +66,7 @@
         <item name="colorOnPrimaryContainer">#ff21005d</item>
         <item name="colorPrimaryInverse">#ffd0bcff</item>
 
-        <item name="colorSecondary">@color/teal_700</item>
+        <item name="colorSecondary">@color/teal_500</item>
         <item name="colorOnSecondary">@color/white</item>
         <item name="colorSecondaryContainer">#ffe8def8</item>
         <item name="colorOnSecondaryContainer">#ff1d192b</item>
