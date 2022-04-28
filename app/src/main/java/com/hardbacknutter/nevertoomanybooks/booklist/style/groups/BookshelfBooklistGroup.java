@@ -26,17 +26,16 @@ import androidx.preference.PreferenceScreen;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOKSHELF_NAME;
 
 /**
  * All plumbing present, but the 'under each' preference is not exposed to the user yet,
@@ -109,7 +108,7 @@ public class BookshelfBooklistGroup
                 .addGroupDomain(
                         // We do not sort on the key domain but add the OB column instead
                         new DomainExpression(DOM_SORTING,
-                                             TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME),
+                                             TBL_BOOKSHELF.dot(DBKey.KEY_BOOKSHELF_NAME),
                                              DomainExpression.SORT_ASC))
                 .addGroupDomain(
                         // Group by id (we want the id available)
@@ -121,8 +120,8 @@ public class BookshelfBooklistGroup
     @NonNull
     protected DomainExpression createDisplayDomainExpression() {
         // Not sorted; we sort on the OB domain as defined in #createGroupKey.
-        return new DomainExpression(DBDefinitions.DOM_BOOKSHELF_NAME,
-                                    DBDefinitions.TBL_BOOKSHELF.dot(DBKey.KEY_BOOKSHELF_NAME));
+        return new DomainExpression(DOM_BOOKSHELF_NAME,
+                                    TBL_BOOKSHELF.dot(DBKey.KEY_BOOKSHELF_NAME));
     }
 
     @Override
