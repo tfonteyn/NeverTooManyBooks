@@ -22,17 +22,15 @@ package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 
 /**
  * An SQL WHERE clause  (column LIKE '%text%').
  * Note that the LIKE usage means this is case insensitive.
  * <p>
- * If we ever use this class... sql concat is a security issue.
+ * If we ever use this class... sql concat with user-entered strings is a security issue.
  * MUST use PreparedStatements instead !
  *
  * <pre>
@@ -49,58 +47,42 @@ public class WildcardFilter
         implements Filter {
 
     @NonNull
-    private final TableDefinition mTable;
-    @NonNull
-    private final String mDomainKey;
+    private final DomainExpression mDomainExpression;
+
     @NonNull
     private final String mCriteria;
 
     /**
      * Constructor.
      *
-     * @param table     to use by the expression
-     * @param domainKey to use by the expression
-     * @param criteria  to use by the expression
+     * @param domainExpression to use by the expression
+     * @param criteria         to use by the expression
      */
-    public WildcardFilter(@NonNull final TableDefinition table,
-                          @NonNull final String domainKey,
+    public WildcardFilter(@NonNull final DomainExpression domainExpression,
                           @NonNull final String criteria) {
-        mTable = table;
-        mDomainKey = domainKey;
+        mDomainExpression = domainExpression;
         mCriteria = criteria;
-    }
-
-    /**
-     * Copy constructor.
-     *
-     * @param filter to copy from
-     */
-    public WildcardFilter(@NonNull final WildcardFilter filter) {
-        mTable = filter.mTable;
-        mDomainKey = filter.mDomainKey;
-        mCriteria = filter.mCriteria;
     }
 
     @Override
     @NonNull
     public String getExpression(@NonNull final Context context) {
-        return '(' + mTable.dot(mDomainKey)
+        return '(' + mDomainExpression.getExpression()
                + " LIKE '%" + SqlEncode.string(mCriteria) + "%'"
                + ')';
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        return DBKey.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                            mDomainKey);
+        return true;
     }
+
 
     @Override
     @NonNull
     public String toString() {
         return "WildcardFilter{"
-               + "mTable=" + mTable.getName()
-               + ", mDomain=" + mDomainKey
+               + ", mDomainExpression=" + mDomainExpression
                + ", mCriteria=`" + mCriteria + '`'
                + '}';
     }

@@ -152,12 +152,6 @@ public class BitmaskFilter
         return context.getString(mLabelId);
     }
 
-    @NonNull
-    @Override
-    public DomainExpression getDomainExpression() {
-        return mDomainExpression;
-    }
-
     @Override
     public boolean isActive(@NonNull final Context context) {
         if (!DBKey.isUsed(PreferenceManager.getDefaultSharedPreferences(context),

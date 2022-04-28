@@ -150,12 +150,6 @@ abstract class IntStringFilter
                                mDomainExpression.getName());
     }
 
-    @NonNull
-    @Override
-    public DomainExpression getDomainExpression() {
-        return mDomainExpression;
-    }
-
     @Override
     public void set(@Nullable final Integer value) {
         if (mPersisted) {

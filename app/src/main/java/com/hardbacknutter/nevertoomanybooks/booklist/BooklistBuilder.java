@@ -41,15 +41,11 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.StyleFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
-import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -74,10 +70,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 
@@ -142,7 +136,7 @@ class BooklistBuilder {
 
     /** Show only books on this bookshelf. */
     @NonNull
-    private final List<Bookshelf> mBookshelves = new ArrayList<>();
+    private final Bookshelf mBookshelf;
 
     @NonNull
     private final Map<String, TableDefinition> mLeftOuterJoins = new HashMap<>();
@@ -170,14 +164,15 @@ class BooklistBuilder {
                     @NonNull final RebuildBooklist rebuildMode) {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-            Log.d(TAG, "ENTER|Booklist"
+            Log.d(TAG, "ENTER|BooklistBuilder"
                        + "|style=" + style.getUuid()
+                       + "|bookshelf=`" + bookshelf.getName() + '`'
                        + "|instances: " + Booklist.DEBUG_INSTANCE_COUNTER.incrementAndGet(),
                   new Throwable());
         }
 
         mStyle = style;
-        mBookshelves.add(bookshelf);
+        mBookshelf = bookshelf;
         mRebuildMode = rebuildMode;
     }
 
@@ -209,66 +204,12 @@ class BooklistBuilder {
     }
 
     /**
-     * The where clause will add a "AND books._id IN (list)".
-     * Be careful when combining with other criteria as you might get less than expected
-     * <p>
-     * An empty filter will silently be rejected.
+     * Add a filer to use in the WHERE clause.
      *
-     * @param filter a list of book ID's.
+     * @param filter to add
      */
-    void addFilterOnBookIdList(@Nullable final List<Long> filter) {
-        if (filter != null && !filter.isEmpty()) {
-            mFilters.add(new NumberListFilter(TBL_BOOKS, DBKey.PK_ID, filter));
-        }
-    }
-
-    /**
-     * Adds the FTS book table for a keyword match.
-     * <p>
-     * An empty filter will silently be rejected.
-     *
-     * @param bookTitle   Book title related keywords to find
-     * @param seriesTitle Series title related keywords to find
-     * @param author      Author related keywords to find
-     * @param publisher   Publisher related keywords to find
-     * @param keywords    Keywords to find anywhere in book; this includes all above fields
-     */
-    void addFilterOnKeywords(@Nullable final String bookTitle,
-                             @Nullable final String seriesTitle,
-                             @Nullable final String author,
-                             @Nullable final String publisher,
-                             @Nullable final String keywords) {
-
-        final String query = FtsDao.createMatchString(bookTitle, seriesTitle,
-                                                      author, publisher, keywords);
-        if (!query.isEmpty()) {
-            mFilters.add(context ->
-                                 '(' + TBL_BOOKS.dot(DBKey.PK_ID) + " IN ("
-                                 // fetch the ID's only
-                                 + SELECT_ + DBKey.KEY_FTS_BOOK_ID
-                                 + _FROM_ + TBL_FTS_BOOKS.getName()
-                                 + _WHERE_ + TBL_FTS_BOOKS.getName()
-                                 + " MATCH '" + query + "')"
-                                 + ')');
-        }
-    }
-
-    /**
-     * Set the filter for only books lend to the named person (exact name).
-     * <p>
-     * An empty filter will silently be rejected.
-     *
-     * @param filter the exact name of the person we lend books to.
-     */
-    void addFilterOnLoanee(@Nullable final String filter) {
-        if (filter != null && !filter.trim().isEmpty()) {
-            mFilters.add(context ->
-                                 "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
-                                 + _WHERE_ + TBL_BOOK_LOANEE.dot(DBKey.KEY_LOANEE)
-                                 + "='" + SqlEncode.string(filter) + '\''
-                                 + _AND_ + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS)
-                                 + ')');
-        }
+    void addFilter(@NonNull final Filter filter) {
+        mFilters.add(filter);
     }
 
     /**
@@ -291,32 +232,14 @@ class BooklistBuilder {
      */
     @NonNull
     public Booklist build(@NonNull final Context context) {
-
-        final boolean isFilteredOnBookshelves = !mBookshelves.get(0).isAllBooks();
-
-        // Filter on the specified Bookshelves.
-        // The filter will only be added if the current style does not contain the Bookshelf group.
-        if (isFilteredOnBookshelves && !mStyle.getGroups().contains(BooklistGroup.BOOKSHELF)) {
-            if (mBookshelves.size() == 1) {
-                mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(DBKey.PK_ID)
-                                  + '=' + mBookshelves.get(0).getId()
-                                  + ')');
-            } else {
-                mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(DBKey.PK_ID)
-                                  + " IN (" + mBookshelves.stream()
-                                                          .map(Bookshelf::getId)
-                                                          .map(String::valueOf)
-                                                          .collect(Collectors.joining(","))
-                                  + "))");
-            }
-        }
-
         final int instanceId = ID_COUNTER.incrementAndGet();
+
+        mFilters.addAll(mBookshelf.getActiveFilters(context));
+        mFilters.addAll(mStyle.getActiveFilters(context));
 
         // Construct the list table and all needed structures.
         final TableBuilder tableBuilder = new TableBuilder(
-                instanceId, mStyle, isFilteredOnBookshelves, mRebuildMode);
-
+                instanceId, mStyle, !mBookshelf.isAllBooks(), mRebuildMode);
         tableBuilder.preBuild(context, mLeftOuterJoins.values(), mBookDomains.values(), mFilters);
 
         final SynchronizedDb db = ServiceLocator.getInstance().getDb();
@@ -327,9 +250,8 @@ class BooklistBuilder {
             final Pair<TableDefinition, TableDefinition> tables = tableBuilder.build(db);
             final TableDefinition listTable = tables.first;
             final TableDefinition navTable = tables.second;
-
-            final BooklistNodeDao rowStateDAO = new BooklistNodeDao(db, listTable,
-                                                                    mStyle, mBookshelves.get(0));
+            final BooklistNodeDao rowStateDAO =
+                    new BooklistNodeDao(db, listTable, mStyle, mBookshelf);
 
             switch (mRebuildMode) {
                 case FromSaved:
@@ -386,9 +308,6 @@ class BooklistBuilder {
         private final ListStyle mStyle;
         /** Set to {@code true} if we're filtering on a specific {@link Bookshelf}. */
         private final boolean mFilteredOnBookshelf;
-
-        /** the list of Filters. */
-        private final Collection<Filter> mFilters = new ArrayList<>();
 
         /** The table we'll be generating. */
         @NonNull
@@ -540,20 +459,6 @@ class BooklistBuilder {
             // Add caller-specified domains
             bookDomains.forEach(this::addDomain);
 
-            // Add filter-specified domains
-            final Collection<StyleFilter<?>> activeFilters =
-                    mStyle.getFilters().getActiveFilters(context);
-            // Not actually needed right now (2020-12-10)
-            // but adding the filter-domains makes them future proof
-            activeFilters.stream()
-                         .map(StyleFilter::getDomainExpression)
-                         .forEach(this::addDomain);
-
-            // Add the active filters from the style
-            mFilters.addAll(activeFilters);
-            // And finally, add all filters to be used for the WHERE clause
-            mFilters.addAll(filters);
-
             // List of column names for the INSERT INTO... clause
             final StringBuilder destColumns = new StringBuilder();
             // List of expressions for the SELECT... clause.
@@ -606,7 +511,7 @@ class BooklistBuilder {
             mSqlForInitialInsert =
                     INSERT_INTO_ + mListTable.getName() + " (" + destColumns + ") "
                     + SELECT_ + sourceColumns
-                    + _FROM_ + buildFrom() + buildWhere(context)
+                    + _FROM_ + buildFrom() + buildWhere(context, filters)
                     + _ORDER_BY_ + buildOrderBy();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
@@ -1105,21 +1010,23 @@ class BooklistBuilder {
          * Create the WHERE clause based on all active filters (for in-use domains).
          *
          * @param context Current context
+         * @param filters
          *
          * @return WHERE clause, can be empty
          */
         @NonNull
-        private String buildWhere(@NonNull final Context context) {
+        private String buildWhere(@NonNull final Context context,
+                                  @NonNull final Collection<Filter> filters) {
             final StringBuilder where = new StringBuilder();
 
-            mFilters.stream()
-                    // Theoretically all filters should be active here, but paranoia...
-                    .filter(filter -> filter.isActive(context))
-                    .forEach(filter -> {
-                        if (where.length() != 0) {
-                            where.append(_AND_);
-                        }
-                        where.append(' ').append(filter.getExpression(context));
+            filters.stream()
+                   // Theoretically all filters should be active here, but paranoia...
+                   .filter(filter -> filter.isActive(context))
+                   .forEach(filter -> {
+                       if (where.length() != 0) {
+                           where.append(_AND_);
+                       }
+                       where.append(' ').append(filter.getExpression(context));
                     });
 
             if (where.length() > 0) {

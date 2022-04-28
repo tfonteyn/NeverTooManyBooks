@@ -27,9 +27,11 @@ import androidx.annotation.NonNull;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Collection;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.Filters;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.StyleFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 
@@ -211,6 +213,18 @@ public interface ListStyle {
      */
     @NonNull
     Filters getFilters();
+
+    /**
+     * Get the list of <strong>active</strong> Filters.
+     *
+     * @param context Current context
+     *
+     * @return list
+     */
+    @NonNull
+    default Collection<StyleFilter<?>> getActiveFilters(@NonNull final Context context) {
+        return getFilters().getActiveFilters(context);
+    }
 
     /**
      * Get the ListScreenBookFields style object.

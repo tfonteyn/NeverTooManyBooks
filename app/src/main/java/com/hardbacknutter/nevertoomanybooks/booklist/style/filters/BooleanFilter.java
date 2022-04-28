@@ -44,7 +44,6 @@ public class BooleanFilter
                   @Nullable final StylePersistenceLayer persistenceLayer,
                   @StringRes final int labelId,
                   @NonNull final String key,
-                  @SuppressWarnings("SameParameterValue")
                   @NonNull final DomainExpression domainExpression) {
         super(isPersistent, persistenceLayer, labelId, key, domainExpression);
     }
