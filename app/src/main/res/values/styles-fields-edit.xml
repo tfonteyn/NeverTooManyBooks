@@ -153,13 +153,17 @@
         <item name="android:layout_width">@dimen/til_fixed_width_language</item>
     </style>
 
-    <!-- The TextInputLayout view for a NON-editable AutoCompleteTextView; equivalent of a Spinner. -->
-    <style name="TIL.ExposedDropdownMenu"
+    <!-- *************************************************************************************** -->
+
+    <!-- The TextInputLayout view for a NON-editable AutoCompleteTextView; equivalent of a Spinner.
+        DO NOT set a style attribute on the AutoCompleteTextView itself!
+
+        The "Dense" style is normally used on the book-edit screens (and related).
+    -->
+    <style name="TIL.DropdownMenu.Outline.Dense"
            parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingBottom">0dp</item>
         <!-- 4x so we can override individually (is this another Android bug?) -->
         <item name="android:layout_marginTop">@dimen/til_margin</item>
         <item name="android:layout_marginBottom">@dimen/til_margin</item>
