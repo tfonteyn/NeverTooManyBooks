@@ -43,6 +43,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -142,11 +143,11 @@ public class EditBookshelvesFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
+        // FAB button to add a new Bookshelf
         final FloatingActionButton fab = getFab();
         fab.setImageResource(R.drawable.ic_baseline_add_24);
         fab.setVisibility(View.VISIBLE);
-        //noinspection ConstantConditions
-        fab.setOnClickListener(v -> mOnEditBookshelfLauncher.launchNewBookshelf(getContext()));
+        fab.setOnClickListener(v -> editNewBookshelf());
 
         //noinspection ConstantConditions
         mListAdapter = new BookshelfAdapter(getContext());
@@ -154,6 +155,12 @@ public class EditBookshelvesFragment
         mVb.list.addItemDecoration(new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         mVb.list.setHasFixedSize(true);
         mVb.list.setAdapter(mListAdapter);
+    }
+
+    private void editNewBookshelf() {
+        //noinspection ConstantConditions
+        final ListStyle style = ServiceLocator.getInstance().getStyles().getDefault(getContext());
+        mOnEditBookshelfLauncher.launch(new Bookshelf("", style));
     }
 
     /**
