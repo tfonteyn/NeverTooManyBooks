@@ -57,6 +57,27 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 
 /**
  * Encapsulate Filters and all related data/logic.
+ * <p>
+ * Example of the stored filters:
+ * <pre>
+ *     {@code
+ *     <string name="style.booklist.filter.isbn">-1</string>
+ *     <string name="style.booklist.filter.signed">-1</string>
+ *     <string name="style.booklist.filter.anthology">-1</string>
+ *     <set name="style.booklist.filter.bookshelves">
+ *         <string>5</string>
+ *         <string>6</string>
+ *     </set>
+ *     <boolean name="style.booklist.filter.editions.active" value="true" />
+ *     <boolean name="style.booklist.filter.bookshelves.active" value="true" />
+ *     <string name="style.booklist.filter.lending">-1</string>
+ *     <set name="style.booklist.filter.editions">
+ *         <string>4</string>
+ *         <string>16</string>
+ *     </set>
+ *     <string name="style.booklist.filter.read">-1</string>
+ *     }
+ * </pre>
  */
 public class Filters {
 
@@ -102,8 +123,7 @@ public class Filters {
 
         mFilters.put(PK_FILTER_TOC_BITMASK, new BooleanFilter(
                 isPersistent, persistenceLayer, R.string.lbl_anthology, PK_FILTER_TOC_BITMASK,
-                new DomainExpression(DOM_BOOK_TOC_BITMASK,
-                                     TBL_BOOKS.dot(DBKey.BITMASK_TOC))));
+                new DomainExpression(DOM_BOOK_TOC_BITMASK, TBL_BOOKS.dot(DBKey.BITMASK_TOC))));
 
         mFilters.put(PK_FILTER_LOANEE, new BooleanFilter(
                 isPersistent, persistenceLayer, R.string.lbl_lend_out, PK_FILTER_LOANEE,
