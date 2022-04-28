@@ -24,26 +24,25 @@ import android.os.Bundle;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentResultListener;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
+
 /**
- * IMPORTANT: this is still in development... the only listener implemented,
- * {@link com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf} will simply ignore
- * the passed parameters and do a full rebuild of its list.
- * <p>
  * Allows to be notified of non-book changes made.
  * The listener {@link #onChange(String, long)} must interpret the key to deduce what the id means.
  */
-@FunctionalInterface
-public interface RowChangedListener
-        extends FragmentResultListener {
+public abstract class RowChangedListener
+        extends FragmentLauncherBase {
 
-    String REQUEST_KEY = "rk:RowChangedListener";
+    public static final String REQUEST_KEY = "rk:RowChangedListener";
+    private static final String KEY = "key";
+    private static final String ITEM_ID = "item";
 
-    /* private. */ String KEY = "key";
-    /* private. */ String ITEM_ID = "item";
+    public RowChangedListener() {
+        super(REQUEST_KEY);
+    }
 
     /**
      * Notify changes where made.
@@ -53,10 +52,10 @@ public interface RowChangedListener
      * @param id         the item being modified,
      *                   or {@code 0} for for a books-table inline item or any global change
      */
-    static void setResult(@NonNull final Fragment fragment,
-                          @NonNull final String requestKey,
-                          @NonNull final String dataKey,
-                          final long id) {
+    public static void setResult(@NonNull final Fragment fragment,
+                                 @NonNull final String requestKey,
+                                 @NonNull final String dataKey,
+                                 final long id) {
         final Bundle result = new Bundle(2);
         result.putString(KEY, dataKey);
         result.putLong(ITEM_ID, id);
@@ -64,8 +63,8 @@ public interface RowChangedListener
     }
 
     @Override
-    default void onFragmentResult(@NonNull final String requestKey,
-                                  @NonNull final Bundle result) {
+    public void onFragmentResult(@NonNull final String requestKey,
+                                 @NonNull final Bundle result) {
         onChange(Objects.requireNonNull(result.getString(KEY), KEY),
                  result.getLong(ITEM_ID));
     }
@@ -77,6 +76,6 @@ public interface RowChangedListener
      * @param id  the item being modified,
      *            or {@code 0} for for a books-table inline item or any global change
      */
-    void onChange(@NonNull String key,
-                  @IntRange(from = 0) long id);
+    public abstract void onChange(@NonNull String key,
+                                  @IntRange(from = 0) long id);
 }

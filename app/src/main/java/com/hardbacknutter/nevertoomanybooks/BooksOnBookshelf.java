@@ -133,10 +133,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.SpinnerInteractionListener;
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
  * <p>
- * FIXME: This class is becoming increasingly overloaded with ActivityResultLauncher
- * and *DialogFragment.Launcher objects. Need to find a way to refactor all these into
- * something more manageable.
- *
+ * URGENT: This class is littered with ActivityResultLauncher and *DialogFragment.Launcher
+ * objects etc... Refactor to sharing the VM is becoming VERY urgent.
  *
  * <p>
  * Notes on the local-search:
@@ -316,8 +314,21 @@ public class BooksOnBookshelf
                 }
             };
 
-    /** React to row changes made. */
-    private final RowChangedListener mRowChangedListener = this::onRowChanged;
+    /**
+     * React to row changes made.
+     * <p>
+     * A number of dialogs use this common listener to report their changes back to us.
+     * e.g. {@link EditAuthorDialogFragment}, {@link EditPublisherDialogFragment} and others.
+     *
+     * @see #onMenuItemSelected(MenuItem, int)
+     */
+    private final RowChangedListener mRowChangedListener = new RowChangedListener() {
+        @Override
+        public void onChange(@NonNull final String key,
+                             final long id) {
+            BooksOnBookshelf.this.onRowChanged(key, id);
+        }
+    };
 
     /**
      * React to the user selecting a style to apply.
@@ -348,6 +359,7 @@ public class BooksOnBookshelf
                     onBookUpdated(mVm.getBook(bookId), DBKey.KEY_LOANEE);
                 }
             };
+
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
 
@@ -487,7 +499,7 @@ public class BooksOnBookshelf
     private void createFragmentResultListeners() {
         final FragmentManager fm = getSupportFragmentManager();
 
-        fm.setFragmentResultListener(RowChangedListener.REQUEST_KEY, this, mRowChangedListener);
+        mRowChangedListener.registerForFragmentResult(fm, this);
 
         mEditBookshelfLauncher.registerForFragmentResult(fm, this);
         mEditLenderLauncher.registerForFragmentResult(fm, this);
@@ -1042,6 +1054,9 @@ public class BooksOnBookshelf
 
         final DataHolder rowData = new CursorRow(cursor);
 
+        //TODO: split this up using KEY_BL_NODE_GROUP
+        //        final int rowGroupId = rowData.getInt(DBKey.KEY_BL_NODE_GROUP);
+        //        switch (rowGroupId) {
 
         if (itemId == R.id.MENU_BOOK_EDIT) {
             final long bookId = rowData.getLong(DBKey.FK_BOOK);
