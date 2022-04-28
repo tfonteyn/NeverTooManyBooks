@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookFromBundleContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesSingleListContract;
@@ -68,7 +67,7 @@ public abstract class SearchBookBaseFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    final Bundle output = getResultOwner().getResultData();
+                    final Bundle output = getResultData();
                     final Intent resultIntent = new Intent().putExtras(output);
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
@@ -95,11 +94,13 @@ public abstract class SearchBookBaseFragment
     }
 
     @NonNull
-    protected abstract ResultIntentOwner getResultOwner();
+    protected abstract Bundle getResultData();
 
     @CallSuper
     void onBookEditingDone(@Nullable final EditBookOutput data) {
-        getResultOwner().onBookEditingDone(data);
+        if (data != null) {
+            getResultData().putParcelable(EditBookOutput.BKEY, data);
+        }
     }
 
     @Override

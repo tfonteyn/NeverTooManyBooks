@@ -39,7 +39,6 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExternalIdBinding;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -70,10 +69,10 @@ public class SearchBookByExternalIdFragment
 
     private SearchBookByExternalIdViewModel mVm;
 
-    @NonNull
     @Override
-    protected ResultIntentOwner getResultOwner() {
-        return mVm;
+    @NonNull
+    protected Bundle getResultData() {
+        return mVm.getResultData();
     }
 
     @Override

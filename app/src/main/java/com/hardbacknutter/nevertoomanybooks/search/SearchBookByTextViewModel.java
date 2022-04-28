@@ -31,14 +31,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
 
 public class SearchBookByTextViewModel
-        extends ViewModel
-        implements ResultIntentOwner {
+        extends ViewModel {
 
     /**
      * A list of author names we have already searched for in this session.

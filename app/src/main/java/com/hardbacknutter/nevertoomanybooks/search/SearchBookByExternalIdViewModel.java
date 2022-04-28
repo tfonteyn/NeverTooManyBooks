@@ -25,12 +25,10 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 
-import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 public class SearchBookByExternalIdViewModel
-        extends ViewModel
-        implements ResultIntentOwner {
+        extends ViewModel {
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull

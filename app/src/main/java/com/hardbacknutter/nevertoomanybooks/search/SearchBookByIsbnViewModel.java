@@ -44,14 +44,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 public class SearchBookByIsbnViewModel
-        extends ViewModel
-        implements ResultIntentOwner {
+        extends ViewModel {
 
     /** Log tag. */
     private static final String TAG = "SearchBookByIsbnViewModel";
