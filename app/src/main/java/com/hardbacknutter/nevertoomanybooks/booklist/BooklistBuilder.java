@@ -233,8 +233,8 @@ class BooklistBuilder {
     @NonNull
     public Booklist build(@NonNull final Context context) {
         final int instanceId = ID_COUNTER.incrementAndGet();
-
-        mFilters.addAll(mBookshelf.getActiveFilters(context));
+//URGENT: this belongs to git branch "bookshelf-filters"
+//        mFilters.addAll(mBookshelf.getActiveFilters(context));
         mFilters.addAll(mStyle.getActiveFilters(context));
 
         // Construct the list table and all needed structures.
