@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.Field;
  * https://github.com/material-components/material-components-android/pull/2025
  * generic input field with clear-text icon at the end. -
  * <p>
- * Most of the code in this class was copied from:
+ * Most of the code in this class was copied from material 1.5 library
  * com.google.android.material.textfield.ClearTextEndIconDelegate
  */
 public class ExtClearTextEndIconDelegate
@@ -243,6 +243,7 @@ public class ExtClearTextEndIconDelegate
 
     private boolean shouldBeVisible() {
         final EditText editText = textInputLayout.getEditText();
+        // removed the checks on "hasFocus()" from the original code.
         return editText != null && editText.getText().length() > 0;
     }
 
