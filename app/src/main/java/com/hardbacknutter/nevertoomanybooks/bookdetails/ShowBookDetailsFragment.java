@@ -128,7 +128,7 @@ public class ShowBookDetailsFragment
 
     /** Handle the edit-lender dialog. */
     private final EditLenderDialogFragment.Launcher mEditLenderLauncher =
-            new EditLenderDialogFragment.Launcher(RK_EDIT_LENDER) {
+            new EditLenderDialogFragment.Launcher() {
                 @Override
                 public void onResult(@IntRange(from = 1) final long bookId,
                                      @NonNull final String loanee) {
@@ -183,7 +183,8 @@ public class ShowBookDetailsFragment
         mVm = new ViewModelProvider(this).get(ShowBookDetailsViewModel.class);
         mVm.init(args);
 
-        mEditLenderLauncher.registerForFragmentResult(getChildFragmentManager(), this);
+        mEditLenderLauncher.registerForFragmentResult(getChildFragmentManager(), RK_EDIT_LENDER,
+                                                      this);
     }
 
     @Override

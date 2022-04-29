@@ -114,8 +114,8 @@ public final class WrappedMaterialDatePicker<S>
 
         private static final String FIELD_ID = "fieldId";
         private static final String SELECTIONS = "selections";
-        protected final String mRequestKey;
-        protected FragmentManager mFragmentManager;
+        private final String mRequestKey;
+        private FragmentManager mFragmentManager;
 
         private DateParser mDateParser;
 

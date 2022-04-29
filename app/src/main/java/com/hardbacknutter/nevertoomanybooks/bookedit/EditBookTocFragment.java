@@ -41,7 +41,9 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -57,7 +59,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
@@ -126,7 +127,7 @@ public class EditBookTocFragment
 
     /** Listen for the results of the entry edit-dialog. */
     private final EditTocEntryDialogFragment.Launcher mEditTocEntryLauncher =
-            new EditTocEntryDialogFragment.Launcher(RK_EDIT_TOC) {
+            new EditTocEntryDialogFragment.Launcher() {
                 @Override
                 public void onResult(@NonNull final TocEntry tocEntry,
                                      final int position) {
@@ -140,7 +141,7 @@ public class EditBookTocFragment
     /** Handles the ISFDB lookup tasks. */
     private EditBookTocViewModel mEditTocVm;
     private final ConfirmTocDialogFragment.Launcher mConfirmTocResultsLauncher =
-            new ConfirmTocDialogFragment.Launcher(RK_CONFIRM_TOC) {
+            new ConfirmTocDialogFragment.Launcher() {
                 @Override
                 public void onResult(@NonNull final Book.ContentType contentType,
                                      @NonNull final List<TocEntry> tocEntries) {
@@ -169,8 +170,8 @@ public class EditBookTocFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        mEditTocEntryLauncher.registerForFragmentResult(fm, this);
-        mConfirmTocResultsLauncher.registerForFragmentResult(fm, this);
+        mEditTocEntryLauncher.registerForFragmentResult(fm, RK_EDIT_TOC, this);
+        mConfirmTocResultsLauncher.registerForFragmentResult(fm, RK_CONFIRM_TOC, this);
     }
 
     @Override
@@ -551,15 +552,13 @@ public class EditBookTocFragment
         }
 
         public abstract static class Launcher
-                extends FragmentLauncherBase {
+                implements FragmentResultListener {
 
             private static final String SEARCH_NEXT_EDITION = "searchNextEdition";
             private static final String TOC_BIT_MASK = "tocBitMask";
             private static final String TOC_LIST = "tocEntries";
-
-            public Launcher(@NonNull final String requestKey) {
-                super(requestKey);
-            }
+            private String mRequestKey;
+            private FragmentManager mFragmentManager;
 
             @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
             static void setResult(@NonNull final Fragment fragment,
@@ -595,6 +594,14 @@ public class EditBookTocFragment
                 final DialogFragment fragment = new ConfirmTocDialogFragment();
                 fragment.setArguments(bookData);
                 fragment.show(mFragmentManager, TAG);
+            }
+
+            public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
+                                                  @NonNull final String requestKey,
+                                                  @NonNull final LifecycleOwner lifecycleOwner) {
+                mFragmentManager = fragmentManager;
+                mRequestKey = requestKey;
+                mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
             }
 
             @Override

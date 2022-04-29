@@ -30,18 +30,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -64,7 +60,7 @@ public class EditBookPublisherListDialogFragment
     private static final String TAG = "EditBookPubListDlg";
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_PUBLISHER =
-            TAG + ":rk:" + EditPublisherForBookDialogFragment.TAG;
+            TAG + ":rk:" + EditBookPublisherDialogFragment.TAG;
 
     /** The book. Must be in the Activity scope. */
     private EditBookViewModel mVm;
@@ -82,8 +78,8 @@ public class EditBookPublisherListDialogFragment
     private ArrayList<Publisher> mList;
     /** The adapter for the list itself. */
     private PublisherListAdapter mListAdapter;
-    private final EditBookBaseFragment.EditItemLauncher<Publisher> mOnEditPublisherLauncher =
-            new EditBookBaseFragment.EditItemLauncher<>(RK_EDIT_PUBLISHER) {
+    private final EditBookPublisherDialogFragment.Launcher mOnEditPublisherLauncher =
+            new EditBookPublisherDialogFragment.Launcher() {
                 @Override
                 public void onResult(@NonNull final Publisher original,
                                      @NonNull final Publisher modified) {
@@ -119,7 +115,8 @@ public class EditBookPublisherListDialogFragment
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
-        mOnEditPublisherLauncher.registerForFragmentResult(getChildFragmentManager(), this);
+        mOnEditPublisherLauncher.registerForFragmentResult(getChildFragmentManager(),
+                                                           RK_EDIT_PUBLISHER, this);
     }
 
     @Override
@@ -313,147 +310,6 @@ public class EditBookPublisherListDialogFragment
         }
     }
 
-    /**
-     * Edit a single Publisher from the book's publisher list.
-     * It could exist (i.e. have an id) or could be a previously added/new one (id==0).
-     * <p>
-     * Must be a public static class to be properly recreated from instance state.
-     */
-    public static class EditPublisherForBookDialogFragment
-            extends FFBaseDialogFragment {
-
-        /** Fragment/Log tag. */
-        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
-        private static final String TAG = "EditPublisherForBookDlg";
-        private static final String BKEY_REQUEST_KEY = TAG + ":rk";
-
-        /** FragmentResultListener request key to use for our response. */
-        private String mRequestKey;
-
-        private EditBookViewModel mVm;
-
-        /** Displayed for info only. */
-        @Nullable
-        private String mBookTitle;
-        /** View Binding. */
-        private DialogEditBookPublisherBinding mVb;
-
-        /** The Publisher we're editing. */
-        private Publisher mPublisher;
-
-        /** Current edit. */
-        private Publisher mCurrentEdit;
-
-        /**
-         * No-arg constructor for OS use.
-         */
-        public EditPublisherForBookDialogFragment() {
-            super(R.layout.dialog_edit_book_publisher);
-        }
-
-        /**
-         * Launch the dialog.
-         *
-         * @param fm         The FragmentManager this fragment will be added to.
-         * @param requestKey for use with the FragmentResultListener
-         * @param bookTitle  displayed for info only
-         * @param publisher  to edit
-         */
-        static void launch(@NonNull final FragmentManager fm,
-                           @SuppressWarnings("SameParameterValue")
-                           @NonNull final String requestKey,
-                           @NonNull final String bookTitle,
-                           @NonNull final Publisher publisher) {
-            final Bundle args = new Bundle(3);
-            args.putString(BKEY_REQUEST_KEY, requestKey);
-            args.putString(DBKey.KEY_TITLE, bookTitle);
-            args.putParcelable(DBKey.FK_PUBLISHER, publisher);
-
-            final DialogFragment frag = new EditPublisherForBookDialogFragment();
-            frag.setArguments(args);
-            frag.show(fm, TAG);
-        }
-
-        @Override
-        public void onCreate(@Nullable final Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            //noinspection ConstantConditions
-            mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
-
-            final Bundle args = requireArguments();
-            mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                                 BKEY_REQUEST_KEY);
-            mPublisher = Objects.requireNonNull(args.getParcelable(DBKey.FK_PUBLISHER),
-                                                DBKey.FK_PUBLISHER);
-            mBookTitle = args.getString(DBKey.KEY_TITLE);
-
-            if (savedInstanceState == null) {
-                mCurrentEdit = new Publisher(mPublisher.getName());
-            } else {
-                //noinspection ConstantConditions
-                mCurrentEdit = savedInstanceState.getParcelable(DBKey.FK_PUBLISHER);
-            }
-        }
-
-        @Override
-        public void onViewCreated(@NonNull final View view,
-                                  @Nullable final Bundle savedInstanceState) {
-            super.onViewCreated(view, savedInstanceState);
-            mVb = DialogEditBookPublisherBinding.bind(view);
-            mVb.toolbar.setSubtitle(mBookTitle);
-
-            //noinspection ConstantConditions
-            final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
-                    getContext(), R.layout.popup_dropdown_menu_item,
-                    ExtArrayAdapter.FilterType.Diacritic, mVm.getAllPublisherNames());
-
-            mVb.name.setText(mCurrentEdit.getName());
-            mVb.name.setAdapter(nameAdapter);
-        }
-
-        @Override
-        protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
-            if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-                if (saveChanges()) {
-                    dismiss();
-                }
-                return true;
-            }
-            return false;
-        }
-
-        private boolean saveChanges() {
-            viewToModel();
-
-            // basic check only, we're doing more extensive checks later on.
-            if (mCurrentEdit.getName().isEmpty()) {
-                showError(mVb.lblName, R.string.vldt_non_blank_required);
-                return false;
-            }
-
-            EditBookBaseFragment.EditItemLauncher
-                    .setResult(this, mRequestKey, mPublisher, mCurrentEdit);
-            return true;
-        }
-
-        private void viewToModel() {
-            mCurrentEdit.setName(mVb.name.getText().toString().trim());
-        }
-
-        @Override
-        public void onSaveInstanceState(@NonNull final Bundle outState) {
-            super.onSaveInstanceState(outState);
-            outState.putParcelable(DBKey.FK_PUBLISHER, mCurrentEdit);
-        }
-
-        @Override
-        public void onPause() {
-            viewToModel();
-            super.onPause();
-        }
-    }
-
     private class PublisherListAdapter
             extends RecyclerViewAdapterBase<Publisher, Holder> {
 
@@ -479,10 +335,9 @@ public class EditBookPublisherListDialogFragment
                     .inflate(R.layout.row_edit_publisher_list, parent, false);
             final Holder holder = new Holder(view);
             // click -> edit
-            holder.rowDetailsView.setOnClickListener(v -> EditPublisherForBookDialogFragment
-                    .launch(getChildFragmentManager(), RK_EDIT_PUBLISHER,
-                            mVm.getBook().getTitle(),
-                            getItem(holder.getBindingAdapterPosition())));
+            holder.rowDetailsView.setOnClickListener(v -> mOnEditPublisherLauncher.launch(
+                    mVm.getBook().getTitle(),
+                    getItem(holder.getBindingAdapterPosition())));
             return holder;
         }
 

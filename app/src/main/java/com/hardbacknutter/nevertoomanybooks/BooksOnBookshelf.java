@@ -171,13 +171,12 @@ public class BooksOnBookshelf
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
 
-
+    /** {@link FragmentResultListener} request key. */
+    private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
     /** {@link FragmentResultListener} request key. */
     private static final String RK_STYLE_PICKER = TAG + ":rk:" + StylePickerDialogFragment.TAG;
     /** {@link FragmentResultListener} request key. */
     private static final String RK_EDIT_LENDER = TAG + ":rk:" + EditLenderDialogFragment.TAG;
-    /** {@link FragmentResultListener} request key. */
-    private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
 
     /** Make a backup. */
     private final ActivityResultLauncher<Void> mExportLauncher =
@@ -292,7 +291,7 @@ public class BooksOnBookshelf
      * Accept the result from the dialog.
      */
     private final EditBookshelfDialogFragment.Launcher mEditBookshelfLauncher =
-            new EditBookshelfDialogFragment.Launcher(RK_EDIT_BOOKSHELF) {
+            new EditBookshelfDialogFragment.Launcher() {
                 @Override
                 public void onResult(final long bookshelfId) {
                     if (bookshelfId != mVm.getCurrentBookshelf().getId()) {
@@ -341,7 +340,7 @@ public class BooksOnBookshelf
      * which is handled {@link #mEditStyleLauncher}.
      */
     private final StylePickerDialogFragment.Launcher mOnStylePickerLauncher =
-            new StylePickerDialogFragment.Launcher(RK_STYLE_PICKER) {
+            new StylePickerDialogFragment.Launcher() {
                 @Override
                 public void onResult(@NonNull final String uuid) {
                     saveListPosition();
@@ -355,7 +354,7 @@ public class BooksOnBookshelf
      * Accept the result from the dialog.
      */
     private final EditLenderDialogFragment.Launcher mEditLenderLauncher =
-            new EditLenderDialogFragment.Launcher(RK_EDIT_LENDER) {
+            new EditLenderDialogFragment.Launcher() {
                 @Override
                 public void onResult(@IntRange(from = 1) final long bookId,
                                      @NonNull final String loanee) {
@@ -504,9 +503,9 @@ public class BooksOnBookshelf
 
         mRowChangedListener.registerForFragmentResult(fm, this);
 
-        mEditBookshelfLauncher.registerForFragmentResult(fm, this);
-        mEditLenderLauncher.registerForFragmentResult(fm, this);
-        mOnStylePickerLauncher.registerForFragmentResult(fm, this);
+        mEditBookshelfLauncher.registerForFragmentResult(fm, RK_EDIT_BOOKSHELF, this);
+        mOnStylePickerLauncher.registerForFragmentResult(fm, RK_STYLE_PICKER, this);
+        mEditLenderLauncher.registerForFragmentResult(fm, RK_EDIT_LENDER, this);
     }
 
     private void createViewModel() {

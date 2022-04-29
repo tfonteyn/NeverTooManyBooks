@@ -144,7 +144,7 @@ public class CoverHandler {
 
         mImageLoader = new ImageViewLoader(ASyncExecutor.MAIN, maxWidth, maxHeight);
 
-        mCoverBrowserLauncher = new CoverBrowserDialogFragment.Launcher(RK_COVER_BROWSER + mCIdx) {
+        mCoverBrowserLauncher = new CoverBrowserDialogFragment.Launcher() {
             @Override
             public void onResult(@NonNull final String fileSpec) {
                 onFileSelected(fileSpec);
@@ -177,7 +177,8 @@ public class CoverHandler {
         final LifecycleOwner lifecycleOwner = fragment.getViewLifecycleOwner();
 
         final FragmentManager fm = fragment.getChildFragmentManager();
-        mCoverBrowserLauncher.registerForFragmentResult(fm, lifecycleOwner);
+        mCoverBrowserLauncher.registerForFragmentResult(fm, RK_COVER_BROWSER + mCIdx,
+                                                        lifecycleOwner);
 
         mVm.onFinished().observe(lifecycleOwner, message -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {

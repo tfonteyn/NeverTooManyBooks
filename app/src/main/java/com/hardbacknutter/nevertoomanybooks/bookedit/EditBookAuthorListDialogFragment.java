@@ -21,31 +21,23 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -72,7 +64,7 @@ public class EditBookAuthorListDialogFragment
     /** Fragment/Log tag. */
     private static final String TAG = "EditBookAuthorListDlg";
     /** FragmentResultListener request key. */
-    private static final String RK_EDIT_AUTHOR = TAG + ":rk:" + EditAuthorForBookDialogFragment.TAG;
+    private static final String RK_EDIT_AUTHOR = TAG + ":rk:" + EditBookAuthorDialogFragment.TAG;
 
     /** The book. Must be in the Activity scope. */
     private EditBookViewModel mVm;
@@ -91,8 +83,8 @@ public class EditBookAuthorListDialogFragment
     /** The adapter for the list itself. */
     private AuthorListAdapter mListAdapter;
 
-    private final EditBookBaseFragment.EditItemLauncher<Author> mOnEditAuthorLauncher =
-            new EditBookBaseFragment.EditItemLauncher<>(RK_EDIT_AUTHOR) {
+    private final EditBookAuthorDialogFragment.Launcher mOnEditAuthorLauncher =
+            new EditBookAuthorDialogFragment.Launcher() {
                 @Override
                 public void onResult(@NonNull final Author original,
                                      @NonNull final Author modified) {
@@ -128,7 +120,8 @@ public class EditBookAuthorListDialogFragment
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
-        mOnEditAuthorLauncher.registerForFragmentResult(getChildFragmentManager(), this);
+        mOnEditAuthorLauncher.registerForFragmentResult(getChildFragmentManager(), RK_EDIT_AUTHOR,
+                                                        this);
     }
 
     @Override
@@ -354,230 +347,6 @@ public class EditBookAuthorListDialogFragment
         }
     }
 
-    /**
-     * Edit a single Author from the book's author list.
-     * It could exist (i.e. have an id) or could be a previously added/new one (id==0).
-     * <p>
-     * Must be a public static class to be properly recreated from instance state.
-     */
-    public static class EditAuthorForBookDialogFragment
-            extends FFBaseDialogFragment {
-
-        /** Fragment/Log tag. */
-        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
-        private static final String TAG = "EditAuthorForBookDialog";
-        private static final String BKEY_REQUEST_KEY = TAG + ":rk";
-
-        /**
-         * We create a list of all the Type checkboxes for easy handling.
-         * The key is the Type.
-         */
-        private final SparseArray<CompoundButton> mTypeButtons = new SparseArray<>();
-
-        /** FragmentResultListener request key to use for our response. */
-        private String mRequestKey;
-
-        private EditBookViewModel mVm;
-
-        /** Displayed for info only. */
-        @Nullable
-        private String mBookTitle;
-
-        /** View Binding. */
-        private DialogEditBookAuthorBinding mVb;
-
-        /** The Author we're editing. */
-        private Author mAuthor;
-
-        /** Current edit. */
-        private Author mCurrentEdit;
-
-        /**
-         * No-arg constructor for OS use.
-         */
-        public EditAuthorForBookDialogFragment() {
-            super(R.layout.dialog_edit_book_author);
-            setForceFullscreen();
-        }
-
-        /**
-         * Launch the dialog.
-         *
-         * @param fm         The FragmentManager this fragment will be added to.
-         * @param requestKey for use with the FragmentResultListener
-         * @param bookTitle  displayed for info only
-         * @param author     to edit
-         */
-        static void launch(@NonNull final FragmentManager fm,
-                           @SuppressWarnings("SameParameterValue")
-                           @NonNull final String requestKey,
-                           @NonNull final String bookTitle,
-                           @NonNull final Author author) {
-            final Bundle args = new Bundle(3);
-            args.putString(BKEY_REQUEST_KEY, requestKey);
-            args.putString(DBKey.KEY_TITLE, bookTitle);
-            args.putParcelable(DBKey.FK_AUTHOR, author);
-
-            final DialogFragment frag = new EditAuthorForBookDialogFragment();
-            frag.setArguments(args);
-            frag.show(fm, TAG);
-        }
-
-        @Override
-        public void onCreate(@Nullable final Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            //noinspection ConstantConditions
-            mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
-
-            final Bundle args = requireArguments();
-            mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                                 BKEY_REQUEST_KEY);
-            mAuthor = Objects.requireNonNull(args.getParcelable(DBKey.FK_AUTHOR),
-                                             DBKey.FK_AUTHOR);
-            mBookTitle = args.getString(DBKey.KEY_TITLE);
-
-            if (savedInstanceState == null) {
-                mCurrentEdit = new Author(mAuthor.getFamilyName(),
-                                          mAuthor.getGivenNames(),
-                                          mAuthor.isComplete());
-                mCurrentEdit.setType(mAuthor.getType());
-            } else {
-                //noinspection ConstantConditions
-                mCurrentEdit = savedInstanceState.getParcelable(DBKey.FK_AUTHOR);
-            }
-        }
-
-        @Override
-        public void onViewCreated(@NonNull final View view,
-                                  @Nullable final Bundle savedInstanceState) {
-            super.onViewCreated(view, savedInstanceState);
-            mVb = DialogEditBookAuthorBinding.bind(view);
-            mVb.toolbar.setSubtitle(mBookTitle);
-
-            //noinspection ConstantConditions
-            final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
-                    getContext(), R.layout.popup_dropdown_menu_item,
-                    ExtArrayAdapter.FilterType.Diacritic, mVm.getAllAuthorFamilyNames());
-
-            final ExtArrayAdapter<String> givenNameAdapter = new ExtArrayAdapter<>(
-                    getContext(), R.layout.popup_dropdown_menu_item,
-                    ExtArrayAdapter.FilterType.Diacritic, mVm.getAllAuthorGivenNames());
-
-            mVb.familyName.setText(mCurrentEdit.getFamilyName());
-            mVb.familyName.setAdapter(familyNameAdapter);
-            mVb.givenNames.setText(mCurrentEdit.getGivenNames());
-            mVb.givenNames.setAdapter(givenNameAdapter);
-            mVb.cbxIsComplete.setChecked(mCurrentEdit.isComplete());
-
-            final SharedPreferences global = PreferenceManager
-                    .getDefaultSharedPreferences(getContext());
-            final boolean useAuthorType =
-                    DBKey.isUsed(global, DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK);
-            mVb.authorTypeGroup.setVisibility(useAuthorType ? View.VISIBLE : View.GONE);
-            if (useAuthorType) {
-                mVb.btnUseAuthorType.setOnCheckedChangeListener(
-                        (v, isChecked) -> setTypeEnabled(isChecked));
-
-                // NEWTHINGS: author type: add a button to the layout
-                mTypeButtons.put(Author.TYPE_WRITER, mVb.cbxAuthorTypeWriter);
-                mTypeButtons.put(Author.TYPE_CONTRIBUTOR, mVb.cbxAuthorTypeContributor);
-                mTypeButtons.put(Author.TYPE_INTRODUCTION, mVb.cbxAuthorTypeIntro);
-                mTypeButtons.put(Author.TYPE_TRANSLATOR, mVb.cbxAuthorTypeTranslator);
-                mTypeButtons.put(Author.TYPE_EDITOR, mVb.cbxAuthorTypeEditor);
-                mTypeButtons.put(Author.TYPE_NARRATOR, mVb.cbxAuthorTypeNarrator);
-
-                mTypeButtons.put(Author.TYPE_ARTIST, mVb.cbxAuthorTypeArtist);
-                mTypeButtons.put(Author.TYPE_INKING, mVb.cbxAuthorTypeInking);
-                mTypeButtons.put(Author.TYPE_COLORIST, mVb.cbxAuthorTypeColorist);
-
-                mTypeButtons.put(Author.TYPE_COVER_ARTIST, mVb.cbxAuthorTypeCoverArtist);
-                mTypeButtons.put(Author.TYPE_COVER_INKING, mVb.cbxAuthorTypeCoverInking);
-                mTypeButtons.put(Author.TYPE_COVER_COLORIST, mVb.cbxAuthorTypeCoverColorist);
-
-                if (mCurrentEdit.getType() == Author.TYPE_UNKNOWN) {
-                    setTypeEnabled(false);
-                } else {
-                    setTypeEnabled(true);
-                    for (int i = 0; i < mTypeButtons.size(); i++) {
-                        mTypeButtons.valueAt(i).setChecked((mCurrentEdit.getType()
-                                                            & mTypeButtons.keyAt(i)) != 0);
-                    }
-                }
-            }
-        }
-
-        /**
-         * Enable or disable the type related fields.
-         *
-         * @param enable Flag
-         */
-        private void setTypeEnabled(final boolean enable) {
-            // don't bother changing the 'checked' status, we'll ignore them anyhow.
-            // and this is more user friendly if they flip the switch more than once.
-            mVb.btnUseAuthorType.setChecked(enable);
-            for (int i = 0; i < mTypeButtons.size(); i++) {
-                mTypeButtons.valueAt(i).setEnabled(enable);
-            }
-        }
-
-        @Override
-        protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
-            if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-                if (saveChanges()) {
-                    dismiss();
-                }
-                return true;
-            }
-            return false;
-        }
-
-        protected boolean saveChanges() {
-            viewToModel();
-
-            // basic check only, we're doing more extensive checks later on.
-            if (mCurrentEdit.getFamilyName().isEmpty()) {
-                showError(mVb.lblFamilyName, R.string.vldt_non_blank_required);
-                return false;
-            }
-
-            // invalidate the type if needed
-            if (!mVb.btnUseAuthorType.isChecked()) {
-                mCurrentEdit.setType(Author.TYPE_UNKNOWN);
-            }
-
-            EditBookBaseFragment.EditItemLauncher
-                    .setResult(this, mRequestKey, mAuthor, mCurrentEdit);
-            return true;
-        }
-
-        private void viewToModel() {
-            mCurrentEdit.setName(mVb.familyName.getText().toString().trim(),
-                                 mVb.givenNames.getText().toString().trim());
-            mCurrentEdit.setComplete(mVb.cbxIsComplete.isChecked());
-
-            int type = Author.TYPE_UNKNOWN;
-            for (int i = 0; i < mTypeButtons.size(); i++) {
-                if (mTypeButtons.valueAt(i).isChecked()) {
-                    type |= mTypeButtons.keyAt(i);
-                }
-            }
-            mCurrentEdit.setType(type);
-        }
-
-        @Override
-        public void onSaveInstanceState(@NonNull final Bundle outState) {
-            super.onSaveInstanceState(outState);
-            outState.putParcelable(DBKey.FK_AUTHOR, mCurrentEdit);
-        }
-
-        @Override
-        public void onPause() {
-            viewToModel();
-            super.onPause();
-        }
-    }
-
     private class AuthorListAdapter
             extends RecyclerViewAdapterBase<Author, Holder> {
 
@@ -608,10 +377,9 @@ public class EditBookAuthorListDialogFragment
                     .inflate(R.layout.row_edit_author_list, parent, false);
             final Holder holder = new Holder(view);
             // click -> edit
-            holder.rowDetailsView.setOnClickListener(v -> EditAuthorForBookDialogFragment
-                    .launch(getChildFragmentManager(), RK_EDIT_AUTHOR,
-                            mVm.getBook().getTitle(),
-                            getItem(holder.getBindingAdapterPosition())));
+            holder.rowDetailsView.setOnClickListener(v -> mOnEditAuthorLauncher.launch(
+                    mVm.getBook().getTitle(),
+                    getItem(holder.getBindingAdapterPosition())));
             return holder;
         }
 

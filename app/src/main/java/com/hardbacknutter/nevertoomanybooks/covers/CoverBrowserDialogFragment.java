@@ -31,6 +31,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -46,7 +49,6 @@ import java.util.concurrent.Executor;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserBinding;
@@ -327,13 +329,11 @@ public class CoverBrowserDialogFragment
     }
 
     public abstract static class Launcher
-            extends FragmentLauncherBase {
+            implements FragmentResultListener {
 
         private static final String COVER_FILE_SPEC = "fileSpec";
-
-        public Launcher(@NonNull final String requestKey) {
-            super(requestKey);
-        }
+        private String mRequestKey;
+        private FragmentManager mFragmentManager;
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
@@ -363,6 +363,14 @@ public class CoverBrowserDialogFragment
             final DialogFragment fragment = new CoverBrowserDialogFragment();
             fragment.setArguments(args);
             fragment.show(mFragmentManager, TAG);
+        }
+
+        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
+                                              @NonNull final String requestKey,
+                                              @NonNull final LifecycleOwner lifecycleOwner) {
+            mFragmentManager = fragmentManager;
+            mRequestKey = requestKey;
+            mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
         }
 
         @Override

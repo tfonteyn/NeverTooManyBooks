@@ -33,6 +33,9 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -43,7 +46,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.ParcelableEntity;
@@ -166,14 +168,12 @@ public class MultiChoiceDialogFragment
     }
 
     public abstract static class Launcher<T extends ParcelableEntity>
-            extends FragmentLauncherBase {
+            implements FragmentResultListener {
 
         private static final String FIELD_ID = "fieldId";
         private static final String SELECTED_ITEMS = "selectedItems";
-
-        public Launcher(@NonNull final String requestKey) {
-            super(requestKey);
-        }
+        private String mRequestKey;
+        private FragmentManager mFragmentManager;
 
         static <T extends ParcelableEntity> void setResult(@NonNull final Fragment fragment,
                                                            @NonNull final String requestKey,
@@ -184,6 +184,14 @@ public class MultiChoiceDialogFragment
             result.putInt(FIELD_ID, fieldId);
             result.putParcelableArrayList(SELECTED_ITEMS, selectedItems);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+        }
+
+        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
+                                              @NonNull final String requestKey,
+                                              @NonNull final LifecycleOwner lifecycleOwner) {
+            mFragmentManager = fragmentManager;
+            mRequestKey = requestKey;
+            mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
         }
 
         /**

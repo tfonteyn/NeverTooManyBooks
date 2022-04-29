@@ -29,12 +29,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
+import androidx.lifecycle.LifecycleOwner;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -196,11 +198,10 @@ public class EditBookshelfDialogFragment
     }
 
     public abstract static class Launcher
-            extends FragmentLauncherBase {
+            implements FragmentResultListener {
 
-        public Launcher(@NonNull final String requestKey) {
-            super(requestKey);
-        }
+        private String mRequestKey;
+        private FragmentManager mFragmentManager;
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
@@ -208,6 +209,14 @@ public class EditBookshelfDialogFragment
             final Bundle result = new Bundle(1);
             result.putLong(DBKey.FK_BOOKSHELF, bookshelfId);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+        }
+
+        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
+                                              @NonNull final String requestKey,
+                                              @NonNull final LifecycleOwner lifecycleOwner) {
+            mFragmentManager = fragmentManager;
+            mRequestKey = requestKey;
+            mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
         }
 
         /**

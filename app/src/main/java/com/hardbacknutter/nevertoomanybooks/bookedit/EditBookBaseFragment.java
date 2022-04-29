@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,7 +36,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
@@ -48,11 +46,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
@@ -86,7 +82,7 @@ public abstract class EditBookBaseFragment
     /** MUST keep a strong reference. */
     private final DatePickerListener mDatePickerListener = this::onDateSet;
     private final PartialDatePickerDialogFragment.Launcher mPartialDatePickerLauncher =
-            new PartialDatePickerDialogFragment.Launcher(RK_DATE_PICKER_PARTIAL) {
+            new PartialDatePickerDialogFragment.Launcher() {
                 @Override
                 public void onResult(@IdRes final int fieldId,
                                      @NonNull final PartialDate date) {
@@ -120,7 +116,8 @@ public abstract class EditBookBaseFragment
         //noinspection ConstantConditions
         mDateParser = new FullDateParser(getContext());
 
-        mPartialDatePickerLauncher.registerForFragmentResult(getChildFragmentManager(), this);
+        mPartialDatePickerLauncher.registerForFragmentResult(getChildFragmentManager(),
+                                                             RK_DATE_PICKER_PARTIAL, this);
     }
 
     @CallSuper
@@ -439,43 +436,6 @@ public abstract class EditBookBaseFragment
         if (fieldId == R.id.read_end) {
             mVm.requireField(R.id.cbx_read).setValue(true);
         }
-    }
-
-    public abstract static class EditItemLauncher<T extends Parcelable>
-            extends FragmentLauncherBase {
-
-        private static final String ORIGINAL = "original";
-        private static final String MODIFIED = "modified";
-
-        EditItemLauncher(@NonNull final String requestKey) {
-            super(requestKey);
-        }
-
-        static <T extends Parcelable> void setResult(@NonNull final Fragment fragment,
-                                                     @NonNull final String requestKey,
-                                                     @NonNull final T original,
-                                                     @NonNull final T modified) {
-            final Bundle result = new Bundle(2);
-            result.putParcelable(ORIGINAL, original);
-            result.putParcelable(MODIFIED, modified);
-            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-        }
-
-        @Override
-        public void onFragmentResult(@NonNull final String requestKey,
-                                     @NonNull final Bundle result) {
-            onResult(Objects.requireNonNull(result.getParcelable(ORIGINAL), ORIGINAL),
-                     Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
-        }
-
-        /**
-         * Callback handler.
-         *
-         * @param original the original item
-         * @param modified the modified item
-         */
-        public abstract void onResult(@NonNull T original,
-                                      @NonNull T modified);
     }
 
     private class MenuHandlersMenuProvider

@@ -35,6 +35,9 @@ import androidx.annotation.StringRes;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
+import androidx.lifecycle.LifecycleOwner;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -47,7 +50,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
@@ -383,16 +385,14 @@ public class PartialDatePickerDialogFragment
     }
 
     public abstract static class Launcher
-            extends FragmentLauncherBase {
+            implements FragmentResultListener {
 
         private static final String FIELD_ID = "fieldId";
         private static final String YEAR = "year";
         private static final String MONTH = "month";
         private static final String DAY = "day";
-
-        public Launcher(@NonNull final String requestKey) {
-            super(requestKey);
-        }
+        private String mRequestKey;
+        private FragmentManager mFragmentManager;
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
@@ -407,6 +407,14 @@ public class PartialDatePickerDialogFragment
             result.putInt(DAY, day);
 
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+        }
+
+        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
+                                              @NonNull final String requestKey,
+                                              @NonNull final LifecycleOwner lifecycleOwner) {
+            mFragmentManager = fragmentManager;
+            mRequestKey = requestKey;
+            mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
         }
 
         /**

@@ -30,18 +30,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -63,7 +59,7 @@ public class EditBookSeriesListDialogFragment
     /** Fragment/Log tag. */
     private static final String TAG = "EditBookSeriesListDlg";
     /** FragmentResultListener request key. */
-    private static final String RK_EDIT_SERIES = TAG + ":rk:" + EditSeriesForBookDialogFragment.TAG;
+    private static final String RK_EDIT_SERIES = TAG + ":rk:" + EditBookSeriesDialogFragment.TAG;
 
     /** The book. Must be in the Activity scope. */
     private EditBookViewModel mVm;
@@ -82,8 +78,8 @@ public class EditBookSeriesListDialogFragment
     /** The adapter for the list itself. */
     private SeriesListAdapter mListAdapter;
 
-    private final EditBookBaseFragment.EditItemLauncher<Series> mOnEditSeriesLauncher =
-            new EditBookBaseFragment.EditItemLauncher<>(RK_EDIT_SERIES) {
+    private final EditBookSeriesDialogFragment.Launcher mOnEditSeriesLauncher =
+            new EditBookSeriesDialogFragment.Launcher() {
                 @Override
                 public void onResult(@NonNull final Series original,
                                      @NonNull final Series modified) {
@@ -116,7 +112,8 @@ public class EditBookSeriesListDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mOnEditSeriesLauncher.registerForFragmentResult(getChildFragmentManager(), this);
+        mOnEditSeriesLauncher.registerForFragmentResult(getChildFragmentManager(), RK_EDIT_SERIES,
+                                                        this);
     }
 
     @Override
@@ -327,156 +324,6 @@ public class EditBookSeriesListDialogFragment
         }
     }
 
-    /**
-     * Edit a single Series from the book's series list.
-     * It could exist (i.e. have an ID) or could be a previously added/new one (ID==0).
-     * <p>
-     * Must be a public static class to be properly recreated from instance state.
-     */
-    public static class EditSeriesForBookDialogFragment
-            extends FFBaseDialogFragment {
-
-        /** Fragment/Log tag. */
-        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
-        private static final String TAG = "EditSeriesForBookDialog";
-        private static final String BKEY_REQUEST_KEY = TAG + ":rk";
-
-        /** FragmentResultListener request key to use for our response. */
-        private String mRequestKey;
-
-        private EditBookViewModel mVm;
-
-        /** Displayed for info only. */
-        @Nullable
-        private String mBookTitle;
-
-        /** View Binding. */
-        private DialogEditBookSeriesBinding mVb;
-
-        /** The Series we're editing. */
-        private Series mSeries;
-
-        /** Current edit. */
-        private Series mCurrentEdit;
-
-        /**
-         * No-arg constructor for OS use.
-         */
-        public EditSeriesForBookDialogFragment() {
-            super(R.layout.dialog_edit_book_series);
-        }
-
-        /**
-         * Launch the dialog.
-         *
-         * @param fm         The FragmentManager this fragment will be added to.
-         * @param requestKey for use with the FragmentResultListener
-         * @param bookTitle  displayed for info only
-         * @param series     to edit
-         */
-        static void launch(@NonNull final FragmentManager fm,
-                           @SuppressWarnings("SameParameterValue")
-                           @NonNull final String requestKey,
-                           @NonNull final String bookTitle,
-                           @NonNull final Series series) {
-            final Bundle args = new Bundle(3);
-            args.putString(BKEY_REQUEST_KEY, requestKey);
-            args.putString(DBKey.KEY_TITLE, bookTitle);
-            args.putParcelable(DBKey.FK_SERIES, series);
-
-            final DialogFragment frag = new EditSeriesForBookDialogFragment();
-            frag.setArguments(args);
-            frag.show(fm, TAG);
-        }
-
-        @Override
-        public void onCreate(@Nullable final Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            //noinspection ConstantConditions
-            mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
-
-            final Bundle args = requireArguments();
-            mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                                 BKEY_REQUEST_KEY);
-            mSeries = Objects.requireNonNull(args.getParcelable(DBKey.FK_SERIES),
-                                             DBKey.FK_SERIES);
-            mBookTitle = args.getString(DBKey.KEY_TITLE);
-
-            if (savedInstanceState == null) {
-                mCurrentEdit = new Series(mSeries.getTitle(), mSeries.isComplete());
-                mCurrentEdit.setNumber(mSeries.getNumber());
-            } else {
-                //noinspection ConstantConditions
-                mCurrentEdit = savedInstanceState.getParcelable(DBKey.FK_SERIES);
-            }
-        }
-
-        @Override
-        public void onViewCreated(@NonNull final View view,
-                                  @Nullable final Bundle savedInstanceState) {
-            super.onViewCreated(view, savedInstanceState);
-            mVb = DialogEditBookSeriesBinding.bind(view);
-            mVb.toolbar.setSubtitle(mBookTitle);
-
-            //noinspection ConstantConditions
-            final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
-                    getContext(), R.layout.popup_dropdown_menu_item,
-                    ExtArrayAdapter.FilterType.Diacritic, mVm.getAllSeriesTitles());
-
-            mVb.seriesTitle.setText(mCurrentEdit.getTitle());
-            mVb.seriesTitle.setAdapter(titleAdapter);
-            mVb.cbxIsComplete.setChecked(mCurrentEdit.isComplete());
-
-            mVb.seriesNum.setText(mCurrentEdit.getNumber());
-        }
-
-        @Override
-        protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
-            if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-                if (saveChanges()) {
-                    dismiss();
-                }
-                return true;
-            }
-            return false;
-        }
-
-        private boolean saveChanges() {
-            viewToModel();
-
-            // basic check only, we're doing more extensive checks later on.
-            if (mCurrentEdit.getTitle().isEmpty()) {
-                showError(mVb.lblSeriesTitle, R.string.vldt_non_blank_required);
-                return false;
-            }
-
-            EditBookBaseFragment.EditItemLauncher
-                    .setResult(this, mRequestKey, mSeries, mCurrentEdit);
-            return true;
-        }
-
-        private void viewToModel() {
-            mCurrentEdit.setTitle(mVb.seriesTitle.getText().toString().trim());
-            mCurrentEdit.setComplete(mVb.cbxIsComplete.isChecked());
-
-            //noinspection ConstantConditions
-            mCurrentEdit.setNumber(mVb.seriesNum.getText().toString().trim());
-        }
-
-        @Override
-        public void onSaveInstanceState(@NonNull final Bundle outState) {
-            super.onSaveInstanceState(outState);
-            outState.putParcelable(DBKey.FK_SERIES, mCurrentEdit);
-        }
-
-        @Override
-        public void onPause() {
-            viewToModel();
-            super.onPause();
-        }
-    }
-
     private class SeriesListAdapter
             extends RecyclerViewAdapterBase<Series, Holder> {
 
@@ -501,10 +348,9 @@ public class EditBookSeriesListDialogFragment
                     .inflate(R.layout.row_edit_series_list, parent, false);
             final Holder holder = new Holder(view);
             // click -> edit
-            holder.rowDetailsView.setOnClickListener(v -> EditSeriesForBookDialogFragment
-                    .launch(getChildFragmentManager(), RK_EDIT_SERIES,
-                            mVm.getBook().getTitle(),
-                            getItem(holder.getBindingAdapterPosition())));
+            holder.rowDetailsView.setOnClickListener(v -> mOnEditSeriesLauncher.launch(
+                    mVm.getBook().getTitle(),
+                    getItem(holder.getBindingAdapterPosition())));
             return holder;
         }
 

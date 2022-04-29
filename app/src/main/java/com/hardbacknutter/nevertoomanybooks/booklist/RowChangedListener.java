@@ -24,26 +24,25 @@ import android.os.Bundle;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
+import androidx.lifecycle.LifecycleOwner;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
-
 /**
  * Allows to be notified of non-book changes made.
+ * The {@link #REQUEST_KEY} is shared between all implementations.
  * The listener {@link #onChange(String, long)} must interpret the key to deduce what the id means.
  */
 public abstract class RowChangedListener
-        extends FragmentLauncherBase {
+        implements FragmentResultListener {
 
     private static final String TAG = "RowChangedListener";
     public static final String REQUEST_KEY = TAG + ":rk";
     private static final String KEY = "key";
     private static final String ITEM_ID = "item";
-
-    public RowChangedListener() {
-        super(REQUEST_KEY);
-    }
+    private FragmentManager mFragmentManager;
 
     /**
      * Notify changes where made.
@@ -61,6 +60,12 @@ public abstract class RowChangedListener
         result.putString(KEY, dataKey);
         result.putLong(ITEM_ID, id);
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+    }
+
+    public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
+                                          @NonNull final LifecycleOwner lifecycleOwner) {
+        mFragmentManager = fragmentManager;
+        mFragmentManager.setFragmentResultListener(REQUEST_KEY, lifecycleOwner, this);
     }
 
     @Override

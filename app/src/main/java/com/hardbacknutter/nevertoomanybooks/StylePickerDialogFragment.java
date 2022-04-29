@@ -29,6 +29,9 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -195,11 +198,10 @@ public class StylePickerDialogFragment
     }
 
     public abstract static class Launcher
-            extends FragmentLauncherBase {
+            implements FragmentResultListener {
 
-        public Launcher(@NonNull final String requestKey) {
-            super(requestKey);
-        }
+        private String mRequestKey;
+        private FragmentManager mFragmentManager;
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
@@ -207,6 +209,14 @@ public class StylePickerDialogFragment
             final Bundle result = new Bundle(1);
             result.putString(DBKey.FK_STYLE, uuid);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+        }
+
+        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
+                                              @NonNull final String requestKey,
+                                              @NonNull final LifecycleOwner lifecycleOwner) {
+            mFragmentManager = fragmentManager;
+            mRequestKey = requestKey;
+            mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
         }
 
         /**
@@ -241,5 +251,6 @@ public class StylePickerDialogFragment
          * @param uuid the selected style
          */
         public abstract void onResult(@NonNull String uuid);
+
     }
 }

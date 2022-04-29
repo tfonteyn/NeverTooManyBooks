@@ -93,7 +93,7 @@ public class EditBookshelvesFragment
 
     /** Accept the result from the dialog. */
     private final EditBookshelfDialogFragment.Launcher mOnEditBookshelfLauncher =
-            new EditBookshelfDialogFragment.Launcher(RK_EDIT_BOOKSHELF) {
+            new EditBookshelfDialogFragment.Launcher() {
                 @Override
                 public void onResult(final long bookshelfId) {
                     // first update the previous, now unselected, row.
@@ -117,7 +117,8 @@ public class EditBookshelvesFragment
         mVm = new ViewModelProvider(this).get(EditBookshelvesViewModel.class);
         mVm.init(getArguments());
 
-        mOnEditBookshelfLauncher.registerForFragmentResult(getChildFragmentManager(), this);
+        mOnEditBookshelfLauncher.registerForFragmentResult(getChildFragmentManager(),
+                                                           RK_EDIT_BOOKSHELF, this);
     }
 
     @Override
