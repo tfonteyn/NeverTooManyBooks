@@ -682,7 +682,7 @@ public class BooklistAdapter
                 final BooklistGroup group = mStyle.getGroups().getGroupByLevel(level);
                 //noinspection ConstantConditions
                 final String value = mNodeData.getString(
-                        group.getDisplayDomainExpression().getName());
+                        group.getDisplayDomainExpression().getDomain().getName());
                 if (!value.isEmpty()) {
                     return format(mInflater.getContext(), group.getId(), value, null);
                 }
@@ -1248,7 +1248,7 @@ public class BooklistAdapter
         RatingHolder(@NonNull final View itemView,
                      @NonNull final BooklistGroup group) {
             super(itemView);
-            mKey = group.getDisplayDomainExpression().getName();
+            mKey = group.getDisplayDomainExpression().getDomain().getName();
             mRatingBar = itemView.findViewById(R.id.rating);
         }
 
@@ -1304,7 +1304,7 @@ public class BooklistAdapter
             super(itemView);
             mAdapter = adapter;
             mGroupKeyId = group.getId();
-            mKey = group.getDisplayDomainExpression().getName();
+            mKey = group.getDisplayDomainExpression().getDomain().getName();
             mTextView = itemView.findViewById(mTextViewId);
         }
 

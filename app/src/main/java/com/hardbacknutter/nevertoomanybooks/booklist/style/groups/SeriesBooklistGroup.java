@@ -105,8 +105,8 @@ public class SeriesBooklistGroup
         // We use the foreign ID to create the key domain.
         // We override the display domain in #createDisplayDomainExpression.
         return new GroupKey(R.string.lbl_series, "s",
-                            DOM_FK_SERIES, TBL_SERIES.dot(DBKey.PK_ID),
-                            DomainExpression.SORT_UNSORTED)
+                            new DomainExpression(DOM_FK_SERIES,
+                                                 TBL_SERIES.dot(DBKey.PK_ID)))
                 .addGroupDomain(
                         // We do not sort on the key domain but add the OB column instead
                         new DomainExpression(DOM_SORTING,

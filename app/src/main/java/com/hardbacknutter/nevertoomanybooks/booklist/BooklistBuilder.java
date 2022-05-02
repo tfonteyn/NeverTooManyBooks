@@ -196,11 +196,12 @@ class BooklistBuilder {
      * @param domainExpression Domain to add
      */
     void addDomain(@NonNull final DomainExpression domainExpression) {
-        if (mBookDomains.containsKey(domainExpression.getName())) {
+        final String key = domainExpression.getDomain().getName();
+        if (mBookDomains.containsKey(key)) {
             // adding a duplicate here is a bug.
-            throw new IllegalArgumentException("Duplicate domain=" + domainExpression.getName());
+            throw new IllegalArgumentException("Duplicate domain=" + key);
         }
-        mBookDomains.put(domainExpression.getName(), domainExpression);
+        mBookDomains.put(key, domainExpression);
     }
 
     /**
@@ -233,8 +234,8 @@ class BooklistBuilder {
     @NonNull
     public Booklist build(@NonNull final Context context) {
         final int instanceId = ID_COUNTER.incrementAndGet();
-//URGENT: this belongs to git branch "bookshelf-filters"
-//        mFilters.addAll(mBookshelf.getActiveFilters(context));
+
+        mFilters.addAll(mBookshelf.getActiveFilters(context));
         mFilters.addAll(mStyle.getActiveFilters(context));
 
         // Construct the list table and all needed structures.
@@ -440,7 +441,7 @@ class BooklistBuilder {
             addIndex(DBKey.KEY_BL_NODE_VISIBLE, false, DOM_BL_NODE_VISIBLE);
 
             // Always sort by level first; no expression, as this does not represent a value.
-            addDomain(new DomainExpression(DOM_BL_NODE_LEVEL, DomainExpression.SORT_ASC));
+            addDomain(new DomainExpression(DOM_BL_NODE_LEVEL, null, DomainExpression.SORT_ASC));
 
             // The level expression; for a book this is always 1 below the #groups obviously
             addDomain(new DomainExpression(
@@ -475,10 +476,10 @@ class BooklistBuilder {
                     sourceColumns.append(',');
                 }
 
-                destColumns.append(domainExpression.getName());
+                destColumns.append(domainExpression.getDomain().getName());
                 sourceColumns.append(domainExpression.getExpression())
                              .append(_AS_)
-                             .append(domainExpression.getName());
+                             .append(domainExpression.getDomain().getName());
             }
 
             // add the node key column
@@ -607,15 +608,17 @@ class BooklistBuilder {
 
             // Build the 'current' header table definition and the sort column list
             mOrderByDomains.stream()
+                           .map(DomainExpression::getDomain)
                            // don't add duplicate domains
-                           .filter(sdi -> !sortedDomainNames.contains(sdi.getName()))
-                           .forEachOrdered(sdi -> {
-                               sortedDomainNames.add(sdi.getName());
+                           .filter(domain -> !sortedDomainNames.contains(domain.getName()))
+                           .forEachOrdered(domain -> {
+                               sortedDomainNames.add(domain.getName());
                                if (valuesColumns.length() > 0) {
                                    valuesColumns.append(",");
                                }
-                               valuesColumns.append("NEW.").append(sdi.getName());
-                               mTriggerHelperTable.addDomain(sdi.getDomain());
+                               valuesColumns.append("NEW.").append(domain.getName());
+
+                               mTriggerHelperTable.addDomain(domain);
                            });
 
             /*
@@ -802,33 +805,33 @@ class BooklistBuilder {
          * @param domainExpression DomainExpression to add
          */
         private void addDomain(@NonNull final DomainExpression domainExpression) {
+            final Domain domain = domainExpression.getDomain();
+            @Nullable
+            final String expression = domainExpression.getExpression();
+
             // Add to the table, if not already there
-            final boolean added = mListTable.addDomain(domainExpression.getDomain());
+            final boolean added = mListTable.addDomain(domain);
 
             // If the expression is {@code null},
             // then the domain is just meant for the lowest level; i.e. the book.
             // otherwise, we check and add it here
-            @Nullable
-            final String expression = domainExpression.getExpression();
             if (expression != null) {
                 // If the domain was already present, and it has an expression,
                 // check the expression being different (or not) from the stored expression
-                if (!added && expression.equals(
-                        mExpressionsDupCheck.get(domainExpression.getDomain()))) {
+                if (!added && expression.equals(mExpressionsDupCheck.get(domain))) {
                     // same expression, we do NOT want to add it.
                     // This is NOT a bug, although one could argue it's an efficiency issue.
                     return;
                 }
 
                 mDomainExpressions.add(domainExpression);
-                mExpressionsDupCheck.put(domainExpression.getDomain(), expression);
+                mExpressionsDupCheck.put(domain, expression);
             }
 
             // If required, add to the order-by domains, if not already there
-            if (domainExpression.isSorted()
-                && !mOrderByDupCheck.contains(domainExpression.getName())) {
+            if (domainExpression.isSorted() && !mOrderByDupCheck.contains(domain.getName())) {
                 mOrderByDomains.add(domainExpression);
-                mOrderByDupCheck.add(domainExpression.getName());
+                mOrderByDupCheck.add(domain.getName());
             }
         }
 
@@ -1020,14 +1023,17 @@ class BooklistBuilder {
             final StringBuilder where = new StringBuilder();
 
             filters.stream()
-                   // Theoretically all filters should be active here, but paranoia...
+                   // ONLY APPLY ACTIVE FILTERS!
                    .filter(filter -> filter.isActive(context))
-                   .forEach(filter -> {
+                   .map(filter -> filter.getExpression(context))
+                   // sanity check
+                   .filter(expression -> !expression.isEmpty())
+                   .forEach(expression -> {
                        if (where.length() != 0) {
                            where.append(_AND_);
                        }
-                       where.append(' ').append(filter.getExpression(context));
-                    });
+                       where.append(' ').append(expression);
+                   });
 
             if (where.length() > 0) {
                 return _WHERE_ + where;

@@ -103,8 +103,8 @@ public class BookshelfBooklistGroup
         // We use the foreign ID to create the key.
         // We override the display domain in #createDisplayDomainExpression.
         return new GroupKey(R.string.lbl_bookshelf, "shelf",
-                            DOM_FK_BOOKSHELF, TBL_BOOKSHELF.dot(DBKey.PK_ID),
-                            DomainExpression.SORT_UNSORTED)
+                            new DomainExpression(DOM_FK_BOOKSHELF,
+                                                 TBL_BOOKSHELF.dot(DBKey.PK_ID)))
                 .addGroupDomain(
                         // We do not sort on the key domain but add the OB column instead
                         new DomainExpression(DOM_SORTING,

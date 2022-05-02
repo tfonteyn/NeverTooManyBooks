@@ -137,8 +137,8 @@ public class AuthorBooklistGroup
         // We override the display domain in #createDisplayDomainExpression.
         // We do not sort on the key domain but add the OB column in #createSortingDomainExpression
         return new GroupKey(R.string.lbl_author, "a",
-                            DOM_FK_AUTHOR, TBL_AUTHORS.dot(DBKey.PK_ID),
-                            DomainExpression.SORT_UNSORTED)
+                            new DomainExpression(DOM_FK_AUTHOR,
+                                                 TBL_AUTHORS.dot(DBKey.PK_ID)))
 
                 .addGroupDomain(
                         // Group by id (we want the id available and there is

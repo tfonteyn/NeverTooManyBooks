@@ -79,17 +79,6 @@ public class DomainExpression
     /**
      * Constructor.
      *
-     * @param domain underlying domain
-     * @param sorted flag
-     */
-    public DomainExpression(@NonNull final Domain domain,
-                            @Sorting final int sorted) {
-        this(domain, null, sorted);
-    }
-
-    /**
-     * Constructor.
-     *
      * @param domain     underlying domain
      * @param expression to use for fetching the data
      * @param sorted     flag
@@ -158,16 +147,6 @@ public class DomainExpression
     @Nullable
     public String getExpression() {
         return mExpression;
-    }
-
-    /**
-     * Get the name of this domain.
-     *
-     * @return name
-     */
-    @NonNull
-    public String getName() {
-        return mDomain.getName();
     }
 
     @NonNull
