@@ -131,6 +131,10 @@ public final class DBKey {
     /** Alias. */
     public static final String KEY_BOOKSHELF_NAME_CSV = "bs_name_csv";
 
+    /** {@link DBDefinitions#TBL_BOOKSHELF_FILTERS}. */
+    public static final String FILTER_NAME = "filter_name";
+    public static final String FILTER_VALUE = "filter_value";
+
 
     /** {@link DBDefinitions#TBL_AUTHORS} */
     public static final String KEY_AUTHOR_FAMILY_NAME = "family_name";
@@ -307,7 +311,7 @@ public final class DBKey {
      * @return {@code true} if the user wants to use this field.
      */
     public static boolean isUsed(@NonNull final SharedPreferences global,
-                                 @UserSelectedDomain @NonNull final String dbdKey) {
+                                 @NonNull final String dbdKey) {
         return global.getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + dbdKey, true);
     }
 

@@ -61,6 +61,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF_FILTERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
@@ -106,7 +107,7 @@ public class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 17;
+    public static final int DATABASE_VERSION = 18;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -452,10 +453,10 @@ public class DBHelper
 //         *
 //         * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
 //         */
-//        name = "after_delete_on_" + TBL_BOOK_AUTHOR.getName();
-//        body = " AFTER DELETE ON " + TBL_BOOK_AUTHOR.getName() + " FOR EACH ROW\n"
+//        name = "after_delete_on_" + TBL_BOOK_AUTHOR.getPrefName();
+//        body = " AFTER DELETE ON " + TBL_BOOK_AUTHOR.getPrefName() + " FOR EACH ROW\n"
 //                + " BEGIN\n"
-//                + "  UPDATE " + TBL_BOOKS.getName()
+//                + "  UPDATE " + TBL_BOOKS.getPrefName()
 //                + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
 //                + " WHERE " + KEY_PK_ID + "=Old." + KEY_FK_BOOK + ";\n"
 //                + " END";
@@ -833,6 +834,9 @@ public class DBHelper
         if (oldVersion < 17) {
             TBL_CALIBRE_CUSTOM_FIELDS.create(db, true);
             prepareCalibreCustomFieldsTable(db);
+        }
+        if (oldVersion < 18) {
+            TBL_BOOKSHELF_FILTERS.create(db, true);
         }
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table:

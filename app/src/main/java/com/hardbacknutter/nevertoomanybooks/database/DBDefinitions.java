@@ -69,6 +69,7 @@ public final class DBDefinitions {
      * <p>
      * basic user data tables
      * TBL_BOOKSHELF,
+     * TBL_BOOKSHELF_FILTERS
      * TBL_AUTHORS,
      * TBL_SERIES,
      * TBL_PUBLISHERS,
@@ -102,6 +103,8 @@ public final class DBDefinitions {
 
     /** Basic table definition. */
     public static final TableDefinition TBL_BOOKSHELF;
+    /** Basic table definition. */
+    public static final TableDefinition TBL_BOOKSHELF_FILTERS;
     /** Basic table definition. */
     public static final TableDefinition TBL_AUTHORS;
     /** Basic table definition. */
@@ -186,6 +189,10 @@ public final class DBDefinitions {
     public static final Domain DOM_BOOKSHELF_BL_TOP_POS;
     /** Saved booklist adapter top row offset from view top. */
     public static final Domain DOM_BOOKSHELF_BL_TOP_OFFSET;
+
+    /** {@link #TBL_BOOKSHELF_FILTERS}. */
+    public static final Domain DOM_BOOKSHELF_FILTER_NAME;
+    public static final Domain DOM_BOOKSHELF_FILTER_VALUE;
 
     /** {@link #TBL_AUTHORS}. */
     public static final Domain DOM_AUTHOR_FAMILY_NAME;
@@ -441,6 +448,8 @@ public final class DBDefinitions {
         TBL_PUBLISHERS = new TableDefinition("publishers").setAlias("p");
 
         TBL_BOOKSHELF = new TableDefinition("bookshelf").setAlias("bsh");
+        TBL_BOOKSHELF_FILTERS = new TableDefinition("bookshelf_filters").setAlias("bshf");
+
         TBL_TOC_ENTRIES = new TableDefinition("anthology").setAlias("an");
 
         TBL_BOOK_BOOKSHELF = new TableDefinition("book_bookshelf").setAlias("bbsh");
@@ -572,6 +581,14 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.KEY_BOOKSHELF_BL_TOP_OFFSET, ColumnInfo.TYPE_INTEGER)
                         .notNull()
                         .withDefault(0)
+                        .build();
+
+        DOM_BOOKSHELF_FILTER_NAME =
+                new Domain.Builder(DBKey.FILTER_NAME, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .build();
+        DOM_BOOKSHELF_FILTER_VALUE =
+                new Domain.Builder(DBKey.FILTER_VALUE, ColumnInfo.TYPE_TEXT)
                         .build();
 
         /* ======================================================================================
@@ -1096,6 +1113,15 @@ public final class DBDefinitions {
                 .addReference(TBL_BOOKLIST_STYLES, DOM_FK_STYLE)
                 .addIndex(DBKey.KEY_BOOKSHELF_NAME, true, DOM_BOOKSHELF_NAME);
         ALL_TABLES.put(TBL_BOOKSHELF.getName(), TBL_BOOKSHELF);
+
+        TBL_BOOKSHELF_FILTERS
+                .addDomains(DOM_FK_BOOKSHELF,
+                            DOM_BOOKSHELF_FILTER_NAME,
+                            DOM_BOOKSHELF_FILTER_VALUE)
+                .setPrimaryKey(DOM_FK_BOOKSHELF, DOM_BOOKSHELF_FILTER_NAME)
+                .addReference(TBL_BOOKSHELF, DOM_FK_BOOKSHELF);
+        ALL_TABLES.put(TBL_BOOKSHELF_FILTERS.getName(), TBL_BOOKSHELF_FILTERS);
+
 
         TBL_AUTHORS
                 .addDomains(DOM_PK_ID,
