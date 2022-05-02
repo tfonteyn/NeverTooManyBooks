@@ -581,6 +581,11 @@ public class TableDefinition {
         return getAlias() + '.' + domain;
     }
 
+    @NonNull
+    public String dot(@NonNull final Domain domain) {
+        return getAlias() + '.' + domain.getName();
+    }
+
     /**
      * Return an SQL fragment. Use this for columns in the select-clause.
      * <p>
@@ -911,17 +916,17 @@ public class TableDefinition {
 //                                  @NonNull final Domain source,
 //                                  @NonNull final Domain destination) {
 //
-//        db.execSQL("ALTER TABLE " + getName()
-//                   + " ADD " + destination.getName() + " text NOT NULL default ''");
+//        db.execSQL("ALTER TABLE " + getPrefName()
+//                   + " ADD " + destination.getPrefName() + " text NOT NULL default ''");
 //
 //        final String updateSql =
-//                "UPDATE " + getName() + " SET " + destination.getName() + "=?"
+//                "UPDATE " + getPrefName() + " SET " + destination.getPrefName() + "=?"
 //                + " WHERE " + DBKey.PK_ID + "=?";
 //
 //        try (SQLiteStatement update = db.compileStatement(updateSql);
 //             Cursor cursor = db.rawQuery(
 //                     "SELECT " + DBKey.PK_ID
-//                     + ',' + source.getName() + " FROM " + getName(),
+//                     + ',' + source.getPrefName() + " FROM " + getPrefName(),
 //                     null)) {
 //
 //            final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
