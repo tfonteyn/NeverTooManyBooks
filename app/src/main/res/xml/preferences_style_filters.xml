@@ -61,7 +61,6 @@
             android:title="@string/lbl_lend_out"
             />
 
-        <!--        -->
         <com.hardbacknutter.nevertoomanybooks.settings.widgets.TriStateMultiSelectListPreference
             android:defaultValue="@array/empty_array"
             android:dialogMessage="@string/info_filter_edition"
@@ -80,15 +79,5 @@
             android:key="style.booklist.filter.isbn"
             android:title="@string/lbl_isbn"
             />
-
-        <!-- under development - disabled in release. -->
-        <com.hardbacknutter.nevertoomanybooks.settings.widgets.TriStateMultiSelectListPreference
-            android:defaultValue="@array/empty_array"
-            android:dialogMessage="@string/info_filter_edition"
-            android:icon="@drawable/ic_baseline_filter_list_24"
-            android:key="style.booklist.filter.bookshelves"
-            android:title="@string/lbl_bookshelves"
-            app:neutralButtonText="@string/btn_all_books" />
-        />
     </PreferenceCategory>
 </PreferenceScreen>
