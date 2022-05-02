@@ -141,7 +141,6 @@ public final class SearchSites {
                 .add(IsfdbSearchEngine.createConfig())
                 .add(OpenLibrarySearchEngine.createConfig());
 
-        // uses old google api which theoretically can be disabled at any time by google
         if (BuildConfig.ENABLE_GOOGLE_BOOKS) {
             registry.add(GoogleBooksSearchEngine.createConfig());
         }
@@ -202,17 +201,14 @@ public final class SearchSites {
 
                 type.addSite(ISFDB);
 
-                // Dutch.
                 if (BuildConfig.ENABLE_STRIP_INFO) {
                     type.addSite(STRIP_INFO_BE, enableIfDutch);
                 }
-                // Dutch.
-                if (BuildConfig.ENABLE_KB_NL) {
-                    type.addSite(KB_NL, enableIfDutch);
-                }
-                // Dutch.
                 if (BuildConfig.ENABLE_LAST_DODO) {
                     type.addSite(LAST_DODO, enableIfDutch);
+                }
+                if (BuildConfig.ENABLE_KB_NL) {
+                    type.addSite(KB_NL, enableIfDutch);
                 }
 
                 // Disabled by default as data from this site is not very complete.
@@ -226,7 +222,6 @@ public final class SearchSites {
 
                 type.addSite(ISFDB);
 
-                // Dutch.
                 if (BuildConfig.ENABLE_KB_NL) {
                     type.addSite(KB_NL, enableIfDutch);
                 }
@@ -252,22 +247,18 @@ public final class SearchSites {
                 type.addSite(GOODREADS);
                 type.addSite(ISFDB);
 
-                // Dutch.
-                if (BuildConfig.ENABLE_LAST_DODO) {
-                    type.addSite(LAST_DODO, enableIfDutch);
-                }
-
                 if (BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
                     type.addSite(LIBRARY_THING);
                 }
 
                 type.addSite(OPEN_LIBRARY);
 
-                // Dutch.
                 if (BuildConfig.ENABLE_STRIP_INFO) {
                     type.addSite(STRIP_INFO_BE, enableIfDutch);
                 }
-
+                if (BuildConfig.ENABLE_LAST_DODO) {
+                    type.addSite(LAST_DODO, enableIfDutch);
+                }
                 break;
             }
 
