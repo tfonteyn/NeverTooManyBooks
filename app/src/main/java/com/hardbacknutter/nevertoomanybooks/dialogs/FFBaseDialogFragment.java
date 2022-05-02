@@ -253,16 +253,15 @@ public abstract class FFBaseDialogFragment
         mDialogToolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
         mDialogToolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClick);
 
-        // Show or hide the button panel depending on the dialog being fullscreen or not.
         if (mFullscreen) {
+            // Always hide the button bar
             if (mButtonPanel != null) {
                 mButtonPanel.setVisibility(View.GONE);
             }
 
-            // Hook-up the toolbar 'confirm' button with the menu title
-            // and the default menu listener.
-            final MenuItem menuItem =
-                    mDialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
+            // Hook-up the toolbar 'confirm' button with the menu 'title' attribute
+            // and redirect a click to our default menu listener.
+            final MenuItem menuItem = mDialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
             if (menuItem != null) {
                 // the ok-button is a button inside the action view of the toolbar menu item
                 final Button okButton = menuItem.getActionView().findViewById(R.id.btn_confirm);
@@ -274,12 +273,13 @@ public abstract class FFBaseDialogFragment
 
         } else {
             if (mButtonPanel != null) {
+                // Always show the button bar
                 mButtonPanel.setVisibility(View.VISIBLE);
                 // Toolbar confirmation menu item is mapped to the ok button.
-                // The menu item is hidden.
                 final MenuItem menuItem =
                         mDialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
                 if (menuItem != null) {
+                    // The menu item is hidden.
                     menuItem.setVisible(false);
                     // the ok-button is a simple button on the button panel.
                     final Button okButton = mButtonPanel.findViewById(R.id.btn_ok);
