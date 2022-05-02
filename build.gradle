@@ -39,7 +39,7 @@ buildscript {
         // https://developer.android.com/jetpack/androidx/versions
 
         // 1.6.0 requires Android 13 Developer Preview 2 SDK
-        androidx_activity_version = '1.5.0-alpha05'
+        androidx_activity_version = '1.5.0-beta01'
 
         androidx_annotation_version = '1.4.0-alpha02'
 
@@ -55,7 +55,7 @@ buildscript {
         androidx_coordinatorlayout_version = '1.2.0'
 
         // 1.9.0 requires Android 13 Developer Preview 2 SDK
-        androidx_core_version = '1.8.0-alpha07'
+        androidx_core_version = '1.8.0-beta01'
 
         androidx_customview_version = '1.1.0'
 
@@ -69,7 +69,7 @@ buildscript {
 
         androidx_interpolator_version = '1.0.0'
 
-        androidx_lifecycle_version = '2.4.1'
+        androidx_lifecycle_version = '2.5.0-beta01'
 
         androidx_preference_version = '1.2.0'
 
@@ -78,7 +78,7 @@ buildscript {
         androidx_viewpager2_version = '1.1.0-beta01'
 
         // https://github.com/material-components/material-components-android/releases
-        google_material_version = '1.6.0-beta01'
+        google_material_version = '1.7.0-alpha01'
 
         // https://jsoup.org/
         jsoup_version = '1.14.3'
@@ -93,10 +93,10 @@ buildscript {
         apache_commons_codec = '1.15'
 
         // https://github.com/ACRA/acra
-        acra_version = '5.9.1'
+        acra_version = '5.9.3'
 
         // https://github.com/mockito/mockito
-        mockito_version = '4.5.0'
+        mockito_version = '4.5.1'
 
         // https://junit.org/junit5/docs/current/user-guide/#overview
         jupiter_version = '5.8.2'
