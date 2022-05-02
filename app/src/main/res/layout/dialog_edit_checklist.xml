@@ -39,7 +39,7 @@
         />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/multi_choice_items"
+        android:id="@+id/item_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/dialogPreferredPaddingTop"
