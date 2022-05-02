@@ -268,6 +268,14 @@ public class EditLenderDialogFragment
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
+        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
+                                              @NonNull final String requestKey,
+                                              @NonNull final LifecycleOwner lifecycleOwner) {
+            mFragmentManager = fragmentManager;
+            mRequestKey = requestKey;
+            mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
+        }
+
         /**
          * Launch the dialog.
          *
@@ -283,14 +291,6 @@ public class EditLenderDialogFragment
             final DialogFragment frag = new EditLenderDialogFragment();
             frag.setArguments(args);
             frag.show(mFragmentManager, TAG);
-        }
-
-        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                              @NonNull final String requestKey,
-                                              @NonNull final LifecycleOwner lifecycleOwner) {
-            mFragmentManager = fragmentManager;
-            mRequestKey = requestKey;
-            mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
         }
 
         /**
