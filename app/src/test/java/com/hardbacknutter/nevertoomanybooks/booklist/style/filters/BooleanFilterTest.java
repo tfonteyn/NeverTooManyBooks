@@ -30,8 +30,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks._mocks.StylePersistenceLayerBundle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -54,8 +52,8 @@ class BooleanFilterTest
         final BooleanFilter p1 = new BooleanFilter(
                 false, mLayerMock, R.string.lbl_read,
                 Filters.PK_FILTER_READ,
-                new DomainExpression(DBDefinitions.DOM_BOOK_READ,
-                                     DBDefinitions.TBL_BOOKS.dot(DBKey.BOOL_READ)));
+                DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_READ
+        );
         p1.set(true);
 
         final BooleanFilter p2 = p1.clone(false, mLayerMock);

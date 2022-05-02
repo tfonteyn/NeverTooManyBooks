@@ -20,7 +20,7 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- Reminder: we let the SearchView handle it's own icons.
          The hint text is defined in xml/searchable.xml
@@ -30,6 +30,14 @@
         android:orderInCategory="@integer/MENU_ORDER_SEARCH"
         android:title="@android:string/search_go"
         app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="ifRoom" />
+
+    <!-- -->
+    <item
+        android:id="@id/MENU_FILTERS"
+        android:icon="@drawable/ic_baseline_filter_list_24"
+        android:orderInCategory="@integer/MENU_ORDER_SORT"
+        android:title="@string/pg_filters"
         app:showAsAction="ifRoom" />
 
     <item

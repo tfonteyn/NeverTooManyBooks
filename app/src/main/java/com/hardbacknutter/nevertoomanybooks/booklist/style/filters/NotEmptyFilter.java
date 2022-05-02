@@ -26,7 +26,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 public class NotEmptyFilter
         extends IntStringFilter {
@@ -38,14 +39,15 @@ public class NotEmptyFilter
      * @param persistenceLayer Style reference.
      * @param labelId          string resource id to use as a display label
      * @param key              preference key
-     * @param domainExpression to use by the expression
+     * @param tableDefinition  to use by the expression
      */
     NotEmptyFilter(final boolean isPersistent,
                    @Nullable final StylePersistenceLayer persistenceLayer,
                    @StringRes final int labelId,
                    @NonNull final String key,
-                   @NonNull final DomainExpression domainExpression) {
-        super(isPersistent, persistenceLayer, labelId, key, domainExpression);
+                   @NonNull final TableDefinition tableDefinition,
+                   @NonNull final Domain domain) {
+        super(isPersistent, persistenceLayer, labelId, key, domain, tableDefinition);
     }
 
     /**
@@ -68,19 +70,16 @@ public class NotEmptyFilter
         return new NotEmptyFilter(isPersistent, persistenceLayer, this);
     }
 
+    @NonNull
     @Override
-    @Nullable
     public String getExpression(@NonNull final Context context) {
         final Integer value = getValue();
-        if (isActive(context)) {
-            if (value == 0) {
-                return "((" + mDomainExpression.getExpression() + " IS NULL)"
-                       + " OR (" + mDomainExpression.getExpression() + "=''))";
-            } else {
-                return "((" + mDomainExpression.getExpression() + " IS NOT NULL)"
-                       + " AND (" + mDomainExpression.getExpression() + "<>''))";
-            }
+        if (value == 0) {
+            return "((" + mTable.dot(mDomain) + " IS NULL)"
+                   + " OR (" + mTable.dot(mDomain) + "=''))";
+        } else {
+            return "((" + mTable.dot(mDomain) + " IS NOT NULL)"
+                   + " AND (" + mTable.dot(mDomain) + "<>''))";
         }
-        return null;
     }
 }

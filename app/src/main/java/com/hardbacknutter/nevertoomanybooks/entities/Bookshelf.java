@@ -34,15 +34,25 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.RowIdFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 
 /**
  * Represents a Bookshelf.
@@ -86,6 +96,9 @@ public class Bookshelf
      * Storing the name and not the id. If you export/import... the id will be different.
      */
     private static final String PREF_BOOKSHELF_CURRENT = "Bookshelf.CurrentBookshelf";
+    @SuppressWarnings("FieldNotUsedInToString")
+    private final List<PFilter<?>> mFilters = new ArrayList<>();
+
     /** Row ID. */
     private long mId;
     /** Bookshelf name. */
@@ -148,6 +161,8 @@ public class Bookshelf
 
         mFirstVisibleItemPosition = rowData.getInt(DBKey.KEY_BOOKSHELF_BL_TOP_POS);
         mFirstVisibleViewOffset = rowData.getInt(DBKey.KEY_BOOKSHELF_BL_TOP_OFFSET);
+
+        mFilters.addAll(ServiceLocator.getInstance().getBookshelfDao().getFilters(mId));
     }
 
     /**
@@ -161,6 +176,9 @@ public class Bookshelf
         mName = in.readString();
         //noinspection ConstantConditions
         mStyleUuid = in.readString();
+
+        //ENHANCE: Filters not parcelled, just restore from database
+        mFilters.addAll(ServiceLocator.getInstance().getBookshelfDao().getFilters(mId));
 
         mFirstVisibleItemPosition = in.readInt();
         mFirstVisibleViewOffset = in.readInt();
@@ -297,6 +315,49 @@ public class Bookshelf
     }
 
     /**
+     * Get the FULL list of defined filters.
+     *
+     * @return list of {@link PFilter}
+     */
+    @NonNull
+    public List<PFilter<?>> getFilters() {
+        return mFilters;
+    }
+
+    /**
+     * Get the list of active filters to use while building the book-list.
+     * Note these are plain {@link Filter} objects!
+     *
+     * @param context Current context
+     *
+     * @return list of active {@link Filter}
+     *
+     * @see #getFilters()
+     */
+    @NonNull
+    public List<Filter> getActiveFilters(@NonNull final Context context) {
+        final List<Filter> filters = new ArrayList<>();
+
+        // Filter on this Bookshelf?
+        // 1. this must NOT be the "all books" Bookshelf
+        final boolean itsNotAllBooks = !isAllBooks();
+        // 2. the current style must NOT contain the Bookshelf group.
+        final boolean styleHasNoBookshelfGroup =
+                !getStyle(context).getGroups().contains(BooklistGroup.BOOKSHELF);
+
+        if (itsNotAllBooks && styleHasNoBookshelfGroup) {
+            filters.add(new RowIdFilter(DOM_PK_ID, TBL_BOOKSHELF, this.getId()));
+        }
+
+        //TODO: if we add a bookshelf filter here, then the above needs changing
+        filters.addAll(mFilters);
+
+        return filters.stream()
+                      .filter(f -> f.isActive(context))
+                      .collect(Collectors.toList());
+    }
+
+    /**
      * Get the stored position to use for re-displaying this bookshelf's booklist.
      * Normally in the range 0..x, but can theoretically be {@link RecyclerView#NO_POSITION} !
      *
@@ -356,10 +417,11 @@ public class Bookshelf
     public void copyFrom(@NonNull final Bookshelf source) {
         mName = source.mName;
         mStyleUuid = source.mStyleUuid;
+        mFilters.clear();
+        mFilters.addAll(source.mFilters);
         // don't copy the 'top' values.
     }
 
-    @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
         return 0;

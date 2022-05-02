@@ -26,7 +26,8 @@ import androidx.annotation.NonNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 /**
  * an SQL WHERE clause (column IN (a,b,c,...)
@@ -37,7 +38,9 @@ public class NumberListFilter<T extends Number>
         implements Filter {
 
     @NonNull
-    private final DomainExpression mDomainExpression;
+    private final Domain mDomain;
+    @NonNull
+    private final TableDefinition mTable;
 
     @NonNull
     private final List<T> mList;
@@ -45,13 +48,13 @@ public class NumberListFilter<T extends Number>
     /**
      * Constructor.
      *
-     * @param domainExpression to use by the expression
-     * @param list             of values
+     * @param list of values
      */
-    public NumberListFilter(@NonNull final DomainExpression domainExpression,
+    public NumberListFilter(@NonNull final TableDefinition table,
+                            @NonNull final Domain domain,
                             @NonNull final List<T> list) {
-
-        mDomainExpression = domainExpression;
+        mDomain = domain;
+        mTable = table;
         mList = list;
     }
 
@@ -60,27 +63,19 @@ public class NumberListFilter<T extends Number>
     public String getExpression(@NonNull final Context context) {
         // micro? optimization...
         if (mList.size() == 1) {
-            return '(' + mDomainExpression.getExpression() + '=' + mList.get(0) + ')';
+            return '(' + mTable.dot(mDomain) + '=' + mList.get(0) + ')';
         } else {
-            return '(' + mDomainExpression.getExpression() + " IN ("
-                   + mList.stream()
-                          .map(String::valueOf)
-                          .collect(Collectors.joining(","))
-                   + "))";
+            return mList.stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.joining(
+                                ",",
+                                '(' + mTable.dot(mDomain) + " IN ("
+                                , "))"));
         }
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        return true;
-    }
-
-    @Override
-    @NonNull
-    public String toString() {
-        return "NumberListFilter{"
-               + "mDomainExpression=" + mDomainExpression
-               + ", mList=`" + mList + '`'
-               + '}';
+        return !mList.isEmpty();
     }
 }

@@ -36,19 +36,20 @@ public interface Filter {
      *
      * @param context Current context
      *
-     * @return filter SQL expression, or {@code null} if not active.
+     * @return filter SQL expression, or undefined if not active.
      */
     @Nullable
     String getExpression(@NonNull Context context);
 
     /**
-     * Allow an implementation to override the definition of being active.
+     * Check if a filter is active / should be applied.
      *
      * @param context Current context
      *
      * @return {@code true} if this filter is active.
      */
     default boolean isActive(@NonNull final Context context) {
-        return getExpression(context) != null;
+        final String expression = getExpression(context);
+        return expression != null && !expression.isEmpty();
     }
 }

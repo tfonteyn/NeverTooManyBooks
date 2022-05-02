@@ -30,8 +30,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks._mocks.StylePersistenceLayerBundle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -55,8 +53,7 @@ class BitmaskFilterTest
         final BitmaskFilter p1 = new BitmaskFilter(
                 false, mLayerMock, R.string.lbl_edition,
                 Filters.PK_FILTER_EDITION_BITMASK,
-                new DomainExpression(DBDefinitions.DOM_BOOK_EDITION_BITMASK,
-                                     DBDefinitions.TBL_BOOKS.dot(DBKey.BITMASK_EDITION)),
+                DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_EDITION_BITMASK,
                 Book.Edition.BITMASK_ALL_BITS);
 
         p1.set(Book.Edition.SIGNED | Book.Edition.LIMITED);

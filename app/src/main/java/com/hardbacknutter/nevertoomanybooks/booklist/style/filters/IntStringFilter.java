@@ -33,7 +33,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 /**
  * An Integer stored as a String
@@ -50,8 +51,6 @@ abstract class IntStringFilter
 
     private static final Integer P_NOT_USED = -1;
 
-    @NonNull
-    final DomainExpression mDomainExpression;
     /** key for the Preference. */
     @NonNull
     private final String mKey;
@@ -66,6 +65,10 @@ abstract class IntStringFilter
     private final Integer mDefaultValue;
     @StringRes
     private final int mLabelId;
+    @NonNull
+    protected final Domain mDomain;
+    @NonNull
+    protected final TableDefinition mTable;
 
     /** in memory value used for non-persistence situations. */
     @Nullable
@@ -79,13 +82,14 @@ abstract class IntStringFilter
      * @param persistenceLayer Style reference.
      * @param labelId          string resource id to use as a display label
      * @param key              preference key
-     * @param domainExpression to use by the expression
      */
     IntStringFilter(final boolean isPersistent,
                     @Nullable final StylePersistenceLayer persistenceLayer,
                     @StringRes final int labelId,
                     @NonNull final String key,
-                    @NonNull final DomainExpression domainExpression) {
+                    @NonNull final Domain domain,
+                    @NonNull final TableDefinition table) {
+
         if (BuildConfig.DEBUG /* always */) {
             if (isPersistent && persistenceLayer == null) {
                 throw new IllegalStateException();
@@ -98,7 +102,9 @@ abstract class IntStringFilter
         mNonPersistedValue = P_NOT_USED;
 
         mLabelId = labelId;
-        mDomainExpression = domainExpression;
+
+        mDomain = domain;
+        mTable = table;
     }
 
     /**
@@ -122,7 +128,8 @@ abstract class IntStringFilter
         mDefaultValue = that.mDefaultValue;
 
         mLabelId = that.mLabelId;
-        mDomainExpression = new DomainExpression(that.mDomainExpression);
+        mDomain = that.mDomain;
+        mTable = that.mTable;
 
         mNonPersistedValue = that.mNonPersistedValue;
 
@@ -147,7 +154,7 @@ abstract class IntStringFilter
     public boolean isActive(@NonNull final Context context) {
         return !P_NOT_USED.equals(getValue())
                && DBKey.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                               mDomainExpression.getName());
+                               mDomain.getName());
     }
 
     @Override
@@ -191,13 +198,14 @@ abstract class IntStringFilter
                && mDefaultValue.equals(that.mDefaultValue)
 
                && mLabelId == that.mLabelId
-               && mDomainExpression.equals(that.mDomainExpression);
+               && mDomain.equals(that.mDomain)
+               && mTable.equals(that.mTable);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(mKey, mNonPersistedValue, mDefaultValue,
-                            mLabelId, mDomainExpression);
+                            mLabelId, mDomain, mTable);
     }
 
     @Override
@@ -210,7 +218,8 @@ abstract class IntStringFilter
                + ", mPersisted=" + mPersisted
 
                + ", mLabelId=`" + ServiceLocator.getAppContext().getString(mLabelId) + '`'
-               + ", mDomainExpression=" + mDomainExpression
+               + ", mDomain=" + mDomain
+               + ", mTable=" + mTable
                + '}';
     }
 }

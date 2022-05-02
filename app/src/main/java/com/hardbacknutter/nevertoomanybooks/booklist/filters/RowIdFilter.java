@@ -23,28 +23,10 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
-/**
- * An SQL WHERE clause  (column LIKE '%text%').
- * Note that the LIKE usage means this is case insensitive.
- * <p>
- * If we ever use this class... sql concat with user-entered strings is a security issue.
- * MUST use PreparedStatements instead !
- *
- * <pre>
- *  {@code
- *      public void setFilterOnSeriesName(@Nullable final String filter){
- *          if (filter!=null&&!filter.trim().isEmpty()){
- *              mFilters.add(new WildcardFilter(TBL_SERIES,KEY_SERIES_TITLE,filter));
- *          }
- *      }
- *  }
- * </pre>
- */
-public class WildcardFilter
+public class RowIdFilter
         implements Filter {
 
     @NonNull
@@ -52,32 +34,24 @@ public class WildcardFilter
     @NonNull
     private final TableDefinition mTable;
 
-    @NonNull
-    private final String mCriteria;
+    private final long id;
 
-    /**
-     * Constructor.
-     *
-     * @param criteria to use by the expression
-     */
-    public WildcardFilter(@NonNull final TableDefinition table,
-                          @NonNull final Domain domain,
-                          @NonNull final String criteria) {
+    public RowIdFilter(@NonNull final Domain domain,
+                       @NonNull final TableDefinition table,
+                       final long id) {
         mDomain = domain;
         mTable = table;
-        mCriteria = criteria;
+        this.id = id;
     }
 
     @Override
     @NonNull
     public String getExpression(@NonNull final Context context) {
-        return '(' + mTable.dot(mDomain)
-               + " LIKE '%" + SqlEncode.string(mCriteria) + "%'"
-               + ')';
+        return '(' + mTable.dot(mDomain) + '=' + id + ')';
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        return true;
+        return id > 0;
     }
 }

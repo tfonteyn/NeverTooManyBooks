@@ -178,6 +178,8 @@ public class BooksOnBookshelf
     /** {@link FragmentResultListener} request key. */
     private static final String RK_EDIT_LENDER = TAG + ":rk:" + EditLenderDialogFragment.TAG;
 
+    private static final String RK_FILTERS = TAG + ":rk:" + BookshelfFiltersDialogFragment.TAG;
+
     /** Make a backup. */
     private final ActivityResultLauncher<Void> mExportLauncher =
             registerForActivityResult(new ExportContract(), success -> {
@@ -283,7 +285,15 @@ public class BooksOnBookshelf
 
     /** View Binding. */
     private BooksonbookshelfBinding mVb;
-
+    private final BookshelfFiltersDialogFragment.Launcher mOnBookshelfFiltersLauncher =
+            new BookshelfFiltersDialogFragment.Launcher() {
+                @Override
+                public void onResult(final boolean modified) {
+                    if (modified) {
+                        buildBookList();
+                    }
+                }
+            };
     /** List layout manager. */
     private LinearLayoutManager mLayoutManager;
 
@@ -506,6 +516,7 @@ public class BooksOnBookshelf
         mEditBookshelfLauncher.registerForFragmentResult(fm, RK_EDIT_BOOKSHELF, this);
         mOnStylePickerLauncher.registerForFragmentResult(fm, RK_STYLE_PICKER, this);
         mEditLenderLauncher.registerForFragmentResult(fm, RK_EDIT_LENDER, this);
+        mOnBookshelfFiltersLauncher.registerForFragmentResult(fm, RK_FILTERS, this);
     }
 
     private void createViewModel() {
@@ -1352,7 +1363,7 @@ public class BooksOnBookshelf
      */
     private void updateBooksFromInternetData(final int position,
                                              @NonNull final DataHolder rowData,
-                                             @Nullable final String message) {
+                                             @Nullable final CharSequence message) {
         final View anchor = mLayoutManager.findViewByPosition(position);
 
         //noinspection ConstantConditions
@@ -1988,6 +1999,9 @@ public class BooksOnBookshelf
             menuInflater.inflate(R.menu.bob, menu);
             MenuHelper.setupSearchActionView(BooksOnBookshelf.this, menu);
 
+            // in development
+            menu.findItem(R.id.MENU_FILTERS).setVisible(BuildConfig.ENABLE_BOOKSHELF_FILTERS);
+
             onPrepareMenu(menu);
         }
 
@@ -2004,7 +2018,11 @@ public class BooksOnBookshelf
 
             final int itemId = menuItem.getItemId();
 
-            if (itemId == R.id.MENU_STYLE_PICKER) {
+            if (itemId == R.id.MENU_FILTERS) {
+                mOnBookshelfFiltersLauncher.launch(mVm.getCurrentBookshelf());
+                return true;
+
+            } else if (itemId == R.id.MENU_STYLE_PICKER) {
                 mOnStylePickerLauncher.launch(mVm.getStyle(BooksOnBookshelf.this), false);
                 return true;
 

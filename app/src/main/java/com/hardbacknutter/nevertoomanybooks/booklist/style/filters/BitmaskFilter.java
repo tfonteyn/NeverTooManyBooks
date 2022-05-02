@@ -33,7 +33,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.settings.widgets.TriStateMultiSelectListPreference;
 
 public class BitmaskFilter
@@ -56,7 +57,9 @@ public class BitmaskFilter
     @NonNull
     private final Integer mDefaultValue;
     @NonNull
-    private final DomainExpression mDomainExpression;
+    private final Domain mDomain;
+    @NonNull
+    private final TableDefinition mTable;
     @StringRes
     private final int mLabelId;
 
@@ -75,14 +78,15 @@ public class BitmaskFilter
      * @param persistenceLayer Style reference.
      * @param labelId          string resource id to use as a display label
      * @param key              preference key
-     * @param domainExpression to use by the expression
+     * @param table            to use by the expression
      * @param mask             valid values bitmask
      */
     BitmaskFilter(final boolean isPersistent,
                   @Nullable final StylePersistenceLayer persistenceLayer,
                   @StringRes final int labelId,
                   @NonNull final String key,
-                  @NonNull final DomainExpression domainExpression,
+                  @NonNull final TableDefinition table,
+                  @NonNull final Domain domain,
                   @NonNull final Integer mask) {
         if (BuildConfig.DEBUG /* always */) {
             if (isPersistent && persistenceLayer == null) {
@@ -95,7 +99,9 @@ public class BitmaskFilter
         mDefaultValue = 0;
 
         mLabelId = labelId;
-        mDomainExpression = domainExpression;
+
+        mDomain = domain;
+        mTable = table;
 
         mMask = mask;
     }
@@ -121,7 +127,8 @@ public class BitmaskFilter
         mDefaultValue = that.mDefaultValue;
 
         mLabelId = that.mLabelId;
-        mDomainExpression = new DomainExpression(that.mDomainExpression);
+        mDomain = that.mDomain;
+        mTable = that.mTable;
 
         mMask = that.mMask;
 
@@ -155,7 +162,7 @@ public class BitmaskFilter
     @Override
     public boolean isActive(@NonNull final Context context) {
         if (!DBKey.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                          mDomainExpression.getName())) {
+                          mDomain.getName())) {
             return false;
         }
 
@@ -173,22 +180,18 @@ public class BitmaskFilter
      * other bits being ignored.
      * If the bitmask is {@code == 0}, the filter looks for values {@code == 0} only.
      *
-     * @return filter SQL expression, or {@code null} if not active.
+     * @return filter SQL expression
      */
+    @NonNull
     @Override
-    @Nullable
     public String getExpression(@NonNull final Context context) {
-        if (isActive(context)) {
-            final int value = getValue();
-            if (value > 0) {
-                return "((" + mDomainExpression.getExpression() + " & " + value + ") <> 0)";
-            } else {
-                return "(" + mDomainExpression.getExpression() + "=0)";
-            }
+        final int value = getValue();
+        if (value > 0) {
+            return "((" + mTable.dot(mDomain) + " & " + value + ")<>0)";
+        } else {
+            return "(" + mTable.dot(mDomain) + "=0)";
         }
-        return null;
     }
-
 
     @Override
     public void set(@Nullable final Integer value) {
@@ -242,7 +245,8 @@ public class BitmaskFilter
                && mDefaultValue.equals(that.mDefaultValue)
 
                && mLabelId == that.mLabelId
-               && mDomainExpression.equals(that.mDomainExpression)
+               && mDomain.equals(that.mDomain)
+               && mTable.equals(that.mTable)
 
                && mNonPersistedValueIsActive == that.mNonPersistedValueIsActive
                && mMask == that.mMask;
@@ -251,7 +255,7 @@ public class BitmaskFilter
     @Override
     public int hashCode() {
         return Objects.hash(mKey, mNonPersistedValue, mDefaultValue,
-                            mLabelId, mDomainExpression,
+                            mLabelId, mDomain, mTable,
                             mNonPersistedValueIsActive,
                             mMask);
     }
@@ -269,7 +273,8 @@ public class BitmaskFilter
                + ", mPersisted=" + mPersisted
 
                + ", mLabelId=`" + ServiceLocator.getAppContext().getString(mLabelId) + '`'
-               + ", mDomainExpression=" + mDomainExpression
+               + ", mDomain=" + mDomain
+               + ", mTable=" + mTable
 
                + ", mMask=" + mMask + "=" + Integer.toBinaryString(mMask)
                + '}';

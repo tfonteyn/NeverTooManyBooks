@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 
@@ -210,7 +209,7 @@ public class BoBTask
                 } else {
                     // Add a where clause for: "AND books._id IN (list)".
                     builder.addFilter(new NumberListFilter<>(
-                            new DomainExpression(DOM_PK_ID, TBL_BOOKS.dot(DBKey.PK_ID)),
+                            TBL_BOOKS, DBDefinitions.DOM_PK_ID,
                             mSearchCriteria.getBookIdList()));
                 }
 

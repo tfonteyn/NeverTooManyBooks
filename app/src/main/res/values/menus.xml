@@ -148,6 +148,8 @@
     <item name="MENU_LEVEL_EXPAND" type="id" />
     <item name="MENU_LEVEL_COLLAPSE" type="id" />
 
+    <item name="MENU_FILTERS" type="id" />
+
     <item name="MENU_STYLE_PICKER" type="id" />
     <item name="MENU_STYLE_LIST_TOGGLE" type="id" />
 
@@ -227,8 +229,11 @@
 
     <!-- Toolbar menu -->
     <item name="MENU_RESET" type="id" />
-    <!-- Toolbar menu, confirming the main action; e.g. Save/Add/Select/... -->
+    <!-- Toolbar menu with an "app:actionLayout" -->
     <item name="MENU_ACTION_CONFIRM" type="id" />
+    <item name="MENU_ACTION_ADD" type="id" />
+    <item name="MENU_ACTION_SAVE" type="id" />
+    <item name="MENU_ACTION_SELECT" type="id" />
 
     <!-- debug options for the SQLite shell activity. -->
     <item name="MENU_DEBUG_SQ_SHELL_RUN" type="id" />

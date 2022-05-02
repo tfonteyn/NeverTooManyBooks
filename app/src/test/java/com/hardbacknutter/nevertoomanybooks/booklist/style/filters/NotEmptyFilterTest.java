@@ -30,8 +30,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks._mocks.StylePersistenceLayerBundle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -54,8 +52,8 @@ public class NotEmptyFilterTest
         final NotEmptyFilter p1 = new NotEmptyFilter(
                 false, mLayerMock, R.string.lbl_isbn,
                 Filters.PK_FILTER_ISBN,
-                new DomainExpression(DBDefinitions.DOM_BOOK_ISBN,
-                                     DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_ISBN)));
+                DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_ISBN
+        );
         p1.set(1);
 
         final NotEmptyFilter p2 = p1.clone(false, mLayerMock);

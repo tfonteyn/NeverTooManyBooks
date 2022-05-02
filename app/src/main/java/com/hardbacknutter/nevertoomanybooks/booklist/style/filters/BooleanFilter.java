@@ -26,7 +26,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 public class BooleanFilter
         extends IntStringFilter {
@@ -38,14 +39,15 @@ public class BooleanFilter
      * @param persistenceLayer Style reference.
      * @param labelId          string resource id to use as a display label
      * @param key              preference key
-     * @param domainExpression to use by the expression
+     * @param tableDefinition  to use by the expression
      */
     BooleanFilter(final boolean isPersistent,
                   @Nullable final StylePersistenceLayer persistenceLayer,
                   @StringRes final int labelId,
                   @NonNull final String key,
-                  @NonNull final DomainExpression domainExpression) {
-        super(isPersistent, persistenceLayer, labelId, key, domainExpression);
+                  @NonNull final TableDefinition tableDefinition,
+                  @NonNull final Domain domain) {
+        super(isPersistent, persistenceLayer, labelId, key, domain, tableDefinition);
     }
 
     /**
@@ -68,14 +70,10 @@ public class BooleanFilter
         return new BooleanFilter(isPersistent, persistenceLayer, this);
     }
 
+    @NonNull
     @Override
-    @Nullable
     public String getExpression(@NonNull final Context context) {
-        final Integer value = getValue();
-        if (isActive(context)) {
-            return mDomainExpression.getExpression() + '=' + value;
-        }
-        return null;
+        return mTable.dot(mDomain) + '=' + getValue();
     }
 
     /**

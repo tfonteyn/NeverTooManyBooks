@@ -36,7 +36,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PIntList;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 /**
  * an SQL WHERE clause (column IN (a,b,c,...)
@@ -58,7 +59,9 @@ public class IntListFilter
     @NonNull
     private final ArrayList<Integer> mDefaultValue;
     @NonNull
-    private final DomainExpression mDomainExpression;
+    protected final Domain mDomain;
+    @NonNull
+    protected final TableDefinition mTable;
     @StringRes
     private final int mLabelId;
     /** in memory value used for non-persistence situations. */
@@ -73,13 +76,13 @@ public class IntListFilter
      * @param persistenceLayer Style reference.
      * @param labelId          string resource id to use as a display label
      * @param key              preference key
-     * @param domainExpression to use by the expression
      */
     IntListFilter(final boolean isPersistent,
                   @Nullable final StylePersistenceLayer persistenceLayer,
                   @StringRes final int labelId,
                   @NonNull final String key,
-                  @NonNull final DomainExpression domainExpression) {
+                  @NonNull final TableDefinition table,
+                  @NonNull final Domain domain) {
         if (BuildConfig.DEBUG /* always */) {
             if (isPersistent && persistenceLayer == null) {
                 throw new IllegalStateException();
@@ -91,7 +94,9 @@ public class IntListFilter
         mDefaultValue = new ArrayList<>();
 
         mLabelId = labelId;
-        mDomainExpression = domainExpression;
+
+        mDomain = domain;
+        mTable = table;
     }
 
     /**
@@ -115,7 +120,8 @@ public class IntListFilter
         mDefaultValue = new ArrayList<>(that.mDefaultValue);
 
         mLabelId = that.mLabelId;
-        mDomainExpression = new DomainExpression(that.mDomainExpression);
+        mDomain = that.mDomain;
+        mTable = that.mTable;
 
         if (that.mNonPersistedValue != null) {
             mNonPersistedValue = new ArrayList<>(that.mNonPersistedValue);
@@ -152,7 +158,7 @@ public class IntListFilter
     @Override
     public boolean isActive(@NonNull final Context context) {
         if (!DBKey.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                          mDomainExpression.getName())) {
+                          mDomain.getName())) {
             return false;
         }
 
@@ -167,15 +173,14 @@ public class IntListFilter
     @Override
     @Nullable
     public String getExpression(@NonNull final Context context) {
-        if (isActive(context)) {
-            final List<Integer> value = getValue();
-            if (!value.isEmpty()) {
-                return '(' + mDomainExpression.getExpression() + " IN ("
-                       + value.stream()
-                              .map(String::valueOf)
-                              .collect(Collectors.joining(","))
-                       + "))";
-            }
+        final List<Integer> value = getValue();
+        if (!value.isEmpty()) {
+            return value.stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.joining(
+                                ",",
+                                '(' + mTable.dot(mDomain) + " IN (",
+                                "))"));
         }
         return null;
     }
@@ -227,7 +232,8 @@ public class IntListFilter
                && mDefaultValue.equals(that.mDefaultValue)
 
                && mLabelId == that.mLabelId
-               && mDomainExpression.equals(that.mDomainExpression)
+               && mDomain.equals(that.mDomain)
+               && mTable.equals(that.mTable)
 
                && mNonPersistedValueIsActive == that.mNonPersistedValueIsActive;
     }
@@ -235,7 +241,7 @@ public class IntListFilter
     @Override
     public int hashCode() {
         return Objects.hash(mKey, mNonPersistedValue, mDefaultValue,
-                            mLabelId, mDomainExpression,
+                            mLabelId, mDomain, mTable,
                             mNonPersistedValueIsActive);
     }
 
@@ -250,7 +256,8 @@ public class IntListFilter
                + ", mPersisted=" + mPersisted
 
                + ", mLabelId=`" + ServiceLocator.getAppContext().getString(mLabelId) + '`'
-               + ", mDomainExpression=" + mDomainExpression
+               + ", mDomain=" + mDomain
+               + ", mTable=" + mTable
                + '}';
     }
 }

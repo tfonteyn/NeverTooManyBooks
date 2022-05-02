@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
@@ -42,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityMerger;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF_FILTERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
 
@@ -114,6 +117,23 @@ public class BookshelfDaoImpl
             + _WHERE_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOK) + "=?"
             + _ORDER_BY_ + TBL_BOOKSHELF.dot(DBKey.KEY_BOOKSHELF_NAME) + _COLLATION;
 
+
+    private static final String SELECT_FILTERS =
+            SELECT_ + DBKey.FILTER_NAME + ',' + DBKey.FILTER_VALUE
+            + _FROM_ + TBL_BOOKSHELF_FILTERS.getName()
+            + _WHERE_ + DBKey.FK_BOOKSHELF + "=?";
+
+    private static final String DELETE_FILTERS =
+            DELETE_FROM_ + TBL_BOOKSHELF_FILTERS.getName()
+            + _WHERE_ + DBKey.FK_BOOKSHELF + "=?";
+
+    private static final String INSERT_FILTER =
+            INSERT_INTO_ + TBL_BOOKSHELF_FILTERS.getName()
+            + '(' + DBKey.FK_BOOKSHELF
+            + ',' + DBKey.FILTER_NAME
+            + ',' + DBKey.FILTER_VALUE
+            + ") VALUES (?,?,?)";
+
     /**
      * Constructor.
      */
@@ -175,6 +195,64 @@ public class BookshelfDaoImpl
         return mDb.rawQuery(SELECT_ALL_USER_SHELVES, null);
     }
 
+    @NonNull
+    @Override
+    public List<PFilter<?>> getFilters(final long bookshelfId) {
+        final List<PFilter<?>> list = new ArrayList<>();
+        try (Cursor cursor = mDb.rawQuery(SELECT_FILTERS,
+                                          new String[]{String.valueOf(bookshelfId)})) {
+            final DataHolder rowData = new CursorRow(cursor);
+            while (cursor.moveToNext()) {
+                final String name = rowData.getString(DBKey.FILTER_NAME);
+                final String value = rowData.getString(DBKey.FILTER_VALUE, null);
+                if (value != null) {
+                    final PFilter<?> filter = FilterFactory.create(name);
+                    if (filter != null) {
+                        filter.setValueAsString(value);
+                        list.add(filter);
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    public void storeFilters(final long bookshelfId,
+                             @NonNull final List<PFilter<?>> list) {
+
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!mDb.inTransaction()) {
+                txLock = mDb.beginTransaction(true);
+            }
+            try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_FILTERS)) {
+                stmt.bindLong(1, bookshelfId);
+                stmt.executeUpdateDelete();
+            }
+
+            if (list.isEmpty()) {
+                return;
+            }
+
+            try (SynchronizedStatement stmt = mDb.compileStatement(INSERT_FILTER)) {
+                list.forEach(filter -> {
+                    stmt.bindLong(1, bookshelfId);
+                    stmt.bindString(2, filter.getPrefName());
+                    stmt.bindString(3, filter.getValueAsString());
+                    stmt.executeInsert();
+                });
+            }
+
+            if (txLock != null) {
+                mDb.setTransactionSuccessful();
+            }
+        } finally {
+            if (txLock != null) {
+                mDb.endTransaction(txLock);
+            }
+        }
+    }
+
     @Override
     public boolean pruneList(@NonNull final Collection<Bookshelf> list) {
         if (list.isEmpty()) {
@@ -205,17 +283,36 @@ public class BookshelfDaoImpl
         // validate the style first
         final long styleId = bookshelf.getStyle(context).getId();
 
-        try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
-            stmt.bindString(1, bookshelf.getName());
-            stmt.bindLong(2, styleId);
-            stmt.bindLong(3, bookshelf.getFirstVisibleItemPosition());
-            stmt.bindLong(4, bookshelf.getFirstVisibleItemViewOffset());
-            final long iId = stmt.executeInsert();
-            if (iId > 0) {
-                bookshelf.setId(iId);
+        final long iId;
+
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!mDb.inTransaction()) {
+                txLock = mDb.beginTransaction(true);
             }
-            return iId;
+            try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
+                stmt.bindString(1, bookshelf.getName());
+                stmt.bindLong(2, styleId);
+                stmt.bindLong(3, bookshelf.getFirstVisibleItemPosition());
+                stmt.bindLong(4, bookshelf.getFirstVisibleItemViewOffset());
+                iId = stmt.executeInsert();
+                if (iId > 0) {
+                    storeFilters(iId, bookshelf.getFilters());
+                }
+            }
+            if (txLock != null) {
+                mDb.setTransactionSuccessful();
+            }
+        } finally {
+            if (txLock != null) {
+                mDb.endTransaction(txLock);
+            }
         }
+
+        if (iId > 0) {
+            bookshelf.setId(iId);
+        }
+        return iId;
     }
 
     @Override
@@ -225,15 +322,35 @@ public class BookshelfDaoImpl
         // validate the style first
         final long styleId = bookshelf.getStyle(context).getId();
 
-        final ContentValues cv = new ContentValues();
-        cv.put(DBKey.KEY_BOOKSHELF_NAME, bookshelf.getName());
-        cv.put(DBKey.KEY_BOOKSHELF_BL_TOP_POS, bookshelf.getFirstVisibleItemPosition());
-        cv.put(DBKey.KEY_BOOKSHELF_BL_TOP_OFFSET, bookshelf.getFirstVisibleItemViewOffset());
+        final int rowsAffected;
 
-        cv.put(DBKey.FK_STYLE, styleId);
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!mDb.inTransaction()) {
+                txLock = mDb.beginTransaction(true);
+            }
 
-        return 0 < mDb.update(TBL_BOOKSHELF.getName(), cv, DBKey.PK_ID + "=?",
-                              new String[]{String.valueOf(bookshelf.getId())});
+            final ContentValues cv = new ContentValues();
+            cv.put(DBKey.KEY_BOOKSHELF_NAME, bookshelf.getName());
+            cv.put(DBKey.KEY_BOOKSHELF_BL_TOP_POS, bookshelf.getFirstVisibleItemPosition());
+            cv.put(DBKey.KEY_BOOKSHELF_BL_TOP_OFFSET, bookshelf.getFirstVisibleItemViewOffset());
+
+            cv.put(DBKey.FK_STYLE, styleId);
+
+            rowsAffected = mDb.update(TBL_BOOKSHELF.getName(), cv, DBKey.PK_ID + "=?",
+                                      new String[]{String.valueOf(bookshelf.getId())});
+
+            storeFilters(bookshelf.getId(), bookshelf.getFilters());
+
+            if (txLock != null) {
+                mDb.setTransactionSuccessful();
+            }
+        } finally {
+            if (txLock != null) {
+                mDb.endTransaction(txLock);
+            }
+        }
+        return 0 < rowsAffected;
     }
 
     @Override

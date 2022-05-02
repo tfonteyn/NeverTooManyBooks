@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
@@ -64,6 +65,16 @@ public interface BookshelfDao {
      */
     @Nullable
     Bookshelf findByName(@NonNull String name);
+
+    /**
+     * Get the filters defined for the given bookshelf.
+     *
+     * @param bookshelfId to fetch
+     *
+     * @return filters
+     */
+    @NonNull
+    List<PFilter<?>> getFilters(long bookshelfId);
 
     /**
      * Convenience method, fetch all shelves, and return them as a List.

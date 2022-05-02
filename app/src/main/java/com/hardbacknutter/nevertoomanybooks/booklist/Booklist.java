@@ -261,7 +261,8 @@ public class Booklist
             mSqlGetOffsetCursor =
                     SELECT_ + mListTable.getDomains()
                                         .stream()
-                                        .map(domain -> mListTable.dot(domain.getName()))
+                                        .map(Domain::getName)
+                                        .map(mListTable::dot)
                                         .collect(Collectors.joining(","))
                     + ',' + (mListTable.dot(DBKey.PK_ID)
                              + _AS_ + DBKey.KEY_BL_LIST_VIEW_NODE_ROW_ID)
