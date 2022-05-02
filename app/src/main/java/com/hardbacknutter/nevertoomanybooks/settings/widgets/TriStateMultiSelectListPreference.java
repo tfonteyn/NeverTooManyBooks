@@ -30,7 +30,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.util.Pair;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.preference.MultiSelectListPreference;
@@ -39,9 +38,10 @@ import androidx.preference.PreferenceDialogFragmentCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.BitmaskFilter;
@@ -209,8 +209,9 @@ public class TriStateMultiSelectListPreference
 
         private final Set<String> mSelectedItems = new HashSet<>();
         private boolean mPreferenceChanged;
-        private CharSequence[] mEntries;
-        private CharSequence[] mEntryValues;
+
+        private ArrayList<String> mEntryValues;
+        private ArrayList<String> mEntries;
 
         /**
          * Set to {@code true} when the user clicks the NeutralButton.
@@ -256,16 +257,22 @@ public class TriStateMultiSelectListPreference
                             + "an entryValues array.");
                 }
 
-                mEntries = preference.getEntries();
-                mEntryValues = preference.getEntryValues();
+                mEntries = Arrays.stream(preference.getEntries())
+                                 .map(CharSequence::toString)
+                                 .collect(Collectors.toCollection(ArrayList::new));
+
+                mEntryValues = Arrays.stream(preference.getEntryValues())
+                                     .map(CharSequence::toString)
+                                     .collect(Collectors.toCollection(ArrayList::new));
+
                 mPreferenceChanged = false;
                 mSelectedItems.clear();
                 mSelectedItems.addAll(preference.getValues());
             } else {
                 //noinspection ConstantConditions
-                mEntries = savedInstanceState.getCharSequenceArray(SAVE_STATE_ENTRIES);
+                mEntries = savedInstanceState.getStringArrayList(SAVE_STATE_ENTRIES);
                 //noinspection ConstantConditions
-                mEntryValues = savedInstanceState.getCharSequenceArray(SAVE_STATE_ENTRY_VALUES);
+                mEntryValues = savedInstanceState.getStringArrayList(SAVE_STATE_ENTRY_VALUES);
                 mPreferenceChanged = savedInstanceState.getBoolean(SAVE_STATE_CHANGED, false);
                 mSelectedItems.clear();
                 //noinspection ConstantConditions
@@ -276,8 +283,8 @@ public class TriStateMultiSelectListPreference
         @Override
         public void onSaveInstanceState(@NonNull final Bundle outState) {
             super.onSaveInstanceState(outState);
-            outState.putCharSequenceArray(SAVE_STATE_ENTRIES, mEntries);
-            outState.putCharSequenceArray(SAVE_STATE_ENTRY_VALUES, mEntryValues);
+            outState.putStringArrayList(SAVE_STATE_ENTRIES, mEntries);
+            outState.putStringArrayList(SAVE_STATE_ENTRY_VALUES, mEntryValues);
             outState.putBoolean(SAVE_STATE_CHANGED, mPreferenceChanged);
             outState.putStringArrayList(SAVE_STATE_VALUES, new ArrayList<>(mSelectedItems));
         }
@@ -301,16 +308,12 @@ public class TriStateMultiSelectListPreference
                 messageView.setVisibility(View.GONE);
             }
 
-            final List<Pair<String, String>> items = new ArrayList<>();
-            for (int i = 0; i < mEntryValues.length; i++) {
-                items.add(new Pair<>(mEntryValues[i].toString(), mEntries[i].toString()));
-            }
-
             final ChecklistRecyclerAdapter<String, String> adapter =
-                    new ChecklistRecyclerAdapter<>(view.getContext(), items, mSelectedItems,
+                    new ChecklistRecyclerAdapter<>(view.getContext(),
+                                                   mEntryValues, mEntries, mSelectedItems,
                                                    (id, checked) -> mPreferenceChanged = true);
 
-            final RecyclerView listView = view.findViewById(R.id.multi_choice_items);
+            final RecyclerView listView = view.findViewById(R.id.item_list);
             listView.setAdapter(adapter);
         }
 
