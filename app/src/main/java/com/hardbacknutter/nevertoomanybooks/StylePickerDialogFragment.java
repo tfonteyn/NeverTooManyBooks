@@ -26,7 +26,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -51,8 +50,10 @@ public class StylePickerDialogFragment
     public static final String TAG = "StylePickerDialogFrag";
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
     private static final String BKEY_SHOW_ALL_STYLES = TAG + ":showAllStyles";
-    /** The styles get transformed into Pair records which are passed to the adapter. */
-    private final List<Pair<String, String>> mAdapterItemList = new ArrayList<>();
+    /** The list of styles to display. */
+    private final List<String> mStyleUuids = new ArrayList<>();
+    private final List<String> mStyleLabels = new ArrayList<>();
+
     /** FragmentResultListener request key to use for our response. */
     private String mRequestKey;
     /** Show all styles, or only the preferred styles. */
@@ -97,8 +98,8 @@ public class StylePickerDialogFragment
         loadStyles();
 
         //noinspection ConstantConditions
-        mAdapter = new RadioGroupRecyclerAdapter<>(getContext(),
-                                                   mAdapterItemList, mCurrentStyleUuid,
+        mAdapter = new RadioGroupRecyclerAdapter<>(getContext(), mStyleUuids, mStyleLabels,
+                                                   mCurrentStyleUuid,
                                                    uuid -> mCurrentStyleUuid = uuid);
         stylesListView.setAdapter(mAdapter);
     }
@@ -191,10 +192,12 @@ public class StylePickerDialogFragment
             }
         }
 
-        mAdapterItemList.clear();
-        for (final ListStyle style : mStyleList) {
-            mAdapterItemList.add(new Pair<>(style.getUuid(), style.getLabel(context)));
-        }
+        mStyleUuids.clear();
+        mStyleLabels.clear();
+        mStyleList.forEach(style -> {
+            mStyleUuids.add(style.getUuid());
+            mStyleLabels.add(style.getLabel(context));
+        });
     }
 
     public abstract static class Launcher
