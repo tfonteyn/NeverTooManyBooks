@@ -47,6 +47,8 @@ import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.MenuHelper;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -80,11 +82,18 @@ public class EditBookFieldsFragment
             new MultiChoiceDialogFragment.Launcher<>() {
                 @Override
                 public void onResult(@IdRes final int fieldId,
-                                     @NonNull final ArrayList<Bookshelf> selectedItems) {
+                                     @NonNull final Set<Long> selectedIds) {
                     final Field<List<Bookshelf>, TextView> field = mVm.requireField(fieldId);
                     final List<Bookshelf> previous = field.getValue();
-                    mVm.getBook().putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, selectedItems);
-                    field.setValue(selectedItems);
+
+                    final ArrayList<Bookshelf> selected =
+                            mVm.getAllBookshelves()
+                               .stream()
+                               .filter(bookshelf -> selectedIds.contains(bookshelf.getId()))
+                               .collect(Collectors.toCollection(ArrayList::new));
+
+                    mVm.getBook().putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, selected);
+                    field.setValue(selected);
                     field.notifyIfChanged(previous);
                 }
             };
@@ -260,12 +269,12 @@ public class EditBookFieldsFragment
     }
 
     private void editBookshelves() {
-        final ArrayList<Bookshelf> allItems = new ArrayList<>(mVm.getAllBookshelves());
-        final ArrayList<Bookshelf> selectedItems = new ArrayList<>(
-                mVm.getBook().getBookshelves());
-
-        mEditBookshelvesLauncher.launch(getString(R.string.lbl_bookshelves),
-                                        R.id.bookshelves, allItems, selectedItems);
+        //noinspection ConstantConditions
+        mEditBookshelvesLauncher.launch(getContext(),
+                                        getString(R.string.lbl_bookshelves),
+                                        R.id.bookshelves,
+                                        mVm.getAllBookshelves(),
+                                        mVm.getBook().getBookshelves());
     }
 
     private class ToolbarMenuProvider
