@@ -20,7 +20,9 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!-- Reminder: MENU_ACTION_CONFIRM must be used to
+         have "FFBaseDialogFragment" handle some mapping automatically. -->
     <item
         android:id="@id/MENU_ACTION_CONFIRM"
         android:title="@string/action_select"
