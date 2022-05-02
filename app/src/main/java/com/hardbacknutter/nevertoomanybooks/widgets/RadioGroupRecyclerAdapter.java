@@ -28,7 +28,6 @@ import android.widget.RadioButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -40,8 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * <p>
  * Row layout: {@code R.layout.row_choice_single}
  *
- * @param <ID> first element of a {@link Pair} - the id for the item
- * @param <CS> second element of a {@link Pair} - the CharSequence to display
+ * @param <ID> the id for the item
+ * @param <CS> the CharSequence to display
  */
 public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
         extends RecyclerView.Adapter<RadioGroupRecyclerAdapter.Holder> {
@@ -50,29 +49,35 @@ public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
     @NonNull
     private final LayoutInflater mInflater;
     @NonNull
-    private final List<Pair<ID, CS>> mItems;
-    @Nullable
-    private final SelectionListener<ID> mOnSelectionListener;
+    private final List<ID> mItemIds;
+    @NonNull
+    private final List<CS> mItemLabels;
+
     /** The (pre-)selected item. */
     @Nullable
     private ID mSelection;
+    @Nullable
+    private final SelectionListener<ID> mOnSelectionListener;
 
     /**
      * Constructor.
      *
      * @param context   Current context
-     * @param items     List of items; each a Pair with an id and the display-string
+     * @param ids       List of items; their ids
+     * @param labels    List of items; their labels to display
      * @param selection (optional) the pre-selected item
      * @param listener  (optional) to send a selection to as the user changes them;
      *                  alternatively use {@link #getSelection()} when done.
      */
     public RadioGroupRecyclerAdapter(@NonNull final Context context,
-                                     @NonNull final List<Pair<ID, CS>> items,
+                                     @NonNull final List<ID> ids,
+                                     @NonNull final List<CS> labels,
                                      @Nullable final ID selection,
                                      @Nullable final SelectionListener<ID> listener) {
 
         mInflater = LayoutInflater.from(context);
-        mItems = items;
+        mItemIds = ids;
+        mItemLabels = labels;
         mSelection = selection;
         mOnSelectionListener = listener;
     }
@@ -90,18 +95,16 @@ public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
     @Override
     public void onBindViewHolder(@NonNull final Holder holder,
                                  final int position) {
-        final Pair<ID, CS> item = mItems.get(position);
-
-        final boolean checked = mSelection != null && mSelection == item.first;
+        final boolean checked = mSelection != null && mSelection == mItemIds.get(position);
         holder.btnOption.setChecked(checked);
-        holder.btnOption.setText(item.second);
+        holder.btnOption.setText(mItemLabels.get(position));
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private void onItemCheckChanged(@NonNull final Holder holder) {
         final int position = holder.getAbsoluteAdapterPosition();
 
-        mSelection = mItems.get(position).first;
+        mSelection = mItemIds.get(position);
         // this triggers a bind call for all rows, which in turn (un)sets the checked row.
         notifyDataSetChanged();
 
@@ -123,7 +126,7 @@ public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
 
     @Override
     public int getItemCount() {
-        return mItems.size();
+        return mItemIds.size();
     }
 
     @FunctionalInterface

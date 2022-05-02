@@ -42,22 +42,21 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.ParcelableEntity;
-import com.hardbacknutter.nevertoomanybooks.widgets.ChecklistRecyclerAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.RadioGroupRecyclerAdapter;
 
 /**
- * Replacement for the AlertDialog with checkbox setup.
+ * Replacement for the AlertDialog with radio button setup.
  */
-public class MultiChoiceDialogFragment
+public class SingleChoiceDialogFragment
         extends DialogFragment {
 
     /** Fragment/Log tag. */
-    public static final String TAG = "MultiChoiceDialogFragment";
+    public static final String TAG = "SingleChoiceDialogFragment";
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
     private static final String BKEY_DIALOG_TITLE = TAG + ":title";
     private static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
@@ -81,8 +80,7 @@ public class MultiChoiceDialogFragment
     /** The list of items to display. */
     private List<Long> mItemIds;
     private List<String> mItemLabels;
-    /** The selected items. */
-    private Set<Long> mSelectedItems;
+    private long mSelectedItem;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -90,7 +88,7 @@ public class MultiChoiceDialogFragment
 
         Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
-        mDialogTitle = args.getString(BKEY_DIALOG_TITLE, getString(R.string.action_edit));
+        mDialogTitle = args.getString(BKEY_DIALOG_TITLE, getString(R.string.action_select));
         mDialogMessage = args.getString(BKEY_DIALOG_MESSAGE, null);
         mFieldId = args.getInt(BKEY_FIELD_ID);
 
@@ -103,16 +101,14 @@ public class MultiChoiceDialogFragment
 
         args = savedInstanceState != null ? savedInstanceState : args;
 
-        mSelectedItems = Arrays.stream(Objects.requireNonNull(
-                                       args.getLongArray(BKEY_SELECTED), BKEY_SELECTED))
-                               .boxed().collect(Collectors.toSet());
+        mSelectedItem = args.getLong(BKEY_SELECTED);
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         @SuppressLint("InflateParams")
-        final View view = getLayoutInflater().inflate(R.layout.dialog_edit_checklist, null);
+        final View view = getLayoutInflater().inflate(R.layout.dialog_choose_one, null);
 
         final TextView messageView = view.findViewById(R.id.message);
         if (mDialogMessage != null && !mDialogMessage.isEmpty()) {
@@ -125,15 +121,9 @@ public class MultiChoiceDialogFragment
         final Context context = getContext();
 
         //noinspection ConstantConditions
-        final ChecklistRecyclerAdapter<Long, String> adapter =
-                new ChecklistRecyclerAdapter<>(context, mItemIds, mItemLabels, mSelectedItems,
-                                               (id, checked) -> {
-                                                   if (checked) {
-                                                       mSelectedItems.add(id);
-                                                   } else {
-                                                       mSelectedItems.remove(id);
-                                                   }
-                                               });
+        final RadioGroupRecyclerAdapter<Long, String> adapter =
+                new RadioGroupRecyclerAdapter<>(context, mItemIds, mItemLabels, mSelectedItem,
+                                                id -> mSelectedItem = id);
 
         final RecyclerView listView = view.findViewById(R.id.item_list);
         listView.setAdapter(adapter);
@@ -147,15 +137,14 @@ public class MultiChoiceDialogFragment
     }
 
     private void saveChanges() {
-        Launcher.setResult(this, mRequestKey, mFieldId,
-                           mSelectedItems.stream().mapToLong(o -> o).toArray());
+        Launcher.setResult(this, mRequestKey, mFieldId, mSelectedItem);
     }
 
     @Override
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putLongArray(BKEY_SELECTED, mSelectedItems.stream().mapToLong(o -> o).toArray());
+        outState.putLong(BKEY_SELECTED, mSelectedItem);
     }
 
     public abstract static class Launcher<T extends ParcelableEntity>
@@ -169,10 +158,10 @@ public class MultiChoiceDialogFragment
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
                               @IdRes final int fieldId,
-                              @NonNull final long[] selectedItems) {
+                              final long selectedItem) {
             final Bundle result = new Bundle(2);
             result.putInt(FIELD_ID, fieldId);
-            result.putLongArray(SELECTED, selectedItems);
+            result.putLong(SELECTED, selectedItem);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
@@ -187,20 +176,19 @@ public class MultiChoiceDialogFragment
         /**
          * Launch the dialog.
          *
-         * @param context       Current context
-         * @param dialogTitle   the dialog title
-         * @param fieldId       this dialog operates on
-         *                      (one launcher can serve multiple fields)
-         * @param allItems      list of all possible items
-         * @param selectedItems list of item which are currently selected
+         * @param dialogTitle  the dialog title
+         * @param fieldId      this dialog operates on
+         *                     (one launcher can serve multiple fields)
+         * @param allItems     list of all possible items
+         * @param selectedItem item which is currently selected
          */
         public void launch(@NonNull final Context context,
                            @NonNull final String dialogTitle,
                            @IdRes final int fieldId,
                            @NonNull final List<T> allItems,
-                           @NonNull final List<T> selectedItems) {
+                           @NonNull final T selectedItem) {
 
-            final Bundle args = new Bundle(6);
+            final Bundle args = new Bundle(5);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
             args.putString(BKEY_DIALOG_TITLE, dialogTitle);
             args.putInt(BKEY_FIELD_ID, fieldId);
@@ -210,10 +198,9 @@ public class MultiChoiceDialogFragment
             args.putStringArray(BKEY_ALL_LABELS, allItems
                     .stream().map(item -> item.getLabel(context)).toArray(String[]::new));
 
-            args.putLongArray(BKEY_SELECTED, selectedItems
-                    .stream().mapToLong(Entity::getId).toArray());
+            args.putLong(BKEY_SELECTED, selectedItem.getId());
 
-            final DialogFragment frag = new MultiChoiceDialogFragment();
+            final DialogFragment frag = new SingleChoiceDialogFragment();
             frag.setArguments(args);
             frag.show(mFragmentManager, TAG);
         }
@@ -222,17 +209,16 @@ public class MultiChoiceDialogFragment
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
             onResult(result.getInt(FIELD_ID),
-                     Arrays.stream(Objects.requireNonNull(result.getLongArray(SELECTED), SELECTED))
-                           .boxed().collect(Collectors.toSet()));
+                     result.getLong(SELECTED));
         }
 
         /**
          * Callback handler with the user's selection.
          *
-         * @param fieldId       this destination field id
-         * @param selectedItems the set of <strong>checked</strong> items
+         * @param fieldId      this destination field id
+         * @param selectedItem the single selected item
          */
         public abstract void onResult(@IdRes int fieldId,
-                                      @NonNull Set<Long> selectedItems);
+                                      long selectedItem);
     }
 }

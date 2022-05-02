@@ -27,7 +27,6 @@ import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.HashSet;
@@ -41,8 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * <p>
  * Row layout: {@code R.layout.row_choice_multi}
  *
- * @param <ID> first element of a {@link Pair} - the id for the item
- * @param <CS> second element of a {@link Pair} - the CharSequence to display
+ * @param <ID> the id for the item
+ * @param <CS> the CharSequence to display
  */
 public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
         extends RecyclerView.Adapter<ChecklistRecyclerAdapter.Holder> {
@@ -51,29 +50,35 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
     @NonNull
     private final LayoutInflater mInflater;
     @NonNull
-    private final List<Pair<ID, CS>> mItems;
-    @Nullable
-    private final SelectionListener<ID> mOnSelectionListener;
+    private final List<ID> mItemIds;
+    @NonNull
+    private final List<CS> mItemLabels;
+
     /** The (pre-)selected items. */
     @NonNull
     private final Set<ID> mSelection;
+    @Nullable
+    private final SelectionListener<ID> mOnSelectionListener;
+
 
     /**
      * Constructor.
      *
      * @param context   Current context
-     * @param items     List of items; each a Pair with an id and the display-string
-     * @param selection (optional) the pre-selected item id's
+     * @param ids       List of items; their ids
+     * @param labels    List of items; their labels to display
+     * @param selection (optional) the pre-selected item ids
      * @param listener  (optional) to send a selection to as the user changes them;
      *                  alternatively use {@link #getSelection()} when done.
      */
     public ChecklistRecyclerAdapter(@NonNull final Context context,
-                                    @NonNull final List<Pair<ID, CS>> items,
+                                    @NonNull final List<ID> ids,
+                                    @NonNull final List<CS> labels,
                                     @Nullable final Set<ID> selection,
                                     @Nullable final SelectionListener<ID> listener) {
-
         mInflater = LayoutInflater.from(context);
-        mItems = items;
+        mItemIds = ids;
+        mItemLabels = labels;
         mSelection = selection != null ? selection : new HashSet<>();
         mOnSelectionListener = listener;
     }
@@ -91,11 +96,9 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
     @Override
     public void onBindViewHolder(@NonNull final Holder holder,
                                  final int position) {
-        final Pair<ID, CS> item = mItems.get(position);
-
-        final boolean checked = mSelection.contains(item.first);
+        final boolean checked = mSelection.contains(mItemIds.get(position));
         holder.btnOption.setChecked(checked);
-        holder.btnOption.setText(item.second);
+        holder.btnOption.setText(mItemLabels.get(position));
     }
 
     private void onItemCheckChanged(@NonNull final Holder holder) {
@@ -103,7 +106,7 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
 
         final boolean selected = holder.btnOption.isChecked();
 
-        final ID itemId = mItems.get(position).first;
+        final ID itemId = mItemIds.get(position);
         if (selected) {
             mSelection.add(itemId);
         } else {
@@ -128,7 +131,7 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
 
     @Override
     public int getItemCount() {
-        return mItems.size();
+        return mItemIds.size();
     }
 
     @FunctionalInterface
