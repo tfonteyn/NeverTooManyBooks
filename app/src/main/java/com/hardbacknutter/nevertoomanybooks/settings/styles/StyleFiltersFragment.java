@@ -25,13 +25,10 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 import androidx.preference.ListPreference;
-import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.Filters;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -87,21 +84,5 @@ public class StyleFiltersFragment
         preference.setVisible(DBKey.isUsed(global, DBKey.BITMASK_EDITION));
         preference.setSummaryProvider(TriStateMultiSelectListPreference
                                               .SimpleSummaryProvider.getInstance());
-
-        final MultiSelectListPreference bookshelves = findPreference(Filters.PK_FILTER_BOOKSHELVES);
-
-        if (BuildConfig.ENABLE_STYLE_BOOKSHELF_FILTER) {
-            final Pair<CharSequence[], CharSequence[]> values = mVm.getBookshelves();
-
-            //noinspection ConstantConditions
-            bookshelves.setVisible(true);
-            bookshelves.setEntries(values.first);
-            bookshelves.setEntryValues(values.second);
-            bookshelves.setSummaryProvider(TriStateMultiSelectListPreference
-                                                   .SimpleSummaryProvider.getInstance());
-        } else {
-            //noinspection ConstantConditions
-            bookshelves.setVisible(false);
-        }
     }
 }
