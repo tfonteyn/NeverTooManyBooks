@@ -453,10 +453,10 @@ public class DBHelper
 //         *
 //         * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
 //         */
-//        name = "after_delete_on_" + TBL_BOOK_AUTHOR.getPrefName();
-//        body = " AFTER DELETE ON " + TBL_BOOK_AUTHOR.getPrefName() + " FOR EACH ROW\n"
+//        name = "after_delete_on_" + TBL_BOOK_AUTHOR.getName();
+//        body = " AFTER DELETE ON " + TBL_BOOK_AUTHOR.getName() + " FOR EACH ROW\n"
 //                + " BEGIN\n"
-//                + "  UPDATE " + TBL_BOOKS.getPrefName()
+//                + "  UPDATE " + TBL_BOOKS.getName()
 //                + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
 //                + " WHERE " + KEY_PK_ID + "=Old." + KEY_FK_BOOK + ";\n"
 //                + " END";

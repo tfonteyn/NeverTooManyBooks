@@ -916,17 +916,17 @@ public class TableDefinition {
 //                                  @NonNull final Domain source,
 //                                  @NonNull final Domain destination) {
 //
-//        db.execSQL("ALTER TABLE " + getPrefName()
-//                   + " ADD " + destination.getPrefName() + " text NOT NULL default ''");
+//        db.execSQL("ALTER TABLE " + getName()
+//                   + " ADD " + destination.getName() + " text NOT NULL default ''");
 //
 //        final String updateSql =
-//                "UPDATE " + getPrefName() + " SET " + destination.getPrefName() + "=?"
+//                "UPDATE " + getName() + " SET " + destination.getName() + "=?"
 //                + " WHERE " + DBKey.PK_ID + "=?";
 //
 //        try (SQLiteStatement update = db.compileStatement(updateSql);
 //             Cursor cursor = db.rawQuery(
 //                     "SELECT " + DBKey.PK_ID
-//                     + ',' + source.getPrefName() + " FROM " + getPrefName(),
+//                     + ',' + source.getName() + " FROM " + getName(),
 //                     null)) {
 //
 //            final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
