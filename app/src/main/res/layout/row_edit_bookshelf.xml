@@ -34,7 +34,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/field_margin_start"
-        android:layout_marginEnd="@dimen/field_margin_start"
+        android:layout_marginEnd="@dimen/field_margin_end"
         android:textAppearance="?attr/textAppearanceListItem"
         android:textIsSelectable="false"
         app:layout_constraintBottom_toBottomOf="parent"
