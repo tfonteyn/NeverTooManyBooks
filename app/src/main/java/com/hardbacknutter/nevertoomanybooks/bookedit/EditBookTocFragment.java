@@ -45,11 +45,11 @@ import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.divider.MaterialDividerItemDecoration;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -225,7 +225,8 @@ public class EditBookTocFragment
                         .make(mVb.getRoot(), R.string.warning_book_not_found,
                               Snackbar.LENGTH_LONG).show()));
 
-        mVb.tocList.addItemDecoration(new DividerItemDecoration(context, RecyclerView.VERTICAL));
+        mVb.tocList.addItemDecoration(
+                new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
         mVb.tocList.setHasFixedSize(true);
 
         mList = mVm.getBook().getToc();
