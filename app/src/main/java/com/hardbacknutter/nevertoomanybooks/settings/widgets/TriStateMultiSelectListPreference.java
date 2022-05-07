@@ -44,7 +44,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.BitmaskFilter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ChecklistRecyclerAdapter;
 
 /**
@@ -67,7 +66,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ChecklistRecyclerAdapter;
 public class TriStateMultiSelectListPreference
         extends MultiSelectListPreference {
 
-    /** See {@link BitmaskFilter}. */
     private static final String ACTIVE = ".active";
 
     /** The text to use for the neutral button, which allows the user to choose "don't use". */

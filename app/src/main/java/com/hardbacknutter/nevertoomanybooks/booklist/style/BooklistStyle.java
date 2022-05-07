@@ -32,7 +32,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.Filters;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BookshelfBooklistGroup;
@@ -61,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
  * <p>
  * ENHANCE: re-introduce global inheritance ? But would that actually be used ?
  * <ul>
- * <li>style preferences, filters and book-details are based on PPrefs and are backed
+ * <li>style preferences and book-details are based on PPrefs and are backed
  * by a global default.</li>
  * <li>group preferences for groups defined in the style are also covered by PPrefs.</li>
  * <li>group preferences for groups NOT defined, are fronted by a method in this class
@@ -146,8 +145,6 @@ public abstract class BooklistStyle
     TextScale mTextScale;
     /** Configuration for the groups in this style. */
     Groups mGroups;
-    /** Configuration for the filters in this style. */
-    Filters mFilters;
     /** Configuration for the fields shown on the Book level in the book list. */
     ListScreenBookFields mListScreenBookFields;
     /** Configuration for the fields shown on the Book details screen. */
@@ -212,7 +209,6 @@ public abstract class BooklistStyle
         mListScreenBookFields = new ListScreenBookFields(isPersistent, mPersistenceLayer);
         mDetailScreenBookFields = new DetailScreenBookFields(isPersistent, mPersistenceLayer);
 
-        mFilters = new Filters(isPersistent, mPersistenceLayer);
         mGroups = new Groups(isPersistent, this);
     }
 
@@ -304,12 +300,6 @@ public abstract class BooklistStyle
     @NonNull
     public Groups getGroups() {
         return mGroups;
-    }
-
-    @Override
-    @NonNull
-    public Filters getFilters() {
-        return mFilters;
     }
 
     @Override
@@ -436,7 +426,6 @@ public abstract class BooklistStyle
         map.putAll(mListScreenBookFields.getRawPreferences());
         map.putAll(mDetailScreenBookFields.getRawPreferences());
 
-        map.putAll(mFilters.getRawPreferences());
         map.putAll(mGroups.getRawPreferences());
 
         return map;
@@ -468,8 +457,7 @@ public abstract class BooklistStyle
                && Objects.equals(mTextScale, style.mTextScale)
                && Objects.equals(mListScreenBookFields, style.mListScreenBookFields)
                && Objects.equals(mDetailScreenBookFields, style.mDetailScreenBookFields)
-               && Objects.equals(mGroups, style.mGroups)
-               && Objects.equals(mFilters, style.mFilters);
+               && Objects.equals(mGroups, style.mGroups);
     }
 
     @Override
@@ -478,7 +466,7 @@ public abstract class BooklistStyle
                             mShowAuthorByGivenName, mSortAuthorByGivenName,
                             mExpansionLevel, mShowHeaderInfo, mUseGroupRowPreferredHeight,
                             mTextScale, mListScreenBookFields, mDetailScreenBookFields,
-                            mGroups, mFilters);
+                            mGroups);
     }
 
     @Override
@@ -503,7 +491,6 @@ public abstract class BooklistStyle
                + ", mListScreenBookFields=" + mListScreenBookFields
                + ", mDetailScreenBookFields=" + mDetailScreenBookFields
 
-               + ", mFilters=" + mFilters
                + ", mGroups=" + mGroups
                + '}';
     }

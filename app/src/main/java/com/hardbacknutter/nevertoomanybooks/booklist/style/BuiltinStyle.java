@@ -30,7 +30,6 @@ import androidx.annotation.VisibleForTesting;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.Filters;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -63,7 +62,9 @@ public final class BuiltinStyle
     public static final String DEFAULT_UUID = UUID_AUTHOR_THEN_SERIES;
 
 
+    @Deprecated
     private static final int ID_UNREAD_AUTHOR_THEN_SERIES = -2;
+    @Deprecated
     private static final String UUID_UNREAD_AUTHOR_THEN_SERIES
             = "f479e979-c43f-4b0b-9c5b-6942964749df";
 
@@ -267,12 +268,12 @@ public final class BuiltinStyle
                 break;
 
             case ID_UNREAD_AUTHOR_THEN_SERIES:
+                //FIXME: used to be filtered on being "unread"; remove this style
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_unread,
                                          isPreferred, menuPos,
                                          BooklistGroup.AUTHOR,
                                          BooklistGroup.SERIES);
-                style.getFilters().setFilter(Filters.PK_FILTER_READ, false);
                 break;
 
             case ID_COMPACT:
@@ -379,7 +380,6 @@ public final class BuiltinStyle
                                          BooklistGroup.DATE_READ_YEAR,
                                          BooklistGroup.DATE_READ_MONTH,
                                          BooklistGroup.AUTHOR);
-                style.getFilters().setFilter(Filters.PK_FILTER_READ, true);
                 break;
 
             case ID_LOCATION:

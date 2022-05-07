@@ -46,14 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PIntList;
 public class StyleSharedPreferences
         implements StylePersistenceLayer {
 
-    /**
-     * Obsolete preference for this style being a preferred style. Now handled in the database.
-     *
-     * @deprecated will be removed soon.
-     */
-    @Deprecated
-    private static final String OBSOLETE_PK_STYLE_BOOKLIST_PREFERRED = "style.booklist.preferred";
-
     /** Log tag. */
     private static final String TAG = "StyleSharedPreferences";
 
@@ -94,9 +86,16 @@ public class StyleSharedPreferences
         }
 
         // remove obsolete entries; no attempt is made to preserve the setting
-        if (mStylePrefs.contains(OBSOLETE_PK_STYLE_BOOKLIST_PREFERRED)) {
-            mStylePrefs.edit().remove(OBSOLETE_PK_STYLE_BOOKLIST_PREFERRED).apply();
-        }
+        mStylePrefs.edit()
+                   .remove("style.booklist.preferred")
+                   .remove("style.booklist.filter.read")
+                   .remove("style.booklist.filter.signed")
+                   .remove("style.booklist.filter.anthology")
+                   .remove("style.booklist.filter.lending")
+                   .remove("style.booklist.filter.isbn")
+                   .remove("style.booklist.filter.editions")
+                   .remove("style.booklist.filter.bookshelves")
+                   .apply();
     }
 
     public static int getBitmaskPref(@NonNull final SharedPreferences preferences,

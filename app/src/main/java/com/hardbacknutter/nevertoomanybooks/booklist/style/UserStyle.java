@@ -24,7 +24,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.Filters;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBitmask;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
@@ -134,8 +133,6 @@ public class UserStyle
 
         mDetailScreenBookFields = new DetailScreenBookFields(true, mPersistenceLayer,
                                                              style.mDetailScreenBookFields);
-
-        mFilters = new Filters(true, mPersistenceLayer, style.mFilters);
 
         mGroups = new Groups(true, this, style.mGroups);
     }

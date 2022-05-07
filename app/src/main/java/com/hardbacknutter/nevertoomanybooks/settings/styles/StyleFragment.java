@@ -64,8 +64,6 @@ public class StyleFragment
 
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     private static final String PSK_STYLE_SHOW_DETAILS = "psk_style_show_details";
-    /** Style - PreferenceScreen/PreferenceCategory Key. */
-    private static final String PSK_STYLE_FILTERS = "psk_style_filters";
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
@@ -186,11 +184,6 @@ public class StyleFragment
         //noinspection ConstantConditions
         findPreference(PSK_STYLE_SHOW_DETAILS)
                 .setSummary(style.getListScreenBookFields().getSummaryText(getContext()));
-
-        // the 'filters' in use (i.e. the actives ones)
-        //noinspection ConstantConditions
-        findPreference(PSK_STYLE_FILTERS)
-                .setSummary(style.getFilters().getSummaryText(getContext(), false));
 
         // the 'groups' in use.
         //noinspection ConstantConditions

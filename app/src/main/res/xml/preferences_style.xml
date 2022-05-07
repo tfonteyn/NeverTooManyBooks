@@ -65,13 +65,6 @@
             />
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFiltersFragment"
-            android:icon="@drawable/ic_baseline_filter_list_24"
-            android:key="psk_style_filters"
-            android:title="@string/pg_filters"
-            />
-
-        <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBookDetailsFragment"
             android:icon="@drawable/ic_baseline_details_24"
             android:key="psk_style_show_details"
