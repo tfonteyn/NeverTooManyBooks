@@ -38,9 +38,10 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.divider.MaterialDividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -136,7 +137,7 @@ public class SearchOrderFragment
 
         //noinspection ConstantConditions
         mVb.siteList.addItemDecoration(
-                new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
+                new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         mVb.siteList.setHasFixedSize(true);
 
         mListAdapter = new SearchSiteListAdapter(getContext(), mSiteList,
