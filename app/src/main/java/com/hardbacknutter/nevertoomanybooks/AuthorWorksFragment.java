@@ -45,8 +45,9 @@ import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.divider.MaterialDividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -168,7 +169,8 @@ public class AuthorWorksFragment
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
         mWorksListView.setHasFixedSize(true);
-        mWorksListView.addItemDecoration(new DividerItemDecoration(context, RecyclerView.VERTICAL));
+        mWorksListView.addItemDecoration(
+                new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         // Optional overlay
