@@ -36,8 +36,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.divider.MaterialDividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,7 +134,8 @@ public class TocFragment
         final Context context = getContext();
 
         //noinspection ConstantConditions
-        mVb.toc.addItemDecoration(new DividerItemDecoration(context, RecyclerView.VERTICAL));
+        mVb.toc.addItemDecoration(
+                new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         final int overlayType = Prefs.getFastScrollerOverlayType(global);
