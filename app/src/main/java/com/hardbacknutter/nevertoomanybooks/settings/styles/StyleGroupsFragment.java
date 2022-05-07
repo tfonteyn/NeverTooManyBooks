@@ -31,11 +31,11 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.divider.MaterialDividerItemDecoration;
 
 import java.util.List;
 
@@ -123,7 +123,7 @@ public class StyleGroupsFragment
 
         //noinspection ConstantConditions
         mVb.groupList.addItemDecoration(
-                new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
+                new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         mVb.groupList.setHasFixedSize(true);
 
         // setup the adapter
