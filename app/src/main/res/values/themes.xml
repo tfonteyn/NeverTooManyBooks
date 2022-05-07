@@ -107,6 +107,7 @@
     <!-- Base theme - used by both Day and Night themes. -->
     <style name="Base.Theme.App" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Material3 style attributes -->
+        <item name="radioButtonStyle">@style/App.radioButtonStyle</item>
         <item name="checkboxStyle">@style/App.checkboxStyle</item>
         <item name="chipGroupStyle">@style/App.chipGroupStyle</item>
         <item name="snackbarTextViewStyle">@style/App.snackbarTextViewStyle</item>
@@ -160,13 +161,16 @@
     </style>
 
     <!-- *************************************************************************************** -->
+    <style name="App.radioButtonStyle" parent="Widget.Material3.CompoundButton.RadioButton">
+        <item name="buttonTint">@color/selection_control_button_tint</item>
+    </style>
 
     <style name="App.checkboxStyle" parent="Widget.Material3.CompoundButton.CheckBox">
-        <item name="buttonTint">@color/compound_button_tint</item>
+        <item name="buttonTint">@color/selection_control_button_tint</item>
     </style>
 
     <style name="App.switchStyle" parent="Widget.Material3.CompoundButton.Switch">
-        <item name="trackTint">@color/compound_button_tint</item>
+        <item name="trackTint">@color/switch_track_tint</item>
     </style>
 
     <style name="App.chipGroupStyle" parent="Widget.Material3.ChipGroup">

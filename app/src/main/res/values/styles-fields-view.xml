@@ -100,7 +100,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
         <item name="android:layout_marginTop">@dimen/field_margin_top</item>
-        <item name="buttonTint">@color/compound_button_tint</item>
+        <item name="buttonTint">@color/selection_control_button_tint</item>
     </style>
 
 </resources>

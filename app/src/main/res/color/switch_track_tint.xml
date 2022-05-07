@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
@@ -18,13 +19,18 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!-- copied from "res/color/m3_switch_track_tint.xml" -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="?attr/colorSecondary"
-          android:state_checked="true" />
-
-    <item android:alpha="@dimen/material_emphasis_disabled"
+    <!-- Disabled -->
+    <item android:alpha="@dimen/material_emphasis_disabled_background"
           android:color="?attr/colorOnSurface"
           android:state_enabled="false" />
 
-    <item android:color="?attr/colorOnSurfaceVariant" />
+    <!-- Checked -->
+    <item android:color="?attr/colorSecondary"
+          android:state_checked="true" />
+
+    <!-- Unchecked -->
+    <item android:color="?attr/colorOnSurfaceVariant"
+          android:state_checked="false" />
 </selector>
