@@ -247,7 +247,6 @@ public class BooksOnBookshelf
     private final ActivityResultLauncher<SearchCriteria> mFtsSearchLauncher =
             registerForActivityResult(new SearchFtsContract(), data -> {
                 if (mVm.setSearchCriteria(data, true)) {
-                    //FIXME: switch bookshelf? all-books?
                     mVm.setForceRebuildInOnResume(true);
                 }
             });
