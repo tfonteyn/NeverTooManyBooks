@@ -39,9 +39,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.divider.MaterialDividerItemDecoration;
 
 import java.util.List;
 
@@ -180,7 +181,8 @@ public class PreferredStylesFragment
         mListAdapter = new ListStylesAdapter(getContext(), mVm.getList(),
                                              vh -> mItemTouchHelper.startDrag(vh));
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
-        mVb.list.addItemDecoration(new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
+        mVb.list.addItemDecoration(
+                new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         mVb.list.setHasFixedSize(true);
         mVb.list.setAdapter(mListAdapter);
 
