@@ -89,7 +89,6 @@ public class UserStyleTest
         assertEquals(s1.getListScreenBookFields(), s2.getListScreenBookFields());
         assertEquals(s1.getDetailScreenBookFields(), s2.getDetailScreenBookFields());
 
-        assertEquals(s1.getFilters(), s2.getFilters());
         assertEquals(s1.getGroups(), s2.getGroups());
     }
 }
