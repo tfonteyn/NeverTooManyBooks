@@ -406,7 +406,6 @@ public class Author
         dest.writeInt(mType);
     }
 
-    @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
         return 0;
