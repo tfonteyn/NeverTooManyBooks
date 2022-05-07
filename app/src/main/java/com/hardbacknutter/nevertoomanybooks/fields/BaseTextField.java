@@ -53,7 +53,7 @@ public abstract class BaseTextField<T, V extends TextView>
         extends BaseField<T, V> {
 
     @NonNull
-    FieldFormatter<T> mFormatter;
+    final FieldFormatter<T> mFormatter;
 
     @ExtEndIconDelegate.EndIconMode
     int mEndIconMode;
