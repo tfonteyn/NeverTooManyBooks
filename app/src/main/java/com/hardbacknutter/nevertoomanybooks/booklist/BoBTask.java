@@ -31,6 +31,9 @@ import androidx.preference.PreferenceManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -38,8 +41,12 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FtsMatchFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.RowIdFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
@@ -51,7 +58,9 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 
 /**
@@ -192,20 +201,17 @@ public class BoBTask
                 // if we have a list of ID's, we'll ignore other criteria
                 if (mSearchCriteria.getBookIdList().isEmpty()) {
                     // Criteria supported by FTS
-                    final String query = mSearchCriteria.getFtsMatchQuery();
-                    if (!query.isEmpty()) {
-                        builder.addFilter(new FtsMatchFilter(query));
-                    }
+                    mSearchCriteria.getFtsMatchQuery().ifPresent(
+                            query -> builder.addFilter(new FtsMatchFilter(query)));
 
                     // Add a filter to retrieve only books lend to the given person (exact name).
-                    final String loanee = mSearchCriteria.getLoanee();
-                    if (loanee != null && !loanee.trim().isEmpty()) {
+                    mSearchCriteria.getLoanee().ifPresent(loanee -> {
                         builder.addFilter(c -> "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
                                                + " WHERE " + TBL_BOOK_LOANEE.dot(DBKey.KEY_LOANEE)
                                                + "='" + SqlEncode.string(loanee) + '\''
                                                + " AND " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS)
                                                + ')');
-                    }
+                    });
                 } else {
                     // Add a where clause for: "AND books._id IN (list)".
                     builder.addFilter(new NumberListFilter<>(
@@ -216,6 +222,43 @@ public class BoBTask
                 // when criteria are used, the build should expand the book list.
                 builder.setRebuildMode(RebuildBooklist.Expanded);
             }
+
+
+            // Prepare the Bookshelf filters
+            final List<PFilter<?>> filters = mBookshelf.getFilters();
+
+            // Add a filter on the current Bookshelf?
+            // Only consider doing this if this is NOT the "All books" Bookshelf
+            if (!mBookshelf.isAllBooks()) {
+                // and only if the current style does NOT contain the Bookshelf group.
+                if (!mBookshelf.getStyle(context).getGroups().contains(BooklistGroup.BOOKSHELF)) {
+                    // do we already have a Bookshelf based filter?
+                    final Optional<PFilter<?>> bookshelfFilter = filters
+                            .stream()
+                            .filter(pFilter -> DBKey.FK_BOOKSHELF.equals(pFilter.getPrefName()))
+                            .findFirst();
+
+                    if (bookshelfFilter.isPresent()) {
+                        // Add the current Bookshelf to the existing filter.
+                        final PEntityListFilter<?> pFilter = (PEntityListFilter<?>)
+                                bookshelfFilter.get();
+
+                        final Set<Long> list = pFilter.getValue();
+                        list.add(mBookshelf.getId());
+                        pFilter.setValue(list);
+
+                    } else {
+                        // Filter os the current one only
+                        builder.addFilter(new RowIdFilter(TBL_BOOKSHELF, DOM_PK_ID,
+                                                          mBookshelf.getId()));
+                    }
+                }
+            }
+
+            // ... and add them
+            builder.addFilter(filters.stream()
+                                     .filter(f -> f.isActive(context))
+                                     .collect(Collectors.toList()));
 
 
             // Build the underlying data

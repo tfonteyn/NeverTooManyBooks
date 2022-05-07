@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/section_margin_top"
+    android:minHeight="?attr/listPreferredItemHeightSmall"
+    >
+
+    <ImageButton
+        android:id="@+id/btn_del"
+        style="@style/RowEditor.Button.Delete"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription"
+        />
+
+    <LinearLayout
+        android:id="@id/ROW_ONCLICK_TARGET"
+        style="@style/RowEditor.TextSection"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btn_del"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+
+        <TextView
+            android:id="@+id/lbl_filter"
+            style="@style/RowEditor.Text.Primary"
+            tools:ignore="SelectableText"
+            tools:text="@string/lbl_bookshelves"
+            />
+
+        <TextView
+            android:id="@+id/filter"
+            style="@style/RowEditor.Text.Secondary"
+            android:layout_marginStart="@dimen/field_margin_start"
+            tools:ignore="SelectableText"
+            tools:text="@string/btn_all_books"
+            />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -61,7 +61,6 @@ public class NumberListFilter<T extends Number>
     @Override
     @NonNull
     public String getExpression(@NonNull final Context context) {
-        // micro? optimization...
         if (mList.size() == 1) {
             return '(' + mTable.dot(mDomain) + '=' + mList.get(0) + ')';
         } else {

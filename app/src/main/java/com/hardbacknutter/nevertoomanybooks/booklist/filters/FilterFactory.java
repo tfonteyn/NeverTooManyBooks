@@ -22,34 +22,44 @@ package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Map;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_EDITION_BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_FORMAT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_LANGUAGE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_SIGNED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_TOC_BITMASK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 
 public final class FilterFactory {
 
-    public static final int[] SUPPORTED_LABELS = {R.string.lbl_read,
-                                                  R.string.lbl_signed,
-                                                  R.string.lbl_bookshelves,
-                                                  R.string.lbl_color,
-                                                  R.string.lbl_format,
-                                                  R.string.lbl_language};
+    public static final Map<String, Integer> SUPPORTED =
+            Map.of(DBKey.BOOL_READ, R.string.lbl_read,
+                   DBKey.BOOL_SIGNED, R.string.lbl_signed,
+                   DBKey.KEY_ISBN, R.string.lbl_isbn,
+                   DBKey.BITMASK_TOC, R.string.lbl_anthology,
+                   DBKey.KEY_LOANEE, R.string.lbl_lend_out,
 
-    public static final String[] SUPPORTED_NAMES = {DBKey.BOOL_READ,
-                                                    DBKey.BOOL_SIGNED,
-                                                    DBKey.FK_BOOKSHELF,
-                                                    DBKey.KEY_COLOR,
-                                                    DBKey.KEY_FORMAT,
-                                                    DBKey.KEY_LANGUAGE};
+                   DBKey.FK_BOOKSHELF, R.string.lbl_bookshelves,
+
+                   DBKey.KEY_COLOR, R.string.lbl_color,
+                   DBKey.KEY_FORMAT, R.string.lbl_format,
+                   DBKey.KEY_LANGUAGE, R.string.lbl_language,
+
+                   DBKey.BITMASK_EDITION, R.string.lbl_edition
+                  );
 
     private FilterFactory() {
     }
@@ -68,28 +78,54 @@ public final class FilterFactory {
                         name, R.string.lbl_signed, R.array.pe_bob_filter_signed,
                         TBL_BOOKS, DOM_BOOK_SIGNED);
 
+            case DBKey.KEY_ISBN:
+                return new PBooleanFilter(
+                        name, R.string.lbl_isbn, R.array.pe_bob_filter_isbn,
+                        TBL_BOOKS, DOM_BOOK_ISBN);
 
-            case DBKey.FK_BOOKSHELF:
-                return new PEntityListFilter(
-                        name, R.string.lbl_bookshelves,
-                        TBL_BOOKSHELF, DOM_PK_ID,
-                        id -> ServiceLocator.getInstance().getBookshelfDao().getById(id));
+            case DBKey.BITMASK_TOC:
+                return new PBooleanFilter(
+                        name, R.string.lbl_anthology, R.array.pe_bob_filter_anthology,
+                        TBL_BOOKS, DOM_BOOK_TOC_BITMASK);
+
+            case DBKey.KEY_LOANEE:
+                return new PBooleanFilter(
+                        name, R.string.lbl_lend_out, R.array.pe_bob_filter_lending,
+                        TBL_BOOK_LOANEE, DOM_LOANEE);
 
 
             case DBKey.KEY_COLOR:
                 return new PStringEqualityFilter(
                         name, R.string.lbl_color,
-                        TBL_BOOKS, DOM_BOOK_COLOR);
+                        TBL_BOOKS, DOM_BOOK_COLOR,
+                        () -> ServiceLocator.getInstance().getColorDao().getList());
 
             case DBKey.KEY_FORMAT:
                 return new PStringEqualityFilter(
                         name, R.string.lbl_format,
-                        TBL_BOOKS, DOM_BOOK_FORMAT);
+                        TBL_BOOKS, DOM_BOOK_FORMAT,
+                        () -> ServiceLocator.getInstance().getFormatDao().getList());
 
             case DBKey.KEY_LANGUAGE:
                 return new PStringEqualityFilter(
                         name, R.string.lbl_language,
-                        TBL_BOOKS, DOM_BOOK_LANGUAGE);
+                        TBL_BOOKS, DOM_BOOK_LANGUAGE,
+                        () -> ServiceLocator.getInstance().getLanguageDao().getList());
+
+
+            case DBKey.FK_BOOKSHELF:
+                return new PEntityListFilter<>(
+                        name, R.string.lbl_bookshelves,
+                        TBL_BOOK_BOOKSHELF, DOM_FK_BOOKSHELF,
+                        () -> ServiceLocator.getInstance().getBookshelfDao().getAll(),
+                        id -> ServiceLocator.getInstance().getBookshelfDao().getById(id));
+
+
+            case DBKey.BITMASK_EDITION:
+                return new PBitmaskFilter(
+                        name, R.string.lbl_edition,
+                        TBL_BOOKS, DOM_BOOK_EDITION_BITMASK,
+                        Book.Edition::getEditions);
 
             default:
                 return null;

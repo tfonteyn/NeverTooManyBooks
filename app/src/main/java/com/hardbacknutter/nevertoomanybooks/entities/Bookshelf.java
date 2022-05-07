@@ -42,17 +42,11 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.RowIdFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
-
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 
 /**
  * Represents a Bookshelf.
@@ -315,46 +309,35 @@ public class Bookshelf
     }
 
     /**
-     * Get the FULL list of defined filters.
+     * Get the list of filters.
      *
      * @return list of {@link PFilter}
      */
     @NonNull
     public List<PFilter<?>> getFilters() {
-        return mFilters;
+        return new ArrayList<>(mFilters);
+    }
+
+    public void setFilters(@Nullable final List<PFilter<?>> list) {
+        mFilters.clear();
+        if (list != null) {
+            mFilters.addAll(list);
+        }
     }
 
     /**
-     * Get the list of active filters to use while building the book-list.
-     * Note these are plain {@link Filter} objects!
+     * Prune the filters so we only keep the active ones.
      *
      * @param context Current context
-     *
-     * @return list of active {@link Filter}
-     *
-     * @see #getFilters()
      */
     @NonNull
-    public List<Filter> getActiveFilters(@NonNull final Context context) {
-        final List<Filter> filters = new ArrayList<>();
-
-        // Filter on this Bookshelf?
-        // 1. this must NOT be the "all books" Bookshelf
-        final boolean itsNotAllBooks = !isAllBooks();
-        // 2. the current style must NOT contain the Bookshelf group.
-        final boolean styleHasNoBookshelfGroup =
-                !getStyle(context).getGroups().contains(BooklistGroup.BOOKSHELF);
-
-        if (itsNotAllBooks && styleHasNoBookshelfGroup) {
-            filters.add(new RowIdFilter(DOM_PK_ID, TBL_BOOKSHELF, this.getId()));
-        }
-
-        //TODO: if we add a bookshelf filter here, then the above needs changing
-        filters.addAll(mFilters);
-
-        return filters.stream()
-                      .filter(f -> f.isActive(context))
-                      .collect(Collectors.toList());
+    public List<PFilter<?>> pruneFilters(@NonNull final Context context) {
+        final List<PFilter<?>> list = mFilters.stream()
+                                              .filter(f -> f.isActive(context))
+                                              .collect(Collectors.toList());
+        mFilters.clear();
+        mFilters.addAll(list);
+        return getFilters();
     }
 
     /**

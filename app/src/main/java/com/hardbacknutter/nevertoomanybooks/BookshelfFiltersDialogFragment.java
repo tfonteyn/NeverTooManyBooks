@@ -20,11 +20,15 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,24 +37,34 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.divider.MaterialDividerItemDecoration;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.PBitmaskFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.PBooleanFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.PStringEqualityFilter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogBookshelfFiltersBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterBitmaskBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterBooleanBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterEntityListBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterStringEqualityBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceAlertDialogBuilder;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
-import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
-import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 public class BookshelfFiltersDialogFragment
         extends FFBaseDialogFragment {
@@ -61,9 +75,13 @@ public class BookshelfFiltersDialogFragment
     /** The Bookshelf we're editing. */
     private Bookshelf mBookshelf;
 
-    @SuppressWarnings("FieldCanBeLocal")
     private FilterListAdapter mListAdapter;
-    private List<PFilter<?>> mList;
+    private final ModificationListener mModificationListener = new ModificationListener() {
+        @Override
+        public void setModified(final boolean modified) {
+            mModified = modified;
+        }
+    };
 
     /** View Binding. */
     @SuppressWarnings("FieldCanBeLocal")
@@ -72,8 +90,8 @@ public class BookshelfFiltersDialogFragment
     /** FragmentResultListener request key to use for our response. */
     private String mRequestKey;
     private boolean mModified;
-    /** Drag and drop support for the list view. */
-    private ItemTouchHelper mItemTouchHelper;
+    /** The list we're editing. */
+    private List<PFilter<?>> mList;
 
     /**
      * No-arg constructor for OS use.
@@ -91,7 +109,6 @@ public class BookshelfFiltersDialogFragment
                                              BKEY_REQUEST_KEY);
         mBookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
                                             DBKey.FK_BOOKSHELF);
-        // ALL filters, active or not.
         mList = mBookshelf.getFilters();
     }
 
@@ -105,14 +122,18 @@ public class BookshelfFiltersDialogFragment
         mVb.toolbar.setSubtitle(mBookshelf.getName());
 
         //noinspection ConstantConditions
-        mListAdapter = new FilterListAdapter(getContext(), mList,
-                                             vh -> mItemTouchHelper.startDrag(vh));
+        mListAdapter = new FilterListAdapter(getContext(), mList, mModificationListener);
         mVb.filterList.setAdapter(mListAdapter);
+        mVb.filterList.addItemDecoration(
+                new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
+    }
 
-        final SimpleItemTouchHelperCallback sitHelperCallback =
-                new SimpleItemTouchHelperCallback(mListAdapter);
-        mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
-        mItemTouchHelper.attachToRecyclerView(mVb.filterList);
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mList.isEmpty()) {
+            onAdd();
+        }
     }
 
     @Override
@@ -126,35 +147,61 @@ public class BookshelfFiltersDialogFragment
     protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
         final int itemId = item.getItemId();
         if (itemId == R.id.MENU_ACTION_CONFIRM) {
-            final CharSequence[] items = Arrays.stream(FilterFactory.SUPPORTED_LABELS)
-                                               .mapToObj(this::getString)
-                                               .toArray(CharSequence[]::new);
-
-            //noinspection ConstantConditions
-            new MaterialAlertDialogBuilder(getContext())
-                    .setSingleChoiceItems(items, -1, (dialog, which) -> {
-                        final String name = FilterFactory.SUPPORTED_NAMES[which];
-                        if (mList.stream().noneMatch(f -> f.getPrefName().equals(name))) {
-                            final PFilter<?> filter = FilterFactory.create(name);
-                            mList.add(filter);
-                            mListAdapter.notifyItemInserted(mList.size());
-                        }
-                        dialog.dismiss();
-                    })
-                    .create()
-                    .show();
+            onAdd();
             return true;
         }
         return false;
     }
 
+    // We don't set the modified flag on adding a filter - the filter is NOT activated yet here.
+    private void onAdd() {
+        //noinspection ConstantConditions
+        final SharedPreferences global = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
+
+        final List<String> keyList = new ArrayList<>();
+        final List<String> labelList = new ArrayList<>();
+
+        FilterFactory.SUPPORTED.forEach((key, value) -> {
+            if (DBKey.isUsed(global, key)) {
+                keyList.add(key);
+                labelList.add(getString(value));
+            }
+        });
+
+        //noinspection ZeroLengthArrayAllocation
+        final CharSequence[] items = labelList.toArray(new CharSequence[0]);
+
+        new MaterialAlertDialogBuilder(getContext())
+                .setTitle(R.string.lbl_add_filter)
+                .setSingleChoiceItems(items, -1, (dialog, which) -> {
+                    final String name = keyList.get(which);
+                    if (mList.stream().noneMatch(f -> f.getPrefName().equals(name))) {
+                        final PFilter<?> filter = FilterFactory.create(name);
+                        mList.add(filter);
+                        mListAdapter.notifyItemInserted(mList.size());
+                    }
+
+                    dialog.dismiss();
+                })
+                .create()
+                .show();
+    }
+
     protected boolean saveChanges() {
         if (mModified) {
+            mBookshelf.setFilters(mList);
             //noinspection ConstantConditions
             ServiceLocator.getInstance().getBookshelfDao().update(getContext(), mBookshelf);
         }
         Launcher.setResult(this, mRequestKey, mModified);
         return true;
+    }
+
+    @FunctionalInterface
+    private interface ModificationListener {
+
+        void setModified(boolean modified);
     }
 
     public abstract static class Launcher
@@ -207,60 +254,264 @@ public class BookshelfFiltersDialogFragment
         public abstract void onResult(final boolean modified);
     }
 
-    private static class Holder
-            extends ItemTouchHelperViewHolderBase {
-
-        final TextView mNameView;
-        final TextView mValueView;
-
-        Holder(@NonNull final View itemView) {
-            super(itemView);
-            mNameView = itemView.findViewById(R.id.lbl_filter);
-            mValueView = itemView.findViewById(R.id.filter);
-        }
-    }
-
     private static class FilterListAdapter
-            extends RecyclerViewAdapterBase<PFilter<?>, Holder> {
+            extends RecyclerView.Adapter<Holder> {
+
+        @NonNull
+        private final List<PFilter<?>> mItems;
+        @NonNull
+        private final ModificationListener mModificationListener;
+        private final LayoutInflater mLayoutInflater;
 
         /**
          * Constructor.
          *
-         * @param context           Current context
-         * @param items             List of items
-         * @param dragStartListener Listener to handle the user moving rows up and down
+         * @param context Current context
+         * @param items   List of items
          */
         FilterListAdapter(@NonNull final Context context,
                           @NonNull final List<PFilter<?>> items,
-                          @Nullable final StartDragListener dragStartListener) {
-            super(context, items, dragStartListener);
+                          @NonNull final ModificationListener modificationListener) {
+            mLayoutInflater = LayoutInflater.from(context);
+            mItems = items;
+            mModificationListener = modificationListener;
         }
 
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final View view = getLayoutInflater()
-                    .inflate(R.layout.row_edit_bookshelf_filter, parent, false);
-            final Holder holder = new Holder(view);
-            holder.mValueView.setOnClickListener(v -> {
-                //URGENT: edit the filter value
-                final PFilter<?> filter = getItem(holder.getBindingAdapterPosition());
-            });
-            return holder;
+            final View view = mLayoutInflater.inflate(viewType, parent, false);
 
+            final Holder holder;
+            if (viewType == PBooleanFilter.LAYOUT_ID) {
+                holder = new BooleanHolder(view, mModificationListener);
+            } else if (viewType == PStringEqualityFilter.LAYOUT_ID) {
+                holder = new StringEqualityHolder(view, mModificationListener);
+            } else if (viewType == PEntityListFilter.LAYOUT_ID) {
+                holder = new EntityListHolder<>(view, mModificationListener);
+            } else if (viewType == PBitmaskFilter.LAYOUT_ID) {
+                holder = new BitmaskHolder(view, mModificationListener);
+            } else {
+                throw new IllegalArgumentException("Unknown viewType");
+            }
+
+            if (holder.mDelBtn != null) {
+                holder.mDelBtn.setOnClickListener(v -> {
+                    final int pos = holder.getBindingAdapterPosition();
+                    mItems.remove(pos);
+                    notifyItemRemoved(pos);
+                    mModificationListener.setModified(true);
+                });
+            }
+            return holder;
         }
 
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-            super.onBindViewHolder(holder, position);
+            holder.onBind(holder.itemView.getContext(), mItems.get(position));
+        }
 
-            final Context context = getContext();
-            final PFilter<?> filter = getItem(position);
+        @Override
+        public int getItemViewType(final int position) {
+            return mItems.get(position).getPrefLayoutId();
+        }
 
-            holder.mNameView.setText(filter.getLabel(context));
-            holder.mValueView.setText(filter.getValueText(context));
+        @Override
+        public int getItemCount() {
+            return mItems.size();
+        }
+    }
+
+    private abstract static class Holder
+            extends RecyclerView.ViewHolder {
+
+        @Nullable
+        final ImageButton mDelBtn;
+        @NonNull
+        final ModificationListener mModificationListener;
+
+        Holder(@NonNull final View itemView,
+               @NonNull final ModificationListener modificationListener) {
+            super(itemView);
+            mModificationListener = modificationListener;
+            mDelBtn = itemView.findViewById(R.id.btn_del);
+        }
+
+        public abstract void onBind(@NonNull Context context,
+                                    @NonNull PFilter<?> pFilter);
+    }
+
+    private static class BooleanHolder
+            extends Holder {
+
+        @NonNull
+        private final RowEditBookshelfFilterBooleanBinding mVb;
+
+        BooleanHolder(@NonNull final View itemView,
+                      @NonNull final ModificationListener modificationListener) {
+            super(itemView, modificationListener);
+            mVb = RowEditBookshelfFilterBooleanBinding.bind(itemView);
+        }
+
+        public void onBind(@NonNull final Context context,
+                           @NonNull final PFilter<?> pFilter) {
+            final PBooleanFilter filter = (PBooleanFilter) pFilter;
+            mVb.lblFilter.setText(filter.getLabel(context));
+
+            mVb.valueTrue.setText(filter.getValueText(context, true));
+            mVb.valueFalse.setText(filter.getValueText(context, false));
+
+            mVb.filter.setOnCheckedChangeListener(null);
+            final Boolean value = filter.getValue();
+            if (value == null) {
+                mVb.filter.clearCheck();
+            } else {
+                mVb.valueTrue.setChecked(value);
+            }
+
+            mVb.filter.setOnCheckedChangeListener((group, checkedId) -> {
+                if (checkedId == -1) {
+                    filter.setValue(null);
+                } else {
+                    filter.setValue(checkedId == mVb.valueTrue.getId());
+                }
+                mModificationListener.setModified(true);
+            });
+        }
+    }
+
+    private static class StringEqualityHolder
+            extends Holder {
+
+        @NonNull
+        private final RowEditBookshelfFilterStringEqualityBinding mVb;
+
+        StringEqualityHolder(@NonNull final View itemView,
+                             @NonNull final ModificationListener modificationListener) {
+            super(itemView, modificationListener);
+            mVb = RowEditBookshelfFilterStringEqualityBinding.bind(itemView);
+        }
+
+        public void onBind(@NonNull final Context context,
+                           @NonNull final PFilter<?> pFilter) {
+            final PStringEqualityFilter filter = (PStringEqualityFilter) pFilter;
+            mVb.lblFilter.setText(filter.getLabel(context));
+
+            mVb.filter.setText(filter.getValueText(context));
+            mVb.filter.setAdapter(filter.getListAdapter(context));
+
+            mVb.filter.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(final CharSequence s,
+                                              final int start,
+                                              final int count,
+                                              final int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(final CharSequence s,
+                                          final int start,
+                                          final int before,
+                                          final int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(final Editable s) {
+                    filter.setValue(s.toString());
+                    mModificationListener.setModified(true);
+                }
+            });
+        }
+    }
+
+    private static class EntityListHolder<T extends Entity>
+            extends Holder {
+
+        @NonNull
+        private final RowEditBookshelfFilterEntityListBinding mVb;
+
+        EntityListHolder(@NonNull final View itemView,
+                         @NonNull final ModificationListener modificationListener) {
+            super(itemView, modificationListener);
+            mVb = RowEditBookshelfFilterEntityListBinding.bind(itemView);
+        }
+
+        public void onBind(@NonNull final Context context,
+                           @NonNull final PFilter<?> pFilter) {
+            //noinspection unchecked
+            final PEntityListFilter<T> filter = (PEntityListFilter<T>) pFilter;
+            mVb.lblFilter.setText(filter.getLabel(context));
+
+            mVb.filter.setText(filter.getValueText(context));
+
+            mVb.ROWONCLICKTARGET.setOnClickListener(v -> {
+                final List<T> entities = filter.getEntities();
+                final List<Long> ids = entities.stream()
+                                               .map(Entity::getId)
+                                               .collect(Collectors.toList());
+                final List<String> labels = entities.stream()
+                                                    .map(entity -> entity.getLabel(context))
+                                                    .collect(Collectors.toList());
+
+                new MultiChoiceAlertDialogBuilder<Long>(LayoutInflater.from(context))
+                        .setDialogTitle(context.getString(R.string.lbl_bookshelves))
+                        .setItems(ids, labels)
+                        .setSelectedItems(filter.getValue())
+                        .setResultConsumer(value -> {
+                            filter.setValue(value);
+                            mVb.filter.setText(filter.getValueText(context));
+                            mModificationListener.setModified(true);
+                        })
+                        .create()
+                        .show();
+            });
+        }
+    }
+
+    private static class BitmaskHolder
+            extends Holder {
+
+        @NonNull
+        private final RowEditBookshelfFilterBitmaskBinding mVb;
+
+        BitmaskHolder(@NonNull final View itemView,
+                      @NonNull final ModificationListener modificationListener) {
+            super(itemView, modificationListener);
+            mVb = RowEditBookshelfFilterBitmaskBinding.bind(itemView);
+        }
+
+        @Override
+        public void onBind(@NonNull final Context context,
+                           @NonNull final PFilter<?> pFilter) {
+            final PBitmaskFilter filter = (PBitmaskFilter) pFilter;
+            mVb.lblFilter.setText(filter.getLabel(context));
+
+            mVb.filter.setText(filter.getValueText(context));
+
+            mVb.ROWONCLICKTARGET.setOnClickListener(v -> {
+                final Map<Integer, Integer> bitsAndLabels = filter.getBitsAndLabels();
+                final List<Integer> ids = new ArrayList<>(bitsAndLabels.keySet());
+                final List<String> labels = bitsAndLabels.values()
+                                                         .stream()
+                                                         .map(context::getString)
+                                                         .collect(Collectors.toList());
+
+                new MultiChoiceAlertDialogBuilder<Integer>(LayoutInflater.from(context))
+                        .setDialogTitle(context.getString(R.string.lbl_edition))
+                        .setItems(ids, labels)
+                        .setSelectedItems(filter.getValue())
+                        .setResultConsumer(value -> {
+                            filter.setValue(value);
+                            mVb.filter.setText(filter.getValueText(context));
+                            mModificationListener.setModified(true);
+                        })
+                        .create()
+                        .show();
+            });
         }
     }
 }

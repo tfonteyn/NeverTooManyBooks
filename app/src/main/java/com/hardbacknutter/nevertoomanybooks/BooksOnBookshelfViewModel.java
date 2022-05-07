@@ -526,9 +526,9 @@ public class BooksOnBookshelfViewModel
         final ListStyle style = getStyle(context);
         if (style.isShowHeader(ListStyle.HEADER_SHOW_FILTER)) {
 
-            final Collection<String> filterText = style
+            //noinspection ConstantConditions
+            final Collection<String> filterText = mBookshelf
                     .getFilters()
-                    .getAll()
                     .stream()
                     .filter(f -> f.isActive(context))
                     .map(filter -> filter.getLabel(context))

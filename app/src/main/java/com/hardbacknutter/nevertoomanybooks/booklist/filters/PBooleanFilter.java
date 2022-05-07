@@ -19,18 +19,31 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 
 import androidx.annotation.ArrayRes;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.preference.PreferenceManager;
 
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
+/**
+ * <ul>
+ * <li>The value is a {@code Boolean}.</li>
+ * <li>A {@code null} value indicates an inactive filter.</li>
+ * </ul>
+ */
 public class PBooleanFilter
         implements PFilter<Boolean> {
+
+    public static final int LAYOUT_ID = R.layout.row_edit_bookshelf_filter_boolean;
 
     @StringRes
     private final int mLabelId;
@@ -60,13 +73,19 @@ public class PBooleanFilter
 
     @Override
     public boolean isActive(@NonNull final Context context) {
+        if (!DBKey.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
+                          mDomain.getName())) {
+            return false;
+        }
+
         return mValue != null;
     }
 
     @NonNull
     @Override
     public String getExpression(@NonNull final Context context) {
-        return mTable.dot(mDomain) + '=' + mValue;
+        //noinspection ConstantConditions
+        return mTable.dot(mDomain) + '=' + (mValue ? 1 : 0);
     }
 
     @Override
@@ -86,6 +105,19 @@ public class PBooleanFilter
         mValue = value == null ? null : "1".equals(value);
     }
 
+    @SuppressLint("UseValueOf")
+    @Nullable
+    @Override
+    public Boolean getValue() {
+        if (mValue == null) {
+            return null;
+        } else {
+            // ignore Lint warnings! we want a NEW instance!
+            //noinspection BooleanConstructorCall,BoxingBoxedValue
+            return new Boolean(mValue);
+        }
+    }
+
     @Override
     public void setValue(@Nullable final Boolean value) {
         mValue = value;
@@ -93,12 +125,13 @@ public class PBooleanFilter
 
     @Override
     @NonNull
-    public String getValueText(@NonNull final Context context) {
+    public String getValueText(@NonNull final Context context,
+                               @Nullable final Boolean value) {
         final CharSequence[] textArray = context.getResources().getTextArray(mAcEntries);
-        if (mValue == null) {
+        if (value == null) {
             return textArray[0].toString();
         } else {
-            return textArray[mValue ? 2 : 1].toString();
+            return textArray[value ? 2 : 1].toString();
         }
     }
 
@@ -107,4 +140,11 @@ public class PBooleanFilter
     public String getLabel(@NonNull final Context context) {
         return context.getString(mLabelId);
     }
+
+    @LayoutRes
+    @Override
+    public int getPrefLayoutId() {
+        return LAYOUT_ID;
+    }
+
 }

@@ -26,32 +26,35 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
+/**
+ * Filter on a specific/single row id.
+ */
 public class RowIdFilter
         implements Filter {
 
     @NonNull
-    private final Domain mDomain;
-    @NonNull
     private final TableDefinition mTable;
+    @NonNull
+    private final Domain mDomain;
 
-    private final long id;
+    private final long mId;
 
-    public RowIdFilter(@NonNull final Domain domain,
-                       @NonNull final TableDefinition table,
+    public RowIdFilter(@NonNull final TableDefinition table,
+                       @NonNull final Domain domain,
                        final long id) {
-        mDomain = domain;
         mTable = table;
-        this.id = id;
+        mDomain = domain;
+        mId = id;
     }
 
     @Override
     @NonNull
     public String getExpression(@NonNull final Context context) {
-        return '(' + mTable.dot(mDomain) + '=' + id + ')';
+        return '(' + mTable.dot(mDomain) + '=' + mId + ')';
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        return id > 0;
+        return mId > 0;
     }
 }

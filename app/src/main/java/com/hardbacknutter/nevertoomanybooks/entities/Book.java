@@ -1304,6 +1304,8 @@ public class Book
         /**
          * Retrieve a <strong>copy</strong> of the ALL map,
          * with the string resource id as the user Locale actual String.
+         * <p>
+         * i.e. : (int,int) -> (int,String)
          *
          * @param context Current context
          *
@@ -1314,6 +1316,11 @@ public class Book
             final Map<Integer, String> result = new LinkedHashMap<>();
             ALL.forEach((key, value) -> result.put(key, context.getString(value)));
             return result;
+        }
+
+        @NonNull
+        public static Map<Integer, Integer> getEditions() {
+            return new LinkedHashMap<>(ALL);
         }
     }
 }

@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -205,12 +206,21 @@ class BooklistBuilder {
     }
 
     /**
-     * Add a filer to use in the WHERE clause.
+     * Add a filter to use in the WHERE clause.
      *
      * @param filter to add
      */
     void addFilter(@NonNull final Filter filter) {
         mFilters.add(filter);
+    }
+
+    /**
+     * Add a list of filter to use in the WHERE clause.
+     *
+     * @param filters to add
+     */
+    void addFilter(@NonNull final List<Filter> filters) {
+        mFilters.addAll(filters);
     }
 
     /**
@@ -225,7 +235,6 @@ class BooklistBuilder {
 
     /**
      * Clear and build the temporary list of books.
-     * Criteria must be set before calling this method with one or more of the setCriteria calls.
      *
      * @param context Current context
      *
@@ -234,9 +243,6 @@ class BooklistBuilder {
     @NonNull
     public Booklist build(@NonNull final Context context) {
         final int instanceId = ID_COUNTER.incrementAndGet();
-
-        mFilters.addAll(mBookshelf.getActiveFilters(context));
-        mFilters.addAll(mStyle.getActiveFilters(context));
 
         // Construct the list table and all needed structures.
         final TableBuilder tableBuilder = new TableBuilder(
@@ -283,12 +289,13 @@ class BooklistBuilder {
         }
     }
 
+
     /**
      * A Builder to accumulates data while building the list table
      * and produce the initial SQL insert statement.
      * <p>
      * While building, the triggers will make sure that the top-level(==1) nodes
-     * are always visible. This is critical for some parts of te code which rely on this.
+     * are always visible. This is critical for some parts of the code which rely on this.
      */
     private static class TableBuilder {
 
@@ -307,6 +314,7 @@ class BooklistBuilder {
 
         @NonNull
         private final ListStyle mStyle;
+
         /** Set to {@code true} if we're filtering on a specific {@link Bookshelf}. */
         private final boolean mFilteredOnBookshelf;
 
@@ -1013,7 +1021,7 @@ class BooklistBuilder {
          * Create the WHERE clause based on all active filters (for in-use domains).
          *
          * @param context Current context
-         * @param filters
+         * @param filters to apply
          *
          * @return WHERE clause, can be empty
          */
@@ -1026,7 +1034,8 @@ class BooklistBuilder {
                    // ONLY APPLY ACTIVE FILTERS!
                    .filter(filter -> filter.isActive(context))
                    .map(filter -> filter.getExpression(context))
-                   // sanity check
+                   // sanity checks
+                   .filter(Objects::nonNull)
                    .filter(expression -> !expression.isEmpty())
                    .forEach(expression -> {
                        if (where.length() != 0) {

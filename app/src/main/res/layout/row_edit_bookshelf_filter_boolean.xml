@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/section_margin_top"
+    android:minHeight="?attr/listPreferredItemHeightSmall"
+    >
+
+    <ImageButton
+        android:id="@+id/btn_del"
+        style="@style/RowEditor.Button.Delete"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription"
+        />
+
+    <TextView
+        android:id="@+id/lbl_filter"
+        style="@style/Label"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
+        app:layout_constraintStart_toEndOf="@id/btn_del"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SelectableText"
+        tools:text="@string/lbl_read"
+        />
+
+    <RadioGroup
+        android:id="@+id/filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/field_margin_start"
+        app:layout_constraintStart_toStartOf="@id/lbl_filter"
+        app:layout_constraintTop_toBottomOf="@id/lbl_filter"
+        >
+
+        <RadioButton
+            android:id="@+id/valueTrue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:checked="true"
+            tools:text="@string/pe_bob_filter_read_yes"
+            />
+
+        <RadioButton
+            android:id="@+id/valueFalse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="@string/pe_bob_filter_read_no"
+            />
+    </RadioGroup>
+</androidx.constraintlayout.widget.ConstraintLayout>

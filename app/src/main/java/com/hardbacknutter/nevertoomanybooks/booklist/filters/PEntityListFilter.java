@@ -21,26 +21,39 @@ package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.content.Context;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.preference.PreferenceManager;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
  * an SQL WHERE clause (column IN (a,b,c,...)
+ *
+ * <ul>
+ * <li>The value is a {@code Set<Long>} with the key being the entity id.</li>
+ * <li>The Set is never {@code null}.</li>
+ * <li>An empty Set indicates an inactive filter.</li>
+ * </ul>
  */
-public class PEntityListFilter
-        implements PFilter<List<Long>> {
+public class PEntityListFilter<T extends Entity>
+        implements PFilter<Set<Long>> {
+
+    public static final int LAYOUT_ID = R.layout.row_edit_bookshelf_filter_entity_list;
 
     @SuppressWarnings("FieldNotUsedInToString")
     private final int mLabelId;
@@ -50,26 +63,35 @@ public class PEntityListFilter
     private final Domain mDomain;
     @NonNull
     private final TableDefinition mTable;
+    @NonNull
+    private final Supplier<List<T>> mListSupplier;
+
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final Function<Long, Entity> mEntitySupplier;
 
-    private final List<Long> mValue = new ArrayList<>();
+    private final Set<Long> mValue = new HashSet<>();
 
     PEntityListFilter(@NonNull final String name,
                       @StringRes final int labelId,
                       @NonNull final TableDefinition table,
                       @NonNull final Domain domain,
+                      @NonNull final Supplier<List<T>> listSupplier,
                       @NonNull final Function<Long, Entity> entitySupplier) {
         mName = name;
         mLabelId = labelId;
         mDomain = domain;
         mTable = table;
+        mListSupplier = listSupplier;
         mEntitySupplier = entitySupplier;
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
+        if (!DBKey.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
+                          mDomain.getName())) {
+            return false;
+        }
         return !mValue.isEmpty();
     }
 
@@ -77,7 +99,7 @@ public class PEntityListFilter
     @NonNull
     public String getExpression(@NonNull final Context context) {
         if (mValue.size() == 1) {
-            return '(' + mTable.dot(mDomain) + '=' + mValue.get(0) + ')';
+            return '(' + mTable.dot(mDomain) + '=' + mValue.toArray()[0] + ')';
         } else {
             return mValue.stream()
                          .map(String::valueOf)
@@ -112,8 +134,19 @@ public class PEntityListFilter
         }
     }
 
+    @NonNull
+    public List<T> getEntities() {
+        return mListSupplier.get();
+    }
+
+    @NonNull
     @Override
-    public void setValue(@Nullable final List<Long> value) {
+    public Set<Long> getValue() {
+        return new HashSet<>(mValue);
+    }
+
+    @Override
+    public void setValue(@Nullable final Set<Long> value) {
         mValue.clear();
         if (value != null && !value.isEmpty()) {
             mValue.addAll(value);
@@ -122,14 +155,15 @@ public class PEntityListFilter
 
     @Override
     @NonNull
-    public String getValueText(@NonNull final Context context) {
-        if (mValue.isEmpty()) {
+    public String getValueText(@NonNull final Context context,
+                               @Nullable final Set<Long> value) {
+        if (value == null || value.isEmpty()) {
             return context.getString(R.string.bob_empty_field);
         } else {
-            return mValue.stream()
-                         .map(mEntitySupplier)
-                         .map(entity -> entity.getLabel(context))
-                         .collect(Collectors.joining("; "));
+            return value.stream()
+                        .map(mEntitySupplier)
+                        .map(entity -> entity.getLabel(context))
+                        .collect(Collectors.joining("; "));
         }
     }
 
@@ -137,5 +171,11 @@ public class PEntityListFilter
     @NonNull
     public String getLabel(@NonNull final Context context) {
         return context.getString(mLabelId);
+    }
+
+    @LayoutRes
+    @Override
+    public int getPrefLayoutId() {
+        return LAYOUT_ID;
     }
 }

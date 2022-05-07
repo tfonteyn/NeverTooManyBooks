@@ -217,8 +217,19 @@ public class BookshelfDaoImpl
         return list;
     }
 
-    public void storeFilters(final long bookshelfId,
-                             @NonNull final List<PFilter<?>> list) {
+    /**
+     * Store the <strong>active filter</strong>.
+     *
+     * @param context     Current context
+     * @param bookshelfId the Bookshelf id; passed separately to allow clean inserts
+     * @param bookshelf   to store
+     */
+    public void storeFilters(final Context context,
+                             final long bookshelfId,
+                             @NonNull final Bookshelf bookshelf) {
+
+        // prune the filters so we only keep the active ones
+        final List<PFilter<?>> list = bookshelf.pruneFilters(context);
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -297,7 +308,7 @@ public class BookshelfDaoImpl
                 stmt.bindLong(4, bookshelf.getFirstVisibleItemViewOffset());
                 iId = stmt.executeInsert();
                 if (iId > 0) {
-                    storeFilters(iId, bookshelf.getFilters());
+                    storeFilters(context, iId, bookshelf);
                 }
             }
             if (txLock != null) {
@@ -340,7 +351,7 @@ public class BookshelfDaoImpl
             rowsAffected = mDb.update(TBL_BOOKSHELF.getName(), cv, DBKey.PK_ID + "=?",
                                       new String[]{String.valueOf(bookshelf.getId())});
 
-            storeFilters(bookshelf.getId(), bookshelf.getFilters());
+            storeFilters(context, bookshelf.getId(), bookshelf);
 
             if (txLock != null) {
                 mDb.setTransactionSuccessful();
