@@ -34,7 +34,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -81,9 +80,9 @@ public class EditBookFieldsFragment
     private final MultiChoiceDialogFragment.Launcher<Bookshelf> mEditBookshelvesLauncher =
             new MultiChoiceDialogFragment.Launcher<>() {
                 @Override
-                public void onResult(@IdRes final int fieldId,
-                                     @NonNull final Set<Long> selectedIds) {
-                    final Field<List<Bookshelf>, TextView> field = mVm.requireField(fieldId);
+                public void onResult(@NonNull final Set<Long> selectedIds) {
+                    final Field<List<Bookshelf>, TextView> field =
+                            mVm.requireField(R.id.bookshelves);
                     final List<Bookshelf> previous = field.getValue();
 
                     final ArrayList<Bookshelf> selected =
@@ -270,9 +269,7 @@ public class EditBookFieldsFragment
 
     private void editBookshelves() {
         //noinspection ConstantConditions
-        mEditBookshelvesLauncher.launch(getContext(),
-                                        getString(R.string.lbl_bookshelves),
-                                        R.id.bookshelves,
+        mEditBookshelvesLauncher.launch(getContext(), getString(R.string.lbl_bookshelves),
                                         mVm.getAllBookshelves(),
                                         mVm.getBook().getBookshelves());
     }
