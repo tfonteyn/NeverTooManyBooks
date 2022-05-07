@@ -35,10 +35,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.divider.MaterialDividerItemDecoration;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
@@ -139,7 +139,7 @@ public class CoverBrowserDialogFragment
                 "Missing LinearLayoutManager");
         //noinspection ConstantConditions
         mVb.gallery.addItemDecoration(
-                new DividerItemDecoration(getContext(), galleryLM.getOrientation()));
+                new MaterialDividerItemDecoration(getContext(), galleryLM.getOrientation()));
         mGalleryAdapter = new GalleryAdapter(mVm.getGalleryDisplayExecutor());
         mVb.gallery.setAdapter(mGalleryAdapter);
 
