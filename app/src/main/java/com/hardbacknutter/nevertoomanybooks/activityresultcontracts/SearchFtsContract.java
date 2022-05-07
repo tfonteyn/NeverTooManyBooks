@@ -65,6 +65,7 @@ public class SearchFtsContract
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final SearchCriteria criteria) {
         final Intent intent = FragmentHostActivity.createIntent(context, SearchFtsFragment.class);
+        //URGENT: criteria is parcelable... update/remove this workaround
         criteria.to(intent);
         return intent;
     }

@@ -214,18 +214,15 @@ public class FtsDaoImpl
 
         final List<Long> result = new ArrayList<>();
 
-        final String query = FtsDao.createMatchString(title, seriesTitle, author,
-                                                      publisherName, keywords);
-        // do we have anything to search for?
-        if (query.isEmpty()) {
-            return result;
-        }
-
-        try (Cursor cursor = mDb.rawQuery(SEARCH, new String[]{query, String.valueOf(limit)})) {
-            while (cursor.moveToNext()) {
-                result.add(cursor.getLong(0));
-            }
-        }
+        FtsDao.createMatchString(title, seriesTitle, author, publisherName, keywords)
+              .ifPresent(query -> {
+                  try (Cursor cursor = mDb.rawQuery(SEARCH, new String[]
+                          {query, String.valueOf(limit)})) {
+                      while (cursor.moveToNext()) {
+                          result.add(cursor.getLong(0));
+                      }
+                  }
+              });
 
         return result;
     }

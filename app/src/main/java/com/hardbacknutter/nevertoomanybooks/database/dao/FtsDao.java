@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
@@ -128,22 +129,23 @@ public interface FtsDao {
      * @param keywords      Keywords to find anywhere in book;
      *                      this includes titles and authors
      *
-     * @return an query string suited to search FTS for the specified parameters,
-     * or {@code ""} if all input was empty
+     * @return an Optional with query string suited to search FTS for the specified parameters.
      */
     @NonNull
-    static String createMatchString(@Nullable final String bookTitle,
-                                    @Nullable final String seriesTitle,
-                                    @Nullable final String author,
-                                    @Nullable final String publisherName,
-                                    @Nullable final String keywords) {
+    static Optional<String> createMatchString(@Nullable final String bookTitle,
+                                              @Nullable final String seriesTitle,
+                                              @Nullable final String author,
+                                              @Nullable final String publisherName,
+                                              @Nullable final String keywords) {
 
-        return (prepareSearchText(keywords, null)
-                + prepareSearchText(author, DBKey.FTS_AUTHOR_NAME)
-                + prepareSearchText(bookTitle, DBKey.KEY_TITLE)
-                + prepareSearchText(seriesTitle, DBKey.KEY_SERIES_TITLE)
-                + prepareSearchText(publisherName, DBKey.KEY_PUBLISHER_NAME)
+        final String query = (prepareSearchText(keywords, null)
+                              + prepareSearchText(author, DBKey.FTS_AUTHOR_NAME)
+                              + prepareSearchText(bookTitle, DBKey.KEY_TITLE)
+                              + prepareSearchText(seriesTitle, DBKey.KEY_SERIES_TITLE)
+                              + prepareSearchText(publisherName, DBKey.KEY_PUBLISHER_NAME)
         ).trim();
+
+        return query.isEmpty() ? Optional.empty() : Optional.of(query);
     }
 
     /**

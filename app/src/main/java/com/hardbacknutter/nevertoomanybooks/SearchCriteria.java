@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
@@ -180,7 +181,7 @@ public class SearchCriteria
     }
 
     @NonNull
-    public String getFtsMatchQuery() {
+    public Optional<String> getFtsMatchQuery() {
         return FtsDao.createMatchString(mFtsBookTitle,
                                         mFtsSeriesTitle,
                                         mFtsAuthor,
@@ -222,9 +223,13 @@ public class SearchCriteria
     }
 
     /** Not supported by FTS. */
-    @Nullable
-    public String getLoanee() {
-        return mLoanee;
+    @NonNull
+    public Optional<String> getLoanee() {
+        if (mLoanee != null && !mLoanee.trim().isEmpty()) {
+            return Optional.of(mLoanee.trim());
+        } else {
+            return Optional.empty();
+        }
     }
 
 
