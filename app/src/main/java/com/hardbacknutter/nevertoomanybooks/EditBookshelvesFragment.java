@@ -37,9 +37,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.divider.MaterialDividerItemDecoration;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
@@ -153,7 +153,8 @@ public class EditBookshelvesFragment
         //noinspection ConstantConditions
         mListAdapter = new BookshelfAdapter(getContext());
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
-        mVb.list.addItemDecoration(new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
+        mVb.list.addItemDecoration(
+                new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         mVb.list.setHasFixedSize(true);
         mVb.list.setAdapter(mListAdapter);
     }
