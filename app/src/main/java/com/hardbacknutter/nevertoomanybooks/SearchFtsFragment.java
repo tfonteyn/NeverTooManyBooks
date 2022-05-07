@@ -37,14 +37,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
+import androidx.lifecycle.ViewModelProvider;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsContract;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdvancedSearchBinding;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 
@@ -75,31 +73,15 @@ public class SearchFtsFragment
     private static final int TIMER_TICK_MS = 250;
     /** 1 second idle trigger. */
     private static final int NANO_TO_SECONDS = 1_000_000_000;
-    /** The maximum number of suggestions we'll show during a live search. */
-    private static final int MAX_SUGGESTIONS = 20;
-
-    /** The results book id list. For sending back to the caller. */
-    private final ArrayList<Long> mBookIdList = new ArrayList<>();
-    /** Database Access. */
-    private FtsDao mDao;
-    /** User entered search text. */
-    @Nullable
-    private String mAuthorSearchText;
-    /** User entered search text. */
-    @Nullable
-    private String mTitleSearchText;
-    /** User entered search text. */
-    @Nullable
-    private String mSeriesTitleSearchText;
-    /** User entered search text. */
-    @Nullable
-    private String mPublisherNameSearchText;
-    /** User entered search text. */
-    @Nullable
-    private String mKeywordsSearchText;
 
     @SuppressWarnings("FieldCanBeLocal")
     private MenuProvider mToolbarMenuProvider;
+
+    /** Detect text changes and call userIsActive(...). */
+    private final TextWatcher mTextWatcher = (ExtTextWatcher) editable -> {
+        // we're not changing the Editable, no need to toggle this listener
+        userIsActive(true);
+    };
 
     /** Indicates user has changed something since the last search. */
     private boolean mSearchIsDirty;
@@ -108,11 +90,7 @@ public class SearchFtsFragment
     /** Timer object for background idle searches. */
     @Nullable
     private Timer mTimer;
-    /** Detect text changes and call userIsActive(...). */
-    private final TextWatcher mTextWatcher = (ExtTextWatcher) editable -> {
-        // we're not going to change the Editable, no need to toggle this listener
-        userIsActive(true);
-    };
+    private SearchFtsViewModel mVm;
 
     /** View Binding. */
     private FragmentAdvancedSearchBinding mVb;
@@ -121,16 +99,8 @@ public class SearchFtsFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDao = ServiceLocator.getInstance().getFtsDao();
-
-        final Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
-        if (args != null) {
-            mTitleSearchText = args.getString(DBKey.KEY_TITLE);
-            mSeriesTitleSearchText = args.getString(DBKey.KEY_SERIES_TITLE);
-            mAuthorSearchText = args.getString(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
-            mPublisherNameSearchText = args.getString(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER);
-            mKeywordsSearchText = args.getString(SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS);
-        }
+        mVm = new ViewModelProvider(this).get(SearchFtsViewModel.class);
+        mVm.init(getArguments());
     }
 
     @Nullable
@@ -153,21 +123,8 @@ public class SearchFtsFragment
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
         toolbar.setTitle(R.string.lbl_local_search);
 
-        if (mTitleSearchText != null) {
-            mVb.title.setText(mTitleSearchText);
-        }
-        if (mSeriesTitleSearchText != null) {
-            mVb.seriesTitle.setText(mSeriesTitleSearchText);
-        }
-        if (mAuthorSearchText != null) {
-            mVb.author.setText(mAuthorSearchText);
-        }
-        if (mPublisherNameSearchText != null) {
-            mVb.publisher.setText(mPublisherNameSearchText);
-        }
-        if (mKeywordsSearchText != null) {
-            mVb.keywords.setText(mKeywordsSearchText);
-        }
+        mVm.onSearchCriteriaUpdate().observe(getViewLifecycleOwner(), this::onSearchCriteriaUpdate);
+        mVm.onBooklistUpdate().observe(getViewLifecycleOwner(), this::onBooklistUpdate);
 
         // Detect when user touches something.
         mVb.content.setOnTouchListener((v, event) -> {
@@ -185,15 +142,26 @@ public class SearchFtsFragment
         // Timer will be started in OnResume().
     }
 
-    // When the show results buttons is tapped, return and show the resulting booklist.
-    private void showList() {
-        final Intent resultIntent = SearchFtsContract
-                .createResultIntent(mBookIdList,
-                                    mTitleSearchText,
-                                    mSeriesTitleSearchText,
-                                    mAuthorSearchText,
-                                    mPublisherNameSearchText,
-                                    mKeywordsSearchText);
+    private void onSearchCriteriaUpdate(@NonNull final SearchCriteria criteria) {
+        mVb.title.setText(criteria.getFtsBookTitle());
+        mVb.seriesTitle.setText(criteria.getFtsSeriesTitle());
+        mVb.author.setText(criteria.getFtsAuthor());
+        mVb.publisher.setText(criteria.getFtsPublisher());
+        mVb.keywords.setText(criteria.getFtsKeywords());
+        onBooklistUpdate(criteria.getBookIdList());
+    }
+
+    private void onBooklistUpdate(final List<Long> idList) {
+        final int count = idList.size();
+        final String s = getResources().getQuantityString(R.plurals.n_books_found, count, count);
+        getToolbar().setSubtitle(s);
+    }
+
+    /**
+     * When the show results buttons is tapped, return and show the resulting booklist.
+     */
+    private void showFullResults() {
+        final Intent resultIntent = new Intent().putExtra(SearchCriteria.BKEY, mVm.getCriteria());
         //noinspection ConstantConditions
         getActivity().setResult(Activity.RESULT_OK, resultIntent);
         getActivity().finish();
@@ -216,29 +184,23 @@ public class SearchFtsFragment
     @CallSuper
     public void onPause() {
         stopIdleTimer();
-        // Get search criteria
         viewToModel();
 
         super.onPause();
     }
 
-    private void updateUi() {
-        final int count = mBookIdList.size();
-        final String s = getResources().getQuantityString(R.plurals.n_books_found, count, count);
-        getToolbar().setSubtitle(s);
-    }
-
     private void viewToModel() {
+        final SearchCriteria criteria = mVm.getCriteria();
         //noinspection ConstantConditions
-        mTitleSearchText = mVb.title.getText().toString().trim();
+        criteria.setFtsBookTitle(mVb.title.getText().toString().trim());
         //noinspection ConstantConditions
-        mSeriesTitleSearchText = mVb.seriesTitle.getText().toString().trim();
+        criteria.setFtsSeriesTitle(mVb.seriesTitle.getText().toString().trim());
         //noinspection ConstantConditions
-        mAuthorSearchText = mVb.author.getText().toString().trim();
+        criteria.setFtsAuthor(mVb.author.getText().toString().trim());
         //noinspection ConstantConditions
-        mPublisherNameSearchText = mVb.publisher.getText().toString().trim();
+        criteria.setFtsPublisher(mVb.publisher.getText().toString().trim());
         //noinspection ConstantConditions
-        mKeywordsSearchText = mVb.keywords.getText().toString().trim();
+        criteria.setFtsKeywords(mVb.keywords.getText().toString().trim());
     }
 
     /**
@@ -257,17 +219,6 @@ public class SearchFtsFragment
                 startIdleTimer();
             }
         }
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putString(DBKey.KEY_TITLE, mTitleSearchText);
-        outState.putString(DBKey.KEY_SERIES_TITLE, mSeriesTitleSearchText);
-        outState.putString(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR, mAuthorSearchText);
-        outState.putString(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER, mPublisherNameSearchText);
-        outState.putString(SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS, mKeywordsSearchText);
     }
 
     @Override
@@ -319,7 +270,7 @@ public class SearchFtsFragment
         @Override
         public void run() {
             boolean doSearch = false;
-            // Synchronize since this is relevant to more than 1 thread.
+            // Synchronize as we might have more than one timer running (but shouldn't)
             synchronized (this) {
                 final boolean idle = (System.nanoTime() - mIdleStart) > NANO_TO_SECONDS;
                 if (idle) {
@@ -335,18 +286,7 @@ public class SearchFtsFragment
             if (doSearch) {
                 // we CAN actually read the Views here ?!
                 viewToModel();
-
-                mBookIdList.clear();
-                mBookIdList.addAll(mDao.search(mAuthorSearchText,
-                                               mTitleSearchText,
-                                               mSeriesTitleSearchText,
-                                               mPublisherNameSearchText,
-                                               mKeywordsSearchText,
-                                               MAX_SUGGESTIONS));
-
-                // Update the UI in main thread.
-                //noinspection ConstantConditions
-                getView().getHandler().post(SearchFtsFragment.this::updateUi);
+                mVm.search();
             }
         }
     }
@@ -368,7 +308,7 @@ public class SearchFtsFragment
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-                showList();
+                showFullResults();
                 return true;
             }
             return false;

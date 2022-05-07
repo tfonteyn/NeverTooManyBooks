@@ -77,7 +77,8 @@ public class BooksOnBookshelfViewModel
     private static final String ERROR_NULL_BOOKLIST = "mBooklist";
 
     /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
-    private final SearchCriteria mSearchCriteria = new SearchCriteria();
+    @Nullable
+    private SearchCriteria mSearchCriteria;
 
     /** Cache for all bookshelves. */
     private final List<Bookshelf> mBookshelfList = new ArrayList<>();
@@ -162,7 +163,7 @@ public class BooksOnBookshelfViewModel
                 mProposeBackup = args.getBoolean(BKEY_PROPOSE_BACKUP, false);
 
                 // extract search criteria if any are present
-                mSearchCriteria.from(args, true);
+                mSearchCriteria = args.getParcelable(SearchCriteria.BKEY);
 
                 // allow the caller to override the user preference
                 if (args.containsKey(BKEY_LIST_STATE)) {
@@ -180,6 +181,11 @@ public class BooksOnBookshelfViewModel
         } else {
             // always preserve the state when the hosting fragment was revived
             mRebuildMode = RebuildBooklist.FromSaved;
+        }
+
+        // create if not explicitly set above
+        if (mSearchCriteria == null) {
+            mSearchCriteria = new SearchCriteria();
         }
 
         // Set the last/preferred bookshelf if not explicitly set above
@@ -462,16 +468,11 @@ public class BooksOnBookshelfViewModel
 
     @NonNull
     SearchCriteria getSearchCriteria() {
-        return mSearchCriteria;
+        return Objects.requireNonNull(mSearchCriteria);
     }
 
-    boolean setSearchCriteria(@Nullable final SearchCriteria data,
-                              @SuppressWarnings("SameParameterValue") final boolean clearFirst) {
-        if (data != null) {
-            return mSearchCriteria.from(data, clearFirst);
-        } else {
-            return false;
-        }
+    void setSearchCriteria(@NonNull final SearchCriteria criteria) {
+        mSearchCriteria = criteria;
     }
 
     /**
@@ -534,10 +535,8 @@ public class BooksOnBookshelfViewModel
                     .map(filter -> filter.getLabel(context))
                     .collect(Collectors.toList());
 
-            final String ftsSearchText = mSearchCriteria.getDisplayText();
-            if (!ftsSearchText.isEmpty()) {
-                filterText.add('"' + ftsSearchText + '"');
-            }
+            //noinspection ConstantConditions
+            mSearchCriteria.getDisplayText().ifPresent(text -> filterText.add('"' + text + '"'));
 
             if (!filterText.isEmpty()) {
                 return context.getString(R.string.lbl_search_filtered_on_x,
@@ -736,6 +735,7 @@ public class BooksOnBookshelfViewModel
     void buildBookList() {
         Objects.requireNonNull(mBookshelf, ERROR_NULL_BOOKLIST);
 
+        //noinspection ConstantConditions
         mBoBTask.build(mBookshelf, mRebuildMode, mSearchCriteria, mCurrentCenteredBookId);
     }
 

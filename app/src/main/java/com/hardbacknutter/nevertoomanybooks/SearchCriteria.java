@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.content.Intent;
-import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -33,10 +31,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
 
 /**
  * Holder class for search criteria with some methods to bulk manipulate them.
@@ -59,22 +54,18 @@ public class SearchCriteria
     /** Log tag. */
     private static final String TAG = "SearchCriteria";
     public static final String BKEY = TAG + ":a";
-
-    /** Bundle key for generic search text. */
-    public static final String BKEY_SEARCH_TEXT_KEYWORDS = TAG + ":keywords";
-
     /**
      * Bundle key for Author search text
      * (all DB KEY's and the ARRAY key is for authors with verified names).
      */
     public static final String BKEY_SEARCH_TEXT_AUTHOR = TAG + ":author";
-
     /**
      * Bundle key for Publisher search text
      * (all DB KEY's and the ARRAY key is for publishers with verified names).
      */
     public static final String BKEY_SEARCH_TEXT_PUBLISHER = TAG + ":publisher";
-
+    /** Bundle key for generic search text. */
+    private static final String BKEY_SEARCH_TEXT_KEYWORDS = TAG + ":keywords";
     /**
      * List of book ID's to display.
      * The RESULT of a search with {@link SearchFtsFragment}
@@ -107,23 +98,6 @@ public class SearchCriteria
     private String mLoanee;
 
     SearchCriteria() {
-    }
-
-    /**
-     * Constructor for FTS searches.
-     */
-    public SearchCriteria(@NonNull final List<Long> bookIdList,
-                          @Nullable final String titleSearchText,
-                          @Nullable final String seriesTitleSearchText,
-                          @Nullable final String authorSearchText,
-                          @Nullable final String publisherNameSearchText,
-                          @Nullable final String keywordsSearchText) {
-        mBookIdList.addAll(bookIdList);
-        mFtsBookTitle = titleSearchText;
-        mFtsSeriesTitle = seriesTitleSearchText;
-        mFtsAuthor = authorSearchText;
-        mFtsPublisher = publisherNameSearchText;
-        mFtsKeywords = keywordsSearchText;
     }
 
     /**
@@ -194,9 +168,17 @@ public class SearchCriteria
         return mFtsBookTitle;
     }
 
+    public void setFtsBookTitle(@Nullable final String ftsBookTitle) {
+        mFtsBookTitle = ftsBookTitle;
+    }
+
     @Nullable
     public String getFtsSeriesTitle() {
         return mFtsSeriesTitle;
+    }
+
+    public void setFtsSeriesTitle(@Nullable final String ftsSeriesTitle) {
+        mFtsSeriesTitle = ftsSeriesTitle;
     }
 
     @Nullable
@@ -204,9 +186,17 @@ public class SearchCriteria
         return mFtsAuthor;
     }
 
+    public void setFtsAuthor(@Nullable final String ftsAuthor) {
+        mFtsAuthor = ftsAuthor;
+    }
+
     @Nullable
     public String getFtsPublisher() {
         return mFtsPublisher;
+    }
+
+    public void setFtsPublisher(@Nullable final String ftsPublisher) {
+        mFtsPublisher = ftsPublisher;
     }
 
     @Nullable
@@ -232,14 +222,28 @@ public class SearchCriteria
         }
     }
 
+    public void setLoanee(@Nullable final String loanee) {
+        mLoanee = loanee;
+    }
+
+    public void search(@NonNull final FtsDao dao,
+                       final int maxSuggestions) {
+        mBookIdList.clear();
+        mBookIdList.addAll(dao.search(mFtsAuthor,
+                                      mFtsBookTitle,
+                                      mFtsSeriesTitle,
+                                      mFtsPublisher,
+                                      mFtsKeywords,
+                                      maxSuggestions));
+    }
 
     /**
      * Get a single string with all search words, for displaying.
      *
-     * @return csv string, can be empty, but never {@code null}.
+     * @return an Optional with a csv string.
      */
     @NonNull
-    public String getDisplayText() {
+    public Optional<String> getDisplayText() {
         final Collection<String> list = new ArrayList<>();
 
         if (mFtsBookTitle != null && !mFtsBookTitle.isEmpty()) {
@@ -260,132 +264,13 @@ public class SearchCriteria
         if (mLoanee != null && !mLoanee.isEmpty()) {
             list.add(mLoanee);
         }
-        return TextUtils.join(",", list);
-    }
 
-
-    /**
-     * Only copies the criteria which are set.
-     * Criteria not set in the data, are preserved!
-     *
-     * @param data       with criteria.
-     * @param clearFirst Flag to force clearing all before loading the new criteria
-     *
-     * @return {@code true} if at least one criteria was set
-     */
-    public boolean from(@NonNull final SearchCriteria data,
-                        final boolean clearFirst) {
-        if (clearFirst) {
-            clear();
+        final String text = TextUtils.join(",", list);
+        if (text.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(text);
         }
-        boolean isSet = false;
-
-        if (!data.mBookIdList.isEmpty()) {
-            setBookIdList(data.mBookIdList);
-            isSet = true;
-        }
-
-        if (data.mFtsBookTitle != null) {
-            mFtsBookTitle = data.mFtsBookTitle;
-            isSet = true;
-        }
-
-        if (data.mFtsSeriesTitle != null) {
-            mFtsSeriesTitle = data.mFtsSeriesTitle;
-            isSet = true;
-        }
-
-        if (data.mFtsAuthor != null) {
-            mFtsAuthor = data.mFtsAuthor;
-            isSet = true;
-        }
-
-        if (data.mFtsPublisher != null) {
-            mFtsPublisher = data.mFtsPublisher;
-            isSet = true;
-        }
-
-        if (data.mFtsKeywords != null) {
-            setFtsKeywords(data.mFtsKeywords);
-            isSet = true;
-        }
-
-        if (data.mLoanee != null) {
-            mLoanee = data.mLoanee;
-            isSet = true;
-        }
-
-        return isSet;
-    }
-
-    /**
-     * Only copies the criteria which are set.
-     * Criteria not set in the bundle, are preserved!
-     *
-     * @param bundle     with criteria.
-     * @param clearFirst Flag to force clearing all before loading the new criteria
-     *
-     * @return {@code true} if at least one criteria was set
-     */
-    public boolean from(@NonNull final Bundle bundle,
-                        final boolean clearFirst) {
-        if (clearFirst) {
-            clear();
-        }
-        boolean isSet = false;
-
-        if (bundle.containsKey(Book.BKEY_BOOK_ID_LIST)) {
-            setBookIdList(ParcelUtils.unwrap(bundle, Book.BKEY_BOOK_ID_LIST));
-            isSet = true;
-        }
-        if (bundle.containsKey(DBKey.KEY_TITLE)) {
-            mFtsBookTitle = bundle.getString(DBKey.KEY_TITLE);
-            isSet = true;
-        }
-
-        if (bundle.containsKey(DBKey.KEY_SERIES_TITLE)) {
-            mFtsSeriesTitle = bundle.getString(DBKey.KEY_SERIES_TITLE);
-            isSet = true;
-        }
-
-        if (bundle.containsKey(BKEY_SEARCH_TEXT_AUTHOR)) {
-            mFtsAuthor = bundle.getString(BKEY_SEARCH_TEXT_AUTHOR);
-            isSet = true;
-        }
-
-        if (bundle.containsKey(BKEY_SEARCH_TEXT_PUBLISHER)) {
-            mFtsPublisher = bundle.getString(BKEY_SEARCH_TEXT_PUBLISHER);
-            isSet = true;
-        }
-
-        if (bundle.containsKey(BKEY_SEARCH_TEXT_KEYWORDS)) {
-            setFtsKeywords(bundle.getString(BKEY_SEARCH_TEXT_KEYWORDS));
-            isSet = true;
-        }
-
-        if (bundle.containsKey(DBKey.KEY_LOANEE)) {
-            mLoanee = bundle.getString(DBKey.KEY_LOANEE);
-            isSet = true;
-        }
-
-        return isSet;
-    }
-
-    /**
-     * Put the search criteria as extras in the Intent.
-     *
-     * @param intent which will be used start an Activity
-     */
-    public void to(@NonNull final Intent intent) {
-
-
-        intent.putExtra(Book.BKEY_BOOK_ID_LIST, ParcelUtils.wrap(mBookIdList))
-              .putExtra(DBKey.KEY_TITLE, mFtsBookTitle)
-              .putExtra(DBKey.KEY_SERIES_TITLE, mFtsSeriesTitle)
-              .putExtra(BKEY_SEARCH_TEXT_AUTHOR, mFtsAuthor)
-              .putExtra(BKEY_SEARCH_TEXT_PUBLISHER, mFtsPublisher)
-              .putExtra(BKEY_SEARCH_TEXT_KEYWORDS, mFtsKeywords)
-              .putExtra(DBKey.KEY_LOANEE, mLoanee);
     }
 
     public boolean isEmpty() {

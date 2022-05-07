@@ -245,8 +245,9 @@ public class BooksOnBookshelf
             registerForActivityResult(new AuthorWorksContract(), this::onBookEditFinished);
     /** The local FTS based search. */
     private final ActivityResultLauncher<SearchCriteria> mFtsSearchLauncher =
-            registerForActivityResult(new SearchFtsContract(), data -> {
-                if (mVm.setSearchCriteria(data, true)) {
+            registerForActivityResult(new SearchFtsContract(), criteria -> {
+                if (criteria != null) {
+                    mVm.setSearchCriteria(criteria);
                     mVm.setForceRebuildInOnResume(true);
                 }
             });

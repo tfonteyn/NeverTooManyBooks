@@ -22,13 +22,10 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -43,30 +40,11 @@ public class SearchFtsContract
     private static final String TAG = "SearchFtsContract";
 
     @NonNull
-    public static Intent createResultIntent(@NonNull final ArrayList<Long> bookIdList,
-                                            @Nullable final String titleSearchText,
-                                            @Nullable final String seriesTitleSearchText,
-                                            @Nullable final String authorSearchText,
-                                            @Nullable final String publisherNameSearchText,
-                                            @Nullable final String keywordsSearchText) {
-        final Parcelable output = new SearchCriteria(bookIdList,
-                                                     titleSearchText,
-                                                     seriesTitleSearchText,
-                                                     authorSearchText,
-                                                     publisherNameSearchText,
-                                                     keywordsSearchText);
-
-        return new Intent().putExtra(SearchCriteria.BKEY, output);
-
-    }
-
-    @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final SearchCriteria criteria) {
         final Intent intent = FragmentHostActivity.createIntent(context, SearchFtsFragment.class);
-        //URGENT: criteria is parcelable... update/remove this workaround
-        criteria.to(intent);
+        intent.putExtra(SearchCriteria.BKEY, criteria);
         return intent;
     }
 
