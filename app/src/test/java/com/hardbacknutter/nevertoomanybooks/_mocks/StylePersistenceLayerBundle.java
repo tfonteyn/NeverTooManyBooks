@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
@@ -68,11 +69,6 @@ public class StylePersistenceLayerBundle
         }
     }
 
-    @Override
-    public boolean getNonGlobalBoolean(@NonNull final String key) {
-        return mBundle.getBoolean(key);
-    }
-
     @Nullable
     @Override
     public Boolean getBoolean(@NonNull final String key) {
@@ -104,26 +100,6 @@ public class StylePersistenceLayerBundle
     }
 
     @Override
-    public void setStringedInt(@NonNull final String key,
-                               @Nullable final Integer value) {
-        if (value == null) {
-            mBundle.remove(key);
-        } else {
-            mBundle.putInt(key, value);
-        }
-    }
-
-    @Nullable
-    @Override
-    public Integer getStringedInt(@NonNull final String key) {
-        if (mBundle.containsKey(key)) {
-            return mBundle.getInt(key);
-        } else {
-            return null;
-        }
-    }
-
-    @Override
     public void setStringedIntList(@NonNull final String key,
                                    @Nullable final List<Integer> value) {
         if (value == null) {
@@ -133,34 +109,16 @@ public class StylePersistenceLayerBundle
         }
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public ArrayList<Integer> getStringedIntList(@NonNull final String key) {
+    public Optional<ArrayList<Integer>> getStringedIntList(@NonNull final String key) {
         if (mBundle.containsKey(key)) {
-            return mBundle.getIntegerArrayList(key);
-        } else {
-            return null;
+            final ArrayList<Integer> list = mBundle.getIntegerArrayList(key);
+            if (list != null) {
+                return Optional.of(list);
+            }
         }
-    }
-
-    @Override
-    public void setIntList(@NonNull final String key,
-                           @Nullable final List<Integer> value) {
-        if (value == null) {
-            mBundle.remove(key);
-        } else {
-            mBundle.putIntegerArrayList(key, new ArrayList<>(value));
-        }
-    }
-
-    @Nullable
-    @Override
-    public ArrayList<Integer> getIntList(@NonNull final String key) {
-        if (mBundle.containsKey(key)) {
-            return mBundle.getIntegerArrayList(key);
-        } else {
-            return null;
-        }
+        return Optional.empty();
     }
 
     @Override

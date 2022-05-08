@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -53,9 +54,9 @@ public class StyleSharedPreferences
     private static final String PK_STYLE_UUID = "style.booklist.uuid";
 
     @NonNull
-    private final SharedPreferences mGlobalPrefs;
+    private final SharedPreferences globalPrefs;
     @NonNull
-    private final SharedPreferences mStylePrefs;
+    private final SharedPreferences stylePrefs;
 
     /**
      * Constructor.
@@ -69,33 +70,33 @@ public class StyleSharedPreferences
                            @NonNull final String uuid,
                            final boolean isPersistent) {
 
-        mGlobalPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        globalPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         if (uuid.isEmpty()) {
             // Doing this here is much easier then doing it each time access is needed.
             // The downside is that when the global settings are accessed,
             // and the desired setting is not preset, a *second* and useless read is done.
-            mStylePrefs = mGlobalPrefs;
+            stylePrefs = globalPrefs;
 
         } else {
-            mStylePrefs = context.getSharedPreferences(uuid, Context.MODE_PRIVATE);
-            if (isPersistent && !mStylePrefs.contains(PK_STYLE_UUID)) {
+            stylePrefs = context.getSharedPreferences(uuid, Context.MODE_PRIVATE);
+            if (isPersistent && !stylePrefs.contains(PK_STYLE_UUID)) {
                 // Storing the uuid is not actually needed but handy to have for debug
-                mStylePrefs.edit().putString(PK_STYLE_UUID, uuid).apply();
+                stylePrefs.edit().putString(PK_STYLE_UUID, uuid).apply();
             }
         }
 
         // remove obsolete entries; no attempt is made to preserve the setting
-        mStylePrefs.edit()
-                   .remove("style.booklist.preferred")
-                   .remove("style.booklist.filter.read")
-                   .remove("style.booklist.filter.signed")
-                   .remove("style.booklist.filter.anthology")
-                   .remove("style.booklist.filter.lending")
-                   .remove("style.booklist.filter.isbn")
-                   .remove("style.booklist.filter.editions")
-                   .remove("style.booklist.filter.bookshelves")
-                   .apply();
+        stylePrefs.edit()
+                  .remove("style.booklist.preferred")
+                  .remove("style.booklist.filter.read")
+                  .remove("style.booklist.filter.signed")
+                  .remove("style.booklist.filter.anthology")
+                  .remove("style.booklist.filter.lending")
+                  .remove("style.booklist.filter.isbn")
+                  .remove("style.booklist.filter.editions")
+                  .remove("style.booklist.filter.bookshelves")
+                  .apply();
     }
 
     public static int getBitmaskPref(@NonNull final SharedPreferences preferences,
@@ -138,22 +139,6 @@ public class StyleSharedPreferences
         return bitmask;
     }
 
-    @NonNull
-    private static ArrayList<Integer> getStringSetAsIntList(@NonNull final Set<String> stringSet) {
-        try {
-            return stringSet.stream()
-                            .map(Integer::parseInt)
-                            .collect(Collectors.toCollection(ArrayList::new));
-        } catch (@NonNull final NumberFormatException e) {
-            // should not happen unless we had a bug while previously writing the pref.
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "values=`" + stringSet + '`', e);
-            }
-            // in which case we bail out gracefully
-            return new ArrayList<>();
-        }
-    }
-
     /**
      * Split a CSV String into a List.
      *
@@ -180,50 +165,45 @@ public class StyleSharedPreferences
 
     @Override
     public void remove(@NonNull final String key) {
-        mStylePrefs.edit().remove(key).apply();
+        stylePrefs.edit().remove(key).apply();
     }
 
     @Override
     public void setString(@NonNull final String key,
                           @Nullable final String value) {
         if (value == null) {
-            mStylePrefs.edit().remove(key).apply();
+            stylePrefs.edit().remove(key).apply();
         } else {
-            mStylePrefs.edit().putString(key, value).apply();
+            stylePrefs.edit().putString(key, value).apply();
         }
     }
 
     @Override
     @Nullable
     public String getNonGlobalString(@NonNull final String key) {
-        return mStylePrefs.getString(key, null);
+        return stylePrefs.getString(key, null);
     }
 
     @Override
     @Nullable
     public String getString(@NonNull final String key) {
 
-        final String value = mStylePrefs.getString(key, null);
+        final String value = stylePrefs.getString(key, null);
         if (value != null && !value.isEmpty()) {
             return value;
         }
 
-        return mGlobalPrefs.getString(key, null);
+        return globalPrefs.getString(key, null);
     }
 
     @Override
     public void setBoolean(@NonNull final String key,
                            @Nullable final Boolean value) {
         if (value == null) {
-            mStylePrefs.edit().remove(key).apply();
+            stylePrefs.edit().remove(key).apply();
         } else {
-            mStylePrefs.edit().putBoolean(key, value).apply();
+            stylePrefs.edit().putBoolean(key, value).apply();
         }
-    }
-
-    @Override
-    public boolean getNonGlobalBoolean(@NonNull final String key) {
-        return mStylePrefs.getBoolean(key, false);
     }
 
     @Override
@@ -231,12 +211,12 @@ public class StyleSharedPreferences
     public Boolean getBoolean(@NonNull final String key) {
         // reminder: it's a primitive so we must test on contains first
 
-        if (mStylePrefs.contains(key)) {
-            return mStylePrefs.getBoolean(key, false);
+        if (stylePrefs.contains(key)) {
+            return stylePrefs.getBoolean(key, false);
         }
 
-        if (mGlobalPrefs.contains(key)) {
-            return mGlobalPrefs.getBoolean(key, false);
+        if (globalPrefs.contains(key)) {
+            return globalPrefs.getBoolean(key, false);
         }
 
         return null;
@@ -246,9 +226,9 @@ public class StyleSharedPreferences
     public void setInt(@NonNull final String key,
                        @Nullable final Integer value) {
         if (value == null) {
-            mStylePrefs.edit().remove(key).apply();
+            stylePrefs.edit().remove(key).apply();
         } else {
-            mStylePrefs.edit().putInt(key, value).apply();
+            stylePrefs.edit().putInt(key, value).apply();
         }
     }
 
@@ -257,12 +237,12 @@ public class StyleSharedPreferences
     public Integer getInteger(@NonNull final String key) {
         // reminder: it's a primitive so we must test on contains first
 
-        if (mStylePrefs.contains(key)) {
-            return mStylePrefs.getInt(key, 0);
+        if (stylePrefs.contains(key)) {
+            return stylePrefs.getInt(key, 0);
         }
 
-        if (mGlobalPrefs.contains(key)) {
-            return mGlobalPrefs.getInt(key, 0);
+        if (globalPrefs.contains(key)) {
+            return globalPrefs.getInt(key, 0);
         }
 
         return null;
@@ -272,7 +252,7 @@ public class StyleSharedPreferences
     public void setBitmask(@NonNull final String key,
                            @Nullable final Integer value) {
         if (value == null) {
-            mStylePrefs.edit().remove(key).apply();
+            stylePrefs.edit().remove(key).apply();
         } else {
             if (value < 0) {
                 throw new IllegalArgumentException(Integer.toBinaryString(value));
@@ -289,7 +269,7 @@ public class StyleSharedPreferences
                 // unsigned shift
                 tmp = tmp >>> 1;
             }
-            mStylePrefs.edit().putStringSet(key, stringSet).apply();
+            stylePrefs.edit().putStringSet(key, stringSet).apply();
         }
     }
 
@@ -298,42 +278,16 @@ public class StyleSharedPreferences
     public Integer getBitmask(@NonNull final String key) {
         // an empty set is a valid result
 
-        Set<String> stringSet = mStylePrefs.getStringSet(key, null);
+        Set<String> stringSet = stylePrefs.getStringSet(key, null);
         if (stringSet != null) {
             return getStringSetAsBitmask(stringSet);
         }
 
-        stringSet = mGlobalPrefs.getStringSet(key, null);
+        stringSet = globalPrefs.getStringSet(key, null);
         if (stringSet != null) {
             return getStringSetAsBitmask(stringSet);
         }
 
-        return null;
-    }
-
-    @Override
-    public void setStringedInt(@NonNull final String key,
-                               @Nullable final Integer value) {
-        if (value == null) {
-            mStylePrefs.edit().remove(key).apply();
-        } else {
-            mStylePrefs.edit().putString(key, String.valueOf(value)).apply();
-        }
-    }
-
-    @Override
-    @Nullable
-    public Integer getStringedInt(@NonNull final String key) {
-        // reminder: {@link androidx.preference.ListPreference} is stored as a String
-        String value = mStylePrefs.getString(key, null);
-        if (value != null && !value.isEmpty()) {
-            return Integer.parseInt(value);
-        }
-
-        value = mGlobalPrefs.getString(key, null);
-        if (value != null && !value.isEmpty()) {
-            return Integer.parseInt(value);
-        }
         return null;
     }
 
@@ -341,58 +295,28 @@ public class StyleSharedPreferences
     public void setStringedIntList(@NonNull final String key,
                                    @Nullable final List<Integer> value) {
         if (value == null || value.isEmpty()) {
-            mStylePrefs.edit().remove(key).apply();
+            stylePrefs.edit().remove(key).apply();
         } else {
-            mStylePrefs.edit()
-                       .putString(key, TextUtils.join(PIntList.DELIM, value))
-                       .apply();
+            stylePrefs.edit()
+                      .putString(key, TextUtils.join(PIntList.DELIM, value))
+                      .apply();
         }
     }
 
     @Override
-    @Nullable
-    public ArrayList<Integer> getStringedIntList(@NonNull final String key) {
-        String csvString = mStylePrefs.getString(key, null);
+    @NonNull
+    public Optional<ArrayList<Integer>> getStringedIntList(@NonNull final String key) {
+        // an empty list is a valid result
+
+        String csvString = stylePrefs.getString(key, null);
         if (csvString != null && !csvString.isEmpty()) {
-            return getIntListFromCsv(csvString);
+            return Optional.of(getIntListFromCsv(csvString));
         }
 
-        csvString = mGlobalPrefs.getString(key, null);
+        csvString = globalPrefs.getString(key, null);
         if (csvString != null && !csvString.isEmpty()) {
-            return getIntListFromCsv(csvString);
+            return Optional.of(getIntListFromCsv(csvString));
         }
-        return null;
-    }
-
-    @Override
-    public void setIntList(@NonNull final String key,
-                           @Nullable final List<Integer> value) {
-        if (value == null) {
-            mStylePrefs.edit().remove(key).apply();
-        } else {
-            mStylePrefs.edit()
-                       .putStringSet(key, value.stream()
-                                               .map(String::valueOf)
-                                               .collect(Collectors.toSet()))
-                       .apply();
-        }
-    }
-
-    @Override
-    @Nullable
-    public ArrayList<Integer> getIntList(@NonNull final String key) {
-        // an empty set is a valid result
-
-        Set<String> stringSet = mStylePrefs.getStringSet(key, null);
-        if (stringSet != null) {
-            return getStringSetAsIntList(stringSet);
-        }
-
-        stringSet = mGlobalPrefs.getStringSet(key, null);
-        if (stringSet != null) {
-            return getStringSetAsIntList(stringSet);
-        }
-
-        return null;
+        return Optional.empty();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public interface StylePersistenceLayer {
 
@@ -87,18 +88,6 @@ public interface StylePersistenceLayer {
      *
      * @return <ol>
      * <li>The user preference if set</li>
-     * <li>{@code false}</li>
-     * </ol>
-     */
-    boolean getNonGlobalBoolean(@NonNull String key);
-
-    /**
-     * Get a Boolean value for the given key.
-     *
-     * @param key preference key
-     *
-     * @return <ol>
-     * <li>The user preference if set</li>
      * <li>The global preference if set</li>
      * <li>{@code null}</li>
      * </ol>
@@ -154,30 +143,6 @@ public interface StylePersistenceLayer {
     @Nullable
     Integer getBitmask(@NonNull String key);
 
-
-    /**
-     * Set or remove the single Integer value, which is <strong>stored as a String</strong>.
-     *
-     * @param key   preference key
-     * @param value to set
-     */
-    void setStringedInt(@NonNull String key,
-                        @Nullable Integer value);
-
-    /**
-     * Get a single Integer value, which is <strong>stored as a String</strong>.
-     *
-     * @param key preference key
-     *
-     * @return <ol>
-     * <li>The user preference if set</li>
-     * <li>The global preference if set</li>
-     * <li>{@code null}</li>
-     * </ol>
-     */
-    @Nullable
-    Integer getStringedInt(@NonNull String key);
-
     /**
      * Set or remove a list of Integer values, which are <strong>stored as a CSV String</strong>.
      *
@@ -198,29 +163,6 @@ public interface StylePersistenceLayer {
      * <li>{@code null}</li>
      * </ol>
      */
-    @Nullable
-    ArrayList<Integer> getStringedIntList(@NonNull String key);
-
-    /**
-     * Set or remove a list of Integer values, which are <strong>stored as a StringSet</strong>.
-     *
-     * @param key   preference key
-     * @param value to set
-     */
-    void setIntList(@NonNull String key,
-                    @Nullable List<Integer> value);
-
-    /**
-     * Get a list of Integer values, which are <strong>stored as a StringSet</strong>.
-     *
-     * @param key preference key
-     *
-     * @return <ol>
-     * <li>The user preference if set</li>
-     * <li>The global preference if set</li>
-     * <li>{@code null}</li>
-     * </ol>
-     */
-    @Nullable
-    ArrayList<Integer> getIntList(@NonNull String key);
+    @NonNull
+    Optional<ArrayList<Integer>> getStringedIntList(@NonNull String key);
 }
