@@ -29,6 +29,7 @@ import androidx.lifecycle.ViewModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -42,23 +43,23 @@ public class TocViewModel
 
     /** The list of TOC entries we're displaying. */
     @NonNull
-    private final List<AuthorWork> mList = new ArrayList<>();
+    private final List<AuthorWork> works = new ArrayList<>();
 
     @Nullable
-    private String mBookTitle;
+    private String bookTitle;
 
     @Nullable
     private String authors;
 
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args) {
-        if (mList.isEmpty()) {
+        if (works.isEmpty()) {
             final ArrayList<TocEntry> tocList = args.getParcelableArrayList(Book.BKEY_TOC_LIST);
             Objects.requireNonNull(tocList, Book.BKEY_TOC_LIST);
-            mList.addAll(tocList);
+            works.addAll(tocList);
 
             // optional, display purpose only
-            mBookTitle = args.getString(DBKey.KEY_TITLE);
+            bookTitle = args.getString(DBKey.KEY_TITLE);
             // optional, display purpose only
             final List<Author> authorList = args.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
             if (authorList != null) {
@@ -72,22 +73,30 @@ public class TocViewModel
     }
 
     public void reload(@NonNull final List<TocEntry> tocList) {
-        mList.clear();
-        mList.addAll(tocList);
+        works.clear();
+        works.addAll(tocList);
     }
 
     @NonNull
-    public List<AuthorWork> getList() {
-        return mList;
+    public List<AuthorWork> getWorks() {
+        return works;
     }
 
-    @Nullable
-    public String getAuthors() {
-        return authors;
+    @NonNull
+    public Optional<String> getAuthors() {
+        if (authors != null && !authors.isEmpty()) {
+            return Optional.of(authors);
+        } else {
+            return Optional.empty();
+        }
     }
 
-    @Nullable
-    public String getBookTitle() {
-        return mBookTitle;
+    @NonNull
+    public Optional<String> getBookTitle() {
+        if (bookTitle != null && !bookTitle.isEmpty()) {
+            return Optional.of(bookTitle);
+        } else {
+            return Optional.empty();
+        }
     }
 }

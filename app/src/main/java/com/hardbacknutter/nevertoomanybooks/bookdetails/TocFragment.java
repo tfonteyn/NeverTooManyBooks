@@ -61,12 +61,12 @@ public class TocFragment
     public static final String TAG = "TocFragment";
 
     /** View Binding. */
-    private FragmentTocBinding mVb;
+    private FragmentTocBinding vb;
 
-    private TocViewModel mVm;
+    private TocViewModel vm;
 
     /** The Adapter. */
-    private TocAdapter mAdapter;
+    private TocAdapter adapter;
 
     /**
      * In embedded mode, we just need/display the list itself.
@@ -109,9 +109,9 @@ public class TocFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mVm = new ViewModelProvider(this).get(TocViewModel.class);
+        vm = new ViewModelProvider(this).get(TocViewModel.class);
         //noinspection ConstantConditions
-        mVm.init(getContext(), requireArguments());
+        vm.init(getContext(), requireArguments());
     }
 
     @Override
@@ -119,8 +119,8 @@ public class TocFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentTocBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentTocBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @CallSuper
@@ -130,36 +130,30 @@ public class TocFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Toolbar toolbar = getToolbar();
         final Context context = getContext();
 
         //noinspection ConstantConditions
-        mVb.toc.addItemDecoration(
+        vb.toc.addItemDecoration(
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         final int overlayType = Prefs.getFastScrollerOverlayType(global);
-        FastScroller.attach(mVb.toc, overlayType);
+        FastScroller.attach(vb.toc, overlayType);
 
-        mAdapter = new TocAdapter(context, mVm.getList());
-        mVb.toc.setAdapter(mAdapter);
-        mVb.toc.setHasFixedSize(true);
+        adapter = new TocAdapter(context, vm.getWorks());
+        vb.toc.setAdapter(adapter);
+        vb.toc.setHasFixedSize(true);
 
         // Author/Book-title are only present when this fragment is full-screen
-        final String authors = mVm.getAuthors();
-        if (authors != null) {
-            toolbar.setTitle(authors);
-        }
-        final String bookTitle = mVm.getBookTitle();
-        if (bookTitle != null) {
-            toolbar.setSubtitle(bookTitle);
-        }
+        final Toolbar toolbar = getToolbar();
+        vm.getAuthors().ifPresent(toolbar::setTitle);
+        vm.getBookTitle().ifPresent(toolbar::setSubtitle);
     }
 
     @SuppressLint("NotifyDataSetChanged")
     public void reload(@NonNull final List<TocEntry> tocList) {
-        mVm.reload(tocList);
-        mAdapter.notifyDataSetChanged();
+        vm.reload(tocList);
+        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -219,8 +213,8 @@ public class TocFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final RowTocEntryBinding vb = RowTocEntryBinding.inflate(mInflater, parent, false);
-            final Holder holder = new Holder(vb);
+            final RowTocEntryBinding hVb = RowTocEntryBinding.inflate(mInflater, parent, false);
+            final Holder holder = new Holder(hVb);
             initTypeButton(holder, viewType);
 
             return holder;
