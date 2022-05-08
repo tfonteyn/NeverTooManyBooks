@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -119,14 +120,11 @@ public abstract class EditStringBaseDialogFragment
             return false;
         });
 
-        final List<String> objects = getList();
-        if (objects != null) {
-            //noinspection ConstantConditions
-            final ExtArrayAdapter<String> adapter = new ExtArrayAdapter<>(
-                    getContext(), R.layout.popup_dropdown_menu_item,
-                    ExtArrayAdapter.FilterType.Diacritic, objects);
-            mVb.editString.setAdapter(adapter);
-        }
+        //noinspection ConstantConditions
+        final ExtArrayAdapter<String> adapter = new ExtArrayAdapter<>(
+                getContext(), R.layout.popup_dropdown_menu_item,
+                ExtArrayAdapter.FilterType.Diacritic, getList());
+        mVb.editString.setAdapter(adapter);
 
         mVb.editString.requestFocus();
     }
@@ -145,11 +143,11 @@ public abstract class EditStringBaseDialogFragment
     /**
      * Get the (optional) list of strings for the auto-complete.
      *
-     * @return list, or {@code null} if there is none
+     * @return list
      */
-    @Nullable
+    @NonNull
     protected List<String> getList() {
-        return null;
+        return new ArrayList<>();
     }
 
     private boolean saveChanges() {
