@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
@@ -516,8 +517,8 @@ public class BooksOnBookshelfViewModel
     }
 
 
-    @Nullable
-    BooklistNode getNextBookWithoutCover(final long rowId) {
+    @NonNull
+    Optional<BooklistNode> getNextBookWithoutCover(final long rowId) {
         Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
         return mBooklist.getNextBookWithoutCover(rowId);
     }
