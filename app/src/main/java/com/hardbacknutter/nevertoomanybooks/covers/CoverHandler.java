@@ -59,6 +59,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -203,9 +204,9 @@ public class CoverHandler {
 
     public void onBindView(@NonNull final ImageView view) {
         // dev warning: in NO circumstances keep a reference to the view!
-        final File file = mBookSupplier.get().getCoverFile(mCIdx);
-        if (file != null) {
-            mImageLoader.fromFile(view, file, null);
+        final Optional<File> file = mBookSupplier.get().getCoverFile(mCIdx);
+        if (file.isPresent()) {
+            mImageLoader.fromFile(view, file.get(), null);
             view.setBackground(null);
         } else {
             mImageLoader.placeholder(view, R.drawable.ic_baseline_add_a_photo_24);
@@ -218,10 +219,9 @@ public class CoverHandler {
         // dev warning: in NO circumstances keep a reference to the view!
         view.setOnClickListener(v -> {
             // Allow zooming by clicking on the image;
-            final File file = mBookSupplier.get().getCoverFile(mCIdx);
-            if (file != null) {
-                ZoomedImageDialogFragment.launch(fm, file);
-            }
+            mBookSupplier.get()
+                         .getCoverFile(mCIdx).
+                         ifPresent(file -> ZoomedImageDialogFragment.launch(fm, file));
         });
 
         view.setOnLongClickListener(this::onCreateContextMenu);
@@ -239,13 +239,13 @@ public class CoverHandler {
         final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
                 .inflate(R.menu.image);
 
-        final File uuidCoverFile = mBookSupplier.get().getCoverFile(mCIdx);
-        if (uuidCoverFile != null) {
+        final Optional<File> uuidCoverFile = mBookSupplier.get().getCoverFile(mCIdx);
+        if (uuidCoverFile.isPresent()) {
             if (BuildConfig.DEBUG /* always */) {
                 // show the size of the image in the title bar
                 final BitmapFactory.Options opts = new BitmapFactory.Options();
                 opts.inJustDecodeBounds = true;
-                BitmapFactory.decodeFile(uuidCoverFile.getAbsolutePath(), opts);
+                BitmapFactory.decodeFile(uuidCoverFile.get().getAbsolutePath(), opts);
             }
         } else {
             // there is no current image; only show the replace menu

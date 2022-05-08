@@ -198,8 +198,8 @@ public abstract class SearchEngineBase
 
         final File tmpFile = mImageDownloader.getTempFile(getConfig().getFilenameSuffix(),
                                                           bookId, cIdx, size);
-        final File file = mImageDownloader.fetch(url, tmpFile);
-
-        return file != null ? file.getAbsolutePath() : null;
+        return mImageDownloader.fetch(url, tmpFile)
+                               .map(File::getAbsolutePath)
+                               .orElse(null);
     }
 }

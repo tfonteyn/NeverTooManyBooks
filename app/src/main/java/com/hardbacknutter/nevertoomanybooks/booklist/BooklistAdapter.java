@@ -54,6 +54,7 @@ import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -417,7 +418,7 @@ public class BooklistAdapter
      *                   the user-locale will be used.
      *
      * @return Formatted string,
-     * or original string when no special format was needed or on any failure
+     *         or original string when no special format was needed or on any failure
      */
     @SuppressLint("SwitchIntDef")
     @NonNull
@@ -1009,11 +1010,10 @@ public class BooklistAdapter
          */
         private void onZoomCover(@NonNull final View coverView) {
             final String uuid = (String) coverView.getTag(R.id.TAG_THUMBNAIL_UUID);
-            final File file = Book.getPersistedCoverFile(uuid, 0);
-            if (file != null && file.exists()) {
+            Book.getPersistedCoverFile(uuid, 0).ifPresent(file -> {
                 final FragmentActivity activity = (FragmentActivity) coverView.getContext();
                 ZoomedImageDialogFragment.launch(activity.getSupportFragmentManager(), file);
-            }
+            });
         }
 
         @Override
@@ -1196,9 +1196,10 @@ public class BooklistAdapter
             }
 
             // 2. Cache did not have it, or we were not allowed to check.
-            final File file = Book.getPersistedCoverFile(uuid, 0);
+            final Optional<File> file = Book.getPersistedCoverFile(uuid, 0);
             // Check if the file exists; if it does not...
-            if (file == null || !file.exists()) {
+            //noinspection SimplifyOptionalCallChains
+            if (!file.isPresent()) {
                 // leave the space blank, but preserve the width BASED on the mMaxHeight!
                 final ViewGroup.LayoutParams lp = mCoverView.getLayoutParams();
                 lp.width = (int) (mCoverLongestSide * HW_RATIO);
@@ -1213,7 +1214,7 @@ public class BooklistAdapter
                 // 1. Gets the image from the file system and display it.
                 // 2. Start a subsequent task to send it to the cache.
                 //noinspection ConstantConditions
-                mImageLoader.fromFile(mCoverView, file, bitmap -> {
+                mImageLoader.fromFile(mCoverView, file.get(), bitmap -> {
                     if (bitmap != null) {
                         ServiceLocator.getInstance().getCoverCacheDao().saveCover(
                                 uuid, 0, bitmap, mCoverLongestSide, mCoverLongestSide);
@@ -1222,7 +1223,7 @@ public class BooklistAdapter
             } else {
                 // Cache not used: Get the image from the file system and display it.
                 //noinspection ConstantConditions
-                mImageLoader.fromFile(mCoverView, file, null);
+                mImageLoader.fromFile(mCoverView, file.get(), null);
             }
         }
     }

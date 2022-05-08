@@ -1121,9 +1121,9 @@ public class CalibreContentServer
     }
 
     @WorkerThread
-    @Nullable
-    public File getCover(final int calibreId,
-                         @NonNull final String coverUrl)
+    @NonNull
+    public Optional<File> getCover(final int calibreId,
+                                   @NonNull final String coverUrl)
             throws StorageException {
 
         synchronized (this) {

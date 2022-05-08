@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -584,8 +585,8 @@ public class Booklist
         }
     }
 
-    @Nullable
-    public BooklistNode getNextBookWithoutCover(final long rowId) {
+    @NonNull
+    public Optional<BooklistNode> getNextBookWithoutCover(final long rowId) {
 
         if (mSqlGetNextBookWithoutCover == null) {
             mSqlGetNextBookWithoutCover =
@@ -604,18 +605,18 @@ public class Booklist
             while (cursor.moveToNext()) {
                 final int nextCol = node.from(cursor);
                 final String uuid = cursor.getString(nextCol);
-                final File file = Book.getPersistedCoverFile(uuid, 0);
-                if (file == null || !file.exists()) {
+                final Optional<File> file = Book.getPersistedCoverFile(uuid, 0);
+                if (file.isPresent()) {
                     // FIRST make the node visible
                     ensureNodeIsVisible(node);
                     // only now calculate the list position
                     node.updateAdapterPosition(mDb, mListTable);
-                    return node;
+                    return Optional.of(node);
                 }
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 
     /**

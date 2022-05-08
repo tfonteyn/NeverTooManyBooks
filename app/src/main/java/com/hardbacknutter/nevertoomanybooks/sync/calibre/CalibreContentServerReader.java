@@ -660,7 +660,7 @@ public class CalibreContentServerReader
             if (!calibreBook.isNull(CalibreBook.COVER)) {
                 final String coverUrl = calibreBook.optString(CalibreBook.COVER);
                 if (!coverUrl.isEmpty()) {
-                    final File file = mServer.getCover(calibreBookId, coverUrl);
+                    final File file = mServer.getCover(calibreBookId, coverUrl).orElse(null);
                     try {
                         localBook.setCover(0, file);
                     } catch (@NonNull final IOException ignore) {

@@ -169,24 +169,22 @@ public class CoverCacheDaoImpl
                            final int maxWidth,
                            final int maxHeight) {
         try {
-            final File file = Book.getPersistedCoverFile(uuid, cIdx);
-            if (file != null) {
-                final long lm = file.lastModified();
-                if (lm > 0) {
-                    final String fileLastModified =
-                            Instant.ofEpochMilli(lm)
-                                   .atZone(ZoneOffset.UTC)
-                                   .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            final long lm = Book.getPersistedCoverFile(uuid, cIdx).map(File::lastModified)
+                                .orElse(0L);
+            if (lm > 0) {
+                final String fileLastModified =
+                        Instant.ofEpochMilli(lm)
+                               .atZone(ZoneOffset.UTC)
+                               .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
-                    final String cacheId = constructCacheId(uuid, cIdx, maxWidth, maxHeight);
+                final String cacheId = constructCacheId(uuid, cIdx, maxWidth, maxHeight);
 
-                    try (Cursor cursor = mDb.rawQuery(
-                            SQL_GET_IMAGE, new String[]{cacheId, fileLastModified})) {
-                        if (cursor.moveToFirst()) {
-                            final byte[] bytes = cursor.getBlob(0);
-                            if (bytes != null) {
-                                return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                            }
+                try (Cursor cursor = mDb.rawQuery(
+                        SQL_GET_IMAGE, new String[]{cacheId, fileLastModified})) {
+                    if (cursor.moveToFirst()) {
+                        final byte[] bytes = cursor.getBlob(0);
+                        if (bytes != null) {
+                            return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         }
                     }
                 }

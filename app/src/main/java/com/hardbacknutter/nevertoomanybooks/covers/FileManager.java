@@ -243,8 +243,7 @@ public class FileManager {
               .stream()
               .filter(Objects::nonNull)
               .map(ImageFileInfo::getFile)
-              .filter(Objects::nonNull)
-              .forEach(FileUtils::delete);
+              .forEach(file -> file.ifPresent(FileUtils::delete));
 
         // not strictly needed, but future-proof
         mFiles.clear();

@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -104,10 +105,10 @@ public class ImageDownloader {
      *
      * @throws StorageException The covers directory is not available
      */
-    @Nullable
+    @NonNull
     @WorkerThread
-    public File fetch(@NonNull final String url,
-                      @NonNull final File destination)
+    public Optional<File> fetch(@NonNull final String url,
+                                @NonNull final File destination)
             throws StorageException {
         @Nullable
         final File savedFile;
@@ -137,9 +138,9 @@ public class ImageDownloader {
             // too small ? reject
             // too big: N/A as we assume a picture from a website is already a good size
             if (ImageUtils.isAcceptableSize(savedFile)) {
-                return savedFile;
+                return Optional.of(savedFile);
             }
-            return null;
+            return Optional.empty();
 
         } catch (@NonNull final IOException e) {
             FileUtils.delete(destination);
@@ -151,7 +152,7 @@ public class ImageDownloader {
                 // FileUtils.copyInputStream operation will fail.
                 // As that is independent from the JUnit test/purpose, we fake success here.
                 if (TestFlags.isJUnit) {
-                    return destination;
+                    return Optional.of(destination);
                 }
             }
 
@@ -160,7 +161,7 @@ public class ImageDownloader {
                 //noinspection ConstantConditions
                 throw new DiskFullException(e.getCause());
             }
-            return null;
+            return Optional.empty();
         }
     }
 

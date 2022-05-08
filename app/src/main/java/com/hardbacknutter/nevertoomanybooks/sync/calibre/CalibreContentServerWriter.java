@@ -338,15 +338,16 @@ public class CalibreContentServerWriter
         }
 
         if (mDoCovers) {
-            final File coverFile = localBook.getCoverFile(0);
-            if (coverFile != null) {
-                final byte[] bFile = new byte[(int) coverFile.length()];
-                try (FileInputStream is = new FileInputStream(coverFile)) {
+            final Optional<File> coverFile = localBook.getCoverFile(0);
+            if (coverFile.isPresent()) {
+                final File file = coverFile.get();
+                final byte[] bFile = new byte[(int) file.length()];
+                try (FileInputStream is = new FileInputStream(file)) {
                     //noinspection ResultOfMethodCallIgnored
                     is.read(bFile);
                 }
                 changes.put(CalibreBook.COVER, Base64.encodeToString(bFile, 0));
-                mResults.addCover(coverFile);
+                mResults.addCover(file);
 
             } else {
                 changes.put(CalibreBook.COVER, "");

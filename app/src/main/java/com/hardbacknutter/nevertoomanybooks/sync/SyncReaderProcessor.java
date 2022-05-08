@@ -39,6 +39,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -159,15 +160,17 @@ public final class SyncReaderProcessor
                             // If it's a cover...
                             if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
                                 // check if it's missing or empty.
-                                final File file = book.getPersistedCoverFile(0);
-                                if (file == null || file.length() == 0) {
+                                final Optional<File> file = book.getPersistedCoverFile(0);
+                                //noinspection SimplifyOptionalCallChains
+                                if (!file.isPresent()) {
                                     filteredMap.put(field.key, field);
                                 }
 
                             } else if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[1])) {
                                 // check if it's missing or empty.
-                                final File file = book.getPersistedCoverFile(1);
-                                if (file == null || file.length() == 0) {
+                                final Optional<File> file = book.getPersistedCoverFile(1);
+                                //noinspection SimplifyOptionalCallChains
+                                if (!file.isPresent()) {
                                     filteredMap.put(field.key, field);
                                 }
 

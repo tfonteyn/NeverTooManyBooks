@@ -252,11 +252,11 @@ public class Book
      * @param uuid UUID of the book
      * @param cIdx 0..n image index
      *
-     * @return The File object for existing files, or {@code null}
+     * @return file
      */
-    @Nullable
-    public static File getPersistedCoverFile(@NonNull final String uuid,
-                                             @IntRange(from = 0, to = 1) final int cIdx) {
+    @NonNull
+    public static Optional<File> getPersistedCoverFile(@NonNull final String uuid,
+                                                       @IntRange(from = 0, to = 1) final int cIdx) {
         final File coverDir;
         try {
             coverDir = CoverDir.getDir(ServiceLocator.getAppContext());
@@ -264,7 +264,7 @@ public class Book
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "getPersistedCoverFile", e);
             }
-            return null;
+            return Optional.empty();
         }
 
         final String name;
@@ -276,15 +276,15 @@ public class Book
 
         final File jpg = new File(coverDir, name + ".jpg");
         if (jpg.exists()) {
-            return jpg;
+            return Optional.of(jpg);
         }
         // could be a png
         final File png = new File(coverDir, name + ".png");
         if (png.exists()) {
-            return png;
+            return Optional.of(png);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -727,12 +727,12 @@ public class Book
      *
      * @param cIdx 0..n image index
      *
-     * @return The File object for existing files, or {@code null}
+     * @return file
      *
      * @see #persistCover(File, int)
      */
-    @Nullable
-    public File getPersistedCoverFile(@IntRange(from = 0, to = 1) final int cIdx) {
+    @NonNull
+    public Optional<File> getPersistedCoverFile(@IntRange(from = 0, to = 1) final int cIdx) {
 
         final String uuid = getString(DBKey.KEY_BOOK_UUID);
         return getPersistedCoverFile(uuid, cIdx);
@@ -745,10 +745,10 @@ public class Book
      *
      * @param cIdx 0..n image index
      *
-     * @return a guaranteed existing File, or {@code null}
+     * @return file
      */
-    @Nullable
-    public File getCoverFile(@IntRange(from = 0, to = 1) final int cIdx) {
+    @NonNull
+    public Optional<File> getCoverFile(@IntRange(from = 0, to = 1) final int cIdx) {
 
         File coverFile = null;
 
@@ -779,7 +779,7 @@ public class Book
                     if (BuildConfig.DEBUG /* always */) {
                         Log.d(TAG, "getCoverFile", e);
                     }
-                    return null;
+                    return Optional.empty();
                 }
 
                 // should be / try jpg first
@@ -801,7 +801,11 @@ public class Book
                      new Throwable("getCoverFile")
                     );
         }
-        return coverFile;
+        if (coverFile != null && coverFile.exists()) {
+            return Optional.of(coverFile);
+        } else {
+            return Optional.empty();
+        }
     }
 
     /**
@@ -825,10 +829,10 @@ public class Book
         final File coverFile = new File(CoverDir.getTemp(ServiceLocator.getAppContext()),
                                         System.nanoTime() + ".jpg");
 
-        final File uuidFile = getCoverFile(cIdx);
-        if (uuidFile != null && uuidFile.exists()) {
-            // We have a permanent file, copy it into the temp location
-            FileUtils.copy(uuidFile, coverFile);
+        // If we have a permanent file, copy it into the temp location
+        final Optional<File> uuidFile = getCoverFile(cIdx);
+        if (uuidFile.isPresent()) {
+            FileUtils.copy(uuidFile.get(), coverFile);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
@@ -836,8 +840,7 @@ public class Book
                           + "|cIdx=" + cIdx
                           + "|exists=" + coverFile.exists()
                           + "|file=" + coverFile.getAbsolutePath(),
-                     new Throwable("createTempCoverFile")
-                    );
+                     new Throwable("createTempCoverFile"));
         }
         return coverFile;
     }
@@ -943,7 +946,7 @@ public class Book
                             );
                 }
 
-                FileUtils.delete(getPersistedCoverFile(cIdx));
+                getPersistedCoverFile(cIdx).ifPresent(FileUtils::delete);
                 if (ImageUtils.isImageCachingEnabled()) {
                     // We delete *all* files related to this book from the cache.
                     ServiceLocator.getInstance().getCoverCacheDao().delete(uuid);

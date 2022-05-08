@@ -26,7 +26,6 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.time.LocalDateTime;
@@ -114,10 +113,7 @@ public class CsvRecordWriter
 
                         if (collectCoverFilenames) {
                             for (int cIdx = 0; cIdx < 2; cIdx++) {
-                                final File coverFile = book.getPersistedCoverFile(cIdx);
-                                if (coverFile != null && coverFile.exists()) {
-                                    results.addCover(coverFile);
-                                }
+                                book.getPersistedCoverFile(cIdx).ifPresent(results::addCover);
                             }
                         }
 

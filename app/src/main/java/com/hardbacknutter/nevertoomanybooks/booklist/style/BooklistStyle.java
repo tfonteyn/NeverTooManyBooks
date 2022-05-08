@@ -79,6 +79,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
  *     androidx.preference framework.</li>
  * </ul>
  */
+@SuppressWarnings("OverlyStrongTypeCast")
 public abstract class BooklistStyle
         implements ListStyle {
 
@@ -329,14 +330,9 @@ public abstract class BooklistStyle
      */
     @Override
     public boolean isShowBooksUnderEachSeries() {
-        final SeriesBooklistGroup group = (SeriesBooklistGroup)
-                (getGroups().getGroupById(BooklistGroup.SERIES));
-        if (group != null) {
-            return group.showBooksUnderEach();
-        } else {
-            // return the global default.
-            return SeriesBooklistGroup.showBooksUnderEachDefault();
-        }
+        return getGroups().getGroupById(BooklistGroup.SERIES)
+                          .map(group -> ((SeriesBooklistGroup) group).showBooksUnderEach())
+                          .orElse(SeriesBooklistGroup.showBooksUnderEachDefault());
     }
 
     /**
@@ -347,14 +343,9 @@ public abstract class BooklistStyle
      */
     @Override
     public boolean isShowBooksUnderEachPublisher() {
-        final PublisherBooklistGroup group = (PublisherBooklistGroup)
-                (getGroups().getGroupById(BooklistGroup.PUBLISHER));
-        if (group != null) {
-            return group.showBooksUnderEach();
-        } else {
-            // return the global default.
-            return PublisherBooklistGroup.showBooksUnderEachDefault();
-        }
+        return getGroups().getGroupById(BooklistGroup.PUBLISHER)
+                          .map(group -> ((PublisherBooklistGroup) group).showBooksUnderEach())
+                          .orElse(PublisherBooklistGroup.showBooksUnderEachDefault());
     }
 
     /**
@@ -365,14 +356,9 @@ public abstract class BooklistStyle
      */
     @Override
     public boolean isShowBooksUnderEachBookshelf() {
-        final BookshelfBooklistGroup group = (BookshelfBooklistGroup)
-                (getGroups().getGroupById(BooklistGroup.BOOKSHELF));
-        if (group != null) {
-            return group.showBooksUnderEach();
-        } else {
-            // return the global default.
-            return BookshelfBooklistGroup.showBooksUnderEachDefault();
-        }
+        return getGroups().getGroupById(BooklistGroup.BOOKSHELF)
+                          .map(group -> ((BookshelfBooklistGroup) group).showBooksUnderEach())
+                          .orElse(BookshelfBooklistGroup.showBooksUnderEachDefault());
     }
 
     /**
@@ -383,14 +369,9 @@ public abstract class BooklistStyle
      */
     @Override
     public boolean isShowBooksUnderEachAuthor() {
-        final AuthorBooklistGroup group = (AuthorBooklistGroup)
-                (getGroups().getGroupById(BooklistGroup.AUTHOR));
-        if (group != null) {
-            return group.showBooksUnderEach();
-        } else {
-            // return the global default.
-            return AuthorBooklistGroup.showBooksUnderEachDefault();
-        }
+        return getGroups().getGroupById(BooklistGroup.AUTHOR)
+                          .map(group -> ((AuthorBooklistGroup) group).showBooksUnderEach())
+                          .orElse(AuthorBooklistGroup.showBooksUnderEachDefault());
     }
 
     /**
@@ -401,14 +382,9 @@ public abstract class BooklistStyle
      */
     @Override
     public int getPrimaryAuthorType() {
-        final AuthorBooklistGroup group = (AuthorBooklistGroup)
-                (getGroups().getGroupById(BooklistGroup.AUTHOR));
-        if (group != null) {
-            return group.getPrimaryType();
-        } else {
-            // return the global default.
-            return AuthorBooklistGroup.getPrimaryTypeGlobalDefault();
-        }
+        return getGroups().getGroupById(BooklistGroup.AUTHOR)
+                          .map(group -> ((AuthorBooklistGroup) group).getPrimaryType())
+                          .orElse(AuthorBooklistGroup.getPrimaryTypeGlobalDefault());
     }
 
     @NonNull

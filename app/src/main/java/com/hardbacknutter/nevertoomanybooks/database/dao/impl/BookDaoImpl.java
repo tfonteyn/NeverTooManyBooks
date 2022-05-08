@@ -397,7 +397,7 @@ public class BookDaoImpl
                 if (!uuid.isEmpty()) {
                     // Delete the covers from the file system.
                     for (int cIdx = 0; cIdx < 2; cIdx++) {
-                        FileUtils.delete(Book.getPersistedCoverFile(uuid, cIdx));
+                        Book.getPersistedCoverFile(uuid, cIdx).ifPresent(FileUtils::delete);
                     }
                     // and from the cache. If the user flipped the cache on/off we'll
                     // not always be cleaning up correctly. It's not that important though.

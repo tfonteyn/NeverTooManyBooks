@@ -44,6 +44,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
@@ -251,9 +252,9 @@ public class CoverBrowserDialogFragment
         }
 
         if (editionIndex >= 0) {
-            final File tmpFile = imageFileInfo.getFile();
-            if (tmpFile != null && tmpFile.exists()) {
-                tmpFile.deleteOnExit();
+            final Optional<File> tmpFile = imageFileInfo.getFile();
+            if (tmpFile.isPresent()) {
+                tmpFile.get().deleteOnExit();
                 // Tell the adapter to refresh the entry.
                 // It will get the image from the file-manager.
                 mGalleryAdapter.notifyItemChanged(editionIndex);
@@ -281,13 +282,10 @@ public class CoverBrowserDialogFragment
      * @param imageFileInfo to use
      */
     private void onGalleryImageSelected(@NonNull final ImageFileInfo imageFileInfo) {
-        final File file = imageFileInfo.getFile();
-        // sanity check
-        if (file != null) {
+        imageFileInfo.getFile().ifPresent(file -> {
             if (ImageFileInfo.Size.Large == imageFileInfo.getSize()) {
                 // the gallery image IS a valid large image, so just display it
                 setSelectedImage(imageFileInfo);
-
             } else {
                 mVb.preview.setVisibility(View.INVISIBLE);
                 mVb.previewProgressBar.show();
@@ -295,7 +293,7 @@ public class CoverBrowserDialogFragment
                 // start a task to fetch a larger image
                 mVm.fetchSelectedImage(imageFileInfo);
             }
-        }
+        });
     }
 
     /**
@@ -310,11 +308,11 @@ public class CoverBrowserDialogFragment
         mVb.previewProgressBar.hide();
 
         if (imageFileInfo != null) {
-            final File file = imageFileInfo.getFile();
-            if (file != null && file.exists()) {
-                mPreviewLoader.fromFile(mVb.preview, file, (bitmap) -> {
+            final Optional<File> file = imageFileInfo.getFile();
+            if (file.isPresent()) {
+                mPreviewLoader.fromFile(mVb.preview, file.get(), (bitmap) -> {
                     // Set AFTER it was successfully loaded and displayed for maximum reliability
-                    mVm.setSelectedFile(file);
+                    mVm.setSelectedFile(file.get());
                     mVb.preview.setVisibility(View.VISIBLE);
                     mVb.statusMessage.setText(R.string.txt_tap_on_image_to_select);
                 });
@@ -470,10 +468,10 @@ public class CoverBrowserDialogFragment
 
             } else {
                 // check if it's good
-                final File file = imageFileInfo.getFile();
-                if (file != null && file.exists()) {
+                final Optional<File> file = imageFileInfo.getFile();
+                if (file.isPresent()) {
                     // YES, load it into the view.
-                    mImageLoader.fromFile(holder.vb.coverImage0, file, null);
+                    mImageLoader.fromFile(holder.vb.coverImage0, file.get(), null);
 
                     // keep this statement here, or we would need to call file.exists() twice
                     holder.vb.coverImage0.setOnClickListener(

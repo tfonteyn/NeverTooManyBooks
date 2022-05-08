@@ -391,7 +391,7 @@ public abstract class ArchiveReaderAbstract
      *
      * @param type to get
      *
-     * @return the record if found, or {@code null} if not found.
+     * @return Optional with the record
      *
      * @throws DataReaderException wraps a format specific Exception
      * @throws IOException         on failure

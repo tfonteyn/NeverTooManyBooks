@@ -33,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
@@ -188,11 +189,16 @@ public class Groups
      *
      * @param id to get
      *
-     * @return group, or {@code null} if not present.
+     * @return Optional with the group
      */
-    @Nullable
-    public BooklistGroup getGroupById(@BooklistGroup.Id final int id) {
-        return mGroupMap.get(id);
+    @NonNull
+    public Optional<BooklistGroup> getGroupById(@BooklistGroup.Id final int id) {
+        final BooklistGroup booklistGroup = mGroupMap.get(id);
+        if (booklistGroup != null) {
+            return Optional.of(booklistGroup);
+        } else {
+            return Optional.empty();
+        }
     }
 
     /**
@@ -242,15 +248,10 @@ public class Groups
     @Override
     public ArrayList<Integer> getValue() {
         if (mPersisted) {
-            final ArrayList<Integer> value = mStyle.getPersistenceLayer().getStringedIntList(mKey);
-            if (value != null) {
-                return value;
-            }
+            return mStyle.getPersistenceLayer().getStringedIntList(mKey).orElse(mDefaultValue);
         } else {
             return mNonPersistedValue;
         }
-
-        return mDefaultValue;
     }
 
     @Override

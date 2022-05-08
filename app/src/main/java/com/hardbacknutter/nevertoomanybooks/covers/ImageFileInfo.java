@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.File;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -135,12 +136,15 @@ public class ImageFileInfo
         return mEngineId;
     }
 
-    @Nullable
-    public File getFile() {
+    @NonNull
+    public Optional<File> getFile() {
         if (mFileSpec != null && !mFileSpec.isEmpty()) {
-            return new File(mFileSpec);
+            final File file = new File(mFileSpec);
+            if (file.exists()) {
+                return Optional.of(file);
+            }
         }
-        return null;
+        return Optional.empty();
     }
 
     /**

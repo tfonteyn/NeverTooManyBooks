@@ -488,7 +488,7 @@ public class BookDaoHelper {
 
                 if (fileSpec.isEmpty()) {
                     // An empty fileSpec indicates we need to delete the cover
-                    FileUtils.delete(mBook.getPersistedCoverFile(cIdx));
+                    mBook.getPersistedCoverFile(cIdx).ifPresent(FileUtils::delete);
                     // Delete from the cache. And yes, we also delete the ones
                     // where != index, but we don't care; it's a cache.
                     if (ImageUtils.isImageCachingEnabled()) {
