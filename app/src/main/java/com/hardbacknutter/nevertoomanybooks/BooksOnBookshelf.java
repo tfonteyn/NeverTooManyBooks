@@ -1071,10 +1071,7 @@ public class BooksOnBookshelf
 
         if (itemId == R.id.MENU_NEXT_MISSING_COVER) {
             final long nodeRowId = rowData.getLong(DBKey.KEY_BL_LIST_VIEW_NODE_ROW_ID);
-            final BooklistNode node = mVm.getNextBookWithoutCover(nodeRowId);
-            if (node != null) {
-                displayList(node);
-            }
+            mVm.getNextBookWithoutCover(nodeRowId).ifPresent(this::displayList);
             return true;
 
         } else if (itemId == R.id.MENU_LEVEL_EXPAND) {
