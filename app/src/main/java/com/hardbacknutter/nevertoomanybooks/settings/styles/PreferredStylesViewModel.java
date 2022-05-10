@@ -289,7 +289,7 @@ public class PreferredStylesViewModel
 
         // Not sure if this check is really needed... or already covered above
         // if the style was cloned from a builtin style,
-        if (!BuiltinStyle.isUserDefined(templateUuid)) {
+        if (BuiltinStyle.isBuiltin(templateUuid)) {
             // then we're assuming the user wanted to 'replace' the builtin style,
             // so remove the builtin style from the preferred styles.
             mList.stream()

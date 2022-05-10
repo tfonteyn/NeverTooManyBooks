@@ -801,7 +801,13 @@ public class XmlRecordReader
                 uuid = tag.name;
             }
 
-            if (BuiltinStyle.isUserDefined(uuid)) {
+            if (BuiltinStyle.isBuiltin(uuid)) {
+                //noinspection ConstantConditions
+                mStyle = mStyles.getStyle(mContext, uuid);
+                // We do NOT read preferences for known builtin styles
+                mStylePrefs = null;
+
+            } else {
                 mStyle = UserStyle.createFromImport(mContext, uuid);
                 ((UserStyle) mStyle).setName(tag.name);
 
@@ -813,15 +819,8 @@ public class XmlRecordReader
                 // So loop all groups, and get their Preferences.
                 // Do NOT add the group itself to the style at this point as our import
                 // might not actually have it.
-                for (final BooklistGroup group : BooklistGroup.getAllGroups(mStyle)) {
-                    mStylePrefs.putAll(group.getRawPreferences());
-                }
-            } else {
-                //noinspection ConstantConditions
-                mStyle = mStyles.getStyle(mContext, uuid);
-                // We do NOT read preferences for known builtin styles
-                mStylePrefs = null;
-
+                BooklistGroup.getAllGroups(mStyle)
+                             .forEach(group -> mStylePrefs.putAll(group.getRawPreferences()));
             }
 
             // not bothering with slightly older backups where the 'preferred' flag was a PPref

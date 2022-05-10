@@ -49,6 +49,7 @@ public final class BuiltinStyle
     public static final int MAX_ID = -19;
 
     private static final int ID_AUTHOR_THEN_SERIES = -1;
+    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     private static final int ID_UNREAD_AUTHOR_THEN_SERIES = -2;
     private static final int ID_COMPACT = -3;
@@ -74,9 +75,10 @@ public final class BuiltinStyle
      * Absolute/initial default.
      */
     public static final int DEFAULT_ID = ID_AUTHOR_THEN_SERIES;
+
     /**
      * Use the NEGATIVE builtin style id to get the UUID for it. Element 0 is not used.
-     * NEVER change the order; NEVER change the values.
+     * NEVER change the order; NEVER change the UUID values.
      */
     private static final String[] ID_UUID = {
             "",
@@ -169,16 +171,17 @@ public final class BuiltinStyle
               .forEach(groupId -> mGroups.add(BooklistGroup.newInstance(groupId, false, this)));
     }
 
-    public static boolean isUserDefined(@NonNull final String uuid) {
-        if (!uuid.isEmpty()) {
-            // Use the array, not the cache!
-            for (final String key : ID_UUID) {
-                if (key.equals(uuid)) {
-                    return false;
-                }
-            }
-        }
-        return true;
+
+    /**
+     * Check if the given UUID is a builtin Style.
+     *
+     * @param uuid to check
+     *
+     * @return {@code true} if it is
+     */
+    public static boolean isBuiltin(@NonNull final String uuid) {
+        // Use the array, not the cache!
+        return !uuid.isEmpty() && Arrays.asList(ID_UUID).contains(uuid);
     }
 
     /**
@@ -198,14 +201,14 @@ public final class BuiltinStyle
                                                   @NonNull final DataHolder rowData) {
 
         // Dev Note: the way we construct these is not optimal, but it mimics the
-        // way we create user-styles. The intention is that this configuration eventually
+        // way we create user-styles. The intention is that eventually all configuration
         // goes into the database.
         final int id = rowData.getInt(DBKey.PK_ID);
         final String uuid = rowData.getString(DBKey.KEY_STYLE_UUID);
         final boolean isPreferred = rowData.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED);
-        final int menuPos = rowData.getInt(DBKey.KEY_STYLE_MENU_POSITION);
+        final int menuPosition = rowData.getInt(DBKey.KEY_STYLE_MENU_POSITION);
 
-        return create(context, id, uuid, isPreferred, menuPos);
+        return create(context, id, uuid, isPreferred, menuPosition);
     }
 
     @VisibleForTesting
@@ -214,13 +217,13 @@ public final class BuiltinStyle
                                       final int id,
                                       @NonNull final String uuid,
                                       final boolean isPreferred,
-                                      final int menuPos) {
+                                      final int menuPosition) {
         final BuiltinStyle style;
         switch (id) {
             case ID_AUTHOR_THEN_SERIES:
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_author_series,
-                                         isPreferred, menuPos,
+                                         isPreferred, menuPosition,
                                          BooklistGroup.AUTHOR,
                                          BooklistGroup.SERIES);
                 break;
@@ -229,7 +232,7 @@ public final class BuiltinStyle
                 //FIXME: used to be filtered on being "unread"; remove this style
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_unread,
-                                         isPreferred, menuPos,
+                                         isPreferred, menuPosition,
                                          BooklistGroup.AUTHOR,
                                          BooklistGroup.SERIES);
                 break;
@@ -237,7 +240,7 @@ public final class BuiltinStyle
             case ID_COMPACT:
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_compact,
-                                         isPreferred, menuPos,
+                                         isPreferred, menuPosition,
                                          BooklistGroup.AUTHOR);
                 style.getTextScale().set(TextScale.TEXT_SCALE_1_SMALL);
                 style.getListScreenBookFields()
@@ -247,21 +250,21 @@ public final class BuiltinStyle
             case ID_BOOK_TITLE_FIRST_LETTER:
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_first_letter_book_title,
-                                         isPreferred, menuPos,
+                                         isPreferred, menuPosition,
                                          BooklistGroup.BOOK_TITLE_1ST_LETTER);
                 break;
 
             case ID_SERIES:
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_series,
-                                         isPreferred, menuPos,
+                                         isPreferred, menuPosition,
                                          BooklistGroup.SERIES);
                 break;
 
             case ID_GENRE:
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_genre,
-                                         isPreferred, menuPos,
+                                         isPreferred, menuPosition,
                                          BooklistGroup.GENRE,
                                          BooklistGroup.AUTHOR,
                                          BooklistGroup.SERIES);
@@ -270,7 +273,7 @@ public final class BuiltinStyle
             case ID_LENDING:
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_lending,
-                                         isPreferred, menuPos,
+                                         isPreferred, menuPosition,
                                          BooklistGroup.LENDING,
                                          BooklistGroup.AUTHOR,
                                          BooklistGroup.SERIES);
@@ -279,7 +282,7 @@ public final class BuiltinStyle
             case ID_READ_AND_UNREAD:
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_read_and_unread,
-                                         isPreferred, menuPos,
+                                         isPreferred, menuPosition,
                                          BooklistGroup.READ_STATUS,
                                          BooklistGroup.AUTHOR,
                                          BooklistGroup.SERIES);
@@ -288,7 +291,7 @@ public final class BuiltinStyle
             case ID_PUBLICATION_DATA:
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_publication_date,
-                                         isPreferred, menuPos,
+                                         isPreferred, menuPosition,
                                          BooklistGroup.DATE_PUBLISHED_YEAR,
                                          BooklistGroup.DATE_PUBLISHED_MONTH,
                                          BooklistGroup.AUTHOR,
@@ -298,7 +301,7 @@ public final class BuiltinStyle
             case ID_DATE_ADDED:
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_added_date,
-                                         isPreferred, menuPos,
+                                         isPreferred, menuPosition,
                                          BooklistGroup.DATE_ADDED_YEAR,
                                          BooklistGroup.DATE_ADDED_MONTH,
                                          BooklistGroup.DATE_ADDED_DAY,
@@ -308,7 +311,7 @@ public final class BuiltinStyle
             case ID_DATE_ACQUIRED:
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_acquired_date,
-                                         isPreferred, menuPos,
+                                         isPreferred, menuPosition,
                                          BooklistGroup.DATE_ACQUIRED_YEAR,
                                          BooklistGroup.DATE_ACQUIRED_MONTH,
                                          BooklistGroup.DATE_ACQUIRED_DAY,
@@ -318,7 +321,7 @@ public final class BuiltinStyle
             case ID_AUTHOR_AND_YEAR:
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_author_year,
-                                         isPreferred, menuPos,
+                                         isPreferred, menuPosition,
                                          BooklistGroup.AUTHOR,
                                          BooklistGroup.DATE_PUBLISHED_YEAR,
                                          BooklistGroup.SERIES);
@@ -327,14 +330,14 @@ public final class BuiltinStyle
             case ID_FORMAT:
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_format,
-                                         isPreferred, menuPos,
+                                         isPreferred, menuPosition,
                                          BooklistGroup.FORMAT);
                 break;
 
             case ID_DATE_READ:
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_read_date,
-                                         isPreferred, menuPos,
+                                         isPreferred, menuPosition,
                                          BooklistGroup.DATE_READ_YEAR,
                                          BooklistGroup.DATE_READ_MONTH,
                                          BooklistGroup.AUTHOR);
@@ -343,7 +346,7 @@ public final class BuiltinStyle
             case ID_LOCATION:
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_location,
-                                         isPreferred, menuPos,
+                                         isPreferred, menuPosition,
                                          BooklistGroup.LOCATION,
                                          BooklistGroup.AUTHOR,
                                          BooklistGroup.SERIES);
@@ -352,7 +355,7 @@ public final class BuiltinStyle
             case ID_LANGUAGE:
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_language,
-                                         isPreferred, menuPos,
+                                         isPreferred, menuPosition,
                                          BooklistGroup.LANGUAGE,
                                          BooklistGroup.AUTHOR,
                                          BooklistGroup.SERIES);
@@ -361,7 +364,7 @@ public final class BuiltinStyle
             case ID_RATING:
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_rating,
-                                         isPreferred, menuPos,
+                                         isPreferred, menuPosition,
                                          BooklistGroup.RATING,
                                          BooklistGroup.AUTHOR,
                                          BooklistGroup.SERIES);
@@ -370,7 +373,7 @@ public final class BuiltinStyle
             case ID_BOOKSHELF:
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_bookshelf,
-                                         isPreferred, menuPos,
+                                         isPreferred, menuPosition,
                                          BooklistGroup.BOOKSHELF,
                                          BooklistGroup.AUTHOR,
                                          BooklistGroup.SERIES);
@@ -379,7 +382,7 @@ public final class BuiltinStyle
             case ID_DATE_LAST_UPDATE:
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_update_date,
-                                         isPreferred, menuPos,
+                                         isPreferred, menuPosition,
                                          BooklistGroup.DATE_LAST_UPDATE_YEAR,
                                          BooklistGroup.DATE_LAST_UPDATE_MONTH,
                                          BooklistGroup.DATE_LAST_UPDATE_DAY);

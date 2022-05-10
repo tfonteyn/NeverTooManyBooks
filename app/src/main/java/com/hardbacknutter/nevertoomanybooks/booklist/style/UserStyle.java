@@ -154,6 +154,10 @@ public class UserStyle
         return new UserStyle(context, uuid);
     }
 
+    public void setName(@NonNull final String name) {
+        mPersistenceLayer.setString(PK_STYLE_NAME, name);
+    }
+
     @Override
     public boolean isUserDefined() {
         return true;
@@ -165,19 +169,10 @@ public class UserStyle
         return context.getString(R.string.style_is_user_defined);
     }
 
-    @NonNull
-    public String getName() {
-        //noinspection ConstantConditions
-        return mPersistenceLayer.getNonGlobalString(PK_STYLE_NAME);
-    }
-
-    public void setName(@NonNull final String name) {
-        mPersistenceLayer.setString(PK_STYLE_NAME, name);
-    }
-
     @Override
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        return getName();
+        //noinspection ConstantConditions
+        return mPersistenceLayer.getNonGlobalString(PK_STYLE_NAME);
     }
 }

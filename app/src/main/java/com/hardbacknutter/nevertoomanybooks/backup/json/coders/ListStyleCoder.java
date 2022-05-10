@@ -23,7 +23,9 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
@@ -98,7 +100,15 @@ public class ListStyleCoder
 
         final Styles styles = ServiceLocator.getInstance().getStyles();
 
-        if (BuiltinStyle.isUserDefined(uuid)) {
+        if (BuiltinStyle.isBuiltin(uuid)) {
+            // It's a builtin style
+            final ListStyle style = styles.getStyle(mContext, uuid);
+            //noinspection ConstantConditions
+            style.setPreferred(data.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED));
+            style.setMenuPosition(data.getInt(DBKey.KEY_STYLE_MENU_POSITION));
+            return style;
+
+        } else {
             final UserStyle style = UserStyle.createFromImport(mContext, uuid);
             style.setName(data.getString(STYLE_NAME));
             style.setPreferred(data.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED));
@@ -110,11 +120,12 @@ public class ListStyleCoder
             // This values list will have the 'Groups' preference itself,
             // but it will be empty, and hence the list will not have any group preferences
             // First copy the base preferences, including the Groups id list.
-            for (final PPref<?> stylePref : style.getRawPreferences().values()) {
-                if (source.has(stylePref.getKey())) {
-                    transfer(source, stylePref);
-                }
-            }
+            style.getRawPreferences()
+                 .values()
+                 .stream()
+                 .filter(stylePref -> source.has(stylePref.getKey()))
+                 .forEach(stylePref -> transfer(source, stylePref));
+
             // The style will now have the 'Groups id list' preference set,
             // so read it, and collect the individual group prefs if we have them
             style.getGroups()
@@ -123,14 +134,6 @@ public class ListStyleCoder
                  .flatMap(group -> group.getRawPreferences().values().stream())
                  .filter(groupPref -> source.has(groupPref.getKey()))
                  .forEach(groupPref -> transfer(source, groupPref));
-            return style;
-
-        } else {
-            // It's a builtin style
-            final ListStyle style = styles.getStyle(mContext, uuid);
-            //noinspection ConstantConditions
-            style.setPreferred(data.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED));
-            style.setMenuPosition(data.getInt(DBKey.KEY_STYLE_MENU_POSITION));
             return style;
 
         }
@@ -150,10 +153,9 @@ public class ListStyleCoder
 
         } else if (dest instanceof PIntList) {
             final JSONArray sourceArray = source.getJSONArray(dest.getKey());
-            final ArrayList<Integer> list = new ArrayList<>();
-            for (int i = 0; i < sourceArray.length(); i++) {
-                list.add(sourceArray.getInt(i));
-            }
+            final List<Integer> list = IntStream.range(0, sourceArray.length())
+                                                .mapToObj(sourceArray::getInt)
+                                                .collect(Collectors.toList());
             ((PIntList) dest).set(list);
         }
     }
