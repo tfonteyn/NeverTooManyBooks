@@ -358,7 +358,7 @@ public final class SyncReaderProcessor
             case Book.BKEY_AUTHOR_LIST: {
                 final ArrayList<Author> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
-                    list.addAll(book.getParcelableArrayList(key));
+                    list.addAll(book.getAuthors());
                     final AuthorDao authorDao = sl.getAuthorDao();
                     authorDao.pruneList(context, list, false, bookLocale);
                 }
@@ -367,7 +367,7 @@ public final class SyncReaderProcessor
             case Book.BKEY_SERIES_LIST: {
                 final ArrayList<Series> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
-                    list.addAll(book.getParcelableArrayList(key));
+                    list.addAll(book.getSeries());
                     final SeriesDao seriesDao = sl.getSeriesDao();
                     seriesDao.pruneList(context, list, false, bookLocale);
                 }
@@ -376,7 +376,7 @@ public final class SyncReaderProcessor
             case Book.BKEY_PUBLISHER_LIST: {
                 final ArrayList<Publisher> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
-                    list.addAll(book.getParcelableArrayList(key));
+                    list.addAll(book.getPublishers());
                     final PublisherDao publisherDao = sl.getPublisherDao();
                     publisherDao.pruneList(context, list, false, bookLocale);
                 }
@@ -385,7 +385,7 @@ public final class SyncReaderProcessor
             case Book.BKEY_TOC_LIST: {
                 final ArrayList<TocEntry> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
-                    list.addAll(book.getParcelableArrayList(key));
+                    list.addAll(book.getToc());
                     final TocEntryDao tocEntryDao = sl.getTocEntryDao();
                     tocEntryDao.pruneList(context, list, false, bookLocale);
                 }
@@ -394,7 +394,7 @@ public final class SyncReaderProcessor
             case Book.BKEY_BOOKSHELF_LIST: {
                 final ArrayList<Bookshelf> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
-                    list.addAll(book.getParcelableArrayList(key));
+                    list.addAll(book.getBookshelves());
                     final BookshelfDao bookshelfDao = sl.getBookshelfDao();
                     bookshelfDao.pruneList(list);
                 }

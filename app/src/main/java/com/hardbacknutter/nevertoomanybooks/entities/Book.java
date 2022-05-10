@@ -304,20 +304,11 @@ public class Book
         // load lists (or init with empty lists)
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
-        putParcelableArrayList(BKEY_BOOKSHELF_LIST,
-                               serviceLocator.getBookshelfDao().getBookshelvesByBookId(bookId));
-
-        putParcelableArrayList(BKEY_AUTHOR_LIST,
-                               serviceLocator.getAuthorDao().getAuthorsByBookId(bookId));
-
-        putParcelableArrayList(BKEY_SERIES_LIST,
-                               serviceLocator.getSeriesDao().getSeriesByBookId(bookId));
-
-        putParcelableArrayList(BKEY_PUBLISHER_LIST,
-                               serviceLocator.getPublisherDao().getPublishersByBookId(bookId));
-
-        putParcelableArrayList(BKEY_TOC_LIST,
-                               serviceLocator.getTocEntryDao().getTocEntryByBookId(bookId));
+        setBookshelves(serviceLocator.getBookshelfDao().getBookshelvesByBookId(bookId));
+        setAuthors(serviceLocator.getAuthorDao().getAuthorsByBookId(bookId));
+        setSeries(serviceLocator.getSeriesDao().getSeriesByBookId(bookId));
+        setPublishers(serviceLocator.getPublisherDao().getPublishersByBookId(bookId));
+        setToc(serviceLocator.getTocEntryDao().getTocEntryByBookId(bookId));
 
         // do NOT preload the full Calibre library object. We hardly ever need it as such.
         // see #getCalibreLibrary
@@ -523,9 +514,18 @@ public class Book
         return Objects.requireNonNullElse(bookLocale, fallbackLocale);
     }
 
+    /**
+     * Get the list of Bookshelves.
+     *
+     * @return an immutable List
+     */
     @NonNull
-    public ArrayList<Bookshelf> getBookshelves() {
-        return getParcelableArrayList(BKEY_BOOKSHELF_LIST);
+    public List<Bookshelf> getBookshelves() {
+        return List.copyOf(getParcelableArrayList(BKEY_BOOKSHELF_LIST));
+    }
+
+    public void setBookshelves(@NonNull final List<Bookshelf> bookShelves) {
+        putParcelableArrayList(BKEY_BOOKSHELF_LIST, new ArrayList<>(bookShelves));
     }
 
     /**
@@ -539,9 +539,18 @@ public class Book
         return authors.isEmpty() ? null : authors.get(0);
     }
 
+    /**
+     * Get the list of Authors.
+     *
+     * @return an immutable List
+     */
     @NonNull
-    public ArrayList<Author> getAuthors() {
-        return getParcelableArrayList(BKEY_AUTHOR_LIST);
+    public List<Author> getAuthors() {
+        return List.copyOf(getParcelableArrayList(BKEY_AUTHOR_LIST));
+    }
+
+    public void setAuthors(@NonNull final List<Author> authors) {
+        putParcelableArrayList(BKEY_AUTHOR_LIST, new ArrayList<>(authors));
     }
 
     /**
@@ -555,9 +564,18 @@ public class Book
         return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
     }
 
+    /**
+     * Get the list of Series.
+     *
+     * @return an immutable List
+     */
     @NonNull
-    public ArrayList<Series> getSeries() {
-        return getParcelableArrayList(BKEY_SERIES_LIST);
+    public List<Series> getSeries() {
+        return List.copyOf(getParcelableArrayList(BKEY_SERIES_LIST));
+    }
+
+    public void setSeries(@NonNull final List<Series> series) {
+        putParcelableArrayList(BKEY_SERIES_LIST, new ArrayList<>(series));
     }
 
     /**
@@ -571,14 +589,32 @@ public class Book
         return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
     }
 
+    /**
+     * Get the list of Publishers.
+     *
+     * @return an immutable List
+     */
     @NonNull
-    public ArrayList<Publisher> getPublishers() {
-        return getParcelableArrayList(BKEY_PUBLISHER_LIST);
+    public List<Publisher> getPublishers() {
+        return List.copyOf(getParcelableArrayList(BKEY_PUBLISHER_LIST));
     }
 
+    public void setPublishers(@NonNull final List<Publisher> publishers) {
+        putParcelableArrayList(BKEY_PUBLISHER_LIST, new ArrayList<>(publishers));
+    }
+
+    /**
+     * Get the list of TocEntry's.
+     *
+     * @return an immutable List
+     */
     @NonNull
-    public ArrayList<TocEntry> getToc() {
-        return getParcelableArrayList(BKEY_TOC_LIST);
+    public List<TocEntry> getToc() {
+        return List.copyOf(getParcelableArrayList(BKEY_TOC_LIST));
+    }
+
+    public void setToc(@NonNull final List<TocEntry> tocEntries) {
+        putParcelableArrayList(BKEY_TOC_LIST, new ArrayList<>(tocEntries));
     }
 
     @Override

@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
@@ -123,14 +124,14 @@ public class BookCoder
         } else if (element instanceof ArrayList) {
             switch (key) {
                 case Book.BKEY_AUTHOR_LIST: {
-                    final ArrayList<Author> list = book.getParcelableArrayList(key);
+                    final List<Author> list = book.getAuthors();
                     if (!list.isEmpty()) {
                         out.put(key, mAuthorCoder.encode(list));
                     }
                     break;
                 }
                 case Book.BKEY_BOOKSHELF_LIST: {
-                    final ArrayList<Bookshelf> list = book.getParcelableArrayList(key);
+                    final List<Bookshelf> list = book.getBookshelves();
                     if (!list.isEmpty()) {
                         // FK as it's a reference
                         out.put(DBKey.FK_BOOKSHELF, mBookshelfCoder.encodeReference(list));
@@ -138,21 +139,21 @@ public class BookCoder
                     break;
                 }
                 case Book.BKEY_PUBLISHER_LIST: {
-                    final ArrayList<Publisher> list = book.getParcelableArrayList(key);
+                    final List<Publisher> list = book.getPublishers();
                     if (!list.isEmpty()) {
                         out.put(key, mPublisherCoder.encode(list));
                     }
                     break;
                 }
                 case Book.BKEY_SERIES_LIST: {
-                    final ArrayList<Series> list = book.getParcelableArrayList(key);
+                    final List<Series> list = book.getSeries();
                     if (!list.isEmpty()) {
                         out.put(key, mSeriesCoder.encode(list));
                     }
                     break;
                 }
                 case Book.BKEY_TOC_LIST: {
-                    final ArrayList<TocEntry> list = book.getParcelableArrayList(key);
+                    final List<TocEntry> list = book.getToc();
                     if (!list.isEmpty()) {
                         out.put(key, mTocEntryCoder.encode(list));
                     }
@@ -186,17 +187,13 @@ public class BookCoder
             switch (key) {
                 case Book.BKEY_BOOKSHELF_LIST:
                     // Full object
-                    book.putParcelableArrayList(
-                            Book.BKEY_BOOKSHELF_LIST,
-                            mBookshelfCoder.decode(data.getJSONArray(key)));
+                    book.setBookshelves(mBookshelfCoder.decode(data.getJSONArray(key)));
                     break;
 
                 case DBKey.FK_BOOKSHELF:
                     // Reference; if the reference is not found,
                     // the book will be put on the preferred (or default) Bookshelf.
-                    book.putParcelableArrayList(
-                            Book.BKEY_BOOKSHELF_LIST,
-                            mBookshelfCoder.decodeReference(data.getJSONArray(key)));
+                    book.setBookshelves(mBookshelfCoder.decodeReference(data.getJSONArray(key)));
                     break;
 
                 case Book.BKEY_CALIBRE_LIBRARY:
@@ -216,27 +213,19 @@ public class BookCoder
 
 
                 case Book.BKEY_AUTHOR_LIST:
-                    book.putParcelableArrayList(
-                            Book.BKEY_AUTHOR_LIST,
-                            mAuthorCoder.decode(data.getJSONArray(key)));
+                    book.setAuthors(mAuthorCoder.decode(data.getJSONArray(key)));
                     break;
 
                 case Book.BKEY_PUBLISHER_LIST:
-                    book.putParcelableArrayList(
-                            Book.BKEY_PUBLISHER_LIST,
-                            mPublisherCoder.decode(data.getJSONArray(key)));
+                    book.setPublishers(mPublisherCoder.decode(data.getJSONArray(key)));
                     break;
 
                 case Book.BKEY_SERIES_LIST:
-                    book.putParcelableArrayList(
-                            Book.BKEY_SERIES_LIST,
-                            mSeriesCoder.decode(data.getJSONArray(key)));
+                    book.setSeries(mSeriesCoder.decode(data.getJSONArray(key)));
                     break;
 
                 case Book.BKEY_TOC_LIST:
-                    book.putParcelableArrayList(
-                            Book.BKEY_TOC_LIST,
-                            mTocEntryCoder.decode(data.getJSONArray(key)));
+                    book.setToc(mTocEntryCoder.decode(data.getJSONArray(key)));
                     break;
 
 

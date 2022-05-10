@@ -565,7 +565,7 @@ public class CalibreContentServerReader
         // "authors": [
         //      "Charles Stross"
         // ],
-        final ArrayList<Author> bookAuthors = new ArrayList<>();
+        final List<Author> bookAuthors = new ArrayList<>();
         if (!calibreBook.isNull(CalibreBook.AUTHOR_ARRAY)) {
             final JSONArray authors = calibreBook.optJSONArray(CalibreBook.AUTHOR_ARRAY);
             if (authors != null && !authors.isEmpty()) {
@@ -581,8 +581,7 @@ public class CalibreContentServerReader
         if (bookAuthors.isEmpty()) {
             bookAuthors.add(Author.createUnknownAuthor(context));
         }
-        // Always overwrite
-        localBook.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, bookAuthors);
+        localBook.setAuthors(bookAuthors);
 
         // "series": null,
         // "series": "Argos Mythos / The devil is dead",
@@ -603,10 +602,9 @@ public class CalibreContentServerReader
                     }
                     series.setNumber(seriesNr);
                 }
-                final ArrayList<Series> bookSeries = new ArrayList<>();
+                final List<Series> bookSeries = new ArrayList<>();
                 bookSeries.add(series);
-                // always overwrite
-                localBook.putParcelableArrayList(Book.BKEY_SERIES_LIST, bookSeries);
+                localBook.setSeries(bookSeries);
             }
         }
 
@@ -617,10 +615,9 @@ public class CalibreContentServerReader
                     throw new IllegalArgumentException(ERROR_NULL_STRING);
                 }
 
-                final ArrayList<Publisher> bookPublishers = new ArrayList<>();
+                final List<Publisher> bookPublishers = new ArrayList<>();
                 bookPublishers.add(Publisher.from(publisherName));
-                // always overwrite
-                localBook.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, bookPublishers);
+                localBook.setPublishers(bookPublishers);
             }
         }
 
@@ -771,6 +768,8 @@ public class CalibreContentServerReader
                             }
                         });
             }
+
+            localBook.setBookshelves(bookShelves);
         }
     }
 

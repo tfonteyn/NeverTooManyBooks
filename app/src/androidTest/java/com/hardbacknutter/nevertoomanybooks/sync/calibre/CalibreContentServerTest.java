@@ -51,7 +51,7 @@ public class CalibreContentServerTest {
         final CalibreContentServer server = new CalibreContentServer(context);
 
         final Book book = new Book();
-        book.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authors);
+        book.setAuthors(authors);
 
         book.putString(DBKey.KEY_TITLE, "Rama");
 
@@ -68,7 +68,7 @@ public class CalibreContentServerTest {
         assertEquals("Rama_ the omnibus", fileName);
 
         // now with a series
-        book.putParcelableArrayList(Book.BKEY_SERIES_LIST, series);
+        book.setSeries(series);
         fileName = server.createFilename(context, book);
         assertEquals("Rama - Rama_ the omnibus", fileName);
     }

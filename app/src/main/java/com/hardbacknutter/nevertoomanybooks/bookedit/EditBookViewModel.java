@@ -96,9 +96,9 @@ public class EditBookViewModel
     private final Collection<FragmentId> mFragmentsWithUnfinishedEdits =
             EnumSet.noneOf(FragmentId.class);
 
-    private final MutableLiveData<ArrayList<Author>> mAuthorList = new MutableLiveData<>();
-    private final MutableLiveData<ArrayList<Series>> mSeriesList = new MutableLiveData<>();
-    private final MutableLiveData<ArrayList<Publisher>> mPublisherList = new MutableLiveData<>();
+    private final MutableLiveData<List<Author>> mAuthorList = new MutableLiveData<>();
+    private final MutableLiveData<List<Series>> mSeriesList = new MutableLiveData<>();
+    private final MutableLiveData<List<Publisher>> mPublisherList = new MutableLiveData<>();
     private final List<MenuHandler> mMenuHandlers = new ArrayList<>();
     private final Collection<FieldGroup> mFieldGroups = EnumSet.noneOf(FieldGroup.class);
 
@@ -610,32 +610,32 @@ public class EditBookViewModel
     }
 
     @NonNull
-    LiveData<ArrayList<Author>> onAuthorList() {
+    LiveData<List<Author>> onAuthorList() {
         return mAuthorList;
     }
 
     @NonNull
-    LiveData<ArrayList<Series>> onSeriesList() {
+    LiveData<List<Series>> onSeriesList() {
         return mSeriesList;
     }
 
     @NonNull
-    LiveData<ArrayList<Publisher>> onPublisherList() {
+    LiveData<List<Publisher>> onPublisherList() {
         return mPublisherList;
     }
 
-    void updateAuthors(@NonNull final ArrayList<Author> list) {
-        mBook.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, list);
+    void updateAuthors(@NonNull final List<Author> list) {
+        mBook.setAuthors(list);
         mAuthorList.setValue(list);
     }
 
-    void updateSeries(@NonNull final ArrayList<Series> list) {
-        mBook.putParcelableArrayList(Book.BKEY_SERIES_LIST, list);
+    void updateSeries(@NonNull final List<Series> list) {
+        mBook.setSeries(list);
         mSeriesList.setValue(list);
     }
 
-    void updatePublishers(@NonNull final ArrayList<Publisher> list) {
-        mBook.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, list);
+    void updatePublishers(@NonNull final List<Publisher> list) {
+        mBook.setPublishers(list);
         mPublisherList.setValue(list);
     }
 
@@ -650,6 +650,7 @@ public class EditBookViewModel
             // That's ok, it will get garbage collected from the database sooner or later.
             list.remove(original);
             list.add(modified);
+            mBook.setAuthors(list);
             mBook.pruneAuthors(context, true);
             return true;
         }
@@ -680,12 +681,13 @@ public class EditBookViewModel
                               @NonNull final Series modified) {
         if (ServiceLocator.getInstance().getSeriesDao()
                           .insert(context, modified, mBook.getLocale(context)) > 0) {
-            final ArrayList<Series> list = mBook.getSeries();
+            final List<Series> list = mBook.getSeries();
             // unlink the original, and link with the new one
             // Note that the original *might* be orphaned at this time.
             // That's ok, it will get garbage collected from the database sooner or later.
             list.remove(original);
             list.add(modified);
+            mBook.setSeries(list);
             mBook.pruneSeries(context, true);
             return true;
         }
@@ -718,12 +720,13 @@ public class EditBookViewModel
 
         if (ServiceLocator.getInstance().getPublisherDao()
                           .insert(context, modified, mBook.getLocale(context)) > 0) {
-            final ArrayList<Publisher> list = mBook.getPublishers();
+            final List<Publisher> list = mBook.getPublishers();
             // unlink the original, and link with the new one
             // Note that the original *might* be orphaned at this time.
             // That's ok, it will get garbage collected from the database sooner or later.
             list.remove(original);
             list.add(modified);
+            mBook.setPublishers(list);
             mBook.prunePublishers(context, true);
             return true;
         }

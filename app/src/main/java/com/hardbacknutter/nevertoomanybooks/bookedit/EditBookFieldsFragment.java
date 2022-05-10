@@ -91,7 +91,7 @@ public class EditBookFieldsFragment
                                .filter(bookshelf -> selectedIds.contains(bookshelf.getId()))
                                .collect(Collectors.toCollection(ArrayList::new));
 
-                    mVm.getBook().putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, selected);
+                    mVm.getBook().setBookshelves(selected);
                     field.setValue(selected);
                     field.notifyIfChanged(previous);
                 }

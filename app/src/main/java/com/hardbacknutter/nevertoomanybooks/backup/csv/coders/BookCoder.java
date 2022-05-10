@@ -406,7 +406,7 @@ public class BookCoder {
             final ArrayList<Bookshelf> bookshelves = mBookshelfCoder.decodeList(encodedList);
             if (!bookshelves.isEmpty()) {
                 mSl.getBookshelfDao().pruneList(bookshelves);
-                book.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelves);
+                book.setBookshelves(bookshelves);
             }
         }
 
@@ -473,7 +473,7 @@ public class BookCoder {
         if (list.isEmpty()) {
             list.add(Author.createUnknownAuthor(context));
         }
-        book.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, list);
+        book.setAuthors(list);
     }
 
     /**
@@ -500,9 +500,9 @@ public class BookCoder {
                     final Series series = new Series(title);
                     // number will be "" if it's not present
                     series.setNumber(book.getString(DBKey.KEY_BOOK_NUM_IN_SERIES));
-                    final ArrayList<Series> list = new ArrayList<>();
+                    final List<Series> list = new ArrayList<>();
                     list.add(series);
-                    book.putParcelableArrayList(Book.BKEY_SERIES_LIST, list);
+                    book.setSeries(list);
                 }
                 book.remove(DBKey.KEY_SERIES_TITLE);
                 book.remove(DBKey.KEY_BOOK_NUM_IN_SERIES);
@@ -512,7 +512,7 @@ public class BookCoder {
             if (!list.isEmpty()) {
                 // Force using the Book Locale, otherwise the import is far to slow.
                 mSl.getSeriesDao().pruneList(context, list, false, bookLocale);
-                book.putParcelableArrayList(Book.BKEY_SERIES_LIST, list);
+                book.setSeries(list);
             }
         }
     }
@@ -538,7 +538,7 @@ public class BookCoder {
             if (!list.isEmpty()) {
                 // Force using the Book Locale, otherwise the import is far to slow.
                 mSl.getPublisherDao().pruneList(context, list, false, bookLocale);
-                book.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, list);
+                book.setPublishers(list);
             }
         }
     }
@@ -567,7 +567,7 @@ public class BookCoder {
             if (!list.isEmpty()) {
                 // Force using the Book Locale, otherwise the import is far to slow.
                 mSl.getTocEntryDao().pruneList(context, list, false, bookLocale);
-                book.putParcelableArrayList(Book.BKEY_TOC_LIST, list);
+                book.setToc(list);
             }
         }
     }
