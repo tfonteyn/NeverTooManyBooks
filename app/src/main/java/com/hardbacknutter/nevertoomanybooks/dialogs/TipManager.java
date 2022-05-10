@@ -79,22 +79,12 @@ public final class TipManager {
     private Tip getTip(@StringRes final int id) {
         Tip tip = ALL.get(id);
         if (tip == null) {
-            if (id == R.string.tip_booklist_style_menu) {
-                tip = new Tip(id, "booklist_style_menu");
-            } else if (id == R.string.tip_booklist_styles_editor) {
+            if (id == R.string.tip_booklist_styles_editor) {
                 tip = new Tip(id, "booklist_styles_editor");
             } else if (id == R.string.tip_booklist_style_groups) {
                 tip = new Tip(id, "booklist_style_groups");
             } else if (id == R.string.tip_booklist_style_properties) {
                 tip = new Tip(id, "booklist_style_properties");
-            } else if (id == R.string.tip_authors_book_may_appear_more_than_once) {
-                tip = new Tip(id, "authors_book_may_appear_more_than_once");
-            } else if (id == R.string.tip_series_book_may_appear_more_than_once) {
-                tip = new Tip(id, "series_book_may_appear_more_than_once");
-            } else if (id == R.string.tip_background_tasks) {
-                tip = new Tip(id, "background_tasks");
-            } else if (id == R.string.tip_background_task_events) {
-                tip = new Tip(id, "background_task_events");
             } else if (id == R.string.tip_autorotate_camera_images) {
                 tip = new Tip(id, "autorotate_camera_images");
             } else if (id == R.string.tip_view_only_help) {
@@ -108,6 +98,12 @@ public final class TipManager {
             } else if (id == R.string.tip_authors_works) {
                 tip = new Tip(id, "authors_works")
                         .setLayoutId(R.layout.dialog_tip_author_works);
+
+            } else if (id == R.string.tip_authors_book_may_appear_more_than_once) {
+                tip = new Tip(id, "authors_book_may_appear_more_than_once");
+            } else if (id == R.string.tip_series_book_may_appear_more_than_once) {
+                tip = new Tip(id, "series_book_may_appear_more_than_once");
+
             } else {
                 throw new IllegalArgumentException(String.valueOf(id));
             }
@@ -202,13 +198,6 @@ public final class TipManager {
             return;
         }
         tip.display(context, tipKey, args, postRun);
-    }
-
-    @FunctionalInterface
-    public interface TipOwner {
-
-        @StringRes
-        int getTip();
     }
 
     /**
