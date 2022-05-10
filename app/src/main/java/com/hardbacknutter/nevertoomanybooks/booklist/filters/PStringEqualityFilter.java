@@ -60,8 +60,6 @@ public class PStringEqualityFilter
     private final TableDefinition mTable;
     @Nullable
     private String mValue;
-    @Nullable
-    private ExtArrayAdapter<String> mAdapter;
 
     PStringEqualityFilter(@NonNull final String name,
                           @StringRes final int labelId,
@@ -113,13 +111,13 @@ public class PStringEqualityFilter
     }
 
     @Nullable
-    public ExtArrayAdapter<String> getListAdapter(@NonNull final Context context) {
-        if (mAdapter == null && mListSupplier != null) {
-            mAdapter = new ExtArrayAdapter<>(context, R.layout.popup_dropdown_menu_item,
-                                             ExtArrayAdapter.FilterType.Diacritic,
-                                             mListSupplier.get());
+    public ExtArrayAdapter<String> createListAdapter(@NonNull final Context context) {
+        if (mListSupplier != null) {
+            return new ExtArrayAdapter<>(context, R.layout.popup_dropdown_menu_item,
+                                         ExtArrayAdapter.FilterType.Diacritic,
+                                         mListSupplier.get());
         }
-        return mAdapter;
+        return null;
     }
 
     @Nullable
