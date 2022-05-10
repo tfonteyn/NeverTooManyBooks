@@ -80,23 +80,26 @@ public class StyleSharedPreferences
 
         } else {
             stylePrefs = context.getSharedPreferences(uuid, Context.MODE_PRIVATE);
-            if (isPersistent && !stylePrefs.contains(PK_STYLE_UUID)) {
-                // Storing the uuid is not actually needed but handy to have for debug
-                stylePrefs.edit().putString(PK_STYLE_UUID, uuid).apply();
+            if (isPersistent) {
+                final SharedPreferences.Editor editor = stylePrefs.edit();
+                if (!stylePrefs.contains(PK_STYLE_UUID)) {
+                    // Storing the uuid is not actually needed but handy to have for debug
+                    editor.putString(PK_STYLE_UUID, uuid);
+                }
+
+                // remove obsolete entries; no attempt is made to preserve the setting
+                editor.remove("style.booklist.preferred")
+                      .remove("style.booklist.filter.read")
+                      .remove("style.booklist.filter.signed")
+                      .remove("style.booklist.filter.anthology")
+                      .remove("style.booklist.filter.lending")
+                      .remove("style.booklist.filter.isbn")
+                      .remove("style.booklist.filter.editions")
+                      .remove("style.booklist.filter.bookshelves")
+
+                      .apply();
             }
         }
-
-        // remove obsolete entries; no attempt is made to preserve the setting
-        stylePrefs.edit()
-                  .remove("style.booklist.preferred")
-                  .remove("style.booklist.filter.read")
-                  .remove("style.booklist.filter.signed")
-                  .remove("style.booklist.filter.anthology")
-                  .remove("style.booklist.filter.lending")
-                  .remove("style.booklist.filter.isbn")
-                  .remove("style.booklist.filter.editions")
-                  .remove("style.booklist.filter.bookshelves")
-                  .apply();
     }
 
     public static int getBitmaskPref(@NonNull final SharedPreferences preferences,
