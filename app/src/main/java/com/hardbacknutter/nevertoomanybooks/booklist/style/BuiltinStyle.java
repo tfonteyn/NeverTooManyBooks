@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -46,8 +47,6 @@ public final class BuiltinStyle
     // and make sure a row is added to the database styles table.
     // next max is -20
     public static final int MAX_ID = -19;
-
-
 
 
     private static final int ID_AUTHOR_THEN_SERIES = -1;
@@ -71,10 +70,11 @@ public final class BuiltinStyle
     private static final int ID_COMPACT = -3;
     private static final String UUID_COMPACT
             = "5e4c3137-a05f-4c4c-853a-bd1dacb6cd16";
+
+    private static final int ID_BOOK_TITLE_FIRST_LETTER = -4;
     /** We need a random style with a filter for testing. */
     @VisibleForTesting
-    public static final String UUID_FOR_TESTING_ONLY = UUID_UNREAD_AUTHOR_THEN_SERIES;
-    private static final int ID_BOOK_TITLE_FIRST_LETTER = -4;
+    public static final String UUID_FOR_TESTING_ONLY = UUID_PUBLICATION_DATA;
 
     private static final int ID_SERIES = -5;
     private static final String UUID_SERIES
@@ -95,6 +95,8 @@ public final class BuiltinStyle
     private static final int ID_PUBLICATION_DATA = -9;
     private static final String UUID_PUBLICATION_DATA
             = "182f5d3c-8fd7-4f3a-b5b0-0c93551d1796";
+    private static final String UUID_BOOK_TITLE_FIRST_LETTER
+            = "16b4ecdf-edef-4bf2-a682-23f7230446c8";
 
     private static final int ID_DATE_ADDED = -10;
     private static final String UUID_DATE_ADDED
@@ -135,8 +137,7 @@ public final class BuiltinStyle
     private static final int ID_DATE_LAST_UPDATE = -19;
     private static final String UUID_DATE_LAST_UPDATE
             = "427a0da5-0779-44b6-89e9-82772e5ad5ef";
-    private static final String UUID_BOOK_TITLE_FIRST_LETTER
-            = "16b4ecdf-edef-4bf2-a682-23f7230446c8";
+
     /**
      * Use the NEGATIVE builtin style id to get the UUID for it. Element 0 is not used.
      * NEVER change the order.
@@ -201,9 +202,8 @@ public final class BuiltinStyle
 
         initPrefs(false);
 
-        for (@BooklistGroup.Id final int groupId : groupIds) {
-            getGroups().add(BooklistGroup.newInstance(groupId, false, this));
-        }
+        Arrays.stream(groupIds)
+              .forEach(groupId -> mGroups.add(BooklistGroup.newInstance(groupId, false, this)));
     }
 
     public static boolean isUserDefined(@NonNull final String uuid) {
@@ -216,11 +216,6 @@ public final class BuiltinStyle
             }
         }
         return true;
-    }
-
-    @Override
-    public boolean isUserDefined() {
-        return false;
     }
 
     /**
@@ -434,6 +429,11 @@ public final class BuiltinStyle
                 throw new IllegalStateException("style id=" + id);
         }
         return style;
+    }
+
+    @Override
+    public boolean isUserDefined() {
+        return false;
     }
 
     @Override
