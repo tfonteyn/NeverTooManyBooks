@@ -70,13 +70,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
 public class ShowBookDetailsActivityViewModel
         extends ViewModel {
 
-    private final List<MenuHandler> mMenuHandlers = new ArrayList<>();
+    private final List<MenuHandler> menuHandlers = new ArrayList<>();
     /** the list with all fields. */
-    private final List<Field<?, ? extends View>> mFields = new ArrayList<>();
+    private final List<Field<?, ? extends View>> fields = new ArrayList<>();
 
-    private ListStyle mStyle;
+    private ListStyle style;
 
-    private boolean mModified;
+    private boolean modified;
 
     /**
      * Part of the fragment result data.
@@ -85,11 +85,11 @@ public class ShowBookDetailsActivityViewModel
      * @return {@code true} if the book was changed and successfully saved.
      */
     public boolean isModified() {
-        return mModified;
+        return modified;
     }
 
     void updateFragmentResult() {
-        mModified = true;
+        modified = true;
     }
 
     /**
@@ -100,26 +100,26 @@ public class ShowBookDetailsActivityViewModel
      */
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args) {
-        if (mStyle == null) {
+        if (style == null) {
             // the style can be 'null' here. If so, the default one will be used.
             final String styleUuid = args.getString(ListStyle.BKEY_UUID);
-            mStyle = ServiceLocator.getInstance().getStyles().getStyleOrDefault(context, styleUuid);
+            style = ServiceLocator.getInstance().getStyles().getStyleOrDefault(context, styleUuid);
 
             initFields(context);
 
-            mMenuHandlers.add(new ViewBookOnWebsiteHandler());
-            mMenuHandlers.add(new AmazonHandler());
+            menuHandlers.add(new ViewBookOnWebsiteHandler());
+            menuHandlers.add(new AmazonHandler());
         }
     }
 
     @NonNull
     public ListStyle getStyle() {
-        return mStyle;
+        return style;
     }
 
     @NonNull
     List<MenuHandler> getMenuHandlers() {
-        return mMenuHandlers;
+        return menuHandlers;
     }
 
     boolean useLoanee(@NonNull final Context context) {
@@ -155,19 +155,19 @@ public class ShowBookDetailsActivityViewModel
         }
 
         // let the style decide
-        return mStyle.getDetailScreenBookFields().isShowCover(global, cIdx);
+        return style.getDetailScreenBookFields().isShowCover(global, cIdx);
     }
 
     @NonNull
     List<Field<?, ? extends View>> getFields() {
-        return mFields;
+        return fields;
     }
 
     @NonNull
     Optional<Field<?, ? extends View>> getField(@IdRes final int id) {
-        return mFields.stream()
-                      .filter(field -> field.getFieldViewId() == id)
-                      .findFirst();
+        return fields.stream()
+                     .filter(field -> field.getFieldViewId() == id)
+                     .findFirst();
     }
 
     /**
@@ -184,7 +184,7 @@ public class ShowBookDetailsActivityViewModel
     @NonNull
     <T, V extends View> Field<T, V> requireField(@IdRes final int id) {
         //noinspection unchecked
-        return (Field<T, V>) mFields
+        return (Field<T, V>) fields
                 .stream()
                 .filter(field -> field.getFieldViewId() == id)
                 .findFirst()
@@ -202,108 +202,108 @@ public class ShowBookDetailsActivityViewModel
         final ListFormatter<Entity> fullDetailListFormatter = new ListFormatter<>(Details.Full);
 
         // book fields
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.title, DBKey.KEY_TITLE));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.title, DBKey.KEY_TITLE));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.author, Book.BKEY_AUTHOR_LIST,
-                                        DBKey.FK_AUTHOR,
-                                        fullDetailListFormatter)
-                            .addRelatedViews(R.id.lbl_author));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.author, Book.BKEY_AUTHOR_LIST,
+                                       DBKey.FK_AUTHOR,
+                                       fullDetailListFormatter)
+                           .addRelatedViews(R.id.lbl_author));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.series_title, Book.BKEY_SERIES_LIST,
-                                        DBKey.KEY_SERIES_TITLE,
-                                        fullDetailListFormatter)
-                            .addRelatedViews(R.id.lbl_series));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.series_title, Book.BKEY_SERIES_LIST,
+                                       DBKey.KEY_SERIES_TITLE,
+                                       fullDetailListFormatter)
+                           .addRelatedViews(R.id.lbl_series));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.isbn, DBKey.KEY_ISBN)
-                            .addRelatedViews(R.id.lbl_isbn));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.isbn, DBKey.KEY_ISBN)
+                           .addRelatedViews(R.id.lbl_isbn));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.description, DBKey.KEY_DESCRIPTION,
-                                        notesFormatter));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.description, DBKey.KEY_DESCRIPTION,
+                                       notesFormatter));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.genre, DBKey.KEY_GENRE)
-                            .addRelatedViews(R.id.lbl_genre));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.genre, DBKey.KEY_GENRE)
+                           .addRelatedViews(R.id.lbl_genre));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.language, DBKey.KEY_LANGUAGE,
-                                        new LanguageFormatter(userLocale))
-                            .addRelatedViews(R.id.lbl_language));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.language, DBKey.KEY_LANGUAGE,
+                                       new LanguageFormatter(userLocale))
+                           .addRelatedViews(R.id.lbl_language));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.pages, DBKey.KEY_PAGES,
-                                        new PagesFormatter()));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.pages, DBKey.KEY_PAGES,
+                                       new PagesFormatter()));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.format, DBKey.KEY_FORMAT));
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.color, DBKey.KEY_COLOR));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.format, DBKey.KEY_FORMAT));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.color, DBKey.KEY_COLOR));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.publisher, Book.BKEY_PUBLISHER_LIST,
-                                        DBKey.KEY_PUBLISHER_NAME,
-                                        normalDetailListFormatter));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.publisher, Book.BKEY_PUBLISHER_LIST,
+                                       DBKey.KEY_PUBLISHER_NAME,
+                                       normalDetailListFormatter));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.date_published,
-                                        DBKey.DATE_BOOK_PUBLICATION,
-                                        dateFormatter)
-                            .addRelatedViews(R.id.lbl_date_published));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.date_published,
+                                       DBKey.DATE_BOOK_PUBLICATION,
+                                       dateFormatter)
+                           .addRelatedViews(R.id.lbl_date_published));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.first_publication,
-                                        DBKey.DATE_FIRST_PUBLICATION,
-                                        dateFormatter)
-                            .addRelatedViews(R.id.lbl_first_publication));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.first_publication,
+                                       DBKey.DATE_FIRST_PUBLICATION,
+                                       dateFormatter)
+                           .addRelatedViews(R.id.lbl_first_publication));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.edition, DBKey.BITMASK_EDITION,
-                                        new BitmaskFormatter(Details.Normal,
-                                                             Book.Edition.getEditions(context)))
-                            .addRelatedViews(R.id.lbl_edition));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.edition, DBKey.BITMASK_EDITION,
+                                       new BitmaskFormatter(Details.Normal,
+                                                            Book.Edition.getEditions(context)))
+                           .addRelatedViews(R.id.lbl_edition));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.print_run, DBKey.KEY_PRINT_RUN));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.print_run, DBKey.KEY_PRINT_RUN));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.price_listed, DBKey.PRICE_LISTED,
-                                        moneyFormatter)
-                            .addRelatedViews(R.id.lbl_price_listed));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.price_listed, DBKey.PRICE_LISTED,
+                                       moneyFormatter)
+                           .addRelatedViews(R.id.lbl_price_listed));
 
 
         // Personal fields
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
-                                        DBKey.FK_BOOKSHELF,
-                                        normalDetailListFormatter)
-                            .addRelatedViews(R.id.lbl_bookshelves));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
+                                       DBKey.FK_BOOKSHELF,
+                                       normalDetailListFormatter)
+                           .addRelatedViews(R.id.lbl_bookshelves));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.date_acquired, DBKey.DATE_ACQUIRED,
-                                        dateFormatter)
-                            .addRelatedViews(R.id.lbl_date_acquired));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.date_acquired, DBKey.DATE_ACQUIRED,
+                                       dateFormatter)
+                           .addRelatedViews(R.id.lbl_date_acquired));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.location, DBKey.KEY_LOCATION)
-                            .addRelatedViews(R.id.lbl_location, R.id.lbl_location_long));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.location, DBKey.KEY_LOCATION)
+                           .addRelatedViews(R.id.lbl_location, R.id.lbl_location_long));
 
-        mFields.add(new RatingBarField(FragmentId.Main, R.id.rating, DBKey.KEY_RATING));
+        fields.add(new RatingBarField(FragmentId.Main, R.id.rating, DBKey.KEY_RATING));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.condition, DBKey.KEY_BOOK_CONDITION,
-                                        new StringArrayResFormatter(
-                                                context, R.array.conditions_book))
-                            .addRelatedViews(R.id.lbl_condition));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.condition, DBKey.KEY_BOOK_CONDITION,
+                                       new StringArrayResFormatter(
+                                               context, R.array.conditions_book))
+                           .addRelatedViews(R.id.lbl_condition));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.condition_cover,
-                                        DBKey.KEY_BOOK_CONDITION_COVER,
-                                        new StringArrayResFormatter(
-                                                context, R.array.conditions_dust_cover))
-                            .addRelatedViews(R.id.lbl_condition_cover));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.condition_cover,
+                                       DBKey.KEY_BOOK_CONDITION_COVER,
+                                       new StringArrayResFormatter(
+                                               context, R.array.conditions_dust_cover))
+                           .addRelatedViews(R.id.lbl_condition_cover));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.notes, DBKey.KEY_PRIVATE_NOTES,
-                                        notesFormatter)
-                            .addRelatedViews(R.id.lbl_notes));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.notes, DBKey.KEY_PRIVATE_NOTES,
+                                       notesFormatter)
+                           .addRelatedViews(R.id.lbl_notes));
 
-        mFields.add(new BooleanIndicatorField(FragmentId.Main, R.id.read, DBKey.BOOL_READ));
+        fields.add(new BooleanIndicatorField(FragmentId.Main, R.id.read, DBKey.BOOL_READ));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.read_start, DBKey.DATE_READ_START,
-                                        dateFormatter)
-                            .addRelatedViews(R.id.lbl_read_start));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.read_start, DBKey.DATE_READ_START,
+                                       dateFormatter)
+                           .addRelatedViews(R.id.lbl_read_start));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.read_end, DBKey.DATE_READ_END,
-                                        dateFormatter)
-                            .addRelatedViews(R.id.lbl_read_end));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.read_end, DBKey.DATE_READ_END,
+                                       dateFormatter)
+                           .addRelatedViews(R.id.lbl_read_end));
 
-        mFields.add(new BooleanIndicatorField(FragmentId.Main, R.id.signed, DBKey.BOOL_SIGNED));
+        fields.add(new BooleanIndicatorField(FragmentId.Main, R.id.signed, DBKey.BOOL_SIGNED));
 
-        mFields.add(new TextViewField<>(FragmentId.Main, R.id.price_paid, DBKey.PRICE_PAID,
-                                        moneyFormatter)
-                            .addRelatedViews(R.id.lbl_price_paid));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.price_paid, DBKey.PRICE_PAID,
+                                       moneyFormatter)
+                           .addRelatedViews(R.id.lbl_price_paid));
     }
 }

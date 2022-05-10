@@ -45,24 +45,22 @@ public class ShowBookPagerFragment
     public static final String TAG = "ShowBookPagerFragment";
 
     /** View Binding with the ViewPager2. */
-    private ViewPager2 mViewPager;
+    private ViewPager2 viewPager;
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private ShowBookPagerAdapter mPagerAdapter;
+    private ShowBookDetailsActivityViewModel aVm;
 
-    private ShowBookDetailsActivityViewModel mAVm;
     /** Contains ONLY the data relevant to the pager. */
-    private ShowBookPagerViewModel mVm;
+    private ShowBookPagerViewModel vm;
 
     /** Set the hosting Activity result, and close it. */
-    private final OnBackPressedCallback mOnBackPressedCallback =
+    private final OnBackPressedCallback onBackPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
                     // always set the *current* book, so BoB can reposition more accurately.
-                    final long bookId = mVm.getBookIdAtPosition(mViewPager.getCurrentItem());
+                    final long bookId = vm.getBookIdAtPosition(viewPager.getCurrentItem());
                     final Intent resultIntent = EditBookOutput
-                            .createResultIntent(bookId, mAVm.isModified());
+                            .createResultIntent(bookId, aVm.isModified());
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
@@ -76,11 +74,11 @@ public class ShowBookPagerFragment
         final Bundle args = requireArguments();
 
         //noinspection ConstantConditions
-        mAVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
-        mAVm.init(getActivity(), args);
+        aVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
+        aVm.init(getActivity(), args);
 
-        mVm = new ViewModelProvider(this).get(ShowBookPagerViewModel.class);
-        mVm.init(args);
+        vm = new ViewModelProvider(this).get(ShowBookPagerViewModel.class);
+        vm.init(args);
     }
 
     @Override
@@ -91,7 +89,7 @@ public class ShowBookPagerFragment
 
         final View view = inflater.inflate(R.layout.fragment_book_details_pager, container, false);
         // pager == view; but keep it future-proof
-        mViewPager = view.findViewById(R.id.pager);
+        viewPager = view.findViewById(R.id.pager);
         return view;
     }
 
@@ -102,11 +100,11 @@ public class ShowBookPagerFragment
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+                     .addCallback(getViewLifecycleOwner(), onBackPressedCallback);
 
-        mPagerAdapter = new ShowBookPagerAdapter(this);
-        mViewPager.setAdapter(mPagerAdapter);
-        mViewPager.setCurrentItem(mVm.getInitialPagerPosition(), false);
+        final ShowBookPagerAdapter adapter = new ShowBookPagerAdapter(this);
+        viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(vm.getInitialPagerPosition(), false);
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
@@ -124,13 +122,13 @@ public class ShowBookPagerFragment
         @NonNull
         @Override
         public Fragment createFragment(final int position) {
-            return ShowBookDetailsFragment.create(mVm.getBookIdAtPosition(position),
-                                                  mAVm.getStyle().getUuid(), false);
+            return ShowBookDetailsFragment.create(vm.getBookIdAtPosition(position),
+                                                  aVm.getStyle().getUuid(), false);
         }
 
         @Override
         public int getItemCount() {
-            return mVm.getRowCount();
+            return vm.getRowCount();
         }
     }
 }

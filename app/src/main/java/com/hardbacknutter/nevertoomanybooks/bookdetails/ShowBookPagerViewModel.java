@@ -46,22 +46,22 @@ public class ShowBookPagerViewModel
 
     /** <strong>Optionally</strong> passed. */
     @Nullable
-    private BooklistNavigatorDao mNavHelper;
+    private BooklistNavigatorDao navHelper;
 
     /**
      * The <strong>initial</strong> pager position being displayed.
      * This is {@code 0} based as it's the recycler view list position.
      */
     @IntRange(from = 0)
-    private int mInitialPagerPosition;
+    private int initialPagerPosition;
     /** The <strong>initial</strong> book id to show. */
-    private long mInitialBookId;
+    private long initialBookId;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @Override
     public void onCleared() {
-        if (mNavHelper != null) {
-            mNavHelper.close();
+        if (navHelper != null) {
+            navHelper.close();
         }
     }
 
@@ -72,9 +72,9 @@ public class ShowBookPagerViewModel
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void init(@NonNull final Bundle args) {
-        if (mInitialBookId == 0) {
-            mInitialBookId = args.getLong(DBKey.FK_BOOK, 0);
-            SanityCheck.requirePositiveValue(mInitialBookId, DBKey.FK_BOOK);
+        if (initialBookId == 0) {
+            initialBookId = args.getLong(DBKey.FK_BOOK, 0);
+            SanityCheck.requirePositiveValue(initialBookId, DBKey.FK_BOOK);
 
             // the list is optional
             // If present, the user can swipe to the next/previous book in the list.
@@ -82,10 +82,10 @@ public class ShowBookPagerViewModel
             if (navTableName != null && !navTableName.isEmpty()) {
                 final long rowId = args.getLong(BKEY_LIST_TABLE_ROW_ID, 0);
                 SanityCheck.requirePositiveValue(rowId, BKEY_LIST_TABLE_ROW_ID);
-                mNavHelper = new BooklistNavigatorDao(navTableName);
-                mInitialPagerPosition = mNavHelper.getRowNumber(rowId) - 1;
+                navHelper = new BooklistNavigatorDao(navTableName);
+                initialPagerPosition = navHelper.getRowNumber(rowId) - 1;
             } else {
-                mInitialPagerPosition = 0;
+                initialPagerPosition = 0;
             }
         }
     }
@@ -98,13 +98,13 @@ public class ShowBookPagerViewModel
      */
     @IntRange(from = 0)
     int getInitialPagerPosition() {
-        return mInitialPagerPosition;
+        return initialPagerPosition;
     }
 
     @IntRange(from = 1)
     int getRowCount() {
-        if (mNavHelper != null) {
-            return mNavHelper.getRowCount();
+        if (navHelper != null) {
+            return navHelper.getRowCount();
         } else {
             return 1;
         }
@@ -112,9 +112,9 @@ public class ShowBookPagerViewModel
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public long getBookIdAtPosition(@IntRange(from = 0) final int position) {
-        if (mNavHelper != null) {
-            return mNavHelper.getBookIdAtRow(position + 1);
+        if (navHelper != null) {
+            return navHelper.getBookIdAtRow(position + 1);
         }
-        return mInitialBookId;
+        return initialBookId;
     }
 }

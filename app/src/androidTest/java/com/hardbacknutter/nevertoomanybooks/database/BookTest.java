@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +57,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.Constants.COVER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /** Do NOT extend BaseSetup ! */
@@ -270,12 +270,16 @@ public class BookTest {
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
 
-        cover = book.getCoverFile(0);
+        Optional<File> coverFile = book.getCoverFile(0);
+        assertTrue(coverFile.isPresent());
+        cover = coverFile.get();
         assertNotNull(cover);
         assertEquals(mOriginalImageSize[0], cover.length());
         assertEquals(uuid + EXT_JPG, cover.getName());
 
-        cover = book.getCoverFile(1);
+        coverFile = book.getCoverFile(1);
+        assertTrue(coverFile.isPresent());
+        cover = coverFile.get();
         assertNotNull(cover);
         assertEquals(mOriginalImageSize[1], cover.length());
         assertEquals(uuid + "_1" + EXT_JPG, cover.getName());
@@ -310,8 +314,8 @@ public class BookTest {
         cover = new File(coverDir, uuid + "_1" + EXT_JPG);
         assertFalse(cover.exists());
 
-        cover = book.getCoverFile(1);
-        assertNull(cover);
+        coverFile = book.getCoverFile(0);
+        assertFalse(coverFile.isPresent());
 
         /*
          * Add the second cover of the read-only book
@@ -327,7 +331,9 @@ public class BookTest {
         cover = new File(coverDir, uuid + "_1" + EXT_JPG);
         assertTrue(cover.exists());
 
-        cover = book.getCoverFile(1);
+        coverFile = book.getCoverFile(1);
+        assertTrue(coverFile.isPresent());
+        cover = coverFile.get();
         assertNotNull(cover);
         assertEquals(uuid + "_1" + EXT_JPG, cover.getName());
         assertTrue(cover.exists());
@@ -367,9 +373,9 @@ public class BookTest {
         book.putLong(DBKey.SID_ISFDB, Constants.BOOK_ISFDB_123);
         book.putString(DBKey.SID_LCCN, Constants.BOOK_LCCN_0);
 
-        book.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, mBookshelfList);
-        book.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthorList);
-        book.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublisherList);
+        book.setBookshelves(mBookshelfList);
+        book.setAuthors(mAuthorList);
+        book.setPublishers(mPublisherList);
 
         book.setCover(0, new File(CoverDir.getTemp(context), Constants.COVER[0]));
 
@@ -418,7 +424,9 @@ public class BookTest {
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
 
-        final File cover = book.getCoverFile(0);
+        final Optional<File> coverFile = book.getCoverFile(0);
+        assertTrue(coverFile.isPresent());
+        final File cover = coverFile.get();
         assertNotNull(cover);
         assertEquals(mOriginalImageSize[0], cover.length());
         assertEquals(uuid + EXT_JPG, cover.getName());

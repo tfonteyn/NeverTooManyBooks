@@ -39,9 +39,9 @@ import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 public class ShowBookDetailsViewModel
         extends ViewModel {
 
-    private final MutableLiveData<LiveDataEvent<Book>> mBookLoaded = new MutableLiveData<>();
+    private final MutableLiveData<LiveDataEvent<Book>> onBookLoaded = new MutableLiveData<>();
 
-    private Book mBook;
+    private Book book;
 
     /**
      * Pseudo constructor.
@@ -50,74 +50,60 @@ public class ShowBookDetailsViewModel
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void init(@NonNull final Bundle args) {
-        if (mBook == null) {
-            final long bookId = args.getLong(DBKey.FK_BOOK, 0);
-            mBook = Book.from(bookId);
+        if (book == null) {
+            loadBook(args.getLong(DBKey.FK_BOOK, 0));
         }
     }
 
     @NonNull
     public MutableLiveData<LiveDataEvent<Book>> onBookLoaded() {
-        return mBookLoaded;
+        return onBookLoaded;
     }
 
-    void reloadBook(final long bookId) {
-        mBook = Book.from(bookId);
-        mBookLoaded.setValue(new LiveDataEvent<>(mBook));
+    void loadBook(final long bookId) {
+        book = Book.from(bookId);
+        onBookLoaded.setValue(new LiveDataEvent<>(book));
     }
 
     void reloadBook() {
-        Objects.requireNonNull(mBook, "Book not loaded yet");
-        mBook = Book.from(mBook.getId());
-        mBookLoaded.setValue(new LiveDataEvent<>(mBook));
+        Objects.requireNonNull(book, "Book not loaded yet");
+        loadBook(book.getId());
     }
 
     @NonNull
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public Book getBook() {
-        Objects.requireNonNull(mBook, "Book not loaded yet");
-        return mBook;
+        Objects.requireNonNull(book, "Book not loaded yet");
+        return book;
     }
 
     /**
      * The book was returned, remove the loanee.
      *
-     * <strong>Important:</strong> we're not using {@link #mBookLoaded}.
+     * <strong>Important:</strong> we're not using {@link #onBookLoaded}.
      * The caller MUST manually update the display and result-data.
      *
      * @return {@code false} on any failure
      */
     @SuppressWarnings("UnusedReturnValue")
     boolean deleteLoan() {
-        mBook.remove(DBKey.KEY_LOANEE);
-        return ServiceLocator.getInstance().getLoaneeDao().setLoanee(mBook, null);
-    }
-
-    /**
-     * Toggle the read-status for this book.
-     *
-     * <strong>Important:</strong> we're not using {@link #mBookLoaded}.
-     * The caller MUST manually update the display and result-data.
-     *
-     * @return the new 'read' status. If the update failed, this will be the unchanged status.
-     */
-    boolean toggleRead() {
-        return mBook.toggleRead();
+        book.remove(DBKey.KEY_LOANEE);
+        return ServiceLocator.getInstance().getLoaneeDao().setLoanee(book, null);
     }
 
     /**
      * Delete the current book.
      *
-     * <strong>Important:</strong> we're not using {@link #mBookLoaded}.
+     * <strong>Important:</strong> we're not using {@link #onBookLoaded}.
      * The caller MUST manually update the display and result-data.
      *
      * @return {@code false} on any failure
      */
     @SuppressWarnings("UnusedReturnValue")
     boolean deleteBook() {
-        if (ServiceLocator.getInstance().getBookDao().delete(mBook)) {
+        if (ServiceLocator.getInstance().getBookDao().delete(book)) {
             //noinspection ConstantConditions
-            mBook = null;
+            book = null;
             return true;
         } else {
             return false;

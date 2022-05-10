@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -108,8 +109,11 @@ class UserCollectionTest
             assertNotNull(document);
             Assertions.assertTrue(document.hasText());
 
-            final List<Bundle> collection = uc.parseDocument(mContext, document, 1, mLogger);
+            final Optional<List<Bundle>> oCollection =
+                    uc.parseDocument(mContext, document, 1, mLogger);
+            assertTrue(oCollection.isPresent());
 
+            final List<Bundle> collection = oCollection.get();
             assertEquals(3, uc.getMaxPages());
             assertNotNull(collection);
 
@@ -159,7 +163,11 @@ class UserCollectionTest
             assertNotNull(document);
             assertTrue(document.hasText());
 
-            final List<Bundle> collection = uc.parseDocument(mContext, document, 3, mLogger);
+            final Optional<List<Bundle>> oCollection =
+                    uc.parseDocument(mContext, document, 3, mLogger);
+            assertTrue(oCollection.isPresent());
+
+            final List<Bundle> collection = oCollection.get();
             assertNotNull(collection);
             assertEquals(1, collection.size());
         }
