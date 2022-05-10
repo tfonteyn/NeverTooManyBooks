@@ -40,10 +40,10 @@ public class EditBookshelvesViewModel
         extends ViewModel {
 
     /** Currently selected row. */
-    private int mSelectedPosition = RecyclerView.NO_POSITION;
+    private int selectedPosition = RecyclerView.NO_POSITION;
 
     /** The list we're editing. */
-    private List<Bookshelf> mList;
+    private List<Bookshelf> list;
 
     /**
      * Pseudo constructor.
@@ -51,12 +51,12 @@ public class EditBookshelvesViewModel
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     void init(@Nullable final Bundle args) {
-        if (mList == null) {
-            mList = ServiceLocator.getInstance().getBookshelfDao().getAll();
+        if (list == null) {
+            list = ServiceLocator.getInstance().getBookshelfDao().getAll();
             if (args != null) {
                 final long id = args.getLong(DBKey.FK_BOOKSHELF);
                 SanityCheck.requirePositiveValue(id, DBKey.FK_BOOKSHELF);
-                mSelectedPosition = findSelectedPosition(id);
+                selectedPosition = findSelectedPosition(id);
             }
         }
     }
@@ -69,8 +69,8 @@ public class EditBookshelvesViewModel
      * @return position
      */
     private int findSelectedPosition(final long id) {
-        for (int i = 0; i < mList.size(); i++) {
-            final Bookshelf bookshelf = mList.get(i);
+        for (int i = 0; i < list.size(); i++) {
+            final Bookshelf bookshelf = list.get(i);
             if (bookshelf.getId() == id) {
                 return i;
             }
@@ -80,7 +80,8 @@ public class EditBookshelvesViewModel
 
     @NonNull
     List<Bookshelf> getList() {
-        return mList;
+        // used directly by the adapter.
+        return list;
     }
 
     /**
@@ -90,23 +91,23 @@ public class EditBookshelvesViewModel
      */
     @Nullable
     Bookshelf getSelectedBookshelf() {
-        if (mSelectedPosition != RecyclerView.NO_POSITION) {
-            return mList.get(mSelectedPosition);
+        if (selectedPosition != RecyclerView.NO_POSITION) {
+            return list.get(selectedPosition);
         }
         return null;
     }
 
     @NonNull
     Bookshelf getBookshelf(final int position) {
-        return Objects.requireNonNull(mList.get(position), String.valueOf(position));
+        return Objects.requireNonNull(list.get(position), String.valueOf(position));
     }
 
     int getSelectedPosition() {
-        return mSelectedPosition;
+        return selectedPosition;
     }
 
     void setSelectedPosition(final int position) {
-        mSelectedPosition = position;
+        selectedPosition = position;
     }
 
     /**
@@ -115,8 +116,8 @@ public class EditBookshelvesViewModel
      * @return the new 'selected' position
      */
     public int findAndSelect(final int position) {
-        mSelectedPosition = MathUtils.clamp(position - 1, 0, mList.size() - 1);
-        return mSelectedPosition;
+        selectedPosition = MathUtils.clamp(position - 1, 0, list.size() - 1);
+        return selectedPosition;
     }
 
     /**
@@ -126,9 +127,9 @@ public class EditBookshelvesViewModel
      * @param bookshelfId id of the modified Bookshelf
      */
     void onBookshelfEdited(final long bookshelfId) {
-        mList.clear();
-        mList.addAll(ServiceLocator.getInstance().getBookshelfDao().getAll());
-        mSelectedPosition = findSelectedPosition(bookshelfId);
+        list.clear();
+        list.addAll(ServiceLocator.getInstance().getBookshelfDao().getAll());
+        selectedPosition = findSelectedPosition(bookshelfId);
     }
 
     /**
@@ -138,8 +139,8 @@ public class EditBookshelvesViewModel
      */
     void deleteBookshelf(@NonNull final Bookshelf bookshelf) {
         ServiceLocator.getInstance().getBookshelfDao().delete(bookshelf);
-        mList.remove(bookshelf);
-        mSelectedPosition = RecyclerView.NO_POSITION;
+        list.remove(bookshelf);
+        selectedPosition = RecyclerView.NO_POSITION;
     }
 
     /**

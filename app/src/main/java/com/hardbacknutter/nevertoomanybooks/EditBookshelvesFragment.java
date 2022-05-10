@@ -64,24 +64,24 @@ public class EditBookshelvesFragment
 
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
-    private EditBookshelvesViewModel mVm;
+    private EditBookshelvesViewModel vm;
 
     /** React to changes in the adapter. */
-    private final SimpleAdapterDataObserver mAdapterDataObserver =
+    private final SimpleAdapterDataObserver adapterDataObserver =
             new SimpleAdapterDataObserver() {
                 @Override
                 public void onChanged() {
-                    prepareMenu(getToolbar().getMenu(), mVm.getSelectedPosition());
+                    prepareMenu(getToolbar().getMenu(), vm.getSelectedPosition());
                 }
             };
 
     /** Set the hosting Activity result, and close it. */
-    private final OnBackPressedCallback mOnBackPressedCallback =
+    private final OnBackPressedCallback onBackPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
                     final Intent resultIntent = EditBookshelvesContract
-                            .createResultIntent(mVm.getSelectedBookshelf());
+                            .createResultIntent(vm.getSelectedBookshelf());
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
@@ -89,36 +89,36 @@ public class EditBookshelvesFragment
             };
 
     /** The adapter for the list. */
-    private BookshelfAdapter mListAdapter;
+    private BookshelfAdapter adapter;
 
     /** Accept the result from the dialog. */
-    private final EditBookshelfDialogFragment.Launcher mOnEditBookshelfLauncher =
+    private final EditBookshelfDialogFragment.Launcher editBookshelfLauncher =
             new EditBookshelfDialogFragment.Launcher() {
                 @Override
                 public void onResult(final long bookshelfId) {
                     // first update the previous, now unselected, row.
-                    mListAdapter.notifyItemChanged(mVm.getSelectedPosition());
+                    adapter.notifyItemChanged(vm.getSelectedPosition());
                     // store the newly selected row.
-                    mVm.onBookshelfEdited(bookshelfId);
+                    vm.onBookshelfEdited(bookshelfId);
                     // update the newly selected row.
-                    mListAdapter.notifyItemChanged(mVm.getSelectedPosition());
+                    adapter.notifyItemChanged(vm.getSelectedPosition());
                 }
             };
 
     @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider mToolbarMenuProvider;
+    private MenuProvider toolbarMenuProvider;
     /** View Binding. */
-    private FragmentEditBookshelvesBinding mVb;
+    private FragmentEditBookshelvesBinding vb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mVm = new ViewModelProvider(this).get(EditBookshelvesViewModel.class);
-        mVm.init(getArguments());
+        vm = new ViewModelProvider(this).get(EditBookshelvesViewModel.class);
+        vm.init(getArguments());
 
-        mOnEditBookshelfLauncher.registerForFragmentResult(getChildFragmentManager(),
-                                                           RK_EDIT_BOOKSHELF, this);
+        editBookshelfLauncher.registerForFragmentResult(getChildFragmentManager(),
+                                                        RK_EDIT_BOOKSHELF, this);
     }
 
     @Override
@@ -126,8 +126,8 @@ public class EditBookshelvesFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentEditBookshelvesBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentEditBookshelvesBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @Override
@@ -136,13 +136,13 @@ public class EditBookshelvesFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        mToolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
+        toolbarMenuProvider = new ToolbarMenuProvider();
+        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
         toolbar.setTitle(R.string.lbl_bookshelves);
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+                     .addCallback(getViewLifecycleOwner(), onBackPressedCallback);
 
         // FAB button to add a new Bookshelf
         final FloatingActionButton fab = getFab();
@@ -151,18 +151,18 @@ public class EditBookshelvesFragment
         fab.setOnClickListener(v -> editNewBookshelf());
 
         //noinspection ConstantConditions
-        mListAdapter = new BookshelfAdapter(getContext());
-        mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
-        mVb.list.addItemDecoration(
+        adapter = new BookshelfAdapter(getContext());
+        adapter.registerAdapterDataObserver(adapterDataObserver);
+        vb.list.addItemDecoration(
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
-        mVb.list.setHasFixedSize(true);
-        mVb.list.setAdapter(mListAdapter);
+        vb.list.setHasFixedSize(true);
+        vb.list.setAdapter(adapter);
     }
 
     private void editNewBookshelf() {
         //noinspection ConstantConditions
         final ListStyle style = ServiceLocator.getInstance().getStyles().getDefault(getContext());
-        mOnEditBookshelfLauncher.launch(new Bookshelf("", style));
+        editBookshelfLauncher.launch(new Bookshelf("", style));
     }
 
     /**
@@ -188,26 +188,25 @@ public class EditBookshelvesFragment
                                        final int position) {
         final int itemId = menuItem.getItemId();
 
-        final Bookshelf bookshelf = mVm.getBookshelf(position);
+        final Bookshelf bookshelf = vm.getBookshelf(position);
 
         if (itemId == R.id.MENU_EDIT) {
-            mOnEditBookshelfLauncher.launch(bookshelf);
+            editBookshelfLauncher.launch(bookshelf);
             return true;
 
         } else if (itemId == R.id.MENU_DELETE) {
-            final Context context = getContext();
             if (bookshelf.getId() > Bookshelf.DEFAULT) {
                 //noinspection ConstantConditions
-                StandardDialogs.deleteBookshelf(context, bookshelf, () -> {
-                    mVm.deleteBookshelf(bookshelf);
-                    mListAdapter.notifyItemRemoved(position);
-                    mListAdapter.notifyItemChanged(mVm.findAndSelect(position));
+                StandardDialogs.deleteBookshelf(getContext(), bookshelf, () -> {
+                    vm.deleteBookshelf(bookshelf);
+                    adapter.notifyItemRemoved(position);
+                    adapter.notifyItemChanged(vm.findAndSelect(position));
                 });
             } else {
                 //TODO: why not ? as long as we make sure there is another one left..
                 // e.g. count > 2, then you can delete '1'
                 //noinspection ConstantConditions
-                StandardDialogs.showError(context, R.string.warning_cannot_delete_1st_bs);
+                StandardDialogs.showError(getContext(), R.string.warning_cannot_delete_1st_bs);
             }
             return true;
 
@@ -215,7 +214,7 @@ public class EditBookshelvesFragment
             final Context context = getContext();
             //noinspection ConstantConditions
             StandardDialogs.purgeBLNS(context, R.string.lbl_bookshelf, bookshelf.getLabel(context),
-                                      () -> mVm.purgeBLNS(bookshelf.getId()));
+                                      () -> vm.purgeBLNS(bookshelf.getId()));
             return true;
         }
 
@@ -242,13 +241,13 @@ public class EditBookshelvesFragment
                                  @NonNull final MenuInflater menuInflater) {
             MenuCompat.setGroupDividerEnabled(menu, true);
             menuInflater.inflate(R.menu.editing_bookshelves, menu);
-            prepareMenu(menu, mVm.getSelectedPosition());
+            prepareMenu(menu, vm.getSelectedPosition());
         }
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             return EditBookshelvesFragment.this.onMenuItemSelected(menuItem,
-                                                                   mVm.getSelectedPosition());
+                                                                   vm.getSelectedPosition());
         }
     }
 
@@ -257,7 +256,7 @@ public class EditBookshelvesFragment
 
         /** Cached inflater. */
         @NonNull
-        private final LayoutInflater mInflater;
+        private final LayoutInflater inflater;
 
         /**
          * Constructor.
@@ -265,25 +264,25 @@ public class EditBookshelvesFragment
          * @param context Current context
          */
         BookshelfAdapter(@NonNull final Context context) {
-            mInflater = LayoutInflater.from(context);
+            inflater = LayoutInflater.from(context);
         }
 
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final RowEditBookshelfBinding vb = RowEditBookshelfBinding
-                    .inflate(mInflater, parent, false);
-            final Holder holder = new Holder(vb);
+            final RowEditBookshelfBinding hVb = RowEditBookshelfBinding
+                    .inflate(inflater, parent, false);
+            final Holder holder = new Holder(hVb);
 
             // click -> set the row as 'selected'.
             holder.vb.name.setOnClickListener(v -> {
                 // first update the previous, now unselected, row.
-                notifyItemChanged(mVm.getSelectedPosition());
+                notifyItemChanged(vm.getSelectedPosition());
                 // store the newly selected row.
-                mVm.setSelectedPosition(holder.getBindingAdapterPosition());
+                vm.setSelectedPosition(holder.getBindingAdapterPosition());
                 // update the newly selected row.
-                notifyItemChanged(mVm.getSelectedPosition());
+                notifyItemChanged(vm.getSelectedPosition());
             });
 
             // long-click -> context menu
@@ -304,15 +303,15 @@ public class EditBookshelvesFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
-            final Bookshelf bookshelf = mVm.getBookshelf(position);
+            final Bookshelf bookshelf = vm.getBookshelf(position);
 
             holder.vb.name.setText(bookshelf.getName());
-            holder.itemView.setSelected(position == mVm.getSelectedPosition());
+            holder.itemView.setSelected(position == vm.getSelectedPosition());
         }
 
         @Override
         public int getItemCount() {
-            return mVm.getList().size();
+            return vm.getList().size();
         }
     }
 }
