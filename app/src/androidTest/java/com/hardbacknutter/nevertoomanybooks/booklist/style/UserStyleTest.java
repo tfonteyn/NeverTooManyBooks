@@ -39,7 +39,7 @@ public class UserStyleTest
     public void clone01() {
         final Context context = mSl.getLocalizedAppContext();
         final Styles styles = mSl.getStyles();
-        final ListStyle s1 = styles.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
+        final ListStyle s1 = styles.getStyle(context, BuiltinStyle.STYLE_FOR_TESTING_ONLY);
 
         assertNotNull(s1);
 
