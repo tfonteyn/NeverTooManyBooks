@@ -20,8 +20,6 @@
       <option name="ARRAY_WRAPPING" value="0" />
     </JSON>
     <JavaCodeStyleSettings>
-      <option name="FIELD_NAME_PREFIX" value="m" />
-      <option name="STATIC_FIELD_NAME_PREFIX" value="s" />
       <option name="GENERATE_FINAL_LOCALS" value="true" />
       <option name="GENERATE_FINAL_PARAMETERS" value="true" />
       <option name="ANNOTATION_PARAMETER_WRAP" value="1" />
