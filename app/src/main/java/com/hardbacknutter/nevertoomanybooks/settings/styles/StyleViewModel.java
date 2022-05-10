@@ -155,16 +155,15 @@ public class StyleViewModel
 
         // Build an array list with the groups already present in the style
         mWrappedGroupList = new ArrayList<>(styleGroups.size());
-        for (final BooklistGroup group : styleGroups.getGroupList()) {
-            mWrappedGroupList.add(new WrappedGroup(group, true));
-        }
+        styleGroups.getGroupList()
+                   .forEach(group -> mWrappedGroupList.add(new WrappedGroup(group, true)));
+
         // Get all other groups and add any missing ones to the list so the user can
         // add them if wanted.
-        for (final BooklistGroup group : BooklistGroup.getAllGroups(mStyle)) {
-            if (!styleGroups.contains(group.getId())) {
-                mWrappedGroupList.add(new WrappedGroup(group, false));
-            }
-        }
+        BooklistGroup.getAllGroups(mStyle)
+                     .stream()
+                     .filter(group -> !styleGroups.contains(group.getId()))
+                     .forEach(group -> mWrappedGroupList.add(new WrappedGroup(group, false)));
 
         return mWrappedGroupList;
     }
