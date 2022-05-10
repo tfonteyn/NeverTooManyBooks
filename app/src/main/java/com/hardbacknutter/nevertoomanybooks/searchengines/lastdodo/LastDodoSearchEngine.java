@@ -29,6 +29,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -305,16 +306,15 @@ public class LastDodoSearchEngine
             }
         }
 
-        final ArrayList<TocEntry> toc = parseToc(document);
         // We DON'T store a toc with a single entry (i.e. the book title itself).
-        if (toc != null && toc.size() > 1) {
+        parseToc(document).ifPresent(toc -> {
             bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
             if (TocEntry.hasMultipleAuthors(toc)) {
                 bookData.putLong(DBKey.BITMASK_TOC, Book.ContentType.Anthology.value);
             } else {
                 bookData.putLong(DBKey.BITMASK_TOC, Book.ContentType.Collection.value);
             }
-        }
+        });
 
         // store accumulated ArrayList's *after* we parsed the TOC
         if (!mAuthors.isEmpty()) {
@@ -387,10 +387,10 @@ public class LastDodoSearchEngine
      *
      * @param document to parse
      *
-     * @return toc list
+     * @return toc list with at least 2 entries
      */
-    @Nullable
-    private ArrayList<TocEntry> parseToc(@NonNull final Document document) {
+    @NonNull
+    private Optional<ArrayList<TocEntry>> parseToc(@NonNull final Document document) {
         Element section = document.selectFirst("legend:contains(Verhalen in dit Album)");
         if (section != null) {
             final ArrayList<TocEntry> toc = new ArrayList<>();
@@ -400,9 +400,11 @@ public class LastDodoSearchEngine
                     toc.add(new TocEntry(mAuthors.get(0), tr.child(1).text()));
                 }
             }
-            return toc;
+            if (toc.size() > 1) {
+                return Optional.of(toc);
+            }
         }
-        return null;
+        return Optional.empty();
     }
 
 

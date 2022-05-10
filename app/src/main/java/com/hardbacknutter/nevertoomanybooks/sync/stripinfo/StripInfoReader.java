@@ -36,6 +36,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -203,14 +204,14 @@ public class StripInfoReader
                    && !mSearchEngine.isCancelled()) {
 
                 pageNr++;
-                final List<Bundle> page = uc.fetchPage(context, pageNr, progressListener);
-                if (page != null && !page.isEmpty()) {
+                final Optional<List<Bundle>> page = uc.fetchPage(context, pageNr, progressListener);
+                if (page.isPresent()) {
                     // We're committing by page.
                     Synchronizer.SyncLock txLock = null;
                     try {
                         txLock = db.beginTransaction(true);
 
-                        processPage(context, page, progressListener);
+                        processPage(context, page.get(), progressListener);
 
                         db.setTransactionSuccessful();
                     } finally {

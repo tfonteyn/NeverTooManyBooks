@@ -177,9 +177,10 @@ public class BookshelfFiltersDialogFragment
                 .setSingleChoiceItems(items, -1, (dialog, which) -> {
                     final String name = keyList.get(which);
                     if (mList.stream().noneMatch(f -> f.getPrefName().equals(name))) {
-                        final PFilter<?> filter = FilterFactory.create(name);
-                        mList.add(filter);
-                        mListAdapter.notifyItemInserted(mList.size());
+                        FilterFactory.create(name).ifPresent(filter -> {
+                            mList.add(filter);
+                            mListAdapter.notifyItemInserted(mList.size());
+                        });
                     }
 
                     dialog.dismiss();
@@ -400,7 +401,7 @@ public class BookshelfFiltersDialogFragment
             mVb.lblFilter.setText(filter.getLabel(context));
 
             mVb.filter.setText(filter.getValueText(context));
-            mVb.filter.setAdapter(filter.getListAdapter(context));
+            mVb.filter.setAdapter(filter.createListAdapter(context));
 
             mVb.filter.addTextChangedListener(new TextWatcher() {
                 @Override

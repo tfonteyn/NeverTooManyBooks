@@ -40,6 +40,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -484,16 +485,15 @@ public class StripInfoSearchEngine
             mSeries.add(0, series);
         }
 
-        final ArrayList<TocEntry> toc = parseToc(context, document);
         // We DON'T store a toc with a single entry (i.e. the book title itself).
-        if (toc != null && toc.size() > 1) {
+        parseToc(context, document).ifPresent(toc -> {
             bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
             if (TocEntry.hasMultipleAuthors(toc)) {
                 bookData.putLong(DBKey.BITMASK_TOC, Book.ContentType.Anthology.value);
             } else {
                 bookData.putLong(DBKey.BITMASK_TOC, Book.ContentType.Collection.value);
             }
-        }
+        });
 
         // store accumulated ArrayList's *after* we parsed the TOC
         if (!mAuthors.isEmpty()) {
@@ -657,11 +657,11 @@ public class StripInfoSearchEngine
      * @param context  Current context
      * @param document to parse
      *
-     * @return the toc list
+     * @return the toc list with at least 2 entries
      */
-    @Nullable
-    private ArrayList<TocEntry> parseToc(@NonNull final Context context,
-                                         @NonNull final Document document) {
+    @NonNull
+    private Optional<ArrayList<TocEntry>> parseToc(@NonNull final Context context,
+                                                   @NonNull final Document document) {
         for (final Element section : document.select("div.c12")) {
             final Element divs = section.selectFirst("div");
             if (divs != null) {
@@ -706,12 +706,14 @@ public class StripInfoSearchEngine
                                 toc.add(tocEntry);
                             }
                         }
-                        return toc;
+                        if (toc.size() > 1) {
+                            return Optional.of(toc);
+                        }
                     }
                 }
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     /**

@@ -27,13 +27,13 @@ import android.util.Log;
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -166,10 +166,10 @@ public class UserCollection {
      */
     @SuppressLint("DefaultLocale")
     @WorkerThread
-    @Nullable
-    public List<Bundle> fetchPage(@NonNull final Context context,
-                                  final int pageNr,
-                                  @NonNull final ProgressListener progressListener)
+    @NonNull
+    public Optional<List<Bundle>> fetchPage(@NonNull final Context context,
+                                            final int pageNr,
+                                            @NonNull final ProgressListener progressListener)
             throws SearchException, StorageException, IOException {
 
         if (!(pageNr == 0 || mMaxPages > pageNr)) {
@@ -221,7 +221,7 @@ public class UserCollection {
             if (pageNr == 1) {
                 mMaxPages = parseMaxPages(context, root, progressListener);
             }
-            return parsePage(root);
+            return Optional.of(parsePage(root));
         }
 
         if (BuildConfig.DEBUG /* always */) {
@@ -232,7 +232,7 @@ public class UserCollection {
 
         // The last page did not contain 'collectionContent'.
         // Assume we reached the end.
-        return null;
+        return Optional.empty();
     }
 
     /**

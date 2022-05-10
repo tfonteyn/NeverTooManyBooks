@@ -20,9 +20,9 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.Map;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -64,71 +64,71 @@ public final class FilterFactory {
     private FilterFactory() {
     }
 
-    @Nullable
-    public static PFilter<?> create(@NonNull final String name) {
+    @NonNull
+    public static Optional<PFilter<?>> create(@NonNull final String name) {
 
         switch (name) {
             case DBKey.BOOL_READ:
-                return new PBooleanFilter(
+                return Optional.of(new PBooleanFilter(
                         name, R.string.lbl_read, R.array.pe_bob_filter_read,
-                        TBL_BOOKS, DOM_BOOK_READ);
+                        TBL_BOOKS, DOM_BOOK_READ));
 
             case DBKey.BOOL_SIGNED:
-                return new PBooleanFilter(
+                return Optional.of(new PBooleanFilter(
                         name, R.string.lbl_signed, R.array.pe_bob_filter_signed,
-                        TBL_BOOKS, DOM_BOOK_SIGNED);
+                        TBL_BOOKS, DOM_BOOK_SIGNED));
 
             case DBKey.KEY_ISBN:
-                return new PBooleanFilter(
+                return Optional.of(new PBooleanFilter(
                         name, R.string.lbl_isbn, R.array.pe_bob_filter_isbn,
-                        TBL_BOOKS, DOM_BOOK_ISBN);
+                        TBL_BOOKS, DOM_BOOK_ISBN));
 
             case DBKey.BITMASK_TOC:
-                return new PBooleanFilter(
+                return Optional.of(new PBooleanFilter(
                         name, R.string.lbl_anthology, R.array.pe_bob_filter_anthology,
-                        TBL_BOOKS, DOM_BOOK_TOC_BITMASK);
+                        TBL_BOOKS, DOM_BOOK_TOC_BITMASK));
 
             case DBKey.KEY_LOANEE:
-                return new PBooleanFilter(
+                return Optional.of(new PBooleanFilter(
                         name, R.string.lbl_lend_out, R.array.pe_bob_filter_lending,
-                        TBL_BOOK_LOANEE, DOM_LOANEE);
+                        TBL_BOOK_LOANEE, DOM_LOANEE));
 
 
             case DBKey.KEY_COLOR:
-                return new PStringEqualityFilter(
+                return Optional.of(new PStringEqualityFilter(
                         name, R.string.lbl_color,
                         TBL_BOOKS, DOM_BOOK_COLOR,
-                        () -> ServiceLocator.getInstance().getColorDao().getList());
+                        () -> ServiceLocator.getInstance().getColorDao().getList()));
 
             case DBKey.KEY_FORMAT:
-                return new PStringEqualityFilter(
+                return Optional.of(new PStringEqualityFilter(
                         name, R.string.lbl_format,
                         TBL_BOOKS, DOM_BOOK_FORMAT,
-                        () -> ServiceLocator.getInstance().getFormatDao().getList());
+                        () -> ServiceLocator.getInstance().getFormatDao().getList()));
 
             case DBKey.KEY_LANGUAGE:
-                return new PStringEqualityFilter(
+                return Optional.of(new PStringEqualityFilter(
                         name, R.string.lbl_language,
                         TBL_BOOKS, DOM_BOOK_LANGUAGE,
-                        () -> ServiceLocator.getInstance().getLanguageDao().getList());
+                        () -> ServiceLocator.getInstance().getLanguageDao().getList()));
 
 
             case DBKey.FK_BOOKSHELF:
-                return new PEntityListFilter<>(
+                return Optional.of(new PEntityListFilter<>(
                         name, R.string.lbl_bookshelves,
                         TBL_BOOK_BOOKSHELF, DOM_FK_BOOKSHELF,
                         () -> ServiceLocator.getInstance().getBookshelfDao().getAll(),
-                        id -> ServiceLocator.getInstance().getBookshelfDao().getById(id));
+                        id -> ServiceLocator.getInstance().getBookshelfDao().getById(id)));
 
 
             case DBKey.BITMASK_EDITION:
-                return new PBitmaskFilter(
+                return Optional.of(new PBitmaskFilter(
                         name, R.string.lbl_edition,
                         TBL_BOOKS, DOM_BOOK_EDITION_BITMASK,
-                        Book.Edition::getEditions);
+                        Book.Edition::getEditions));
 
             default:
-                return null;
+                return Optional.empty();
         }
     }
 }

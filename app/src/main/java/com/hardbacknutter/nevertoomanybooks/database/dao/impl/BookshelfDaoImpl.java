@@ -206,11 +206,10 @@ public class BookshelfDaoImpl
                 final String name = rowData.getString(DBKey.FILTER_NAME);
                 final String value = rowData.getString(DBKey.FILTER_VALUE, null);
                 if (value != null) {
-                    final PFilter<?> filter = FilterFactory.create(name);
-                    if (filter != null) {
+                    FilterFactory.create(name).ifPresent(filter -> {
                         filter.setValueAsString(value);
                         list.add(filter);
-                    }
+                    });
                 }
             }
         }
