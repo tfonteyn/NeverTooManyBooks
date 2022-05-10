@@ -210,11 +210,11 @@ public class UserCollection {
     }
 
     @VisibleForTesting
-    @Nullable
-    List<Bundle> parseDocument(@NonNull final Context context,
-                               @NonNull final Document document,
-                               final int pageNr,
-                               @NonNull final ProgressListener progressListener)
+    @NonNull
+    Optional<List<Bundle>> parseDocument(@NonNull final Context context,
+                                         @NonNull final Document document,
+                                         final int pageNr,
+                                         @NonNull final ProgressListener progressListener)
             throws SearchException {
         final Element root = document.getElementById("collectionContent");
         if (root != null) {
