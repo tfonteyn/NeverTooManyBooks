@@ -850,27 +850,29 @@ public class XmlRecordReader
             if (mStyle.isUserDefined()) {
                 // we now have the groups themselves (one of the 'flat' prefs) set on the style,
                 // so transfer their specific Preferences.
-                for (final BooklistGroup group : mStyle.getGroups().getGroupList()) {
-                    for (final PPref<?> dest : group.getRawPreferences().values()) {
-                        // do we have this Preference in the imported data?
-                        //noinspection ConstantConditions
-                        final PPref<?> source = mStylePrefs.get(dest.getKey());
-                        if (source != null) {
-                            if (dest instanceof PInt) {
-                                ((PInt) dest).set(((PInt) source).getValue());
+                // do we have this Preference in the imported data?
+                mStyle.getGroups()
+                      .getGroupList()
+                      .stream()
+                      .flatMap(group -> group.getRawPreferences().values().stream())
+                      .forEach(dest -> {
+                          //noinspection ConstantConditions
+                          final PPref<?> source = mStylePrefs.get(dest.getKey());
+                          if (source != null) {
+                              if (dest instanceof PInt) {
+                                  ((PInt) dest).set(((PInt) source).getValue());
 
-                            } else if (dest instanceof PBoolean) {
-                                ((PBoolean) dest).set(((PBoolean) source).getValue());
+                              } else if (dest instanceof PBoolean) {
+                                  ((PBoolean) dest).set(((PBoolean) source).getValue());
 
-                            } else if (dest instanceof PString) {
-                                ((PString) dest).set(((PString) source).getValue());
+                              } else if (dest instanceof PString) {
+                                  ((PString) dest).set(((PString) source).getValue());
 
-                            } else if (dest instanceof PIntList) {
-                                ((PIntList) dest).set(((PIntList) source).getValue());
-                            }
-                        }
-                    }
-                }
+                              } else if (dest instanceof PIntList) {
+                                  ((PIntList) dest).set(((PIntList) source).getValue());
+                              }
+                          }
+                      });
             }
 
             mStyles.updateOrInsert(mStyle);
