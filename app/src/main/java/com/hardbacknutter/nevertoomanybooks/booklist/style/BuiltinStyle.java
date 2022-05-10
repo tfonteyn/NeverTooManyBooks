@@ -48,128 +48,88 @@ public final class BuiltinStyle
     // next max is -20
     public static final int MAX_ID = -19;
 
-
     private static final int ID_AUTHOR_THEN_SERIES = -1;
+    @Deprecated
+    private static final int ID_UNREAD_AUTHOR_THEN_SERIES = -2;
+    private static final int ID_COMPACT = -3;
+    private static final int ID_BOOK_TITLE_FIRST_LETTER = -4;
+    private static final int ID_SERIES = -5;
+    private static final int ID_GENRE = -6;
+    private static final int ID_LENDING = -7;
+    private static final int ID_READ_AND_UNREAD = -8;
+    private static final int ID_PUBLICATION_DATA = -9;
+    private static final int ID_DATE_ADDED = -10;
+    private static final int ID_DATE_ACQUIRED = -11;
+    private static final int ID_AUTHOR_AND_YEAR = -12;
+    private static final int ID_FORMAT = -13;
+    private static final int ID_DATE_READ = -14;
+    private static final int ID_LOCATION = -15;
+    private static final int ID_LANGUAGE = -16;
+    private static final int ID_RATING = -17;
+    private static final int ID_BOOKSHELF = -18;
+    private static final int ID_DATE_LAST_UPDATE = -19;
+
 
     /**
      * Absolute/initial default.
      */
     public static final int DEFAULT_ID = ID_AUTHOR_THEN_SERIES;
-
-    private static final String UUID_AUTHOR_THEN_SERIES
-            = "6a82c4c0-48f1-4130-8a62-bbf478ffe184";
-
-    /**
-     * Absolute/initial default.
-     */
-    public static final String DEFAULT_UUID = UUID_AUTHOR_THEN_SERIES;
-
-    @Deprecated
-    private static final int ID_UNREAD_AUTHOR_THEN_SERIES = -2;
-    @Deprecated
-    private static final String UUID_UNREAD_AUTHOR_THEN_SERIES
-            = "f479e979-c43f-4b0b-9c5b-6942964749df";
-
-    private static final int ID_COMPACT = -3;
-    private static final String UUID_COMPACT
-            = "5e4c3137-a05f-4c4c-853a-bd1dacb6cd16";
-
-    private static final int ID_BOOK_TITLE_FIRST_LETTER = -4;
-    /** We need a random style with a filter for testing. */
-    @VisibleForTesting
-    public static final String UUID_FOR_TESTING_ONLY = UUID_PUBLICATION_DATA;
-
-    private static final int ID_SERIES = -5;
-    private static final String UUID_SERIES
-            = "ad55ebc3-f79d-4cc2-a27d-f06ff0bf2335";
-
-    private static final int ID_GENRE = -6;
-    private static final String UUID_GENRE
-            = "edc5c178-60f0-40e7-9674-e08445b6c942";
-
-    private static final int ID_LENDING = -7;
-    private static final String UUID_LENDING
-            = "e4f1c364-2cbe-467e-a0c1-3ae71bd56fa3";
-
-    private static final int ID_READ_AND_UNREAD = -8;
-    private static final String UUID_READ_AND_UNREAD
-            = "e3678890-7785-4870-9213-333a68293a49";
-
-    private static final int ID_PUBLICATION_DATA = -9;
-    private static final String UUID_PUBLICATION_DATA
-            = "182f5d3c-8fd7-4f3a-b5b0-0c93551d1796";
-
-    private static final int ID_DATE_ADDED = -10;
-    private static final String UUID_DATE_ADDED
-            = "95d7afc0-a70a-4f1f-8d77-aa7ebc60e521";
-
-    private static final int ID_DATE_ACQUIRED = -11;
-    private static final String UUID_DATE_ACQUIRED
-            = "b3255b1f-5b07-4b3e-9700-96c0f8f35a58";
-
-    private static final int ID_AUTHOR_AND_YEAR = -12;
-    private static final String UUID_AUTHOR_AND_YEAR
-            = "7c9ad91e-df7c-415a-a205-cdfabff5465d";
-
-    private static final int ID_FORMAT = -13;
-    private static final String UUID_FORMAT
-            = "bdc43f17-2a95-42ef-b0f8-c750ef920f28";
-
-    private static final int ID_DATE_READ = -14;
-    private static final String UUID_DATE_READ
-            = "034fe547-879b-4fa0-997a-28d769ba5a84";
-
-    private static final int ID_LOCATION = -15;
-    private static final String UUID_LOCATION
-            = "e21a90c9-5150-49ee-a204-0cab301fc5a1";
-
-    private static final int ID_LANGUAGE = -16;
-    private static final String UUID_LANGUAGE
-            = "00379d95-6cb2-40e6-8c3b-f8278f34750a";
-
-    private static final int ID_RATING = -17;
-    private static final String UUID_RATING
-            = "20a2ebdf-81a7-4eca-a3a9-7275062b907a";
-
-    private static final int ID_BOOKSHELF = -18;
-    private static final String UUID_BOOKSHELF
-            = "999d383e-6e76-416a-86f9-960c729aa718";
-
-    private static final int ID_DATE_LAST_UPDATE = -19;
-    private static final String UUID_DATE_LAST_UPDATE
-            = "427a0da5-0779-44b6-89e9-82772e5ad5ef";
-    private static final String UUID_BOOK_TITLE_FIRST_LETTER
-            = "16b4ecdf-edef-4bf2-a682-23f7230446c8";
-
     /**
      * Use the NEGATIVE builtin style id to get the UUID for it. Element 0 is not used.
-     * NEVER change the order.
+     * NEVER change the order; NEVER change the values.
      */
     private static final String[] ID_UUID = {
             "",
-            UUID_AUTHOR_THEN_SERIES,
-            UUID_UNREAD_AUTHOR_THEN_SERIES,
-            UUID_COMPACT,
-            UUID_BOOK_TITLE_FIRST_LETTER,
-            UUID_SERIES,
+            //  1: ID_AUTHOR_THEN_SERIES
+            "6a82c4c0-48f1-4130-8a62-bbf478ffe184",
+            //Deprecated  2: ID_UNREAD_AUTHOR_THEN_SERIES
+            "f479e979-c43f-4b0b-9c5b-6942964749df",
+            //  3: ID_COMPACT
+            "5e4c3137-a05f-4c4c-853a-bd1dacb6cd16",
+            //  4: ID_BOOK_TITLE_FIRST_LETTER
+            "16b4ecdf-edef-4bf2-a682-23f7230446c8",
+            //  5: ID_SERIES
+            "ad55ebc3-f79d-4cc2-a27d-f06ff0bf2335",
 
-            UUID_GENRE,
-            UUID_LENDING,
-            UUID_READ_AND_UNREAD,
-            UUID_PUBLICATION_DATA,
-            UUID_DATE_ADDED,
+            //  6: ID_GENRE
+            "edc5c178-60f0-40e7-9674-e08445b6c942",
+            //  7: ID_LENDING
+            "e4f1c364-2cbe-467e-a0c1-3ae71bd56fa3",
+            //  8: ID_READ_AND_UNREAD
+            "e3678890-7785-4870-9213-333a68293a49",
+            //  9: ID_PUBLICATION_DATA
+            "182f5d3c-8fd7-4f3a-b5b0-0c93551d1796",
+            // 10: ID_DATE_ADDED
+            "95d7afc0-a70a-4f1f-8d77-aa7ebc60e521",
 
-            UUID_DATE_ACQUIRED,
-            UUID_AUTHOR_AND_YEAR,
-            UUID_FORMAT,
-            UUID_DATE_READ,
-            UUID_LOCATION,
+            // 11: ID_DATE_ACQUIRED
+            "b3255b1f-5b07-4b3e-9700-96c0f8f35a58",
+            // 12: ID_AUTHOR_AND_YEAR
+            "7c9ad91e-df7c-415a-a205-cdfabff5465d",
+            // 13: ID_FORMAT
+            "bdc43f17-2a95-42ef-b0f8-c750ef920f28",
+            // 14: ID_DATE_READ
+            "034fe547-879b-4fa0-997a-28d769ba5a84",
+            // 15: ID_LOCATION
+            "e21a90c9-5150-49ee-a204-0cab301fc5a1",
 
-            UUID_LANGUAGE,
-            UUID_RATING,
-            UUID_BOOKSHELF,
-            UUID_DATE_LAST_UPDATE,
+            // 16: ID_LANGUAGE
+            "00379d95-6cb2-40e6-8c3b-f8278f34750a",
+            // 17: ID_RATING
+            "20a2ebdf-81a7-4eca-a3a9-7275062b907a",
+            // 18: ID_BOOKSHELF
+            "999d383e-6e76-416a-86f9-960c729aa718",
+            // 19: ID_DATE_LAST_UPDATE
+            "427a0da5-0779-44b6-89e9-82772e5ad5ef",
             };
+    /**
+     * Absolute/initial default.
+     */
+    public static final String DEFAULT_UUID = ID_UUID[-ID_AUTHOR_THEN_SERIES];
+
+    /** We need a random style with a filter for testing. */
+    @VisibleForTesting
+    public static final String UUID_FOR_TESTING_ONLY = ID_UUID[-ID_PUBLICATION_DATA];
 
     /**
      * Display name of this style.
