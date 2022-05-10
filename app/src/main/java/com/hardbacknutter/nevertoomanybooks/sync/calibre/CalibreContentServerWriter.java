@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -267,9 +266,10 @@ public class CalibreContentServerWriter
                     localBook.getString(DBKey.UTC_DATE_LAST_UPDATED));
 
         final JSONArray authors = new JSONArray();
-        for (final Author author : localBook.getAuthors()) {
-            authors.put(author.getFormattedName(true));
-        }
+        localBook.getAuthors()
+                 .stream()
+                 .map(author -> author.getFormattedName(true))
+                 .forEach(authors::put);
         changes.put(CalibreBook.AUTHOR_ARRAY, authors);
 
         final Optional<Series> optSeries = localBook.getPrimarySeries();
