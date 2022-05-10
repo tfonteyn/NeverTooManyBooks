@@ -142,7 +142,7 @@ public class PEntityListFilter<T extends Entity>
     @NonNull
     @Override
     public Set<Long> getValue() {
-        return new HashSet<>(mValue);
+        return Set.copyOf(mValue);
     }
 
     @Override

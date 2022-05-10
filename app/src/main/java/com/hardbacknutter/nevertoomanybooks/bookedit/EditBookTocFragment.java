@@ -119,7 +119,7 @@ public class EditBookTocFragment
     @SuppressWarnings("FieldCanBeLocal")
     private MenuProvider mToolbarMenuProvider;
     /** the rows. A reference to the parcelled list in the Book. */
-    private ArrayList<TocEntry> mList;
+    private List<TocEntry> mList;
     /** View Binding. */
     private FragmentEditBookTocBinding mVb;
     /** The adapter for the list. */
@@ -289,6 +289,12 @@ public class EditBookTocFragment
         fields.forEach(field -> field.setVisibility(getView(), global, false, false));
     }
 
+    @Override
+    public void onSaveFields(@NonNull final Book book) {
+        super.onSaveFields(book);
+        book.setToc(mList);
+    }
+
     /**
      * Using {@link ExtPopupMenu} for context menus.
      *
@@ -425,13 +431,14 @@ public class EditBookTocFragment
             // update the book with Series information that was gathered from the TOC
             final List<Series> series = result.getParcelableArrayList(Book.BKEY_SERIES_LIST);
             if (series != null && !series.isEmpty()) {
-                final ArrayList<Series> inBook = book.getSeries();
+                final List<Series> inBook = book.getSeries();
                 // add, weeding out duplicates
                 for (final Series s : series) {
                     if (!inBook.contains(s)) {
                         inBook.add(s);
                     }
                 }
+                book.setSeries(inBook);
             }
 
             // update the book with the first publication date that was gathered from the TOC

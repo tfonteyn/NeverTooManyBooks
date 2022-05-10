@@ -76,10 +76,10 @@ public class TocFragment
      * @return new instance
      */
     @NonNull
-    public static Fragment createEmbedded(@NonNull final ArrayList<TocEntry> toc) {
+    public static Fragment createEmbedded(@NonNull final List<TocEntry> toc) {
         final Fragment fragment = new TocFragment();
         final Bundle args = new Bundle(1);
-        args.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
+        args.putParcelableArrayList(Book.BKEY_TOC_LIST, new ArrayList<>(toc));
         fragment.setArguments(args);
         return fragment;
     }
@@ -87,18 +87,16 @@ public class TocFragment
     /**
      * In full screen mode, we display the authors and book title as the Toolbar title/subtitle
      *
-     * @param toc  list
      * @param book for Toolbar info display
      *
      * @return new instance
      */
     @NonNull
-    public static Fragment create(@NonNull final ArrayList<TocEntry> toc,
-                                  @NonNull final Book book) {
+    public static Fragment create(@NonNull final Book book) {
         final Fragment fragment = new TocFragment();
         final Bundle args = new Bundle(4);
-        args.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
-        args.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, book.getAuthors());
+        args.putParcelableArrayList(Book.BKEY_TOC_LIST, new ArrayList<>(book.getToc()));
+        args.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, new ArrayList<>(book.getAuthors()));
         args.putString(DBKey.KEY_TITLE, book.getTitle());
         args.putLong(DBKey.FK_BOOK, book.getId());
         fragment.setArguments(args);

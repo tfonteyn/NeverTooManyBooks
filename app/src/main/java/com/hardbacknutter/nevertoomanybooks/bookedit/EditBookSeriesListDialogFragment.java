@@ -34,7 +34,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -74,7 +73,7 @@ public class EditBookSeriesListDialogFragment
     /** View Binding. */
     private DialogEditBookSeriesListBinding mVb;
     /** the rows. */
-    private ArrayList<Series> mList;
+    private List<Series> mList;
     /** The adapter for the list itself. */
     private SeriesListAdapter mListAdapter;
 

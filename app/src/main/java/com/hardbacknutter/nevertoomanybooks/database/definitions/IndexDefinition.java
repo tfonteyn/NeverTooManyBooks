@@ -76,11 +76,11 @@ class IndexDefinition {
     /**
      * Get a copy of the list with domains.
      *
-     * @return list of domains in index.
+     * @return an immutable List
      */
     @NonNull
     List<Domain> getDomains() {
-        return new ArrayList<>(mDomains);
+        return List.copyOf(mDomains);
     }
 
     @NonNull

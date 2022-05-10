@@ -34,7 +34,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -79,7 +78,7 @@ public class EditBookAuthorListDialogFragment
     /** View Binding. */
     private DialogEditBookAuthorListBinding mVb;
     /** the rows. */
-    private ArrayList<Author> mList;
+    private List<Author> mList;
     /** The adapter for the list itself. */
     private AuthorListAdapter mListAdapter;
 

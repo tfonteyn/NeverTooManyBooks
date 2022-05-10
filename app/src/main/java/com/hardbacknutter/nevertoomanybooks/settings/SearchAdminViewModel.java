@@ -85,10 +85,10 @@ public class SearchAdminViewModel
     /**
      * Get the list of types we're handling.
      *
-     * @return ordered list of types
+     * @return an immutable List
      */
     public List<Site.Type> getTypes() {
-        return new ArrayList<>(mTypeAndSites.keySet());
+        return List.copyOf(mTypeAndSites.keySet());
     }
 
     /**

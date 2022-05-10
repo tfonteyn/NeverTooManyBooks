@@ -34,7 +34,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -115,15 +114,10 @@ public class DataManager
         mRawData.clear();
     }
 
-    /**
-     * Get the set of keys.
-     *
-     * @return a new set
-     */
     @NonNull
     @Override
     public Set<String> keySet() {
-        return new HashSet<>(mRawData.keySet());
+        return Set.copyOf(mRawData.keySet());
     }
 
     /**
@@ -482,6 +476,8 @@ public class DataManager
 
     /**
      * Store a {@link Parcelable} {@link ArrayList} in the collection.
+     * <p>
+     * If possible, AVOID using this method directly.
      *
      * @param key   Key of data object
      * @param value to store
@@ -499,6 +495,8 @@ public class DataManager
 
     /**
      * Store a {@link Parcelable} in the collection.
+     * <p>
+     * If possible, AVOID using this method directly.
      *
      * @param key   Key of data object
      * @param value to store

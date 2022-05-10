@@ -25,7 +25,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -58,7 +57,7 @@ public class CursorRow
     @Override
     @NonNull
     public Set<String> keySet() {
-        return new HashSet<>(Arrays.asList(mCursor.getColumnNames()));
+        return Set.copyOf(Arrays.asList(mCursor.getColumnNames()));
     }
 
     /**

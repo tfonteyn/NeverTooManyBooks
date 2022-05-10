@@ -311,11 +311,11 @@ public class Bookshelf
     /**
      * Get the list of filters.
      *
-     * @return list of {@link PFilter}
+     * @return an immutable List
      */
     @NonNull
     public List<PFilter<?>> getFilters() {
-        return new ArrayList<>(mFilters);
+        return List.copyOf(mFilters);
     }
 
     public void setFilters(@Nullable final List<PFilter<?>> list) {

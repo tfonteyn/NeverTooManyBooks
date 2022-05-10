@@ -30,6 +30,7 @@ import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -243,7 +244,7 @@ public class BoBTask
                         final PEntityListFilter<?> pFilter = (PEntityListFilter<?>)
                                 bookshelfFilter.get();
 
-                        final Set<Long> list = pFilter.getValue();
+                        final Set<Long> list = new HashSet<>(pFilter.getValue());
                         list.add(mBookshelf.getId());
                         pFilter.setValue(list);
 

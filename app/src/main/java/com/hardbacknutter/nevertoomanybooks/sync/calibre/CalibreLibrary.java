@@ -201,12 +201,17 @@ public class CalibreLibrary
         mTotalBooks = totalBooks;
     }
 
+    /**
+     * Get the defined custom fields.
+     *
+     * @return an immutable Set
+     */
     @NonNull
     public Set<CalibreCustomField> getCustomFields() {
-        return mCalibreCustomFields;
+        return Set.copyOf(mCalibreCustomFields);
     }
 
-    void setCustomFields(final Set<CalibreCustomField> calibreCustomFields) {
+    void setCustomFields(@NonNull final Set<CalibreCustomField> calibreCustomFields) {
         mCalibreCustomFields.clear();
         mCalibreCustomFields.addAll(calibreCustomFields);
     }

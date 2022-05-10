@@ -161,7 +161,7 @@ public class PBitmaskFilter
         if (mValue == null) {
             return null;
         } else {
-            return new HashSet<>(mValue);
+            return Set.copyOf(mValue);
         }
     }
 

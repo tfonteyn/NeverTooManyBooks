@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -58,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
  * @see PIntList
  */
 public class Groups
-        implements PPref<ArrayList<Integer>>, PIntList {
+        implements PPref<List<Integer>>, PIntList {
 
     /** Style group preferences. */
     public static final String PK_STYLE_GROUPS = "style.booklist.groups";
@@ -123,20 +124,19 @@ public class Groups
     private void initGroupMap(@Nullable final Collection<Integer> value) {
         mGroupMap.clear();
         if (value != null) {
-            for (@BooklistGroup.Id final int id : value) {
-                mGroupMap.put(id, BooklistGroup.newInstance(id, mPersisted, mStyle));
-            }
+            value.forEach(id -> mGroupMap
+                    .put(id, BooklistGroup.newInstance(id, mPersisted, mStyle)));
         }
     }
 
     /**
      * Get all groups assigned to this style.
      *
-     * @return group list
+     * @return an immutable List
      */
     @NonNull
-    public ArrayList<BooklistGroup> getGroupList() {
-        return new ArrayList<>(mGroupMap.values());
+    public List<BooklistGroup> getGroupList() {
+        return List.copyOf(mGroupMap.values());
     }
 
     /**
@@ -255,7 +255,7 @@ public class Groups
     }
 
     @Override
-    public void set(@Nullable final ArrayList<Integer> value) {
+    public void set(@Nullable final List<Integer> value) {
         if (mPersisted) {
             mStyle.getPersistenceLayer().setStringedIntList(mKey, value);
         } else {
@@ -309,12 +309,9 @@ public class Groups
             if (list != null && !list.isEmpty()) {
                 // create a new list, and copy the elements from the old list
                 // except the one to remove
-                final List<String> newList = new ArrayList<>();
-                for (final String e : list.split(DELIM)) {
-                    if (!e.equals(String.valueOf(id))) {
-                        newList.add(e);
-                    }
-                }
+                final List<String> newList = Arrays.stream(list.split(DELIM))
+                                                   .filter(e -> !e.equals(String.valueOf(id)))
+                                                   .collect(Collectors.toList());
                 if (newList.isEmpty()) {
                     persistenceLayer.remove(mKey);
                 } else {
@@ -339,9 +336,7 @@ public class Groups
         // the actual groups which is a list of integers => the group id's
         map.put(mKey, this);
         // flatten each group specific preferences
-        for (final BooklistGroup group : getGroupList()) {
-            map.putAll(group.getRawPreferences());
-        }
+        getGroupList().stream().map(BooklistGroup::getRawPreferences).forEach(map::putAll);
         return map;
     }
 

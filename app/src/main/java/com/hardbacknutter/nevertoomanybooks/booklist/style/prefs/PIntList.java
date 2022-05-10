@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -53,7 +54,7 @@ public interface PIntList {
         }
     }
 
-    void set(@Nullable ArrayList<Integer> value);
+    void set(@Nullable List<Integer> value);
 
     @NonNull
     ArrayList<Integer> getValue();
