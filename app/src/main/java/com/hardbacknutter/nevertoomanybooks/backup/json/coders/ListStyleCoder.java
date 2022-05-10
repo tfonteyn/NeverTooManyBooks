@@ -30,7 +30,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PIntList;
@@ -118,13 +117,12 @@ public class ListStyleCoder
             }
             // The style will now have the 'Groups id list' preference set,
             // so read it, and collect the individual group prefs if we have them
-            for (final BooklistGroup group : style.getGroups().getGroupList()) {
-                for (final PPref<?> groupPref : group.getRawPreferences().values()) {
-                    if (source.has(groupPref.getKey())) {
-                        transfer(source, groupPref);
-                    }
-                }
-            }
+            style.getGroups()
+                 .getGroupList()
+                 .stream()
+                 .flatMap(group -> group.getRawPreferences().values().stream())
+                 .filter(groupPref -> source.has(groupPref.getKey()))
+                 .forEach(groupPref -> transfer(source, groupPref));
             return style;
 
         } else {
