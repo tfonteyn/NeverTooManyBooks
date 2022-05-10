@@ -38,7 +38,7 @@ public class SeriesBooklistGroupTest
     public void cc() {
         final Context context = mSl.getLocalizedAppContext();
         final Styles styles = mSl.getStyles();
-        final ListStyle s1 = styles.getStyle(context, BuiltinStyle.STYLE_FOR_TESTING_ONLY);
+        final ListStyle s1 = styles.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
         assertNotNull(s1);
 
         final BooklistGroup g1 = BooklistGroup.newInstance(BooklistGroup.SERIES, false, s1);

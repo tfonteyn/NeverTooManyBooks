@@ -74,7 +74,7 @@ public final class BuiltinStyle
     private static final int ID_BOOK_TITLE_FIRST_LETTER = -4;
     /** We need a random style with a filter for testing. */
     @VisibleForTesting
-    public static final String STYLE_FOR_TESTING_ONLY = UUID_PUBLICATION_DATA;
+    public static final String UUID_FOR_TESTING_ONLY = UUID_PUBLICATION_DATA;
 
     private static final int ID_SERIES = -5;
     private static final String UUID_SERIES
