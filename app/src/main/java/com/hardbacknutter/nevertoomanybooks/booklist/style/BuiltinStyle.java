@@ -51,15 +51,18 @@ public final class BuiltinStyle
 
     private static final int ID_AUTHOR_THEN_SERIES = -1;
 
-    /** Absolute/initial default. */
+    /**
+     * Absolute/initial default.
+     */
     public static final int DEFAULT_ID = ID_AUTHOR_THEN_SERIES;
 
     private static final String UUID_AUTHOR_THEN_SERIES
             = "6a82c4c0-48f1-4130-8a62-bbf478ffe184";
 
-    /** Absolute/initial default. */
+    /**
+     * Absolute/initial default.
+     */
     public static final String DEFAULT_UUID = UUID_AUTHOR_THEN_SERIES;
-
 
     @Deprecated
     private static final int ID_UNREAD_AUTHOR_THEN_SERIES = -2;
@@ -95,8 +98,6 @@ public final class BuiltinStyle
     private static final int ID_PUBLICATION_DATA = -9;
     private static final String UUID_PUBLICATION_DATA
             = "182f5d3c-8fd7-4f3a-b5b0-0c93551d1796";
-    private static final String UUID_BOOK_TITLE_FIRST_LETTER
-            = "16b4ecdf-edef-4bf2-a682-23f7230446c8";
 
     private static final int ID_DATE_ADDED = -10;
     private static final String UUID_DATE_ADDED
@@ -137,6 +138,8 @@ public final class BuiltinStyle
     private static final int ID_DATE_LAST_UPDATE = -19;
     private static final String UUID_DATE_LAST_UPDATE
             = "427a0da5-0779-44b6-89e9-82772e5ad5ef";
+    private static final String UUID_BOOK_TITLE_FIRST_LETTER
+            = "16b4ecdf-edef-4bf2-a682-23f7230446c8";
 
     /**
      * Use the NEGATIVE builtin style id to get the UUID for it. Element 0 is not used.
