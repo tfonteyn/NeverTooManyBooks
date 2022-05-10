@@ -144,6 +144,7 @@ public class SearchCriteria
 
     @NonNull
     public ArrayList<Long> getBookIdList() {
+        // used directly!
         return mBookIdList;
     }
 

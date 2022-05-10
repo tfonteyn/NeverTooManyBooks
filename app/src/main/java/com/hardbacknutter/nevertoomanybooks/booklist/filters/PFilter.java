@@ -66,7 +66,9 @@ public interface PFilter<T>
     /**
      * Get the typed value.
      * <p>
-     * Implementations <strong>MUST</strong> return a copy of the internal value.
+     * Implementations <strong>MUST</strong> return an immutable copy of the internal value.
+     *
+     * @return immutable object or {@code null}
      */
     @Nullable
     T getValue();

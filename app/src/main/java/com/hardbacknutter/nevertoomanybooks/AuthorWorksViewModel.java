@@ -135,6 +135,7 @@ public class AuthorWorksViewModel
 
     @NonNull
     ArrayList<AuthorWork> getList() {
+        // used directly by the adapter
         return mList;
     }
 

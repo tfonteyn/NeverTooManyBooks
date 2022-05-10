@@ -85,6 +85,7 @@ public class CalibreDaoImpl
 
         final CalibreLibraryDao libraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
         final CalibreLibrary library;
+        //reminder: do not use book.getCalibreLibrary(); that would be pointless here
         if (book.contains(Book.BKEY_CALIBRE_LIBRARY)) {
             library = book.getParcelable(Book.BKEY_CALIBRE_LIBRARY);
 

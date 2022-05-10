@@ -238,6 +238,7 @@ public class CoverBrowserViewModel
 
     @NonNull
     public ArrayList<String> getEditions() {
+        // used directly
         return mEditions;
     }
 
