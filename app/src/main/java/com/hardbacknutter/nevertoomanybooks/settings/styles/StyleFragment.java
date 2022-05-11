@@ -31,6 +31,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.EditTextPreference;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SeekBarPreference;
 import androidx.preference.SwitchPreference;
@@ -85,6 +86,16 @@ public class StyleFragment
     /** Flag: prompt for the name of cloned styles. */
     private boolean mNameSet;
 
+    private EditTextPreference pName;
+    private Preference pCoverScale;
+    private Preference pTextScale;
+    private SeekBarPreference pExpansionLevel;
+    private Preference pListHeader;
+    private Preference pPrimaryAuthorType;
+    private Preference pShowDetails;
+    private Preference pGroups;
+
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
@@ -95,22 +106,25 @@ public class StyleFragment
             mNameSet = savedInstanceState.getBoolean(SIS_NAME_SET);
         }
 
-        final EditTextPreference etp = findPreference(UserStyle.PK_STYLE_NAME);
-        //noinspection ConstantConditions
-        etp.setOnBindEditTextListener(editText -> {
+        pName = findPreference(UserStyle.PK_STYLE_NAME);
+        pExpansionLevel = findPreference(UserStyle.PK_LEVELS_EXPANSION);
+        pCoverScale = findPreference(ListScreenBookFields.PK_COVER_SCALE);
+        pTextScale = findPreference(TextScale.PK_TEXT_SCALE);
+        pListHeader = findPreference(BooklistStyle.PK_LIST_HEADER);
+        pPrimaryAuthorType = findPreference(AuthorBooklistGroup.PK_PRIMARY_TYPE);
+        pShowDetails = findPreference(PSK_STYLE_SHOW_DETAILS);
+        pGroups = findPreference(Groups.PK_STYLE_GROUPS);
+
+        pName.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
+        pListHeader.setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
+        pPrimaryAuthorType.setSummaryProvider(
+                MultiSelectListPreferenceSummaryProvider.getInstance());
+
+        pName.setOnBindEditTextListener(editText -> {
             editText.setInputType(InputType.TYPE_CLASS_TEXT
                                   | InputType.TYPE_TEXT_VARIATION_URI);
             editText.selectAll();
         });
-        etp.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
-
-        //noinspection ConstantConditions
-        findPreference(BooklistStyle.PK_LIST_HEADER)
-                .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
-
-        //noinspection ConstantConditions
-        findPreference(AuthorBooklistGroup.PK_PRIMARY_TYPE)
-                .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
     }
 
     @Override
@@ -151,8 +165,7 @@ public class StyleFragment
 
         // for new (i.e. cloned) styles, auto-popup the name field for the user to change it.
         if (style.getId() == 0) {
-            //noinspection ConstantConditions
-            findPreference(UserStyle.PK_STYLE_NAME).setViewId(R.id.STYLE_NAME_VIEW);
+            pName.setViewId(R.id.STYLE_NAME_VIEW);
             // We need this convoluted approach as the view we want to click
             // will only exist after the RecyclerView has bound it.
             getListView().addOnChildAttachStateChangeListener(
@@ -195,15 +208,11 @@ public class StyleFragment
                 .setSummary(mVm.getStyle().getListScreenBookFields()
                                .getCoverScaleSummaryText(getContext()));
 
-        //noinspection ConstantConditions
-        findPreference(TextScale.PK_TEXT_SCALE)
-                .setSummary(mVm.getStyle().getTextScale().getSummaryText(getContext()));
+        pTextScale.setSummary(mVm.getStyle().getTextScale().getSummaryText(getContext()));
 
         // the 'level expansion' depends on the number of groups in use
-        final SeekBarPreference levelExpPref = findPreference(UserStyle.PK_LEVELS_EXPANSION);
-        //noinspection ConstantConditions
-        levelExpPref.setMax(style.getGroups().size());
-        levelExpPref.setValue(style.getTopLevel());
+        pExpansionLevel.setMax(style.getGroups().size());
+        pExpansionLevel.setValue(style.getExpansionLevel());
     }
 
     @Override
