@@ -314,7 +314,7 @@ public class Styles {
         if (ServiceLocator.getInstance().getStyleDao().delete(style)) {
             if (style.isUserDefined()) {
                 mCache.remove(style.getUuid());
-                context.deleteSharedPreferences(style.getUuid());
+                ((UserStyle) style).discard(context);
             }
             return true;
         }

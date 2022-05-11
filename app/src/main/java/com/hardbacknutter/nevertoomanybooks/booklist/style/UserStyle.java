@@ -154,6 +154,21 @@ public class UserStyle
         return new UserStyle(context, uuid);
     }
 
+    /**
+     * Discard this style by deleting the SharedPreferences file.
+     * This can only be done for a cloned (new) style which have not been
+     * persisted to the database.
+     *
+     * @param context Current context
+     */
+    public void discard(@NonNull final Context context) {
+        if (getId() != 0) {
+            throw new IllegalArgumentException("Style already persisted");
+        }
+        context.deleteSharedPreferences(getUuid());
+    }
+
+
     public void setName(@NonNull final String name) {
         mPersistenceLayer.setString(PK_STYLE_NAME, name);
     }

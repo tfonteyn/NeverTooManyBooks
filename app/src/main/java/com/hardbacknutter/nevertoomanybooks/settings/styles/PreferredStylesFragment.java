@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditPreferredStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -119,7 +120,7 @@ public class PreferredStylesFragment
                         // The style was not modified. If this was a cloned (new) style,
                         // discard it by deleting the SharedPreferences file
                         if (style != null && style.getId() == 0) {
-                            getContext().deleteSharedPreferences(style.getUuid());
+                            ((UserStyle) style).discard(getContext());
                         }
                     }
                 }
