@@ -195,18 +195,13 @@ public class StyleFragment
 
         // the 'book details' fields in use.
         //noinspection ConstantConditions
-        findPreference(PSK_STYLE_SHOW_DETAILS)
-                .setSummary(style.getListScreenBookFields().getSummaryText(getContext()));
+        pShowDetails.setSummary(style.getListScreenBookFields().getSummaryText(getContext()));
 
         // the 'groups' in use.
-        //noinspection ConstantConditions
-        findPreference(Groups.PK_STYLE_GROUPS)
-                .setSummary(style.getGroups().getSummaryText(getContext()));
+        pGroups.setSummary(style.getGroups().getSummaryText(getContext()));
 
-        //noinspection ConstantConditions
-        findPreference(ListScreenBookFields.PK_COVER_SCALE)
-                .setSummary(mVm.getStyle().getListScreenBookFields()
-                               .getCoverScaleSummaryText(getContext()));
+        pCoverScale.setSummary(mVm.getStyle().getListScreenBookFields()
+                                  .getCoverScaleSummaryText(getContext()));
 
         pTextScale.setSummary(mVm.getStyle().getTextScale().getSummaryText(getContext()));
 

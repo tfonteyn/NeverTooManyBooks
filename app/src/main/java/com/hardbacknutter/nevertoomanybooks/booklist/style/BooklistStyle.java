@@ -267,6 +267,10 @@ public abstract class BooklistStyle
         return level;
     }
 
+    public void setExpansionLevel(@IntRange(from = 1) final int value) {
+        mExpansionLevel.set(value);
+    }
+
     @Override
     @NonNull
     public String getUuid() {

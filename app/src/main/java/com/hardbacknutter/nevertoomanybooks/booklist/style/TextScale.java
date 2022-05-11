@@ -90,6 +90,10 @@ public class TextScale {
         mScale = new PInteger(isPersistent, persistenceLayer, textScale.mScale);
     }
 
+    public int getScale() {
+        return mScale.getValue();
+    }
+
     /**
      * Used by built-in styles only. Set by user via preferences screen.
      *
