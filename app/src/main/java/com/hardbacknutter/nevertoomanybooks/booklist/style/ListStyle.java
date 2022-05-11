@@ -175,7 +175,7 @@ public interface ListStyle {
      * @return level
      */
     @IntRange(from = 1)
-    int getTopLevel();
+    int getExpansionLevel();
 
     /**
      * Get the group row <strong>height</strong> to be applied to

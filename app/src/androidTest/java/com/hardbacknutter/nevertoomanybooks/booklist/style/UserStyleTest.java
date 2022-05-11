@@ -75,7 +75,7 @@ public class UserStyleTest
                      s2.isShowHeader(ListStyle.HEADER_SHOW_FILTER));
 
         assertEquals(s1.getGroupRowHeight(context), s2.getGroupRowHeight(context));
-        assertEquals(s1.getTopLevel(), s2.getTopLevel());
+        assertEquals(s1.getExpansionLevel(), s2.getExpansionLevel());
 
         assertEquals(s1.isShowBooksUnderEachAuthor(), s2.isShowBooksUnderEachAuthor());
         assertEquals(s1.isShowBooksUnderEachBookshelf(), s2.isShowBooksUnderEachBookshelf());

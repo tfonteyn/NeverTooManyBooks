@@ -173,6 +173,12 @@ public class UserStyle
         mPersistenceLayer.setString(PK_STYLE_NAME, name);
     }
 
+    @NonNull
+    public String getName() {
+        //noinspection ConstantConditions
+        return mPersistenceLayer.getNonGlobalString(PK_STYLE_NAME);
+    }
+
     @Override
     public boolean isUserDefined() {
         return true;
@@ -187,7 +193,6 @@ public class UserStyle
     @Override
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        //noinspection ConstantConditions
-        return mPersistenceLayer.getNonGlobalString(PK_STYLE_NAME);
+        return getName();
     }
 }

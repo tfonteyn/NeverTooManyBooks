@@ -268,7 +268,7 @@ class BooklistBuilder {
 
                 case Preferred:
                     // all rows will be collapsed/hidden; now adjust as required.
-                    rowStateDAO.setAllNodes(mStyle.getTopLevel(), false);
+                    rowStateDAO.setAllNodes(mStyle.getExpansionLevel(), false);
                     break;
 
                 case Expanded:

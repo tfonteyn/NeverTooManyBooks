@@ -102,46 +102,6 @@ public class StyleSharedPreferences
         }
     }
 
-    public static int getBitmaskPref(@NonNull final SharedPreferences preferences,
-                                     @NonNull final String key,
-                                     final int defValue) {
-        // an empty set is a valid result
-        final Set<String> stringSet = preferences.getStringSet(key, null);
-        if (stringSet == null || stringSet.isEmpty()) {
-            return defValue;
-        }
-
-        // we should never have an invalid setting in the prefs... flw
-        try {
-            return getStringSetAsBitmask(stringSet);
-        } catch (@NonNull final NumberFormatException ignore) {
-            return defValue;
-        }
-    }
-
-    public static int getBitmaskPref(@NonNull final String key,
-                                     final int defValue) {
-        return getBitmaskPref(ServiceLocator.getGlobalPreferences(), key, defValue);
-    }
-
-    /**
-     * Parse and combine the values in the set into a bitmask.
-     *
-     * @param stringSet to parse
-     *
-     * @return bitmask
-     *
-     * @throws NumberFormatException is for some reason the stored value cannot be parsed
-     */
-    @IntRange(from = 0, to = 0xFFFF)
-    public static int getStringSetAsBitmask(@NonNull final Set<String> stringSet) {
-        int bitmask = 0;
-        for (final String s : stringSet) {
-            bitmask |= Integer.parseInt(s);
-        }
-        return bitmask;
-    }
-
     /**
      * Split a CSV String into a List.
      *
@@ -164,6 +124,62 @@ public class StyleSharedPreferences
             // in which case we bail out gracefully
             return new ArrayList<>();
         }
+    }
+
+    public static int getBitmaskPref(@NonNull final SharedPreferences preferences,
+                                     @NonNull final String key,
+                                     final int defValue) {
+        // an empty set is a valid result
+        final Set<String> stringSet = preferences.getStringSet(key, null);
+        if (stringSet == null || stringSet.isEmpty()) {
+            return defValue;
+        }
+
+        // we should never have an invalid setting in the prefs... flw
+        try {
+            return convert(stringSet);
+        } catch (@NonNull final NumberFormatException ignore) {
+            return defValue;
+        }
+    }
+
+    public static int getBitmaskPref(@NonNull final String key,
+                                     final int defValue) {
+        return getBitmaskPref(ServiceLocator.getGlobalPreferences(), key, defValue);
+    }
+
+    /**
+     * Parse and combine the values in the set into a bitmask.
+     *
+     * @param stringSet to parse
+     *
+     * @return bitmask
+     *
+     * @throws NumberFormatException is for some reason the stored value cannot be parsed
+     */
+    @IntRange(from = 0, to = 0xFFFF)
+    public static int convert(@NonNull final Set<String> stringSet) {
+        int bitmask = 0;
+        for (final String s : stringSet) {
+            bitmask |= Integer.parseInt(s);
+        }
+        return bitmask;
+    }
+
+    @NonNull
+    public static Set<String> convert(final int value) {
+        final Set<String> stringSet = new HashSet<>();
+        int tmp = value;
+        int bit = 1;
+        while (tmp != 0) {
+            if ((tmp & 1) == 1) {
+                stringSet.add(String.valueOf(bit));
+            }
+            bit *= 2;
+            // unsigned shift
+            tmp = tmp >>> 1;
+        }
+        return stringSet;
     }
 
     @Override
@@ -261,17 +277,7 @@ public class StyleSharedPreferences
                 throw new IllegalArgumentException(Integer.toBinaryString(value));
             }
 
-            final Set<String> stringSet = new HashSet<>();
-            int tmp = value;
-            int bit = 1;
-            while (tmp != 0) {
-                if ((tmp & 1) == 1) {
-                    stringSet.add(String.valueOf(bit));
-                }
-                bit *= 2;
-                // unsigned shift
-                tmp = tmp >>> 1;
-            }
+            final Set<String> stringSet = convert(value);
             stylePrefs.edit().putStringSet(key, stringSet).apply();
         }
     }
@@ -283,12 +289,12 @@ public class StyleSharedPreferences
 
         Set<String> stringSet = stylePrefs.getStringSet(key, null);
         if (stringSet != null) {
-            return getStringSetAsBitmask(stringSet);
+            return convert(stringSet);
         }
 
         stringSet = globalPrefs.getStringSet(key, null);
         if (stringSet != null) {
-            return getStringSetAsBitmask(stringSet);
+            return convert(stringSet);
         }
 
         return null;

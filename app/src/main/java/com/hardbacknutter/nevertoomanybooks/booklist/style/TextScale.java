@@ -96,7 +96,7 @@ public class TextScale {
      * @param scale id
      */
     @SuppressWarnings("SameParameterValue")
-    void set(@Scale final int scale) {
+    public void setScale(@Scale final int scale) {
         mScale.set(scale);
     }
 

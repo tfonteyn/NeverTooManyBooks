@@ -104,6 +104,10 @@ public class ListScreenBookFields
         mThumbnailScale = new PInteger(isPersistent, persistenceLayer, bookFields.mThumbnailScale);
     }
 
+    public void setCoverScale(@ListStyle.CoverScale final int value) {
+        mThumbnailScale.set(value);
+    }
+
     /**
      * Get the scale <strong>identifier</strong> for the thumbnail size preferred.
      *
@@ -241,5 +245,4 @@ public class ListScreenBookFields
                + ", mThumbnailScale=" + mThumbnailScale
                + '}';
     }
-
 }

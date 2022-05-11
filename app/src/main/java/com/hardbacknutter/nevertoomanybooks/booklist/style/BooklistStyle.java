@@ -24,11 +24,13 @@ import android.view.ViewGroup;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.preference.MultiSelectListPreference;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -228,6 +230,19 @@ public abstract class BooklistStyle
         return (mShowHeaderInfo.getValue() & headerMask) != 0;
     }
 
+    @Nullable
+    public Set<String> getShowHeaderInfo() {
+        return StyleSharedPreferences.convert(mShowHeaderInfo.getValue());
+    }
+
+    public void setShowHeaderInfo(@Nullable final Set<String> values) {
+        if (values == null) {
+            this.mShowHeaderInfo.set(null);
+        } else {
+            this.mShowHeaderInfo.set(StyleSharedPreferences.convert(values));
+        }
+    }
+
     @Override
     public int getGroupRowHeight(@NonNull final Context context) {
         if (mUseGroupRowPreferredHeight.getValue()) {
@@ -243,7 +258,7 @@ public abstract class BooklistStyle
 
     @Override
     @IntRange(from = 1)
-    public int getTopLevel() {
+    public int getExpansionLevel() {
         // limit to the amount of groups!
         int level = mExpansionLevel.getValue();
         if (level > mGroups.size()) {

@@ -2008,7 +2008,7 @@ public class BooksOnBookshelf
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
             final boolean showPreferredOption =
-                    mVm.getStyle(BooksOnBookshelf.this).getTopLevel() > 1;
+                    mVm.getStyle(BooksOnBookshelf.this).getExpansionLevel() > 1;
             menu.findItem(R.id.MENU_LEVEL_PREFERRED_EXPANSION).setVisible(showPreferredOption);
         }
 
@@ -2027,7 +2027,7 @@ public class BooksOnBookshelf
                 return true;
 
             } else if (itemId == R.id.MENU_LEVEL_PREFERRED_EXPANSION) {
-                expandAllNodes(mVm.getStyle(BooksOnBookshelf.this).getTopLevel(), false);
+                expandAllNodes(mVm.getStyle(BooksOnBookshelf.this).getExpansionLevel(), false);
                 return true;
 
             } else if (itemId == R.id.MENU_LEVEL_EXPAND) {

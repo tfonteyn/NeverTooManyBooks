@@ -242,7 +242,7 @@ public final class BuiltinStyle
                                          R.string.style_builtin_compact,
                                          isPreferred, menuPosition,
                                          BooklistGroup.AUTHOR);
-                style.getTextScale().set(TextScale.TEXT_SCALE_1_SMALL);
+                style.getTextScale().setScale(TextScale.TEXT_SCALE_1_SMALL);
                 style.getListScreenBookFields()
                      .setShowField(ListScreenBookFields.PK_COVERS, false);
                 break;
