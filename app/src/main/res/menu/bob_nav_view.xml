@@ -34,7 +34,7 @@
 
     <item
         android:id="@id/MENU_MANAGE_LIST_STYLES"
-        android:icon="@drawable/ic_baseline_details_24"
+        android:icon="@drawable/ic_baseline_style_24"
         android:title="@string/lbl_styles_long" />
 
 
