@@ -73,10 +73,12 @@ public class ListStyleCoder
         out.put(DBKey.KEY_STYLE_MENU_POSITION, style.getMenuPosition());
 
         if (style.isUserDefined()) {
-            out.put(STYLE_NAME, style.getLabel(mContext));
+            final UserStyle userStyle = (UserStyle) style;
+
+            out.put(STYLE_NAME, userStyle.getName());
 
             final JSONObject dest = new JSONObject();
-            for (final PPref<?> source : style.getRawPreferences().values()) {
+            for (final PPref<?> source : userStyle.getRawPreferences().values()) {
                 if (source instanceof PInt
                     || source instanceof PBoolean
                     || source instanceof PString) {
@@ -109,10 +111,10 @@ public class ListStyleCoder
             return style;
 
         } else {
-            final UserStyle style = UserStyle.createFromImport(mContext, uuid);
-            style.setName(data.getString(STYLE_NAME));
-            style.setPreferred(data.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED));
-            style.setMenuPosition(data.getInt(DBKey.KEY_STYLE_MENU_POSITION));
+            final UserStyle userStyle = UserStyle.createFromImport(mContext, uuid);
+            userStyle.setName(data.getString(STYLE_NAME));
+            userStyle.setPreferred(data.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED));
+            userStyle.setMenuPosition(data.getInt(DBKey.KEY_STYLE_MENU_POSITION));
 
             // any element in the source which we don't know, will simply be ignored.
             final JSONObject source = data.getJSONObject(STYLE_SETTINGS);
@@ -120,21 +122,21 @@ public class ListStyleCoder
             // This values list will have the 'Groups' preference itself,
             // but it will be empty, and hence the list will not have any group preferences
             // First copy the base preferences, including the Groups id list.
-            style.getRawPreferences()
-                 .values()
-                 .stream()
+            userStyle.getRawPreferences()
+                     .values()
+                     .stream()
                  .filter(stylePref -> source.has(stylePref.getKey()))
                  .forEach(stylePref -> transfer(source, stylePref));
 
             // The style will now have the 'Groups id list' preference set,
             // so read it, and collect the individual group prefs if we have them
-            style.getGroups()
-                 .getGroupList()
-                 .stream()
-                 .flatMap(group -> group.getRawPreferences().values().stream())
-                 .filter(groupPref -> source.has(groupPref.getKey()))
-                 .forEach(groupPref -> transfer(source, groupPref));
-            return style;
+            userStyle.getGroups()
+                     .getGroupList()
+                     .stream()
+                     .flatMap(group -> group.getRawPreferences().values().stream())
+                     .filter(groupPref -> source.has(groupPref.getKey()))
+                     .forEach(groupPref -> transfer(source, groupPref));
+            return userStyle;
 
         }
     }

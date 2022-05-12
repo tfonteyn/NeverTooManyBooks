@@ -809,13 +809,15 @@ public class XmlRecordReader
 
             } else {
                 mStyle = UserStyle.createFromImport(mContext, uuid);
-                ((UserStyle) mStyle).setName(tag.name);
+
+                final UserStyle userStyle = (UserStyle) mStyle;
+                userStyle.setName(tag.name);
 
                 // This will not have any groups assigned to it...
                 //... and hence, the Style Preferences won't have any group Preferences either.
                 // Reminder: the map mStylePrefs is a TEMPORARY map,
                 // but the elements IN this map ARE PART OF THE STYLE.
-                mStylePrefs = mStyle.getRawPreferences();
+                mStylePrefs = userStyle.getRawPreferences();
                 // So loop all groups, and get their Preferences.
                 // Do NOT add the group itself to the style at this point as our import
                 // might not actually have it.

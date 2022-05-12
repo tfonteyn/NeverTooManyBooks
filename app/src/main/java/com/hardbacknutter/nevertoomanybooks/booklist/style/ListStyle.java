@@ -27,10 +27,8 @@ import androidx.annotation.NonNull;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 
 public interface ListStyle {
 
@@ -242,16 +240,6 @@ public interface ListStyle {
     boolean isSortAuthorByGivenName();
 
     int getPrimaryAuthorType();
-
-    /**
-     * Get a flat map with accumulated preferences for this object and it's children.<br>
-     * Provides low-level access to all preferences.<br>
-     * This should only be called for export/import.
-     *
-     * @return flat map
-     */
-    @NonNull
-    Map<String, PPref<?>> getRawPreferences();
 
     @IntDef(flag = true, value = {HEADER_SHOW_BOOK_COUNT,
                                   HEADER_SHOW_STYLE_NAME,

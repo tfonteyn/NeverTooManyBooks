@@ -23,11 +23,15 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBitmask;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInteger;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
@@ -182,6 +186,33 @@ public class UserStyle
     @Override
     public boolean isUserDefined() {
         return true;
+    }
+
+    /**
+     * Get a flat map with accumulated preferences for this object and it's groups.<br>
+     * Provides low-level access to all preferences.<br>
+     * This should only be called for export/import.
+     *
+     * @return flat map
+     */
+    @NonNull
+    public Map<String, PPref<?>> getRawPreferences() {
+        final Map<String, PPref<?>> map = new HashMap<>();
+
+        map.put(mExpansionLevel.getKey(), mExpansionLevel);
+        map.put(mUseGroupRowPreferredHeight.getKey(), mUseGroupRowPreferredHeight);
+        map.put(mShowHeaderInfo.getKey(), mShowHeaderInfo);
+
+        map.put(mShowAuthorByGivenName.getKey(), mShowAuthorByGivenName);
+        map.put(mSortAuthorByGivenName.getKey(), mSortAuthorByGivenName);
+
+        map.putAll(mTextScale.getRawPreferences());
+        map.putAll(mListScreenBookFields.getRawPreferences());
+        map.putAll(mDetailScreenBookFields.getRawPreferences());
+
+        map.putAll(mGroups.getRawPreferences());
+
+        return map;
     }
 
     @Override
