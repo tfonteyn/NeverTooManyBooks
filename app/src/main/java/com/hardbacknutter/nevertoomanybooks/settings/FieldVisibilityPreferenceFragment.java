@@ -37,8 +37,11 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
  */
 @Keep
 public class FieldVisibilityPreferenceFragment
-        extends BasePreferenceFragment {
+        extends BasePreferenceFragment
+        implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    @NonNull
+    private final SwitchPreference[] pCovers = new SwitchPreference[2];
     private SettingsViewModel mVm;
 
     @Override
@@ -50,26 +53,40 @@ public class FieldVisibilityPreferenceFragment
         mVm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
 
         setPreferencesFromResource(R.xml.preferences_field_visibility, rootKey);
+
+        pCovers[0] = findPreference(DBKey.PREFS_COVER_VISIBILITY_KEY[0]);
+        pCovers[1] = findPreference(DBKey.PREFS_COVER_VISIBILITY_KEY[1]);
+
+        pCovers[0].setOnPreferenceChangeListener((preference, newValue) -> {
+            if (newValue instanceof Boolean && !(Boolean) newValue) {
+                pCovers[1].setChecked(false);
+            }
+            return true;
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //noinspection ConstantConditions
+        getPreferenceScreen().getSharedPreferences()
+                             .registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        //noinspection ConstantConditions
+        getPreferenceScreen().getSharedPreferences()
+                             .unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
     }
 
     @Override
     @CallSuper
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
                                           @NonNull final String key) {
-
-        if (DBKey.PREFS_COVER_VISIBILITY_KEY[0].equals(key)
-            && !preferences.getBoolean(key, false)) {
-            // Setting cover 0 to false -> set cover 1 to false as well
-            final SwitchPreference cover = findPreference(DBKey.PREFS_COVER_VISIBILITY_KEY[1]);
-            //noinspection ConstantConditions
-            cover.setChecked(false);
-        }
-
-        // Changing ANY field visibility will usually require recreating the activity which
-        // was active when the prefs screen was called.
+        // Changing ANY field visibility will usually require recreating the activity
         // TODO: make this fine-grained
         mVm.setOnBackRequiresActivityRecreation();
-
-        super.onSharedPreferenceChanged(preferences, key);
     }
 }

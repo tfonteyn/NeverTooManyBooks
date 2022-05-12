@@ -19,13 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
-import android.content.SharedPreferences;
 import android.hardware.camera2.CameraMetadata;
 import android.os.Bundle;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.Keep;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.ListPreference;
 
@@ -89,38 +86,30 @@ public class BarcodePreferenceFragment
         cameraPref.setEntries(entries);
         cameraPref.setEntryValues(entryValues);
         cameraPref.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
-    }
 
-    @Override
-    @CallSuper
-    public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
-                                          @NonNull final String key) {
-        switch (key) {
-            case Prefs.pk_sounds_scan_found_barcode:
-                if (preferences.getBoolean(key, false)) {
-                    //noinspection ConstantConditions
-                    SoundManager.playFile(getContext(), R.raw.zxing_beep);
-                }
-                break;
-
-            case Prefs.pk_sounds_scan_isbn_valid:
-                if (preferences.getBoolean(key, false)) {
-                    //noinspection ConstantConditions
-                    SoundManager.playFile(getContext(), R.raw.beep_high);
-                }
-                break;
-
-            case Prefs.pk_sounds_scan_isbn_invalid:
-                if (preferences.getBoolean(key, false)) {
-                    //noinspection ConstantConditions
-                    SoundManager.playFile(getContext(), R.raw.beep_low);
-                }
-                break;
-
-            default:
-                break;
-        }
-
-        super.onSharedPreferenceChanged(preferences, key);
+        //noinspection ConstantConditions
+        findPreference(Prefs.pk_sounds_scan_found_barcode)
+                .setOnPreferenceChangeListener((preference, newValue) -> {
+                    if (newValue instanceof Boolean && (Boolean) newValue) {
+                        SoundManager.playFile(getContext(), R.raw.zxing_beep);
+                    }
+                    return true;
+                });
+        //noinspection ConstantConditions
+        findPreference(Prefs.pk_sounds_scan_isbn_valid)
+                .setOnPreferenceChangeListener((preference, newValue) -> {
+                    if (newValue instanceof Boolean && (Boolean) newValue) {
+                        SoundManager.playFile(getContext(), R.raw.beep_high);
+                    }
+                    return true;
+                });
+        //noinspection ConstantConditions
+        findPreference(Prefs.pk_sounds_scan_isbn_invalid)
+                .setOnPreferenceChangeListener((preference, newValue) -> {
+                    if (newValue instanceof Boolean && (Boolean) newValue) {
+                        SoundManager.playFile(getContext(), R.raw.beep_low);
+                    }
+                    return true;
+                });
     }
 }

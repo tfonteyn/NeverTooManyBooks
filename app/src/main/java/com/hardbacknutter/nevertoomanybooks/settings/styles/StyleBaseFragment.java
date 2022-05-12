@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 
@@ -57,7 +56,9 @@ public abstract class StyleBaseFragment
         if (!style.isGlobal()) {
             // non-global, set the correct UUID SharedPreferences to use
             // This MUST be done in onCreate/onCreatePreferences
-            getPreferenceManager().setSharedPreferencesName(style.getUuid());
+            //getPreferenceManager().setSharedPreferencesName(style.getUuid());
+
+            getPreferenceManager().setPreferenceDataStore(mVm.getStyleDataStore());
         }
     }
 
@@ -76,14 +77,5 @@ public abstract class StyleBaseFragment
 
         //noinspection ConstantConditions
         toolbar.setSubtitle(style.getLabel(getContext()));
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(@NonNull final SharedPreferences stylePrefs,
-                                          @NonNull final String key) {
-        // set the result (and again and again...)
-        mVm.setModified();
-
-        super.onSharedPreferenceChanged(stylePrefs, key);
     }
 }

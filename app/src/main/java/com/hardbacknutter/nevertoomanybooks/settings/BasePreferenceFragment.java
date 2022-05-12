@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 
@@ -47,8 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.widgets.TriStateMultiSelect
  */
 public abstract class BasePreferenceFragment
         extends PreferenceFragmentCompat
-        implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
-                   SharedPreferences.OnSharedPreferenceChangeListener {
+        implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
 
     /** Log tag. */
     private static final String TAG = "BasePreferenceFragment";
@@ -121,29 +119,10 @@ public abstract class BasePreferenceFragment
     public void onResume() {
         super.onResume();
 
-        //noinspection ConstantConditions
-        getPreferenceScreen().getSharedPreferences()
-                             .registerOnSharedPreferenceChangeListener(this);
-
         if (mAutoScrollToKey != null) {
             scrollToPreference(mAutoScrollToKey);
             mAutoScrollToKey = null;
         }
-    }
-
-    @Override
-    public void onPause() {
-        //noinspection ConstantConditions
-        getPreferenceScreen().getSharedPreferences()
-                             .unregisterOnSharedPreferenceChangeListener(this);
-        super.onPause();
-    }
-
-    @Override
-    @CallSuper
-    public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
-                                          @NonNull final String key) {
-        // do nothing (not abstract, easier)
     }
 
     /**

@@ -39,7 +39,6 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -54,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesAllListsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.OrderByHelper;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -69,7 +70,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * Global settings page.
  */
 public class SettingsFragment
-        extends BasePreferenceFragment {
+        extends BasePreferenceFragment
+        implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     /** Fragment manager tag. */
     public static final String TAG = "SettingsFragment";
@@ -131,17 +133,41 @@ public class SettingsFragment
         final ListPreference.SimpleSummaryProvider listSummaryProvider =
                 ListPreference.SimpleSummaryProvider.getInstance();
 
+
+        final Preference pUiLocale = findPreference(Prefs.pk_ui_locale);
         //noinspection ConstantConditions
-        findPreference(Prefs.pk_ui_locale).setSummaryProvider(listSummaryProvider);
+        pUiLocale.setSummaryProvider(listSummaryProvider);
+        pUiLocale.setOnPreferenceChangeListener((preference, newValue) -> {
+            // Set the activity result so our caller will recreate itself
+            mVm.setOnBackRequiresActivityRecreation();
+            getActivity().recreate();
+            return true;
+        });
+
+
+        final Preference pUiTheme = findPreference(Prefs.pk_ui_theme);
         //noinspection ConstantConditions
-        findPreference(Prefs.pk_ui_theme).setSummaryProvider(listSummaryProvider);
+        pUiTheme.setSummaryProvider(listSummaryProvider);
+        pUiTheme.setOnPreferenceChangeListener((preference, newValue) -> {
+            //noinspection ConstantConditions
+            NightMode.apply(getContext());
+            return true;
+        });
+
+
+        final Preference pFastscroller = findPreference(Prefs.pk_booklist_fastscroller_overlay);
+        //noinspection ConstantConditions
+        pFastscroller.setSummaryProvider(listSummaryProvider);
+        pFastscroller.setOnPreferenceChangeListener((preference, newValue) -> {
+            mVm.setOnBackRequiresActivityRecreation();
+            return true;
+        });
+
         //noinspection ConstantConditions
         findPreference(Prefs.pk_edit_book_isbn_checks).setSummaryProvider(listSummaryProvider);
         //noinspection ConstantConditions
         findPreference(Prefs.pk_booklist_rebuild_state).setSummaryProvider(listSummaryProvider);
-        //noinspection ConstantConditions
-        findPreference(Prefs.pk_booklist_fastscroller_overlay)
-                .setSummaryProvider(listSummaryProvider);
+
 
         //noinspection ConstantConditions
         findPreference(PSK_SEARCH_SITE_ORDER).setOnPreferenceClickListener(p -> {
@@ -150,7 +176,7 @@ public class SettingsFragment
         });
 
         //noinspection ConstantConditions
-        mTitleOrderByPref = findPreference(Prefs.pk_sort_title_reordered);
+        mTitleOrderByPref = findPreference(OrderByHelper.PK_SORT_TITLE_REORDERED);
         //noinspection ConstantConditions
         setVisualIndicator(mTitleOrderByPref, StartupViewModel.PK_REBUILD_TITLE_OB);
         mTitleOrderByPref.setOnPreferenceChangeListener(this::onTitleOrderByChange);
@@ -319,9 +345,11 @@ public class SettingsFragment
     @Override
     public void onResume() {
         super.onResume();
+        final SharedPreferences global = getPreferenceScreen().getSharedPreferences();
         //noinspection ConstantConditions
-        final boolean enabled = PreferenceManager.getDefaultSharedPreferences(getContext())
-                                                 .getBoolean(CalibreHandler.PK_ENABLED, false);
+        global.registerOnSharedPreferenceChangeListener(this);
+
+        final boolean enabled = global.getBoolean(CalibreHandler.PK_ENABLED, false);
         //noinspection ConstantConditions
         findPreference(PSK_CALIBRE).setSummary(enabled ? R.string.enabled : R.string.disabled);
     }
@@ -334,26 +362,22 @@ public class SettingsFragment
     }
 
     @Override
+    public void onPause() {
+        //noinspection ConstantConditions
+        getPreferenceScreen().getSharedPreferences()
+                             .unregisterOnSharedPreferenceChangeListener(this);
+
+        super.onPause();
+    }
+
+    @Override
     @CallSuper
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
                                           @NonNull final String key) {
+        //TODO: once these are on the style level, the below can be removed as well.
         switch (key) {
-            case Prefs.pk_ui_theme: {
-                // recreation of ALL activities is automatic!
-                //noinspection ConstantConditions
-                NightMode.apply(getContext());
-                break;
-            }
-            case Prefs.pk_ui_locale: {
-                // Set the activity result so our caller will recreate itself
-                mVm.setOnBackRequiresActivityRecreation();
-                //noinspection ConstantConditions
-                getActivity().recreate();
-                break;
-            }
-            case Prefs.pk_sort_title_reordered:
-            case Prefs.pk_show_title_reordered:
-            case Prefs.pk_booklist_fastscroller_overlay: {
+            case OrderByHelper.PK_SORT_TITLE_REORDERED:
+            case ReorderHelper.PK_SHOW_TITLE_REORDERED: {
                 // Set the activity result so our caller will recreate itself
                 mVm.setOnBackRequiresActivityRecreation();
                 break;
@@ -361,8 +385,6 @@ public class SettingsFragment
             default:
                 break;
         }
-
-        super.onSharedPreferenceChanged(preferences, key);
     }
 
     /**
