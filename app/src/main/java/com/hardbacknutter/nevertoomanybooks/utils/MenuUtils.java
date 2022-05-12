@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks;
+package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.app.Activity;
 import android.app.SearchManager;
@@ -37,11 +37,12 @@ import androidx.annotation.NonNull;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
+import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
+import com.hardbacknutter.nevertoomanybooks.R;
 
-public final class MenuHelper {
+public final class MenuUtils {
 
-    private MenuHelper() {
+    private MenuUtils() {
     }
 
     public static void setupSearchActionView(@NonNull final Activity activity,

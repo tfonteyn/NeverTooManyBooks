@@ -62,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
-import com.hardbacknutter.nevertoomanybooks.MenuHelper;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
@@ -81,6 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 
 /**
@@ -561,7 +561,7 @@ public class ShowBookDetailsFragment
                 MenuCompat.setGroupDividerEnabled(menu, true);
             } else {
                 //noinspection ConstantConditions
-                MenuHelper.setupSearchActionView(getActivity(), inflater, menu);
+                MenuUtils.setupSearchActionView(getActivity(), inflater, menu);
             }
 
             if (calibreHandler != null) {

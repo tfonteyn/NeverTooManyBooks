@@ -49,7 +49,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.MenuHelper;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
@@ -62,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 
 /**
  * Note that the 'pick-list' fields are stored directly in the Book as well as the field.
@@ -284,7 +284,7 @@ public class EditBookFieldsFragment
             menuInflater.inflate(R.menu.sm_isbn_validity, menu);
 
             //noinspection ConstantConditions
-            MenuHelper.customizeMenuGroupTitle(getContext(), menu, R.id.sm_title_isbn_validity);
+            MenuUtils.customizeMenuGroupTitle(getContext(), menu, R.id.sm_title_isbn_validity);
 
             onPrepareMenu(menu);
         }

@@ -126,6 +126,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
@@ -1997,7 +1998,7 @@ public class BooksOnBookshelf
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
             menuInflater.inflate(R.menu.bob, menu);
-            MenuHelper.setupSearchActionView(BooksOnBookshelf.this, menu);
+            MenuUtils.setupSearchActionView(BooksOnBookshelf.this, menu);
 
             // in development
             menu.findItem(R.id.MENU_FILTERS).setVisible(BuildConfig.ENABLE_BOOKSHELF_FILTERS);
