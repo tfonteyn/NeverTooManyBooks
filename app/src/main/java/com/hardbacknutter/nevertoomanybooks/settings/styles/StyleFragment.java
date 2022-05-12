@@ -21,13 +21,11 @@ package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.EditTextPreference;
@@ -95,11 +93,16 @@ public class StyleFragment
     private Preference pShowDetails;
     private Preference pGroups;
 
+    @NonNull
+    private final SwitchPreference[] pShowCoversOnDetailsScreen = new SwitchPreference[2];
+
     @SuppressWarnings("ConstantConditions")
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
+
+
         setPreferencesFromResource(R.xml.preferences_style, rootKey);
 
         if (savedInstanceState != null) {
@@ -115,6 +118,9 @@ public class StyleFragment
         pShowDetails = findPreference(PSK_STYLE_SHOW_DETAILS);
         pGroups = findPreference(Groups.PK_STYLE_GROUPS);
 
+        pShowCoversOnDetailsScreen[0] = findPreference(DetailScreenBookFields.PK_COVER[0]);
+        pShowCoversOnDetailsScreen[1] = findPreference(DetailScreenBookFields.PK_COVER[1]);
+
         pName.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
         pListHeader.setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
         pPrimaryAuthorType.setSummaryProvider(
@@ -124,6 +130,15 @@ public class StyleFragment
             editText.setInputType(InputType.TYPE_CLASS_TEXT
                                   | InputType.TYPE_TEXT_VARIATION_URI);
             editText.selectAll();
+        });
+
+        pShowCoversOnDetailsScreen[0].setOnPreferenceChangeListener((preference, newValue) -> {
+            // Covers on DETAIL screen:
+            // Setting cover 0 to false -> set cover 1 to false as well
+            if (newValue instanceof Boolean && !(Boolean) newValue) {
+                pShowCoversOnDetailsScreen[1].setChecked(false);
+            }
+            return true;
         });
     }
 
@@ -215,23 +230,4 @@ public class StyleFragment
         super.onSaveInstanceState(outState);
         outState.putBoolean(SIS_NAME_SET, mNameSet);
     }
-
-    @Override
-    @CallSuper
-    public void onSharedPreferenceChanged(@NonNull final SharedPreferences stylePrefs,
-                                          @NonNull final String key) {
-        updateSummaries();
-
-        if (DetailScreenBookFields.PK_COVER[0].equals(key)
-            && !stylePrefs.getBoolean(key, false)) {
-            // Covers on DETAIL screen:
-            // Setting cover 0 to false -> set cover 1 to false as well
-            final SwitchPreference cover = findPreference(DetailScreenBookFields.PK_COVER[1]);
-            //noinspection ConstantConditions
-            cover.setChecked(false);
-        }
-
-        super.onSharedPreferenceChanged(stylePrefs, key);
-    }
-
 }

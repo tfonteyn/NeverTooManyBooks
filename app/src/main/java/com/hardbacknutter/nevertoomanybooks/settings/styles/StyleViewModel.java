@@ -41,16 +41,17 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 public class StyleViewModel
         extends ViewModel {
 
-    private String mTemplateUuid;
-
-    private boolean mIsModified;
+    private String templateUuid;
 
     /** The style we're editing. */
-    private UserStyle mStyle;
+    private UserStyle style;
 
     /** The list of groups with a boolean flag for when the user is editing the groups. */
     @Nullable
-    private ArrayList<WrappedGroup> mWrappedGroupList;
+    private ArrayList<WrappedGroup> wrappedGroupList;
+
+    @Nullable
+    private StyleDataStore styleDataStore;
 
     /**
      * Pseudo constructor.
@@ -60,7 +61,7 @@ public class StyleViewModel
      */
     void init(@NonNull final Context context,
               @NonNull final Bundle args) {
-        if (mStyle == null) {
+        if (style == null) {
 
             final String uuid = Objects.requireNonNull(args.getString(ListStyle.BKEY_UUID),
                                                        ListStyle.BKEY_UUID);
@@ -71,98 +72,103 @@ public class StyleViewModel
 
                 // we're doing the global preferences, create a placeholder style
                 // with an empty uuid and let it use the standard SharedPreferences
-                mStyle = UserStyle.createGlobal(context);
+                style = UserStyle.createGlobal(context);
 
             } else {
                 // ALWAYS pass the original style uuid back.
-                mTemplateUuid = uuid;
+                templateUuid = uuid;
 
-                final ListStyle style = ServiceLocator.getInstance().getStyles()
-                                                      .getStyle(context, uuid);
-                Objects.requireNonNull(style, "uuid not found: " + uuid);
+                final ListStyle dbStyle = ServiceLocator.getInstance().getStyles()
+                                                        .getStyle(context, uuid);
+                Objects.requireNonNull(dbStyle, "uuid not found: " + uuid);
 
                 @EditStyleContract.EditAction
                 final int action = args.getInt(EditStyleContract.BKEY_ACTION,
                                                EditStyleContract.ACTION_EDIT);
 
-                if (action == EditStyleContract.ACTION_CLONE || !style.isUserDefined()) {
-                    mStyle = style.clone(context);
+                if (action == EditStyleContract.ACTION_CLONE || !dbStyle.isUserDefined()) {
+                    style = dbStyle.clone(context);
                 } else {
-                    mStyle = (UserStyle) style;
+                    style = (UserStyle) dbStyle;
                 }
 
+                // Only set if true, don't overwrite
                 if (args.getBoolean(EditStyleContract.BKEY_SET_AS_PREFERRED)) {
-                    mStyle.setPreferred(true);
+                    style.setPreferred(true);
                 }
+
+                styleDataStore = new StyleDataStore(style);
             }
         }
     }
 
     @NonNull
     UserStyle getStyle() {
-        return mStyle;
+        return style;
     }
 
-
-    void setModified() {
-        mIsModified = true;
+    @Nullable
+    public StyleDataStore getStyleDataStore() {
+        return styleDataStore;
     }
 
     @NonNull
     public String getTemplateUuid() {
-        return Objects.requireNonNull(mTemplateUuid, "mTemplateUuid");
+        return Objects.requireNonNull(templateUuid, "mTemplateUuid");
     }
 
     public boolean isModified() {
-        return mIsModified;
+        //noinspection ConstantConditions
+        return styleDataStore.isModified();
     }
 
     /**
      * Called when the user leaves the fragment. Save any updates needed.
      */
     void updateOrInsertStyle() {
-        if (mIsModified) {
-            ServiceLocator.getInstance().getStyles().updateOrInsert(mStyle);
+        //noinspection ConstantConditions
+        if (styleDataStore.isModified()) {
+            ServiceLocator.getInstance().getStyles().updateOrInsert(style);
         }
     }
 
     @NonNull
     ArrayList<WrappedGroup> createWrappedGroupList() {
-        final Groups styleGroups = mStyle.getGroups();
+        final Groups styleGroups = style.getGroups();
 
         // Build an array list with the groups already present in the style
-        mWrappedGroupList = new ArrayList<>(styleGroups.size());
+        wrappedGroupList = new ArrayList<>(styleGroups.size());
         styleGroups.getGroupList()
-                   .forEach(group -> mWrappedGroupList.add(new WrappedGroup(group, true)));
+                   .forEach(group -> wrappedGroupList.add(new WrappedGroup(group, true)));
 
         // Get all other groups and add any missing ones to the list so the user can
         // add them if wanted.
-        BooklistGroup.getAllGroups(mStyle)
+        BooklistGroup.getAllGroups(style)
                      .stream()
                      .filter(group -> !styleGroups.contains(group.getId()))
-                     .forEach(group -> mWrappedGroupList.add(new WrappedGroup(group, false)));
+                     .forEach(group -> wrappedGroupList.add(new WrappedGroup(group, false)));
 
-        return mWrappedGroupList;
+        return wrappedGroupList;
     }
 
     boolean hasGroupsSelected() {
-        Objects.requireNonNull(mWrappedGroupList);
+        Objects.requireNonNull(wrappedGroupList);
 
-        return mWrappedGroupList.stream().anyMatch(WrappedGroup::isPresent);
+        return wrappedGroupList.stream().anyMatch(WrappedGroup::isPresent);
     }
 
     /**
      * Collect the user selected groups, and update the style.
      */
     void updateStyleGroups() {
-        Objects.requireNonNull(mWrappedGroupList);
+        Objects.requireNonNull(wrappedGroupList);
 
-        final Groups styleGroups = mStyle.getGroups();
+        final Groups styleGroups = style.getGroups();
         styleGroups.clear();
-        mWrappedGroupList.stream()
-                         .filter(WrappedGroup::isPresent)
-                         .map(WrappedGroup::getGroup)
-                         .forEach(styleGroups::add);
+        wrappedGroupList.stream()
+                        .filter(WrappedGroup::isPresent)
+                        .map(WrappedGroup::getGroup)
+                        .forEach(styleGroups::add);
     }
 
     /**
