@@ -28,10 +28,11 @@ import androidx.preference.PreferenceManager;
 import java.util.Locale;
 import java.util.function.BiFunction;
 
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
-final class OrderByHelper {
+public final class OrderByHelper {
+
+    public static final String PK_SORT_TITLE_REORDERED = "sort.title.reordered";
 
     private OrderByHelper() {
     }
@@ -43,7 +44,7 @@ final class OrderByHelper {
      */
     static boolean forSorting(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_sort_title_reordered, true);
+                                .getBoolean(PK_SORT_TITLE_REORDERED, true);
     }
 
     /**

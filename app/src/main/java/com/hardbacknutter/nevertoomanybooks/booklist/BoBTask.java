@@ -332,7 +332,7 @@ public class BoBTask
         }
 
         // for now, don't get the author type.
-//              if (bookFields.isShowField(context, ListScreenBookFields.PK_AUTHOR_TYPE)) {
+//              if (bookFields.getValue(context, ListScreenBookFields.PK_AUTHOR_TYPE)) {
 //                  builder.addDomain(new DomainExpression(
 //                          DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
 //                          DBDefinitions.TBL_BOOK_AUTHOR

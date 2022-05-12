@@ -54,7 +54,7 @@ public class BookshelfBooklistGroup
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     private static final String PSK_STYLE_BOOKSHELF = "psk_style_bookshelf";
 
-    private static final String PK_SHOW_BOOKS_UNDER_EACH =
+    public static final String PK_SHOW_BOOKS_UNDER_EACH =
             "style.booklist.group.bookshelf.show.all";
     /** For sorting. */
     private static final Domain DOM_SORTING;

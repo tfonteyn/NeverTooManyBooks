@@ -32,9 +32,10 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public final class ReorderHelper {
+
+    public static final String PK_SHOW_TITLE_REORDERED = "show.title.reordered";
 
     /**
      * Static cache for the pv_reformat_titles_prefixes strings.
@@ -51,7 +52,7 @@ public final class ReorderHelper {
      */
     public static boolean forDisplay(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_show_title_reordered, false);
+                                .getBoolean(PK_SHOW_TITLE_REORDERED, false);
     }
 
     /**

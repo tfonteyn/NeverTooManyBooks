@@ -89,10 +89,14 @@ public abstract class BookFields {
         }
 
         if (mFields.containsKey(key)) {
-            final PBoolean value = mFields.get(key);
-            return value != null && value.isTrue();
+            return getValue(key);
         }
         return false;
+    }
+
+    public boolean getValue(@Key @NonNull final String key) {
+        return Objects.requireNonNull(mFields.get(key), key)
+                      .getValue();
     }
 
     /**
@@ -101,10 +105,10 @@ public abstract class BookFields {
      * @param key  for the field
      * @param show value to set
      */
-    void setShowField(@Key @NonNull final String key,
-                      final boolean show) {
-        //noinspection ConstantConditions
-        mFields.get(key).set(show);
+    public void setValue(@Key @NonNull final String key,
+                         final boolean show) {
+        Objects.requireNonNull(mFields.get(key), key)
+               .set(show);
     }
 
     /**

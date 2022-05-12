@@ -82,6 +82,10 @@ public abstract class AbstractLinkedTableBooklistGroup
         return mUnderEach.isTrue();
     }
 
+    public void setShowBooksUnderEach(final boolean value) {
+        mUnderEach.set(value);
+    }
+
     @Override
     @CallSuper
     @NonNull

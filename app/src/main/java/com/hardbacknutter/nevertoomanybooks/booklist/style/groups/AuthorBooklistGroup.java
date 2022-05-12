@@ -64,7 +64,7 @@ public class AuthorBooklistGroup
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     private static final String PSK_STYLE_AUTHOR = "psk_style_author";
 
-    private static final String PK_SHOW_BOOKS_UNDER_EACH =
+    public static final String PK_SHOW_BOOKS_UNDER_EACH =
             "style.booklist.group.authors.show.all";
     /** For sorting. */
     private static final Domain DOM_SORTING;
@@ -204,6 +204,10 @@ public class AuthorBooklistGroup
     @Author.Type
     public int getPrimaryType() {
         return mPrimaryType.getValue();
+    }
+
+    public void setPrimaryType(@Nullable final Integer value) {
+        mPrimaryType.set(value);
     }
 
     @Override

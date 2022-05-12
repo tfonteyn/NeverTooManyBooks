@@ -244,7 +244,7 @@ public final class BuiltinStyle
                                          BooklistGroup.AUTHOR);
                 style.getTextScale().setScale(TextScale.TEXT_SCALE_1_SMALL);
                 style.getListScreenBookFields()
-                     .setShowField(ListScreenBookFields.PK_COVERS, false);
+                     .setValue(ListScreenBookFields.PK_COVERS, false);
                 break;
 
             case ID_BOOK_TITLE_FIRST_LETTER:
@@ -387,7 +387,7 @@ public final class BuiltinStyle
                                          BooklistGroup.DATE_LAST_UPDATE_MONTH,
                                          BooklistGroup.DATE_LAST_UPDATE_DAY);
                 style.getListScreenBookFields()
-                     .setShowField(ListScreenBookFields.PK_AUTHOR, true);
+                     .setValue(ListScreenBookFields.PK_AUTHOR, true);
                 break;
 
             // NEWTHINGS: BuiltinStyle: add a new builtin style

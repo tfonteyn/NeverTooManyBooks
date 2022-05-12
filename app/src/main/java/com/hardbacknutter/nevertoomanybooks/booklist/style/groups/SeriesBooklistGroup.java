@@ -55,7 +55,7 @@ public class SeriesBooklistGroup
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     private static final String PSK_STYLE_SERIES = "psk_style_series";
 
-    private static final String PK_SHOW_BOOKS_UNDER_EACH =
+    public static final String PK_SHOW_BOOKS_UNDER_EACH =
             "style.booklist.group.series.show.all";
 
     /** For sorting. */

@@ -25,10 +25,9 @@ import android.view.ViewGroup;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.math.MathUtils;
 import androidx.preference.MultiSelectListPreference;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -45,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInteger;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 /**
@@ -93,7 +91,10 @@ public abstract class BooklistStyle
      * The spacing used for the group/level rows.
      * A value of {@code 0} means {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}.
      */
-    private static final String PK_SCALE_GROUP_ROW = "style.booklist.group.height";
+    public static final String PK_SCALE_GROUP_ROW = "style.booklist.group.height";
+
+    public static final String PK_SORT_AUTHOR_NAME_GIVEN_FIRST = "sort.author.name.given_first";
+    public static final String PK_SHOW_AUTHOR_NAME_GIVEN_FIRST = "show.author.name.given_first";
 
     /** Cached backing preferences. */
     @SuppressWarnings("FieldNotUsedInToString")
@@ -192,10 +193,10 @@ public abstract class BooklistStyle
     void initPrefs(final boolean isPersistent) {
 
         mShowAuthorByGivenName = new PBoolean(isPersistent, mPersistenceLayer,
-                                              Prefs.pk_show_author_name_given_first,
+                                              PK_SHOW_AUTHOR_NAME_GIVEN_FIRST,
                                               false);
         mSortAuthorByGivenName = new PBoolean(isPersistent, mPersistenceLayer,
-                                              Prefs.pk_sort_author_name_given_first,
+                                              PK_SORT_AUTHOR_NAME_GIVEN_FIRST,
                                               false);
 
         mExpansionLevel = new PInteger(isPersistent, mPersistenceLayer,
@@ -220,9 +221,17 @@ public abstract class BooklistStyle
         return mShowAuthorByGivenName.isTrue();
     }
 
+    public void setShowAuthorByGivenName(final boolean value) {
+        mShowAuthorByGivenName.set(value);
+    }
+
     @Override
     public boolean isSortAuthorByGivenName() {
         return mSortAuthorByGivenName.isTrue();
+    }
+
+    public void setSortAuthorByGivenName(final boolean value) {
+        mSortAuthorByGivenName.set(value);
     }
 
     @Override
@@ -256,15 +265,19 @@ public abstract class BooklistStyle
         }
     }
 
+    public boolean getUseGroupRowPreferredHeight() {
+        return mUseGroupRowPreferredHeight.getValue();
+    }
+
+    public void setUseGroupRowPreferredHeight(final boolean value) {
+        mUseGroupRowPreferredHeight.set(value);
+    }
+
     @Override
     @IntRange(from = 1)
     public int getExpansionLevel() {
         // limit to the amount of groups!
-        int level = mExpansionLevel.getValue();
-        if (level > mGroups.size()) {
-            level = mGroups.size();
-        }
-        return level;
+        return MathUtils.clamp(mExpansionLevel.getValue(), 1, mGroups.size());
     }
 
     public void setExpansionLevel(@IntRange(from = 1) final int value) {
@@ -354,6 +367,13 @@ public abstract class BooklistStyle
                           .orElse(SeriesBooklistGroup.showBooksUnderEachDefault());
     }
 
+    public void setShowBooksUnderEachSeries(final boolean value) {
+        getGroups().getGroupById(BooklistGroup.SERIES).ifPresent(group -> {
+            ((SeriesBooklistGroup) group).setShowBooksUnderEach(value);
+        });
+    }
+
+
     /**
      * Wrapper that gets the preference from {@link PublisherBooklistGroup}
      * if we have it this group, or from the global default if not.
@@ -365,6 +385,12 @@ public abstract class BooklistStyle
         return getGroups().getGroupById(BooklistGroup.PUBLISHER)
                           .map(group -> ((PublisherBooklistGroup) group).showBooksUnderEach())
                           .orElse(PublisherBooklistGroup.showBooksUnderEachDefault());
+    }
+
+    public void setShowBooksUnderEachPublisher(final boolean value) {
+        getGroups().getGroupById(BooklistGroup.PUBLISHER).ifPresent(group -> {
+            ((PublisherBooklistGroup) group).setShowBooksUnderEach(value);
+        });
     }
 
     /**
@@ -380,6 +406,13 @@ public abstract class BooklistStyle
                           .orElse(BookshelfBooklistGroup.showBooksUnderEachDefault());
     }
 
+    public void setShowBooksUnderEachBookshelf(final boolean value) {
+        getGroups().getGroupById(BooklistGroup.BOOKSHELF).ifPresent(group -> {
+            ((BookshelfBooklistGroup) group).setShowBooksUnderEach(value);
+        });
+    }
+
+
     /**
      * Wrapper that gets the preference from {@link AuthorBooklistGroup}
      * if we have it this group, or from the global default if not.
@@ -392,6 +425,13 @@ public abstract class BooklistStyle
                           .map(group -> ((AuthorBooklistGroup) group).showBooksUnderEach())
                           .orElse(AuthorBooklistGroup.showBooksUnderEachDefault());
     }
+
+    public void setShowBooksUnderEachAuthor(final boolean value) {
+        getGroups().getGroupById(BooklistGroup.AUTHOR).ifPresent(group -> {
+            ((AuthorBooklistGroup) group).setShowBooksUnderEach(value);
+        });
+    }
+
 
     /**
      * Wrapper that gets the getPrimaryType flag from the
@@ -406,24 +446,19 @@ public abstract class BooklistStyle
                           .orElse(AuthorBooklistGroup.getPrimaryTypeGlobalDefault());
     }
 
-    @NonNull
-    public Map<String, PPref<?>> getRawPreferences() {
-        final Map<String, PPref<?>> map = new HashMap<>();
+    public Set<String> getPrimaryAuthorTypes() {
+        return StyleSharedPreferences.convert(getPrimaryAuthorType());
+    }
 
-        map.put(mExpansionLevel.getKey(), mExpansionLevel);
-        map.put(mUseGroupRowPreferredHeight.getKey(), mUseGroupRowPreferredHeight);
-        map.put(mShowHeaderInfo.getKey(), mShowHeaderInfo);
-
-        map.put(mShowAuthorByGivenName.getKey(), mShowAuthorByGivenName);
-        map.put(mSortAuthorByGivenName.getKey(), mSortAuthorByGivenName);
-
-        map.putAll(mTextScale.getRawPreferences());
-        map.putAll(mListScreenBookFields.getRawPreferences());
-        map.putAll(mDetailScreenBookFields.getRawPreferences());
-
-        map.putAll(mGroups.getRawPreferences());
-
-        return map;
+    public void setPrimaryAuthorTypes(@Nullable final Set<String> values) {
+        getGroups().getGroupById(BooklistGroup.AUTHOR).ifPresent(group -> {
+            if (values == null) {
+                ((AuthorBooklistGroup) group).setPrimaryType(null);
+            } else {
+                ((AuthorBooklistGroup) group).setPrimaryType(
+                        StyleSharedPreferences.convert(values));
+            }
+        });
     }
 
     @NonNull

@@ -50,7 +50,7 @@ public class PublisherBooklistGroup
 
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     private static final String PSK_STYLE_PUBLISHER = "psk_style_publisher";
-    private static final String PK_SHOW_BOOKS_UNDER_EACH =
+    public static final String PK_SHOW_BOOKS_UNDER_EACH =
             "style.booklist.group.publisher.show.all";
 
     /** For sorting. */

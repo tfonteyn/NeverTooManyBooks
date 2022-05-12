@@ -55,10 +55,6 @@ public final class Prefs {
 
     public static final String pk_storage_volume = "storage.volume.index";
 
-    public static final String pk_sort_title_reordered = "sort.title.reordered";
-    public static final String pk_show_title_reordered = "show.title.reordered";
-    public static final String pk_sort_author_name_given_first = "sort.author.name.given_first";
-    public static final String pk_show_author_name_given_first = "show.author.name.given_first";
     public static final String pk_booklist_rebuild_state = "booklist.rebuild.state";
     public static final String pk_booklist_fastscroller_overlay = "booklist.fastscroller.overlay";
 
