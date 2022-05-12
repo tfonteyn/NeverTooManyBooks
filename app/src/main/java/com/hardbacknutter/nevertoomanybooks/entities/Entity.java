@@ -22,10 +22,12 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.Locale;
 import java.util.function.Supplier;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
@@ -54,16 +56,18 @@ public interface Entity {
     /**
      * Get the label to use for <strong>displaying</strong>.
      * <p>
-     * The default implementation ignores the details parameter.
+     * The default implementation ignores the details/style parameters.
      *
      * @param context Current context
      * @param details the amount of details wanted
+     * @param style   (optional) to use
      *
      * @return the label to use.
      */
     @NonNull
     default String getLabel(@NonNull final Context context,
-                            @NonNull final Details details) {
+                            @NonNull final Details details,
+                            @Nullable final ListStyle style) {
         return getLabel(context);
     }
 
