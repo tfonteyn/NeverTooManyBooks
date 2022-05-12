@@ -22,6 +22,7 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
     <EditTextPreference
@@ -179,6 +180,7 @@
             android:key="style.booklist.group.authors.primary.type"
             android:title="@string/pt_primary_author_type"
             app:isPreferenceVisible="false"
+            tools:isPreferenceVisible="true"
             />
 
 
@@ -191,6 +193,7 @@
             android:summaryOn="@string/pv_bob_books_under_multiple_each_author"
             android:title="@string/pt_bob_books_under_multiple_authors"
             app:isPreferenceVisible="false"
+            tools:isPreferenceVisible="true"
             />
 
     </PreferenceCategory>
@@ -199,6 +202,7 @@
         android:key="psk_style_series"
         android:title="@string/lbl_series"
         app:isPreferenceVisible="false"
+        tools:isPreferenceVisible="true"
         >
 
         <!-- Enabled if Group 'Series' is present in this style. -->
@@ -210,6 +214,7 @@
             android:summaryOn="@string/pv_bob_books_under_multiple_each_series"
             android:title="@string/pt_bob_books_under_multiple_series"
             app:isPreferenceVisible="false"
+            tools:isPreferenceVisible="true"
             />
 
     </PreferenceCategory>
@@ -218,6 +223,7 @@
         android:key="psk_style_publisher"
         android:title="@string/lbl_publisher"
         app:isPreferenceVisible="false"
+        tools:isPreferenceVisible="true"
         >
 
         <!-- Enabled if Group 'Publisher' is present in this style. -->
@@ -229,6 +235,7 @@
             android:summaryOn="@string/pv_bob_books_under_multiple_each_publisher"
             android:title="@string/pt_bob_books_under_multiple_publisher"
             app:isPreferenceVisible="false"
+            tools:isPreferenceVisible="true"
             />
 
     </PreferenceCategory>
