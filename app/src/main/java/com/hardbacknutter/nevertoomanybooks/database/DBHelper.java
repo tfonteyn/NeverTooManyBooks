@@ -42,25 +42,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookshelfDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreCustomFieldDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF_FILTERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
@@ -75,15 +73,11 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FT
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOL_STYLE_IS_BUILTIN;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOL_STYLE_IS_PREFERRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_CALIBRE_LIBRARY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_STYLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_BOOK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_BOOK_UUID;
@@ -93,8 +87,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_LI
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_VIRT_LIB_EXPR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_FTS_BOOK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_ISBN;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_STYLE_MENU_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_STYLE_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.UTC_DATE_LAST_SYNC_CALIBRE_LIBRARY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.UTC_DATE_LAST_UPDATED;
@@ -305,100 +297,6 @@ public class DBHelper
         }
     }
 
-    /**
-     * Run at installation time to add the builtin style ID's to the database.
-     * This allows foreign keys to work.
-     *
-     * @param db Database Access
-     */
-    private void prepareStylesTable(@NonNull final SQLiteDatabase db) {
-        final String sqlInsertStyles =
-                "INSERT INTO " + TBL_BOOKLIST_STYLES
-                + '(' + PK_ID
-                // 1==true
-                + ',' + BOOL_STYLE_IS_BUILTIN
-                // 0==false
-                + ',' + BOOL_STYLE_IS_PREFERRED
-                + ',' + KEY_STYLE_MENU_POSITION
-                + ',' + KEY_STYLE_UUID
-                + ") VALUES(?,1,0,?,?)";
-        try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
-            for (int id = BuiltinStyle.MAX_ID; id < 0; id++) {
-                // remember, the id is negative -1..
-                stmt.bindLong(1, id);
-                // menu position, initially just as defined but with a positive number
-                stmt.bindLong(2, -id);
-                stmt.bindString(3, BuiltinStyle.getUuidById(-id));
-
-                // after inserting '-1' our debug logging will claim that the insert failed.
-                if (BuildConfig.DEBUG /* always */) {
-                    if (id == -1) {
-                        Log.d(TAG, "prepareStylesTable|Ignore debug message inserting -1 ^^^");
-                    }
-                }
-                stmt.executeInsert();
-            }
-        }
-    }
-
-    /**
-     * Run at installation time to add the 'all' and default shelves to the database.
-     *
-     * @param context Current context
-     * @param db      Database Access
-     */
-    private void prepareBookshelfTable(@NonNull final Context context,
-                                       @NonNull final SQLiteDatabase db) {
-        // inserts a 'All Books' bookshelf with _id==-1, see {@link Bookshelf}.
-        db.execSQL("INSERT INTO " + TBL_BOOKSHELF
-                   + '(' + PK_ID
-                   + ',' + KEY_BOOKSHELF_NAME
-                   + ',' + FK_STYLE
-                   + ") VALUES ("
-                   + Bookshelf.ALL_BOOKS
-                   + ",'" + context.getString(R.string.bookshelf_all_books)
-                   + "'," + BuiltinStyle.DEFAULT_ID
-                   + ')');
-
-        // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
-        db.execSQL("INSERT INTO " + TBL_BOOKSHELF
-                   + '(' + PK_ID
-                   + ',' + KEY_BOOKSHELF_NAME
-                   + ',' + FK_STYLE
-                   + ") VALUES ("
-                   + Bookshelf.DEFAULT
-                   + ",'" + context.getString(R.string.bookshelf_my_books)
-                   + "'," + BuiltinStyle.DEFAULT_ID
-                   + ')');
-    }
-
-
-    /**
-     * Run at installation time a set of default fields.
-     *
-     * @param db Database Access
-     */
-    private void prepareCalibreCustomFieldsTable(@NonNull final SQLiteDatabase db) {
-        final String[][] all = {
-                {"#read", CalibreCustomField.TYPE_BOOL, DBKey.BOOL_READ},
-
-                {"#read_start", CalibreCustomField.TYPE_DATETIME, DBKey.DATE_READ_START},
-                {"#read_end", CalibreCustomField.TYPE_DATETIME, DBKey.DATE_READ_END},
-                {"#date_read", CalibreCustomField.TYPE_DATETIME, DBKey.DATE_READ_END},
-
-                {"#notes", CalibreCustomField.TYPE_TEXT, DBKey.KEY_PRIVATE_NOTES},
-                {"#notes", CalibreCustomField.TYPE_COMMENTS, DBKey.KEY_PRIVATE_NOTES}
-        };
-
-        final ContentValues cv = new ContentValues();
-        for (final String[] row : all) {
-            cv.clear();
-            cv.put(DBKey.CALIBRE_CUSTOM_FIELD_NAME, row[0]);
-            cv.put(DBKey.CALIBRE_CUSTOM_FIELD_TYPE, row[1]);
-            cv.put(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING, row[2]);
-            db.insert(TBL_CALIBRE_CUSTOM_FIELDS.getName(), null, cv);
-        }
-    }
 
     /**
      * Create all database triggers.
@@ -642,11 +540,11 @@ public class DBHelper
         TableDefinition.onCreate(db, DBDefinitions.ALL_TABLES.values());
 
         // insert the builtin styles so foreign key rules are possible.
-        prepareStylesTable(db);
+        StyleDaoImpl.onPostCreate(db);
         // and the all/default shelves
-        prepareBookshelfTable(context, db);
+        BookshelfDaoImpl.onPostCreate(context, db);
 
-        prepareCalibreCustomFieldsTable(db);
+        CalibreCustomFieldDaoImpl.onPostCreate(db);
 
         //IMPORTANT: withDomainConstraints MUST BE false (FTS columns don't use a type/constraints)
         TBL_FTS_BOOKS.create(db, false);
@@ -833,7 +731,7 @@ public class DBHelper
         }
         if (oldVersion < 17) {
             TBL_CALIBRE_CUSTOM_FIELDS.create(db, true);
-            prepareCalibreCustomFieldsTable(db);
+            CalibreCustomFieldDaoImpl.onPostCreate(db);
         }
         if (oldVersion < 18) {
             TBL_BOOKSHELF_FILTERS.create(db, true);

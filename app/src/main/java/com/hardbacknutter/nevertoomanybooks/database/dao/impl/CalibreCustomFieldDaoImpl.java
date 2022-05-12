@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.NonNull;
 
@@ -72,6 +73,33 @@ public class CalibreCustomFieldDaoImpl
      */
     public CalibreCustomFieldDaoImpl() {
         super(TAG);
+    }
+
+    /**
+     * Run at installation time a set of default fields.
+     *
+     * @param db Database Access
+     */
+    public static void onPostCreate(@NonNull final SQLiteDatabase db) {
+        final String[][] all = {
+                {"#read", CalibreCustomField.TYPE_BOOL, DBKey.BOOL_READ},
+
+                {"#read_start", CalibreCustomField.TYPE_DATETIME, DBKey.DATE_READ_START},
+                {"#read_end", CalibreCustomField.TYPE_DATETIME, DBKey.DATE_READ_END},
+                {"#date_read", CalibreCustomField.TYPE_DATETIME, DBKey.DATE_READ_END},
+
+                {"#notes", CalibreCustomField.TYPE_TEXT, DBKey.KEY_PRIVATE_NOTES},
+                {"#notes", CalibreCustomField.TYPE_COMMENTS, DBKey.KEY_PRIVATE_NOTES}
+        };
+
+        final ContentValues cv = new ContentValues();
+        for (final String[] row : all) {
+            cv.clear();
+            cv.put(DBKey.CALIBRE_CUSTOM_FIELD_NAME, row[0]);
+            cv.put(DBKey.CALIBRE_CUSTOM_FIELD_TYPE, row[1]);
+            cv.put(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING, row[2]);
+            db.insert(TBL_CALIBRE_CUSTOM_FIELDS.getName(), null, cv);
+        }
     }
 
     @Override

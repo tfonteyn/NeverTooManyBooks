@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -31,8 +32,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
@@ -47,6 +50,9 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF_FILTERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_STYLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOKSHELF_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PK_ID;
 
 public class BookshelfDaoImpl
         extends BaseDaoImpl
@@ -139,6 +145,37 @@ public class BookshelfDaoImpl
      */
     public BookshelfDaoImpl() {
         super(TAG);
+    }
+
+    /**
+     * Run at installation time to add the 'all' and default shelves to the database.
+     *
+     * @param context Current context
+     * @param db      Database Access
+     */
+    public static void onPostCreate(@NonNull final Context context,
+                                    @NonNull final SQLiteDatabase db) {
+        // inserts a 'All Books' bookshelf with _id==-1, see {@link Bookshelf}.
+        db.execSQL("INSERT INTO " + TBL_BOOKSHELF
+                   + '(' + PK_ID
+                   + ',' + KEY_BOOKSHELF_NAME
+                   + ',' + FK_STYLE
+                   + ") VALUES ("
+                   + Bookshelf.ALL_BOOKS
+                   + ",'" + context.getString(R.string.bookshelf_all_books)
+                   + "'," + BuiltinStyle.DEFAULT_ID
+                   + ')');
+
+        // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
+        db.execSQL("INSERT INTO " + TBL_BOOKSHELF
+                   + '(' + PK_ID
+                   + ',' + KEY_BOOKSHELF_NAME
+                   + ',' + FK_STYLE
+                   + ") VALUES ("
+                   + Bookshelf.DEFAULT
+                   + ",'" + context.getString(R.string.bookshelf_my_books)
+                   + "'," + BuiltinStyle.DEFAULT_ID
+                   + ')');
     }
 
     @Override

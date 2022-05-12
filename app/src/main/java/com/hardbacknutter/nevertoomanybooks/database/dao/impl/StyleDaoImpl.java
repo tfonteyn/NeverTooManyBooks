@@ -22,12 +22,16 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
@@ -40,6 +44,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOL_STYLE_IS_BUILTIN;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOL_STYLE_IS_PREFERRED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_STYLE_MENU_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_STYLE_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PK_ID;
 
 public class StyleDaoImpl
         extends BaseDaoImpl
@@ -86,6 +95,42 @@ public class StyleDaoImpl
      */
     public StyleDaoImpl() {
         super(TAG);
+    }
+
+    /**
+     * Run at installation time to add the builtin style ID's to the database.
+     * This allows foreign keys to work.
+     *
+     * @param db Database Access
+     */
+    public static void onPostCreate(@NonNull final SQLiteDatabase db) {
+        final String sqlInsertStyles =
+                "INSERT INTO " + TBL_BOOKLIST_STYLES
+                + '(' + PK_ID
+                // 1==true
+                + ',' + BOOL_STYLE_IS_BUILTIN
+                // 0==false
+                + ',' + BOOL_STYLE_IS_PREFERRED
+                + ',' + KEY_STYLE_MENU_POSITION
+                + ',' + KEY_STYLE_UUID
+                + ") VALUES(?,1,0,?,?)";
+        try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
+            for (int id = BuiltinStyle.MAX_ID; id < 0; id++) {
+                // remember, the id is negative -1..
+                stmt.bindLong(1, id);
+                // menu position, initially just as defined but with a positive number
+                stmt.bindLong(2, -id);
+                stmt.bindString(3, BuiltinStyle.getUuidById(-id));
+
+                // after inserting '-1' our debug logging will claim that the insert failed.
+                if (BuildConfig.DEBUG /* always */) {
+                    if (id == -1) {
+                        Log.d(TAG, "onPostCreate|Ignore debug message inserting -1 ^^^");
+                    }
+                }
+                stmt.executeInsert();
+            }
+        }
     }
 
     @Override
