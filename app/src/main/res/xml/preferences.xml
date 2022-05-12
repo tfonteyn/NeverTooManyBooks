@@ -85,6 +85,7 @@
     <PreferenceCategory
         android:title="@string/lbl_formatting">
 
+        <!-- This is the global setting. There is also a specific style-level setting. -->
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_baseline_reorder_24"
@@ -94,6 +95,7 @@
             android:title="@string/pt_show_author_name_given_first"
             />
 
+        <!-- This is the global setting. URGENT: add style-level setting -->
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_baseline_reorder_24"
@@ -107,14 +109,8 @@
     <PreferenceCategory
         android:title="@string/lbl_sorting">
 
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_sort_by_alpha_24"
-            android:key="sort.author.name.given_first"
-            android:summaryOff="@string/pv_author_name_family_first"
-            android:summaryOn="@string/pv_author_name_given_first"
-            android:title="@string/pt_sort_author_name_given_first" />
-
+        <!-- URGENT: this should be done on the style level similar to how we sort authors.
+        ... that would also remove the need to re-populate the OB column -->
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_baseline_sort_by_alpha_24"
