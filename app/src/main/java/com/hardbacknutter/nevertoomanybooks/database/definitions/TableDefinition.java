@@ -158,14 +158,6 @@ public class TableDefinition {
      * @param tables Table list
      */
     public static void onCreate(@NonNull final SQLiteDatabase db,
-                                @NonNull final TableDefinition... tables) {
-        for (final TableDefinition table : tables) {
-            table.create(db, true);
-            table.createIndices(db);
-        }
-    }
-
-    public static void onCreate(@NonNull final SQLiteDatabase db,
                                 @NonNull final Collection<TableDefinition> tables) {
         for (final TableDefinition table : tables) {
             table.create(db, true);

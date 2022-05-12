@@ -26,6 +26,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.List;
+
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -138,7 +140,7 @@ public class CoversDbHelper
 
     @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
-        TableDefinition.onCreate(db, TBL_IMAGE);
+        TableDefinition.onCreate(db, List.of(TBL_IMAGE));
     }
 
     @Override
