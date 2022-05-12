@@ -44,10 +44,10 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
@@ -79,6 +79,9 @@ public class Author
             return new Author[size];
         }
     };
+
+    /** This is the global setting! There is also a specific style-level setting. */
+    private static final String PK_SHOW_AUTHOR_NAME_GIVEN_FIRST = "show.author.name.given_first";
 
     /*
      * {@link DBDefinitions#DOM_BOOK_AUTHOR_TYPE_BITMASK}.
@@ -463,7 +466,7 @@ public class Author
 
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        return getLabel(context, Details.Normal);
+        return getLabel(context, Details.Normal, null);
     }
 
     /**
@@ -479,21 +482,30 @@ public class Author
      *
      * @param context Current context
      * @param details the amount of details wanted
+     * @param style   (optional) to use
      *
      * @return the label to use.
      */
     @Override
     @NonNull
     public String getLabel(@NonNull final Context context,
-                           @NonNull final Details details) {
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        final boolean givenFirst = global.getBoolean(Prefs.pk_show_author_name_given_first,
-                                                     false);
+                           @NonNull final Details details,
+                           @Nullable final ListStyle style) {
+        final boolean givenFirst;
+        if (style != null) {
+            givenFirst = style.isShowAuthorByGivenName();
+        } else {
+            final SharedPreferences global = PreferenceManager
+                    .getDefaultSharedPreferences(context);
+            givenFirst = global.getBoolean(PK_SHOW_AUTHOR_NAME_GIVEN_FIRST, false);
+        }
 
         switch (details) {
             case Full: {
                 String label = getFormattedName(givenFirst);
+
+                final SharedPreferences global = PreferenceManager
+                        .getDefaultSharedPreferences(context);
                 if (DBKey.isUsed(global, DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
                     final String type = getTypeLabels(context);
                     if (!type.isEmpty()) {

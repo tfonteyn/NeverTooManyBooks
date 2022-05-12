@@ -52,6 +52,6 @@ public class EntityFormatter<T extends Entity>
     @NonNull
     public String format(@NonNull final Context context,
                          @Nullable final T entity) {
-        return entity == null ? "" : entity.getLabel(context, mDetails);
+        return entity == null ? "" : entity.getLabel(context, mDetails, null);
     }
 }

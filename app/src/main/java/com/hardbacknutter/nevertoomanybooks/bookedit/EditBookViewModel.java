@@ -185,7 +185,7 @@ public class EditBookViewModel
             final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
             mDateFormatter = new DateFieldFormatter(locale);
             mLanguageFormatter = new LanguageFormatter(locale);
-            mNormalDetailListFormatter = new ListFormatter<>(Details.Normal);
+            mNormalDetailListFormatter = new ListFormatter<>(Details.Normal, null);
             mDoubleNumberFormatter = new DoubleNumberFormatter();
 
             if (args != null) {

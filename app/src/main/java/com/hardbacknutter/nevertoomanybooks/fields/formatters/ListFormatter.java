@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
@@ -42,18 +43,22 @@ public class ListFormatter<T extends Entity>
     private static final String DEFAULT_DELIMITER = "; ";
 
     @NonNull
-    private final Details mDetails;
+    private final Details details;
 
     @NonNull
-    private final String mDelimiter;
+    private final String delimiter;
+    @Nullable
+    private final ListStyle style;
 
     /**
      * Constructor.
      *
      * @param details how much details to show
+     * @param style   (optional) to use
      */
-    public ListFormatter(@NonNull final Details details) {
-        this(details, DEFAULT_DELIMITER);
+    public ListFormatter(@NonNull final Details details,
+                         @Nullable final ListStyle style) {
+        this(details, DEFAULT_DELIMITER, style);
     }
 
     /**
@@ -61,12 +66,15 @@ public class ListFormatter<T extends Entity>
      *
      * @param details   how much details to show
      * @param delimiter to use if details is {@link Details#Normal}
+     * @param style     (optional) to use
      */
     @SuppressWarnings("WeakerAccess")
     public ListFormatter(@NonNull final Details details,
-                         @NonNull final String delimiter) {
-        mDetails = details;
-        mDelimiter = delimiter;
+                         @NonNull final String delimiter,
+                         @Nullable final ListStyle style) {
+        this.details = details;
+        this.delimiter = delimiter;
+        this.style = style;
     }
 
     @Override
@@ -77,26 +85,27 @@ public class ListFormatter<T extends Entity>
             return "";
         }
 
-        switch (mDetails) {
+        switch (details) {
             case Full: {
                 return rawValue.stream()
-                               .map(entity -> entity.getLabel(context, mDetails))
+                               .map(entity -> entity.getLabel(context, details, style))
                                .map(s -> "<li>" + s + "</li>")
                                .collect(Collectors.joining("", "<ul>", "</ul>"));
             }
             case Normal: {
                 return rawValue.stream()
-                               .map(entity -> entity.getLabel(context, mDetails))
-                               .collect(Collectors.joining(mDelimiter));
+                               .map(entity -> entity.getLabel(context, details, style))
+                               .collect(Collectors.joining(delimiter));
             }
             case Short: {
                 if (rawValue.size() > 1) {
                     // special case, we use the Normal setting and use the "and_others" suffix
                     return context.getString(R.string.and_others_plus,
-                                             rawValue.get(0).getLabel(context, Details.Normal),
+                                             rawValue.get(0)
+                                                     .getLabel(context, Details.Normal, style),
                                              rawValue.size() - 1);
                 } else {
-                    return rawValue.get(0).getLabel(context, mDetails);
+                    return rawValue.get(0).getLabel(context, details, style);
                 }
             }
         }

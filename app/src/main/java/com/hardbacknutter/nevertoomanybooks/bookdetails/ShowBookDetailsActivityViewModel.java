@@ -198,8 +198,10 @@ public class ShowBookDetailsActivityViewModel
         final FieldFormatter<String> dateFormatter = new DateFieldFormatter(userLocale);
         final FieldFormatter<Money> moneyFormatter = new MoneyFormatter(userLocale);
         final FieldFormatter<String> notesFormatter = new HtmlFormatter<>(true, true);
-        final ListFormatter<Entity> normalDetailListFormatter = new ListFormatter<>(Details.Normal);
-        final ListFormatter<Entity> fullDetailListFormatter = new ListFormatter<>(Details.Full);
+        final ListFormatter<Entity> normalDetailListFormatter =
+                new ListFormatter<>(Details.Normal, style);
+        final ListFormatter<Entity> fullDetailListFormatter =
+                new ListFormatter<>(Details.Full, style);
 
         // book fields
         fields.add(new TextViewField<>(FragmentId.Main, R.id.title, DBKey.KEY_TITLE));
