@@ -30,6 +30,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
@@ -137,9 +138,11 @@ public class StyleViewModel
         final Groups styleGroups = style.getGroups();
 
         // Build an array list with the groups already present in the style
-        wrappedGroupList = new ArrayList<>(styleGroups.size());
-        styleGroups.getGroupList()
-                   .forEach(group -> wrappedGroupList.add(new WrappedGroup(group, true)));
+        wrappedGroupList = styleGroups
+                .getGroupList()
+                .stream()
+                .map(group -> new WrappedGroup(group, true))
+                .collect(Collectors.toCollection(ArrayList::new));
 
         // Get all other groups and add any missing ones to the list so the user can
         // add them if wanted.

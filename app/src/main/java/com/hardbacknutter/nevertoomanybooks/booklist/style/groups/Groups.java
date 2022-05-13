@@ -29,7 +29,6 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,25 +62,26 @@ public class Groups
 
     /** Style group preferences. */
     public static final String PK_STYLE_GROUPS = "style.booklist.groups";
+
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
-    private final ListStyle mStyle;
+    private final ListStyle style;
     /** key for the Preference. */
     @NonNull
-    private final String mKey;
+    private final String key;
     /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
-    private final ArrayList<Integer> mDefaultValue;
-    /** Flag indicating we should use the persistence store, or use {@link #mNonPersistedValue}. */
-    private final boolean mPersisted;
+    private final ArrayList<Integer> defaultValue;
+    /** Flag indicating we should use the persistence store, or use {@link #nonPersistedValue}. */
+    private final boolean persisted;
     /** in memory value used for non-persistence situations. */
     @NonNull
-    private final ArrayList<Integer> mNonPersistedValue;
+    private final ArrayList<Integer> nonPersistedValue;
     /**
      * All groups; <strong>ordered</strong>.
      * Reminder: the underlying pref is only storing the id.
      */
-    private final Map<Integer, BooklistGroup> mGroupMap = new LinkedHashMap<>();
+    private final Map<Integer, BooklistGroup> groupMap = new LinkedHashMap<>();
 
     /**
      * Constructor.
@@ -91,11 +91,11 @@ public class Groups
      */
     public Groups(final boolean isPersistent,
                   @NonNull final ListStyle style) {
-        mPersisted = isPersistent;
-        mStyle = style;
-        mKey = PK_STYLE_GROUPS;
-        mDefaultValue = new ArrayList<>();
-        mNonPersistedValue = new ArrayList<>();
+        persisted = isPersistent;
+        this.style = style;
+        key = PK_STYLE_GROUPS;
+        defaultValue = new ArrayList<>();
+        nonPersistedValue = new ArrayList<>();
         // initial load of the groups
         initGroupMap(getValue());
     }
@@ -110,22 +110,22 @@ public class Groups
     public Groups(final boolean isPersistent,
                   @NonNull final ListStyle style,
                   @NonNull final Groups that) {
-        mPersisted = isPersistent;
-        mStyle = style;
-        mKey = that.mKey;
-        mDefaultValue = new ArrayList<>(that.mDefaultValue);
-        mNonPersistedValue = new ArrayList<>(that.mNonPersistedValue);
+        persisted = isPersistent;
+        this.style = style;
+        key = that.key;
+        defaultValue = new ArrayList<>(that.defaultValue);
+        nonPersistedValue = new ArrayList<>(that.nonPersistedValue);
 
-        if (mPersisted) {
+        if (persisted) {
             set(that.getValue());
         }
     }
 
     private void initGroupMap(@Nullable final Collection<Integer> value) {
-        mGroupMap.clear();
+        groupMap.clear();
         if (value != null) {
-            value.forEach(id -> mGroupMap
-                    .put(id, BooklistGroup.newInstance(id, mPersisted, mStyle)));
+            value.forEach(id -> groupMap
+                    .put(id, BooklistGroup.newInstance(id, persisted, style)));
         }
     }
 
@@ -136,7 +136,7 @@ public class Groups
      */
     @NonNull
     public List<BooklistGroup> getGroupList() {
-        return List.copyOf(mGroupMap.values());
+        return List.copyOf(groupMap.values());
     }
 
     /**
@@ -147,7 +147,7 @@ public class Groups
      * @return {@code true} if present
      */
     public boolean contains(@BooklistGroup.Id final int id) {
-        return mGroupMap.containsKey(id);
+        return groupMap.containsKey(id);
     }
 
     /**
@@ -180,7 +180,7 @@ public class Groups
          */
 
         // note the use of a Supplier
-        return Objects.requireNonNull(mGroupMap.get(id), ()
+        return Objects.requireNonNull(groupMap.get(id), ()
                 -> "Group was NULL: id=" + id + ", " + this);
     }
 
@@ -193,7 +193,7 @@ public class Groups
      */
     @NonNull
     public Optional<BooklistGroup> getGroupById(@BooklistGroup.Id final int id) {
-        final BooklistGroup booklistGroup = mGroupMap.get(id);
+        final BooklistGroup booklistGroup = groupMap.get(id);
         if (booklistGroup != null) {
             return Optional.of(booklistGroup);
         } else {
@@ -211,7 +211,7 @@ public class Groups
     @NonNull
     public BooklistGroup getGroupByLevel(@IntRange(from = 1) final int level) {
         // can throw IndexOutOfBoundsException only if we have a bug passing an illegal level.
-        return (BooklistGroup) mGroupMap.values().toArray()[level - 1];
+        return (BooklistGroup) groupMap.values().toArray()[level - 1];
     }
 
     /**
@@ -220,7 +220,7 @@ public class Groups
      * @return the number of groups
      */
     public int size() {
-        return mGroupMap.size();
+        return groupMap.size();
     }
 
     /**
@@ -233,35 +233,35 @@ public class Groups
      */
     @NonNull
     public String getSummaryText(@NonNull final Context context) {
-        return mGroupMap.values().stream()
-                        .map(element -> element.getLabel(context))
-                        .collect(Collectors.joining(", "));
+        return groupMap.values().stream()
+                       .map(element -> element.getLabel(context))
+                       .collect(Collectors.joining(", "));
     }
 
     @NonNull
     @Override
     public String getKey() {
-        return mKey;
+        return key;
     }
 
     @NonNull
     @Override
     public ArrayList<Integer> getValue() {
-        if (mPersisted) {
-            return mStyle.getPersistenceLayer().getStringedIntList(mKey).orElse(mDefaultValue);
+        if (persisted) {
+            return style.getPersistenceLayer().getStringedIntList(key).orElse(defaultValue);
         } else {
-            return mNonPersistedValue;
+            return nonPersistedValue;
         }
     }
 
     @Override
     public void set(@Nullable final List<Integer> value) {
-        if (mPersisted) {
-            mStyle.getPersistenceLayer().setStringedIntList(mKey, value);
+        if (persisted) {
+            style.getPersistenceLayer().setStringedIntList(key, value);
         } else {
-            mNonPersistedValue.clear();
+            nonPersistedValue.clear();
             if (value != null) {
-                mNonPersistedValue.addAll(value);
+                nonPersistedValue.addAll(value);
             }
         }
 
@@ -270,11 +270,11 @@ public class Groups
     }
 
     public void clear() {
-        mGroupMap.clear();
-        if (mPersisted) {
-            mStyle.getPersistenceLayer().remove(mKey);
+        groupMap.clear();
+        if (persisted) {
+            style.getPersistenceLayer().remove(key);
         } else {
-            mNonPersistedValue.clear();
+            nonPersistedValue.clear();
         }
     }
 
@@ -284,14 +284,14 @@ public class Groups
      * @param group to add
      */
     public void add(@NonNull final BooklistGroup group) {
-        mGroupMap.put(group.getId(), group);
+        groupMap.put(group.getId(), group);
 
-        if (mPersisted) {
-            final StylePersistenceLayer persistenceLayer = mStyle.getPersistenceLayer();
-            final String list = persistenceLayer.getNonGlobalString(mKey);
-            persistenceLayer.setString(mKey, (list != null ? list + DELIM : "") + group.getId());
+        if (persisted) {
+            final StylePersistenceLayer persistenceLayer = style.getPersistenceLayer();
+            final String list = persistenceLayer.getNonGlobalString(key);
+            persistenceLayer.setString(key, (list != null ? list + DELIM : "") + group.getId());
         } else {
-            mNonPersistedValue.add(group.getId());
+            nonPersistedValue.add(group.getId());
         }
     }
 
@@ -301,11 +301,11 @@ public class Groups
      * @param id of group to remove
      */
     public void remove(@BooklistGroup.Id final int id) {
-        mGroupMap.remove(id);
+        groupMap.remove(id);
 
-        if (mPersisted) {
-            final StylePersistenceLayer persistenceLayer = mStyle.getPersistenceLayer();
-            final String list = persistenceLayer.getNonGlobalString(mKey);
+        if (persisted) {
+            final StylePersistenceLayer persistenceLayer = style.getPersistenceLayer();
+            final String list = persistenceLayer.getNonGlobalString(key);
             if (list != null && !list.isEmpty()) {
                 // create a new list, and copy the elements from the old list
                 // except the one to remove
@@ -313,31 +313,31 @@ public class Groups
                                                    .filter(e -> !e.equals(String.valueOf(id)))
                                                    .collect(Collectors.toList());
                 if (newList.isEmpty()) {
-                    persistenceLayer.remove(mKey);
+                    persistenceLayer.remove(key);
                 } else {
-                    persistenceLayer.setString(mKey, TextUtils.join(DELIM, newList));
+                    persistenceLayer.setString(key, TextUtils.join(DELIM, newList));
                 }
             }
         } else {
-            mNonPersistedValue.remove(id);
+            nonPersistedValue.remove(id);
         }
     }
 
     /**
-     * Get a flat map with accumulated preferences for this object and it's children.<br>
+     * Get a flat list with accumulated preferences for this object and it's children.<br>
      * Provides low-level access to all preferences.<br>
      * This should only be called for export/import.
      *
-     * @return flat map
+     * @return list
      */
     @NonNull
-    public Map<String, PPref<?>> getRawPreferences() {
-        final Map<String, PPref<?>> map = new HashMap<>();
+    public Collection<PPref<?>> getRawPreferences() {
+        final Collection<PPref<?>> list = new ArrayList<>();
         // the actual groups which is a list of integers => the group id's
-        map.put(mKey, this);
+        list.add(this);
         // flatten each group specific preferences
-        getGroupList().stream().map(BooklistGroup::getRawPreferences).forEach(map::putAll);
-        return map;
+        getGroupList().stream().map(BooklistGroup::getRawPreferences).forEach(list::addAll);
+        return list;
     }
 
     @Override
@@ -350,27 +350,27 @@ public class Groups
         }
         final Groups groups = (Groups) o;
         // mPersisted/mStyle is NOT part of the values to compare!
-        return mKey.equals(groups.mKey)
-               && mNonPersistedValue.equals(groups.mNonPersistedValue)
-               && mDefaultValue.equals(groups.mDefaultValue)
+        return key.equals(groups.key)
+               && nonPersistedValue.equals(groups.nonPersistedValue)
+               && defaultValue.equals(groups.defaultValue)
 
-               && Objects.equals(mGroupMap, groups.mGroupMap);
+               && Objects.equals(groupMap, groups.groupMap);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mKey, mNonPersistedValue, mDefaultValue, mGroupMap);
+        return Objects.hash(key, nonPersistedValue, defaultValue, groupMap);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "Groups{"
-               + "mKey=`" + mKey + '`'
-               + ", mDefaultValue=`" + mDefaultValue + '`'
-               + ", mPersisted=" + mPersisted
-               + ", mNonPersistedValue=`" + mNonPersistedValue + '`'
-               + ", mGroupMap=" + mGroupMap
+               + "key=`" + key + '`'
+               + ", defaultValue=`" + defaultValue + '`'
+               + ", persisted=" + persisted
+               + ", nonPersistedValue=`" + nonPersistedValue + '`'
+               + ", groupMap=" + groupMap
                + '}';
     }
 }

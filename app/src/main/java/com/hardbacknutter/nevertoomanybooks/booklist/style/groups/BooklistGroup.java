@@ -34,7 +34,7 @@ import androidx.preference.PreferenceScreen;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -804,11 +804,11 @@ public class BooklistGroup {
     /**
      * Get the Preference objects that this group will contribute to a Style.
      *
-     * @return a map with the prefs
+     * @return list
      */
     @NonNull
-    public Map<String, PPref<?>> getRawPreferences() {
-        return new LinkedHashMap<>();
+    public Collection<PPref<?>> getRawPreferences() {
+        return new ArrayList<>();
     }
 
     /**

@@ -175,7 +175,7 @@ public final class DBKey {
     public static final String UTC_DATE_ADDED = "date_added";
     public static final String UTC_DATE_LAST_UPDATED = "last_update_date";
 
-    public static final String KEY_STYLE_UUID = "uuid";
+    public static final String KEY_BOOK_UUID = "book_uuid";
     public static final String KEY_TITLE = "title";
     public static final String KEY_ISBN = "isbn";
     public static final String DATE_FIRST_PUBLICATION = "first_publication";
@@ -189,7 +189,6 @@ public final class DBKey {
     public static final String KEY_LANGUAGE = "language";
     public static final String KEY_GENRE = "genre";
     public static final String KEY_DESCRIPTION = "description";
-    public static final String KEY_BOOK_UUID = "book_uuid";
     public static final String BITMASK_EDITION = "edition_bm";
     public static final String BITMASK_TOC = "anthology";
 
@@ -214,6 +213,7 @@ public final class DBKey {
     public static final String KEY_LOANEE = "loaned_to";
 
     /** {@link DBDefinitions#TBL_BOOKLIST_STYLES}. */
+    public static final String KEY_STYLE_UUID = "uuid";
     public static final String BOOL_STYLE_IS_BUILTIN = "builtin";
     public static final String BOOL_STYLE_IS_PREFERRED = "preferred";
     public static final String KEY_STYLE_MENU_POSITION = "menu_order";

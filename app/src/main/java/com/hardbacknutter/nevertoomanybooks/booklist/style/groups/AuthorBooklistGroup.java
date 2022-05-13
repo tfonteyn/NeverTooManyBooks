@@ -26,7 +26,7 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.Collection;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -76,9 +76,9 @@ public class AuthorBooklistGroup
 
     /** DomainExpression for sorting the data - depends on the style used. */
     @NonNull
-    private final DomainExpression mSortingDomainExpression;
+    private final DomainExpression sortingDomainExpression;
     /** The primary author type the user prefers. */
-    private final PBitmask mPrimaryType;
+    private final PBitmask primaryAuthorType;
 
     /**
      * Constructor.
@@ -89,10 +89,10 @@ public class AuthorBooklistGroup
     AuthorBooklistGroup(final boolean isPersistent,
                         @NonNull final ListStyle style) {
         super(AUTHOR, isPersistent, style, PK_SHOW_BOOKS_UNDER_EACH);
-        mSortingDomainExpression = createSortingDomainExpression();
+        sortingDomainExpression = createSortingDomainExpression();
 
-        mPrimaryType = new PBitmask(mPersisted, mPersistenceLayer, PK_PRIMARY_TYPE,
-                                    Author.TYPE_UNKNOWN, Author.TYPE_BITMASK_ALL);
+        primaryAuthorType = new PBitmask(mPersisted, mPersistenceLayer, PK_PRIMARY_TYPE,
+                                         Author.TYPE_UNKNOWN, Author.TYPE_BITMASK_ALL);
     }
 
     /**
@@ -106,9 +106,9 @@ public class AuthorBooklistGroup
                         @NonNull final ListStyle style,
                         @NonNull final AuthorBooklistGroup group) {
         super(isPersistent, style, group);
-        mSortingDomainExpression = createSortingDomainExpression();
+        sortingDomainExpression = createSortingDomainExpression();
 
-        mPrimaryType = new PBitmask(mPersisted, mPersistenceLayer, group.mPrimaryType);
+        primaryAuthorType = new PBitmask(mPersisted, mPersistenceLayer, group.primaryAuthorType);
     }
 
 
@@ -171,7 +171,7 @@ public class AuthorBooklistGroup
     public ArrayList<DomainExpression> getGroupDomainExpressions() {
         // We inject the mSortedDomain as first in the list.
         final ArrayList<DomainExpression> list = new ArrayList<>();
-        list.add(0, mSortingDomainExpression);
+        list.add(0, sortingDomainExpression);
         list.addAll(super.getGroupDomainExpressions());
         return list;
     }
@@ -179,10 +179,10 @@ public class AuthorBooklistGroup
     @Override
     @CallSuper
     @NonNull
-    public Map<String, PPref<?>> getRawPreferences() {
-        final Map<String, PPref<?>> map = super.getRawPreferences();
-        map.put(mPrimaryType.getKey(), mPrimaryType);
-        return map;
+    public Collection<PPref<?>> getRawPreferences() {
+        final Collection<PPref<?>> list = super.getRawPreferences();
+        list.add(primaryAuthorType);
+        return list;
     }
 
     @Override
@@ -203,11 +203,11 @@ public class AuthorBooklistGroup
      */
     @Author.Type
     public int getPrimaryType() {
-        return mPrimaryType.getValue();
+        return primaryAuthorType.getValue();
     }
 
     public void setPrimaryType(@Nullable final Integer value) {
-        mPrimaryType.set(value);
+        primaryAuthorType.set(value);
     }
 
     @Override
@@ -216,13 +216,13 @@ public class AuthorBooklistGroup
             return false;
         }
         final AuthorBooklistGroup that = (AuthorBooklistGroup) o;
-        return Objects.equals(mSortingDomainExpression, that.mSortingDomainExpression)
-               && Objects.equals(mPrimaryType, that.mPrimaryType);
+        return Objects.equals(sortingDomainExpression, that.sortingDomainExpression)
+               && Objects.equals(primaryAuthorType, that.primaryAuthorType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), mSortingDomainExpression, mPrimaryType);
+        return Objects.hash(super.hashCode(), sortingDomainExpression, primaryAuthorType);
     }
 
     @Override
@@ -230,8 +230,8 @@ public class AuthorBooklistGroup
     public String toString() {
         return "AuthorBooklistGroup{"
                + super.toString()
-               + ", mSortedDomain=" + mSortingDomainExpression
-               + ", mPrimaryType=" + mPrimaryType
+               + ", mSortedDomain=" + sortingDomainExpression
+               + ", mPrimaryType=" + primaryAuthorType
                + '}';
     }
 }

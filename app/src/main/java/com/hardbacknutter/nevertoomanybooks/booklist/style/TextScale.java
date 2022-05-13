@@ -28,8 +28,8 @@ import androidx.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 /**
  * Encapsulate Font Scale and all related data/logic.
  * <p>
- * Dev. Note: the resource attributes depend on the {@link #mScale}, so we can't cache
+ * Dev. Note: the resource attributes depend on the {@link #scale}, so we can't cache
  * them in the constructor.
  */
 public class TextScale {
@@ -64,7 +64,7 @@ public class TextScale {
     static final int TEXT_SCALE_4_VERY_LARGE = 4;
 
     /** Relative size of list text. */
-    private final PInteger mScale;
+    private final PInteger scale;
 
     /**
      * Constructor.
@@ -74,7 +74,7 @@ public class TextScale {
      */
     TextScale(final boolean isPersistent,
               @NonNull final StylePersistenceLayer persistenceLayer) {
-        mScale = new PInteger(isPersistent, persistenceLayer, PK_TEXT_SCALE, TEXT_SCALE_2_MEDIUM);
+        scale = new PInteger(isPersistent, persistenceLayer, PK_TEXT_SCALE, TEXT_SCALE_2_MEDIUM);
     }
 
     /**
@@ -87,11 +87,11 @@ public class TextScale {
     TextScale(final boolean isPersistent,
               @NonNull final StylePersistenceLayer persistenceLayer,
               @NonNull final TextScale textScale) {
-        mScale = new PInteger(isPersistent, persistenceLayer, textScale.mScale);
+        scale = new PInteger(isPersistent, persistenceLayer, textScale.scale);
     }
 
     public int getScale() {
-        return mScale.getValue();
+        return scale.getValue();
     }
 
     /**
@@ -101,7 +101,7 @@ public class TextScale {
      */
     @SuppressWarnings("SameParameterValue")
     public void setScale(@Scale final int scale) {
-        mScale.set(scale);
+        this.scale.set(scale);
     }
 
     /**
@@ -115,7 +115,7 @@ public class TextScale {
         final TypedArray ta = context.getResources()
                                      .obtainTypedArray(R.array.bob_text_padding_in_percent);
         try {
-            return ta.getFloat(mScale.getValue(), TEXT_SCALE_2_MEDIUM);
+            return ta.getFloat(scale.getValue(), TEXT_SCALE_2_MEDIUM);
         } finally {
             ta.recycle();
         }
@@ -132,7 +132,7 @@ public class TextScale {
         final TypedArray ta = context.getResources()
                                      .obtainTypedArray(R.array.bob_text_size_in_sp);
         try {
-            return ta.getFloat(mScale.getValue(), TEXT_SCALE_2_MEDIUM);
+            return ta.getFloat(scale.getValue(), TEXT_SCALE_2_MEDIUM);
         } finally {
             ta.recycle();
         }
@@ -148,7 +148,7 @@ public class TextScale {
      */
     @NonNull
     public String getSummaryText(@NonNull final Context context) {
-        return context.getResources().getStringArray(R.array.pe_bob_text_scale)[mScale.getValue()];
+        return context.getResources().getStringArray(R.array.pe_bob_text_scale)[scale.getValue()];
     }
 
     /**
@@ -157,21 +157,21 @@ public class TextScale {
      * @return {@code true} if this is the default
      */
     public boolean isDefaultScale() {
-        return mScale.getValue() == TEXT_SCALE_2_MEDIUM;
+        return scale.getValue() == TEXT_SCALE_2_MEDIUM;
     }
 
     /**
-     * Get a flat map with accumulated preferences for this object and it's children.<br>
+     * Get a flat list with accumulated preferences for this object and it's children.<br>
      * Provides low-level access to all preferences.<br>
      * This should only be called for export/import.
      *
-     * @return flat map
+     * @return list
      */
     @NonNull
-    public Map<String, PPref<?>> getRawPreferences() {
-        final Map<String, PPref<?>> map = new HashMap<>();
-        map.put(mScale.getKey(), mScale);
-        return map;
+    public Collection<PPref<?>> getRawPreferences() {
+        final Collection<PPref<?>> list = new ArrayList<>();
+        list.add(scale);
+        return list;
     }
 
     @Override
@@ -183,19 +183,19 @@ public class TextScale {
             return false;
         }
         final TextScale textScale = (TextScale) o;
-        return Objects.equals(mScale, textScale.mScale);
+        return Objects.equals(scale, textScale.scale);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mScale);
+        return Objects.hash(scale);
     }
 
     @NonNull
     @Override
     public String toString() {
         return "TextScale{"
-               + "mScale=" + mScale
+               + "scale=" + scale
                + '}';
     }
 

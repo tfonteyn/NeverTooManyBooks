@@ -23,8 +23,8 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
@@ -55,7 +55,7 @@ public class UserStyle
         super(context, "", true);
 
         // negative == builtin; MIN_VALUE because why not....
-        mId = Integer.MIN_VALUE;
+        id = Integer.MIN_VALUE;
 
         initPrefs(true);
     }
@@ -71,7 +71,7 @@ public class UserStyle
     private UserStyle(@NonNull final Context context,
                       @NonNull final String uuid) {
         super(context, uuid, true);
-        mId = 0;
+        id = 0;
 
         initPrefs(true);
     }
@@ -86,9 +86,9 @@ public class UserStyle
                       @NonNull final DataHolder rowData) {
         super(context, rowData.getString(DBKey.KEY_STYLE_UUID), true);
 
-        mId = rowData.getLong(DBKey.PK_ID);
-        mIsPreferred = rowData.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED);
-        mMenuPosition = rowData.getInt(DBKey.KEY_STYLE_MENU_POSITION);
+        id = rowData.getLong(DBKey.PK_ID);
+        preferred = rowData.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED);
+        menuPosition = rowData.getInt(DBKey.KEY_STYLE_MENU_POSITION);
 
         initPrefs(true);
     }
@@ -110,35 +110,35 @@ public class UserStyle
                         @NonNull final String uuid) {
         super(context, uuid, true);
 
-        mId = id;
+        this.id = id;
 
         // Store the new name.
-        mPersistenceLayer.setString(PK_STYLE_NAME, style.getLabel(context));
+        persistenceLayer.setString(PK_STYLE_NAME, style.getLabel(context));
 
         // copy the basic settings (i.e. non-preferences)
-        mIsPreferred = style.isPreferred();
-        mMenuPosition = style.getMenuPosition();
+        preferred = style.isPreferred();
+        menuPosition = style.getMenuPosition();
 
         // clone the preferences
-        mShowAuthorByGivenName = new PBoolean(true, mPersistenceLayer,
-                                              style.mShowAuthorByGivenName);
-        mSortAuthorByGivenName = new PBoolean(true, mPersistenceLayer,
-                                              style.mSortAuthorByGivenName);
+        showAuthorByGivenName = new PBoolean(true, persistenceLayer,
+                                             style.showAuthorByGivenName);
+        sortAuthorByGivenName = new PBoolean(true, persistenceLayer,
+                                             style.sortAuthorByGivenName);
 
-        mExpansionLevel = new PInteger(true, mPersistenceLayer, style.mExpansionLevel);
-        mShowHeaderInfo = new PBitmask(true, mPersistenceLayer, style.mShowHeaderInfo);
-        mUseGroupRowPreferredHeight = new PBoolean(true, mPersistenceLayer,
-                                                   style.mUseGroupRowPreferredHeight);
+        expansionLevel = new PInteger(true, persistenceLayer, style.expansionLevel);
+        showHeaderInfo = new PBitmask(true, persistenceLayer, style.showHeaderInfo);
+        useGroupRowPreferredHeight = new PBoolean(true, persistenceLayer,
+                                                  style.useGroupRowPreferredHeight);
 
-        mTextScale = new TextScale(true, mPersistenceLayer, style.mTextScale);
+        textScale = new TextScale(true, persistenceLayer, style.textScale);
 
-        mListScreenBookFields = new ListScreenBookFields(true, mPersistenceLayer,
-                                                         style.mListScreenBookFields);
+        listScreenBookFields = new ListScreenBookFields(true, persistenceLayer,
+                                                        style.listScreenBookFields);
 
-        mDetailScreenBookFields = new DetailScreenBookFields(true, mPersistenceLayer,
-                                                             style.mDetailScreenBookFields);
+        detailScreenBookFields = new DetailScreenBookFields(true, persistenceLayer,
+                                                            style.detailScreenBookFields);
 
-        mGroups = new Groups(true, this, style.mGroups);
+        groups = new Groups(true, this, style.groups);
     }
 
     @NonNull
@@ -172,15 +172,14 @@ public class UserStyle
         context.deleteSharedPreferences(getUuid());
     }
 
-
-    public void setName(@NonNull final String name) {
-        mPersistenceLayer.setString(PK_STYLE_NAME, name);
-    }
-
     @NonNull
     public String getName() {
         //noinspection ConstantConditions
-        return mPersistenceLayer.getNonGlobalString(PK_STYLE_NAME);
+        return persistenceLayer.getNonGlobalString(PK_STYLE_NAME);
+    }
+
+    public void setName(@NonNull final String name) {
+        persistenceLayer.setString(PK_STYLE_NAME, name);
     }
 
     @Override
@@ -189,31 +188,31 @@ public class UserStyle
     }
 
     /**
-     * Get a flat map with accumulated preferences for this object and it's groups.<br>
+     * Get a flat list with accumulated preferences for this object and it's groups.<br>
      * Provides low-level access to all preferences.<br>
      * This should only be called for export/import.
      *
-     * @return flat map
+     * @return list
      */
     @NonNull
-    public Map<String, PPref<?>> getRawPreferences() {
-        final Map<String, PPref<?>> map = new HashMap<>();
+    public Collection<PPref<?>> getRawPreferences() {
+        final Collection<PPref<?>> list = new ArrayList<>();
+        list.add(expansionLevel);
+        list.add(useGroupRowPreferredHeight);
+        list.add(showHeaderInfo);
 
-        map.put(mExpansionLevel.getKey(), mExpansionLevel);
-        map.put(mUseGroupRowPreferredHeight.getKey(), mUseGroupRowPreferredHeight);
-        map.put(mShowHeaderInfo.getKey(), mShowHeaderInfo);
+        list.add(showAuthorByGivenName);
+        list.add(sortAuthorByGivenName);
 
-        map.put(mShowAuthorByGivenName.getKey(), mShowAuthorByGivenName);
-        map.put(mSortAuthorByGivenName.getKey(), mSortAuthorByGivenName);
+        list.addAll(textScale.getRawPreferences());
+        list.addAll(listScreenBookFields.getRawPreferences());
+        list.addAll(detailScreenBookFields.getRawPreferences());
 
-        map.putAll(mTextScale.getRawPreferences());
-        map.putAll(mListScreenBookFields.getRawPreferences());
-        map.putAll(mDetailScreenBookFields.getRawPreferences());
+        list.addAll(groups.getRawPreferences());
 
-        map.putAll(mGroups.getRawPreferences());
-
-        return map;
+        return list;
     }
+
 
     @Override
     @NonNull

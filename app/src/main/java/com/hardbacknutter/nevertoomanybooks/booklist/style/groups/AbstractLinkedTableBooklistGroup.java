@@ -23,7 +23,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Map;
+import java.util.Collection;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
@@ -39,29 +39,29 @@ public abstract class AbstractLinkedTableBooklistGroup
 
     /** DomainExpression for displaying the data. */
     @NonNull
-    private final DomainExpression mDisplayDomainExpression;
+    private final DomainExpression displayDomainExpression;
 
     /** Show a book under each item it is linked to. */
     @NonNull
-    private final PBoolean mUnderEach;
+    private final PBoolean underEach;
 
     AbstractLinkedTableBooklistGroup(@Id final int id,
                                      final boolean isPersistent,
                                      @NonNull final ListStyle style,
                                      @NonNull final String pkUnderEach) {
         super(id, isPersistent, style);
-        mDisplayDomainExpression = createDisplayDomainExpression();
+        displayDomainExpression = createDisplayDomainExpression();
 
-        mUnderEach = new PBoolean(mPersisted, mPersistenceLayer, pkUnderEach, false);
+        underEach = new PBoolean(mPersisted, mPersistenceLayer, pkUnderEach, false);
     }
 
     AbstractLinkedTableBooklistGroup(final boolean isPersistent,
                                      @NonNull final ListStyle style,
                                      @NonNull final AbstractLinkedTableBooklistGroup group) {
         super(isPersistent, style, group);
-        mDisplayDomainExpression = createDisplayDomainExpression();
+        displayDomainExpression = createDisplayDomainExpression();
 
-        mUnderEach = new PBoolean(mPersisted, mPersistenceLayer, group.mUnderEach);
+        underEach = new PBoolean(mPersisted, mPersistenceLayer, group.underEach);
     }
 
     @NonNull
@@ -70,7 +70,7 @@ public abstract class AbstractLinkedTableBooklistGroup
     @Override
     @NonNull
     public DomainExpression getDisplayDomainExpression() {
-        return mDisplayDomainExpression;
+        return displayDomainExpression;
     }
 
     /**
@@ -79,20 +79,20 @@ public abstract class AbstractLinkedTableBooklistGroup
      * @return {@code true} if we want to show a book under each of its linked items.
      */
     public boolean showBooksUnderEach() {
-        return mUnderEach.isTrue();
+        return underEach.isTrue();
     }
 
     public void setShowBooksUnderEach(final boolean value) {
-        mUnderEach.set(value);
+        underEach.set(value);
     }
 
     @Override
     @CallSuper
     @NonNull
-    public Map<String, PPref<?>> getRawPreferences() {
-        final Map<String, PPref<?>> map = super.getRawPreferences();
-        map.put(mUnderEach.getKey(), mUnderEach);
-        return map;
+    public Collection<PPref<?>> getRawPreferences() {
+        final Collection<PPref<?>> list = super.getRawPreferences();
+        list.add(underEach);
+        return list;
     }
 
     @Override
@@ -101,20 +101,20 @@ public abstract class AbstractLinkedTableBooklistGroup
             return false;
         }
         final AbstractLinkedTableBooklistGroup that = (AbstractLinkedTableBooklistGroup) o;
-        return Objects.equals(mDisplayDomainExpression, that.mDisplayDomainExpression)
-               && Objects.equals(mUnderEach, that.mUnderEach);
+        return Objects.equals(displayDomainExpression, that.displayDomainExpression)
+               && Objects.equals(underEach, that.underEach);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), mDisplayDomainExpression, mUnderEach);
+        return Objects.hash(super.hashCode(), displayDomainExpression, underEach);
     }
 
     @Override
     @NonNull
     public String toString() {
         return super.toString()
-               + ", mDisplayDomainExpression=" + mDisplayDomainExpression
-               + ", mUnderEach=" + mUnderEach;
+               + ", mDisplayDomainExpression=" + displayDomainExpression
+               + ", mUnderEach=" + underEach;
     }
 }

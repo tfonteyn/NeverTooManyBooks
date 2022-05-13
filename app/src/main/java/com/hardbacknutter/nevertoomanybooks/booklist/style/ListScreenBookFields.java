@@ -27,9 +27,9 @@ import androidx.annotation.NonNull;
 import androidx.core.math.MathUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -65,7 +65,7 @@ public class ListScreenBookFields
     public static final String PK_COVER_SCALE = "style.booklist.scale.thumbnails";
 
     /** Scale factor to apply for thumbnails. */
-    private final PInteger mThumbnailScale;
+    private final PInteger thumbnailScale;
 
     /**
      * Constructor.
@@ -76,8 +76,8 @@ public class ListScreenBookFields
     ListScreenBookFields(final boolean isPersistent,
                          @NonNull final StylePersistenceLayer persistenceLayer) {
 
-        mThumbnailScale = new PInteger(isPersistent, persistenceLayer, PK_COVER_SCALE,
-                                       ListStyle.IMAGE_SCALE_DEFAULT);
+        thumbnailScale = new PInteger(isPersistent, persistenceLayer, PK_COVER_SCALE,
+                                      ListStyle.IMAGE_SCALE_DEFAULT);
 
         addField(new PBoolean(isPersistent, persistenceLayer, PK_COVERS, true));
         addField(new PBoolean(isPersistent, persistenceLayer, PK_AUTHOR, false));
@@ -101,11 +101,7 @@ public class ListScreenBookFields
                          @NonNull final StylePersistenceLayer persistenceLayer,
                          @NonNull final ListScreenBookFields bookFields) {
         super(isPersistent, persistenceLayer, bookFields);
-        mThumbnailScale = new PInteger(isPersistent, persistenceLayer, bookFields.mThumbnailScale);
-    }
-
-    public void setCoverScale(@ListStyle.CoverScale final int value) {
-        mThumbnailScale.set(value);
+        thumbnailScale = new PInteger(isPersistent, persistenceLayer, bookFields.thumbnailScale);
     }
 
     /**
@@ -118,11 +114,15 @@ public class ListScreenBookFields
         final SharedPreferences global = ServiceLocator.getGlobalPreferences();
 
         if (isShowField(global, PK_COVERS)) {
-            return MathUtils.clamp(mThumbnailScale.getValue(),
+            return MathUtils.clamp(thumbnailScale.getValue(),
                                    ListStyle.IMAGE_SCALE_1_SMALL,
                                    ListStyle.IMAGE_SCALE_3_LARGE);
         }
         return ListStyle.IMAGE_SCALE_0_NOT_DISPLAYED;
+    }
+
+    public void setCoverScale(@ListStyle.CoverScale final int value) {
+        thumbnailScale.set(value);
     }
 
     /**
@@ -204,16 +204,16 @@ public class ListScreenBookFields
     }
 
     /**
-     * Get a flat map with accumulated preferences for this object and it's children.<br>
+     * Get a flat list with accumulated preferences for this object and it's children.<br>
      * Provides low-level access to all preferences.<br>
      * This should only be called for export/import.
      *
-     * @return flat map
+     * @return list
      */
     @NonNull
-    public Map<String, PPref<?>> getRawPreferences() {
-        final Map<String, PPref<?>> map = super.getRawPreferences();
-        map.put(mThumbnailScale.getKey(), mThumbnailScale);
+    public Collection<PPref<?>> getRawPreferences() {
+        final Collection<PPref<?>> map = super.getRawPreferences();
+        map.add(thumbnailScale);
         return map;
     }
 
@@ -229,12 +229,12 @@ public class ListScreenBookFields
             return false;
         }
         final ListScreenBookFields that = (ListScreenBookFields) o;
-        return Objects.equals(mThumbnailScale, that.mThumbnailScale);
+        return Objects.equals(thumbnailScale, that.thumbnailScale);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), mThumbnailScale);
+        return Objects.hash(super.hashCode(), thumbnailScale);
     }
 
     @NonNull
@@ -242,7 +242,7 @@ public class ListScreenBookFields
     public String toString() {
         return "ListScreenBookFields{"
                + super.toString()
-               + ", mThumbnailScale=" + mThumbnailScale
+               + ", thumbnailScale=" + thumbnailScale
                + '}';
     }
 }

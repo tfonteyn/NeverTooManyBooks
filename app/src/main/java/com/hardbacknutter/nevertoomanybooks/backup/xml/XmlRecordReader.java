@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,6 +47,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -56,6 +58,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
@@ -101,21 +104,23 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 public class XmlRecordReader
         implements RecordReader {
 
+    private static final String TAG = "XmlRecordReader";
+
     private static final String ERROR_UNABLE_TO_PROCESS_XML_RECORD = "Unable to process XML ";
 
     @Nullable
-    private final Locale mUserLocale;
+    private final Locale userLocale;
 
     /**
      * Stack for popping tags on if we go into one.
      * This is of course overkill, just to handle the list/set set,
      * but it's clean and future proof
      */
-    private final Deque<TagInfo> mTagStack = new ArrayDeque<>();
+    private final Deque<TagInfo> tagStack = new ArrayDeque<>();
     @NonNull
-    private final Set<RecordType> mImportEntriesAllowed;
+    private final Set<RecordType> importEntriesAllowed;
     /** a simple Holder for the current tag name and attributes. Pushed/pulled on the stack. */
-    private TagInfo mCurrentTag;
+    private TagInfo currentTag;
 
     /**
      * Constructor.
@@ -125,8 +130,8 @@ public class XmlRecordReader
      */
     public XmlRecordReader(@NonNull final Context context,
                            @NonNull final Set<RecordType> importEntriesAllowed) {
-        mImportEntriesAllowed = importEntriesAllowed;
-        mUserLocale = context.getResources().getConfiguration().getLocales().get(0);
+        this.importEntriesAllowed = importEntriesAllowed;
+        userLocale = context.getResources().getConfiguration().getLocales().get(0);
     }
 
     @Override
@@ -158,7 +163,7 @@ public class XmlRecordReader
         if (record.getType().isPresent()) {
             final RecordType recordType = record.getType().get();
 
-            if (mImportEntriesAllowed.contains(recordType)) {
+            if (importEntriesAllowed.contains(recordType)) {
                 if (recordType == RecordType.Styles) {
                     final StylesReader stylesReader = new StylesReader(context);
                     fromXml(record, stylesReader);
@@ -230,81 +235,81 @@ public class XmlRecordReader
         rootFilter.addFilter(listRootElement, rootElement)
                   .setStartAction(elementContext -> {
                       // use as top-tag
-                      mCurrentTag = new TagInfo(elementContext);
+                      currentTag = new TagInfo(elementContext);
                       // we only have a version on the top tag, not on every tag.
                       final String version = elementContext.getAttributes()
                                                            .getValue(XmlUtils.ATTR_VERSION);
                       accessor.startElement(version == null ? 0 : Integer.parseInt(version),
-                                            mCurrentTag);
+                                            currentTag);
                   })
                   .setEndAction(elementContext -> accessor.endElement());
 
         // typed tag starts. for both attribute and body based elements.
         final Consumer<ElementContext> startTypedTag = elementContext -> {
-            mTagStack.push(mCurrentTag);
-            mCurrentTag = new TagInfo(elementContext);
+            tagStack.push(currentTag);
+            currentTag = new TagInfo(elementContext);
 
             // if we have a value attribute, this tag is done. Handle here.
-            if (mCurrentTag.value != null) {
-                switch (mCurrentTag.type) {
+            if (currentTag.value != null) {
+                switch (currentTag.type) {
                     case XmlUtils.TAG_STRING:
                         // attribute Strings are encoded.
-                        accessor.putString(mCurrentTag.name, XmlUtils.decode(mCurrentTag.value));
+                        accessor.putString(currentTag.name, XmlUtils.decode(currentTag.value));
                         break;
 
                     case XmlUtils.TAG_BOOLEAN:
-                        accessor.putBoolean(mCurrentTag.name, Boolean.parseBoolean(
-                                mCurrentTag.value));
+                        accessor.putBoolean(currentTag.name, Boolean.parseBoolean(
+                                currentTag.value));
                         break;
 
                     case XmlUtils.TAG_INT:
-                        accessor.putInt(mCurrentTag.name, Integer.parseInt(mCurrentTag.value));
+                        accessor.putInt(currentTag.name, Integer.parseInt(currentTag.value));
                         break;
 
                     case XmlUtils.TAG_LONG:
-                        accessor.putLong(mCurrentTag.name, Long.parseLong(mCurrentTag.value));
+                        accessor.putLong(currentTag.name, Long.parseLong(currentTag.value));
                         break;
 
                     case XmlUtils.TAG_FLOAT:
-                        accessor.putFloat(mCurrentTag.name, ParseUtils.parseFloat(
-                                mCurrentTag.value, mUserLocale));
+                        accessor.putFloat(currentTag.name, ParseUtils.parseFloat(
+                                currentTag.value, userLocale));
                         break;
 
                     case XmlUtils.TAG_DOUBLE:
-                        accessor.putDouble(mCurrentTag.name, ParseUtils.parseDouble(
-                                mCurrentTag.value, mUserLocale));
+                        accessor.putDouble(currentTag.name, ParseUtils.parseDouble(
+                                currentTag.value, userLocale));
                         break;
 
                     default:
                         break;
                 }
-                mCurrentTag = mTagStack.pop();
+                currentTag = tagStack.pop();
             }
         };
 
         // the end of a typed tag with a body
         final Consumer<ElementContext> endTypedTag = elementContext -> {
             try {
-                switch (mCurrentTag.type) {
+                switch (currentTag.type) {
                     case XmlUtils.TAG_STRING:
                         // body Strings use CDATA
-                        accessor.putString(mCurrentTag.name, elementContext.getBody());
+                        accessor.putString(currentTag.name, elementContext.getBody());
                         break;
 
                     case XmlUtils.TAG_SET:
-                        accessor.putStringSet(mCurrentTag.name, currentStringList);
+                        accessor.putStringSet(currentTag.name, currentStringList);
                         // cleanup, ready for the next Set
                         currentStringList.clear();
                         break;
 
                     case XmlUtils.TAG_LIST:
-                        accessor.putStringList(mCurrentTag.name, currentStringList);
+                        accessor.putStringList(currentTag.name, currentStringList);
                         // cleanup, ready for the next List
                         currentStringList.clear();
                         break;
 
                     case XmlUtils.TAG_SERIALIZABLE:
-                        accessor.putSerializable(mCurrentTag.name,
+                        accessor.putSerializable(currentTag.name,
                                                  Base64.decode(elementContext.getBody(),
                                                                Base64.DEFAULT));
                         break;
@@ -313,11 +318,11 @@ public class XmlRecordReader
                         break;
                 }
 
-                mCurrentTag = mTagStack.pop();
+                currentTag = tagStack.pop();
 
             } catch (@NonNull final RuntimeException e) {
-                throw new RuntimeException(ERROR_UNABLE_TO_PROCESS_XML_RECORD + mCurrentTag.name
-                                           + '(' + mCurrentTag.type + ')', e);
+                throw new RuntimeException(ERROR_UNABLE_TO_PROCESS_XML_RECORD + currentTag.name
+                                           + '(' + currentTag.type + ')', e);
             }
         };
 
@@ -353,26 +358,26 @@ public class XmlRecordReader
          */
         // set/list elements with attributes.
         final Consumer<ElementContext> startElementInCollection = elementContext -> {
-            mTagStack.push(mCurrentTag);
-            mCurrentTag = new TagInfo(elementContext);
+            tagStack.push(currentTag);
+            currentTag = new TagInfo(elementContext);
 
             // if we have a value attribute, this tag is done. Handle here.
-            if (mCurrentTag.value != null) {
+            if (currentTag.value != null) {
                 // yes, switch is silly here. But let's keep it generic and above all, clear!
-                switch (mCurrentTag.type) {
+                switch (currentTag.type) {
                     case XmlUtils.TAG_BOOLEAN:
                     case XmlUtils.TAG_INT:
                     case XmlUtils.TAG_LONG:
                     case XmlUtils.TAG_FLOAT:
                     case XmlUtils.TAG_DOUBLE:
-                        currentStringList.add(mCurrentTag.value);
+                        currentStringList.add(currentTag.value);
                         break;
 
                     default:
                         break;
                 }
 
-                mCurrentTag = mTagStack.pop();
+                currentTag = tagStack.pop();
             }
         };
 
@@ -381,7 +386,7 @@ public class XmlRecordReader
             // handle tags with bodies.
             try {
                 // yes, switch is silly here. But let's keep it generic and above all, clear!
-                switch (mCurrentTag.type) {
+                switch (currentTag.type) {
                     // No support for list/set inside a list/set (no point)
                     case XmlUtils.TAG_SERIALIZABLE:
                         // serializable is indeed just added as a string...
@@ -395,10 +400,10 @@ public class XmlRecordReader
                         break;
                 }
 
-                mCurrentTag = mTagStack.pop();
+                currentTag = tagStack.pop();
 
             } catch (@NonNull final RuntimeException e) {
-                throw new RuntimeException(ERROR_UNABLE_TO_PROCESS_XML_RECORD + mCurrentTag, e);
+                throw new RuntimeException(ERROR_UNABLE_TO_PROCESS_XML_RECORD + currentTag, e);
             }
         };
 
@@ -817,12 +822,15 @@ public class XmlRecordReader
                 //... and hence, the Style Preferences won't have any group Preferences either.
                 // Reminder: the map mStylePrefs is a TEMPORARY map,
                 // but the elements IN this map ARE PART OF THE STYLE.
-                mStylePrefs = userStyle.getRawPreferences();
+                mStylePrefs = userStyle.getRawPreferences().stream()
+                                       .collect(Collectors.toMap(PPref::getKey, v -> v));
+
                 // So loop all groups, and get their Preferences.
                 // Do NOT add the group itself to the style at this point as our import
                 // might not actually have it.
-                BooklistGroup.getAllGroups(mStyle)
-                             .forEach(group -> mStylePrefs.putAll(group.getRawPreferences()));
+                BooklistGroup.getAllGroups(mStyle).stream()
+                             .flatMap(group -> group.getRawPreferences().stream())
+                             .forEach(pPref -> mStylePrefs.put(pPref.getKey(), pPref));
             }
 
             // not bothering with slightly older backups where the 'preferred' flag was a PPref
@@ -855,7 +863,7 @@ public class XmlRecordReader
                 mStyle.getGroups()
                       .getGroupList()
                       .stream()
-                      .flatMap(group -> group.getRawPreferences().values().stream())
+                      .flatMap(group -> group.getRawPreferences().stream())
                       .forEach(dest -> {
                           //noinspection ConstantConditions
                           final PPref<?> source = mStylePrefs.get(dest.getKey());
@@ -925,7 +933,7 @@ public class XmlRecordReader
             if (mStylePrefs != null) {
                 final PIntList p = (PIntList) mStylePrefs.get(key);
                 if (p != null) {
-                    p.setStringCollection(value);
+                    p.set(toIntList(value));
                 }
             }
         }
@@ -936,8 +944,29 @@ public class XmlRecordReader
             if (mStylePrefs != null) {
                 final PIntList p = (PIntList) mStylePrefs.get(key);
                 if (p != null) {
-                    p.setStringCollection(value);
+                    p.set(toIntList(value));
                 }
+            }
+        }
+
+        /**
+         * Convert a list with strings to a list with integers.
+         *
+         * @param values to convert
+         *
+         * @return list
+         */
+        @NonNull
+        private ArrayList<Integer> toIntList(@NonNull final Collection<String> values) {
+            try {
+                return values.stream()
+                             .map(Integer::parseInt)
+                             .collect(Collectors.toCollection(ArrayList::new));
+            } catch (@NonNull final NumberFormatException e) {
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "values=`" + values + '`', e);
+                }
+                throw new IllegalStateException("bad input");
             }
         }
     }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,40 +19,20 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style.prefs;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 
 /**
  * Passthrough support for a {@code PPref<ArrayList<Integer>>}
  * <p>
- * Note that the methods are the same as in PPref itself but with the Integer type set.
- * In contrast to {@link PInt} we need a transformation step.
+ * Methods are the same as in {@link PPref} but with the Integer type hardcoded.
  */
 public interface PIntList {
 
     String DELIM = ",";
-
-    default void setStringCollection(@NonNull final Collection<String> values) {
-        try {
-            set(values.stream()
-                      .map(Integer::parseInt)
-                      .collect(Collectors.toCollection(ArrayList::new)));
-        } catch (@NonNull final NumberFormatException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d("PIntList", "values=`" + values + '`', e);
-            }
-            throw new IllegalStateException("bad input");
-        }
-    }
 
     void set(@Nullable List<Integer> value);
 

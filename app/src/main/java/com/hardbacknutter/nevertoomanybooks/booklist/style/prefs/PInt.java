@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,7 +25,7 @@ import androidx.annotation.Nullable;
 /**
  * Passthrough support for a {@code PPref<Integer>}.
  * <p>
- * Note that the methods are the same as in PPref itself but with the Integer type set.
+ * Methods are the same as in {@link PPref} but with the Integer type hardcoded.
  */
 public interface PInt {
 

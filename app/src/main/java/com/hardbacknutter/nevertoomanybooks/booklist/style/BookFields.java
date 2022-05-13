@@ -25,7 +25,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -39,7 +40,7 @@ public abstract class BookFields {
      * All fields (domains) that are optionally shown on the Book level,
      * in an <strong>ordered</strong> map.
      */
-    private final Map<String, PBoolean> mFields = new LinkedHashMap<>();
+    private final Map<String, PBoolean> fields = new LinkedHashMap<>();
 
     /**
      * Constructor.
@@ -57,19 +58,19 @@ public abstract class BookFields {
     BookFields(final boolean isPersistent,
                @NonNull final StylePersistenceLayer persistenceLayer,
                @NonNull final BookFields bookFields) {
-        for (final PBoolean field : bookFields.mFields.values()) {
+        for (final PBoolean field : bookFields.fields.values()) {
             final PBoolean clonedField = new PBoolean(isPersistent, persistenceLayer, field);
-            mFields.put(clonedField.getKey(), clonedField);
+            fields.put(clonedField.getKey(), clonedField);
         }
     }
 
     void addField(@NonNull final PBoolean field) {
-        mFields.put(field.getKey(), field);
+        fields.put(field.getKey(), field);
     }
 
     boolean isInUse(@NonNull final String key) {
         //noinspection ConstantConditions
-        return mFields.get(key).isTrue();
+        return fields.get(key).isTrue();
     }
 
     /**
@@ -88,14 +89,14 @@ public abstract class BookFields {
             return false;
         }
 
-        if (mFields.containsKey(key)) {
+        if (fields.containsKey(key)) {
             return getValue(key);
         }
         return false;
     }
 
     public boolean getValue(@Key @NonNull final String key) {
-        return Objects.requireNonNull(mFields.get(key), key)
+        return Objects.requireNonNull(fields.get(key), key)
                       .getValue();
     }
 
@@ -107,24 +108,20 @@ public abstract class BookFields {
      */
     public void setValue(@Key @NonNull final String key,
                          final boolean show) {
-        Objects.requireNonNull(mFields.get(key), key)
+        Objects.requireNonNull(fields.get(key), key)
                .set(show);
     }
 
     /**
-     * Get a flat map with accumulated preferences for this object and it's children.<br>
+     * Get a flat list with accumulated preferences for this object and it's children.<br>
      * Provides low-level access to all preferences.<br>
      * This should only be called for export/import.
      *
-     * @return flat map
+     * @return list
      */
     @NonNull
-    public Map<String, PPref<?>> getRawPreferences() {
-        final Map<String, PPref<?>> map = new HashMap<>();
-        for (final PBoolean field : mFields.values()) {
-            map.put(field.getKey(), field);
-        }
-        return map;
+    public Collection<PPref<?>> getRawPreferences() {
+        return new ArrayList<>(fields.values());
     }
 
     @Override
@@ -136,18 +133,18 @@ public abstract class BookFields {
             return false;
         }
         final BookFields that = (BookFields) o;
-        return Objects.equals(mFields, that.mFields);
+        return Objects.equals(fields, that.fields);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mFields);
+        return Objects.hash(fields);
     }
 
     @Override
     @NonNull
     public String toString() {
-        return "mFields=" + mFields;
+        return "fields=" + fields;
     }
 
     @StringDef({ListScreenBookFields.PK_COVERS,

@@ -70,7 +70,6 @@ public final class BuiltinStyle
     private static final int ID_BOOKSHELF = -18;
     private static final int ID_DATE_LAST_UPDATE = -19;
 
-
     /**
      * Absolute/initial default.
      */
@@ -137,7 +136,7 @@ public final class BuiltinStyle
      * Display name of this style.
      */
     @StringRes
-    private final int mLabelId;
+    private final int labelResId;
 
     /**
      * Constructor.
@@ -145,7 +144,7 @@ public final class BuiltinStyle
      * @param context      Current context
      * @param id           a negative int
      * @param uuid         UUID for the builtin style.
-     * @param labelId      the resource id for the name
+     * @param labelResId   the resource id for the name
      * @param isPreferred  flag
      * @param menuPosition to set
      * @param groupIds     a list of groups to attach to this style
@@ -153,22 +152,22 @@ public final class BuiltinStyle
     private BuiltinStyle(@NonNull final Context context,
                          @IntRange(from = MAX_ID, to = -1) final long id,
                          @NonNull final String uuid,
-                         @StringRes final int labelId,
+                         @StringRes final int labelResId,
                          final boolean isPreferred,
                          final int menuPosition,
                          @NonNull final int... groupIds) {
         super(context, uuid, false);
-        mId = id;
+        this.id = id;
 
-        mLabelId = labelId;
+        this.labelResId = labelResId;
 
-        mIsPreferred = isPreferred;
-        mMenuPosition = menuPosition;
+        preferred = isPreferred;
+        this.menuPosition = menuPosition;
 
         initPrefs(false);
 
         Arrays.stream(groupIds)
-              .forEach(groupId -> mGroups.add(BooklistGroup.newInstance(groupId, false, this)));
+              .forEach(groupId -> groups.add(BooklistGroup.newInstance(groupId, false, this)));
     }
 
 
@@ -411,7 +410,7 @@ public final class BuiltinStyle
     @Override
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        return context.getString(mLabelId);
+        return context.getString(labelResId);
     }
 
     @Override
@@ -426,11 +425,11 @@ public final class BuiltinStyle
             return false;
         }
         final BuiltinStyle that = (BuiltinStyle) o;
-        return mLabelId == that.mLabelId;
+        return labelResId == that.labelResId;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), mLabelId);
+        return Objects.hash(super.hashCode(), labelResId);
     }
 }
