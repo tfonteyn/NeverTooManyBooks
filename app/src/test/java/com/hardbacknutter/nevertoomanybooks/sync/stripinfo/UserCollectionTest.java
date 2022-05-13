@@ -127,15 +127,15 @@ class UserCollectionTest
 
             final Bundle b0 = collection.get(0);
             assertEquals(5435, b0.getLong(DBKey.SID_STRIP_INFO));
-            assertEquals(5408, b0.getLong(DBKey.KEY_STRIP_INFO_COLL_ID));
+            assertEquals(5408, b0.getLong(DBKey.STRIP_INFO_COLL_ID));
 
             assertEquals(45f, b0.getDouble(DBKey.PRICE_PAID));
             assertEquals("EUR", b0.getString(DBKey.PRICE_PAID_CURRENCY));
             assertEquals("2021-03-10", b0.getString(DBKey.DATE_ACQUIRED));
 
-            assertEquals(1, b0.getInt(DBKey.KEY_STRIP_INFO_AMOUNT));
-            assertTrue(b0.getBoolean(DBKey.BOOL_STRIP_INFO_OWNED));
-            assertTrue(b0.getBoolean(DBKey.BOOL_STRIP_INFO_WANTED));
+            assertEquals(1, b0.getInt(DBKey.STRIP_INFO_AMOUNT));
+            assertTrue(b0.getBoolean(DBKey.STRIP_INFO_OWNED));
+            assertTrue(b0.getBoolean(DBKey.STRIP_INFO_WANTED));
 
         }
     }

@@ -87,7 +87,7 @@ public class ShowBookDetailsViewModel
      */
     @SuppressWarnings("UnusedReturnValue")
     boolean deleteLoan() {
-        book.remove(DBKey.KEY_LOANEE);
+        book.remove(DBKey.LOANEE_NAME);
         return ServiceLocator.getInstance().getLoaneeDao().setLoanee(book, null);
     }
 

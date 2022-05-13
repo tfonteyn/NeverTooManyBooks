@@ -45,7 +45,7 @@ public class EditFormatDialogFragment
      * No-arg constructor for OS use.
      */
     public EditFormatDialogFragment() {
-        super(R.string.lbl_format, R.string.lbl_format, DBKey.KEY_FORMAT);
+        super(R.string.lbl_format, R.string.lbl_format, DBKey.BOOK_FORMAT);
     }
 
     /**

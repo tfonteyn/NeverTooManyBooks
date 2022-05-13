@@ -104,7 +104,7 @@ class BooklistBuilder {
      * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
      */
     static final String EXP_BOOKSHELF_NAME_CSV =
-            "(SELECT GROUP_CONCAT(" + TBL_BOOKSHELF.dot(DBKey.KEY_BOOKSHELF_NAME) + ",', ')"
+            "(SELECT GROUP_CONCAT(" + TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME) + ",', ')"
             + _FROM_ + TBL_BOOKSHELF.startJoin(TBL_BOOK_BOOKSHELF)
             + _WHERE_
             + TBL_BOOKS.dot(DBKey.PK_ID) + "=" + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOK)
@@ -117,7 +117,7 @@ class BooklistBuilder {
      * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
      */
     static final String EXP_PUBLISHER_NAME_CSV =
-            "(SELECT GROUP_CONCAT(" + TBL_PUBLISHERS.dot(DBKey.KEY_PUBLISHER_NAME) + ",', ')"
+            "(SELECT GROUP_CONCAT(" + TBL_PUBLISHERS.dot(DBKey.PUBLISHER_NAME) + ",', ')"
             + _FROM_ + TBL_PUBLISHERS.startJoin(TBL_BOOK_PUBLISHER)
             + _WHERE_
             + TBL_BOOKS.dot(DBKey.PK_ID) + "=" + TBL_BOOK_PUBLISHER.dot(DBKey.FK_BOOK)
@@ -943,12 +943,12 @@ class BooklistBuilder {
             joinWithAuthors(sql);
 
             if (styleGroups.contains(BooklistGroup.SERIES)
-                || DBKey.isUsed(global, DBKey.KEY_SERIES_TITLE)) {
+                || DBKey.isUsed(global, DBKey.SERIES_TITLE)) {
                 joinWithSeries(sql);
             }
 
             if (styleGroups.contains(BooklistGroup.PUBLISHER)
-                || DBKey.isUsed(global, DBKey.KEY_PUBLISHER_NAME)) {
+                || DBKey.isUsed(global, DBKey.PUBLISHER_NAME)) {
                 joinWithPublishers(sql);
             }
 
@@ -969,19 +969,19 @@ class BooklistBuilder {
                 if (primaryAuthorType == Author.TYPE_UNKNOWN) {
                     // don't care about Author type, so just grab the first one (i.e. pos==1)
                     sql.append(_AND_)
-                       .append(TBL_BOOK_AUTHOR.dot(DBKey.KEY_BOOK_AUTHOR_POSITION))
+                       .append(TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_POSITION))
                        .append("=1");
                 } else {
                     // grab the desired type, or if no such type, grab the first one
                     //   AND (((type & TYPE)<>0) OR (((type &~ TYPE)=0) AND pos=1))
                     sql.append(" AND (((")
-                       .append(TBL_BOOK_AUTHOR.dot(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK))
+                       .append(TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_TYPE_BITMASK))
                        .append(" & ").append(primaryAuthorType).append(")<>0)")
                        .append(" OR (((")
-                       .append(TBL_BOOK_AUTHOR.dot(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK))
+                       .append(TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_TYPE_BITMASK))
                        .append(" &~ ").append(primaryAuthorType).append(")=0)")
                        .append(_AND_)
-                       .append(TBL_BOOK_AUTHOR.dot(DBKey.KEY_BOOK_AUTHOR_POSITION))
+                       .append(TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_POSITION))
                        .append("=1))");
                 }
             }
@@ -996,7 +996,7 @@ class BooklistBuilder {
             // the user wants the book to show under all its Series
             if (!mStyle.isShowBooksUnderEachSeries()) {
                 sql.append(_AND_)
-                   .append(TBL_BOOK_SERIES.dot(DBKey.KEY_BOOK_SERIES_POSITION))
+                   .append(TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_POSITION))
                    .append("=1");
             }
             // Join with Series to make the titles available
@@ -1010,7 +1010,7 @@ class BooklistBuilder {
             // the user wants the book to show under all its Publishers
             if (!mStyle.isShowBooksUnderEachPublisher()) {
                 sql.append(_AND_)
-                   .append(TBL_BOOK_PUBLISHER.dot(DBKey.KEY_BOOK_PUBLISHER_POSITION))
+                   .append(TBL_BOOK_PUBLISHER.dot(DBKey.BOOK_PUBLISHER_POSITION))
                    .append("=1");
             }
             // Join with Publishers to make the names available

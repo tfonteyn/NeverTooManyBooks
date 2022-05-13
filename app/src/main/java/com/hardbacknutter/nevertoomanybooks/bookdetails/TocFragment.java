@@ -97,7 +97,7 @@ public class TocFragment
         final Bundle args = new Bundle(4);
         args.putParcelableArrayList(Book.BKEY_TOC_LIST, new ArrayList<>(book.getToc()));
         args.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, new ArrayList<>(book.getAuthors()));
-        args.putString(DBKey.KEY_TITLE, book.getTitle());
+        args.putString(DBKey.TITLE, book.getTitle());
         args.putLong(DBKey.FK_BOOK, book.getId());
         fragment.setArguments(args);
         return fragment;

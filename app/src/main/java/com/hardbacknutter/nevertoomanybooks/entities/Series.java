@@ -197,11 +197,11 @@ public class Series
     public Series(final long id,
                   @NonNull final DataHolder rowData) {
         mId = id;
-        mTitle = rowData.getString(DBKey.KEY_SERIES_TITLE);
-        mIsComplete = rowData.getBoolean(DBKey.BOOL_SERIES_IS_COMPLETE);
+        mTitle = rowData.getString(DBKey.SERIES_TITLE);
+        mIsComplete = rowData.getBoolean(DBKey.SERIES_IS_COMPLETE);
         // optional domain, not always used.
-        if (rowData.contains(DBKey.KEY_BOOK_NUM_IN_SERIES)) {
-            mNumber = rowData.getString(DBKey.KEY_BOOK_NUM_IN_SERIES);
+        if (rowData.contains(DBKey.SERIES_BOOK_NUMBER)) {
+            mNumber = rowData.getString(DBKey.SERIES_BOOK_NUMBER);
         } else {
             mNumber = "";
         }

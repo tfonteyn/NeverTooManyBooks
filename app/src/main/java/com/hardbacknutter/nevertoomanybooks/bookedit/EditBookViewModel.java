@@ -360,7 +360,7 @@ public class EditBookViewModel
      */
     boolean bookExists() {
         if (mBook.isNew()) {
-            final String isbnStr = mBook.getString(DBKey.KEY_ISBN);
+            final String isbnStr = mBook.getString(DBKey.ISBN);
             if (!isbnStr.isEmpty()) {
                 return ServiceLocator.getInstance().getBookDao().bookExistsByIsbn(isbnStr);
             }
@@ -416,7 +416,7 @@ public class EditBookViewModel
     List<String> getAllAuthorFamilyNames() {
         if (mAuthorFamilyNames == null) {
             mAuthorFamilyNames = ServiceLocator.getInstance().getAuthorDao()
-                                               .getNames(DBKey.KEY_AUTHOR_FAMILY_NAME);
+                                               .getNames(DBKey.AUTHOR_FAMILY_NAME);
         }
         return mAuthorFamilyNames;
     }
@@ -430,7 +430,7 @@ public class EditBookViewModel
     List<String> getAllAuthorGivenNames() {
         if (mAuthorGivenNames == null) {
             mAuthorGivenNames = ServiceLocator.getInstance().getAuthorDao()
-                                              .getNames(DBKey.KEY_AUTHOR_GIVEN_NAMES);
+                                              .getNames(DBKey.AUTHOR_GIVEN_NAMES);
         }
         return mAuthorGivenNames;
     }
@@ -481,7 +481,7 @@ public class EditBookViewModel
      * Load a language list.
      * <p>
      * Returns a unique list of all languages in the database.
-     * The list is ordered by {@link DBKey#UTC_DATE_LAST_UPDATED}.
+     * The list is ordered by {@link DBKey#DATE_LAST_UPDATED__UTC}.
      *
      * @return The list of ISO 639-2 codes
      */
@@ -842,34 +842,34 @@ public class EditBookViewModel
                                     mErrStrNonBlankRequired)));
 
         mFields.add(new TextViewField<>(fragmentId, R.id.series_title, Book.BKEY_SERIES_LIST,
-                                        DBKey.KEY_SERIES_TITLE,
+                                        DBKey.SERIES_TITLE,
                                         mNormalDetailListFormatter)
                             .setTextInputLayoutId(R.id.lbl_series));
 
-        mFields.add(new EditTextField<>(fragmentId, R.id.title, DBKey.KEY_TITLE)
+        mFields.add(new EditTextField<>(fragmentId, R.id.title, DBKey.TITLE)
                             .setTextInputLayoutId(R.id.lbl_title)
                             .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
                             .setValidator(field -> field.setErrorIfEmpty(
                                     mErrStrNonBlankRequired)));
 
-        mFields.add(new EditTextField<>(fragmentId, R.id.description, DBKey.KEY_DESCRIPTION)
+        mFields.add(new EditTextField<>(fragmentId, R.id.description, DBKey.DESCRIPTION)
                             .setTextInputLayoutId(R.id.lbl_description)
                             .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         // Not using a EditIsbn custom View, as we want to be able to enter invalid codes here.
-        mFields.add(new EditTextField<>(fragmentId, R.id.isbn, DBKey.KEY_ISBN)
+        mFields.add(new EditTextField<>(fragmentId, R.id.isbn, DBKey.ISBN)
                             .setTextInputLayoutId(R.id.lbl_isbn));
         // don't do this for now. There is a scan icon as end-icon.
         //                  .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
 
-        mFields.add(new AutoCompleteTextField(fragmentId, R.id.language, DBKey.KEY_LANGUAGE,
+        mFields.add(new AutoCompleteTextField(fragmentId, R.id.language, DBKey.LANGUAGE,
                                               mLanguageFormatter, true,
                                               this::getAllLanguagesCodes)
                             .setTextInputLayoutId(R.id.lbl_language)
                             .setValidator(field -> field.setErrorIfEmpty(
                                     mErrStrNonBlankRequired)));
 
-        mFields.add(new AutoCompleteTextField(fragmentId, R.id.genre, DBKey.KEY_GENRE,
+        mFields.add(new AutoCompleteTextField(fragmentId, R.id.genre, DBKey.GENRE,
                                               this::getAllGenres)
                             .setTextInputLayoutId(R.id.lbl_genre));
 
@@ -885,16 +885,16 @@ public class EditBookViewModel
 
     private void initFieldsPublication(@NonNull final FragmentId fragmentId) {
 
-        mFields.add(new AutoCompleteTextField(fragmentId, R.id.format, DBKey.KEY_FORMAT,
+        mFields.add(new AutoCompleteTextField(fragmentId, R.id.format, DBKey.BOOK_FORMAT,
                                               this::getAllFormats)
                             .setTextInputLayoutId(R.id.lbl_format));
 
-        mFields.add(new AutoCompleteTextField(fragmentId, R.id.color, DBKey.KEY_COLOR,
+        mFields.add(new AutoCompleteTextField(fragmentId, R.id.color, DBKey.COLOR,
                                               this::getAllColors)
                             .setTextInputLayoutId(R.id.lbl_color));
 
         mFields.add(new TextViewField<>(fragmentId, R.id.publisher, Book.BKEY_PUBLISHER_LIST,
-                                        DBKey.KEY_PUBLISHER_NAME,
+                                        DBKey.PUBLISHER_NAME,
                                         mNormalDetailListFormatter)
                             .setTextInputLayoutId(R.id.lbl_publisher));
 
@@ -910,7 +910,7 @@ public class EditBookViewModel
                             .setTextInputLayoutId(R.id.lbl_date_published)
                             .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        mFields.add(new EditTextField<>(fragmentId, R.id.pages, DBKey.KEY_PAGES)
+        mFields.add(new EditTextField<>(fragmentId, R.id.pages, DBKey.PAGES)
                             .setTextInputLayoutId(R.id.lbl_pages)
                             .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
@@ -927,7 +927,7 @@ public class EditBookViewModel
                             .setTextInputLayoutId(R.id.lbl_price_listed_currency)
                             .addRelatedViews(R.id.lbl_price_listed, R.id.price_listed_currency));
 
-        mFields.add(new EditTextField<>(fragmentId, R.id.print_run, DBKey.KEY_PRINT_RUN)
+        mFields.add(new EditTextField<>(fragmentId, R.id.print_run, DBKey.PRINT_RUN)
                             .setTextInputLayoutId(R.id.lbl_print_run)
                             .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
@@ -938,13 +938,13 @@ public class EditBookViewModel
 
     private void initFieldsNotes(@NonNull final Context context,
                                  @NonNull final FragmentId fragmentId) {
-        mFields.add(new CompoundButtonField(fragmentId, R.id.cbx_read, DBKey.BOOL_READ));
+        mFields.add(new CompoundButtonField(fragmentId, R.id.cbx_read, DBKey.READ__BOOL));
 
-        mFields.add(new CompoundButtonField(fragmentId, R.id.cbx_signed, DBKey.BOOL_SIGNED));
+        mFields.add(new CompoundButtonField(fragmentId, R.id.cbx_signed, DBKey.SIGNED__BOOL));
 
-        mFields.add(new RatingBarEditField(fragmentId, R.id.rating, DBKey.KEY_RATING));
+        mFields.add(new RatingBarEditField(fragmentId, R.id.rating, DBKey.RATING));
 
-        mFields.add(new EditTextField<>(fragmentId, R.id.notes, DBKey.KEY_PRIVATE_NOTES)
+        mFields.add(new EditTextField<>(fragmentId, R.id.notes, DBKey.PERSONAL_NOTES)
                             .setTextInputLayoutId(R.id.lbl_notes)
                             .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
@@ -961,16 +961,16 @@ public class EditBookViewModel
                             .addRelatedViews(R.id.lbl_price_paid, R.id.price_paid_currency));
 
         mFields.add(new StringArrayDropDownMenuField(fragmentId, R.id.condition,
-                                                     DBKey.KEY_BOOK_CONDITION,
+                                                     DBKey.BOOK_CONDITION,
                                                      context, R.array.conditions_book)
                             .setTextInputLayoutId(R.id.lbl_condition));
 
         mFields.add(new StringArrayDropDownMenuField(fragmentId, R.id.condition_cover,
-                                                     DBKey.KEY_BOOK_CONDITION_COVER,
+                                                     DBKey.BOOK_CONDITION_COVER,
                                                      context, R.array.conditions_dust_cover)
                             .setTextInputLayoutId(R.id.lbl_condition_cover));
 
-        mFields.add(new AutoCompleteTextField(fragmentId, R.id.location, DBKey.KEY_LOCATION,
+        mFields.add(new AutoCompleteTextField(fragmentId, R.id.location, DBKey.LOCATION,
                                               this::getAllLocations)
                             .setTextInputLayoutId(R.id.lbl_location));
 
@@ -979,13 +979,13 @@ public class EditBookViewModel
                             .setTextInputLayoutId(R.id.lbl_date_acquired)
                             .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        mFields.add(new TextViewField<>(fragmentId, R.id.read_start, DBKey.DATE_READ_START,
+        mFields.add(new TextViewField<>(fragmentId, R.id.read_start, DBKey.READ_START__DATE,
                                         mDateFormatter)
                             .setTextInputLayoutId(R.id.lbl_read_start)
                             .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
                             .setValidator(this::validateReadStartAndEndFields));
 
-        mFields.add(new TextViewField<>(fragmentId, R.id.read_end, DBKey.DATE_READ_END,
+        mFields.add(new TextViewField<>(fragmentId, R.id.read_end, DBKey.READ_END__DATE,
                                         mDateFormatter)
                             .setTextInputLayoutId(R.id.lbl_read_end)
                             .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)

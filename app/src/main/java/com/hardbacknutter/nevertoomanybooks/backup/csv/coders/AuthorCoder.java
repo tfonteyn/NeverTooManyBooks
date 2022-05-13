@@ -66,10 +66,10 @@ public class AuthorCoder
 
         final JSONObject details = new JSONObject();
         if (author.isComplete()) {
-            details.put(DBKey.BOOL_AUTHOR_IS_COMPLETE, true);
+            details.put(DBKey.AUTHOR_IS_COMPLETE, true);
         }
         if (author.getType() != Author.TYPE_UNKNOWN) {
-            details.put(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK, author.getType());
+            details.put(DBKey.BOOK_AUTHOR_TYPE_BITMASK, author.getType());
         }
 
         if (!details.isEmpty()) {
@@ -87,14 +87,14 @@ public class AuthorCoder
             try {
                 final JSONObject details = new JSONObject(parts.get(1));
 
-                if (details.has(DBKey.BOOL_AUTHOR_IS_COMPLETE)) {
-                    author.setComplete(details.optBoolean(DBKey.BOOL_AUTHOR_IS_COMPLETE));
+                if (details.has(DBKey.AUTHOR_IS_COMPLETE)) {
+                    author.setComplete(details.optBoolean(DBKey.AUTHOR_IS_COMPLETE));
                 } else if (details.has("complete")) {
                     author.setComplete(details.optBoolean("complete"));
                 }
 
-                if (details.has(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
-                    author.setType(details.optInt(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK));
+                if (details.has(DBKey.BOOK_AUTHOR_TYPE_BITMASK)) {
+                    author.setType(details.optInt(DBKey.BOOK_AUTHOR_TYPE_BITMASK));
                 } else if (details.has("type")) {
                     author.setType(details.optInt("type"));
                 }

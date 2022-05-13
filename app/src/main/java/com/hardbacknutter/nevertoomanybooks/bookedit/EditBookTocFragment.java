@@ -754,7 +754,7 @@ public class EditBookTocFragment
                     return true;
                 }
 
-                final String isbnStr = book.getString(DBKey.KEY_ISBN);
+                final String isbnStr = book.getString(DBKey.ISBN);
                 if (!isbnStr.isEmpty()) {
                     final ISBN isbn = ISBN.createISBN(isbnStr);
                     if (isbn.isValid(true)) {

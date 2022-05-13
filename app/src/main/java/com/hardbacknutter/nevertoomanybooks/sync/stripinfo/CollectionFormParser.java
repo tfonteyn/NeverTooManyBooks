@@ -144,7 +144,7 @@ public class CollectionFormParser
         parseDetails(response, destBundle);
 
         // Add as last one in case of errors thrown
-        destBundle.putLong(DBKey.KEY_STRIP_INFO_COLL_ID, collectionId);
+        destBundle.putLong(DBKey.STRIP_INFO_COLL_ID, collectionId);
     }
 
     public void cancel() {

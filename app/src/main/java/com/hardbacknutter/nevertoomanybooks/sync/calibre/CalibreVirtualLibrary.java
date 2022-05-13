@@ -88,7 +88,7 @@ public class CalibreVirtualLibrary
         super(id, rowData);
 
         mLibraryId = rowData.getLong(DBKey.FK_CALIBRE_LIBRARY);
-        mExpr = rowData.getString(DBKey.KEY_CALIBRE_VIRT_LIB_EXPR);
+        mExpr = rowData.getString(DBKey.CALIBRE_VIRT_LIB_EXPR);
     }
 
     /**

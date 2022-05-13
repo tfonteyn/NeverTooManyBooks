@@ -84,11 +84,11 @@ public class UserStyle
      */
     private UserStyle(@NonNull final Context context,
                       @NonNull final DataHolder rowData) {
-        super(context, rowData.getString(DBKey.KEY_STYLE_UUID), true);
+        super(context, rowData.getString(DBKey.STYLE_UUID), true);
 
         id = rowData.getLong(DBKey.PK_ID);
-        preferred = rowData.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED);
-        menuPosition = rowData.getInt(DBKey.KEY_STYLE_MENU_POSITION);
+        preferred = rowData.getBoolean(DBKey.STYLE_IS_PREFERRED);
+        menuPosition = rowData.getInt(DBKey.STYLE_MENU_POSITION);
 
         initPrefs(true);
     }

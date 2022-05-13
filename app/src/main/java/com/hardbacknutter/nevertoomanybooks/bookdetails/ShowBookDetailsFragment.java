@@ -138,7 +138,7 @@ public class ShowBookDetailsFragment
                     aVm.updateFragmentResult();
 
                     if (bookChangedListener != null) {
-                        bookChangedListener.onBookUpdated(vm.getBook(), DBKey.KEY_LOANEE);
+                        bookChangedListener.onBookUpdated(vm.getBook(), DBKey.LOANEE_NAME);
                     }
                 }
             };
@@ -317,7 +317,7 @@ public class ShowBookDetailsFragment
             //noinspection unchecked
             final Field<String, TextView> field = (Field<String, TextView>) f;
 
-            final String date = book.getString(DBKey.DATE_READ_END);
+            final String date = book.getString(DBKey.READ_END__DATE);
             //noinspection ConstantConditions
             final SharedPreferences global = PreferenceManager
                     .getDefaultSharedPreferences(getContext());
@@ -330,7 +330,7 @@ public class ShowBookDetailsFragment
         toolbarMenuProvider.updateMenuReadOptions(getToolbar().getMenu());
 
         if (bookChangedListener != null) {
-            bookChangedListener.onBookUpdated(book, DBKey.BOOL_READ, DBKey.DATE_READ_END);
+            bookChangedListener.onBookUpdated(book, DBKey.READ__BOOL, DBKey.READ_END__DATE);
         }
     }
 
@@ -349,7 +349,7 @@ public class ShowBookDetailsFragment
                 //noinspection ConstantConditions
                 toolbar.setTitle(Author.getCondensedNames(getContext(), book.getAuthors()));
 
-                String title = book.getString(DBKey.KEY_TITLE);
+                String title = book.getString(DBKey.TITLE);
                 if (BuildConfig.DEBUG /* always */) {
                     title = "[" + book.getId() + "] " + title;
                 }
@@ -660,7 +660,7 @@ public class ShowBookDetailsFragment
             }
 
             if (bookChangedListener != null) {
-                bookChangedListener.onBookUpdated(book, DBKey.KEY_LOANEE);
+                bookChangedListener.onBookUpdated(book, DBKey.LOANEE_NAME);
             }
         }
 
@@ -686,7 +686,7 @@ public class ShowBookDetailsFragment
         }
 
         private void updateMenuReadOptions(@NonNull final Menu menu) {
-            final boolean isRead = vm.getBook().getBoolean(DBKey.BOOL_READ);
+            final boolean isRead = vm.getBook().getBoolean(DBKey.READ__BOOL);
             menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(!isRead);
             menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isRead);
         }

@@ -119,7 +119,7 @@ public class PublisherBooklistGroup
     protected DomainExpression createDisplayDomainExpression() {
         // Not sorted; we sort on the OB domain as defined in #createGroupKey.
         return new DomainExpression(DBDefinitions.DOM_PUBLISHER_NAME,
-                                    DBDefinitions.TBL_PUBLISHERS.dot(DBKey.KEY_PUBLISHER_NAME));
+                                    DBDefinitions.TBL_PUBLISHERS.dot(DBKey.PUBLISHER_NAME));
     }
 
     @Override

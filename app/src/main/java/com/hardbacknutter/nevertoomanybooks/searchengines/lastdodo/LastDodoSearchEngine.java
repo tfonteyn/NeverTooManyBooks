@@ -197,7 +197,7 @@ public class LastDodoSearchEngine
                     break;
 
                 case "Titel:":
-                    processText(td, DBKey.KEY_TITLE, bookData);
+                    processText(td, DBKey.TITLE, bookData);
                     break;
 
                 case "Serie / held:":
@@ -237,7 +237,7 @@ public class LastDodoSearchEngine
                     break;
 
                 case "Cover:":
-                    processText(td, DBKey.KEY_FORMAT, bookData);
+                    processText(td, DBKey.BOOK_FORMAT, bookData);
                     break;
 
                 case "Druk:":
@@ -245,7 +245,7 @@ public class LastDodoSearchEngine
                     break;
 
                 case "Inkleuring:":
-                    processText(td, DBKey.KEY_COLOR, bookData);
+                    processText(td, DBKey.COLOR, bookData);
                     break;
 
                 case "ISBN:":
@@ -253,17 +253,17 @@ public class LastDodoSearchEngine
                     if (!"Geen".equals(tmpString)) {
                         tmpString = ISBN.cleanText(tmpString);
                         if (!tmpString.isEmpty()) {
-                            bookData.putString(DBKey.KEY_ISBN, tmpString);
+                            bookData.putString(DBKey.ISBN, tmpString);
                         }
                     }
                     break;
 
                 case "Oplage:":
-                    processText(td, DBKey.KEY_PRINT_RUN, bookData);
+                    processText(td, DBKey.PRINT_RUN, bookData);
                     break;
 
                 case "Aantal bladzijden:":
-                    processText(td, DBKey.KEY_PAGES, bookData);
+                    processText(td, DBKey.PAGES, bookData);
                     break;
 
                 case "Afmetingen:":
@@ -281,7 +281,7 @@ public class LastDodoSearchEngine
                     break;
 
                 case "Bijzonderheden:":
-                    processText(td, DBKey.KEY_DESCRIPTION, bookData);
+                    processText(td, DBKey.DESCRIPTION, bookData);
                     break;
 
                 default:
@@ -328,8 +328,8 @@ public class LastDodoSearchEngine
         }
 
         // It's extremely unlikely, but should the language be missing, add dutch.
-        if (!bookData.containsKey(DBKey.KEY_LANGUAGE)) {
-            bookData.putString(DBKey.KEY_LANGUAGE, "nld");
+        if (!bookData.containsKey(DBKey.LANGUAGE)) {
+            bookData.putString(DBKey.LANGUAGE, "nld");
         }
 
 
@@ -339,7 +339,7 @@ public class LastDodoSearchEngine
         }
 
         if (fetchCovers[0] || fetchCovers[1]) {
-            final String isbn = bookData.getString(DBKey.KEY_ISBN);
+            final String isbn = bookData.getString(DBKey.ISBN);
             parseCovers(document, isbn, fetchCovers, bookData);
         }
     }
@@ -478,12 +478,12 @@ public class LastDodoSearchEngine
     private void processLanguage(@NonNull final Context context,
                                  @NonNull final Element td,
                                  @NonNull final Bundle bookData) {
-        processText(td, DBKey.KEY_LANGUAGE, bookData);
-        String lang = bookData.getString(DBKey.KEY_LANGUAGE);
+        processText(td, DBKey.LANGUAGE, bookData);
+        String lang = bookData.getString(DBKey.LANGUAGE);
         if (lang != null && !lang.isEmpty()) {
             lang = ServiceLocator.getInstance().getLanguages()
                                  .getISO3FromDisplayName(getLocale(context), lang);
-            bookData.putString(DBKey.KEY_LANGUAGE, lang);
+            bookData.putString(DBKey.LANGUAGE, lang);
         }
     }
 

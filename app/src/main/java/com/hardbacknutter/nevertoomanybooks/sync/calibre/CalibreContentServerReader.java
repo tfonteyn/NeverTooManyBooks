@@ -420,7 +420,7 @@ public class CalibreContentServerReader
                         final Book book = Book.from(databaseBookId);
                         // Should always be Non Null
                         final LocalDateTime localDate = mDateParser.parse(
-                                book.getString(DBKey.UTC_DATE_LAST_UPDATED));
+                                book.getString(DBKey.DATE_LAST_UPDATED__UTC));
                         // Should not be null, but paranoia
                         final LocalDateTime remoteDate = mDateParser.parse(
                                 calibreBook.getString(CalibreBook.LAST_MODIFIED));
@@ -486,7 +486,7 @@ public class CalibreContentServerReader
         final Book book = new Book();
         book.setStage(EntityStage.Stage.Dirty);
         // it's an eBook - duh!
-        book.putString(DBKey.KEY_FORMAT, mEBookString);
+        book.putString(DBKey.BOOK_FORMAT, mEBookString);
         copyCalibreData(context, calibreBook, book);
         // sanity check, the book should always/already be on the mapped shelf.
         book.ensureBookshelf(context);
@@ -517,25 +517,25 @@ public class CalibreContentServerReader
             throws StorageException, JSONException {
 
         final int calibreBookId = calibreBook.getInt(CalibreBook.ID);
-        localBook.putInt(DBKey.KEY_CALIBRE_BOOK_ID, calibreBookId);
-        localBook.putString(DBKey.KEY_CALIBRE_BOOK_UUID,
+        localBook.putInt(DBKey.CALIBRE_BOOK_ID, calibreBookId);
+        localBook.putString(DBKey.CALIBRE_BOOK_UUID,
                             calibreBook.getString(CalibreBook.UUID));
 
         // "last_modified": "2020-11-20T11:17:51+00:00",
         // Note we copy the string as-is, and leave the normalisation to the book DAO routines.
         // Reminder: we already checked this date being newer then the local one before we got here
-        localBook.putString(DBKey.UTC_DATE_LAST_UPDATED,
+        localBook.putString(DBKey.DATE_LAST_UPDATED__UTC,
                             calibreBook.getString(CalibreBook.LAST_MODIFIED));
 
         // paranoia ...
         if (!calibreBook.isNull(CalibreBook.TITLE)) {
             // always overwrite
-            localBook.putString(DBKey.KEY_TITLE, calibreBook.getString(CalibreBook.TITLE));
+            localBook.putString(DBKey.TITLE, calibreBook.getString(CalibreBook.TITLE));
         }
 
         if (!calibreBook.isNull(CalibreBook.DESCRIPTION)) {
             // always overwrite
-            localBook.putString(DBKey.KEY_DESCRIPTION,
+            localBook.putString(DBKey.DESCRIPTION,
                                 calibreBook.getString(CalibreBook.DESCRIPTION));
         }
 
@@ -543,7 +543,7 @@ public class CalibreContentServerReader
             final int rating = calibreBook.getInt(CalibreBook.RATING);
             // don't overwrite the local value with a remote 'not-set' value
             if (rating > 0) {
-                localBook.putFloat(DBKey.KEY_RATING, rating);
+                localBook.putFloat(DBKey.RATING, rating);
             }
         }
 
@@ -557,7 +557,7 @@ public class CalibreContentServerReader
                 final String lang = languages.optString(0);
                 // don't overwrite the local value with a remote 'not-set' value
                 if (lang != null && !lang.isEmpty()) {
-                    localBook.putString(DBKey.KEY_LANGUAGE, lang);
+                    localBook.putString(DBKey.LANGUAGE, lang);
                 }
             }
         }
@@ -712,7 +712,7 @@ public class CalibreContentServerReader
                 if (it.hasNext()) {
                     final String format = it.next();
                     if (format != null && !format.isEmpty()) {
-                        localBook.putString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT, format);
+                        localBook.putString(DBKey.CALIBRE_BOOK_MAIN_FORMAT, format);
                     }
                 }
             }

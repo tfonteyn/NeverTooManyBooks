@@ -264,12 +264,12 @@ public class Author
     public Author(final long id,
                   @NonNull final DataHolder rowData) {
         mId = id;
-        mFamilyName = rowData.getString(DBKey.KEY_AUTHOR_FAMILY_NAME);
-        mGivenNames = rowData.getString(DBKey.KEY_AUTHOR_GIVEN_NAMES);
-        mIsComplete = rowData.getBoolean(DBKey.BOOL_AUTHOR_IS_COMPLETE);
+        mFamilyName = rowData.getString(DBKey.AUTHOR_FAMILY_NAME);
+        mGivenNames = rowData.getString(DBKey.AUTHOR_GIVEN_NAMES);
+        mIsComplete = rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE);
 
-        if (rowData.contains(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
-            mType = rowData.getInt(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK);
+        if (rowData.contains(DBKey.BOOK_AUTHOR_TYPE_BITMASK)) {
+            mType = rowData.getInt(DBKey.BOOK_AUTHOR_TYPE_BITMASK);
         }
     }
 
@@ -506,7 +506,7 @@ public class Author
 
                 final SharedPreferences global = PreferenceManager
                         .getDefaultSharedPreferences(context);
-                if (DBKey.isUsed(global, DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
+                if (DBKey.isUsed(global, DBKey.BOOK_AUTHOR_TYPE_BITMASK)) {
                     final String type = getTypeLabels(context);
                     if (!type.isEmpty()) {
                         label += " <small><i>" + type + "</i></small>";

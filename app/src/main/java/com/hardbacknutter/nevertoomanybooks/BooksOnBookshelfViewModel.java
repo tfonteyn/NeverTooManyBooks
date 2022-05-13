@@ -458,8 +458,8 @@ public class BooksOnBookshelfViewModel
      */
     boolean isAvailable(@NonNull final DataHolder rowData) {
         final String loanee;
-        if (rowData.contains(DBKey.KEY_LOANEE)) {
-            loanee = rowData.getString(DBKey.KEY_LOANEE);
+        if (rowData.contains(DBKey.LOANEE_NAME)) {
+            loanee = rowData.getString(DBKey.LOANEE_NAME);
         } else {
             loanee = ServiceLocator.getInstance().getLoaneeDao().getLoaneeByBookId(
                     rowData.getLong(DBKey.FK_BOOK));

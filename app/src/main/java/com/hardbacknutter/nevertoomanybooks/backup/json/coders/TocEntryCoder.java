@@ -41,7 +41,7 @@ public class TocEntryCoder
         final JSONObject data = new JSONObject();
 
         data.put(DBKey.PK_ID, tocEntry.getId());
-        data.put(DBKey.KEY_TITLE, tocEntry.getTitle());
+        data.put(DBKey.TITLE, tocEntry.getTitle());
         data.put(DBKey.FK_AUTHOR, mAuthorCoder.encode(tocEntry.getPrimaryAuthor()));
 
         tocEntry.getFirstPublicationDate().ifPresent(
@@ -57,7 +57,7 @@ public class TocEntryCoder
 
         final TocEntry tocEntry = new TocEntry(
                 mAuthorCoder.decode(data.getJSONObject(DBKey.FK_AUTHOR)),
-                data.getString(DBKey.KEY_TITLE),
+                data.getString(DBKey.TITLE),
                 data.optString(DBKey.DATE_FIRST_PUBLICATION));
 
         tocEntry.setId(data.getLong(DBKey.PK_ID));

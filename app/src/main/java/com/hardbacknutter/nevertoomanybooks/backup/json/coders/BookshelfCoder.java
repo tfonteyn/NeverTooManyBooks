@@ -57,7 +57,7 @@ public class BookshelfCoder
         final JSONObject out = new JSONObject();
 
         out.put(DBKey.PK_ID, bookshelf.getId());
-        out.put(DBKey.KEY_BOOKSHELF_NAME, bookshelf.getName());
+        out.put(DBKey.BOOKSHELF_NAME, bookshelf.getName());
         if (!bookshelf.getStyleUuid().isEmpty()) {
             out.put(DBKey.FK_STYLE, bookshelf.getStyleUuid());
         }
@@ -69,7 +69,7 @@ public class BookshelfCoder
     public JSONObject encodeReference(@NonNull final Bookshelf bookshelf)
             throws JSONException {
         final JSONObject out = new JSONObject();
-        out.put(DBKey.KEY_BOOKSHELF_NAME, bookshelf.getName());
+        out.put(DBKey.BOOKSHELF_NAME, bookshelf.getName());
         return out;
     }
 
@@ -79,7 +79,7 @@ public class BookshelfCoder
             throws JSONException {
 
         final Bookshelf bookshelf = new Bookshelf(
-                data.getString(DBKey.KEY_BOOKSHELF_NAME), mDefaultStyle);
+                data.getString(DBKey.BOOKSHELF_NAME), mDefaultStyle);
         bookshelf.setId(data.getLong(DBKey.PK_ID));
 
         // It's quite possible that the UUID is not a style we (currently) know.
@@ -98,7 +98,7 @@ public class BookshelfCoder
     public Optional<Bookshelf> decodeReference(@NonNull final JSONObject data)
             throws JSONException {
 
-        final String name = data.optString(DBKey.KEY_BOOKSHELF_NAME);
+        final String name = data.optString(DBKey.BOOKSHELF_NAME);
         if (name != null && !name.isEmpty()) {
             final Bookshelf bookshelf =
                     ServiceLocator.getInstance().getBookshelfDao().findByName(name);

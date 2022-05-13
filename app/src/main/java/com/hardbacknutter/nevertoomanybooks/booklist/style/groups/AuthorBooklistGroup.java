@@ -148,7 +148,7 @@ public class AuthorBooklistGroup
                 .addGroupDomain(
                         // Group by complete-flag
                         new DomainExpression(DOM_AUTHOR_IS_COMPLETE,
-                                             TBL_AUTHORS.dot(DBKey.BOOL_AUTHOR_IS_COMPLETE)));
+                                             TBL_AUTHORS.dot(DBKey.AUTHOR_IS_COMPLETE)));
     }
 
     @Override

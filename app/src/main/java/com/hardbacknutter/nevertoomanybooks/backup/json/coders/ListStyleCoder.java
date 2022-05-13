@@ -68,9 +68,9 @@ public class ListStyleCoder
             throws JSONException {
         final JSONObject out = new JSONObject();
 
-        out.put(DBKey.KEY_STYLE_UUID, style.getUuid());
-        out.put(DBKey.BOOL_STYLE_IS_PREFERRED, style.isPreferred());
-        out.put(DBKey.KEY_STYLE_MENU_POSITION, style.getMenuPosition());
+        out.put(DBKey.STYLE_UUID, style.getUuid());
+        out.put(DBKey.STYLE_IS_PREFERRED, style.isPreferred());
+        out.put(DBKey.STYLE_MENU_POSITION, style.getMenuPosition());
 
         if (style.isUserDefined()) {
             final UserStyle userStyle = (UserStyle) style;
@@ -98,7 +98,7 @@ public class ListStyleCoder
     public ListStyle decode(@NonNull final JSONObject data)
             throws JSONException {
 
-        final String uuid = data.getString(DBKey.KEY_STYLE_UUID);
+        final String uuid = data.getString(DBKey.STYLE_UUID);
 
         final Styles styles = ServiceLocator.getInstance().getStyles();
 
@@ -106,15 +106,15 @@ public class ListStyleCoder
             // It's a builtin style
             final ListStyle style = styles.getStyle(context, uuid);
             //noinspection ConstantConditions
-            style.setPreferred(data.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED));
-            style.setMenuPosition(data.getInt(DBKey.KEY_STYLE_MENU_POSITION));
+            style.setPreferred(data.getBoolean(DBKey.STYLE_IS_PREFERRED));
+            style.setMenuPosition(data.getInt(DBKey.STYLE_MENU_POSITION));
             return style;
 
         } else {
             final UserStyle userStyle = UserStyle.createFromImport(context, uuid);
             userStyle.setName(data.getString(STYLE_NAME));
-            userStyle.setPreferred(data.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED));
-            userStyle.setMenuPosition(data.getInt(DBKey.KEY_STYLE_MENU_POSITION));
+            userStyle.setPreferred(data.getBoolean(DBKey.STYLE_IS_PREFERRED));
+            userStyle.setMenuPosition(data.getInt(DBKey.STYLE_MENU_POSITION));
 
             // any element in the source which we don't know, will simply be ignored.
             final JSONObject source = data.getJSONObject(STYLE_SETTINGS);

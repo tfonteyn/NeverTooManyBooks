@@ -150,11 +150,11 @@ public class Bookshelf
     public Bookshelf(final long id,
                      @NonNull final DataHolder rowData) {
         mId = id;
-        mName = rowData.getString(DBKey.KEY_BOOKSHELF_NAME);
-        mStyleUuid = rowData.getString(DBKey.KEY_STYLE_UUID);
+        mName = rowData.getString(DBKey.BOOKSHELF_NAME);
+        mStyleUuid = rowData.getString(DBKey.STYLE_UUID);
 
-        mFirstVisibleItemPosition = rowData.getInt(DBKey.KEY_BOOKSHELF_BL_TOP_POS);
-        mFirstVisibleViewOffset = rowData.getInt(DBKey.KEY_BOOKSHELF_BL_TOP_OFFSET);
+        mFirstVisibleItemPosition = rowData.getInt(DBKey.BOOKSHELF_BL_TOP_POS);
+        mFirstVisibleViewOffset = rowData.getInt(DBKey.BOOKSHELF_BL_TOP_OFFSET);
 
         mFilters.addAll(ServiceLocator.getInstance().getBookshelfDao().getFilters(mId));
     }

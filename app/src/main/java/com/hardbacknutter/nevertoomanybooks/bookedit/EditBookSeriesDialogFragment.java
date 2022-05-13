@@ -91,7 +91,7 @@ public class EditBookSeriesDialogFragment
                                              BKEY_REQUEST_KEY);
         mSeries = Objects.requireNonNull(args.getParcelable(DBKey.FK_SERIES),
                                          DBKey.FK_SERIES);
-        mBookTitle = args.getString(DBKey.KEY_TITLE);
+        mBookTitle = args.getString(DBKey.TITLE);
 
         if (savedInstanceState == null) {
             mCurrentEdit = new Series(mSeries.getTitle(), mSeries.isComplete());
@@ -201,7 +201,7 @@ public class EditBookSeriesDialogFragment
                     @NonNull final Series series) {
             final Bundle args = new Bundle(3);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
-            args.putString(DBKey.KEY_TITLE, bookTitle);
+            args.putString(DBKey.TITLE, bookTitle);
             args.putParcelable(DBKey.FK_SERIES, series);
 
             final DialogFragment frag = new EditBookSeriesDialogFragment();

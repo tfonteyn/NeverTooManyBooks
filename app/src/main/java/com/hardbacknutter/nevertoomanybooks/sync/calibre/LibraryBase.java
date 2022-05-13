@@ -67,7 +67,7 @@ abstract class LibraryBase
     LibraryBase(final long id,
                 @NonNull final DataHolder rowData) {
         mId = id;
-        mName = rowData.getString(DBKey.KEY_CALIBRE_LIBRARY_NAME);
+        mName = rowData.getString(DBKey.CALIBRE_LIBRARY_NAME);
         mMappedBookshelfId = rowData.getLong(DBKey.FK_BOOKSHELF);
     }
 

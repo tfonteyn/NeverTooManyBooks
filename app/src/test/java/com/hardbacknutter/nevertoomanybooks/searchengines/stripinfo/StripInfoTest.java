@@ -86,13 +86,13 @@ class StripInfoTest
         loadData(mContext, mSearchEngine, UTF_8, locationHeader, filename,
                  new boolean[]{true, true});
 
-        assertEquals("De 37ste parallel", mRawData.getString(DBKey.KEY_TITLE));
-        assertEquals("9789463064385", mRawData.getString(DBKey.KEY_ISBN));
+        assertEquals("De 37ste parallel", mRawData.getString(DBKey.TITLE));
+        assertEquals("9789463064385", mRawData.getString(DBKey.ISBN));
         assertEquals("2018", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("48", mRawData.getString(DBKey.KEY_PAGES));
-        assertEquals("Hardcover", mRawData.getString(DBKey.KEY_FORMAT));
-        assertEquals("nld", mRawData.getString(DBKey.KEY_LANGUAGE));
-        assertEquals("Kleur", mRawData.getString(DBKey.KEY_COLOR));
+        assertEquals("48", mRawData.getString(DBKey.PAGES));
+        assertEquals("Hardcover", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("nld", mRawData.getString(DBKey.LANGUAGE));
+        assertEquals("Kleur", mRawData.getString(DBKey.COLOR));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
@@ -153,13 +153,13 @@ class StripInfoTest
         loadData(mContext, mSearchEngine, UTF_8, locationHeader, filename,
                  new boolean[]{true, true});
 
-        assertEquals("De boom van de twee lentes", mRawData.getString(DBKey.KEY_TITLE));
-        assertEquals("905581315X", mRawData.getString(DBKey.KEY_ISBN));
+        assertEquals("De boom van de twee lentes", mRawData.getString(DBKey.TITLE));
+        assertEquals("905581315X", mRawData.getString(DBKey.ISBN));
         assertEquals("2000", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("64", mRawData.getString(DBKey.KEY_PAGES));
-        assertEquals("Softcover", mRawData.getString(DBKey.KEY_FORMAT));
-        assertEquals("nld", mRawData.getString(DBKey.KEY_LANGUAGE));
-        assertEquals("Kleur", mRawData.getString(DBKey.KEY_COLOR));
+        assertEquals("64", mRawData.getString(DBKey.PAGES));
+        assertEquals("Softcover", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("nld", mRawData.getString(DBKey.LANGUAGE));
+        assertEquals("Kleur", mRawData.getString(DBKey.COLOR));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
@@ -219,13 +219,13 @@ class StripInfoTest
                  new boolean[]{true, false});
 
         assertEquals("Het huis van verboden geneugten",
-                     mRawData.getString(DBKey.KEY_TITLE));
-        assertEquals("9789085522072", mRawData.getString(DBKey.KEY_ISBN));
+                     mRawData.getString(DBKey.TITLE));
+        assertEquals("9789085522072", mRawData.getString(DBKey.ISBN));
         assertEquals("2012", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("64", mRawData.getString(DBKey.KEY_PAGES));
-        assertEquals("Hardcover", mRawData.getString(DBKey.KEY_FORMAT));
-        assertEquals("nld", mRawData.getString(DBKey.KEY_LANGUAGE));
-        assertEquals("Kleur", mRawData.getString(DBKey.KEY_COLOR));
+        assertEquals("64", mRawData.getString(DBKey.PAGES));
+        assertEquals("Hardcover", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("nld", mRawData.getString(DBKey.LANGUAGE));
+        assertEquals("Kleur", mRawData.getString(DBKey.COLOR));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
@@ -278,13 +278,13 @@ class StripInfoTest
         loadData(mContext, mSearchEngine, UTF_8, locationHeader, filename,
                  new boolean[]{false, false});
 
-        assertEquals("De integrale 5", mRawData.getString(DBKey.KEY_TITLE));
-        assertEquals("9789055819485", mRawData.getString(DBKey.KEY_ISBN));
+        assertEquals("De integrale 5", mRawData.getString(DBKey.TITLE));
+        assertEquals("9789055819485", mRawData.getString(DBKey.ISBN));
         assertEquals("2017", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("224", mRawData.getString(DBKey.KEY_PAGES));
-        assertEquals("Hardcover", mRawData.getString(DBKey.KEY_FORMAT));
-        assertEquals("nld", mRawData.getString(DBKey.KEY_LANGUAGE));
-        assertEquals("Kleur", mRawData.getString(DBKey.KEY_COLOR));
+        assertEquals("224", mRawData.getString(DBKey.PAGES));
+        assertEquals("Hardcover", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("nld", mRawData.getString(DBKey.LANGUAGE));
+        assertEquals("Kleur", mRawData.getString(DBKey.COLOR));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
@@ -337,12 +337,12 @@ class StripInfoTest
         loadData(mContext, mSearchEngine, UTF_8, locationHeader, filename,
                  new boolean[]{false, false});
 
-        assertEquals("Red Dust", mRawData.getString(DBKey.KEY_TITLE));
+        assertEquals("Red Dust", mRawData.getString(DBKey.TITLE));
         assertEquals("1972", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("48", mRawData.getString(DBKey.KEY_PAGES));
-        assertEquals("Softcover", mRawData.getString(DBKey.KEY_FORMAT));
-        assertEquals("nld", mRawData.getString(DBKey.KEY_LANGUAGE));
-        assertEquals("Kleur", mRawData.getString(DBKey.KEY_COLOR));
+        assertEquals("48", mRawData.getString(DBKey.PAGES));
+        assertEquals("Softcover", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("nld", mRawData.getString(DBKey.LANGUAGE));
+        assertEquals("Kleur", mRawData.getString(DBKey.COLOR));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
@@ -393,11 +393,11 @@ class StripInfoTest
         loadData(mContext, mSearchEngine, UTF_8, locationHeader, filename,
                  new boolean[]{false, false});
 
-        assertEquals("Spoken in de grot", mRawData.getString(DBKey.KEY_TITLE));
+        assertEquals("Spoken in de grot", mRawData.getString(DBKey.TITLE));
         assertEquals("1977", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("Softcover", mRawData.getString(DBKey.KEY_FORMAT));
-        assertEquals("nld", mRawData.getString(DBKey.KEY_LANGUAGE));
-        assertEquals("Kleur", mRawData.getString(DBKey.KEY_COLOR));
+        assertEquals("Softcover", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("nld", mRawData.getString(DBKey.LANGUAGE));
+        assertEquals("Kleur", mRawData.getString(DBKey.COLOR));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
@@ -462,13 +462,13 @@ class StripInfoTest
         assertFalse(mRawData.isEmpty());
         System.out.println(mRawData);
 
-        assertEquals("9782756010830", mRawData.getString(DBKey.KEY_ISBN));
-        assertEquals("Le chant du pluvier", mRawData.getString(DBKey.KEY_TITLE));
+        assertEquals("9782756010830", mRawData.getString(DBKey.ISBN));
+        assertEquals("Le chant du pluvier", mRawData.getString(DBKey.TITLE));
         assertEquals("2009", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("172", mRawData.getString(DBKey.KEY_PAGES));
-        assertEquals("Hardcover", mRawData.getString(DBKey.KEY_FORMAT));
-        assertEquals("fra", mRawData.getString(DBKey.KEY_LANGUAGE));
-        assertEquals("Kleur", mRawData.getString(DBKey.KEY_COLOR));
+        assertEquals("172", mRawData.getString(DBKey.PAGES));
+        assertEquals("Hardcover", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("fra", mRawData.getString(DBKey.LANGUAGE));
+        assertEquals("Kleur", mRawData.getString(DBKey.COLOR));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);

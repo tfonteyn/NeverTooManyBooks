@@ -82,7 +82,7 @@ public abstract class SearchEngineBase
      * @param bookData Bundle to update
      */
     public static void checkForSeriesNameInTitle(@NonNull final Bundle bookData) {
-        final String fullTitle = bookData.getString(DBKey.KEY_TITLE);
+        final String fullTitle = bookData.getString(DBKey.TITLE);
         if (fullTitle != null) {
             final Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
             if (matcher.find()) {
@@ -105,7 +105,7 @@ public abstract class SearchEngineBase
                     // store Series back
                     bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
                     // and store cleansed book title back
-                    bookData.putString(DBKey.KEY_TITLE, bookTitle);
+                    bookData.putString(DBKey.TITLE, bookTitle);
                 }
             }
         }

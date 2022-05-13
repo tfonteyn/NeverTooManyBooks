@@ -86,7 +86,7 @@ public abstract class BaseRecordReader
             throws StorageException,
                    DaoWriteException {
         // Verified to be valid earlier.
-        final String uuid = book.getString(DBKey.KEY_BOOK_UUID);
+        final String uuid = book.getString(DBKey.BOOK_UUID);
 
         // check if the book exists in our database, and fetch it's id.
         final long databaseBookId = mBookDao.getBookIdByUuid(uuid);
@@ -114,7 +114,7 @@ public abstract class BaseRecordReader
                     final LocalDateTime localDate = mBookDao.getLastUpdateDate(databaseBookId);
                     if (localDate != null) {
                         final LocalDateTime importDate = mDateParser.parse(
-                                book.getString(DBKey.UTC_DATE_LAST_UPDATED));
+                                book.getString(DBKey.DATE_LAST_UPDATED__UTC));
 
                         if (importDate != null && importDate.isAfter(localDate)) {
 
@@ -157,7 +157,7 @@ public abstract class BaseRecordReader
                                            | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
             mResults.booksCreated++;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                Log.d(TAG, "UUID=" + book.getString(DBKey.KEY_BOOK_UUID)
+                Log.d(TAG, "UUID=" + book.getString(DBKey.BOOK_UUID)
                            + "|importNumericId=" + importNumericId
                            + "|INSERT|book=" + book.getId() + "|" + book.getTitle());
             }

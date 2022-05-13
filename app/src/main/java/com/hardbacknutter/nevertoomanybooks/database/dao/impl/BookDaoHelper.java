@@ -96,7 +96,7 @@ public class BookDaoHelper {
      */
     BookDaoHelper process(@NonNull final Context context) {
         // Handle TITLE
-        if (mBook.contains(DBKey.KEY_TITLE)) {
+        if (mBook.contains(DBKey.TITLE)) {
             final OrderByHelper.OrderByData obd = OrderByHelper
                     .createOrderByData(context, mBook.getTitle(), mBookLocale, null);
             mBook.putString(DBKey.KEY_TITLE_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
@@ -470,7 +470,7 @@ public class BookDaoHelper {
     void persistCovers()
             throws StorageException, IOException {
 
-        final String uuid = mBook.getString(DBKey.KEY_BOOK_UUID);
+        final String uuid = mBook.getString(DBKey.BOOK_UUID);
 
         if (BuildConfig.DEBUG /* always */) {
             // the UUID should always be valid here

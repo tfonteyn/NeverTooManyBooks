@@ -140,9 +140,9 @@ public interface FtsDao {
 
         final String query = (prepareSearchText(keywords, null)
                               + prepareSearchText(author, DBKey.FTS_AUTHOR_NAME)
-                              + prepareSearchText(bookTitle, DBKey.KEY_TITLE)
-                              + prepareSearchText(seriesTitle, DBKey.KEY_SERIES_TITLE)
-                              + prepareSearchText(publisherName, DBKey.KEY_PUBLISHER_NAME)
+                              + prepareSearchText(bookTitle, DBKey.TITLE)
+                              + prepareSearchText(seriesTitle, DBKey.SERIES_TITLE)
+                              + prepareSearchText(publisherName, DBKey.PUBLISHER_NAME)
         ).trim();
 
         return query.isEmpty() ? Optional.empty() : Optional.of(query);

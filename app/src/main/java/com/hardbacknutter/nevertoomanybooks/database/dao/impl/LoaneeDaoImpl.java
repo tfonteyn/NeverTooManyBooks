@@ -42,22 +42,22 @@ public class LoaneeDaoImpl
 
     /** Get the name of the loanee of a {@link Book} by the Book id. */
     private static final String SELECT_BY_BOOK_ID =
-            SELECT_ + DBKey.KEY_LOANEE
+            SELECT_ + DBKey.LOANEE_NAME
             + _FROM_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
             + _WHERE_ + DBKey.FK_BOOK + "=?";
 
     /** name only. */
     private static final String SELECT_ALL =
-            SELECT_DISTINCT_ + DBKey.KEY_LOANEE
+            SELECT_DISTINCT_ + DBKey.LOANEE_NAME
             + _FROM_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
-            + _WHERE_ + DBKey.KEY_LOANEE + "<> ''"
-            + _ORDER_BY_ + DBKey.KEY_LOANEE + _COLLATION;
+            + _WHERE_ + DBKey.LOANEE_NAME + "<> ''"
+            + _ORDER_BY_ + DBKey.LOANEE_NAME + _COLLATION;
 
     /** Lend a book. */
     private static final String INSERT =
             INSERT_INTO_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
             + '(' + DBKey.FK_BOOK
-            + ',' + DBKey.KEY_LOANEE
+            + ',' + DBKey.LOANEE_NAME
             + ") VALUES(?,?)";
 
     /** Delete the loan of a {@link Book}; i.e. 'return the book'. */
@@ -94,7 +94,7 @@ public class LoaneeDaoImpl
 
     /**
      * Lend out a book / return a book.
-     * The book's {@link DBKey#UTC_DATE_LAST_UPDATED} <strong>will NOT</strong> be updated.
+     * The book's {@link DBKey#DATE_LAST_UPDATED__UTC} <strong>will NOT</strong> be updated.
      *
      * @param bookId book to lend
      * @param loanee person to lend to; set to {@code null} or {@code ""} to delete the loan
@@ -122,7 +122,7 @@ public class LoaneeDaoImpl
 
             } else if (!loanee.equals(current)) {
                 final ContentValues cv = new ContentValues();
-                cv.put(DBKey.KEY_LOANEE, loanee);
+                cv.put(DBKey.LOANEE_NAME, loanee);
                 success = 0 < mDb.update(DBDefinitions.TBL_BOOK_LOANEE.getName(), cv,
                                          DBKey.FK_BOOK + "=?",
                                          new String[]{String.valueOf(bookId)});

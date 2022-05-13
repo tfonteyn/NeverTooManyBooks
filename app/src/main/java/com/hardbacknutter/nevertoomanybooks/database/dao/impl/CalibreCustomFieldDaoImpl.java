@@ -82,14 +82,14 @@ public class CalibreCustomFieldDaoImpl
      */
     public static void onPostCreate(@NonNull final SQLiteDatabase db) {
         final String[][] all = {
-                {"#read", CalibreCustomField.TYPE_BOOL, DBKey.BOOL_READ},
+                {"#read", CalibreCustomField.TYPE_BOOL, DBKey.READ__BOOL},
 
-                {"#read_start", CalibreCustomField.TYPE_DATETIME, DBKey.DATE_READ_START},
-                {"#read_end", CalibreCustomField.TYPE_DATETIME, DBKey.DATE_READ_END},
-                {"#date_read", CalibreCustomField.TYPE_DATETIME, DBKey.DATE_READ_END},
+                {"#read_start", CalibreCustomField.TYPE_DATETIME, DBKey.READ_START__DATE},
+                {"#read_end", CalibreCustomField.TYPE_DATETIME, DBKey.READ_END__DATE},
+                {"#date_read", CalibreCustomField.TYPE_DATETIME, DBKey.READ_END__DATE},
 
-                {"#notes", CalibreCustomField.TYPE_TEXT, DBKey.KEY_PRIVATE_NOTES},
-                {"#notes", CalibreCustomField.TYPE_COMMENTS, DBKey.KEY_PRIVATE_NOTES}
+                {"#notes", CalibreCustomField.TYPE_TEXT, DBKey.PERSONAL_NOTES},
+                {"#notes", CalibreCustomField.TYPE_COMMENTS, DBKey.PERSONAL_NOTES}
         };
 
         final ContentValues cv = new ContentValues();

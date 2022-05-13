@@ -125,8 +125,8 @@ public abstract class BaseSetup
         book[0].setBookshelves(bookshelfList);
         book[0].setStage(EntityStage.Stage.Dirty);
 
-        book[0].putString(DBKey.KEY_TITLE, BOOK_TITLE + "0");
-        book[0].putString(DBKey.KEY_LANGUAGE, "eng");
+        book[0].putString(DBKey.TITLE, BOOK_TITLE + "0");
+        book[0].putString(DBKey.LANGUAGE, "eng");
         authorList.clear();
         authorList.add(author[0]);
         authorList.add(author[1]);
@@ -143,8 +143,8 @@ public abstract class BaseSetup
         bookshelfList.add(bookshelf[0]);
         book[1].setBookshelves(bookshelfList);
         book[1].setStage(EntityStage.Stage.Dirty);
-        book[1].putString(DBKey.KEY_TITLE, BOOK_TITLE + "1");
-        book[1].putString(DBKey.KEY_LANGUAGE, "ger");
+        book[1].putString(DBKey.TITLE, BOOK_TITLE + "1");
+        book[1].putString(DBKey.LANGUAGE, "ger");
         authorList.clear();
         authorList.add(author[1]);
         book[1].setAuthors(authorList);
@@ -160,8 +160,8 @@ public abstract class BaseSetup
         bookshelfList.add(bookshelf[0]);
         book[2].setBookshelves(bookshelfList);
         book[2].setStage(EntityStage.Stage.Dirty);
-        book[2].putString(DBKey.KEY_TITLE, BOOK_TITLE + "2");
-        book[2].putString(DBKey.KEY_LANGUAGE, "eng");
+        book[2].putString(DBKey.TITLE, BOOK_TITLE + "2");
+        book[2].putString(DBKey.LANGUAGE, "eng");
         authorList.clear();
         authorList.add(author[2]);
         book[2].setAuthors(authorList);
@@ -177,8 +177,8 @@ public abstract class BaseSetup
         bookshelfList.add(bookshelf[0]);
         book[3].setBookshelves(bookshelfList);
         book[3].setStage(EntityStage.Stage.Dirty);
-        book[3].putString(DBKey.KEY_TITLE, BOOK_TITLE + "3");
-        book[3].putString(DBKey.KEY_LANGUAGE, "eng");
+        book[3].putString(DBKey.TITLE, BOOK_TITLE + "3");
+        book[3].putString(DBKey.LANGUAGE, "eng");
         authorList.clear();
         authorList.add(author[0]);
         authorList.add(author[2]);
@@ -195,8 +195,8 @@ public abstract class BaseSetup
         bookshelfList.add(bookshelf[0]);
         book[4].setBookshelves(bookshelfList);
         book[4].setStage(EntityStage.Stage.Dirty);
-        book[4].putString(DBKey.KEY_TITLE, BOOK_TITLE + "4");
-        book[4].putString(DBKey.KEY_LANGUAGE, "eng");
+        book[4].putString(DBKey.TITLE, BOOK_TITLE + "4");
+        book[4].putString(DBKey.LANGUAGE, "eng");
         authorList.clear();
         authorList.add(author[1]);
         authorList.add(author[2]);

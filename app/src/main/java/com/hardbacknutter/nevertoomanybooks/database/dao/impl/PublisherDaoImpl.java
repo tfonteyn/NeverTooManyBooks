@@ -75,7 +75,7 @@ public class PublisherDaoImpl
 
     /** name only. */
     private static final String SELECT_ALL_NAMES =
-            SELECT_DISTINCT_ + DBKey.KEY_PUBLISHER_NAME
+            SELECT_DISTINCT_ + DBKey.PUBLISHER_NAME
             + ',' + DBKey.KEY_PUBLISHER_NAME_OB
             + _FROM_ + TBL_PUBLISHERS.getName()
             + _ORDER_BY_ + DBKey.KEY_PUBLISHER_NAME_OB + _COLLATION;
@@ -86,13 +86,13 @@ public class PublisherDaoImpl
     /** All Publishers for a Book; ordered by position, name. */
     private static final String PUBLISHER_BY_BOOK_ID =
             SELECT_DISTINCT_ + TBL_PUBLISHERS.dotAs(DBKey.PK_ID,
-                                                    DBKey.KEY_PUBLISHER_NAME,
+                                                    DBKey.PUBLISHER_NAME,
                                                     DBKey.KEY_PUBLISHER_NAME_OB)
-            + ',' + TBL_BOOK_PUBLISHER.dotAs(DBKey.KEY_BOOK_PUBLISHER_POSITION)
+            + ',' + TBL_BOOK_PUBLISHER.dotAs(DBKey.BOOK_PUBLISHER_POSITION)
 
             + _FROM_ + TBL_BOOK_PUBLISHER.startJoin(TBL_PUBLISHERS)
             + _WHERE_ + TBL_BOOK_PUBLISHER.dot(DBKey.FK_BOOK) + "=?"
-            + _ORDER_BY_ + TBL_BOOK_PUBLISHER.dot(DBKey.KEY_BOOK_PUBLISHER_POSITION)
+            + _ORDER_BY_ + TBL_BOOK_PUBLISHER.dot(DBKey.BOOK_PUBLISHER_POSITION)
             + ',' + TBL_PUBLISHERS.dot(DBKey.KEY_PUBLISHER_NAME_OB) + _COLLATION;
 
     /** Get a {@link Publisher} by the Publisher id. */
@@ -118,7 +118,7 @@ public class PublisherDaoImpl
 
     private static final String INSERT =
             INSERT_INTO_ + TBL_PUBLISHERS.getName()
-            + '(' + DBKey.KEY_PUBLISHER_NAME
+            + '(' + DBKey.PUBLISHER_NAME
             + ',' + DBKey.KEY_PUBLISHER_NAME_OB
             + ") VALUES (?,?)";
 
@@ -331,7 +331,7 @@ public class PublisherDaoImpl
                 context, publisher.getName(), bookLocale, publisher::getLocale);
 
         final ContentValues cv = new ContentValues();
-        cv.put(DBKey.KEY_PUBLISHER_NAME, publisher.getName());
+        cv.put(DBKey.PUBLISHER_NAME, publisher.getName());
         cv.put(DBKey.KEY_PUBLISHER_NAME_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
 
         return 0 < mDb.update(TBL_PUBLISHERS.getName(), cv, DBKey.PK_ID + "=?",
@@ -414,7 +414,7 @@ public class PublisherDaoImpl
     public int repositionPublishers(@NonNull final Context context) {
         final String sql = "SELECT " + DBKey.FK_BOOK + " FROM "
                            + "(SELECT " + DBKey.FK_BOOK
-                           + ", MIN(" + DBKey.KEY_BOOK_PUBLISHER_POSITION
+                           + ", MIN(" + DBKey.BOOK_PUBLISHER_POSITION
                            + ") AS mp"
                            + " FROM " + TBL_BOOK_PUBLISHER.getName()
                            + " GROUP BY " + DBKey.FK_BOOK

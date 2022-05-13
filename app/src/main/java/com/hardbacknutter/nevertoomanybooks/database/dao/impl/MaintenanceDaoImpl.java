@@ -56,7 +56,7 @@ public class MaintenanceDaoImpl
             // The index of KEY_PK_ID, KEY_SERIES_TITLE, KEY_SERIES_TITLE_OB is hardcoded
             // Don't change!
             SELECT_ + DBKey.PK_ID
-            + ',' + DBKey.KEY_SERIES_TITLE
+            + ',' + DBKey.SERIES_TITLE
             + ',' + DBKey.KEY_SERIES_TITLE_OB
             + _FROM_ + TBL_SERIES.getName();
 
@@ -65,7 +65,7 @@ public class MaintenanceDaoImpl
             // The index of KEY_PK_ID, KEY_PUBLISHER_NAME, KEY_PUBLISHER_NAME_OB is hardcoded
             // Don't change!
             SELECT_ + DBKey.PK_ID
-            + ',' + DBKey.KEY_PUBLISHER_NAME
+            + ',' + DBKey.PUBLISHER_NAME
             + ',' + DBKey.KEY_PUBLISHER_NAME_OB
             + _FROM_ + TBL_PUBLISHERS.getName();
 
@@ -73,16 +73,16 @@ public class MaintenanceDaoImpl
     private static final String BOOK_TITLES =
             // The index of KEY_PK_ID, KEY_TITLE, KEY_TITLE_OB is hardcoded - don't change!
             SELECT_ + DBKey.PK_ID
-            + ',' + DBKey.KEY_TITLE
+            + ',' + DBKey.TITLE
             + ',' + DBKey.KEY_TITLE_OB
-            + ',' + DBKey.KEY_LANGUAGE
+            + ',' + DBKey.LANGUAGE
             + _FROM_ + TBL_BOOKS.getName();
 
     /** All TocEntry titles for a rebuild of the {@link DBKey#KEY_TITLE_OB} column. */
     private static final String TOC_ENTRY_TITLES =
             // The index of KEY_PK_ID, KEY_TITLE, KEY_TITLE_OB is hardcoded - don't change!
             SELECT_ + DBKey.PK_ID
-            + ',' + DBKey.KEY_TITLE
+            + ',' + DBKey.TITLE
             + ',' + DBKey.KEY_TITLE_OB
             + _FROM_ + TBL_TOC_ENTRIES.getName();
 
@@ -133,7 +133,7 @@ public class MaintenanceDaoImpl
             }
 
             try (Cursor cursor = mDb.rawQuery(BOOK_TITLES, null)) {
-                final int langIdx = cursor.getColumnIndex(DBKey.KEY_LANGUAGE);
+                final int langIdx = cursor.getColumnIndex(DBKey.LANGUAGE);
                 while (cursor.moveToNext()) {
                     language = cursor.getString(langIdx);
                     bookLocale = appLocale.getLocale(context, language);

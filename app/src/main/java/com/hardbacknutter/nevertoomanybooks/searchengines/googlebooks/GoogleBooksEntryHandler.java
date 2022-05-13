@@ -295,7 +295,7 @@ class GoogleBooksEntryHandler
 
                 final String fileSpec;
                 try {
-                    fileSpec = mSearchEngine.saveImage(url, mBookData.getString(DBKey.KEY_ISBN),
+                    fileSpec = mSearchEngine.saveImage(url, mBookData.getString(DBKey.ISBN),
                                                        0, null);
                 } catch (@NonNull final StorageException e) {
                     throw new SAXException(e);
@@ -358,7 +358,7 @@ class GoogleBooksEntryHandler
         switch (localName.toLowerCase(mLocale)) {
             case XML_TITLE:
                 // there can be multiple listed, we only take the first one found
-                addIfNotPresent(DBKey.KEY_TITLE, mBuilder.toString());
+                addIfNotPresent(DBKey.TITLE, mBuilder.toString());
                 break;
 
             case XML_ISBN:
@@ -366,10 +366,10 @@ class GoogleBooksEntryHandler
                 String tmpIsbn = mBuilder.toString();
                 if (tmpIsbn.indexOf("ISBN:") == 0) {
                     tmpIsbn = tmpIsbn.substring(5);
-                    final String isbnStr = mBookData.getString(DBKey.KEY_ISBN);
+                    final String isbnStr = mBookData.getString(DBKey.ISBN);
                     // store the 'longest' isbn
                     if (isbnStr == null || tmpIsbn.length() > isbnStr.length()) {
-                        mBookData.putString(DBKey.KEY_ISBN, tmpIsbn);
+                        mBookData.putString(DBKey.ISBN, tmpIsbn);
                     }
                 }
                 break;
@@ -379,7 +379,7 @@ class GoogleBooksEntryHandler
                 final String iso = mBuilder.toString();
                 if (!iso.isEmpty()) {
                     // the language is a proper iso code, just store.
-                    addIfNotPresent(DBKey.KEY_LANGUAGE, iso);
+                    addIfNotPresent(DBKey.LANGUAGE, iso);
                 }
                 break;
 
@@ -406,23 +406,23 @@ class GoogleBooksEntryHandler
                 final String tmpFormat = mBuilder.toString();
                 int index = tmpFormat.indexOf(" pages");
                 if (index > -1) {
-                    mBookData.putString(DBKey.KEY_PAGES,
+                    mBookData.putString(DBKey.PAGES,
                                         tmpFormat.substring(0, index).trim());
                 } else {
                     index = tmpFormat.indexOf("Dimensions");
                     if (index > -1) {
-                        mBookData.putString(DBKey.KEY_FORMAT, tmpFormat.trim());
+                        mBookData.putString(DBKey.BOOK_FORMAT, tmpFormat.trim());
                     }
                 }
                 break;
 
             case XML_GENRE:
                 // there can be multiple listed, we only take the first one found
-                addIfNotPresent(DBKey.KEY_GENRE, mBuilder.toString());
+                addIfNotPresent(DBKey.GENRE, mBuilder.toString());
                 break;
 
             case XML_DESCRIPTION:
-                addIfNotPresent(DBKey.KEY_DESCRIPTION, mBuilder.toString());
+                addIfNotPresent(DBKey.DESCRIPTION, mBuilder.toString());
                 break;
 
             default:

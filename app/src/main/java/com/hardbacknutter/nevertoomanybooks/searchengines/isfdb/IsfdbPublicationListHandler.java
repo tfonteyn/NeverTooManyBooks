@@ -247,7 +247,7 @@ class IsfdbPublicationListHandler
 
             // ISFDB does not provide the books language in xml
             //ENHANCE: the site is adding language to the data. For now, default to English
-            mPublicationData.putString(DBKey.KEY_LANGUAGE, "eng");
+            mPublicationData.putString(DBKey.LANGUAGE, "eng");
 
             mInPublication = false;
             mBookDataList.add(mPublicationData);
@@ -276,7 +276,7 @@ class IsfdbPublicationListHandler
                     break;
                 }
                 case XML_TITLE: {
-                    addIfNotPresent(DBKey.KEY_TITLE, mBuilder.toString());
+                    addIfNotPresent(DBKey.TITLE, mBuilder.toString());
                     break;
                 }
                 case XML_AUTHOR: {
@@ -292,12 +292,12 @@ class IsfdbPublicationListHandler
                     break;
                 }
                 case XML_ISBN: {
-                    addIfNotPresent(DBKey.KEY_ISBN, ISBN.cleanText(mBuilder.toString()));
+                    addIfNotPresent(DBKey.ISBN, ISBN.cleanText(mBuilder.toString()));
                     break;
                 }
                 case XML_CATALOG: {
                     // use the ISBN if we have one, otherwise the catalog id
-                    addIfNotPresent(DBKey.KEY_ISBN, mBuilder.toString());
+                    addIfNotPresent(DBKey.ISBN, mBuilder.toString());
                     break;
                 }
                 case XML_PUBLISHER: {
@@ -328,11 +328,11 @@ class IsfdbPublicationListHandler
                     break;
                 }
                 case XML_PAGES: {
-                    addIfNotPresent(DBKey.KEY_PAGES, mBuilder.toString());
+                    addIfNotPresent(DBKey.PAGES, mBuilder.toString());
                     break;
                 }
                 case XML_BINDING: {
-                    addIfNotPresent(DBKey.KEY_FORMAT, mBuilder.toString());
+                    addIfNotPresent(DBKey.BOOK_FORMAT, mBuilder.toString());
                     break;
                 }
                 case XML_TYPE: {
@@ -352,7 +352,7 @@ class IsfdbPublicationListHandler
                     if (mFetchCovers[0]) {
                         final String tmpString = mBuilder.toString().trim();
                         try {
-                            final String isbn = mPublicationData.getString(DBKey.KEY_ISBN);
+                            final String isbn = mPublicationData.getString(DBKey.ISBN);
                             final String fileSpec =
                                     mSearchEngine.saveImage(tmpString, isbn, 0, null);
                             if (fileSpec != null) {
@@ -378,7 +378,7 @@ class IsfdbPublicationListHandler
                 }
                 case XML_NOTE: {
                     // can contain html tags!
-                    addIfNotPresent(DBKey.KEY_DESCRIPTION,
+                    addIfNotPresent(DBKey.DESCRIPTION,
                                     ParseUtils.cleanText(mBuilder.toString()));
                     break;
                 }

@@ -73,23 +73,23 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FT
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_BOOK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_BOOK_MAIN_FORMAT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_BOOK_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_LIBRARY_LAST_SYNC_DATE__UTC;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_LIBRARY_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_LIBRARY_STRING_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_LIBRARY_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_VIRT_LIB_EXPR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DATE_LAST_UPDATED__UTC;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_CALIBRE_LIBRARY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_BOOK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_BOOK_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_LIBRARY_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_LIBRARY_STRING_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_LIBRARY_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_VIRT_LIB_EXPR;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_FTS_BOOK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_ISBN;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FTS_BOOK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.UTC_DATE_LAST_SYNC_CALIBRE_LIBRARY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.UTC_DATE_LAST_UPDATED;
 
 /**
  * {@link SQLiteOpenHelper} for the main database.
@@ -339,7 +339,7 @@ public class DBHelper
         body = " AFTER DELETE ON " + TBL_BOOK_BOOKSHELF.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + UTC_DATE_LAST_UPDATED + "=current_timestamp"
+               + "  SET " + DATE_LAST_UPDATED__UTC + "=current_timestamp"
                + " WHERE " + PK_ID + "=OLD." + FK_BOOK + ";\n"
                + " END";
 
@@ -375,7 +375,7 @@ public class DBHelper
         body = " AFTER UPDATE ON " + TBL_AUTHORS.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + UTC_DATE_LAST_UPDATED + "=current_timestamp"
+               + "  SET " + DATE_LAST_UPDATED__UTC + "=current_timestamp"
 
                + " WHERE " + PK_ID + " IN \n"
                // actual books by this Author
@@ -401,7 +401,7 @@ public class DBHelper
         body = " AFTER DELETE ON " + TBL_BOOK_SERIES.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + UTC_DATE_LAST_UPDATED + "=current_timestamp"
+               + "  SET " + DATE_LAST_UPDATED__UTC + "=current_timestamp"
                + " WHERE " + PK_ID + "=OLD." + FK_BOOK + ";\n"
                + " END";
 
@@ -417,7 +417,7 @@ public class DBHelper
         body = " AFTER UPDATE ON " + TBL_SERIES.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + UTC_DATE_LAST_UPDATED + "=current_timestamp"
+               + "  SET " + DATE_LAST_UPDATED__UTC + "=current_timestamp"
                + " WHERE " + PK_ID + " IN \n"
                + "(SELECT " + FK_BOOK + " FROM " + TBL_BOOK_SERIES.getName()
                + " WHERE " + FK_SERIES + "=OLD." + PK_ID + ");\n"
@@ -435,7 +435,7 @@ public class DBHelper
         body = " AFTER DELETE ON " + TBL_BOOK_LOANEE.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + UTC_DATE_LAST_UPDATED + "=current_timestamp"
+               + "  SET " + DATE_LAST_UPDATED__UTC + "=current_timestamp"
                + " WHERE " + PK_ID + "=OLD." + FK_BOOK + ";\n"
                + " END";
 
@@ -451,7 +451,7 @@ public class DBHelper
         body = " AFTER UPDATE ON " + TBL_BOOK_LOANEE.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + UTC_DATE_LAST_UPDATED + "=current_timestamp"
+               + "  SET " + DATE_LAST_UPDATED__UTC + "=current_timestamp"
                + " WHERE " + PK_ID + "=NEW." + FK_BOOK + ";\n"
                + " END";
 
@@ -467,7 +467,7 @@ public class DBHelper
         body = " AFTER INSERT ON " + TBL_BOOK_LOANEE.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + UTC_DATE_LAST_UPDATED + "=current_timestamp"
+               + "  SET " + DATE_LAST_UPDATED__UTC + "=current_timestamp"
                + " WHERE " + PK_ID + "=NEW." + FK_BOOK + ";\n"
                + " END";
 
@@ -484,7 +484,7 @@ public class DBHelper
         body = " AFTER DELETE ON " + TBL_BOOKS.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  DELETE FROM " + TBL_FTS_BOOKS.getName()
-               + " WHERE " + KEY_FTS_BOOK_ID + "=OLD." + PK_ID + ";\n"
+               + " WHERE " + FTS_BOOK_ID + "=OLD." + PK_ID + ";\n"
                + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -494,9 +494,9 @@ public class DBHelper
         /*
          * If the ISBN of a {@link Book) is changed, reset external ID's and sync dates.
          */
-        name = "after_update_of_" + KEY_ISBN + "_on_" + TBL_BOOKS.getName();
-        body = " AFTER UPDATE OF " + KEY_ISBN + " ON " + TBL_BOOKS.getName() + " FOR EACH ROW\n"
-               + " WHEN NEW." + KEY_ISBN + " <> OLD." + KEY_ISBN + '\n'
+        name = "after_update_of_" + ISBN + "_on_" + TBL_BOOKS.getName();
+        body = " AFTER UPDATE OF " + ISBN + " ON " + TBL_BOOKS.getName() + " FOR EACH ROW\n"
+               + " WHEN NEW." + ISBN + " <> OLD." + ISBN + '\n'
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName() + " SET ";
 
@@ -653,10 +653,10 @@ public class DBHelper
 
                     try (SQLiteStatement stmt = db.compileStatement(
                             "INSERT INTO " + TBL_CALIBRE_LIBRARIES.getName()
-                            + '(' + KEY_CALIBRE_LIBRARY_UUID
-                            + ',' + KEY_CALIBRE_LIBRARY_STRING_ID
-                            + ',' + KEY_CALIBRE_LIBRARY_NAME
-                            + ',' + UTC_DATE_LAST_SYNC_CALIBRE_LIBRARY
+                            + '(' + CALIBRE_LIBRARY_UUID
+                            + ',' + CALIBRE_LIBRARY_STRING_ID
+                            + ',' + CALIBRE_LIBRARY_NAME
+                            + ',' + CALIBRE_LIBRARY_LAST_SYNC_DATE__UTC
                             + ',' + FK_BOOKSHELF
                             + ") VALUES (?,?,?,?,?)")) {
                         stmt.bindString(1, "");
@@ -684,8 +684,8 @@ public class DBHelper
                         try (SQLiteStatement stmt = db.compileStatement(
                                 "INSERT INTO " + TBL_CALIBRE_VIRTUAL_LIBRARIES.getName()
                                 + '(' + FK_CALIBRE_LIBRARY
-                                + ',' + KEY_CALIBRE_LIBRARY_NAME
-                                + ',' + KEY_CALIBRE_VIRT_LIB_EXPR
+                                + ',' + CALIBRE_LIBRARY_NAME
+                                + ',' + CALIBRE_VIRT_LIB_EXPR
                                 + ',' + FK_BOOKSHELF
                                 + ") VALUES (?,?,?,?)")) {
                             stmt.bindLong(1, libId);
@@ -711,9 +711,9 @@ public class DBHelper
                     if (libId != null) {
                         final ContentValues cv = new ContentValues();
                         cv.put(FK_BOOK, bookId);
-                        cv.put(KEY_CALIBRE_BOOK_ID, clbBookId);
-                        cv.put(KEY_CALIBRE_BOOK_UUID, clbUuid);
-                        cv.put(KEY_CALIBRE_BOOK_MAIN_FORMAT, format);
+                        cv.put(CALIBRE_BOOK_ID, clbBookId);
+                        cv.put(CALIBRE_BOOK_UUID, clbUuid);
+                        cv.put(CALIBRE_BOOK_MAIN_FORMAT, format);
                         cv.put(FK_CALIBRE_LIBRARY, libId);
 
                         db.insert(TBL_CALIBRE_BOOKS.getName(), null, cv);

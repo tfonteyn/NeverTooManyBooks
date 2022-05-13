@@ -45,7 +45,7 @@ public class EditGenreDialogFragment
      * No-arg constructor for OS use.
      */
     public EditGenreDialogFragment() {
-        super(R.string.lbl_genre, R.string.lbl_genre, DBKey.KEY_GENRE);
+        super(R.string.lbl_genre, R.string.lbl_genre, DBKey.GENRE);
     }
 
     /**

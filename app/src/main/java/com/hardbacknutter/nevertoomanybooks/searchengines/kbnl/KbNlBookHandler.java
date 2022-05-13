@@ -81,8 +81,8 @@ class KbNlBookHandler
         }
         // As kb.nl is dutch, and there is no 'language' field,
         // we're going to assume that all books are in Dutch.
-        if (!mBookData.isEmpty() && !mBookData.containsKey(DBKey.KEY_LANGUAGE)) {
-            mBookData.putString(DBKey.KEY_LANGUAGE, "nld");
+        if (!mBookData.isEmpty() && !mBookData.containsKey(DBKey.LANGUAGE)) {
+            mBookData.putString(DBKey.LANGUAGE, "nld");
         }
     }
 
@@ -232,7 +232,7 @@ class KbNlBookHandler
         }
 
         final String cleanedTitle = sbTitle.toString().split("/")[0].trim();
-        mBookData.putString(DBKey.KEY_TITLE, cleanedTitle);
+        mBookData.putString(DBKey.TITLE, cleanedTitle);
     }
 
     /**
@@ -317,7 +317,7 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processSeriesNumber(@NonNull final List<String> currentData) {
-        final String title = mBookData.getString(DBKey.KEY_TITLE);
+        final String title = mBookData.getString(DBKey.TITLE);
         // should never happen, but paranoia...
         if (title != null) {
             final Series series = Series.from(title, currentData.get(0));
@@ -346,16 +346,16 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processIsbn(@NonNull final List<String> currentData) {
-        if (!mBookData.containsKey(DBKey.KEY_ISBN)) {
-            mBookData.putString(DBKey.KEY_ISBN, digits(currentData.get(0), true));
+        if (!mBookData.containsKey(DBKey.ISBN)) {
+            mBookData.putString(DBKey.ISBN, digits(currentData.get(0), true));
             if (currentData.size() > 1) {
-                if (!mBookData.containsKey(DBKey.KEY_FORMAT)) {
+                if (!mBookData.containsKey(DBKey.BOOK_FORMAT)) {
                     String format = currentData.get(1).trim();
                     if (format.startsWith("(")) {
                         format = format.substring(1, format.length() - 1);
                     }
                     if (!format.isEmpty()) {
-                        mBookData.putString(DBKey.KEY_FORMAT, format);
+                        mBookData.putString(DBKey.BOOK_FORMAT, format);
                     }
                 }
             }
@@ -448,14 +448,14 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processPages(@NonNull final List<String> currentData) {
-        if (!mBookData.containsKey(DBKey.KEY_PAGES)) {
+        if (!mBookData.containsKey(DBKey.PAGES)) {
             try {
                 final String cleanedString = currentData.get(0).split(" ")[0];
                 final int pages = Integer.parseInt(cleanedString);
-                mBookData.putString(DBKey.KEY_PAGES, String.valueOf(pages));
+                mBookData.putString(DBKey.PAGES, String.valueOf(pages));
             } catch (@NonNull final NumberFormatException e) {
                 // use source
-                mBookData.putString(DBKey.KEY_PAGES, currentData.get(0));
+                mBookData.putString(DBKey.PAGES, currentData.get(0));
             }
         }
     }

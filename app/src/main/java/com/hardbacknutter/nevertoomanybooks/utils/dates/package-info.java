@@ -45,16 +45,16 @@
  * Affected columns are those of type
  * {@link  com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo#TYPE_DATETIME}.
  * Status on 2020-09-26:
- * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#UTC_DATE_ADDED}
- * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#UTC_DATE_LAST_UPDATED}
+ * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#DATE_ADDED__UTC}
+ * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#DATE_LAST_UPDATED__UTC}
  * and
  * {@link com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper}#CKEY_UTC_DATETIME
  * <p>
  * Columns of type
  * {@link  com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo#TYPE_DATE}
  * Status on 2020-09-26:
- * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#DATE_READ_START}
- * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#DATE_READ_END}
+ * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#READ_START__DATE}
+ * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#READ_END__DATE}
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#DATE_ACQUIRED}
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#DATE_BOOK_PUBLICATION}
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#DATE_FIRST_PUBLICATION}

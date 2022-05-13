@@ -437,7 +437,7 @@ public class JsonRecordReader
             }
             try {
                 final Book book = bookCoder.decode(books.getJSONObject(i));
-                Objects.requireNonNull(book.getString(DBKey.KEY_BOOK_UUID), DBKey.KEY_BOOK_UUID);
+                Objects.requireNonNull(book.getString(DBKey.BOOK_UUID), DBKey.BOOK_UUID);
 
                 final long importNumericId = book.getLong(DBKey.PK_ID);
                 book.remove(DBKey.PK_ID);

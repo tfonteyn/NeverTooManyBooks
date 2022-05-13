@@ -90,24 +90,24 @@ public class BookCoder {
      */
     private static final String EXPORT_FIELD_HEADERS_BASE =
             '"' + DBKey.PK_ID + '"'
-            + COMMA + '"' + DBKey.KEY_BOOK_UUID + '"'
-            + COMMA + '"' + DBKey.UTC_DATE_LAST_UPDATED + '"'
+            + COMMA + '"' + DBKey.BOOK_UUID + '"'
+            + COMMA + '"' + DBKey.DATE_LAST_UPDATED__UTC + '"'
             + COMMA + '"' + CSV_COLUMN_AUTHORS + '"'
-            + COMMA + '"' + DBKey.KEY_TITLE + '"'
-            + COMMA + '"' + DBKey.KEY_ISBN + '"'
+            + COMMA + '"' + DBKey.TITLE + '"'
+            + COMMA + '"' + DBKey.ISBN + '"'
             + COMMA + '"' + CSV_COLUMN_PUBLISHERS + '"'
-            + COMMA + '"' + DBKey.KEY_PRINT_RUN + '"'
+            + COMMA + '"' + DBKey.PRINT_RUN + '"'
             + COMMA + '"' + DBKey.DATE_BOOK_PUBLICATION + '"'
             + COMMA + '"' + DBKey.DATE_FIRST_PUBLICATION + '"'
             + COMMA + '"' + DBKey.BITMASK_EDITION + '"'
-            + COMMA + '"' + DBKey.KEY_RATING + '"'
-            + COMMA + '"' + DBKey.KEY_BOOKSHELF_NAME + '"'
-            + COMMA + '"' + DBKey.BOOL_READ + '"'
+            + COMMA + '"' + DBKey.RATING + '"'
+            + COMMA + '"' + DBKey.BOOKSHELF_NAME + '"'
+            + COMMA + '"' + DBKey.READ__BOOL + '"'
             + COMMA + '"' + CSV_COLUMN_SERIES + '"'
-            + COMMA + '"' + DBKey.KEY_PAGES + '"'
-            + COMMA + '"' + DBKey.KEY_PRIVATE_NOTES + '"'
-            + COMMA + '"' + DBKey.KEY_BOOK_CONDITION + '"'
-            + COMMA + '"' + DBKey.KEY_BOOK_CONDITION_COVER + '"'
+            + COMMA + '"' + DBKey.PAGES + '"'
+            + COMMA + '"' + DBKey.PERSONAL_NOTES + '"'
+            + COMMA + '"' + DBKey.BOOK_CONDITION + '"'
+            + COMMA + '"' + DBKey.BOOK_CONDITION_COVER + '"'
 
             + COMMA + '"' + DBKey.PRICE_LISTED + '"'
             + COMMA + '"' + DBKey.PRICE_LISTED_CURRENCY + '"'
@@ -116,25 +116,25 @@ public class BookCoder {
             + COMMA + '"' + DBKey.DATE_ACQUIRED + '"'
 
             + COMMA + '"' + DBKey.BITMASK_TOC + '"'
-            + COMMA + '"' + DBKey.KEY_LOCATION + '"'
-            + COMMA + '"' + DBKey.DATE_READ_START + '"'
-            + COMMA + '"' + DBKey.DATE_READ_END + '"'
-            + COMMA + '"' + DBKey.KEY_FORMAT + '"'
-            + COMMA + '"' + DBKey.KEY_COLOR + '"'
-            + COMMA + '"' + DBKey.BOOL_SIGNED + '"'
-            + COMMA + '"' + DBKey.KEY_LOANEE + '"'
+            + COMMA + '"' + DBKey.LOCATION + '"'
+            + COMMA + '"' + DBKey.READ_START__DATE + '"'
+            + COMMA + '"' + DBKey.READ_END__DATE + '"'
+            + COMMA + '"' + DBKey.BOOK_FORMAT + '"'
+            + COMMA + '"' + DBKey.COLOR + '"'
+            + COMMA + '"' + DBKey.SIGNED__BOOL + '"'
+            + COMMA + '"' + DBKey.LOANEE_NAME + '"'
             + COMMA + '"' + CSV_COLUMN_TOC + '"'
-            + COMMA + '"' + DBKey.KEY_DESCRIPTION + '"'
-            + COMMA + '"' + DBKey.KEY_GENRE + '"'
-            + COMMA + '"' + DBKey.KEY_LANGUAGE + '"'
-            + COMMA + '"' + DBKey.UTC_DATE_ADDED + '"'
+            + COMMA + '"' + DBKey.DESCRIPTION + '"'
+            + COMMA + '"' + DBKey.GENRE + '"'
+            + COMMA + '"' + DBKey.LANGUAGE + '"'
+            + COMMA + '"' + DBKey.DATE_ADDED__UTC + '"'
 
             // the Calibre book ID/UUID as they define the book on the Calibre Server
-            + COMMA + '"' + DBKey.KEY_CALIBRE_BOOK_ID + '"'
-            + COMMA + '"' + DBKey.KEY_CALIBRE_BOOK_UUID + '"'
-            + COMMA + '"' + DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT + '"'
+            + COMMA + '"' + DBKey.CALIBRE_BOOK_ID + '"'
+            + COMMA + '"' + DBKey.CALIBRE_BOOK_UUID + '"'
+            + COMMA + '"' + DBKey.CALIBRE_BOOK_MAIN_FORMAT + '"'
             // we write the String ID! not the internal row id
-            + COMMA + '"' + DBKey.KEY_CALIBRE_LIBRARY_STRING_ID + '"';
+            + COMMA + '"' + DBKey.CALIBRE_LIBRARY_STRING_ID + '"';
 
     private final StringList<Author> mAuthorCoder = new StringList<>(new AuthorCoder());
     private final StringList<Series> mSeriesCoder = new StringList<>(new SeriesCoder());
@@ -190,46 +190,46 @@ public class BookCoder {
         final StringJoiner line = new StringJoiner(",");
 
         line.add(escapeLong(book.getLong(DBKey.PK_ID)));
-        line.add(escape(book.getString(DBKey.KEY_BOOK_UUID)));
-        line.add(escape(book.getString(DBKey.UTC_DATE_LAST_UPDATED)));
+        line.add(escape(book.getString(DBKey.BOOK_UUID)));
+        line.add(escape(book.getString(DBKey.DATE_LAST_UPDATED__UTC)));
         line.add(escape(mAuthorCoder.encodeList(book.getAuthors())));
-        line.add(escape(book.getString(DBKey.KEY_TITLE)));
-        line.add(escape(book.getString(DBKey.KEY_ISBN)));
+        line.add(escape(book.getString(DBKey.TITLE)));
+        line.add(escape(book.getString(DBKey.ISBN)));
         line.add(escape(mPublisherCoder.encodeList(book.getPublishers())));
-        line.add(escape(book.getString(DBKey.KEY_PRINT_RUN)));
+        line.add(escape(book.getString(DBKey.PRINT_RUN)));
         line.add(escape(book.getString(DBKey.DATE_BOOK_PUBLICATION)));
         line.add(escape(book.getString(DBKey.DATE_FIRST_PUBLICATION)));
         line.add(escapeLong(book.getLong(DBKey.BITMASK_EDITION)));
-        line.add(escapeDouble(book.getFloat(DBKey.KEY_RATING)));
+        line.add(escapeDouble(book.getFloat(DBKey.RATING)));
         line.add(escape(mBookshelfCoder.encodeList(book.getBookshelves())));
-        line.add(escapeLong(book.getInt(DBKey.BOOL_READ)));
+        line.add(escapeLong(book.getInt(DBKey.READ__BOOL)));
         line.add(escape(mSeriesCoder.encodeList(book.getSeries())));
-        line.add(escape(book.getString(DBKey.KEY_PAGES)));
-        line.add(escape(book.getString(DBKey.KEY_PRIVATE_NOTES)));
-        line.add(escapeLong(book.getInt(DBKey.KEY_BOOK_CONDITION)));
-        line.add(escapeLong(book.getInt(DBKey.KEY_BOOK_CONDITION_COVER)));
+        line.add(escape(book.getString(DBKey.PAGES)));
+        line.add(escape(book.getString(DBKey.PERSONAL_NOTES)));
+        line.add(escapeLong(book.getInt(DBKey.BOOK_CONDITION)));
+        line.add(escapeLong(book.getInt(DBKey.BOOK_CONDITION_COVER)));
         line.add(escapeDouble(book.getDouble(DBKey.PRICE_LISTED)));
         line.add(escape(book.getString(DBKey.PRICE_LISTED_CURRENCY)));
         line.add(escapeDouble(book.getDouble(DBKey.PRICE_PAID)));
         line.add(escape(book.getString(DBKey.PRICE_PAID_CURRENCY)));
         line.add(escape(book.getString(DBKey.DATE_ACQUIRED)));
         line.add(escapeLong(book.getLong(DBKey.BITMASK_TOC)));
-        line.add(escape(book.getString(DBKey.KEY_LOCATION)));
-        line.add(escape(book.getString(DBKey.DATE_READ_START)));
-        line.add(escape(book.getString(DBKey.DATE_READ_END)));
-        line.add(escape(book.getString(DBKey.KEY_FORMAT)));
-        line.add(escape(book.getString(DBKey.KEY_COLOR)));
-        line.add(escapeLong(book.getInt(DBKey.BOOL_SIGNED)));
-        line.add(escape(book.getString(DBKey.KEY_LOANEE)));
+        line.add(escape(book.getString(DBKey.LOCATION)));
+        line.add(escape(book.getString(DBKey.READ_START__DATE)));
+        line.add(escape(book.getString(DBKey.READ_END__DATE)));
+        line.add(escape(book.getString(DBKey.BOOK_FORMAT)));
+        line.add(escape(book.getString(DBKey.COLOR)));
+        line.add(escapeLong(book.getInt(DBKey.SIGNED__BOOL)));
+        line.add(escape(book.getString(DBKey.LOANEE_NAME)));
         line.add(escape(mTocCoder.encodeList(book.getToc())));
-        line.add(escape(book.getString(DBKey.KEY_DESCRIPTION)));
-        line.add(escape(book.getString(DBKey.KEY_GENRE)));
-        line.add(escape(book.getString(DBKey.KEY_LANGUAGE)));
-        line.add(escape(book.getString(DBKey.UTC_DATE_ADDED)));
+        line.add(escape(book.getString(DBKey.DESCRIPTION)));
+        line.add(escape(book.getString(DBKey.GENRE)));
+        line.add(escape(book.getString(DBKey.LANGUAGE)));
+        line.add(escape(book.getString(DBKey.DATE_ADDED__UTC)));
 
-        line.add(escapeLong(book.getInt(DBKey.KEY_CALIBRE_BOOK_ID)));
-        line.add(escape(book.getString(DBKey.KEY_CALIBRE_BOOK_UUID)));
-        line.add(escape(book.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
+        line.add(escapeLong(book.getInt(DBKey.CALIBRE_BOOK_ID)));
+        line.add(escape(book.getString(DBKey.CALIBRE_BOOK_UUID)));
+        line.add(escape(book.getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT)));
 
         // we write the Calibre String ID! not the internal row id
         final long clbRowId = book.getLong(DBKey.FK_CALIBRE_LIBRARY);
@@ -339,7 +339,7 @@ public class BookCoder {
 
         // check/add a title
         if (book.getTitle().isEmpty()) {
-            book.putString(DBKey.KEY_TITLE, context.getString(R.string.unknown_title));
+            book.putString(DBKey.TITLE, context.getString(R.string.unknown_title));
         }
 
         // check/fix the language
@@ -361,9 +361,9 @@ public class BookCoder {
 
     private void decodeCalibreData(@NonNull final Book /* in/out */ book) {
         // we need to convert the string id to the row id.
-        final String stringId = book.getString(DBKey.KEY_CALIBRE_LIBRARY_STRING_ID);
+        final String stringId = book.getString(DBKey.CALIBRE_LIBRARY_STRING_ID);
         // and discard the string-id
-        book.remove(DBKey.KEY_CALIBRE_LIBRARY_STRING_ID);
+        book.remove(DBKey.CALIBRE_LIBRARY_STRING_ID);
 
         if (!stringId.isEmpty()) {
             if (mCalibreLibraryStr2IdMap == null) {
@@ -389,9 +389,9 @@ public class BookCoder {
 
         String encodedList = null;
 
-        if (book.contains(DBKey.KEY_BOOKSHELF_NAME)) {
+        if (book.contains(DBKey.BOOKSHELF_NAME)) {
             // current version
-            encodedList = book.getString(DBKey.KEY_BOOKSHELF_NAME);
+            encodedList = book.getString(DBKey.BOOKSHELF_NAME);
 
         } else if (book.contains(LEGACY_BOOKSHELF_1_1_x)) {
             // obsolete
@@ -413,7 +413,7 @@ public class BookCoder {
         book.remove(LEGACY_BOOKSHELF_ID);
         book.remove(LEGACY_BOOKSHELF_TEXT);
         book.remove(LEGACY_BOOKSHELF_1_1_x);
-        book.remove(DBKey.KEY_BOOKSHELF_NAME);
+        book.remove(DBKey.BOOKSHELF_NAME);
     }
 
     /**
@@ -444,15 +444,15 @@ public class BookCoder {
                 }
                 book.remove(DBKey.KEY_AUTHOR_FORMATTED);
 
-            } else if (book.contains(DBKey.KEY_AUTHOR_FAMILY_NAME)) {
-                final String family = book.getString(DBKey.KEY_AUTHOR_FAMILY_NAME);
+            } else if (book.contains(DBKey.AUTHOR_FAMILY_NAME)) {
+                final String family = book.getString(DBKey.AUTHOR_FAMILY_NAME);
                 if (!family.isEmpty()) {
                     // given will be "" if it's not present
-                    final String given = book.getString(DBKey.KEY_AUTHOR_GIVEN_NAMES);
+                    final String given = book.getString(DBKey.AUTHOR_GIVEN_NAMES);
                     list.add(new Author(family, given));
                 }
-                book.remove(DBKey.KEY_AUTHOR_FAMILY_NAME);
-                book.remove(DBKey.KEY_AUTHOR_GIVEN_NAMES);
+                book.remove(DBKey.AUTHOR_FAMILY_NAME);
+                book.remove(DBKey.AUTHOR_GIVEN_NAMES);
 
             } else if (book.contains(LEGACY_AUTHOR_NAME)) {
                 final String a = book.getString(LEGACY_AUTHOR_NAME);
@@ -494,18 +494,18 @@ public class BookCoder {
 
         if (encodedList.isEmpty()) {
             // check for individual series title/number fields in the input
-            if (book.contains(DBKey.KEY_SERIES_TITLE)) {
-                final String title = book.getString(DBKey.KEY_SERIES_TITLE);
+            if (book.contains(DBKey.SERIES_TITLE)) {
+                final String title = book.getString(DBKey.SERIES_TITLE);
                 if (!title.isEmpty()) {
                     final Series series = new Series(title);
                     // number will be "" if it's not present
-                    series.setNumber(book.getString(DBKey.KEY_BOOK_NUM_IN_SERIES));
+                    series.setNumber(book.getString(DBKey.SERIES_BOOK_NUMBER));
                     final List<Series> list = new ArrayList<>();
                     list.add(series);
                     book.setSeries(list);
                 }
-                book.remove(DBKey.KEY_SERIES_TITLE);
-                book.remove(DBKey.KEY_BOOK_NUM_IN_SERIES);
+                book.remove(DBKey.SERIES_TITLE);
+                book.remove(DBKey.SERIES_BOOK_NUMBER);
             }
         } else {
             final ArrayList<Series> list = mSeriesCoder.decodeList(encodedList);

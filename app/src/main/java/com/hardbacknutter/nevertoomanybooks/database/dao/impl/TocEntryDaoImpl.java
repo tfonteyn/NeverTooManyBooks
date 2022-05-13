@@ -72,8 +72,8 @@ public class TocEntryDaoImpl
     /** All Books as {@link BookLight} for a given {@link TocEntry}. */
     private static final String SELECT_BOOK_TITLES_BY_TOC_ENTRY_ID =
             SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID,
-                                      DBKey.KEY_TITLE,
-                                      DBKey.KEY_LANGUAGE)
+                                      DBKey.TITLE,
+                                      DBKey.LANGUAGE)
             + _FROM_ + TBL_BOOK_TOC_ENTRIES.startJoin(TBL_BOOKS)
             + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_TOC_ENTRY) + "=?"
             + _ORDER_BY_ + TBL_BOOKS.dot(DBKey.KEY_TITLE_OB);
@@ -85,12 +85,12 @@ public class TocEntryDaoImpl
     private static final String TOC_ENTRIES_BY_BOOK_ID =
             SELECT_ + TBL_TOC_ENTRIES.dotAs(DBKey.PK_ID,
                                             DBKey.FK_AUTHOR,
-                                            DBKey.KEY_TITLE,
+                                            DBKey.TITLE,
                                             DBKey.DATE_FIRST_PUBLICATION)
             // for convenience, we fetch the Author here
-            + ',' + TBL_AUTHORS.dotAs(DBKey.KEY_AUTHOR_FAMILY_NAME,
-                                      DBKey.KEY_AUTHOR_GIVEN_NAMES,
-                                      DBKey.BOOL_AUTHOR_IS_COMPLETE)
+            + ',' + TBL_AUTHORS.dotAs(DBKey.AUTHOR_FAMILY_NAME,
+                                      DBKey.AUTHOR_GIVEN_NAMES,
+                                      DBKey.AUTHOR_IS_COMPLETE)
 
             // count the number of books this TOC entry is present in.
             + ',' + "(SELECT COUNT(*) FROM " + TBL_BOOK_TOC_ENTRIES.getName()
@@ -207,8 +207,8 @@ public class TocEntryDaoImpl
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new BookLight(rowData.getLong(DBKey.PK_ID),
-                                       rowData.getString(DBKey.KEY_TITLE),
-                                       rowData.getString(DBKey.KEY_LANGUAGE),
+                                       rowData.getString(DBKey.TITLE),
+                                       rowData.getString(DBKey.LANGUAGE),
                                        author, null));
             }
         }
@@ -226,7 +226,7 @@ public class TocEntryDaoImpl
             while (cursor.moveToNext()) {
                 list.add(new TocEntry(rowData.getLong(DBKey.PK_ID),
                                       new Author(rowData.getLong(DBKey.FK_AUTHOR), rowData),
-                                      rowData.getString(DBKey.KEY_TITLE),
+                                      rowData.getString(DBKey.TITLE),
                                       rowData.getString(DBKey.DATE_FIRST_PUBLICATION),
                                       rowData.getInt(DBKey.KEY_BOOK_COUNT)));
             }

@@ -502,11 +502,11 @@ public class Booklist
         final boolean hasDomain = mListTable.getDomains()
                                             .stream()
                                             .map(Domain::getName)
-                                            .anyMatch(name -> name.equals(DBKey.BOOL_READ));
+                                            .anyMatch(name -> name.equals(DBKey.READ__BOOL));
         if (hasDomain) {
             if (mSqlUpdateBookRead == null) {
                 mSqlUpdateBookRead = UPDATE_ + mListTable.getName()
-                                     + _SET_ + DBKey.BOOL_READ + "=?"
+                                     + _SET_ + DBKey.READ__BOOL + "=?"
                                      + _WHERE_ + DBKey.FK_BOOK + "=?"
                                      + _AND_ + DBKey.KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK;
             }
@@ -535,11 +535,11 @@ public class Booklist
         final boolean hasDomain = mListTable.getDomains()
                                             .stream()
                                             .map(Domain::getName)
-                                            .anyMatch(name -> name.equals(DBKey.KEY_LOANEE));
+                                            .anyMatch(name -> name.equals(DBKey.LOANEE_NAME));
         if (hasDomain) {
             if (mSqlUpdateBookLoanee == null) {
                 mSqlUpdateBookLoanee = UPDATE_ + mListTable.getName()
-                                       + _SET_ + DBKey.KEY_LOANEE + "=?"
+                                       + _SET_ + DBKey.LOANEE_NAME + "=?"
                                        + _WHERE_ + DBKey.FK_BOOK + "=?"
                                        + _AND_ + DBKey.KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK;
             }
@@ -591,7 +591,7 @@ public class Booklist
         if (mSqlGetNextBookWithoutCover == null) {
             mSqlGetNextBookWithoutCover =
                     SELECT_ + BooklistNode.getColumns(mListTable)
-                    + ',' + mListTable.dot(DBKey.KEY_BOOK_UUID)
+                    + ',' + mListTable.dot(DBKey.BOOK_UUID)
                     + _FROM_ + mListTable.ref()
                     + _WHERE_ + mListTable.dot(DBKey.KEY_BL_NODE_GROUP) + "=?"
                     + _AND_ + mListTable.dot(DBKey.PK_ID) + ">?";

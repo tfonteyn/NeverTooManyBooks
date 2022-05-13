@@ -46,17 +46,17 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 public final class FilterFactory {
 
     public static final Map<String, Integer> SUPPORTED =
-            Map.of(DBKey.BOOL_READ, R.string.lbl_read,
-                   DBKey.BOOL_SIGNED, R.string.lbl_signed,
-                   DBKey.KEY_ISBN, R.string.lbl_isbn,
+            Map.of(DBKey.READ__BOOL, R.string.lbl_read,
+                   DBKey.SIGNED__BOOL, R.string.lbl_signed,
+                   DBKey.ISBN, R.string.lbl_isbn,
                    DBKey.BITMASK_TOC, R.string.lbl_anthology,
-                   DBKey.KEY_LOANEE, R.string.lbl_lend_out,
+                   DBKey.LOANEE_NAME, R.string.lbl_lend_out,
 
                    DBKey.FK_BOOKSHELF, R.string.lbl_bookshelves,
 
-                   DBKey.KEY_COLOR, R.string.lbl_color,
-                   DBKey.KEY_FORMAT, R.string.lbl_format,
-                   DBKey.KEY_LANGUAGE, R.string.lbl_language,
+                   DBKey.COLOR, R.string.lbl_color,
+                   DBKey.BOOK_FORMAT, R.string.lbl_format,
+                   DBKey.LANGUAGE, R.string.lbl_language,
 
                    DBKey.BITMASK_EDITION, R.string.lbl_edition
                   );
@@ -68,17 +68,17 @@ public final class FilterFactory {
     public static Optional<PFilter<?>> create(@NonNull final String name) {
 
         switch (name) {
-            case DBKey.BOOL_READ:
+            case DBKey.READ__BOOL:
                 return Optional.of(new PBooleanFilter(
                         name, R.string.lbl_read, R.array.pe_bob_filter_read,
                         TBL_BOOKS, DOM_BOOK_READ));
 
-            case DBKey.BOOL_SIGNED:
+            case DBKey.SIGNED__BOOL:
                 return Optional.of(new PBooleanFilter(
                         name, R.string.lbl_signed, R.array.pe_bob_filter_signed,
                         TBL_BOOKS, DOM_BOOK_SIGNED));
 
-            case DBKey.KEY_ISBN:
+            case DBKey.ISBN:
                 return Optional.of(new PBooleanFilter(
                         name, R.string.lbl_isbn, R.array.pe_bob_filter_isbn,
                         TBL_BOOKS, DOM_BOOK_ISBN));
@@ -88,25 +88,25 @@ public final class FilterFactory {
                         name, R.string.lbl_anthology, R.array.pe_bob_filter_anthology,
                         TBL_BOOKS, DOM_BOOK_TOC_BITMASK));
 
-            case DBKey.KEY_LOANEE:
+            case DBKey.LOANEE_NAME:
                 return Optional.of(new PBooleanFilter(
                         name, R.string.lbl_lend_out, R.array.pe_bob_filter_lending,
                         TBL_BOOK_LOANEE, DOM_LOANEE));
 
 
-            case DBKey.KEY_COLOR:
+            case DBKey.COLOR:
                 return Optional.of(new PStringEqualityFilter(
                         name, R.string.lbl_color,
                         TBL_BOOKS, DOM_BOOK_COLOR,
                         () -> ServiceLocator.getInstance().getColorDao().getList()));
 
-            case DBKey.KEY_FORMAT:
+            case DBKey.BOOK_FORMAT:
                 return Optional.of(new PStringEqualityFilter(
                         name, R.string.lbl_format,
                         TBL_BOOKS, DOM_BOOK_FORMAT,
                         () -> ServiceLocator.getInstance().getFormatDao().getList()));
 
-            case DBKey.KEY_LANGUAGE:
+            case DBKey.LANGUAGE:
                 return Optional.of(new PStringEqualityFilter(
                         name, R.string.lbl_language,
                         TBL_BOOKS, DOM_BOOK_LANGUAGE,

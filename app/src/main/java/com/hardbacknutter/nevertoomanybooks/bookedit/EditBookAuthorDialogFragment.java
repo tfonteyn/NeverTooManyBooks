@@ -102,7 +102,7 @@ public class EditBookAuthorDialogFragment
                                              BKEY_REQUEST_KEY);
         mAuthor = Objects.requireNonNull(args.getParcelable(DBKey.FK_AUTHOR),
                                          DBKey.FK_AUTHOR);
-        mBookTitle = args.getString(DBKey.KEY_TITLE);
+        mBookTitle = args.getString(DBKey.TITLE);
 
         if (savedInstanceState == null) {
             mCurrentEdit = new Author(mAuthor.getFamilyName(),
@@ -140,7 +140,7 @@ public class EditBookAuthorDialogFragment
         final SharedPreferences global = PreferenceManager
                 .getDefaultSharedPreferences(getContext());
         final boolean useAuthorType =
-                DBKey.isUsed(global, DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK);
+                DBKey.isUsed(global, DBKey.BOOK_AUTHOR_TYPE_BITMASK);
         mVb.authorTypeGroup.setVisibility(useAuthorType ? View.VISIBLE : View.GONE);
         if (useAuthorType) {
             mVb.btnUseAuthorType.setOnCheckedChangeListener(
@@ -279,7 +279,7 @@ public class EditBookAuthorDialogFragment
                     @NonNull final Author author) {
             final Bundle args = new Bundle(3);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
-            args.putString(DBKey.KEY_TITLE, bookTitle);
+            args.putString(DBKey.TITLE, bookTitle);
             args.putParcelable(DBKey.FK_AUTHOR, author);
 
             final DialogFragment frag = new EditBookAuthorDialogFragment();

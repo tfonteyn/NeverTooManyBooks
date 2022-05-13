@@ -114,7 +114,7 @@ public class CollectionFormUploader {
     public void setOwned(@NonNull final Book book)
             throws IOException, IllegalArgumentException, StorageException {
 
-        final boolean owned = book.getBoolean(DBKey.BOOL_STRIP_INFO_OWNED);
+        final boolean owned = book.getBoolean(DBKey.STRIP_INFO_OWNED);
 
         setBooleanByMode(book, owned ? "inBezit" : "notInBezit");
     }
@@ -134,7 +134,7 @@ public class CollectionFormUploader {
     public void setRead(@NonNull final Book book)
             throws IOException, IllegalArgumentException, StorageException {
 
-        final boolean read = book.getBoolean(DBKey.BOOL_READ);
+        final boolean read = book.getBoolean(DBKey.READ__BOOL);
 
         setBooleanByMode(book, read ? "gelezen" : "notGelezen");
     }
@@ -154,7 +154,7 @@ public class CollectionFormUploader {
     public void setWanted(@NonNull final Book book)
             throws IOException, IllegalArgumentException, StorageException {
 
-        final boolean wanted = book.getBoolean(DBKey.BOOL_STRIP_INFO_WANTED);
+        final boolean wanted = book.getBoolean(DBKey.STRIP_INFO_WANTED);
 
         setBooleanByMode(book, wanted ? "inWishlist" : "notInWishlist");
     }
@@ -168,7 +168,7 @@ public class CollectionFormUploader {
             throw new IllegalArgumentException("externalId == 0");
         }
 
-        final long collectionId = book.getLong(DBKey.KEY_STRIP_INFO_COLL_ID);
+        final long collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
         if (collectionId == 0) {
             throw new IllegalArgumentException("collectionId == 0");
         }
@@ -187,7 +187,7 @@ public class CollectionFormUploader {
 
     @AnyThread
     private String ratingToSite(@NonNull final Book book) {
-        return String.valueOf(MathUtils.clamp(book.getFloat(DBKey.KEY_RATING) * 2, 0, 10));
+        return String.valueOf(MathUtils.clamp(book.getFloat(DBKey.RATING) * 2, 0, 10));
     }
 
     /**
@@ -210,11 +210,11 @@ public class CollectionFormUploader {
             throw new IllegalArgumentException("externalId == 0");
         }
 
-        long collectionId = book.getLong(DBKey.KEY_STRIP_INFO_COLL_ID);
+        long collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
         if (collectionId == 0) {
             // Flag the book as 'owned' which will give it a collection-id.
             setOwned(book);
-            collectionId = book.getLong(DBKey.KEY_STRIP_INFO_COLL_ID);
+            collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
             // sanity check
             if (collectionId == 0) {
                 throw new IllegalArgumentException("collectionId == 0");
@@ -247,8 +247,8 @@ public class CollectionFormUploader {
         // we're only supporting 1 copy and the site does not allow 0 or an empty string.
         builder.appendQueryParameter(FF_AANTAL, "1");
 
-        builder.appendQueryParameter(FF_LOCATIE, book.getString(DBKey.KEY_LOCATION));
-        builder.appendQueryParameter(FF_OPMERKING, book.getString(DBKey.KEY_PRIVATE_NOTES));
+        builder.appendQueryParameter(FF_LOCATIE, book.getString(DBKey.LOCATION));
+        builder.appendQueryParameter(FF_OPMERKING, book.getString(DBKey.PERSONAL_NOTES));
 
         final String postBody =
                 builder.appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
@@ -270,7 +270,7 @@ public class CollectionFormUploader {
             throw new IllegalArgumentException("externalId=0");
         }
 
-        final long collectionId = book.getLong(DBKey.KEY_STRIP_INFO_COLL_ID);
+        final long collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
         if (collectionId == 0) {
             throw new IllegalArgumentException("collectionId=0");
         }
@@ -312,11 +312,11 @@ public class CollectionFormUploader {
      */
     public void removeFields(@NonNull final Book book) {
         book.remove(DBKey.SID_STRIP_INFO);
-        book.remove(DBKey.KEY_STRIP_INFO_AMOUNT);
-        book.remove(DBKey.KEY_STRIP_INFO_COLL_ID);
-        book.remove(DBKey.BOOL_STRIP_INFO_OWNED);
-        book.remove(DBKey.BOOL_STRIP_INFO_WANTED);
-        book.remove(DBKey.UTC_DATE_LAST_SYNC_STRIP_INFO);
+        book.remove(DBKey.STRIP_INFO_AMOUNT);
+        book.remove(DBKey.STRIP_INFO_COLL_ID);
+        book.remove(DBKey.STRIP_INFO_OWNED);
+        book.remove(DBKey.STRIP_INFO_WANTED);
+        book.remove(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC);
     }
 
     /**
@@ -338,7 +338,7 @@ public class CollectionFormUploader {
             throw new IllegalArgumentException("externalId=0");
         }
 
-        long collectionId = book.getLong(DBKey.KEY_STRIP_INFO_COLL_ID);
+        long collectionId = book.getLong(DBKey.STRIP_INFO_COLL_ID);
         if (collectionId == 0) {
             final String postBody = new Uri.Builder()
                     .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
@@ -350,7 +350,7 @@ public class CollectionFormUploader {
             final Document responseForm = doPost(postBody);
 
             collectionId = mJSoupHelper.getInt(responseForm, FF_STRIP_COLLECTIE_ID);
-            book.putLong(DBKey.KEY_STRIP_INFO_COLL_ID, collectionId);
+            book.putLong(DBKey.STRIP_INFO_COLL_ID, collectionId);
 
             book.setStage(EntityStage.Stage.Dirty);
 

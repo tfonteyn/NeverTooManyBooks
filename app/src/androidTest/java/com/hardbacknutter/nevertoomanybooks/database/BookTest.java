@@ -231,7 +231,7 @@ public class BookTest {
          * update the stored book
          */
         book.setStage(EntityStage.Stage.WriteAble);
-        book.putString(DBKey.KEY_TITLE, BOOK_TITLE + "0_upd");
+        book.putString(DBKey.TITLE, BOOK_TITLE + "0_upd");
         book.setStage(EntityStage.Stage.Dirty);
 
         authors = book.getAuthors();
@@ -253,7 +253,7 @@ public class BookTest {
         book = Book.from(mBookId[0]);
         assertEquals(mBookId[0], book.getId());
 
-        uuid = book.getString(DBKey.KEY_BOOK_UUID);
+        uuid = book.getString(DBKey.BOOK_UUID);
 
         assertEquals(BOOK_TITLE + "0_upd", book.getTitle());
         bookshelves = book.getBookshelves();
@@ -296,7 +296,7 @@ public class BookTest {
         book = Book.from(mBookId[0]);
         assertEquals(mBookId[0], book.getId());
 
-        uuid = book.getString(DBKey.KEY_BOOK_UUID);
+        uuid = book.getString(DBKey.BOOK_UUID);
 
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
@@ -367,7 +367,7 @@ public class BookTest {
 
         final Book book = new Book();
         book.setStage(EntityStage.Stage.WriteAble);
-        book.putString(DBKey.KEY_TITLE, Constants.BOOK_TITLE + "0");
+        book.putString(DBKey.TITLE, Constants.BOOK_TITLE + "0");
         book.setStage(EntityStage.Stage.Dirty);
 
         book.putLong(DBKey.SID_ISFDB, Constants.BOOK_ISFDB_123);
@@ -399,7 +399,7 @@ public class BookTest {
 
         assertEquals(EntityStage.Stage.Clean, book.getStage());
 
-        final String uuid = book.getString(DBKey.KEY_BOOK_UUID);
+        final String uuid = book.getString(DBKey.BOOK_UUID);
         assertFalse(uuid.isEmpty());
         assertEquals(BOOK_TITLE + "0", book.getTitle());
 

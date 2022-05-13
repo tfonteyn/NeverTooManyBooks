@@ -349,8 +349,8 @@ public class Book
         // KEY_BOOK_DATE_ADDED
         // KEY_DATE_LAST_UPDATED
 
-        bookData.putString(DBKey.KEY_TITLE, getString(DBKey.KEY_TITLE));
-        bookData.putString(DBKey.KEY_ISBN, getString(DBKey.KEY_ISBN));
+        bookData.putString(DBKey.TITLE, getString(DBKey.TITLE));
+        bookData.putString(DBKey.ISBN, getString(DBKey.ISBN));
 
         bookData.putParcelableArrayList(BKEY_AUTHOR_LIST,
                                         getParcelableArrayList(BKEY_AUTHOR_LIST));
@@ -362,20 +362,20 @@ public class Book
                                         getParcelableArrayList(BKEY_TOC_LIST));
 
         // publication data
-        bookData.putString(DBKey.KEY_PRINT_RUN, getString(DBKey.KEY_PRINT_RUN));
+        bookData.putString(DBKey.PRINT_RUN, getString(DBKey.PRINT_RUN));
         bookData.putLong(DBKey.BITMASK_TOC, getLong(DBKey.BITMASK_TOC));
         bookData.putString(DBKey.DATE_BOOK_PUBLICATION, getString(DBKey.DATE_BOOK_PUBLICATION));
         bookData.putDouble(DBKey.PRICE_LISTED, getDouble(DBKey.PRICE_LISTED));
         bookData.putString(DBKey.PRICE_LISTED_CURRENCY, getString(DBKey.PRICE_LISTED_CURRENCY));
         bookData.putString(DBKey.DATE_FIRST_PUBLICATION, getString(DBKey.DATE_FIRST_PUBLICATION));
 
-        bookData.putString(DBKey.KEY_FORMAT, getString(DBKey.KEY_FORMAT));
-        bookData.putString(DBKey.KEY_COLOR, getString(DBKey.KEY_COLOR));
-        bookData.putString(DBKey.KEY_GENRE, getString(DBKey.KEY_GENRE));
-        bookData.putString(DBKey.KEY_LANGUAGE, getString(DBKey.KEY_LANGUAGE));
-        bookData.putString(DBKey.KEY_PAGES, getString(DBKey.KEY_PAGES));
+        bookData.putString(DBKey.BOOK_FORMAT, getString(DBKey.BOOK_FORMAT));
+        bookData.putString(DBKey.COLOR, getString(DBKey.COLOR));
+        bookData.putString(DBKey.GENRE, getString(DBKey.GENRE));
+        bookData.putString(DBKey.LANGUAGE, getString(DBKey.LANGUAGE));
+        bookData.putString(DBKey.PAGES, getString(DBKey.PAGES));
         // common blurb
-        bookData.putString(DBKey.KEY_DESCRIPTION, getString(DBKey.KEY_DESCRIPTION));
+        bookData.putString(DBKey.DESCRIPTION, getString(DBKey.DESCRIPTION));
 
         // partially edition info, partially use-owned info.
         bookData.putLong(DBKey.BITMASK_EDITION, getLong(DBKey.BITMASK_EDITION));
@@ -383,22 +383,22 @@ public class Book
         // user data
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
-        bookData.putLong(DBKey.BOOL_SIGNED, getLong(DBKey.BOOL_SIGNED));
+        bookData.putLong(DBKey.SIGNED__BOOL, getLong(DBKey.SIGNED__BOOL));
 
-        bookData.putFloat(DBKey.KEY_RATING, getFloat(DBKey.KEY_RATING));
-        bookData.putString(DBKey.KEY_PRIVATE_NOTES, getString(DBKey.KEY_PRIVATE_NOTES));
+        bookData.putFloat(DBKey.RATING, getFloat(DBKey.RATING));
+        bookData.putString(DBKey.PERSONAL_NOTES, getString(DBKey.PERSONAL_NOTES));
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
-        bookData.putLong(DBKey.BOOL_READ, getLong(DBKey.BOOL_READ));
-        bookData.putString(DBKey.DATE_READ_START, getString(DBKey.DATE_READ_START));
-        bookData.putString(DBKey.DATE_READ_END, getString(DBKey.DATE_READ_END));
+        bookData.putLong(DBKey.READ__BOOL, getLong(DBKey.READ__BOOL));
+        bookData.putString(DBKey.READ_START__DATE, getString(DBKey.READ_START__DATE));
+        bookData.putString(DBKey.READ_END__DATE, getString(DBKey.READ_END__DATE));
 
         bookData.putString(DBKey.DATE_ACQUIRED, getString(DBKey.DATE_ACQUIRED));
         bookData.putDouble(DBKey.PRICE_PAID, getDouble(DBKey.PRICE_PAID));
         bookData.putString(DBKey.PRICE_PAID_CURRENCY, getString(DBKey.PRICE_PAID_CURRENCY));
 
-        bookData.putInt(DBKey.KEY_BOOK_CONDITION, getInt(DBKey.KEY_BOOK_CONDITION));
-        bookData.putInt(DBKey.KEY_BOOK_CONDITION_COVER, getInt(DBKey.KEY_BOOK_CONDITION_COVER));
+        bookData.putInt(DBKey.BOOK_CONDITION, getInt(DBKey.BOOK_CONDITION));
+        bookData.putInt(DBKey.BOOK_CONDITION_COVER, getInt(DBKey.BOOK_CONDITION_COVER));
 
         return bookData;
     }
@@ -430,14 +430,14 @@ public class Book
      */
     @NonNull
     public String getTitle() {
-        return getString(DBKey.KEY_TITLE);
+        return getString(DBKey.TITLE);
     }
 
     @NonNull
     public List<BookLight> getBookTitles(@NonNull final Context context) {
         return Collections.singletonList(
                 new BookLight(getId(), getTitle(),
-                              getString(DBKey.KEY_LANGUAGE),
+                              getString(DBKey.LANGUAGE),
                               getPrimaryAuthor(),
                               getString(DBKey.DATE_FIRST_PUBLICATION)));
     }
@@ -498,15 +498,15 @@ public class Book
                                      @NonNull final Locale fallbackLocale,
                                      final boolean updateLanguage) {
         Locale bookLocale = null;
-        if (contains(DBKey.KEY_LANGUAGE)) {
-            final String lang = getString(DBKey.KEY_LANGUAGE);
+        if (contains(DBKey.LANGUAGE)) {
+            final String lang = getString(DBKey.LANGUAGE);
 
             bookLocale = ServiceLocator.getInstance().getAppLocale().getLocale(context, lang);
             if (bookLocale == null) {
                 return fallbackLocale;
 
             } else if (updateLanguage) {
-                putString(DBKey.KEY_LANGUAGE, lang);
+                putString(DBKey.LANGUAGE, lang);
             }
         }
 
@@ -652,9 +652,9 @@ public class Book
             remove(DBKey.FK_CALIBRE_LIBRARY);
             remove(BKEY_CALIBRE_LIBRARY);
 
-            remove(DBKey.KEY_CALIBRE_BOOK_ID);
-            remove(DBKey.KEY_CALIBRE_BOOK_UUID);
-            remove(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT);
+            remove(DBKey.CALIBRE_BOOK_ID);
+            remove(DBKey.CALIBRE_BOOK_UUID);
+            remove(DBKey.CALIBRE_BOOK_MAIN_FORMAT);
         }
     }
 
@@ -676,15 +676,15 @@ public class Book
     public Optional<String> getLoanee() {
         final String loanee;
         // We SHOULD have it...
-        if (contains(DBKey.KEY_LOANEE)) {
-            loanee = getString(DBKey.KEY_LOANEE);
+        if (contains(DBKey.LOANEE_NAME)) {
+            loanee = getString(DBKey.LOANEE_NAME);
 
         } else {
             // but if not, go explicitly fetch it.
             loanee = ServiceLocator.getInstance().getLoaneeDao().getLoaneeByBookId(getId());
             if (loanee != null) {
                 // store for reuse - note we store "" as well, to prevent calling the db repeatedly
-                putString(DBKey.KEY_LOANEE, loanee);
+                putString(DBKey.LOANEE_NAME, loanee);
             }
         }
 
@@ -701,7 +701,7 @@ public class Book
      * @return the new 'read' status. If the update failed, this will be the unchanged status.
      */
     public boolean toggleRead() {
-        return setRead(!getBoolean(DBKey.BOOL_READ));
+        return setRead(!getBoolean(DBKey.READ__BOOL));
     }
 
     /**
@@ -713,7 +713,7 @@ public class Book
      * @return the new 'read' status. If the update failed, this will be the unchanged status.
      */
     private boolean setRead(final boolean isRead) {
-        final boolean old = getBoolean(DBKey.BOOL_READ);
+        final boolean old = getBoolean(DBKey.READ__BOOL);
 
         if (ServiceLocator.getInstance().getBookDao().setRead(this, isRead)) {
             return isRead;
@@ -744,7 +744,7 @@ public class Book
                              @IntRange(from = 0, to = 1) final int cIdx)
             throws StorageException, IOException {
 
-        final String uuid = getString(DBKey.KEY_BOOK_UUID);
+        final String uuid = getString(DBKey.BOOK_UUID);
         final String name;
         if (cIdx > 0) {
             name = uuid + "_" + cIdx + ".jpg";
@@ -770,7 +770,7 @@ public class Book
     @NonNull
     public Optional<File> getPersistedCoverFile(@IntRange(from = 0, to = 1) final int cIdx) {
 
-        final String uuid = getString(DBKey.KEY_BOOK_UUID);
+        final String uuid = getString(DBKey.BOOK_UUID);
         return getPersistedCoverFile(uuid, cIdx);
     }
 
@@ -799,7 +799,7 @@ public class Book
             }
         } else {
             // Get the permanent, UUID based, cover file for this book.
-            final String uuid = getString(DBKey.KEY_BOOK_UUID);
+            final String uuid = getString(DBKey.BOOK_UUID);
             if (!uuid.isEmpty()) {
                 final String name;
                 if (cIdx > 0) {
@@ -942,7 +942,7 @@ public class Book
 
         } else {
             // we're in read-only mode, use the UUID storage based file name
-            final String uuid = getString(DBKey.KEY_BOOK_UUID);
+            final String uuid = getString(DBKey.BOOK_UUID);
             SanityCheck.requireValue(uuid, "uuid");
 
             // the file to return from this method, after the incoming file has been processed
@@ -1001,12 +1001,12 @@ public class Book
      */
     public void addValidators() {
 
-        addValidator(DBKey.KEY_TITLE,
+        addValidator(DBKey.TITLE,
                      NON_BLANK_VALIDATOR, R.string.lbl_title);
         addValidator(BKEY_AUTHOR_LIST,
                      NON_BLANK_VALIDATOR, R.string.lbl_author);
 
-        addValidator(DBKey.KEY_LANGUAGE,
+        addValidator(DBKey.LANGUAGE,
                      NON_BLANK_VALIDATOR, R.string.lbl_language);
 
         addValidator(DBKey.BITMASK_EDITION,
@@ -1020,11 +1020,11 @@ public class Book
                      PRICE_VALIDATOR, R.string.lbl_price_paid);
 
         addCrossValidator((context, book) -> {
-            final String start = book.getString(DBKey.DATE_READ_START);
+            final String start = book.getString(DBKey.READ_START__DATE);
             if (start.isEmpty()) {
                 return;
             }
-            final String end = book.getString(DBKey.DATE_READ_END);
+            final String end = book.getString(DBKey.READ_END__DATE);
             if (end.isEmpty()) {
                 return;
             }
@@ -1054,8 +1054,8 @@ public class Book
      * @param context Current context
      */
     public void ensureLanguage(@NonNull final Context context) {
-        if (getString(DBKey.KEY_LANGUAGE).isEmpty()) {
-            putString(DBKey.KEY_LANGUAGE,
+        if (getString(DBKey.LANGUAGE).isEmpty()) {
+            putString(DBKey.LANGUAGE,
                       context.getResources().getConfiguration().getLocales().get(0)
                              .getISO3Language());
         }
@@ -1193,7 +1193,7 @@ public class Book
                 .orElse("");
 
         //remove trailing 0's
-        final float rating = getFloat(DBKey.KEY_RATING);
+        final float rating = getFloat(DBKey.RATING);
         String ratingStr;
         if (rating > 0) {
             // force rounding down and check the fraction

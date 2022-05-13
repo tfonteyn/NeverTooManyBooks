@@ -75,6 +75,6 @@ public final class FormatMapper
     @NonNull
     @Override
     public String getKey() {
-        return DBKey.KEY_FORMAT;
+        return DBKey.BOOK_FORMAT;
     }
 }

@@ -131,7 +131,7 @@ public class CoverBrowserDialogFragment
         mVb = DialogCoverBrowserBinding.bind(view);
 
         final String bookTitle = Objects.requireNonNull(
-                requireArguments().getString(DBKey.KEY_TITLE), DBKey.KEY_TITLE);
+                requireArguments().getString(DBKey.TITLE), DBKey.TITLE);
         mVb.toolbar.setSubtitle(bookTitle);
 
         // LayoutManager is set in the layout xml
@@ -354,8 +354,8 @@ public class CoverBrowserDialogFragment
 
             final Bundle args = new Bundle(4);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
-            args.putString(DBKey.KEY_TITLE, bookTitle);
-            args.putString(DBKey.KEY_ISBN, isbn);
+            args.putString(DBKey.TITLE, bookTitle);
+            args.putString(DBKey.ISBN, isbn);
             args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);
 
             final DialogFragment fragment = new CoverBrowserDialogFragment();

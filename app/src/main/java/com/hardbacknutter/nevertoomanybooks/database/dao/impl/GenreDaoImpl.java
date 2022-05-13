@@ -33,6 +33,6 @@ public class GenreDaoImpl
      * Constructor.
      */
     public GenreDaoImpl() {
-        super(TAG, DBKey.KEY_GENRE);
+        super(TAG, DBKey.GENRE);
     }
 }

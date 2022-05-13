@@ -75,7 +75,7 @@ public class SeriesDaoImpl
 
     /** name only. */
     private static final String SELECT_ALL_NAMES =
-            SELECT_DISTINCT_ + DBKey.KEY_SERIES_TITLE
+            SELECT_DISTINCT_ + DBKey.SERIES_TITLE
             + ',' + DBKey.KEY_SERIES_TITLE_OB
             + _FROM_ + TBL_SERIES.getName()
             + _ORDER_BY_ + DBKey.KEY_SERIES_TITLE_OB + _COLLATION;
@@ -86,15 +86,15 @@ public class SeriesDaoImpl
     /** All Series for a Book; ordered by position, name. */
     private static final String SERIES_BY_BOOK_ID =
             SELECT_DISTINCT_ + TBL_SERIES.dotAs(DBKey.PK_ID,
-                                                DBKey.KEY_SERIES_TITLE,
+                                                DBKey.SERIES_TITLE,
                                                 DBKey.KEY_SERIES_TITLE_OB,
-                                                DBKey.BOOL_SERIES_IS_COMPLETE)
-            + ',' + TBL_BOOK_SERIES.dotAs(DBKey.KEY_BOOK_NUM_IN_SERIES,
-                                          DBKey.KEY_BOOK_SERIES_POSITION)
+                                                DBKey.SERIES_IS_COMPLETE)
+            + ',' + TBL_BOOK_SERIES.dotAs(DBKey.SERIES_BOOK_NUMBER,
+                                          DBKey.BOOK_SERIES_POSITION)
 
             + _FROM_ + TBL_BOOK_SERIES.startJoin(TBL_SERIES)
             + _WHERE_ + TBL_BOOK_SERIES.dot(DBKey.FK_BOOK) + "=?"
-            + _ORDER_BY_ + TBL_BOOK_SERIES.dot(DBKey.KEY_BOOK_SERIES_POSITION)
+            + _ORDER_BY_ + TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_POSITION)
             + ',' + TBL_SERIES.dot(DBKey.KEY_SERIES_TITLE_OB) + _COLLATION;
 
     /** Get a {@link Series} by the Series id. */
@@ -115,10 +115,10 @@ public class SeriesDaoImpl
      * This is defined as the language code for the first book in the Series.
      */
     private static final String GET_LANGUAGE =
-            SELECT_ + TBL_BOOKS.dotAs(DBKey.KEY_LANGUAGE)
+            SELECT_ + TBL_BOOKS.dotAs(DBKey.LANGUAGE)
             + _FROM_ + TBL_BOOK_SERIES.startJoin(TBL_BOOKS)
             + _WHERE_ + TBL_BOOK_SERIES.dot(DBKey.FK_SERIES) + "=?"
-            + _ORDER_BY_ + TBL_BOOK_SERIES.dot(DBKey.KEY_BOOK_NUM_IN_SERIES)
+            + _ORDER_BY_ + TBL_BOOK_SERIES.dot(DBKey.SERIES_BOOK_NUMBER)
             + " LIMIT 1";
 
     private static final String COUNT_ALL =
@@ -131,9 +131,9 @@ public class SeriesDaoImpl
 
     private static final String INSERT =
             INSERT_INTO_ + TBL_SERIES.getName()
-            + '(' + DBKey.KEY_SERIES_TITLE
+            + '(' + DBKey.SERIES_TITLE
             + ',' + DBKey.KEY_SERIES_TITLE_OB
-            + ',' + DBKey.BOOL_SERIES_IS_COMPLETE
+            + ',' + DBKey.SERIES_IS_COMPLETE
             + ") VALUES (?,?,?)";
 
     /** Delete a {@link Series}. */
@@ -276,7 +276,7 @@ public class SeriesDaoImpl
     public boolean setComplete(final long seriesId,
                                final boolean isComplete) {
         final ContentValues cv = new ContentValues();
-        cv.put(DBKey.BOOL_SERIES_IS_COMPLETE, isComplete);
+        cv.put(DBKey.SERIES_IS_COMPLETE, isComplete);
 
         return 0 < mDb.update(TBL_SERIES.getName(), cv, DBKey.PK_ID + "=?",
                               new String[]{String.valueOf(seriesId)});
@@ -371,9 +371,9 @@ public class SeriesDaoImpl
                 context, series.getTitle(), bookLocale, series::getLocale);
 
         final ContentValues cv = new ContentValues();
-        cv.put(DBKey.KEY_SERIES_TITLE, series.getTitle());
+        cv.put(DBKey.SERIES_TITLE, series.getTitle());
         cv.put(DBKey.KEY_SERIES_TITLE_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
-        cv.put(DBKey.BOOL_SERIES_IS_COMPLETE, series.isComplete());
+        cv.put(DBKey.SERIES_IS_COMPLETE, series.isComplete());
 
         return 0 < mDb.update(TBL_SERIES.getName(), cv, DBKey.PK_ID + "=?",
                               new String[]{String.valueOf(series.getId())});
@@ -457,7 +457,7 @@ public class SeriesDaoImpl
         final String sql =
                 "SELECT " + DBKey.FK_BOOK + " FROM "
                 + "(SELECT " + DBKey.FK_BOOK
-                + ", MIN(" + DBKey.KEY_BOOK_SERIES_POSITION + ") AS mp"
+                + ", MIN(" + DBKey.BOOK_SERIES_POSITION + ") AS mp"
                 + " FROM " + TBL_BOOK_SERIES.getName() + " GROUP BY " + DBKey.FK_BOOK
                 + ") WHERE mp > 1";
 

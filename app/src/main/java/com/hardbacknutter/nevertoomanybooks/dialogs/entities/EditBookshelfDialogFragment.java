@@ -88,7 +88,7 @@ public class EditBookshelfDialogFragment
             mName = mBookshelf.getName();
         } else {
             //noinspection ConstantConditions
-            mName = savedInstanceState.getString(DBKey.KEY_BOOKSHELF_NAME);
+            mName = savedInstanceState.getString(DBKey.BOOKSHELF_NAME);
         }
     }
 
@@ -188,7 +188,7 @@ public class EditBookshelfDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBKey.KEY_BOOKSHELF_NAME, mName);
+        outState.putString(DBKey.BOOKSHELF_NAME, mName);
     }
 
     @Override

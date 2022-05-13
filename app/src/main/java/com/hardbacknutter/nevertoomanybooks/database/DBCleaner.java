@@ -149,8 +149,8 @@ public class DBCleaner {
      */
     public void datetimeFormat() {
         final String[] columns = {
-                DBKey.UTC_DATE_LAST_UPDATED,
-                DBKey.UTC_DATE_ADDED,
+                DBKey.DATE_LAST_UPDATED__UTC,
+                DBKey.DATE_ADDED__UTC,
                 };
 
         final Pattern T = Pattern.compile("T");

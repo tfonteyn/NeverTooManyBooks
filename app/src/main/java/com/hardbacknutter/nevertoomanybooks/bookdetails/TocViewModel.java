@@ -59,7 +59,7 @@ public class TocViewModel
             works.addAll(tocList);
 
             // optional, display purpose only
-            bookTitle = args.getString(DBKey.KEY_TITLE);
+            bookTitle = args.getString(DBKey.TITLE);
             // optional, display purpose only
             final List<Author> authorList = args.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
             if (authorList != null) {

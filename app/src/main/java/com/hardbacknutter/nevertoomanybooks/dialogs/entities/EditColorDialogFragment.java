@@ -45,7 +45,7 @@ public class EditColorDialogFragment
      * No-arg constructor for OS use.
      */
     public EditColorDialogFragment() {
-        super(R.string.lbl_color, R.string.lbl_color, DBKey.KEY_COLOR);
+        super(R.string.lbl_color, R.string.lbl_color, DBKey.COLOR);
     }
 
     /**

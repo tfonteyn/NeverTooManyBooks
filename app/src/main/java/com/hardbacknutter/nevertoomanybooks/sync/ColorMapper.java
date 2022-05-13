@@ -48,7 +48,7 @@ public final class ColorMapper
     @NonNull
     @Override
     public String getKey() {
-        return DBKey.KEY_COLOR;
+        return DBKey.COLOR;
     }
 
     public static boolean isMappingAllowed(@NonNull final SharedPreferences global) {

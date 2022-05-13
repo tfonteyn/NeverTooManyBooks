@@ -146,19 +146,19 @@ public class StripInfoReader
                 .addList(R.string.lbl_bookshelves, DBKey.FK_BOOKSHELF, Book.BKEY_BOOKSHELF_LIST)
 
                 .add(R.string.lbl_date_acquired, DBKey.DATE_ACQUIRED)
-                .add(R.string.lbl_location, DBKey.KEY_LOCATION)
-                .add(R.string.lbl_personal_notes, DBKey.KEY_PRIVATE_NOTES)
-                .add(R.string.lbl_rating, DBKey.KEY_RATING)
-                .add(R.string.lbl_read, DBKey.BOOL_READ)
+                .add(R.string.lbl_location, DBKey.LOCATION)
+                .add(R.string.lbl_personal_notes, DBKey.PERSONAL_NOTES)
+                .add(R.string.lbl_rating, DBKey.RATING)
+                .add(R.string.lbl_read, DBKey.READ__BOOL)
 
                 .add(R.string.lbl_price_paid, DBKey.PRICE_PAID)
                 .addRelatedField(DBKey.PRICE_PAID_CURRENCY, DBKey.PRICE_PAID)
 
                 // The site specific keys
-                .add(R.string.lbl_owned, DBKey.BOOL_STRIP_INFO_OWNED)
-                .add(R.string.lbl_wishlist, DBKey.BOOL_STRIP_INFO_WANTED)
-                .add(R.string.lbl_number, DBKey.KEY_STRIP_INFO_AMOUNT)
-                .add(R.string.site_stripinfo_be, DBKey.KEY_STRIP_INFO_COLL_ID)
+                .add(R.string.lbl_owned, DBKey.STRIP_INFO_OWNED)
+                .add(R.string.lbl_wishlist, DBKey.STRIP_INFO_WANTED)
+                .add(R.string.lbl_number, DBKey.STRIP_INFO_AMOUNT)
+                .add(R.string.site_stripinfo_be, DBKey.STRIP_INFO_COLL_ID)
 
                 .build();
     }

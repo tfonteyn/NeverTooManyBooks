@@ -43,16 +43,16 @@ public class LanguageDaoImpl
 
     /** Code only, ordered by last-used. */
     private static final String SELECT_ALL =
-            SELECT_DISTINCT_ + DBKey.KEY_LANGUAGE
+            SELECT_DISTINCT_ + DBKey.LANGUAGE
             + _FROM_ + DBDefinitions.TBL_BOOKS.getName()
-            + _WHERE_ + DBKey.KEY_LANGUAGE + "<> ''"
-            + _ORDER_BY_ + DBKey.UTC_DATE_LAST_UPDATED;
+            + _WHERE_ + DBKey.LANGUAGE + "<> ''"
+            + _ORDER_BY_ + DBKey.DATE_LAST_UPDATED__UTC;
 
     /**
      * Constructor.
      */
     public LanguageDaoImpl() {
-        super(TAG, DBKey.KEY_LANGUAGE);
+        super(TAG, DBKey.LANGUAGE);
     }
 
     @Override

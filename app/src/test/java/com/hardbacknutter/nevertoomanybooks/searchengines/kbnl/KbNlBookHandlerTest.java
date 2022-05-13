@@ -70,13 +70,13 @@ class KbNlBookHandlerTest
             mParser.parse(in, mHandler);
         }
 
-        assertEquals("De buitengewone reis", mRawData.getString(DBKey.KEY_TITLE));
+        assertEquals("De buitengewone reis", mRawData.getString(DBKey.TITLE));
 
         assertEquals("2019", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("9789463731454", mRawData.getString(DBKey.KEY_ISBN));
-        assertEquals("paperback", mRawData.getString(DBKey.KEY_FORMAT));
-        assertEquals("48", mRawData.getString(DBKey.KEY_PAGES));
-        assertEquals("nld", mRawData.getString(DBKey.KEY_LANGUAGE));
+        assertEquals("9789463731454", mRawData.getString(DBKey.ISBN));
+        assertEquals("paperback", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("48", mRawData.getString(DBKey.PAGES));
+        assertEquals("nld", mRawData.getString(DBKey.LANGUAGE));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
@@ -117,13 +117,13 @@ class KbNlBookHandlerTest
             mParser.parse(in, mHandler);
         }
 
-        assertEquals("De Foundation", mRawData.getString(DBKey.KEY_TITLE));
+        assertEquals("De Foundation", mRawData.getString(DBKey.TITLE));
 
         assertEquals("1983", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("9022953351", mRawData.getString(DBKey.KEY_ISBN));
-        assertEquals("geb.", mRawData.getString(DBKey.KEY_FORMAT));
-        assertEquals("156", mRawData.getString(DBKey.KEY_PAGES));
-        assertEquals("nld", mRawData.getString(DBKey.KEY_LANGUAGE));
+        assertEquals("9022953351", mRawData.getString(DBKey.ISBN));
+        assertEquals("geb.", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("156", mRawData.getString(DBKey.PAGES));
+        assertEquals("nld", mRawData.getString(DBKey.LANGUAGE));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);

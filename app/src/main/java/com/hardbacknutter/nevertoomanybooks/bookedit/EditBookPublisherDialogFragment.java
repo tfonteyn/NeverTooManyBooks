@@ -90,7 +90,7 @@ public class EditBookPublisherDialogFragment
                                              BKEY_REQUEST_KEY);
         mPublisher = Objects.requireNonNull(args.getParcelable(DBKey.FK_PUBLISHER),
                                             DBKey.FK_PUBLISHER);
-        mBookTitle = args.getString(DBKey.KEY_TITLE);
+        mBookTitle = args.getString(DBKey.TITLE);
 
         if (savedInstanceState == null) {
             mCurrentEdit = new Publisher(mPublisher.getName());
@@ -192,7 +192,7 @@ public class EditBookPublisherDialogFragment
                     @NonNull final Publisher publisher) {
             final Bundle args = new Bundle(3);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
-            args.putString(DBKey.KEY_TITLE, bookTitle);
+            args.putString(DBKey.TITLE, bookTitle);
             args.putParcelable(DBKey.FK_PUBLISHER, publisher);
 
             final DialogFragment frag = new EditBookPublisherDialogFragment();

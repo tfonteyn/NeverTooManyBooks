@@ -129,8 +129,8 @@ public class CsvArchiveWriterTest
         bookDao.delete(deletedBookId);
 
         final Book book = Book.from(modifiedBookId);
-        book.putString(DBKey.KEY_PRIVATE_NOTES,
-                       "MODIFIED" + book.getString(DBKey.KEY_PRIVATE_NOTES));
+        book.putString(DBKey.PERSONAL_NOTES,
+                       "MODIFIED" + book.getString(DBKey.PERSONAL_NOTES));
         bookDao.update(context, book, 0);
 
         final ImportHelper importHelper = new ImportHelper(context, Uri.fromFile(file));

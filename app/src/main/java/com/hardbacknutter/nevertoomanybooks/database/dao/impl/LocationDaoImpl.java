@@ -33,6 +33,6 @@ public class LocationDaoImpl
      * Constructor.
      */
     public LocationDaoImpl() {
-        super(TAG, DBKey.KEY_LOCATION);
+        super(TAG, DBKey.LOCATION);
     }
 }

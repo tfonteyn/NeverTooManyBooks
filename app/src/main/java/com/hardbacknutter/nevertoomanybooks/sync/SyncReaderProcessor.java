@@ -265,12 +265,12 @@ public final class SyncReaderProcessor
         // Commit the new data
         if (!bookData.isEmpty()) {
             // Get the language, if there was one requested for updating.
-            String bookLang = bookData.getString(DBKey.KEY_LANGUAGE);
+            String bookLang = bookData.getString(DBKey.LANGUAGE);
             if (bookLang == null || bookLang.isEmpty()) {
                 // Otherwise add the original one.
-                bookLang = book.getString(DBKey.KEY_LANGUAGE);
+                bookLang = book.getString(DBKey.LANGUAGE);
                 if (!bookLang.isEmpty()) {
-                    bookData.putString(DBKey.KEY_LANGUAGE, bookLang);
+                    bookData.putString(DBKey.LANGUAGE, bookLang);
                 }
             }
 
@@ -333,7 +333,7 @@ public final class SyncReaderProcessor
                 // We're called in a loop, and the chance of an exception here is very low
                 // so let's log it, and quietly continue.
                 Logger.error(TAG, e, "processCoverImage|uuid="
-                                     + book.getString(DBKey.KEY_BOOK_UUID)
+                                     + book.getString(DBKey.BOOK_UUID)
                                      + "|cIdx=" + cIdx);
             }
         }

@@ -245,8 +245,8 @@ public class SearchBookByTextFragment
         // If any of the search fields are not present in the result,
         // we add them manually as the template for a new book.
 
-        if (!bookData.containsKey(DBKey.KEY_TITLE)) {
-            bookData.putString(DBKey.KEY_TITLE, mCoordinator.getTitleSearchText());
+        if (!bookData.containsKey(DBKey.TITLE)) {
+            bookData.putString(DBKey.TITLE, mCoordinator.getTitleSearchText());
         }
 
         final ArrayList<Author> authors =

@@ -282,7 +282,7 @@ public class AmazonSearchEngine
         }
 
         final String title = titleElement.text().trim();
-        bookData.putString(DBKey.KEY_TITLE, title);
+        bookData.putString(DBKey.TITLE, title);
 
         parsePrice(document, bookData, siteLocale);
 
@@ -313,7 +313,7 @@ public class AmazonSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final String isbn = bookData.getString(DBKey.KEY_ISBN);
+            final String isbn = bookData.getString(DBKey.ISBN);
             final ArrayList<String> list = parseCovers(document, isbn, 0);
             if (!list.isEmpty()) {
                 bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
@@ -370,12 +370,12 @@ public class AmazonSearchEngine
             String data = li.text().trim();
             switch (label.toLowerCase(siteLocale)) {
                 case "isbn-13":
-                    bookData.putString(DBKey.KEY_ISBN, data);
+                    bookData.putString(DBKey.ISBN, data);
                     break;
 
                 case "isbn-10":
-                    if (!bookData.containsKey(DBKey.KEY_ISBN)) {
-                        bookData.putString(DBKey.KEY_ISBN, data);
+                    if (!bookData.containsKey(DBKey.ISBN)) {
+                        bookData.putString(DBKey.ISBN, data);
                     }
                     break;
 
@@ -385,8 +385,8 @@ public class AmazonSearchEngine
                 case "broché":
                 case "taschenbuch":
                 case "gebundene ausgabe":
-                    bookData.putString(DBKey.KEY_FORMAT, label);
-                    bookData.putString(DBKey.KEY_PAGES,
+                    bookData.putString(DBKey.BOOK_FORMAT, label);
+                    bookData.putString(DBKey.PAGES,
                                        mPagesPattern.matcher(data).replaceAll("").trim());
                     break;
 
@@ -396,7 +396,7 @@ public class AmazonSearchEngine
                 case "taal":
                     data = ServiceLocator.getInstance().getLanguages()
                                          .getISO3FromDisplayName(siteLocale, data);
-                    bookData.putString(DBKey.KEY_LANGUAGE, data);
+                    bookData.putString(DBKey.LANGUAGE, data);
                     break;
 
                 case "publisher":

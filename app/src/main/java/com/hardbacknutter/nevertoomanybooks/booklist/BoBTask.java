@@ -104,7 +104,7 @@ public class BoBTask
                 // Example: "The Dream Master"
                 new DomainExpression(
                         DBDefinitions.DOM_TITLE,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_TITLE)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.TITLE)));
         mFixedDomainList.add(
                 // Title for sorting
                 // Example: "dreammasterthe" OR "thedreammaster"
@@ -123,13 +123,13 @@ public class BoBTask
                 // the book language is needed for reordering titles
                 new DomainExpression(
                         DBDefinitions.DOM_BOOK_LANGUAGE,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_LANGUAGE)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.LANGUAGE)));
 
         mFixedDomainList.add(
                 // Always get the read flag
                 new DomainExpression(
                         DBDefinitions.DOM_BOOK_READ,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.BOOL_READ)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.READ__BOOL)));
 
         mFixedDomainList.add(
                 // Always get the Author ID
@@ -142,13 +142,13 @@ public class BoBTask
                 // We want the UUID for the book so we can get thumbnails
                 new DomainExpression(
                         DBDefinitions.DOM_BOOK_UUID,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_BOOK_UUID)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.BOOK_UUID)));
 
         mFixedDomainList.add(
                 // Always get the ISBN
                 new DomainExpression(
                         DBDefinitions.DOM_BOOK_ISBN,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_ISBN)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.ISBN)));
 
         // external site ID's
         for (final Domain domain : SearchEngineRegistry.getInstance().getExternalIdDomains()) {
@@ -208,7 +208,7 @@ public class BoBTask
                     // Add a filter to retrieve only books lend to the given person (exact name).
                     mSearchCriteria.getLoanee().ifPresent(loanee -> {
                         builder.addFilter(c -> "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
-                                               + " WHERE " + TBL_BOOK_LOANEE.dot(DBKey.KEY_LOANEE)
+                                               + " WHERE " + TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME)
                                                + "='" + SqlEncode.string(loanee) + '\''
                                                + " AND " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS)
                                                + ')');
@@ -292,24 +292,24 @@ public class BoBTask
                     DBDefinitions.TBL_BOOKS.dot(DBKey.BITMASK_EDITION)));
         }
 
-        if (DBKey.isUsed(global, DBKey.BOOL_SIGNED)) {
+        if (DBKey.isUsed(global, DBKey.SIGNED__BOOL)) {
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_BOOK_SIGNED,
-                    DBDefinitions.TBL_BOOKS.dot(DBKey.BOOL_SIGNED)));
+                    DBDefinitions.TBL_BOOKS.dot(DBKey.SIGNED__BOOL)));
         }
 
-        if (DBKey.isUsed(global, DBKey.KEY_BOOK_CONDITION)) {
+        if (DBKey.isUsed(global, DBKey.BOOK_CONDITION)) {
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_BOOK_CONDITION,
-                    DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_BOOK_CONDITION)));
+                    DBDefinitions.TBL_BOOKS.dot(DBKey.BOOK_CONDITION)));
         }
 
-        if (DBKey.isUsed(global, DBKey.KEY_LOANEE)) {
+        if (DBKey.isUsed(global, DBKey.LOANEE_NAME)) {
             // Used to display/hide the 'lend' icon for each book.
             builder.addLeftOuterJoin(DBDefinitions.TBL_BOOK_LOANEE);
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_LOANEE,
-                    DBDefinitions.TBL_BOOK_LOANEE.dot(DBKey.KEY_LOANEE)));
+                    DBDefinitions.TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME)));
         }
     }
 
@@ -355,19 +355,19 @@ public class BoBTask
         if (bookFields.isShowField(global, ListScreenBookFields.PK_FORMAT)) {
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_BOOK_FORMAT,
-                    DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_FORMAT)));
+                    DBDefinitions.TBL_BOOKS.dot(DBKey.BOOK_FORMAT)));
         }
 
         if (bookFields.isShowField(global, ListScreenBookFields.PK_LOCATION)) {
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_BOOK_LOCATION,
-                    DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_LOCATION)));
+                    DBDefinitions.TBL_BOOKS.dot(DBKey.LOCATION)));
         }
 
         if (bookFields.isShowField(global, ListScreenBookFields.PK_RATING)) {
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_BOOK_RATING,
-                    DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_RATING)));
+                    DBDefinitions.TBL_BOOKS.dot(DBKey.RATING)));
         }
     }
 
@@ -376,13 +376,13 @@ public class BoBTask
 
         builder.addDomain(new DomainExpression(
                 DBDefinitions.DOM_CALIBRE_BOOK_ID,
-                DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBKey.KEY_CALIBRE_BOOK_ID)));
+                DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBKey.CALIBRE_BOOK_ID)));
         builder.addDomain(new DomainExpression(
                 DBDefinitions.DOM_CALIBRE_BOOK_UUID,
-                DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBKey.KEY_CALIBRE_BOOK_UUID)));
+                DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBKey.CALIBRE_BOOK_UUID)));
         builder.addDomain(new DomainExpression(
                 DBDefinitions.DOM_CALIBRE_BOOK_MAIN_FORMAT,
-                DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
+                DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBKey.CALIBRE_BOOK_MAIN_FORMAT)));
 
         builder.addDomain(new DomainExpression(
                 DBDefinitions.DOM_FK_CALIBRE_LIBRARY,

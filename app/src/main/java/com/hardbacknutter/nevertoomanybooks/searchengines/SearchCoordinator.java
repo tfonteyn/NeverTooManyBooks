@@ -269,9 +269,9 @@ public class SearchCoordinator
                         DBKey.isUsed(global, DBKey.COVER_IS_USED[1])
                 };
 
-                mIsbnSearchText = args.getString(DBKey.KEY_ISBN, "");
+                mIsbnSearchText = args.getString(DBKey.ISBN, "");
 
-                mTitleSearchText = args.getString(DBKey.KEY_TITLE, "");
+                mTitleSearchText = args.getString(DBKey.TITLE, "");
 
                 mAuthorSearchText = args.getString(
                         SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR, "");
@@ -488,7 +488,7 @@ public class SearchCoordinator
                 if (result != null && hasIsbn(result)) {
                     mWaitingForIsbnOrCode = false;
                     // replace the search text with the (we hope) exact ISBN/code
-                    mIsbnSearchText = result.getString(DBKey.KEY_ISBN, "");
+                    mIsbnSearchText = result.getString(DBKey.ISBN, "");
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                         Log.d(TAG, "onSearchTaskFinished|mWaitingForExactCode|isbn="
@@ -784,7 +784,7 @@ public class SearchCoordinator
      * @return Present/absent
      */
     private boolean hasIsbn(@NonNull final Bundle bundle) {
-        final String isbnStr = bundle.getString(DBKey.KEY_ISBN);
+        final String isbnStr = bundle.getString(DBKey.ISBN);
         return isbnStr != null && !isbnStr.trim().isEmpty();
     }
 
@@ -953,8 +953,8 @@ public class SearchCoordinator
                     // any results for this site?
                     if (siteData != null && !siteData.isEmpty()) {
                         // yes; check isbn to determine the order in which we'll use the results
-                        if (siteData.containsKey(DBKey.KEY_ISBN)) {
-                            final String isbnFound = siteData.getString(DBKey.KEY_ISBN);
+                        if (siteData.containsKey(DBKey.ISBN)) {
+                            final String isbnFound = siteData.getString(DBKey.ISBN);
                             // do they match?
                             if (isbnFound != null && !isbnFound.isEmpty()
                                 && mIsbn.equals(ISBN.createISBN(isbnFound))) {
@@ -976,7 +976,7 @@ public class SearchCoordinator
             sites.addAll(sitesWithoutIsbn);
             // Add the passed ISBN first;
             // avoids overwriting with potentially different isbn from the sites
-            bookData.putString(DBKey.KEY_ISBN, mIsbnSearchText);
+            bookData.putString(DBKey.ISBN, mIsbnSearchText);
 
         } else {
             // If an ISBN was not passed, then just use the default order
@@ -987,15 +987,15 @@ public class SearchCoordinator
         mResultsAccumulator.process(context, sites, mSearchResultsBySite, bookData);
 
         // If we did not get an ISBN, use the one we originally searched for.
-        final String isbnStr = bookData.getString(DBKey.KEY_ISBN);
+        final String isbnStr = bookData.getString(DBKey.ISBN);
         if (isbnStr == null || isbnStr.isEmpty()) {
-            bookData.putString(DBKey.KEY_ISBN, mIsbnSearchText);
+            bookData.putString(DBKey.ISBN, mIsbnSearchText);
         }
 
         // If we did not get an title, use the one we originally searched for.
-        final String title = bookData.getString(DBKey.KEY_TITLE);
+        final String title = bookData.getString(DBKey.TITLE);
         if (title == null || title.isEmpty()) {
-            bookData.putString(DBKey.KEY_TITLE, mTitleSearchText);
+            bookData.putString(DBKey.TITLE, mTitleSearchText);
         }
 
         return bookData;

@@ -93,7 +93,7 @@ public class EditTocEntryDialogFragment
 
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
-        mBookTitle = args.getString(DBKey.KEY_TITLE);
+        mBookTitle = args.getString(DBKey.TITLE);
         mHasMultipleAuthors = args.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
         mTocEntry = Objects.requireNonNull(args.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY);
         mEditPosition = args.getInt(BKEY_POSITION, 0);
@@ -105,7 +105,7 @@ public class EditTocEntryDialogFragment
             mAuthorName = mTocEntry.getPrimaryAuthor().getLabel(getContext());
         } else {
             //noinspection ConstantConditions
-            mTitle = savedInstanceState.getString(DBKey.KEY_TITLE);
+            mTitle = savedInstanceState.getString(DBKey.TITLE);
             //noinspection ConstantConditions
             mFirstPublicationDate = savedInstanceState.getParcelable(DBKey.DATE_FIRST_PUBLICATION);
             //noinspection ConstantConditions
@@ -202,7 +202,7 @@ public class EditTocEntryDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBKey.KEY_TITLE, mTitle);
+        outState.putString(DBKey.TITLE, mTitle);
         outState.putParcelable(DBKey.DATE_FIRST_PUBLICATION, mFirstPublicationDate);
         outState.putString(DBKey.KEY_AUTHOR_FORMATTED, mAuthorName);
     }
@@ -253,7 +253,7 @@ public class EditTocEntryDialogFragment
 
             final Bundle args = new Bundle(5);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
-            args.putString(DBKey.KEY_TITLE, book.getTitle());
+            args.putString(DBKey.TITLE, book.getTitle());
             args.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, hasMultipleAuthors);
             args.putInt(BKEY_POSITION, position);
             args.putParcelable(BKEY_TOC_ENTRY, tocEntry);

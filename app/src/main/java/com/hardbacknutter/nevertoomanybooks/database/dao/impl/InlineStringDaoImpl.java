@@ -54,7 +54,7 @@ public abstract class InlineStringDaoImpl
                         + _ORDER_BY_ + key + _COLLATION;
 
         mSqlUpdate = UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
-                     + _SET_ + DBKey.UTC_DATE_LAST_UPDATED + "=current_timestamp"
+                     + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
                      + ',' + key + "=?"
                      + _WHERE_ + key + "=?";
     }

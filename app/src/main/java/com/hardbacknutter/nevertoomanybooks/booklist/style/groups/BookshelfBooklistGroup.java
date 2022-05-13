@@ -108,7 +108,7 @@ public class BookshelfBooklistGroup
                 .addGroupDomain(
                         // We do not sort on the key domain but add the OB column instead
                         new DomainExpression(DOM_SORTING,
-                                             TBL_BOOKSHELF.dot(DBKey.KEY_BOOKSHELF_NAME),
+                                             TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME),
                                              DomainExpression.SORT_ASC))
                 .addGroupDomain(
                         // Group by id (we want the id available)
@@ -121,7 +121,7 @@ public class BookshelfBooklistGroup
     protected DomainExpression createDisplayDomainExpression() {
         // Not sorted; we sort on the OB domain as defined in #createGroupKey.
         return new DomainExpression(DOM_BOOKSHELF_NAME,
-                                    TBL_BOOKSHELF.dot(DBKey.KEY_BOOKSHELF_NAME));
+                                    TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME));
     }
 
     @Override

@@ -47,7 +47,7 @@ public class Identifier {
     static {
         Identifier identifier;
 
-        identifier = new Identifier(ISBN, DBKey.KEY_ISBN, false);
+        identifier = new Identifier(ISBN, DBKey.ISBN, false);
         MAP.put(identifier.remote, identifier);
         identifier = new Identifier(OPENLIBRARY, DBKey.SID_OPEN_LIBRARY, false);
         MAP.put(identifier.remote, identifier);

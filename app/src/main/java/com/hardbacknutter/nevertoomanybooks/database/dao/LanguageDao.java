@@ -33,7 +33,7 @@ public interface LanguageDao
 
     /**
      * Get a unique list of all resolved/localized language names.
-     * The list is ordered by {@link DBKey#UTC_DATE_LAST_UPDATED}.
+     * The list is ordered by {@link DBKey#DATE_LAST_UPDATED__UTC}.
      *
      * @param context Current context
      *

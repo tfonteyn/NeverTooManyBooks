@@ -53,7 +53,7 @@ public class CalibreContentServerTest {
         final Book book = new Book();
         book.setAuthors(authors);
 
-        book.putString(DBKey.KEY_TITLE, "Rama");
+        book.putString(DBKey.TITLE, "Rama");
 
         final String dir = server.createAuthorDirectoryName(context, book);
         assertEquals("Clarke, Arthur C", dir);
@@ -61,7 +61,7 @@ public class CalibreContentServerTest {
         String fileName = server.createFilename(context, book);
         assertEquals("Rama", fileName);
 
-        book.putString(DBKey.KEY_TITLE, "Rama: the omnibus");
+        book.putString(DBKey.TITLE, "Rama: the omnibus");
 
         // without a series
         fileName = server.createFilename(context, book);

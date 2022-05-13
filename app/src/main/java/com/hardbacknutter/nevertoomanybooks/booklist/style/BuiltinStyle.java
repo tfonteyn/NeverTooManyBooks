@@ -203,9 +203,9 @@ public final class BuiltinStyle
         // way we create user-styles. The intention is that eventually all configuration
         // goes into the database.
         final int id = rowData.getInt(DBKey.PK_ID);
-        final String uuid = rowData.getString(DBKey.KEY_STYLE_UUID);
-        final boolean isPreferred = rowData.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED);
-        final int menuPosition = rowData.getInt(DBKey.KEY_STYLE_MENU_POSITION);
+        final String uuid = rowData.getString(DBKey.STYLE_UUID);
+        final boolean isPreferred = rowData.getBoolean(DBKey.STYLE_IS_PREFERRED);
+        final int menuPosition = rowData.getInt(DBKey.STYLE_MENU_POSITION);
 
         return create(context, id, uuid, isPreferred, menuPosition);
     }

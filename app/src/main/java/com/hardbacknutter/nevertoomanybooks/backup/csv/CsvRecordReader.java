@@ -195,7 +195,7 @@ public class CsvRecordReader
         final List<String> csvColumnNamesList = Arrays.asList(csvColumnNames);
         // If a sync was requested, we'll need this column or cannot proceed.
         if (helper.getUpdateOption() == DataReader.Updates.OnlyNewer) {
-            requireColumnOrThrow(context, csvColumnNamesList, DBKey.UTC_DATE_LAST_UPDATED);
+            requireColumnOrThrow(context, csvColumnNamesList, DBKey.DATE_LAST_UPDATED__UTC);
         }
 
         // One book == One row. We start after the headings row.
@@ -340,7 +340,7 @@ public class CsvRecordReader
                     final LocalDateTime localDate = mBookDao.getLastUpdateDate(importNumericId);
                     if (localDate != null) {
                         final LocalDateTime importDate = mDateParser.parse(
-                                book.getString(DBKey.UTC_DATE_LAST_UPDATED));
+                                book.getString(DBKey.DATE_LAST_UPDATED__UTC));
 
                         if (importDate != null && importDate.isAfter(localDate)) {
 
@@ -410,10 +410,10 @@ public class CsvRecordReader
         final String uuid;
 
         // Get the "book_uuid", and remove from book if null/blank
-        if (book.contains(DBKey.KEY_BOOK_UUID)) {
-            uuid = book.getString(DBKey.KEY_BOOK_UUID);
+        if (book.contains(DBKey.BOOK_UUID)) {
+            uuid = book.getString(DBKey.BOOK_UUID);
             if (uuid.isEmpty()) {
-                book.remove(DBKey.KEY_BOOK_UUID);
+                book.remove(DBKey.BOOK_UUID);
             }
 
         } else if (book.contains("uuid")) {
@@ -423,7 +423,7 @@ public class CsvRecordReader
             book.remove("uuid");
             // but if we got a UUID from it, store it again, using the correct key
             if (!uuid.isEmpty()) {
-                book.putString(DBKey.KEY_BOOK_UUID, uuid);
+                book.putString(DBKey.BOOK_UUID, uuid);
             }
         } else {
             uuid = null;

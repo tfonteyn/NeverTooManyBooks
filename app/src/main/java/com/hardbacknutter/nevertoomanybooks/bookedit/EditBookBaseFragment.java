@@ -203,8 +203,8 @@ public abstract class EditBookBaseFragment
             }
 
             if (mVm.handlesField(getFragmentId(), R.id.condition)) {
-                if (DBKey.isUsed(global, DBKey.KEY_BOOK_CONDITION)) {
-                    book.putInt(DBKey.KEY_BOOK_CONDITION, Book.CONDITION_AS_NEW);
+                if (DBKey.isUsed(global, DBKey.BOOK_CONDITION)) {
+                    book.putInt(DBKey.BOOK_CONDITION, Book.CONDITION_AS_NEW);
                 }
             }
         }

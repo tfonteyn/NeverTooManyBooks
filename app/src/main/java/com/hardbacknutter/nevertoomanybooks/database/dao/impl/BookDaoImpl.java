@@ -87,15 +87,24 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_ST
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BITMASK_EDITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BITMASK_TOC;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOL_READ;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOL_SIGNED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOL_STRIP_INFO_OWNED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOL_STRIP_INFO_WANTED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_AUTHOR_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_AUTHOR_TYPE_BITMASK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_CONDITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_CONDITION_COVER;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_FORMAT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_PUBLISHER_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_SERIES_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_BOOK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_BOOK_MAIN_FORMAT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_BOOK_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DATE_ACQUIRED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DATE_ADDED__UTC;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DATE_BOOK_PUBLICATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DATE_FIRST_PUBLICATION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DATE_READ_END;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DATE_READ_START;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DATE_LAST_UPDATED__UTC;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DESCRIPTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_BOOKSHELF;
@@ -103,43 +112,34 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_CALIBRE_LIB
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_TOC_ENTRY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_AUTHOR_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_CONDITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_CONDITION_COVER;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_NUM_IN_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_PUBLISHER_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_SERIES_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.GENRE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_TOC_ENTRY_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_BOOK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_BOOK_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_COLOR;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_DESCRIPTION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_FORMAT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_GENRE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_ISBN;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_LANGUAGE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_LOANEE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_LOCATION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_PAGES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_PRINT_RUN;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_PRIVATE_NOTES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_RATING;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_STRIP_INFO_AMOUNT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_STRIP_INFO_COLL_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_TITLE_OB;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.LANGUAGE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.LOANEE_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.LOCATION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PAGES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PERSONAL_NOTES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PRICE_LISTED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PRICE_LISTED_CURRENCY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PRICE_PAID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PRICE_PAID_CURRENCY;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PRINT_RUN;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.RATING;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.READ_END__DATE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.READ_START__DATE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.READ__BOOL;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.SERIES_BOOK_NUMBER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.SID_STRIP_INFO;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.UTC_DATE_ADDED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.UTC_DATE_LAST_SYNC_STRIP_INFO;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.UTC_DATE_LAST_UPDATED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.SIGNED__BOOL;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.STRIP_INFO_AMOUNT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.STRIP_INFO_COLL_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.STRIP_INFO_OWNED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.STRIP_INFO_WANTED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.TITLE;
 
 /**
  * Database access helper class.
@@ -209,12 +209,12 @@ public class BookDaoImpl
             final String addedOrUpdatedNow = SqlEncode.date(LocalDateTime.now(ZoneOffset.UTC));
 
             // if we do NOT have a date set, use 'now'
-            if (!cv.containsKey(UTC_DATE_ADDED)) {
-                cv.put(UTC_DATE_ADDED, addedOrUpdatedNow);
+            if (!cv.containsKey(DATE_ADDED__UTC)) {
+                cv.put(DATE_ADDED__UTC, addedOrUpdatedNow);
             }
             // if we do NOT have a date set, use 'now'
-            if (!cv.containsKey(UTC_DATE_LAST_UPDATED)) {
-                cv.put(UTC_DATE_LAST_UPDATED, addedOrUpdatedNow);
+            if (!cv.containsKey(DATE_LAST_UPDATED__UTC)) {
+                cv.put(DATE_LAST_UPDATED__UTC, addedOrUpdatedNow);
             }
 
             // if allowed, and we have an id, use it.
@@ -233,7 +233,7 @@ public class BookDaoImpl
                                                    + "|cv=" + cv);
 
                 book.putLong(PK_ID, 0);
-                book.remove(KEY_BOOK_UUID);
+                book.remove(BOOK_UUID);
                 throw new DaoWriteException(ERROR_CREATING_BOOK_FROM + book);
             }
 
@@ -243,7 +243,7 @@ public class BookDaoImpl
             // (even if we inserted with a uuid... to protect against future changes)
             final String uuid = getBookUuid(newBookId);
             SanityCheck.requireValue(uuid, "uuid");
-            book.putString(KEY_BOOK_UUID, uuid);
+            book.putString(BOOK_UUID, uuid);
 
             // next we add the links to series, authors,...
             insertBookLinks(context, book, flags);
@@ -257,12 +257,12 @@ public class BookDaoImpl
 
             } catch (@NonNull final StorageException e) {
                 book.putLong(PK_ID, 0);
-                book.remove(KEY_BOOK_UUID);
+                book.remove(BOOK_UUID);
                 throw e;
 
             } catch (@NonNull final IOException e) {
                 book.putLong(PK_ID, 0);
-                book.remove(KEY_BOOK_UUID);
+                book.remove(BOOK_UUID);
                 throw new DaoWriteException(ERROR_STORING_COVERS + book, e);
             }
 
@@ -300,15 +300,15 @@ public class BookDaoImpl
                     .filterValues(mDb.getTableInfo(TBL_BOOKS));
 
             // Disallow UUID updates
-            if (cv.containsKey(KEY_BOOK_UUID)) {
-                cv.remove(KEY_BOOK_UUID);
+            if (cv.containsKey(BOOK_UUID)) {
+                cv.remove(BOOK_UUID);
             }
 
             // set the KEY_DATE_LAST_UPDATED to 'now' if we're allowed,
             // or if it's not already present.
             if ((flags & BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT) == 0
-                || !cv.containsKey(UTC_DATE_LAST_UPDATED)) {
-                cv.put(UTC_DATE_LAST_UPDATED, SqlEncode
+                || !cv.containsKey(DATE_LAST_UPDATED__UTC)) {
+                cv.put(DATE_LAST_UPDATED__UTC, SqlEncode
                         .date(LocalDateTime.now(ZoneOffset.UTC)));
             }
 
@@ -323,7 +323,7 @@ public class BookDaoImpl
                 // always lookup the UUID
                 final String uuid = getBookUuid(book.getId());
                 SanityCheck.requireValue(uuid, "uuid");
-                book.putString(KEY_BOOK_UUID, uuid);
+                book.putString(BOOK_UUID, uuid);
 
                 insertBookLinks(context, book, flags);
 
@@ -357,7 +357,7 @@ public class BookDaoImpl
         final boolean success = delete(book.getId());
         if (success) {
             book.remove(DBKey.PK_ID);
-            book.remove(KEY_BOOK_UUID);
+            book.remove(BOOK_UUID);
         }
         return success;
     }
@@ -486,11 +486,11 @@ public class BookDaoImpl
                               bookLocale);
         }
 
-        if (book.contains(KEY_LOANEE)) {
-            ServiceLocator.getInstance().getLoaneeDao().setLoanee(book, book.getString(KEY_LOANEE));
+        if (book.contains(LOANEE_NAME)) {
+            ServiceLocator.getInstance().getLoaneeDao().setLoanee(book, book.getString(LOANEE_NAME));
         }
 
-        if (book.contains(KEY_CALIBRE_BOOK_UUID)) {
+        if (book.contains(CALIBRE_BOOK_UUID)) {
             // Calibre libraries will be inserted if new, but not updated
             ServiceLocator.getInstance().getCalibreDao().updateOrInsert(book);
         }
@@ -927,9 +927,9 @@ public class BookDaoImpl
         }
 
         if (success) {
-            book.putBoolean(BOOL_READ, isRead);
-            book.putString(DATE_READ_END, now);
-            book.putString(UTC_DATE_LAST_UPDATED, now);
+            book.putBoolean(READ__BOOL, isRead);
+            book.putString(READ_END__DATE, now);
+            book.putString(DATE_LAST_UPDATED__UTC, now);
         }
 
         return success;
@@ -1022,7 +1022,7 @@ public class BookDaoImpl
             }
         } else {
             try (SynchronizedStatement stmt = mDb.compileStatement(
-                    Sql.Count.BOOKS + _WHERE_ + UTC_DATE_LAST_UPDATED + ">=?")) {
+                    Sql.Count.BOOKS + _WHERE_ + DATE_LAST_UPDATED__UTC + ">=?")) {
                 stmt.bindString(1, SqlEncode.date(since));
                 return (int) stmt.simpleQueryForLongOrZero();
             }
@@ -1035,7 +1035,7 @@ public class BookDaoImpl
         if (since == null) {
             return getBookCursor(null, null, TBL_BOOKS.dot(PK_ID));
         } else {
-            return getBookCursor(TBL_BOOKS.dot(UTC_DATE_LAST_UPDATED) + ">=?",
+            return getBookCursor(TBL_BOOKS.dot(DATE_LAST_UPDATED__UTC) + ">=?",
                                  new String[]{SqlEncode.date(since)},
                                  TBL_BOOKS.dot(PK_ID));
         }
@@ -1051,7 +1051,7 @@ public class BookDaoImpl
                                  TBL_BOOKS.dot(PK_ID));
         } else {
             return getBookCursor(TBL_CALIBRE_BOOKS.dot(FK_CALIBRE_LIBRARY) + "=?"
-                                 + _AND_ + TBL_BOOKS.dot(UTC_DATE_LAST_UPDATED) + ">=?",
+                                 + _AND_ + TBL_BOOKS.dot(DATE_LAST_UPDATED__UTC) + ">=?",
                                  new String[]{String.valueOf(libraryId), SqlEncode.date(since)},
                                  TBL_BOOKS.dot(PK_ID));
         }
@@ -1064,7 +1064,7 @@ public class BookDaoImpl
             return getBookCursor(null, null, TBL_BOOKS.dot(PK_ID));
         } else {
             return getBookCursor(TBL_STRIPINFO_COLLECTION.dot(
-                                         UTC_DATE_LAST_SYNC_STRIP_INFO) + ">=?",
+                                         STRIP_INFO_LAST_SYNC_DATE__UTC) + ">=?",
                                  new String[]{SqlEncode.date(since)},
                                  TBL_BOOKS.dot(PK_ID));
         }
@@ -1077,11 +1077,11 @@ public class BookDaoImpl
 
         if (isbnList.size() == 1) {
             // optimize for single book
-            return getBookCursor(TBL_BOOKS.dot(KEY_ISBN) + "=?",
+            return getBookCursor(TBL_BOOKS.dot(ISBN) + "=?",
                                  new String[]{SqlEncode.string(isbnList.get(0))},
                                  null);
         } else {
-            return getBookCursor(TBL_BOOKS.dot(KEY_ISBN)
+            return getBookCursor(TBL_BOOKS.dot(ISBN)
                                  + " IN ("
                                  + isbnList.stream()
                                            .map(s -> '\'' + SqlEncode.string(s) + '\'')
@@ -1239,24 +1239,24 @@ public class BookDaoImpl
 
             /** Get the UUID of a {@link Book} by the Book id. */
             static final String BOOK_UUID_BY_ID =
-                    SELECT_ + KEY_BOOK_UUID + _FROM_ + TBL_BOOKS.getName()
+                    SELECT_ + BOOK_UUID + _FROM_ + TBL_BOOKS.getName()
                     + _WHERE_ + PK_ID + "=?";
 
             /** Get the title and ISBN of a {@link Book} by the Book id. */
             static final String BOOK_TITLE_AND_ISBN_BY_BOOK_ID =
-                    SELECT_ + KEY_TITLE + ',' + KEY_ISBN
+                    SELECT_ + TITLE + ',' + ISBN
                     + _FROM_ + TBL_BOOKS.getName()
                     + _WHERE_ + PK_ID + "=?";
 
             /** Get the last-update-date for a {@link Book} by its id. */
             static final String LAST_UPDATE_DATE_BY_BOOK_ID =
-                    SELECT_ + UTC_DATE_LAST_UPDATED + _FROM_ + TBL_BOOKS.getName()
+                    SELECT_ + DATE_LAST_UPDATED__UTC + _FROM_ + TBL_BOOKS.getName()
                     + _WHERE_ + PK_ID + "=?";
 
             /** Get the id of a {@link Book} by UUID. */
             static final String BOOK_ID_BY_UUID =
                     SELECT_ + PK_ID + _FROM_ + TBL_BOOKS.getName()
-                    + _WHERE_ + KEY_BOOK_UUID + "=?";
+                    + _WHERE_ + BOOK_UUID + "=?";
         }
 
         /**
@@ -1266,20 +1266,20 @@ public class BookDaoImpl
 
             /** Find the {@link Book} id+title based on a search for the ISBN (both 10 & 13). */
             static final String BY_VALID_ISBN =
-                    SELECT_ + PK_ID + ',' + KEY_TITLE + _FROM_ + TBL_BOOKS.getName()
-                    + _WHERE_ + KEY_ISBN + " LIKE ? OR " + KEY_ISBN + " LIKE ?";
+                    SELECT_ + PK_ID + ',' + TITLE + _FROM_ + TBL_BOOKS.getName()
+                    + _WHERE_ + ISBN + " LIKE ? OR " + ISBN + " LIKE ?";
 
             /**
              * Find the {@link Book} id+title based on a search for the ISBN.
              * The isbn need not be valid and can in fact be any code whatsoever.
              */
             static final String BY_ISBN =
-                    SELECT_ + PK_ID + ',' + KEY_TITLE + _FROM_ + TBL_BOOKS.getName()
-                    + _WHERE_ + KEY_ISBN + " LIKE ?";
+                    SELECT_ + PK_ID + ',' + TITLE + _FROM_ + TBL_BOOKS.getName()
+                    + _WHERE_ + ISBN + " LIKE ?";
 
             /** Book UUID only, for accessing all cover image files. */
             static final String ALL_BOOK_UUID =
-                    SELECT_ + KEY_BOOK_UUID + _FROM_ + TBL_BOOKS.getName();
+                    SELECT_ + BOOK_UUID + _FROM_ + TBL_BOOKS.getName();
 
             /** The SELECT and FROM clause for getting a book (list). */
             static final String SQL_BOOK;
@@ -1291,22 +1291,22 @@ public class BookDaoImpl
                 // Nevertheless, listing the fields here gives a better understanding
 
                 SQL_BOOK = SELECT_ + TBL_BOOKS.dotAs(
-                        PK_ID, KEY_BOOK_UUID, KEY_TITLE, KEY_ISBN, BITMASK_TOC,
-                        DATE_BOOK_PUBLICATION, KEY_PRINT_RUN,
+                        PK_ID, BOOK_UUID, TITLE, ISBN, BITMASK_TOC,
+                        DATE_BOOK_PUBLICATION, PRINT_RUN,
                         PRICE_LISTED, PRICE_LISTED_CURRENCY,
                         DATE_FIRST_PUBLICATION,
-                        KEY_FORMAT, KEY_COLOR, KEY_GENRE, KEY_LANGUAGE, KEY_PAGES,
+                        BOOK_FORMAT, COLOR, GENRE, LANGUAGE, PAGES,
                         // Main/public description about the content/publication
-                        KEY_DESCRIPTION,
+                        DESCRIPTION,
                         // partially edition info, partially user-owned info.
                         BITMASK_EDITION,
                         // user notes
-                        KEY_PRIVATE_NOTES, KEY_BOOK_CONDITION, KEY_BOOK_CONDITION_COVER,
-                        KEY_LOCATION, BOOL_SIGNED, KEY_RATING,
-                        BOOL_READ, DATE_READ_START, DATE_READ_END,
+                        PERSONAL_NOTES, BOOK_CONDITION, BOOK_CONDITION_COVER,
+                        LOCATION, SIGNED__BOOL, RATING,
+                        READ__BOOL, READ_START__DATE, READ_END__DATE,
                         DATE_ACQUIRED, PRICE_PAID, PRICE_PAID_CURRENCY,
                         // added/updated
-                        UTC_DATE_ADDED, UTC_DATE_LAST_UPDATED
+                        DATE_ADDED__UTC, DATE_LAST_UPDATED__UTC
                         //NEWTHINGS: adding a new search engine: optional: add engine specific keys
                                                     )
 
@@ -1314,27 +1314,27 @@ public class BookDaoImpl
                         SearchEngineRegistry.getInstance().getExternalIdDomains())
 
                            // COALESCE nulls to "" for the LEFT OUTER JOINed LOANEE name
-                           + ",COALESCE(" + TBL_BOOK_LOANEE.dot(KEY_LOANEE) + ", '')"
-                           + _AS_ + KEY_LOANEE
+                           + ",COALESCE(" + TBL_BOOK_LOANEE.dot(LOANEE_NAME) + ", '')"
+                           + _AS_ + LOANEE_NAME
 
                            //FIXME: we should not join with all tables we MIGHT need
 
                            // LEFT OUTER JOIN, columns default to NULL
                            + ','
                            + TBL_CALIBRE_BOOKS
-                                   .dotAs(KEY_CALIBRE_BOOK_ID,
-                                          KEY_CALIBRE_BOOK_UUID,
-                                          KEY_CALIBRE_BOOK_MAIN_FORMAT,
+                                   .dotAs(CALIBRE_BOOK_ID,
+                                          CALIBRE_BOOK_UUID,
+                                          CALIBRE_BOOK_MAIN_FORMAT,
                                           FK_CALIBRE_LIBRARY)
 
                            // LEFT OUTER JOIN, columns default to NULL
                            + ','
                            + TBL_STRIPINFO_COLLECTION
-                                   .dotAs(KEY_STRIP_INFO_COLL_ID,
-                                          BOOL_STRIP_INFO_OWNED,
-                                          BOOL_STRIP_INFO_WANTED,
-                                          KEY_STRIP_INFO_AMOUNT,
-                                          UTC_DATE_LAST_SYNC_STRIP_INFO)
+                                   .dotAs(STRIP_INFO_COLL_ID,
+                                          STRIP_INFO_OWNED,
+                                          STRIP_INFO_WANTED,
+                                          STRIP_INFO_AMOUNT,
+                                          STRIP_INFO_LAST_SYNC_DATE__UTC)
 
                            + _FROM_ + TBL_BOOKS.ref()
                            + TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE)
@@ -1351,7 +1351,7 @@ public class BookDaoImpl
             static final String TOC_ENTRY =
                     INSERT_INTO_ + TBL_TOC_ENTRIES.getName()
                     + '(' + FK_AUTHOR
-                    + ',' + KEY_TITLE
+                    + ',' + TITLE
                     + ',' + KEY_TITLE_OB
                     + ',' + DATE_FIRST_PUBLICATION
                     + ") VALUES (?,?,?,?)";
@@ -1370,21 +1370,21 @@ public class BookDaoImpl
                     INSERT_INTO_ + TBL_BOOK_AUTHOR.getName()
                     + '(' + FK_BOOK
                     + ',' + FK_AUTHOR
-                    + ',' + KEY_BOOK_AUTHOR_POSITION
-                    + ',' + KEY_BOOK_AUTHOR_TYPE_BITMASK
+                    + ',' + BOOK_AUTHOR_POSITION
+                    + ',' + BOOK_AUTHOR_TYPE_BITMASK
                     + ") VALUES(?,?,?,?)";
             static final String BOOK_SERIES =
                     INSERT_INTO_ + TBL_BOOK_SERIES.getName()
                     + '(' + FK_BOOK
                     + ',' + FK_SERIES
-                    + ',' + KEY_BOOK_NUM_IN_SERIES
-                    + ',' + KEY_BOOK_SERIES_POSITION
+                    + ',' + SERIES_BOOK_NUMBER
+                    + ',' + BOOK_SERIES_POSITION
                     + ") VALUES(?,?,?,?)";
             static final String BOOK_PUBLISHER =
                     INSERT_INTO_ + TBL_BOOK_PUBLISHER.getName()
                     + '(' + FK_BOOK
                     + ',' + FK_PUBLISHER
-                    + ',' + KEY_BOOK_PUBLISHER_POSITION
+                    + ',' + BOOK_PUBLISHER_POSITION
                     + ") VALUES(?,?,?)";
         }
 
@@ -1396,7 +1396,7 @@ public class BookDaoImpl
             /** Update a single {@link TocEntry}. */
             static final String TOCENTRY =
                     UPDATE_ + TBL_TOC_ENTRIES.getName()
-                    + _SET_ + KEY_TITLE + "=?"
+                    + _SET_ + TITLE + "=?"
                     + ',' + KEY_TITLE_OB + "=?"
                     + ',' + DATE_FIRST_PUBLICATION + "=?"
                     + _WHERE_ + PK_ID + "=?";
@@ -1404,9 +1404,9 @@ public class BookDaoImpl
             /** Update a single Book's read status and read_end date. */
             static final String READ =
                     UPDATE_ + TBL_BOOKS.getName()
-                    + _SET_ + UTC_DATE_LAST_UPDATED + "=current_timestamp"
-                    + ',' + BOOL_READ + "=?"
-                    + ',' + DATE_READ_END + "=?"
+                    + _SET_ + DATE_LAST_UPDATED__UTC + "=current_timestamp"
+                    + ',' + READ__BOOL + "=?"
+                    + ',' + READ_END__DATE + "=?"
                     + _WHERE_ + PK_ID + "=?";
         }
 

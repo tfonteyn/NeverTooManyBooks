@@ -33,6 +33,6 @@ public class ColorDaoImpl
      * Constructor.
      */
     public ColorDaoImpl() {
-        super(TAG, DBKey.KEY_COLOR);
+        super(TAG, DBKey.COLOR);
     }
 }

@@ -526,7 +526,7 @@ public class OpenLibrarySearchEngine
 
         // store the isbn; we might override it later on though (e.g. isbn 13v10)
         // not sure if this is needed though. Need more data.
-        bookData.putString(DBKey.KEY_ISBN, validIsbn);
+        bookData.putString(DBKey.ISBN, validIsbn);
 
         JSONObject element;
         JSONArray a;
@@ -535,7 +535,7 @@ public class OpenLibrarySearchEngine
 
         s = document.optString("title");
         if (!s.isEmpty()) {
-            bookData.putString(DBKey.KEY_TITLE, s);
+            bookData.putString(DBKey.TITLE, s);
         }
 
         // s = document.optString("subtitle");
@@ -563,7 +563,7 @@ public class OpenLibrarySearchEngine
         // } else {
         i = document.optInt("number_of_pages");
         if (i > 0) {
-            bookData.putString(DBKey.KEY_PAGES, String.valueOf(i));
+            bookData.putString(DBKey.PAGES, String.valueOf(i));
         }
         // }
 
@@ -597,7 +597,7 @@ public class OpenLibrarySearchEngine
         // "notes" is a specific (set of) remarks on this particular edition of the book.
         s = document.optString("notes");
         if (!s.isEmpty()) {
-            bookData.putString(DBKey.KEY_DESCRIPTION, s);
+            bookData.putString(DBKey.DESCRIPTION, s);
         }
 
 
@@ -661,11 +661,11 @@ public class OpenLibrarySearchEngine
         // see if we have a better isbn.
         a = element.optJSONArray("isbn_13");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBKey.KEY_ISBN, a.getString(0));
+            bookData.putString(DBKey.ISBN, a.getString(0));
         } else {
             a = element.optJSONArray("isbn_10");
             if (a != null && !a.isEmpty()) {
-                bookData.putString(DBKey.KEY_ISBN, a.getString(0));
+                bookData.putString(DBKey.ISBN, a.getString(0));
             }
         }
         a = element.optJSONArray("amazon");

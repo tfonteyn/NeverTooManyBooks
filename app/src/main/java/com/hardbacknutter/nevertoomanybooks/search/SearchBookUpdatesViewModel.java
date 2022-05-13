@@ -164,32 +164,32 @@ public class SearchBookUpdatesViewModel
                         .add(R.string.lbl_cover_back, DBKey.COVER_IS_USED[1])
                         .addRelatedField(DBKey.COVER_IS_USED[1], Book.BKEY_TMP_FILE_SPEC[1])
 
-                        .add(R.string.lbl_title, DBKey.KEY_TITLE)
-                        .add(R.string.lbl_isbn, DBKey.KEY_ISBN)
+                        .add(R.string.lbl_title, DBKey.TITLE)
+                        .add(R.string.lbl_isbn, DBKey.ISBN)
 
                         .addList(R.string.lbl_authors, DBKey.FK_AUTHOR, Book.BKEY_AUTHOR_LIST)
-                        .addList(R.string.lbl_series_multiple, DBKey.KEY_SERIES_TITLE,
+                        .addList(R.string.lbl_series_multiple, DBKey.SERIES_TITLE,
                                  Book.BKEY_SERIES_LIST)
 
-                        .add(R.string.lbl_description, DBKey.KEY_DESCRIPTION)
+                        .add(R.string.lbl_description, DBKey.DESCRIPTION)
 
                         .addList(R.string.lbl_table_of_content, DBKey.BITMASK_TOC,
                                  Book.BKEY_TOC_LIST)
 
-                        .addList(R.string.lbl_publishers, DBKey.KEY_PUBLISHER_NAME,
+                        .addList(R.string.lbl_publishers, DBKey.PUBLISHER_NAME,
                                  Book.BKEY_PUBLISHER_LIST)
-                        .add(R.string.lbl_print_run, DBKey.KEY_PRINT_RUN)
+                        .add(R.string.lbl_print_run, DBKey.PRINT_RUN)
                         .add(R.string.lbl_date_published, DBKey.DATE_BOOK_PUBLICATION)
                         .add(R.string.lbl_first_publication, DBKey.DATE_FIRST_PUBLICATION)
 
                         .add(R.string.lbl_price_listed, DBKey.PRICE_LISTED)
                         .addRelatedField(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY)
 
-                        .add(R.string.lbl_pages, DBKey.KEY_PAGES)
-                        .add(R.string.lbl_format, DBKey.KEY_FORMAT)
-                        .add(R.string.lbl_color, DBKey.KEY_COLOR)
-                        .add(R.string.lbl_language, DBKey.KEY_LANGUAGE)
-                        .add(R.string.lbl_genre, DBKey.KEY_GENRE);
+                        .add(R.string.lbl_pages, DBKey.PAGES)
+                        .add(R.string.lbl_format, DBKey.BOOK_FORMAT)
+                        .add(R.string.lbl_color, DBKey.COLOR)
+                        .add(R.string.lbl_language, DBKey.LANGUAGE)
+                        .add(R.string.lbl_genre, DBKey.GENRE);
 
         for (final SearchEngineConfig seConfig : SearchEngineRegistry.getInstance().getAll()) {
             final Domain domain = seConfig.getExternalIdDomain();
@@ -322,7 +322,7 @@ public class SearchBookUpdatesViewModel
                     clearSearchCriteria();
                     boolean canSearch = false;
 
-                    final String isbnStr = mCurrentBook.getString(DBKey.KEY_ISBN);
+                    final String isbnStr = mCurrentBook.getString(DBKey.ISBN);
                     if (!isbnStr.isEmpty()) {
                         setIsbnSearchText(isbnStr, true);
                         canSearch = true;

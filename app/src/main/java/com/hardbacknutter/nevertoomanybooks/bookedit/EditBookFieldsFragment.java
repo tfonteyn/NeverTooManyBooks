@@ -101,7 +101,7 @@ public class EditBookFieldsFragment
     private final ActivityResultLauncher<Fragment> mScannerLauncher = registerForActivityResult(
             new ScannerContract(), barCode -> {
                 if (barCode != null) {
-                    mVm.getBook().putString(DBKey.KEY_ISBN, barCode);
+                    mVm.getBook().putString(DBKey.ISBN, barCode);
                 }
             });
 
@@ -169,7 +169,7 @@ public class EditBookFieldsFragment
         mVb.lblAuthor.setEndIconOnClickListener(v -> editAuthor());
         mVb.author.setOnClickListener(v -> editAuthor());
 
-        if (DBKey.isUsed(global, DBKey.KEY_SERIES_TITLE)) {
+        if (DBKey.isUsed(global, DBKey.SERIES_TITLE)) {
             mVm.onSeriesList().observe(getViewLifecycleOwner(), series ->
                     mVm.requireField(R.id.series_title).setValue(series));
             // Series editor (screen)

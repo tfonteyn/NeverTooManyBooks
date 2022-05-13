@@ -64,7 +64,7 @@ public class SeriesCoder
 
         final JSONObject details = new JSONObject();
         if (series.isComplete()) {
-            details.put(DBKey.BOOL_SERIES_IS_COMPLETE, true);
+            details.put(DBKey.SERIES_IS_COMPLETE, true);
         }
 
         if (!details.isEmpty()) {
@@ -81,8 +81,8 @@ public class SeriesCoder
         if (parts.size() > 1) {
             try {
                 final JSONObject details = new JSONObject(parts.get(1));
-                if (details.has(DBKey.BOOL_SERIES_IS_COMPLETE)) {
-                    series.setComplete(details.optBoolean(DBKey.BOOL_SERIES_IS_COMPLETE));
+                if (details.has(DBKey.SERIES_IS_COMPLETE)) {
+                    series.setComplete(details.optBoolean(DBKey.SERIES_IS_COMPLETE));
                 } else if (details.has("complete")) {
                     series.setComplete(details.optBoolean("complete"));
                 }

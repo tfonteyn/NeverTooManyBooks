@@ -370,7 +370,7 @@ public class CoverHandler {
         if (mCoverBrowserIsbnSupplier != null) {
             isbnStr = mCoverBrowserIsbnSupplier.get();
         } else {
-            isbnStr = book.getString(DBKey.KEY_ISBN);
+            isbnStr = book.getString(DBKey.ISBN);
         }
 
         if (!isbnStr.isEmpty()) {

@@ -39,13 +39,13 @@ public class SeriesCoder
         final JSONObject out = new JSONObject();
 
         out.put(DBKey.PK_ID, series.getId());
-        out.put(DBKey.KEY_SERIES_TITLE, series.getTitle());
+        out.put(DBKey.SERIES_TITLE, series.getTitle());
 
         if (!series.getNumber().isEmpty()) {
-            out.put(DBKey.KEY_BOOK_NUM_IN_SERIES, series.getNumber());
+            out.put(DBKey.SERIES_BOOK_NUMBER, series.getNumber());
         }
         if (series.isComplete()) {
-            out.put(DBKey.BOOL_SERIES_IS_COMPLETE, true);
+            out.put(DBKey.SERIES_IS_COMPLETE, true);
         }
         return out;
     }
@@ -55,14 +55,14 @@ public class SeriesCoder
     public Series decode(@NonNull final JSONObject data)
             throws JSONException {
 
-        final Series series = new Series(data.getString(DBKey.KEY_SERIES_TITLE));
+        final Series series = new Series(data.getString(DBKey.SERIES_TITLE));
         series.setId(data.getLong(DBKey.PK_ID));
 
-        if (data.has(DBKey.KEY_BOOK_NUM_IN_SERIES)) {
-            series.setNumber(data.getString(DBKey.KEY_BOOK_NUM_IN_SERIES));
+        if (data.has(DBKey.SERIES_BOOK_NUMBER)) {
+            series.setNumber(data.getString(DBKey.SERIES_BOOK_NUMBER));
         }
-        if (data.has(DBKey.BOOL_SERIES_IS_COMPLETE)) {
-            series.setComplete(data.getBoolean(DBKey.BOOL_SERIES_IS_COMPLETE));
+        if (data.has(DBKey.SERIES_IS_COMPLETE)) {
+            series.setComplete(data.getBoolean(DBKey.SERIES_IS_COMPLETE));
         } else if (data.has("complete")) {
             series.setComplete(data.getBoolean("complete"));
         }

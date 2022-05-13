@@ -60,7 +60,7 @@ class SingleFileDownloadTask
         mFolder = folder;
 
         // sanity check
-        if (mBook.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT).isEmpty()) {
+        if (mBook.getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT).isEmpty()) {
             //TODO: use a better message
             setTaskFailure(new TaskStartException(R.string.error_download_failed));
             return;

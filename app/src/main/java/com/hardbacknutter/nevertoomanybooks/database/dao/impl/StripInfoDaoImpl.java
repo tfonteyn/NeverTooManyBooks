@@ -41,11 +41,11 @@ public class StripInfoDaoImpl
             INSERT_INTO_ + TBL_STRIPINFO_COLLECTION.getName()
             + '(' + DBKey.FK_BOOK
             + ',' + DBKey.SID_STRIP_INFO
-            + ',' + DBKey.KEY_STRIP_INFO_COLL_ID
-            + ',' + DBKey.BOOL_STRIP_INFO_OWNED
-            + ',' + DBKey.BOOL_STRIP_INFO_WANTED
-            + ',' + DBKey.KEY_STRIP_INFO_AMOUNT
-            + ',' + DBKey.UTC_DATE_LAST_SYNC_STRIP_INFO
+            + ',' + DBKey.STRIP_INFO_COLL_ID
+            + ',' + DBKey.STRIP_INFO_OWNED
+            + ',' + DBKey.STRIP_INFO_WANTED
+            + ',' + DBKey.STRIP_INFO_AMOUNT
+            + ',' + DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC
             + ") VALUES (?,?,?,?,?,?,?)";
 
     /**
@@ -82,11 +82,11 @@ public class StripInfoDaoImpl
         try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
             stmt.bindLong(1, book.getId());
             stmt.bindLong(2, book.getInt(DBKey.SID_STRIP_INFO));
-            stmt.bindLong(3, book.getInt(DBKey.KEY_STRIP_INFO_COLL_ID));
-            stmt.bindBoolean(4, book.getBoolean(DBKey.BOOL_STRIP_INFO_OWNED));
-            stmt.bindBoolean(5, book.getBoolean(DBKey.BOOL_STRIP_INFO_WANTED));
-            stmt.bindLong(6, book.getInt(DBKey.KEY_STRIP_INFO_AMOUNT));
-            stmt.bindString(7, book.getString(DBKey.UTC_DATE_LAST_SYNC_STRIP_INFO));
+            stmt.bindLong(3, book.getInt(DBKey.STRIP_INFO_COLL_ID));
+            stmt.bindBoolean(4, book.getBoolean(DBKey.STRIP_INFO_OWNED));
+            stmt.bindBoolean(5, book.getBoolean(DBKey.STRIP_INFO_WANTED));
+            stmt.bindLong(6, book.getInt(DBKey.STRIP_INFO_AMOUNT));
+            stmt.bindString(7, book.getString(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC));
             final long rowId = stmt.executeInsert();
             if (rowId == -1) {
                 throw new DaoWriteException("StripInfo data insert failed");

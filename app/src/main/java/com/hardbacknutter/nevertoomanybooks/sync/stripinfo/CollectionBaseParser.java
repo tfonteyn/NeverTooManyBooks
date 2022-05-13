@@ -81,20 +81,20 @@ abstract class CollectionBaseParser {
                     @NonNull final Bundle destBundle) {
 
         if (mJSoupHelper.getBoolean(root, mIdRead)) {
-            destBundle.putBoolean(DBKey.BOOL_READ, true);
+            destBundle.putBoolean(DBKey.READ__BOOL, true);
         }
 
         final ArrayList<Bookshelf> bookshelves = new ArrayList<>();
 
         if (mJSoupHelper.getBoolean(root, mIdOwned)) {
-            destBundle.putBoolean(DBKey.BOOL_STRIP_INFO_OWNED, true);
+            destBundle.putBoolean(DBKey.STRIP_INFO_OWNED, true);
             if (mOwnedBooksBookshelf != null) {
                 bookshelves.add(mOwnedBooksBookshelf);
             }
         }
 
         if (mJSoupHelper.getBoolean(root, mIdWanted)) {
-            destBundle.putBoolean(DBKey.BOOL_STRIP_INFO_WANTED, true);
+            destBundle.putBoolean(DBKey.STRIP_INFO_WANTED, true);
             if (mWishListBookshelf != null) {
                 bookshelves.add(mWishListBookshelf);
             }
@@ -113,12 +113,12 @@ abstract class CollectionBaseParser {
 
         tmpStr = mJSoupHelper.getString(root, mIdLocation);
         if (!tmpStr.isEmpty()) {
-            destBundle.putString(DBKey.KEY_LOCATION, tmpStr);
+            destBundle.putString(DBKey.LOCATION, tmpStr);
         }
 
         tmpStr = mJSoupHelper.getString(root, mIdNotes);
         if (!tmpStr.isEmpty()) {
-            destBundle.putString(DBKey.KEY_PRIVATE_NOTES, tmpStr);
+            destBundle.putString(DBKey.PERSONAL_NOTES, tmpStr);
         }
 
         // Incoming value attribute is in the format "DD/MM/YYYY".
@@ -143,7 +143,7 @@ abstract class CollectionBaseParser {
         tmpInt = mJSoupHelper.getInt(root, mIdRating);
         if (tmpInt > 0) {
             // site is int 1..10; convert to float 0.5 .. 5 (and clamp because paranoia)
-            destBundle.putFloat(DBKey.KEY_RATING,
+            destBundle.putFloat(DBKey.RATING,
                                 MathUtils.clamp(((float) tmpInt) / 2, 0.5f, 5f));
         }
 
@@ -154,7 +154,7 @@ abstract class CollectionBaseParser {
 
         tmpInt = mJSoupHelper.getInt(root, mIdAmount);
         if (tmpInt > 0) {
-            destBundle.putInt(DBKey.KEY_STRIP_INFO_AMOUNT, tmpInt);
+            destBundle.putInt(DBKey.STRIP_INFO_AMOUNT, tmpInt);
         }
     }
 }

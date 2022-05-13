@@ -286,8 +286,8 @@ public class IsfdbSearchEngine
             // We use that page in all other searches.
             // However when searching by their native id, we're not visiting that page.
             // Default to English...
-            if (!bookData.containsKey(DBKey.KEY_LANGUAGE)) {
-                bookData.putString(DBKey.KEY_LANGUAGE, LANGUAGE_DEFAULT);
+            if (!bookData.containsKey(DBKey.LANGUAGE)) {
+                bookData.putString(DBKey.LANGUAGE, LANGUAGE_DEFAULT);
             }
         }
         return bookData;
@@ -821,7 +821,7 @@ public class IsfdbSearchEngine
                             nextSibling = labelElement.nextSibling();
                             if (nextSibling != null) {
                                 mTitle = nextSibling.toString().trim();
-                                bookData.putString(DBKey.KEY_TITLE, mTitle);
+                                bookData.putString(DBKey.TITLE, mTitle);
                             }
                             break;
                         }
@@ -864,7 +864,7 @@ public class IsfdbSearchEngine
                                 tmpString = nextSibling.toString().trim();
                                 tmpString = ISBN.cleanText(tmpString);
                                 if (!tmpString.isEmpty()) {
-                                    bookData.putString(DBKey.KEY_ISBN, tmpString);
+                                    bookData.putString(DBKey.ISBN, tmpString);
                                 }
 
                                 final Element nextElementSibling =
@@ -924,7 +924,7 @@ public class IsfdbSearchEngine
                             nextSibling = labelElement.nextSibling();
                             if (nextSibling != null) {
                                 tmpString = nextSibling.toString().trim();
-                                bookData.putString(DBKey.KEY_PAGES, tmpString);
+                                bookData.putString(DBKey.PAGES, tmpString);
                             }
                             break;
                         }
@@ -935,7 +935,7 @@ public class IsfdbSearchEngine
                             final Element nextElementSibling = labelElement.nextElementSibling();
                             if (nextElementSibling != null) {
                                 tmpString = nextElementSibling.ownText();
-                                bookData.putString(DBKey.KEY_FORMAT, tmpString);
+                                bookData.putString(DBKey.BOOK_FORMAT, tmpString);
                             }
 
                             break;
@@ -1017,7 +1017,7 @@ public class IsfdbSearchEngine
             if (tmpString.startsWith("<b>Notes:</b>")) {
                 tmpString = tmpString.substring(13).trim();
             }
-            bookData.putString(DBKey.KEY_DESCRIPTION, tmpString);
+            bookData.putString(DBKey.DESCRIPTION, tmpString);
         }
 
         // post-process all found data.
@@ -1069,7 +1069,7 @@ public class IsfdbSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final String isbn = bookData.getString(DBKey.KEY_ISBN);
+            final String isbn = bookData.getString(DBKey.ISBN);
             final ArrayList<String> list = parseCovers(document, isbn, 0);
             if (!list.isEmpty()) {
                 bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
@@ -1448,13 +1448,13 @@ public class IsfdbSearchEngine
             // We *could* during parsing force load the publication page,
             // but that's quite an overhead just to get the language.
             // Instead...
-            if (!bookData.containsKey(DBKey.KEY_LANGUAGE)) {
+            if (!bookData.containsKey(DBKey.LANGUAGE)) {
                 final String lang = edition.getLangIso3();
                 if (lang != null && !lang.isEmpty()) {
-                    bookData.putString(DBKey.KEY_LANGUAGE, lang);
+                    bookData.putString(DBKey.LANGUAGE, lang);
                 } else {
                     // ... just set English as the language and let the user manually correct it.
-                    bookData.putString(DBKey.KEY_LANGUAGE, LANGUAGE_DEFAULT);
+                    bookData.putString(DBKey.LANGUAGE, LANGUAGE_DEFAULT);
                 }
             }
         }

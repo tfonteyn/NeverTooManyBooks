@@ -207,8 +207,8 @@ public class CalibreContentServerWriter
                           @NonNull final Book book)
             throws IOException, StorageException, JSONException {
 
-        final int calibreId = book.getInt(DBKey.KEY_CALIBRE_BOOK_ID);
-        final String calibreUuid = book.getString(DBKey.KEY_CALIBRE_BOOK_UUID);
+        final int calibreId = book.getInt(DBKey.CALIBRE_BOOK_ID);
+        final String calibreUuid = book.getString(DBKey.CALIBRE_BOOK_UUID);
 
         // ENHANCE: full sync in one go.
         //  The logic below is TO SLOW as we fetch each book individually
@@ -227,7 +227,7 @@ public class CalibreContentServerWriter
         if (remoteTime != null) {
             // is our data newer then the server data ?
             final LocalDateTime localTime =
-                    mDateParser.parse(book.getString(DBKey.UTC_DATE_LAST_UPDATED));
+                    mDateParser.parse(book.getString(DBKey.DATE_LAST_UPDATED__UTC));
             if (localTime != null && localTime.isAfter(remoteTime)) {
                 final JSONObject identifiers = calibreBook.optJSONObject(CalibreBook.IDENTIFIERS);
                 final JSONObject changes = collectChanges(library, identifiers, book);
@@ -258,12 +258,12 @@ public class CalibreContentServerWriter
 
         final JSONObject changes = new JSONObject();
         changes.put(CalibreBook.TITLE, localBook.getTitle());
-        changes.put(CalibreBook.DESCRIPTION, localBook.getString(DBKey.KEY_DESCRIPTION));
+        changes.put(CalibreBook.DESCRIPTION, localBook.getString(DBKey.DESCRIPTION));
         // we don't read this field, but we DO write it.
         changes.put(CalibreBook.DATE_PUBLISHED,
                     localBook.getString(DBKey.DATE_BOOK_PUBLICATION));
         changes.put(CalibreBook.LAST_MODIFIED,
-                    localBook.getString(DBKey.UTC_DATE_LAST_UPDATED));
+                    localBook.getString(DBKey.DATE_LAST_UPDATED__UTC));
 
         final JSONArray authors = new JSONArray();
         localBook.getAuthors()
@@ -291,10 +291,10 @@ public class CalibreContentServerWriter
                                                     .map(Publisher::getName)
                                                     .orElse(""));
 
-        changes.put(CalibreBook.RATING, (int) localBook.getFloat(DBKey.KEY_RATING));
+        changes.put(CalibreBook.RATING, (int) localBook.getFloat(DBKey.RATING));
 
         final JSONArray languages = new JSONArray();
-        final String language = localBook.getString(DBKey.KEY_LANGUAGE);
+        final String language = localBook.getString(DBKey.LANGUAGE);
         if (!language.isEmpty()) {
             languages.put(language);
         }

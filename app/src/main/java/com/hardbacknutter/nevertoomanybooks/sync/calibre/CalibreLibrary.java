@@ -117,9 +117,9 @@ public class CalibreLibrary
                           @NonNull final DataHolder rowData) {
         super(id, rowData);
 
-        mLibraryStringId = rowData.getString(DBKey.KEY_CALIBRE_LIBRARY_STRING_ID);
-        mUuid = rowData.getString(DBKey.KEY_CALIBRE_LIBRARY_UUID);
-        mLastSyncDate = rowData.getString(DBKey.UTC_DATE_LAST_SYNC_CALIBRE_LIBRARY);
+        mLibraryStringId = rowData.getString(DBKey.CALIBRE_LIBRARY_STRING_ID);
+        mUuid = rowData.getString(DBKey.CALIBRE_LIBRARY_UUID);
+        mLastSyncDate = rowData.getString(DBKey.CALIBRE_LIBRARY_LAST_SYNC_DATE__UTC);
     }
 
     /**

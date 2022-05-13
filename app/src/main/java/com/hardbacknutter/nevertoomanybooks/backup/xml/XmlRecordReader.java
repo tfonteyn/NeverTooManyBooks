@@ -800,7 +800,7 @@ public class XmlRecordReader
         public void startElement(final int version,
                                  @NonNull final TagInfo tag) {
 
-            String uuid = tag.attrs.getValue(DBKey.KEY_STYLE_UUID);
+            String uuid = tag.attrs.getValue(DBKey.STYLE_UUID);
             if (uuid == null) {
                 // backwards compatibility
                 uuid = tag.name;
@@ -837,7 +837,7 @@ public class XmlRecordReader
             boolean isPreferred;
             try {
                 isPreferred = ParseUtils.parseBoolean(tag.attrs.getValue(
-                        DBKey.BOOL_STYLE_IS_PREFERRED), true);
+                        DBKey.STYLE_IS_PREFERRED), true);
             } catch (@NonNull final NumberFormatException ignore) {
                 isPreferred = false;
             }
@@ -845,7 +845,7 @@ public class XmlRecordReader
             int menuPosition;
             try {
                 menuPosition = Integer.parseInt(tag.attrs.getValue(
-                        DBKey.KEY_STYLE_MENU_POSITION));
+                        DBKey.STYLE_MENU_POSITION));
             } catch (@NonNull final NumberFormatException ignore) {
                 menuPosition = ListStyle.MENU_POSITION_NOT_PREFERRED;
             }

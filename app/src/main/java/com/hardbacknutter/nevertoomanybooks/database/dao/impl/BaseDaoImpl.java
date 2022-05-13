@@ -77,7 +77,7 @@ abstract class BaseDaoImpl {
      */
     private static final String TOUCH =
             UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
-            + _SET_ + DBKey.UTC_DATE_LAST_UPDATED + "=current_timestamp"
+            + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
             + _WHERE_ + DBKey.PK_ID + "=?";
 
     /** Log tag. */
@@ -130,7 +130,7 @@ abstract class BaseDaoImpl {
     @SuppressWarnings("UnusedReturnValue")
     public boolean touch(@NonNull final Book book) {
         if (touchBook(book.getId())) {
-            book.putString(DBKey.UTC_DATE_LAST_UPDATED,
+            book.putString(DBKey.DATE_LAST_UPDATED__UTC,
                            SqlEncode.date(LocalDateTime.now(ZoneOffset.UTC)));
             return true;
 

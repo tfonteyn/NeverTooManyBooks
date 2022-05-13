@@ -125,12 +125,12 @@ public class EditAuthorDialogFragment
         final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                authorDao.getNames(DBKey.KEY_AUTHOR_FAMILY_NAME));
+                authorDao.getNames(DBKey.AUTHOR_FAMILY_NAME));
 
         final ExtArrayAdapter<String> givenNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                authorDao.getNames(DBKey.KEY_AUTHOR_GIVEN_NAMES));
+                authorDao.getNames(DBKey.AUTHOR_GIVEN_NAMES));
 
         mVb.familyName.setText(mCurrentEdit.getFamilyName());
         mVb.familyName.setAdapter(familyNameAdapter);

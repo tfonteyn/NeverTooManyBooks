@@ -45,9 +45,9 @@ public class CalibreDaoImpl
     private static final String INSERT =
             INSERT_INTO_ + TBL_CALIBRE_BOOKS.getName()
             + '(' + DBKey.FK_BOOK
-            + ',' + DBKey.KEY_CALIBRE_BOOK_ID
-            + ',' + DBKey.KEY_CALIBRE_BOOK_UUID
-            + ',' + DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT
+            + ',' + DBKey.CALIBRE_BOOK_ID
+            + ',' + DBKey.CALIBRE_BOOK_UUID
+            + ',' + DBKey.CALIBRE_BOOK_MAIN_FORMAT
             + ',' + DBKey.FK_CALIBRE_LIBRARY
             + ") VALUES (?,?,?,?,?)";
 
@@ -121,9 +121,9 @@ public class CalibreDaoImpl
 
         try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
             stmt.bindLong(1, book.getId());
-            stmt.bindLong(2, book.getInt(DBKey.KEY_CALIBRE_BOOK_ID));
-            stmt.bindString(3, book.getString(DBKey.KEY_CALIBRE_BOOK_UUID));
-            stmt.bindString(4, book.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT));
+            stmt.bindLong(2, book.getInt(DBKey.CALIBRE_BOOK_ID));
+            stmt.bindString(3, book.getString(DBKey.CALIBRE_BOOK_UUID));
+            stmt.bindString(4, book.getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT));
             stmt.bindLong(5, library.getId());
             final long rowId = stmt.executeInsert();
             if (rowId == -1) {

@@ -416,38 +416,38 @@ public class BooklistGroup {
             case COLOR: {
                 return new GroupKey(R.string.lbl_color, "col",
                                     new DomainExpression(DOM_BOOK_COLOR,
-                                                         TBL_BOOKS.dot(DBKey.KEY_COLOR),
+                                                         TBL_BOOKS.dot(DBKey.COLOR),
                                                          DomainExpression.SORT_ASC));
             }
             case FORMAT: {
                 return new GroupKey(R.string.lbl_format, "fmt",
                                     new DomainExpression(DOM_BOOK_FORMAT,
-                                                         TBL_BOOKS.dot(DBKey.KEY_FORMAT),
+                                                         TBL_BOOKS.dot(DBKey.BOOK_FORMAT),
                                                          DomainExpression.SORT_ASC));
             }
             case GENRE: {
                 return new GroupKey(R.string.lbl_genre, "g",
                                     new DomainExpression(DOM_BOOK_GENRE,
-                                                         TBL_BOOKS.dot(DBKey.KEY_GENRE),
+                                                         TBL_BOOKS.dot(DBKey.GENRE),
                                                          DomainExpression.SORT_ASC));
             }
             case LANGUAGE: {
                 // Formatting is done after fetching.
                 return new GroupKey(R.string.lbl_language, "lng",
                                     new DomainExpression(DOM_BOOK_LANGUAGE,
-                                                         TBL_BOOKS.dot(DBKey.KEY_LANGUAGE),
+                                                         TBL_BOOKS.dot(DBKey.LANGUAGE),
                                                          DomainExpression.SORT_ASC));
             }
             case LOCATION: {
                 return new GroupKey(R.string.lbl_location, "loc",
                                     new DomainExpression(DOM_BOOK_LOCATION,
-                                                         TBL_BOOKS.dot(DBKey.KEY_LOCATION),
+                                                         TBL_BOOKS.dot(DBKey.LOCATION),
                                                          DomainExpression.SORT_ASC));
             }
             case CONDITION: {
                 return new GroupKey(R.string.lbl_condition, "bk_cnd",
                                     new DomainExpression(DOM_BOOK_CONDITION,
-                                                         TBL_BOOKS.dot(DBKey.KEY_BOOK_CONDITION),
+                                                         TBL_BOOKS.dot(DBKey.BOOK_CONDITION),
                                                          DomainExpression.SORT_DESC));
             }
             case RATING: {
@@ -456,7 +456,7 @@ public class BooklistGroup {
                 // The data is cast to an integer as a precaution.
                 return new GroupKey(R.string.lbl_rating, "rt",
                                     new DomainExpression(DOM_BOOK_RATING,
-                                                         "CAST(" + TBL_BOOKS.dot(DBKey.KEY_RATING)
+                                                         "CAST(" + TBL_BOOKS.dot(DBKey.RATING)
                                                          + " AS INTEGER)",
                                                          DomainExpression.SORT_DESC));
             }
@@ -464,7 +464,7 @@ public class BooklistGroup {
                 return new GroupKey(R.string.lbl_lend_out, "l",
                                     new DomainExpression(DOM_LOANEE,
                                                          "COALESCE(" + TBL_BOOK_LOANEE.dot(
-                                                                 DBKey.KEY_LOANEE) + ",'')",
+                                                                 DBKey.LOANEE_NAME) + ",'')",
                                                          DomainExpression.SORT_ASC));
             }
 
@@ -476,7 +476,7 @@ public class BooklistGroup {
                                             new Domain.Builder("blg_rd_sts", ColumnInfo.TYPE_TEXT)
                                                     .notNull()
                                                     .build(),
-                                            TBL_BOOKS.dot(DBKey.BOOL_READ),
+                                            TBL_BOOKS.dot(DBKey.READ__BOOL),
                                             DomainExpression.SORT_ASC));
             }
             case BOOK_TITLE_1ST_LETTER: {
@@ -577,7 +577,7 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_add_y", ColumnInfo.TYPE_INTEGER).build(),
-                        year(TBL_BOOKS.dot(DBKey.UTC_DATE_ADDED), true),
+                        year(TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC), true),
                         DomainExpression.SORT_DESC);
                 return new GroupKey(R.string.lbl_added_year, "ya", keyDomain)
                         .addBaseDomain(DATE_ADDED);
@@ -586,7 +586,7 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done after fetching.
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_add_m", ColumnInfo.TYPE_INTEGER).build(),
-                        month(TBL_BOOKS.dot(DBKey.UTC_DATE_ADDED), true),
+                        month(TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC), true),
                         DomainExpression.SORT_DESC);
                 return new GroupKey(R.string.lbl_added_month, "ma", keyDomain)
                         .addBaseDomain(DATE_ADDED);
@@ -595,7 +595,7 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_add_d", ColumnInfo.TYPE_INTEGER).build(),
-                        day(TBL_BOOKS.dot(DBKey.UTC_DATE_ADDED), true),
+                        day(TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC), true),
                         DomainExpression.SORT_DESC);
                 return new GroupKey(R.string.lbl_added_day, "da", keyDomain)
                         .addBaseDomain(DATE_ADDED);
@@ -606,7 +606,7 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_upd_y", ColumnInfo.TYPE_INTEGER).build(),
-                        year(TBL_BOOKS.dot(DBKey.UTC_DATE_LAST_UPDATED), true),
+                        year(TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC), true),
                         DomainExpression.SORT_DESC);
                 return new GroupKey(R.string.lbl_update_year, "yu", keyDomain)
                         .addBaseDomain(DATE_LAST_UPDATED);
@@ -615,7 +615,7 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done after fetching.
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_upd_m", ColumnInfo.TYPE_INTEGER).build(),
-                        month(TBL_BOOKS.dot(DBKey.UTC_DATE_LAST_UPDATED), true),
+                        month(TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC), true),
                         DomainExpression.SORT_DESC);
                 return new GroupKey(R.string.lbl_update_month, "mu", keyDomain)
                         .addBaseDomain(DATE_LAST_UPDATED);
@@ -624,7 +624,7 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_upd_d", ColumnInfo.TYPE_INTEGER).build(),
-                        day(TBL_BOOKS.dot(DBKey.UTC_DATE_LAST_UPDATED), true),
+                        day(TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC), true),
                         DomainExpression.SORT_DESC);
                 return new GroupKey(R.string.lbl_update_day, "du", keyDomain)
                         .addBaseDomain(DATE_LAST_UPDATED);
@@ -635,7 +635,7 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_rd_y", ColumnInfo.TYPE_INTEGER).build(),
-                        year(TBL_BOOKS.dot(DBKey.DATE_READ_END), true),
+                        year(TBL_BOOKS.dot(DBKey.READ_END__DATE), true),
                         DomainExpression.SORT_DESC);
                 return new GroupKey(R.string.lbl_read_year, "yr", keyDomain)
                         .addBaseDomain(DATE_READ_END)
@@ -645,7 +645,7 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done after fetching.
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_rd_m", ColumnInfo.TYPE_INTEGER).build(),
-                        month(TBL_BOOKS.dot(DBKey.DATE_READ_END), true),
+                        month(TBL_BOOKS.dot(DBKey.READ_END__DATE), true),
                         DomainExpression.SORT_DESC);
                 return new GroupKey(R.string.lbl_read_month, "mr", keyDomain)
                         .addBaseDomain(DATE_READ_END)
@@ -655,7 +655,7 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_rd_d", ColumnInfo.TYPE_INTEGER).build(),
-                        day(TBL_BOOKS.dot(DBKey.DATE_READ_END), true),
+                        day(TBL_BOOKS.dot(DBKey.READ_END__DATE), true),
                         DomainExpression.SORT_DESC);
                 return new GroupKey(R.string.lbl_read_day, "dr", keyDomain)
                         .addBaseDomain(DATE_READ_END)
@@ -666,7 +666,7 @@ public class BooklistGroup {
             // This prevents a potential null issue
             case BOOK: {
                 return new GroupKey(R.string.lbl_book, "b", new DomainExpression(
-                        DOM_TITLE, TBL_BOOKS.dot(DBKey.KEY_TITLE)));
+                        DOM_TITLE, TBL_BOOKS.dot(DBKey.TITLE)));
             }
             default:
                 throw new IllegalArgumentException(String.valueOf(mId));

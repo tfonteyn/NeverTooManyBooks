@@ -120,7 +120,7 @@ public class SeriesBooklistGroup
                 .addGroupDomain(
                         // Group by complete-flag
                         new DomainExpression(DOM_SERIES_IS_COMPLETE,
-                                             TBL_SERIES.dot(DBKey.BOOL_SERIES_IS_COMPLETE)))
+                                             TBL_SERIES.dot(DBKey.SERIES_IS_COMPLETE)))
                 .addBaseDomain(
                         // The series number in the base data in sorted order.
                         // This field is NOT displayed.
@@ -128,7 +128,7 @@ public class SeriesBooklistGroup
                         // or even 3.1|Omnibus 3-10" as a series number.
                         new DomainExpression(DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT,
                                              "CAST("
-                                             + TBL_BOOK_SERIES.dot(DBKey.KEY_BOOK_NUM_IN_SERIES)
+                                             + TBL_BOOK_SERIES.dot(DBKey.SERIES_BOOK_NUMBER)
                                              + " AS REAL)",
                                              DomainExpression.SORT_ASC))
                 .addBaseDomain(
@@ -136,7 +136,7 @@ public class SeriesBooklistGroup
                         // This field is displayed.
                         // Covers non-numeric data (where the above float would fail)
                         new DomainExpression(DOM_BOOK_NUM_IN_SERIES,
-                                             TBL_BOOK_SERIES.dot(DBKey.KEY_BOOK_NUM_IN_SERIES),
+                                             TBL_BOOK_SERIES.dot(DBKey.SERIES_BOOK_NUMBER),
                                              DomainExpression.SORT_ASC));
     }
 
@@ -145,7 +145,7 @@ public class SeriesBooklistGroup
     protected DomainExpression createDisplayDomainExpression() {
         // Not sorted; we sort on the OB domain as defined in #createGroupKey.
         return new DomainExpression(DBDefinitions.DOM_SERIES_TITLE,
-                                    DBDefinitions.TBL_SERIES.dot(DBKey.KEY_SERIES_TITLE));
+                                    DBDefinitions.TBL_SERIES.dot(DBKey.SERIES_TITLE));
     }
 
     @Override

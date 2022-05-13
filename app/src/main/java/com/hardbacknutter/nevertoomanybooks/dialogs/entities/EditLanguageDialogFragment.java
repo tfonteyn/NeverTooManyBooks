@@ -51,7 +51,7 @@ public class EditLanguageDialogFragment
      * No-arg constructor for OS use.
      */
     public EditLanguageDialogFragment() {
-        super(R.string.lbl_language, R.string.lbl_language, DBKey.KEY_LANGUAGE);
+        super(R.string.lbl_language, R.string.lbl_language, DBKey.LANGUAGE);
     }
 
     /**

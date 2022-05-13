@@ -53,26 +53,26 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FT
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.AUTHOR_FAMILY_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.AUTHOR_GIVEN_NAMES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_AUTHOR_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_PUBLISHER_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_SERIES_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DESCRIPTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FTS_AUTHOR_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FTS_BOOK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FTS_TOC_ENTRY_TITLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_AUTHOR_FAMILY_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_AUTHOR_GIVEN_NAMES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_AUTHOR_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_NUM_IN_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_PUBLISHER_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_SERIES_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.GENRE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_TOC_ENTRY_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_DESCRIPTION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_FTS_BOOK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_GENRE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_ISBN;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_LOCATION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_PRIVATE_NOTES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_PUBLISHER_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_SERIES_TITLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_TITLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.LOCATION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PERSONAL_NOTES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PUBLISHER_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.SERIES_BOOK_NUMBER;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.SERIES_TITLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.TITLE;
 
 public class FtsDaoImpl
         extends BaseDaoImpl
@@ -83,18 +83,18 @@ public class FtsDaoImpl
 
     /** the body of an INSERT INTO [table]. Used more than once. */
     private static final String INSERT_BODY =
-            " (" + KEY_TITLE
+            " (" + TITLE
             + ',' + FTS_AUTHOR_NAME
-            + ',' + KEY_SERIES_TITLE
-            + ',' + KEY_DESCRIPTION
-            + ',' + KEY_PRIVATE_NOTES
-            + ',' + KEY_PUBLISHER_NAME
-            + ',' + KEY_GENRE
-            + ',' + KEY_LOCATION
-            + ',' + KEY_ISBN
+            + ',' + SERIES_TITLE
+            + ',' + DESCRIPTION
+            + ',' + PERSONAL_NOTES
+            + ',' + PUBLISHER_NAME
+            + ',' + GENRE
+            + ',' + LOCATION
+            + ',' + ISBN
             + ',' + FTS_TOC_ENTRY_TITLE
 
-            + ',' + KEY_FTS_BOOK_ID
+            + ',' + FTS_BOOK_ID
             + ") VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 
     /**
@@ -103,18 +103,18 @@ public class FtsDaoImpl
      */
     private static final String UPDATE =
             UPDATE_ + TBL_FTS_BOOKS.getName()
-            + _SET_ + KEY_TITLE + "=?"
+            + _SET_ + TITLE + "=?"
             + ',' + FTS_AUTHOR_NAME + "=?"
-            + ',' + KEY_SERIES_TITLE + "=?"
-            + ',' + KEY_DESCRIPTION + "=?"
-            + ',' + KEY_PRIVATE_NOTES + "=?"
-            + ',' + KEY_PUBLISHER_NAME + "=?"
-            + ',' + KEY_GENRE + "=?"
-            + ',' + KEY_LOCATION + "=?"
-            + ',' + KEY_ISBN + "=?"
+            + ',' + SERIES_TITLE + "=?"
+            + ',' + DESCRIPTION + "=?"
+            + ',' + PERSONAL_NOTES + "=?"
+            + ',' + PUBLISHER_NAME + "=?"
+            + ',' + GENRE + "=?"
+            + ',' + LOCATION + "=?"
+            + ',' + ISBN + "=?"
             + ',' + FTS_TOC_ENTRY_TITLE + "=?"
 
-            + _WHERE_ + KEY_FTS_BOOK_ID + "=?";
+            + _WHERE_ + FTS_BOOK_ID + "=?";
 
     /**
      * The full INSERT statement.
@@ -127,12 +127,12 @@ public class FtsDaoImpl
     /** Used during a full FTS rebuild. Minimal column list. */
     private static final String ALL_BOOKS =
             SELECT_ + PK_ID
-            + ',' + KEY_TITLE
-            + ',' + KEY_DESCRIPTION
-            + ',' + KEY_PRIVATE_NOTES
-            + ',' + KEY_GENRE
-            + ',' + KEY_LOCATION
-            + ',' + KEY_ISBN
+            + ',' + TITLE
+            + ',' + DESCRIPTION
+            + ',' + PERSONAL_NOTES
+            + ',' + GENRE
+            + ',' + LOCATION
+            + ',' + ISBN
             + _FROM_ + TBL_BOOKS.getName();
 
     /** Used during insert of a book. Minimal column list. */
@@ -140,38 +140,38 @@ public class FtsDaoImpl
 
     /** Used during insert of a book. Minimal column list. Ordered by position. */
     private static final String GET_AUTHORS_BY_BOOK_ID =
-            SELECT_ + TBL_AUTHORS.dotAs(KEY_AUTHOR_FAMILY_NAME, KEY_AUTHOR_GIVEN_NAMES)
+            SELECT_ + TBL_AUTHORS.dotAs(AUTHOR_FAMILY_NAME, AUTHOR_GIVEN_NAMES)
             + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_AUTHORS)
             + _WHERE_ + TBL_BOOK_AUTHOR.dot(FK_BOOK) + "=?"
-            + _ORDER_BY_ + TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_POSITION);
+            + _ORDER_BY_ + TBL_BOOK_AUTHOR.dot(BOOK_AUTHOR_POSITION);
 
     /** Used during insert of a book. Minimal column list. Ordered by position. */
     private static final String GET_PUBLISHERS_BY_BOOK_ID =
-            SELECT_ + TBL_PUBLISHERS.dotAs(KEY_PUBLISHER_NAME)
+            SELECT_ + TBL_PUBLISHERS.dotAs(PUBLISHER_NAME)
             + _FROM_ + TBL_BOOK_PUBLISHER.startJoin(TBL_PUBLISHERS)
             + _WHERE_ + TBL_BOOK_PUBLISHER.dot(FK_BOOK) + "=?"
-            + _ORDER_BY_ + TBL_BOOK_PUBLISHER.dot(KEY_BOOK_PUBLISHER_POSITION);
+            + _ORDER_BY_ + TBL_BOOK_PUBLISHER.dot(BOOK_PUBLISHER_POSITION);
 
     /** Used during insert of a book. Minimal column list. Ordered by position. */
     private static final String GET_TOC_TITLES_BY_BOOK_ID =
-            SELECT_ + TBL_TOC_ENTRIES.dotAs(KEY_TITLE)
+            SELECT_ + TBL_TOC_ENTRIES.dotAs(TITLE)
             + _FROM_ + TBL_TOC_ENTRIES.startJoin(TBL_BOOK_TOC_ENTRIES)
             + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(FK_BOOK) + "=?"
             + _ORDER_BY_ + TBL_BOOK_TOC_ENTRIES.dot(KEY_BOOK_TOC_ENTRY_POSITION);
 
     /** Used during insert of a book. Minimal column list. Ordered by position. */
     private static final String GET_SERIES_BY_BOOK_ID =
-            SELECT_ + TBL_SERIES.dot(KEY_SERIES_TITLE) + "||' '||"
-            + " COALESCE(" + TBL_BOOK_SERIES.dot(KEY_BOOK_NUM_IN_SERIES) + ",'')"
-            + _AS_ + KEY_SERIES_TITLE
+            SELECT_ + TBL_SERIES.dot(SERIES_TITLE) + "||' '||"
+            + " COALESCE(" + TBL_BOOK_SERIES.dot(SERIES_BOOK_NUMBER) + ",'')"
+            + _AS_ + SERIES_TITLE
             + _FROM_ + TBL_BOOK_SERIES.startJoin(TBL_SERIES)
             + _WHERE_ + TBL_BOOK_SERIES.dot(FK_BOOK) + "=?"
-            + _ORDER_BY_ + TBL_BOOK_SERIES.dot(KEY_BOOK_SERIES_POSITION);
+            + _ORDER_BY_ + TBL_BOOK_SERIES.dot(BOOK_SERIES_POSITION);
 
     /** Advanced Local-search. */
     private static final String SEARCH =
             // KEY_FTS_BOOKS_PK is the _id into the books table.
-            SELECT_ + DBKey.KEY_FTS_BOOK_ID
+            SELECT_ + DBKey.FTS_BOOK_ID
             + _FROM_ + TBL_FTS_BOOKS.getName()
             + _WHERE_ + TBL_FTS_BOOKS.getName()
             + " MATCH ? LIMIT ?";
@@ -379,10 +379,10 @@ public class FtsDaoImpl
             try (Cursor authors = mDb.rawQuery(GET_AUTHORS_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colGivenNames < 0) {
-                    colGivenNames = authors.getColumnIndexOrThrow(KEY_AUTHOR_GIVEN_NAMES);
+                    colGivenNames = authors.getColumnIndexOrThrow(AUTHOR_GIVEN_NAMES);
                 }
                 if (colFamilyName < 0) {
-                    colFamilyName = authors.getColumnIndexOrThrow(KEY_AUTHOR_FAMILY_NAME);
+                    colFamilyName = authors.getColumnIndexOrThrow(AUTHOR_FAMILY_NAME);
                 }
 
                 while (authors.moveToNext()) {
@@ -397,7 +397,7 @@ public class FtsDaoImpl
             try (Cursor series = mDb.rawQuery(GET_SERIES_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colSeriesTitle < 0) {
-                    colSeriesTitle = series.getColumnIndexOrThrow(KEY_SERIES_TITLE);
+                    colSeriesTitle = series.getColumnIndexOrThrow(SERIES_TITLE);
                 }
 
                 while (series.moveToNext()) {
@@ -410,7 +410,7 @@ public class FtsDaoImpl
                     .rawQuery(GET_PUBLISHERS_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colPublisherName < 0) {
-                    colPublisherName = publishers.getColumnIndexOrThrow(KEY_PUBLISHER_NAME);
+                    colPublisherName = publishers.getColumnIndexOrThrow(PUBLISHER_NAME);
                 }
 
                 while (publishers.moveToNext()) {
@@ -422,7 +422,7 @@ public class FtsDaoImpl
             try (Cursor toc = mDb.rawQuery(GET_TOC_TITLES_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colTOCEntryTitle < 0) {
-                    colTOCEntryTitle = toc.getColumnIndexOrThrow(KEY_TITLE);
+                    colTOCEntryTitle = toc.getColumnIndexOrThrow(TITLE);
                 }
 
                 while (toc.moveToNext()) {
@@ -431,17 +431,17 @@ public class FtsDaoImpl
             }
 
             try (final SynchronizedStatement stmt = mDb.compileStatement(sql)) {
-                bindStringOrNull(stmt, 1, rowData.getString(KEY_TITLE));
+                bindStringOrNull(stmt, 1, rowData.getString(TITLE));
                 // KEY_FTS_AUTHOR_NAME
                 bindStringOrNull(stmt, 2, authorText.toString());
                 // KEY_SERIES_TITLE
                 bindStringOrNull(stmt, 3, seriesText.toString());
-                bindStringOrNull(stmt, 4, rowData.getString(KEY_DESCRIPTION));
-                bindStringOrNull(stmt, 5, rowData.getString(KEY_PRIVATE_NOTES));
+                bindStringOrNull(stmt, 4, rowData.getString(DESCRIPTION));
+                bindStringOrNull(stmt, 5, rowData.getString(PERSONAL_NOTES));
                 bindStringOrNull(stmt, 6, publisherText.toString());
-                bindStringOrNull(stmt, 7, rowData.getString(KEY_GENRE));
-                bindStringOrNull(stmt, 8, rowData.getString(KEY_LOCATION));
-                bindStringOrNull(stmt, 9, rowData.getString(KEY_ISBN));
+                bindStringOrNull(stmt, 7, rowData.getString(GENRE));
+                bindStringOrNull(stmt, 8, rowData.getString(LOCATION));
+                bindStringOrNull(stmt, 9, rowData.getString(ISBN));
                 // KEY_FTS_TOC_ENTRY_TITLE
                 bindStringOrNull(stmt, 10, tocTitles.toString());
 

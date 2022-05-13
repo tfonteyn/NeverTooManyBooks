@@ -68,13 +68,13 @@ class LastDodoTest
         loadData(mContext, mSearchEngine, UTF_8, locationHeader, filename,
                  new boolean[]{false, false});
 
-        assertEquals("De 37ste parallel", mRawData.getString(DBKey.KEY_TITLE));
-        assertEquals("9789463064385", mRawData.getString(DBKey.KEY_ISBN));
+        assertEquals("De 37ste parallel", mRawData.getString(DBKey.TITLE));
+        assertEquals("9789463064385", mRawData.getString(DBKey.ISBN));
         assertEquals("2018", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("48", mRawData.getString(DBKey.KEY_PAGES));
-        assertEquals("Hardcover", mRawData.getString(DBKey.KEY_FORMAT));
-        assertEquals("nld", mRawData.getString(DBKey.KEY_LANGUAGE));
-        assertEquals("Gekleurd", mRawData.getString(DBKey.KEY_COLOR));
+        assertEquals("48", mRawData.getString(DBKey.PAGES));
+        assertEquals("Hardcover", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("nld", mRawData.getString(DBKey.LANGUAGE));
+        assertEquals("Gekleurd", mRawData.getString(DBKey.COLOR));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);

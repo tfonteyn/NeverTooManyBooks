@@ -50,8 +50,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF_FILTERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_STYLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PK_ID;
 
 public class BookshelfDaoImpl
@@ -63,10 +63,10 @@ public class BookshelfDaoImpl
 
     private static final String INSERT =
             INSERT_INTO_ + TBL_BOOKSHELF.getName()
-            + '(' + DBKey.KEY_BOOKSHELF_NAME
+            + '(' + DBKey.BOOKSHELF_NAME
             + ',' + DBKey.FK_STYLE
-            + ',' + DBKey.KEY_BOOKSHELF_BL_TOP_POS
-            + ',' + DBKey.KEY_BOOKSHELF_BL_TOP_OFFSET
+            + ',' + DBKey.BOOKSHELF_BL_TOP_POS
+            + ',' + DBKey.BOOKSHELF_BL_TOP_OFFSET
             + ") VALUES (?,?,?,?)";
 
     private static final String BOOK_LIST_NODE_STATE_BY_BOOKSHELF =
@@ -84,22 +84,22 @@ public class BookshelfDaoImpl
      */
     private static final String FIND_ID =
             SELECT_ + DBKey.PK_ID + _FROM_ + TBL_BOOKSHELF.getName()
-            + _WHERE_ + DBKey.KEY_BOOKSHELF_NAME + "=?" + _COLLATION;
+            + _WHERE_ + DBKey.BOOKSHELF_NAME + "=?" + _COLLATION;
 
     /** All {@link Bookshelf}, all columns; linked with the styles table. */
     private static final String SELECT_ALL =
             SELECT_ + TBL_BOOKSHELF.dotAs(DBKey.PK_ID,
-                                          DBKey.KEY_BOOKSHELF_NAME,
-                                          DBKey.KEY_BOOKSHELF_BL_TOP_POS,
-                                          DBKey.KEY_BOOKSHELF_BL_TOP_OFFSET,
+                                          DBKey.BOOKSHELF_NAME,
+                                          DBKey.BOOKSHELF_BL_TOP_POS,
+                                          DBKey.BOOKSHELF_BL_TOP_OFFSET,
                                           DBKey.FK_STYLE)
-            + ',' + TBL_BOOKLIST_STYLES.dotAs(DBKey.KEY_STYLE_UUID)
+            + ',' + TBL_BOOKLIST_STYLES.dotAs(DBKey.STYLE_UUID)
             + _FROM_ + TBL_BOOKSHELF.startJoin(TBL_BOOKLIST_STYLES);
 
     /** User defined {@link Bookshelf}, all columns; linked with the styles table. */
     private static final String SELECT_ALL_USER_SHELVES =
             SELECT_ALL + _WHERE_ + TBL_BOOKSHELF.dot(DBKey.PK_ID) + ">0"
-            + _ORDER_BY_ + DBKey.KEY_BOOKSHELF_NAME + _COLLATION;
+            + _ORDER_BY_ + DBKey.BOOKSHELF_NAME + _COLLATION;
 
     /** Get a {@link Bookshelf} by the Bookshelf id; linked with the styles table. */
     private static final String SELECT_BY_ID =
@@ -107,21 +107,21 @@ public class BookshelfDaoImpl
 
     /** Get a {@link Bookshelf} by its name; linked with the styles table. */
     private static final String FIND =
-            SELECT_ALL + _WHERE_ + TBL_BOOKSHELF.dot(DBKey.KEY_BOOKSHELF_NAME) + "=?"
+            SELECT_ALL + _WHERE_ + TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME) + "=?"
             + _COLLATION;
 
     /** All Bookshelves for a Book; ordered by name. */
     private static final String BOOKSHELVES_BY_BOOK_ID =
             SELECT_DISTINCT_ + TBL_BOOKSHELF.dotAs(DBKey.PK_ID,
-                                                   DBKey.KEY_BOOKSHELF_NAME,
-                                                   DBKey.KEY_BOOKSHELF_BL_TOP_POS,
-                                                   DBKey.KEY_BOOKSHELF_BL_TOP_OFFSET,
+                                                   DBKey.BOOKSHELF_NAME,
+                                                   DBKey.BOOKSHELF_BL_TOP_POS,
+                                                   DBKey.BOOKSHELF_BL_TOP_OFFSET,
                                                    DBKey.FK_STYLE)
-            + ',' + TBL_BOOKLIST_STYLES.dotAs(DBKey.KEY_STYLE_UUID)
+            + ',' + TBL_BOOKLIST_STYLES.dotAs(DBKey.STYLE_UUID)
 
             + _FROM_ + TBL_BOOK_BOOKSHELF.startJoin(TBL_BOOKSHELF, TBL_BOOKLIST_STYLES)
             + _WHERE_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOK) + "=?"
-            + _ORDER_BY_ + TBL_BOOKSHELF.dot(DBKey.KEY_BOOKSHELF_NAME) + _COLLATION;
+            + _ORDER_BY_ + TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME) + _COLLATION;
 
 
     private static final String SELECT_FILTERS =
@@ -158,7 +158,7 @@ public class BookshelfDaoImpl
         // inserts a 'All Books' bookshelf with _id==-1, see {@link Bookshelf}.
         db.execSQL("INSERT INTO " + TBL_BOOKSHELF
                    + '(' + PK_ID
-                   + ',' + KEY_BOOKSHELF_NAME
+                   + ',' + BOOKSHELF_NAME
                    + ',' + FK_STYLE
                    + ") VALUES ("
                    + Bookshelf.ALL_BOOKS
@@ -169,7 +169,7 @@ public class BookshelfDaoImpl
         // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
         db.execSQL("INSERT INTO " + TBL_BOOKSHELF
                    + '(' + PK_ID
-                   + ',' + KEY_BOOKSHELF_NAME
+                   + ',' + BOOKSHELF_NAME
                    + ',' + FK_STYLE
                    + ") VALUES ("
                    + Bookshelf.DEFAULT
@@ -378,9 +378,9 @@ public class BookshelfDaoImpl
             }
 
             final ContentValues cv = new ContentValues();
-            cv.put(DBKey.KEY_BOOKSHELF_NAME, bookshelf.getName());
-            cv.put(DBKey.KEY_BOOKSHELF_BL_TOP_POS, bookshelf.getFirstVisibleItemPosition());
-            cv.put(DBKey.KEY_BOOKSHELF_BL_TOP_OFFSET, bookshelf.getFirstVisibleItemViewOffset());
+            cv.put(DBKey.BOOKSHELF_NAME, bookshelf.getName());
+            cv.put(DBKey.BOOKSHELF_BL_TOP_POS, bookshelf.getFirstVisibleItemPosition());
+            cv.put(DBKey.BOOKSHELF_BL_TOP_OFFSET, bookshelf.getFirstVisibleItemViewOffset());
 
             cv.put(DBKey.FK_STYLE, styleId);
 

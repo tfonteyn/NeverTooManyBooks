@@ -185,7 +185,7 @@ public class CalibreHandler {
                               @NonNull final Menu menu,
                               @NonNull final Book book) {
 
-        final boolean hasCalibreId = !book.getString(DBKey.KEY_CALIBRE_BOOK_UUID).isEmpty();
+        final boolean hasCalibreId = !book.getString(DBKey.CALIBRE_BOOK_UUID).isEmpty();
 
         menu.findItem(R.id.SUBMENU_CALIBRE).setVisible(hasCalibreId);
         if (hasCalibreId) {
@@ -198,7 +198,7 @@ public class CalibreHandler {
                 menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD)
                     .setTitle(context.getString(
                             R.string.menu_download_ebook_format,
-                            book.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT)))
+                            book.getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT)))
                     .setVisible(true);
 
                 // don't show

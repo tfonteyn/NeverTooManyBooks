@@ -44,11 +44,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOL_STYLE_IS_BUILTIN;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOL_STYLE_IS_PREFERRED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_STYLE_MENU_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_STYLE_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.STYLE_IS_BUILTIN;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.STYLE_IS_PREFERRED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.STYLE_MENU_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.STYLE_UUID;
 
 public class StyleDaoImpl
         extends BaseDaoImpl
@@ -66,7 +66,7 @@ public class StyleDaoImpl
      */
     private static final String SELECT_STYLES_BY_TYPE =
             SELECT_STYLES
-            + _WHERE_ + DBKey.BOOL_STYLE_IS_BUILTIN + "=?"
+            + _WHERE_ + DBKey.STYLE_IS_BUILTIN + "=?"
             + _ORDER_BY_ + DBKey.PK_ID;
 
     private static final String DELETE_BOOK_LIST_NODE_STATE_BY_STYLE =
@@ -75,10 +75,10 @@ public class StyleDaoImpl
 
     private static final String INSERT_STYLE =
             INSERT_INTO_ + TBL_BOOKLIST_STYLES.getName()
-            + '(' + DBKey.KEY_STYLE_UUID
-            + ',' + DBKey.BOOL_STYLE_IS_BUILTIN
-            + ',' + DBKey.BOOL_STYLE_IS_PREFERRED
-            + ',' + DBKey.KEY_STYLE_MENU_POSITION
+            + '(' + DBKey.STYLE_UUID
+            + ',' + DBKey.STYLE_IS_BUILTIN
+            + ',' + DBKey.STYLE_IS_PREFERRED
+            + ',' + DBKey.STYLE_MENU_POSITION
             + ") VALUES (?,?,?,?)";
 
     /** Delete a {@link ListStyle}. */
@@ -88,7 +88,7 @@ public class StyleDaoImpl
     /** Get the id of a {@link ListStyle} by UUID. */
     private static final String SELECT_STYLE_ID_BY_UUID =
             SELECT_ + DBKey.PK_ID + _FROM_ + TBL_BOOKLIST_STYLES.getName()
-            + _WHERE_ + DBKey.KEY_STYLE_UUID + "=?";
+            + _WHERE_ + DBKey.STYLE_UUID + "=?";
 
     /**
      * Constructor.
@@ -108,11 +108,11 @@ public class StyleDaoImpl
                 "INSERT INTO " + TBL_BOOKLIST_STYLES
                 + '(' + PK_ID
                 // 1==true
-                + ',' + BOOL_STYLE_IS_BUILTIN
+                + ',' + STYLE_IS_BUILTIN
                 // 0==false
-                + ',' + BOOL_STYLE_IS_PREFERRED
-                + ',' + KEY_STYLE_MENU_POSITION
-                + ',' + KEY_STYLE_UUID
+                + ',' + STYLE_IS_PREFERRED
+                + ',' + STYLE_MENU_POSITION
+                + ',' + STYLE_UUID
                 + ") VALUES(?,1,0,?,?)";
         try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
             for (int id = BuiltinStyle.MAX_ID; id < 0; id++) {
@@ -194,8 +194,8 @@ public class StyleDaoImpl
     public boolean update(@NonNull final ListStyle style) {
 
         final ContentValues cv = new ContentValues();
-        cv.put(DBKey.BOOL_STYLE_IS_PREFERRED, style.isPreferred());
-        cv.put(DBKey.KEY_STYLE_MENU_POSITION, style.getMenuPosition());
+        cv.put(DBKey.STYLE_IS_PREFERRED, style.isPreferred());
+        cv.put(DBKey.STYLE_MENU_POSITION, style.getMenuPosition());
 
         return 0 < mDb.update(TBL_BOOKLIST_STYLES.getName(), cv, DBKey.PK_ID + "=?",
                               new String[]{String.valueOf(style.getId())});

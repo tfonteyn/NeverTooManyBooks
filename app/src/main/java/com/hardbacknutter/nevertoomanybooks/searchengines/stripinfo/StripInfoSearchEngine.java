@@ -352,7 +352,7 @@ public class StripInfoSearchEngine
 
                     final Element titleUrlElement = titleHeader.selectFirst(A_HREF_STRIP);
                     if (titleUrlElement != null) {
-                        bookData.putString(DBKey.KEY_TITLE, ParseUtils
+                        bookData.putString(DBKey.TITLE, ParseUtils
                                 .cleanText(titleUrlElement.text()));
                         // extract the external (site) id from the url
                         externalId = processExternalId(titleUrlElement, bookData);
@@ -401,15 +401,15 @@ public class StripInfoSearchEngine
                                     break;
 
                                 case "Pagina's":
-                                    i += processText(td, DBKey.KEY_PAGES, bookData);
+                                    i += processText(td, DBKey.PAGES, bookData);
                                     break;
 
                                 case "ISBN":
-                                    i += processText(td, DBKey.KEY_ISBN, bookData);
+                                    i += processText(td, DBKey.ISBN, bookData);
                                     break;
 
                                 case "Kaft":
-                                    i += processText(td, DBKey.KEY_FORMAT, bookData);
+                                    i += processText(td, DBKey.BOOK_FORMAT, bookData);
                                     break;
 
                                 case "Taal":
@@ -421,7 +421,7 @@ public class StripInfoSearchEngine
                                     break;
 
                                 case "Oplage":
-                                    i += processText(td, DBKey.KEY_PRINT_RUN, bookData);
+                                    i += processText(td, DBKey.PRINT_RUN, bookData);
                                     break;
 
                                 case "Barcode":
@@ -507,8 +507,8 @@ public class StripInfoSearchEngine
         }
 
         // It's extremely unlikely, but should the language be missing, add dutch.
-        if (!bookData.containsKey(DBKey.KEY_LANGUAGE)) {
-            bookData.putString(DBKey.KEY_LANGUAGE, "nld");
+        if (!bookData.containsKey(DBKey.LANGUAGE)) {
+            bookData.putString(DBKey.LANGUAGE, "nld");
         }
 
         if (isCancelled()) {
@@ -544,7 +544,7 @@ public class StripInfoSearchEngine
                               @NonNull final Bundle bookData)
             throws StorageException {
 
-        final String isbn = bookData.getString(DBKey.KEY_ISBN);
+        final String isbn = bookData.getString(DBKey.ISBN);
         final String url = parseCover(document, cIdx);
         if (url != null) {
             final String fileSpec = saveCover(isbn, cIdx, url);
@@ -785,7 +785,7 @@ public class StripInfoSearchEngine
 
             // is it a color ?
             if (COLOR_STRINGS.contains(text)) {
-                bookData.putString(DBKey.KEY_COLOR, text);
+                bookData.putString(DBKey.COLOR, text);
             }
             return 1;
         }
@@ -922,12 +922,12 @@ public class StripInfoSearchEngine
     private int processLanguage(@NonNull final Context context,
                                 @NonNull final Element td,
                                 @NonNull final Bundle bookData) {
-        final int found = processText(td, DBKey.KEY_LANGUAGE, bookData);
-        String lang = bookData.getString(DBKey.KEY_LANGUAGE);
+        final int found = processText(td, DBKey.LANGUAGE, bookData);
+        String lang = bookData.getString(DBKey.LANGUAGE);
         if (lang != null && !lang.isEmpty()) {
             lang = ServiceLocator.getInstance().getLanguages()
                                  .getISO3FromDisplayName(getLocale(context), lang);
-            bookData.putString(DBKey.KEY_LANGUAGE, lang);
+            bookData.putString(DBKey.LANGUAGE, lang);
         }
         return found;
     }
@@ -969,7 +969,7 @@ public class StripInfoSearchEngine
                 }
             }
             if (content.length() > 0) {
-                bookData.putString(DBKey.KEY_DESCRIPTION, content.toString());
+                bookData.putString(DBKey.DESCRIPTION, content.toString());
             }
         }
     }
