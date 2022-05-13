@@ -346,8 +346,8 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processIsbn(@NonNull final List<String> currentData) {
-        if (!mBookData.containsKey(DBKey.ISBN)) {
-            mBookData.putString(DBKey.ISBN, digits(currentData.get(0), true));
+        if (!mBookData.containsKey(DBKey.KEY_ISBN)) {
+            mBookData.putString(DBKey.KEY_ISBN, digits(currentData.get(0), true));
             if (currentData.size() > 1) {
                 if (!mBookData.containsKey(DBKey.BOOK_FORMAT)) {
                     String format = currentData.get(1).trim();

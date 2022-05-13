@@ -405,7 +405,7 @@ public class StripInfoSearchEngine
                                     break;
 
                                 case "ISBN":
-                                    i += processText(td, DBKey.ISBN, bookData);
+                                    i += processText(td, DBKey.KEY_ISBN, bookData);
                                     break;
 
                                 case "Kaft":
@@ -544,7 +544,7 @@ public class StripInfoSearchEngine
                               @NonNull final Bundle bookData)
             throws StorageException {
 
-        final String isbn = bookData.getString(DBKey.ISBN);
+        final String isbn = bookData.getString(DBKey.KEY_ISBN);
         final String url = parseCover(document, cIdx);
         if (url != null) {
             final String fileSpec = saveCover(isbn, cIdx, url);

@@ -148,7 +148,7 @@ public class BoBTask
                 // Always get the ISBN
                 new DomainExpression(
                         DBDefinitions.DOM_BOOK_ISBN,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.ISBN)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_ISBN)));
 
         // external site ID's
         for (final Domain domain : SearchEngineRegistry.getInstance().getExternalIdDomains()) {

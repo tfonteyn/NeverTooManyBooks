@@ -165,7 +165,7 @@ public class SearchBookUpdatesViewModel
                         .addRelatedField(DBKey.COVER_IS_USED[1], Book.BKEY_TMP_FILE_SPEC[1])
 
                         .add(R.string.lbl_title, DBKey.TITLE)
-                        .add(R.string.lbl_isbn, DBKey.ISBN)
+                        .add(R.string.lbl_isbn, DBKey.KEY_ISBN)
 
                         .addList(R.string.lbl_authors, DBKey.FK_AUTHOR, Book.BKEY_AUTHOR_LIST)
                         .addList(R.string.lbl_series_multiple, DBKey.SERIES_TITLE,
@@ -322,7 +322,7 @@ public class SearchBookUpdatesViewModel
                     clearSearchCriteria();
                     boolean canSearch = false;
 
-                    final String isbnStr = mCurrentBook.getString(DBKey.ISBN);
+                    final String isbnStr = mCurrentBook.getString(DBKey.KEY_ISBN);
                     if (!isbnStr.isEmpty()) {
                         setIsbnSearchText(isbnStr, true);
                         canSearch = true;

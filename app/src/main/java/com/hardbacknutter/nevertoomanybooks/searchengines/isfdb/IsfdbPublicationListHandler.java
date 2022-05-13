@@ -292,12 +292,12 @@ class IsfdbPublicationListHandler
                     break;
                 }
                 case XML_ISBN: {
-                    addIfNotPresent(DBKey.ISBN, ISBN.cleanText(mBuilder.toString()));
+                    addIfNotPresent(DBKey.KEY_ISBN, ISBN.cleanText(mBuilder.toString()));
                     break;
                 }
                 case XML_CATALOG: {
                     // use the ISBN if we have one, otherwise the catalog id
-                    addIfNotPresent(DBKey.ISBN, mBuilder.toString());
+                    addIfNotPresent(DBKey.KEY_ISBN, mBuilder.toString());
                     break;
                 }
                 case XML_PUBLISHER: {
@@ -352,7 +352,7 @@ class IsfdbPublicationListHandler
                     if (mFetchCovers[0]) {
                         final String tmpString = mBuilder.toString().trim();
                         try {
-                            final String isbn = mPublicationData.getString(DBKey.ISBN);
+                            final String isbn = mPublicationData.getString(DBKey.KEY_ISBN);
                             final String fileSpec =
                                     mSearchEngine.saveImage(tmpString, isbn, 0, null);
                             if (fileSpec != null) {

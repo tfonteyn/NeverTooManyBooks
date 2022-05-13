@@ -816,7 +816,7 @@ public class BooklistAdapter
             bookshelf = bookshelf && rowData.contains(DBKey.KEY_BOOKSHELF_NAME_CSV);
             cover = cover && rowData.contains(DBKey.BOOK_UUID);
             format = format && rowData.contains(DBKey.BOOK_FORMAT);
-            isbn = isbn && rowData.contains(DBKey.ISBN);
+            isbn = isbn && rowData.contains(DBKey.KEY_ISBN);
             location = location && rowData.contains(DBKey.LOCATION);
             pubDate = pubDate && rowData.contains(DBKey.DATE_BOOK_PUBLICATION);
             publisher = publisher && rowData.contains(DBKey.PUBLISHER_NAME);
@@ -1097,7 +1097,7 @@ public class BooklistAdapter
                 showOrHide(mPublisherView, getPublisherAndPubDateText(rowData));
             }
             if (mInUse.isbn) {
-                showOrHide(mIsbnView, rowData.getString(DBKey.ISBN));
+                showOrHide(mIsbnView, rowData.getString(DBKey.KEY_ISBN));
             }
             if (mInUse.format) {
                 showOrHide(mFormatView, rowData.getString(DBKey.BOOK_FORMAT));

@@ -438,8 +438,8 @@ public class XmlRecordWriter
                 writer.write('<' + TAG_BOOK);
                 writer.write(XmlUtils.idAttr(book.getLong(DBKey.PK_ID)));
                 writer.write(XmlUtils.attr(DBKey.TITLE, title));
-                writer.write(XmlUtils.attr(DBKey.ISBN,
-                                           book.getString(DBKey.ISBN)));
+                writer.write(XmlUtils.attr(DBKey.KEY_ISBN,
+                                           book.getString(DBKey.KEY_ISBN)));
                 writer.write(XmlUtils.attr(DBKey.BOOK_UUID, uuid));
                 writer.write(XmlUtils.attr(DBKey.DATE_ADDED__UTC,
                                            book.getString(DBKey.DATE_ADDED__UTC)));

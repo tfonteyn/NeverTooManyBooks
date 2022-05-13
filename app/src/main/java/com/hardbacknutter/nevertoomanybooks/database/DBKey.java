@@ -177,7 +177,7 @@ public final class DBKey {
 
     public static final String BOOK_UUID = "book_uuid";
     public static final String TITLE = "title";
-    public static final String ISBN = "isbn";
+    public static final String KEY_ISBN = "isbn";
     public static final String DATE_FIRST_PUBLICATION = "first_publication";
     public static final String DATE_BOOK_PUBLICATION = "date_published";
     public static final String PRINT_RUN = "print_run";
@@ -336,7 +336,7 @@ public final class DBKey {
             DATE_FIRST_PUBLICATION,
             BOOK_FORMAT,
             GENRE,
-            ISBN,
+            KEY_ISBN,
             LANGUAGE,
             LOANEE_NAME,
             LOCATION,

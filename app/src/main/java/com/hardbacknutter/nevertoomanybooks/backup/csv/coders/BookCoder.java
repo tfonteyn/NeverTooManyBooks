@@ -94,7 +94,7 @@ public class BookCoder {
             + COMMA + '"' + DBKey.DATE_LAST_UPDATED__UTC + '"'
             + COMMA + '"' + CSV_COLUMN_AUTHORS + '"'
             + COMMA + '"' + DBKey.TITLE + '"'
-            + COMMA + '"' + DBKey.ISBN + '"'
+            + COMMA + '"' + DBKey.KEY_ISBN + '"'
             + COMMA + '"' + CSV_COLUMN_PUBLISHERS + '"'
             + COMMA + '"' + DBKey.PRINT_RUN + '"'
             + COMMA + '"' + DBKey.DATE_BOOK_PUBLICATION + '"'
@@ -194,7 +194,7 @@ public class BookCoder {
         line.add(escape(book.getString(DBKey.DATE_LAST_UPDATED__UTC)));
         line.add(escape(mAuthorCoder.encodeList(book.getAuthors())));
         line.add(escape(book.getString(DBKey.TITLE)));
-        line.add(escape(book.getString(DBKey.ISBN)));
+        line.add(escape(book.getString(DBKey.KEY_ISBN)));
         line.add(escape(mPublisherCoder.encodeList(book.getPublishers())));
         line.add(escape(book.getString(DBKey.PRINT_RUN)));
         line.add(escape(book.getString(DBKey.DATE_BOOK_PUBLICATION)));

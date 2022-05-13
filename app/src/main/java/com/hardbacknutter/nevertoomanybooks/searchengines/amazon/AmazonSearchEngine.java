@@ -313,7 +313,7 @@ public class AmazonSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final String isbn = bookData.getString(DBKey.ISBN);
+            final String isbn = bookData.getString(DBKey.KEY_ISBN);
             final ArrayList<String> list = parseCovers(document, isbn, 0);
             if (!list.isEmpty()) {
                 bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
@@ -370,12 +370,12 @@ public class AmazonSearchEngine
             String data = li.text().trim();
             switch (label.toLowerCase(siteLocale)) {
                 case "isbn-13":
-                    bookData.putString(DBKey.ISBN, data);
+                    bookData.putString(DBKey.KEY_ISBN, data);
                     break;
 
                 case "isbn-10":
-                    if (!bookData.containsKey(DBKey.ISBN)) {
-                        bookData.putString(DBKey.ISBN, data);
+                    if (!bookData.containsKey(DBKey.KEY_ISBN)) {
+                        bookData.putString(DBKey.KEY_ISBN, data);
                     }
                     break;
 

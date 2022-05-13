@@ -360,7 +360,7 @@ public class EditBookViewModel
      */
     boolean bookExists() {
         if (mBook.isNew()) {
-            final String isbnStr = mBook.getString(DBKey.ISBN);
+            final String isbnStr = mBook.getString(DBKey.KEY_ISBN);
             if (!isbnStr.isEmpty()) {
                 return ServiceLocator.getInstance().getBookDao().bookExistsByIsbn(isbnStr);
             }
@@ -857,7 +857,7 @@ public class EditBookViewModel
                             .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         // Not using a EditIsbn custom View, as we want to be able to enter invalid codes here.
-        mFields.add(new EditTextField<>(fragmentId, R.id.isbn, DBKey.ISBN)
+        mFields.add(new EditTextField<>(fragmentId, R.id.isbn, DBKey.KEY_ISBN)
                             .setTextInputLayoutId(R.id.lbl_isbn));
         // don't do this for now. There is a scan icon as end-icon.
         //                  .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)

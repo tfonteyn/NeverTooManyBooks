@@ -64,8 +64,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FTS_AUTHOR_NAM
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FTS_BOOK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FTS_TOC_ENTRY_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.GENRE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_TOC_ENTRY_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.LOCATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PERSONAL_NOTES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PK_ID;
@@ -91,7 +91,7 @@ public class FtsDaoImpl
             + ',' + PUBLISHER_NAME
             + ',' + GENRE
             + ',' + LOCATION
-            + ',' + ISBN
+            + ',' + KEY_ISBN
             + ',' + FTS_TOC_ENTRY_TITLE
 
             + ',' + FTS_BOOK_ID
@@ -111,7 +111,7 @@ public class FtsDaoImpl
             + ',' + PUBLISHER_NAME + "=?"
             + ',' + GENRE + "=?"
             + ',' + LOCATION + "=?"
-            + ',' + ISBN + "=?"
+            + ',' + KEY_ISBN + "=?"
             + ',' + FTS_TOC_ENTRY_TITLE + "=?"
 
             + _WHERE_ + FTS_BOOK_ID + "=?";
@@ -132,7 +132,7 @@ public class FtsDaoImpl
             + ',' + PERSONAL_NOTES
             + ',' + GENRE
             + ',' + LOCATION
-            + ',' + ISBN
+            + ',' + KEY_ISBN
             + _FROM_ + TBL_BOOKS.getName();
 
     /** Used during insert of a book. Minimal column list. */
@@ -441,7 +441,7 @@ public class FtsDaoImpl
                 bindStringOrNull(stmt, 6, publisherText.toString());
                 bindStringOrNull(stmt, 7, rowData.getString(GENRE));
                 bindStringOrNull(stmt, 8, rowData.getString(LOCATION));
-                bindStringOrNull(stmt, 9, rowData.getString(ISBN));
+                bindStringOrNull(stmt, 9, rowData.getString(KEY_ISBN));
                 // KEY_FTS_TOC_ENTRY_TITLE
                 bindStringOrNull(stmt, 10, tocTitles.toString());
 

@@ -355,7 +355,7 @@ public class CoverBrowserDialogFragment
             final Bundle args = new Bundle(4);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
             args.putString(DBKey.TITLE, bookTitle);
-            args.putString(DBKey.ISBN, isbn);
+            args.putString(DBKey.KEY_ISBN, isbn);
             args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);
 
             final DialogFragment fragment = new CoverBrowserDialogFragment();

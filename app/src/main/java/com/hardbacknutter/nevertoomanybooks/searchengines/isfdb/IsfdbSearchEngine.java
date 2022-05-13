@@ -864,7 +864,7 @@ public class IsfdbSearchEngine
                                 tmpString = nextSibling.toString().trim();
                                 tmpString = ISBN.cleanText(tmpString);
                                 if (!tmpString.isEmpty()) {
-                                    bookData.putString(DBKey.ISBN, tmpString);
+                                    bookData.putString(DBKey.KEY_ISBN, tmpString);
                                 }
 
                                 final Element nextElementSibling =
@@ -1069,7 +1069,7 @@ public class IsfdbSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final String isbn = bookData.getString(DBKey.ISBN);
+            final String isbn = bookData.getString(DBKey.KEY_ISBN);
             final ArrayList<String> list = parseCovers(document, isbn, 0);
             if (!list.isEmpty()) {
                 bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);

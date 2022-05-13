@@ -48,7 +48,7 @@ public final class FilterFactory {
     public static final Map<String, Integer> SUPPORTED =
             Map.of(DBKey.READ__BOOL, R.string.lbl_read,
                    DBKey.SIGNED__BOOL, R.string.lbl_signed,
-                   DBKey.ISBN, R.string.lbl_isbn,
+                   DBKey.KEY_ISBN, R.string.lbl_isbn,
                    DBKey.BITMASK_TOC, R.string.lbl_anthology,
                    DBKey.LOANEE_NAME, R.string.lbl_lend_out,
 
@@ -78,7 +78,7 @@ public final class FilterFactory {
                         name, R.string.lbl_signed, R.array.pe_bob_filter_signed,
                         TBL_BOOKS, DOM_BOOK_SIGNED));
 
-            case DBKey.ISBN:
+            case DBKey.KEY_ISBN:
                 return Optional.of(new PBooleanFilter(
                         name, R.string.lbl_isbn, R.array.pe_bob_filter_isbn,
                         TBL_BOOKS, DOM_BOOK_ISBN));

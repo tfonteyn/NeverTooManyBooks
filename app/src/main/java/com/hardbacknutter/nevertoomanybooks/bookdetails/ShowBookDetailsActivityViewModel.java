@@ -216,7 +216,7 @@ public class ShowBookDetailsActivityViewModel
                                        fullDetailListFormatter)
                            .addRelatedViews(R.id.lbl_series));
 
-        fields.add(new TextViewField<>(FragmentId.Main, R.id.isbn, DBKey.ISBN)
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.isbn, DBKey.KEY_ISBN)
                            .addRelatedViews(R.id.lbl_isbn));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.description, DBKey.DESCRIPTION,

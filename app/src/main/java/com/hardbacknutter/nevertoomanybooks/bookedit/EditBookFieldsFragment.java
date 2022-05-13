@@ -101,7 +101,7 @@ public class EditBookFieldsFragment
     private final ActivityResultLauncher<Fragment> mScannerLauncher = registerForActivityResult(
             new ScannerContract(), barCode -> {
                 if (barCode != null) {
-                    mVm.getBook().putString(DBKey.ISBN, barCode);
+                    mVm.getBook().putString(DBKey.KEY_ISBN, barCode);
                 }
             });
 

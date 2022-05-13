@@ -142,7 +142,7 @@ class BookTest
 
         // String: valid
         // (KEY_ISBN is the external key for Amazon)
-        book.put(DBKey.ISBN, "test");
+        book.put(DBKey.KEY_ISBN, "test");
         // blank string for a text field -> should be removed
         book.put(DBKey.SID_OPEN_LIBRARY, "");
 
@@ -158,14 +158,14 @@ class BookTest
         assertFalse(book.contains(DBKey.SID_LIBRARY_THING));
         assertFalse(book.contains(DBKey.SID_STRIP_INFO));
 
-        assertEquals("test", book.getString(DBKey.ISBN));
+        assertEquals("test", book.getString(DBKey.KEY_ISBN));
         assertFalse(book.contains(DBKey.SID_OPEN_LIBRARY));
 
         bdh.processNullsAndBlanks();
         dump(book);
         // should not have any effect, so same tests:
         assertEquals(2, book.getLong(DBKey.SID_GOODREADS_BOOK));
-        assertEquals("test", book.getString(DBKey.ISBN));
+        assertEquals("test", book.getString(DBKey.KEY_ISBN));
     }
 
     @Test
@@ -187,7 +187,7 @@ class BookTest
 
         // String: valid
         // (KEY_ISBN is the external key for Amazon)
-        book.put(DBKey.ISBN, "test");
+        book.put(DBKey.KEY_ISBN, "test");
         // blank string for a text field -> defaulted to null
         book.put(DBKey.SID_OPEN_LIBRARY, "");
 
@@ -205,7 +205,7 @@ class BookTest
         assertNull(book.get(DBKey.SID_LIBRARY_THING));
         assertNull(book.get(DBKey.SID_STRIP_INFO));
 
-        assertEquals("test", book.getString(DBKey.ISBN));
+        assertEquals("test", book.getString(DBKey.KEY_ISBN));
         assertNull(book.get(DBKey.SID_OPEN_LIBRARY));
 
 
@@ -218,7 +218,7 @@ class BookTest
         assertNull(book.get(DBKey.SID_LIBRARY_THING));
         assertNull(book.get(DBKey.SID_STRIP_INFO));
 
-        assertEquals("test", book.getString(DBKey.ISBN));
+        assertEquals("test", book.getString(DBKey.KEY_ISBN));
         assertNull(book.get(DBKey.SID_OPEN_LIBRARY));
     }
 

@@ -113,8 +113,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_TOC_ENTRY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.GENRE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_TOC_ENTRY_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_TITLE_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.LANGUAGE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.LOANEE_NAME;
@@ -1077,11 +1077,11 @@ public class BookDaoImpl
 
         if (isbnList.size() == 1) {
             // optimize for single book
-            return getBookCursor(TBL_BOOKS.dot(ISBN) + "=?",
+            return getBookCursor(TBL_BOOKS.dot(KEY_ISBN) + "=?",
                                  new String[]{SqlEncode.string(isbnList.get(0))},
                                  null);
         } else {
-            return getBookCursor(TBL_BOOKS.dot(ISBN)
+            return getBookCursor(TBL_BOOKS.dot(KEY_ISBN)
                                  + " IN ("
                                  + isbnList.stream()
                                            .map(s -> '\'' + SqlEncode.string(s) + '\'')
@@ -1244,7 +1244,7 @@ public class BookDaoImpl
 
             /** Get the title and ISBN of a {@link Book} by the Book id. */
             static final String BOOK_TITLE_AND_ISBN_BY_BOOK_ID =
-                    SELECT_ + TITLE + ',' + ISBN
+                    SELECT_ + TITLE + ',' + KEY_ISBN
                     + _FROM_ + TBL_BOOKS.getName()
                     + _WHERE_ + PK_ID + "=?";
 
@@ -1267,7 +1267,7 @@ public class BookDaoImpl
             /** Find the {@link Book} id+title based on a search for the ISBN (both 10 & 13). */
             static final String BY_VALID_ISBN =
                     SELECT_ + PK_ID + ',' + TITLE + _FROM_ + TBL_BOOKS.getName()
-                    + _WHERE_ + ISBN + " LIKE ? OR " + ISBN + " LIKE ?";
+                    + _WHERE_ + KEY_ISBN + " LIKE ? OR " + KEY_ISBN + " LIKE ?";
 
             /**
              * Find the {@link Book} id+title based on a search for the ISBN.
@@ -1275,7 +1275,7 @@ public class BookDaoImpl
              */
             static final String BY_ISBN =
                     SELECT_ + PK_ID + ',' + TITLE + _FROM_ + TBL_BOOKS.getName()
-                    + _WHERE_ + ISBN + " LIKE ?";
+                    + _WHERE_ + KEY_ISBN + " LIKE ?";
 
             /** Book UUID only, for accessing all cover image files. */
             static final String ALL_BOOK_UUID =
@@ -1291,7 +1291,7 @@ public class BookDaoImpl
                 // Nevertheless, listing the fields here gives a better understanding
 
                 SQL_BOOK = SELECT_ + TBL_BOOKS.dotAs(
-                        PK_ID, BOOK_UUID, TITLE, ISBN, BITMASK_TOC,
+                        PK_ID, BOOK_UUID, TITLE, KEY_ISBN, BITMASK_TOC,
                         DATE_BOOK_PUBLICATION, PRINT_RUN,
                         PRICE_LISTED, PRICE_LISTED_CURRENCY,
                         DATE_FIRST_PUBLICATION,

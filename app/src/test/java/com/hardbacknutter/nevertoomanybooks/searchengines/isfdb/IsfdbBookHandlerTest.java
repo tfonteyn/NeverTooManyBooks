@@ -84,7 +84,7 @@ class IsfdbBookHandlerTest
         assertEquals(112781L, mRawData.getLong(DBKey.SID_ISFDB));
         // On the site: "Date: 1986-10-00". Our code substitutes "00" with "01"
         assertEquals("1986-10-01", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("0413600106", mRawData.getString(DBKey.ISBN));
+        assertEquals("0413600106", mRawData.getString(DBKey.KEY_ISBN));
         assertEquals("9780413600103", mRawData.getString(IsfdbSearchEngine.SiteField.ISBN_2));
         assertEquals(1.95d, mRawData.getDouble(DBKey.PRICE_LISTED));
         assertEquals(Money.GBP, mRawData.getString(DBKey.PRICE_LISTED_CURRENCY));
@@ -151,7 +151,7 @@ class IsfdbBookHandlerTest
         assertEquals("Mort", mRawData.getString(DBKey.TITLE));
         assertEquals(431964L, mRawData.getLong(DBKey.SID_ISFDB));
         assertEquals("2013-11-07", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("9781473200104", mRawData.getString(DBKey.ISBN));
+        assertEquals("9781473200104", mRawData.getString(DBKey.KEY_ISBN));
         assertEquals("1473200105", mRawData.getString(IsfdbSearchEngine.SiteField.ISBN_2));
         assertEquals(9.99d, mRawData.getDouble(DBKey.PRICE_LISTED));
         assertEquals(Money.GBP, mRawData.getString(DBKey.PRICE_LISTED_CURRENCY));
@@ -208,7 +208,7 @@ class IsfdbBookHandlerTest
         assertEquals("The Shepherd's Crown", mRawData.getString(DBKey.TITLE));
         assertEquals(542125L, mRawData.getLong(DBKey.SID_ISFDB));
         assertEquals("2015-09-01", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("9780062429995", mRawData.getString(DBKey.ISBN));
+        assertEquals("9780062429995", mRawData.getString(DBKey.KEY_ISBN));
         assertEquals("006242999X", mRawData.getString(IsfdbSearchEngine.SiteField.ISBN_2));
         assertEquals(11.99d, mRawData.getDouble(DBKey.PRICE_LISTED));
         assertEquals(Money.USD, mRawData.getString(DBKey.PRICE_LISTED_CURRENCY));

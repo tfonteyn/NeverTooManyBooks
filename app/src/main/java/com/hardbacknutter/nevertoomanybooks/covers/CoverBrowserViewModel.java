@@ -160,7 +160,7 @@ public class CoverBrowserViewModel
      */
     public void init(@NonNull final Bundle args) {
         if (mBaseIsbn == null) {
-            mBaseIsbn = SanityCheck.requireValue(args.getString(DBKey.ISBN), DBKey.ISBN);
+            mBaseIsbn = SanityCheck.requireValue(args.getString(DBKey.KEY_ISBN), DBKey.KEY_ISBN);
             mCIdx = args.getInt(BKEY_FILE_INDEX);
 
             // optional

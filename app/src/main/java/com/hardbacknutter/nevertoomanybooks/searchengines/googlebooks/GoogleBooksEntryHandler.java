@@ -295,7 +295,7 @@ class GoogleBooksEntryHandler
 
                 final String fileSpec;
                 try {
-                    fileSpec = mSearchEngine.saveImage(url, mBookData.getString(DBKey.ISBN),
+                    fileSpec = mSearchEngine.saveImage(url, mBookData.getString(DBKey.KEY_ISBN),
                                                        0, null);
                 } catch (@NonNull final StorageException e) {
                     throw new SAXException(e);
@@ -366,10 +366,10 @@ class GoogleBooksEntryHandler
                 String tmpIsbn = mBuilder.toString();
                 if (tmpIsbn.indexOf("ISBN:") == 0) {
                     tmpIsbn = tmpIsbn.substring(5);
-                    final String isbnStr = mBookData.getString(DBKey.ISBN);
+                    final String isbnStr = mBookData.getString(DBKey.KEY_ISBN);
                     // store the 'longest' isbn
                     if (isbnStr == null || tmpIsbn.length() > isbnStr.length()) {
-                        mBookData.putString(DBKey.ISBN, tmpIsbn);
+                        mBookData.putString(DBKey.KEY_ISBN, tmpIsbn);
                     }
                 }
                 break;

@@ -350,7 +350,7 @@ public class Book
         // KEY_DATE_LAST_UPDATED
 
         bookData.putString(DBKey.TITLE, getString(DBKey.TITLE));
-        bookData.putString(DBKey.ISBN, getString(DBKey.ISBN));
+        bookData.putString(DBKey.KEY_ISBN, getString(DBKey.KEY_ISBN));
 
         bookData.putParcelableArrayList(BKEY_AUTHOR_LIST,
                                         getParcelableArrayList(BKEY_AUTHOR_LIST));

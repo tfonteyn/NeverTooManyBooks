@@ -79,7 +79,7 @@ class OpenLibrarySearchEngineTest
         assertFalse(mRawData.isEmpty());
 
         assertEquals("Slow reading", mRawData.getString(DBKey.TITLE));
-        assertEquals("9780980200447", mRawData.getString(DBKey.ISBN));
+        assertEquals("9780980200447", mRawData.getString(DBKey.KEY_ISBN));
         assertEquals("OL22853304M", mRawData.getString(DBKey.SID_OPEN_LIBRARY));
         assertEquals("2008054742", mRawData.getString(DBKey.SID_LCCN));
         assertEquals(8071257L, mRawData.getLong(DBKey.SID_LIBRARY_THING));

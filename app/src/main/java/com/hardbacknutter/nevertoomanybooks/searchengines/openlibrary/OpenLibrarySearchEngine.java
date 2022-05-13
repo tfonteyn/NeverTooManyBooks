@@ -526,7 +526,7 @@ public class OpenLibrarySearchEngine
 
         // store the isbn; we might override it later on though (e.g. isbn 13v10)
         // not sure if this is needed though. Need more data.
-        bookData.putString(DBKey.ISBN, validIsbn);
+        bookData.putString(DBKey.KEY_ISBN, validIsbn);
 
         JSONObject element;
         JSONArray a;
@@ -661,11 +661,11 @@ public class OpenLibrarySearchEngine
         // see if we have a better isbn.
         a = element.optJSONArray("isbn_13");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBKey.ISBN, a.getString(0));
+            bookData.putString(DBKey.KEY_ISBN, a.getString(0));
         } else {
             a = element.optJSONArray("isbn_10");
             if (a != null && !a.isEmpty()) {
-                bookData.putString(DBKey.ISBN, a.getString(0));
+                bookData.putString(DBKey.KEY_ISBN, a.getString(0));
             }
         }
         a = element.optJSONArray("amazon");
