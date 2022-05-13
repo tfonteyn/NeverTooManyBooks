@@ -24,7 +24,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Base64;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,11 +42,9 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -58,23 +55,11 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveReaderAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveWriterAbstract;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PIntList;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PString;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
@@ -86,7 +71,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 /**
  * <ul>Supports:
  *      <li>{@link RecordType#MetaData}</li>
- *      <li>{@link RecordType#Styles}</li>
  *      <li>{@link RecordType#Preferences}</li>
  * </ul>
  *
@@ -103,8 +87,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 @Deprecated
 public class XmlRecordReader
         implements RecordReader {
-
-    private static final String TAG = "XmlRecordReader";
 
     private static final String ERROR_UNABLE_TO_PROCESS_XML_RECORD = "Unable to process XML ";
 
@@ -164,12 +146,7 @@ public class XmlRecordReader
             final RecordType recordType = record.getType().get();
 
             if (importEntriesAllowed.contains(recordType)) {
-                if (recordType == RecordType.Styles) {
-                    final StylesReader stylesReader = new StylesReader(context);
-                    fromXml(record, stylesReader);
-                    results.styles += stylesReader.getStylesRead();
-
-                } else if (recordType == RecordType.Preferences) {
+                if (recordType == RecordType.Preferences) {
                     final SharedPreferences.Editor ed = PreferenceManager
                             .getDefaultSharedPreferences(context).edit();
                     fromXml(record, new PreferencesReader(ed));
@@ -725,249 +702,6 @@ public class XmlRecordReader
         public void putStringList(@NonNull final String key,
                                   @NonNull final Collection<String> value) {
             mEditor.putString(key, TextUtils.join(",", value));
-        }
-    }
-
-    /**
-     * Supports a *list* of {@link StylesReader#TAG_ELEMENT} block,
-     * enclosed inside a {@link RecordType#Styles}
-     * <p>
-     * See {@link XmlRecordWriter} :
-     * * Filters and Groups are flattened.
-     * * - each filter has a tag
-     * * - actual groups are written as a set of ID's
-     * * - each preference in a group has a tag.
-     */
-    public static class StylesReader
-            implements EntityReader<String> {
-
-        static final String TAG_ROOT = "style-list";
-        static final String TAG_ELEMENT = "style";
-
-        @NonNull
-        private final Context mContext;
-
-        @NonNull
-        private final Styles mStyles;
-
-        private ListStyle mStyle;
-
-        /**
-         * A collection of all Preferences (including the preferences from *all* groups).
-         * Reminder: the map mStylePrefs is NOT a part of the style,
-         * but the elements IN this map ARE.
-         */
-        @Nullable
-        private Map<String, PPref<?>> mStylePrefs;
-
-        /** A counter to track how many styles we have read. */
-        private int mStylesRead;
-
-        /**
-         * Constructor.
-         *
-         * @param context Current context
-         */
-        StylesReader(@NonNull final Context context) {
-            mContext = context;
-            mStyles = ServiceLocator.getInstance().getStyles();
-        }
-
-        int getStylesRead() {
-            return mStylesRead;
-        }
-
-        @Override
-        @NonNull
-        public String getRootTag() {
-            return TAG_ROOT;
-        }
-
-        @NonNull
-        @Override
-        public String getElementTag() {
-            return TAG_ELEMENT;
-        }
-
-        /**
-         * The start of a Style element.
-         * <p>
-         * Creates a new {@link ListStyle}, and sets it as the 'current' one ready for writes.
-         *
-         * <br><br>{@inheritDoc}
-         */
-        @Override
-        public void startElement(final int version,
-                                 @NonNull final TagInfo tag) {
-
-            String uuid = tag.attrs.getValue(DBKey.STYLE_UUID);
-            if (uuid == null) {
-                // backwards compatibility
-                uuid = tag.name;
-            }
-
-            if (BuiltinStyle.isBuiltin(uuid)) {
-                //noinspection ConstantConditions
-                mStyle = mStyles.getStyle(mContext, uuid);
-                // We do NOT read preferences for known builtin styles
-                mStylePrefs = null;
-
-            } else {
-                mStyle = UserStyle.createFromImport(mContext, uuid);
-
-                final UserStyle userStyle = (UserStyle) mStyle;
-                userStyle.setName(tag.name);
-
-                // This will not have any groups assigned to it...
-                //... and hence, the Style Preferences won't have any group Preferences either.
-                // Reminder: the map mStylePrefs is a TEMPORARY map,
-                // but the elements IN this map ARE PART OF THE STYLE.
-                mStylePrefs = userStyle.getRawPreferences().stream()
-                                       .collect(Collectors.toMap(PPref::getKey, v -> v));
-
-                // So loop all groups, and get their Preferences.
-                // Do NOT add the group itself to the style at this point as our import
-                // might not actually have it.
-                BooklistGroup.getAllGroups(mStyle).stream()
-                             .flatMap(group -> group.getRawPreferences().stream())
-                             .forEach(pPref -> mStylePrefs.put(pPref.getKey(), pPref));
-            }
-
-            // not bothering with slightly older backups where the 'preferred' flag was a PPref
-            boolean isPreferred;
-            try {
-                isPreferred = ParseUtils.parseBoolean(tag.attrs.getValue(
-                        DBKey.STYLE_IS_PREFERRED), true);
-            } catch (@NonNull final NumberFormatException ignore) {
-                isPreferred = false;
-            }
-
-            int menuPosition;
-            try {
-                menuPosition = Integer.parseInt(tag.attrs.getValue(
-                        DBKey.STYLE_MENU_POSITION));
-            } catch (@NonNull final NumberFormatException ignore) {
-                menuPosition = ListStyle.MENU_POSITION_NOT_PREFERRED;
-            }
-
-            mStyle.setPreferred(isPreferred);
-            mStyle.setMenuPosition(menuPosition);
-        }
-
-        @Override
-        public void endElement() {
-            if (mStyle.isUserDefined()) {
-                // we now have the groups themselves (one of the 'flat' prefs) set on the style,
-                // so transfer their specific Preferences.
-                // do we have this Preference in the imported data?
-                mStyle.getGroups()
-                      .getGroupList()
-                      .stream()
-                      .flatMap(group -> group.getRawPreferences().stream())
-                      .forEach(dest -> {
-                          //noinspection ConstantConditions
-                          final PPref<?> source = mStylePrefs.get(dest.getKey());
-                          if (source != null) {
-                              if (dest instanceof PInt) {
-                                  ((PInt) dest).set(((PInt) source).getValue());
-
-                              } else if (dest instanceof PBoolean) {
-                                  ((PBoolean) dest).set(((PBoolean) source).getValue());
-
-                              } else if (dest instanceof PString) {
-                                  ((PString) dest).set(((PString) source).getValue());
-
-                              } else if (dest instanceof PIntList) {
-                                  ((PIntList) dest).set(((PIntList) source).getValue());
-                              }
-                          }
-                      });
-            }
-
-            mStyles.updateOrInsert(mStyle);
-
-            mStylesRead++;
-        }
-
-        @Override
-        public void putString(@NonNull final String key,
-                              @NonNull final String value) {
-            if (mStylePrefs != null) {
-                if (UserStyle.PK_STYLE_NAME.equals(key) && mStyle.isUserDefined()) {
-                    // backwards compatibility
-                    ((UserStyle) mStyle).setName(value);
-                } else {
-                    final PPref<String> p = (PString) mStylePrefs.get(key);
-                    if (p != null) {
-                        p.set(value);
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void putBoolean(@NonNull final String key,
-                               final boolean value) {
-            if (mStylePrefs != null) {
-                final PPref<Boolean> p = (PBoolean) mStylePrefs.get(key);
-                if (p != null) {
-                    p.set(value);
-                }
-            }
-        }
-
-        @Override
-        public void putInt(@NonNull final String key,
-                           final int value) {
-            if (mStylePrefs != null) {
-                final PInt p = (PInt) mStylePrefs.get(key);
-                if (p != null) {
-                    p.set(value);
-                }
-            }
-        }
-
-        @Override
-        public void putStringSet(@NonNull final String key,
-                                 @NonNull final Collection<String> value) {
-            if (mStylePrefs != null) {
-                final PIntList p = (PIntList) mStylePrefs.get(key);
-                if (p != null) {
-                    p.set(toIntList(value));
-                }
-            }
-        }
-
-        @Override
-        public void putStringList(@NonNull final String key,
-                                  @NonNull final Collection<String> value) {
-            if (mStylePrefs != null) {
-                final PIntList p = (PIntList) mStylePrefs.get(key);
-                if (p != null) {
-                    p.set(toIntList(value));
-                }
-            }
-        }
-
-        /**
-         * Convert a list with strings to a list with integers.
-         *
-         * @param values to convert
-         *
-         * @return list
-         */
-        @NonNull
-        private ArrayList<Integer> toIntList(@NonNull final Collection<String> values) {
-            try {
-                return values.stream()
-                             .map(Integer::parseInt)
-                             .collect(Collectors.toCollection(ArrayList::new));
-            } catch (@NonNull final NumberFormatException e) {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "values=`" + values + '`', e);
-                }
-                throw new IllegalStateException("bad input");
-            }
         }
     }
 
