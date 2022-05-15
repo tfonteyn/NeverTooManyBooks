@@ -20,14 +20,11 @@
 package com.hardbacknutter.nevertoomanybooks.backup.xml;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Base64;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -40,10 +37,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -69,19 +64,16 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
- * <ul>Supports:
- *      <li>{@link RecordType#MetaData}</li>
- *      <li>{@link RecordType#Preferences}</li>
- * </ul>
- *
  * <strong>Important</strong>: The sax parser closes streams, which is not good
  * on a Tar archive entry. This class uses a {@link BufferedReaderNoClose} to get around that.
  *
- * @deprecated the main backup to a zip file is moving towards storing all text data in JSON
- *         We're keeping this XML reader for a while longer so we're able to read older backups;
+ * @deprecated the main backup to a zip file is storing all text data in JSON
+ *         This reader only supports reading {@link RecordType#MetaData}
+ *         so we're able to read the info block from older backups;
  *         i.e. {@link ArchiveWriterAbstract} version 2.
- *         See {@link ArchiveReaderAbstract}
- *         class docs for the version descriptions.
+ *         See {@link ArchiveReaderAbstract} class docs for the version descriptions.
+ *         <p>
+ *         Most of the remaining code here is overkill and should be rationalized some day.
  */
 @SuppressWarnings("DeprecatedIsStillUsed")
 @Deprecated
@@ -99,20 +91,16 @@ public class XmlRecordReader
      * but it's clean and future proof
      */
     private final Deque<TagInfo> tagStack = new ArrayDeque<>();
-    @NonNull
-    private final Set<RecordType> importEntriesAllowed;
+
     /** a simple Holder for the current tag name and attributes. Pushed/pulled on the stack. */
     private TagInfo currentTag;
 
     /**
      * Constructor.
      *
-     * @param context              Current context
-     * @param importEntriesAllowed the record types we're allowed to read
+     * @param context Current context
      */
-    public XmlRecordReader(@NonNull final Context context,
-                           @NonNull final Set<RecordType> importEntriesAllowed) {
-        this.importEntriesAllowed = importEntriesAllowed;
+    public XmlRecordReader(@NonNull final Context context) {
         userLocale = context.getResources().getConfiguration().getLocales().get(0);
     }
 
@@ -139,23 +127,8 @@ public class XmlRecordReader
                               @NonNull final ProgressListener progressListener)
             throws DataReaderException,
                    IOException {
-
-        final ImportResults results = new ImportResults();
-
-        if (record.getType().isPresent()) {
-            final RecordType recordType = record.getType().get();
-
-            if (importEntriesAllowed.contains(recordType)) {
-                if (recordType == RecordType.Preferences) {
-                    final SharedPreferences.Editor ed = PreferenceManager
-                            .getDefaultSharedPreferences(context).edit();
-                    fromXml(record, new PreferencesReader(ed));
-                    ed.apply();
-                    results.preferences++;
-                }
-            }
-        }
-        return results;
+        // No longer supported
+        return new ImportResults();
     }
 
     /**
@@ -627,81 +600,6 @@ public class XmlRecordReader
         public void putSerializable(@NonNull final String key,
                                     @NonNull final Serializable value) {
             mBundle.putSerializable(key, value);
-        }
-    }
-
-    /**
-     * Supports a *single* {@link RecordType#Preferences} block,
-     * enclosed inside a {@link PreferencesReader#TAG_ROOT}.
-     */
-    public static class PreferencesReader
-            implements EntityReader<String> {
-
-        static final String TAG_ROOT = "preferences-list";
-
-        private final SharedPreferences.Editor mEditor;
-
-        /**
-         * Constructor.
-         *
-         * @param editor to write to
-         */
-        PreferencesReader(@NonNull final SharedPreferences.Editor editor) {
-            mEditor = editor;
-        }
-
-        @Override
-        @NonNull
-        public String getRootTag() {
-            return TAG_ROOT;
-        }
-
-        @Override
-        @NonNull
-        public String getElementTag() {
-            return RecordType.Preferences.getName();
-        }
-
-        @Override
-        public void putString(@NonNull final String key,
-                              @NonNull final String value) {
-            mEditor.putString(key, value);
-        }
-
-        @Override
-        public void putBoolean(@NonNull final String key,
-                               final boolean value) {
-            mEditor.putBoolean(key, value);
-        }
-
-        @Override
-        public void putInt(@NonNull final String key,
-                           final int value) {
-            mEditor.putInt(key, value);
-        }
-
-        @Override
-        public void putLong(@NonNull final String key,
-                            final long value) {
-            mEditor.putLong(key, value);
-        }
-
-        @Override
-        public void putFloat(@NonNull final String key,
-                             final float value) {
-            mEditor.putFloat(key, value);
-        }
-
-        @Override
-        public void putStringSet(@NonNull final String key,
-                                 @NonNull final Collection<String> value) {
-            mEditor.putStringSet(key, new HashSet<>(value));
-        }
-
-        @Override
-        public void putStringList(@NonNull final String key,
-                                  @NonNull final Collection<String> value) {
-            mEditor.putString(key, TextUtils.join(",", value));
         }
     }
 
