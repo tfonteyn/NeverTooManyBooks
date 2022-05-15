@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.RowIdFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistBookFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -76,19 +76,19 @@ public class BoBTask
     private static final String TAG = "BoBTask";
 
     /** The fixed list of domains we always need for building the book list. */
-    private final Collection<DomainExpression> mFixedDomainList = new ArrayList<>();
+    private final Collection<DomainExpression> fixedDomainList = new ArrayList<>();
 
     /** Currently selected bookshelf. */
-    private Bookshelf mBookshelf;
+    private Bookshelf bookshelf;
 
     /** Preferred booklist state in next rebuild. */
-    private RebuildBooklist mRebuildMode;
+    private RebuildBooklist rebuildMode;
 
     /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
-    private SearchCriteria mSearchCriteria;
+    private SearchCriteria searchCriteria;
 
     /** The row id we want the new list to display more-or-less in the center. */
-    private long mDesiredCentralBookId;
+    private long desiredCentralBookId;
 
     /**
      * Constructor.
@@ -99,13 +99,13 @@ public class BoBTask
     }
 
     private void initFixedDomainList() {
-        mFixedDomainList.add(
+        fixedDomainList.add(
                 // Title for displaying; do NOT sort on it
                 // Example: "The Dream Master"
                 new DomainExpression(
                         DBDefinitions.DOM_TITLE,
                         DBDefinitions.TBL_BOOKS.dot(DBKey.TITLE)));
-        mFixedDomainList.add(
+        fixedDomainList.add(
                 // Title for sorting
                 // Example: "dreammasterthe" OR "thedreammaster"
                 // i.e. depending on user preference, the first format
@@ -119,32 +119,32 @@ public class BoBTask
                         DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_TITLE_OB),
                         DomainExpression.SORT_ASC));
 
-        mFixedDomainList.add(
+        fixedDomainList.add(
                 // the book language is needed for reordering titles
                 new DomainExpression(
                         DBDefinitions.DOM_BOOK_LANGUAGE,
                         DBDefinitions.TBL_BOOKS.dot(DBKey.LANGUAGE)));
 
-        mFixedDomainList.add(
+        fixedDomainList.add(
                 // Always get the read flag
                 new DomainExpression(
                         DBDefinitions.DOM_BOOK_READ,
                         DBDefinitions.TBL_BOOKS.dot(DBKey.READ__BOOL)));
 
-        mFixedDomainList.add(
+        fixedDomainList.add(
                 // Always get the Author ID
                 // (the need for the name will depend on the style).
                 new DomainExpression(
                         DBDefinitions.DOM_FK_AUTHOR,
                         DBDefinitions.TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR)));
 
-        mFixedDomainList.add(
+        fixedDomainList.add(
                 // We want the UUID for the book so we can get thumbnails
                 new DomainExpression(
                         DBDefinitions.DOM_BOOK_UUID,
                         DBDefinitions.TBL_BOOKS.dot(DBKey.BOOK_UUID)));
 
-        mFixedDomainList.add(
+        fixedDomainList.add(
                 // Always get the ISBN
                 new DomainExpression(
                         DBDefinitions.DOM_BOOK_ISBN,
@@ -152,7 +152,7 @@ public class BoBTask
 
         // external site ID's
         for (final Domain domain : SearchEngineRegistry.getInstance().getExternalIdDomains()) {
-            mFixedDomainList.add(
+            fixedDomainList.add(
                     new DomainExpression(domain, DBDefinitions.TBL_BOOKS.dot(domain.getName())));
         }
     }
@@ -161,10 +161,10 @@ public class BoBTask
                       @NonNull final RebuildBooklist mode,
                       @NonNull final SearchCriteria searchCriteria,
                       final long desiredCentralBookId) {
-        mBookshelf = bookshelf;
-        mRebuildMode = mode;
-        mSearchCriteria = searchCriteria;
-        mDesiredCentralBookId = desiredCentralBookId;
+        this.bookshelf = bookshelf;
+        rebuildMode = mode;
+        this.searchCriteria = searchCriteria;
+        this.desiredCentralBookId = desiredCentralBookId;
 
         execute();
     }
@@ -175,15 +175,15 @@ public class BoBTask
     protected Outcome doWork(@NonNull final Context context) {
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        final ListStyle style = mBookshelf.getStyle(context);
+        final ListStyle style = bookshelf.getStyle(context);
 
         Booklist booklist = null;
         try {
             // get a new builder and add the required domains
-            final BooklistBuilder builder = new BooklistBuilder(style, mBookshelf, mRebuildMode);
+            final BooklistBuilder builder = new BooklistBuilder(style, bookshelf, rebuildMode);
 
             // Add the fixed list of domains we always need.
-            for (final DomainExpression domainDetails : mFixedDomainList) {
+            for (final DomainExpression domainDetails : fixedDomainList) {
                 builder.addDomain(domainDetails);
             }
 
@@ -192,32 +192,32 @@ public class BoBTask
             }
 
             addConditionalGlobalDomains(builder, global);
-            addConditionalStyleDomains(builder, global, style);
+            addConditionalStyleDomains(builder, style);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-                Log.d(TAG, "mSearchCriteria=" + mSearchCriteria);
+                Log.d(TAG, "mSearchCriteria=" + searchCriteria);
             }
 
-            if (!mSearchCriteria.isEmpty()) {
+            if (!searchCriteria.isEmpty()) {
                 // if we have a list of ID's, we'll ignore other criteria
-                if (mSearchCriteria.getBookIdList().isEmpty()) {
+                if (searchCriteria.getBookIdList().isEmpty()) {
                     // Criteria supported by FTS
-                    mSearchCriteria.getFtsMatchQuery().ifPresent(
+                    searchCriteria.getFtsMatchQuery().ifPresent(
                             query -> builder.addFilter(new FtsMatchFilter(query)));
 
                     // Add a filter to retrieve only books lend to the given person (exact name).
-                    mSearchCriteria.getLoanee().ifPresent(loanee -> {
-                        builder.addFilter(c -> "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
-                                               + " WHERE " + TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME)
-                                               + "='" + SqlEncode.string(loanee) + '\''
-                                               + " AND " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS)
-                                               + ')');
-                    });
+                    searchCriteria.getLoanee().ifPresent(
+                            loanee -> builder.addFilter(
+                                    c -> "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
+                                         + " WHERE " + TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME)
+                                         + "='" + SqlEncode.string(loanee) + '\''
+                                         + " AND " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS)
+                                         + ')'));
                 } else {
                     // Add a where clause for: "AND books._id IN (list)".
                     builder.addFilter(new NumberListFilter<>(
                             TBL_BOOKS, DBDefinitions.DOM_PK_ID,
-                            mSearchCriteria.getBookIdList()));
+                            searchCriteria.getBookIdList()));
                 }
 
                 // when criteria are used, the build should expand the book list.
@@ -226,13 +226,13 @@ public class BoBTask
 
 
             // Prepare the Bookshelf filters
-            final List<PFilter<?>> filters = mBookshelf.getFilters();
+            final List<PFilter<?>> filters = bookshelf.getFilters();
 
             // Add a filter on the current Bookshelf?
             // Only consider doing this if this is NOT the "All books" Bookshelf
-            if (!mBookshelf.isAllBooks()) {
+            if (!bookshelf.isAllBooks()) {
                 // and only if the current style does NOT contain the Bookshelf group.
-                if (!mBookshelf.getStyle(context).getGroups().contains(BooklistGroup.BOOKSHELF)) {
+                if (!bookshelf.getStyle(context).hasGroup(BooklistGroup.BOOKSHELF)) {
                     // do we already have a Bookshelf based filter?
                     final Optional<PFilter<?>> bookshelfFilter = filters
                             .stream()
@@ -245,13 +245,13 @@ public class BoBTask
                                 bookshelfFilter.get();
 
                         final Set<Long> list = new HashSet<>(pFilter.getValue());
-                        list.add(mBookshelf.getId());
+                        list.add(bookshelf.getId());
                         pFilter.setValue(list);
 
                     } else {
                         // Filter os the current one only
                         builder.addFilter(new RowIdFilter(TBL_BOOKSHELF, DOM_PK_ID,
-                                                          mBookshelf.getId()));
+                                                          bookshelf.getId()));
                     }
                 }
             }
@@ -267,13 +267,13 @@ public class BoBTask
 
             // pre-count and cache (in the builder) these while we're in the background.
             // They are used for the header, and will not change even if the list cursor changes.
-            if (style.isShowHeader(ListStyle.HEADER_SHOW_BOOK_COUNT)) {
+            if (style.isShowHeader(BooklistHeader.SHOW_BOOK_COUNT)) {
                 booklist.countBooks();
                 booklist.countDistinctBooks();
             }
 
             // Get the row(s) which will be used to determine new cursor position
-            return new Outcome(booklist, booklist.getVisibleBookNodes(mDesiredCentralBookId));
+            return new Outcome(booklist, booklist.getVisibleBookNodes(desiredCentralBookId));
 
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception e) {
             if (booklist != null) {
@@ -314,11 +314,10 @@ public class BoBTask
     }
 
     private void addConditionalStyleDomains(@NonNull final BooklistBuilder builder,
-                                            @NonNull final SharedPreferences global,
                                             @NonNull final ListStyle style) {
-        final ListScreenBookFields bookFields = style.getListScreenBookFields();
+        final BooklistBookFieldVisibility bookFields = style.getBooklistBookFieldVisibility();
 
-        if (bookFields.isShowField(global, ListScreenBookFields.PK_BOOKSHELVES)) {
+        if (bookFields.isShowField(BooklistBookFieldVisibility.SHOW_BOOKSHELVES)) {
             // This collects a CSV list of the bookshelves the book is on.
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_BOOKSHELF_NAME_CSV,
@@ -326,45 +325,45 @@ public class BoBTask
         }
 
         // we fetch ONLY the primary author to show on the Book level
-        if (bookFields.isShowField(global, ListScreenBookFields.PK_AUTHOR)) {
+        if (bookFields.isShowField(BooklistBookFieldVisibility.SHOW_AUTHOR)) {
             builder.addDomain(AuthorDaoImpl.createDisplayDomainExpression(
                     style.isShowAuthorByGivenName()));
         }
 
         // for now, don't get the author type.
-//              if (bookFields.getValue(context, ListScreenBookFields.PK_AUTHOR_TYPE)) {
+//              if (bookFields.isShowField(BooklistBookFieldVisibility.LIST_AUTHOR_TYPE)) {
 //                  builder.addDomain(new DomainExpression(
 //                          DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
 //                          DBDefinitions.TBL_BOOK_AUTHOR
 //                          .dot(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)));
 //              }
 
-        if (bookFields.isShowField(global, ListScreenBookFields.PK_PUBLISHER)) {
+        if (bookFields.isShowField(BooklistBookFieldVisibility.SHOW_PUBLISHER)) {
             // Collect a CSV list of the publishers of the book
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_PUBLISHER_NAME_CSV,
                     BooklistBuilder.EXP_PUBLISHER_NAME_CSV));
         }
 
-        if (bookFields.isShowField(global, ListScreenBookFields.PK_PUB_DATE)) {
+        if (bookFields.isShowField(BooklistBookFieldVisibility.SHOW_PUB_DATE)) {
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
                     DBDefinitions.TBL_BOOKS.dot(DBKey.DATE_BOOK_PUBLICATION)));
         }
 
-        if (bookFields.isShowField(global, ListScreenBookFields.PK_FORMAT)) {
+        if (bookFields.isShowField(BooklistBookFieldVisibility.SHOW_FORMAT)) {
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_BOOK_FORMAT,
                     DBDefinitions.TBL_BOOKS.dot(DBKey.BOOK_FORMAT)));
         }
 
-        if (bookFields.isShowField(global, ListScreenBookFields.PK_LOCATION)) {
+        if (bookFields.isShowField(BooklistBookFieldVisibility.SHOW_LOCATION)) {
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_BOOK_LOCATION,
                     DBDefinitions.TBL_BOOKS.dot(DBKey.LOCATION)));
         }
 
-        if (bookFields.isShowField(global, ListScreenBookFields.PK_RATING)) {
+        if (bookFields.isShowField(BooklistBookFieldVisibility.SHOW_RATING)) {
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_BOOK_RATING,
                     DBDefinitions.TBL_BOOKS.dot(DBKey.RATING)));

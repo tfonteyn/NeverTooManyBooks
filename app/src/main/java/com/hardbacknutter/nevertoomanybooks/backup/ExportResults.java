@@ -56,9 +56,9 @@ public class ExportResults
     };
 
     /** id's of books we exported. */
-    private final List<Long> mBooksExported = new ArrayList<>();
+    private final List<Long> booksExported = new ArrayList<>();
     /** filenames of covers exported. */
-    private final List<String> mCoversExported = new ArrayList<>();
+    private final List<String> coversExported = new ArrayList<>();
     /** #styles we exported. */
     public int styles;
     /** #bookshelves we exported. */
@@ -83,8 +83,8 @@ public class ExportResults
      * @param in Parcel to construct the object from
      */
     private ExportResults(@NonNull final Parcel in) {
-        in.readList(mBooksExported, getClass().getClassLoader());
-        in.readStringList(mCoversExported);
+        in.readList(booksExported, getClass().getClassLoader());
+        in.readStringList(coversExported);
 
         bookshelves = in.readInt();
         calibreLibraries = in.readInt();
@@ -130,8 +130,8 @@ public class ExportResults
      * @param results to add
      */
     public void add(@NonNull final ExportResults results) {
-        mBooksExported.addAll(results.mBooksExported);
-        mCoversExported.addAll(results.mCoversExported);
+        booksExported.addAll(results.booksExported);
+        coversExported.addAll(results.coversExported);
 
         bookshelves += results.bookshelves;
         calibreLibraries += results.calibreLibraries;
@@ -143,28 +143,28 @@ public class ExportResults
 
     @Override
     public void addBook(@IntRange(from = 1) final long bookId) {
-        mBooksExported.add(bookId);
+        booksExported.add(bookId);
     }
 
     @Override
     public int getBookCount() {
-        return mBooksExported.size();
+        return booksExported.size();
     }
 
     @VisibleForTesting
     @NonNull
     public List<Long> getBooksExported() {
-        return mBooksExported;
+        return booksExported;
     }
 
     @Override
     public void addCover(@NonNull final String path) {
-        mCoversExported.add(path);
+        coversExported.add(path);
     }
 
     @Override
     public int getCoverCount() {
-        return mCoversExported.size();
+        return coversExported.size();
     }
 
     /**
@@ -178,14 +178,14 @@ public class ExportResults
      */
     @NonNull
     public List<String> getCoverFileNames() {
-        return mCoversExported;
+        return coversExported;
     }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeList(mBooksExported);
-        dest.writeStringList(mCoversExported);
+        dest.writeList(booksExported);
+        dest.writeStringList(coversExported);
 
         dest.writeInt(bookshelves);
         dest.writeInt(calibreLibraries);
@@ -205,8 +205,8 @@ public class ExportResults
     @NonNull
     public String toString() {
         return "ExportResults{"
-               + "mBooksExported=" + mBooksExported
-               + ", mCoversExported=" + mCoversExported
+               + "booksExported=" + booksExported
+               + ", coversExported=" + coversExported
                + ", bookshelves=" + bookshelves
                + ", calibreLibraries=" + calibreLibraries
                + ", calibreCustomFields=" + calibreCustomFields

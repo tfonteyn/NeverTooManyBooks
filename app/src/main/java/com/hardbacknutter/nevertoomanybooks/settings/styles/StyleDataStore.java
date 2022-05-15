@@ -19,28 +19,76 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceDataStore;
 
+import java.util.HashSet;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.DetailScreenBookFields;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistBookFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BookshelfBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.PublisherBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.SeriesBooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 /**
  * It's not possible to use PreferenceDataStore for individual preferences:
  * FIXME: https://issuetracker.google.com/issues/232206237
+ *
+ * The PK_STYLE strings are still used during import/export for backwards compatibility.
  */
 public class StyleDataStore
         extends PreferenceDataStore {
+
+    /** Style display name. */
+    public static final String PK_STYLE_NAME = "style.booklist.name";
+    /** The default expansion level for the groups. */
+    public static final String PK_EXPANSION_LEVEL = "style.booklist.levels.default";
+
+    /** What fields the user wants to see in the list header. */
+    public static final String PK_LIST_HEADER = "style.booklist.header";
+
+    public static final String PK_SORT_AUTHOR_NAME_GIVEN_FIRST = "sort.author.name.given_first";
+    public static final String PK_SHOW_AUTHOR_NAME_GIVEN_FIRST = "show.author.name.given_first";
+
+    public static final String PK_GROUP_ROW_HEIGHT = "style.booklist.group.height";
+
+    /** Show the cover image (front only) for each book on the list screen. */
+    public static final String PK_LIST_SHOW_COVERS = "style.booklist.show.thumbnails";
+    /** Show author for each book on the list screen. */
+    public static final String PK_LIST_SHOW_AUTHOR = "style.booklist.show.author";
+    /** Show publisher for each book on the list screen. */
+    public static final String PK_LIST_SHOW_PUBLISHER = "style.booklist.show.publisher";
+    /** Show publication date for each book on the list screen. */
+    public static final String PK_LIST_SHOW_PUB_DATE = "style.booklist.show.publication.date";
+    /** Show format for each book on the list screen. */
+    public static final String PK_LIST_SHOW_FORMAT = "style.booklist.show.format";
+    /** Show location for each book on the list screen. */
+    public static final String PK_LIST_SHOW_LOCATION = "style.booklist.show.location";
+    /** Show rating for each book on the list screen. */
+    public static final String PK_LIST_SHOW_RATING = "style.booklist.show.rating";
+    /** Show list of bookshelves for each book on the list screen. */
+    public static final String PK_LIST_SHOW_BOOKSHELVES = "style.booklist.show.bookshelves";
+    /** Show ISBN for each book on the list screen. */
+    public static final String PK_LIST_SHOW_ISBN = "style.booklist.show.isbn";
+    /** Style group preferences. */
+    public static final String PK_STYLE_GROUPS = "style.booklist.groups";
+
+    /** Show the cover images (front/back) for each book on the details screen. */
+    public static final String[] PK_STYLE_BOOK_DETAILS_COVER = {
+            "style.details.show.thumbnail.0",
+            "style.details.show.thumbnail.1",
+            };
+
+    /** Relative scaling factor for text on the list screen. */
+    public static final String PK_TEXT_SCALE = "style.booklist.scale.font";
+    /** Relative scaling factor for covers on the list screen. */
+    public static final String PK_COVER_SCALE = "style.booklist.scale.thumbnails";
 
     @NonNull
     private final UserStyle style;
@@ -51,6 +99,50 @@ public class StyleDataStore
         this.style = style;
     }
 
+    /**
+     * Parse and combine the values in the set into a bitmask.
+     *
+     * @param stringSet to parse
+     * @param defValue  to use upon any error
+     *
+     * @return bitmask, or the defValue if converting failed
+     */
+    @IntRange(from = 0, to = 0xFFFF)
+    public static int convert(@Nullable final Set<String> stringSet,
+                              final int defValue) {
+        if (stringSet == null || stringSet.isEmpty()) {
+            return defValue;
+        }
+
+        try {
+            int bitmask = 0;
+            for (final String s : stringSet) {
+                bitmask |= Integer.parseInt(s);
+            }
+            return bitmask;
+
+        } catch (@NonNull final NumberFormatException ignore) {
+            // we should never have an invalid setting in the prefs... flw
+            return defValue;
+        }
+    }
+
+    @NonNull
+    private static Set<String> convert(final int value) {
+        final Set<String> stringSet = new HashSet<>();
+        int tmp = value;
+        int bit = 1;
+        while (tmp != 0) {
+            if ((tmp & 1) == 1) {
+                stringSet.add(String.valueOf(bit));
+            }
+            bit *= 2;
+            // unsigned shift
+            tmp = tmp >>> 1;
+        }
+        return stringSet;
+    }
+
     public boolean isModified() {
         return modified;
     }
@@ -59,16 +151,16 @@ public class StyleDataStore
     public void putInt(@NonNull final String key,
                        final int value) {
         switch (key) {
-            case BooklistStyle.PK_LEVELS_EXPANSION:
+            case PK_EXPANSION_LEVEL:
                 style.setExpansionLevel(value);
                 break;
 
-            case ListScreenBookFields.PK_COVER_SCALE:
-                style.getListScreenBookFields().setCoverScale(value);
+            case PK_COVER_SCALE:
+                style.setCoverScale(value);
                 break;
 
-            case TextScale.PK_TEXT_SCALE:
-                style.getTextScale().setScale(value);
+            case PK_TEXT_SCALE:
+                style.setTextScale(value);
                 break;
 
             default:
@@ -82,14 +174,14 @@ public class StyleDataStore
     public int getInt(@NonNull final String key,
                       final int defValue) {
         switch (key) {
-            case BooklistStyle.PK_LEVELS_EXPANSION:
+            case PK_EXPANSION_LEVEL:
                 return style.getExpansionLevel();
 
-            case ListScreenBookFields.PK_COVER_SCALE:
-                return style.getListScreenBookFields().getCoverScale();
+            case PK_COVER_SCALE:
+                return style.getCoverScale();
 
-            case TextScale.PK_TEXT_SCALE:
-                return style.getTextScale().getScale();
+            case PK_TEXT_SCALE:
+                return style.getTextScale();
 
             default:
                 return super.getInt(key, defValue);
@@ -100,27 +192,52 @@ public class StyleDataStore
     public void putBoolean(final String key,
                            final boolean value) {
         switch (key) {
-            case ListScreenBookFields.PK_COVERS:
-            case ListScreenBookFields.PK_AUTHOR:
-            case ListScreenBookFields.PK_PUBLISHER:
-            case ListScreenBookFields.PK_PUB_DATE:
-            case ListScreenBookFields.PK_FORMAT:
-            case ListScreenBookFields.PK_LOCATION:
-            case ListScreenBookFields.PK_RATING:
-            case ListScreenBookFields.PK_BOOKSHELVES:
-            case ListScreenBookFields.PK_ISBN:
-                style.getListScreenBookFields().setValue(key, value);
+            case PK_LIST_SHOW_COVERS:
+                style.getBooklistBookFieldVisibility()
+                     .setShowField(BooklistBookFieldVisibility.SHOW_COVER_0, value);
+                break;
+            case PK_LIST_SHOW_AUTHOR:
+                style.getBooklistBookFieldVisibility()
+                     .setShowField(BooklistBookFieldVisibility.SHOW_AUTHOR, value);
+                break;
+            case PK_LIST_SHOW_PUBLISHER:
+                style.getBooklistBookFieldVisibility()
+                     .setShowField(BooklistBookFieldVisibility.SHOW_PUBLISHER, value);
+                break;
+            case PK_LIST_SHOW_PUB_DATE:
+                style.getBooklistBookFieldVisibility()
+                     .setShowField(BooklistBookFieldVisibility.SHOW_PUB_DATE, value);
+                break;
+            case PK_LIST_SHOW_FORMAT:
+                style.getBooklistBookFieldVisibility()
+                     .setShowField(BooklistBookFieldVisibility.SHOW_FORMAT, value);
+                break;
+            case PK_LIST_SHOW_LOCATION:
+                style.getBooklistBookFieldVisibility()
+                     .setShowField(BooklistBookFieldVisibility.SHOW_LOCATION, value);
+                break;
+            case PK_LIST_SHOW_RATING:
+                style.getBooklistBookFieldVisibility()
+                     .setShowField(BooklistBookFieldVisibility.SHOW_RATING, value);
+                break;
+            case PK_LIST_SHOW_BOOKSHELVES:
+                style.getBooklistBookFieldVisibility()
+                     .setShowField(BooklistBookFieldVisibility.SHOW_BOOKSHELVES, value);
+                break;
+            case PK_LIST_SHOW_ISBN:
+                style.getBooklistBookFieldVisibility()
+                     .setShowField(BooklistBookFieldVisibility.SHOW_ISBN, value);
                 break;
 
-            case BooklistStyle.PK_SCALE_GROUP_ROW:
+            case PK_GROUP_ROW_HEIGHT:
                 style.setUseGroupRowPreferredHeight(value);
                 break;
 
-            case BooklistStyle.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST:
+            case PK_SHOW_AUTHOR_NAME_GIVEN_FIRST:
                 style.setShowAuthorByGivenName(value);
                 break;
 
-            case BooklistStyle.PK_SORT_AUTHOR_NAME_GIVEN_FIRST:
+            case PK_SORT_AUTHOR_NAME_GIVEN_FIRST:
                 style.setSortAuthorByGivenName(value);
                 break;
 
@@ -141,9 +258,10 @@ public class StyleDataStore
                 break;
 
             default:
-                if (key.equals(DetailScreenBookFields.PK_COVER[0])
-                    || key.equals(DetailScreenBookFields.PK_COVER[1])) {
-                    style.getDetailScreenBookFields().setValue(key, value);
+                if (key.equals(PK_STYLE_BOOK_DETAILS_COVER[0])) {
+                    style.getBookDetailsFieldVisibility().setShowCover(0, value);
+                } else if (key.equals(PK_STYLE_BOOK_DETAILS_COVER[1])) {
+                    style.getBookDetailsFieldVisibility().setShowCover(1, value);
                 } else {
                     super.putBoolean(key, value);
                 }
@@ -156,24 +274,49 @@ public class StyleDataStore
     public boolean getBoolean(final String key,
                               final boolean defValue) {
         switch (key) {
-            case ListScreenBookFields.PK_COVERS:
-            case ListScreenBookFields.PK_AUTHOR:
-            case ListScreenBookFields.PK_PUBLISHER:
-            case ListScreenBookFields.PK_PUB_DATE:
-            case ListScreenBookFields.PK_FORMAT:
-            case ListScreenBookFields.PK_LOCATION:
-            case ListScreenBookFields.PK_RATING:
-            case ListScreenBookFields.PK_BOOKSHELVES:
-            case ListScreenBookFields.PK_ISBN:
-                return style.getListScreenBookFields().getValue(key);
+            case PK_LIST_SHOW_COVERS:
+                return style.getBooklistBookFieldVisibility().isShowField(
+                        BooklistBookFieldVisibility.SHOW_COVER_0);
 
-            case BooklistStyle.PK_SCALE_GROUP_ROW:
-                return style.getUseGroupRowPreferredHeight();
+            case PK_LIST_SHOW_AUTHOR:
+                return style.getBooklistBookFieldVisibility().isShowField(
+                        BooklistBookFieldVisibility.SHOW_AUTHOR);
 
-            case BooklistStyle.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST:
+            case PK_LIST_SHOW_PUBLISHER:
+                return style.getBooklistBookFieldVisibility().isShowField(
+                        BooklistBookFieldVisibility.SHOW_PUBLISHER);
+
+            case PK_LIST_SHOW_PUB_DATE:
+                return style.getBooklistBookFieldVisibility().isShowField(
+                        BooklistBookFieldVisibility.SHOW_PUB_DATE);
+
+            case PK_LIST_SHOW_FORMAT:
+                return style.getBooklistBookFieldVisibility().isShowField(
+                        BooklistBookFieldVisibility.SHOW_FORMAT);
+
+            case PK_LIST_SHOW_LOCATION:
+                return style.getBooklistBookFieldVisibility().isShowField(
+                        BooklistBookFieldVisibility.SHOW_LOCATION);
+
+            case PK_LIST_SHOW_RATING:
+                return style.getBooklistBookFieldVisibility().isShowField(
+                        BooklistBookFieldVisibility.SHOW_RATING);
+
+            case PK_LIST_SHOW_BOOKSHELVES:
+                return style.getBooklistBookFieldVisibility().isShowField(
+                        BooklistBookFieldVisibility.SHOW_BOOKSHELVES);
+
+            case PK_LIST_SHOW_ISBN:
+                return style.getBooklistBookFieldVisibility().isShowField(
+                        BooklistBookFieldVisibility.SHOW_ISBN);
+
+            case PK_GROUP_ROW_HEIGHT:
+                return style.isGroupRowUsesPreferredHeight();
+
+            case PK_SHOW_AUTHOR_NAME_GIVEN_FIRST:
                 return style.isShowAuthorByGivenName();
 
-            case BooklistStyle.PK_SORT_AUTHOR_NAME_GIVEN_FIRST:
+            case PK_SORT_AUTHOR_NAME_GIVEN_FIRST:
                 return style.isSortAuthorByGivenName();
 
             case AuthorBooklistGroup.PK_SHOW_BOOKS_UNDER_EACH:
@@ -189,9 +332,11 @@ public class StyleDataStore
                 return style.isShowBooksUnderEachBookshelf();
 
             default:
-                if (key.equals(DetailScreenBookFields.PK_COVER[0])
-                    || key.equals(DetailScreenBookFields.PK_COVER[1])) {
-                    return style.getDetailScreenBookFields().getValue(key);
+                if (key.equals(PK_STYLE_BOOK_DETAILS_COVER[0])) {
+                    return style.getBookDetailsFieldVisibility().isShowCover(0);
+
+                } else if (key.equals(PK_STYLE_BOOK_DETAILS_COVER[1])) {
+                    return style.getBookDetailsFieldVisibility().isShowCover(1);
                 }
                 return super.getBoolean(key, defValue);
         }
@@ -200,14 +345,11 @@ public class StyleDataStore
     @Override
     public void putString(@NonNull final String key,
                           @Nullable final String value) {
-        switch (key) {
-            case UserStyle.PK_STYLE_NAME:
-                style.setName(value);
-                break;
-
-            default:
-                super.putString(key, value);
-                break;
+        if (PK_STYLE_NAME.equals(key)) {
+            //noinspection ConstantConditions
+            style.setName(value);
+        } else {
+            super.putString(key, value);
         }
         modified = true;
     }
@@ -216,25 +358,22 @@ public class StyleDataStore
     @Override
     public String getString(@NonNull final String key,
                             @Nullable final String defValue) {
-        switch (key) {
-            case UserStyle.PK_STYLE_NAME:
-                return style.getName();
-
-            default:
-                return super.getString(key, defValue);
+        if (PK_STYLE_NAME.equals(key)) {
+            return style.getName();
         }
+        return super.getString(key, defValue);
     }
 
     @Override
     public void putStringSet(@NonNull final String key,
                              @Nullable final Set<String> values) {
         switch (key) {
-            case BooklistStyle.PK_LIST_HEADER:
-                style.setShowHeaderInfo(values);
+            case PK_LIST_HEADER:
+                style.setShowHeaderFields(convert(values, BooklistHeader.BITMASK_ALL));
                 break;
 
             case AuthorBooklistGroup.PK_PRIMARY_TYPE:
-                style.setPrimaryAuthorTypes(values);
+                style.setPrimaryAuthorTypes(convert(values, Author.TYPE_UNKNOWN));
                 break;
 
             default:
@@ -249,11 +388,11 @@ public class StyleDataStore
     public Set<String> getStringSet(@NonNull final String key,
                                     @Nullable final Set<String> defValues) {
         switch (key) {
-            case BooklistStyle.PK_LIST_HEADER:
-                return style.getShowHeaderInfo();
+            case PK_LIST_HEADER:
+                return convert(style.getShowHeaderFields());
 
             case AuthorBooklistGroup.PK_PRIMARY_TYPE:
-                return style.getPrimaryAuthorTypes();
+                return convert(style.getPrimaryAuthorType());
 
             default:
                 return super.getStringSet(key, defValues);

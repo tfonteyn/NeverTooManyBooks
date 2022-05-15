@@ -70,18 +70,18 @@ public class ExportHelper
 
     /** <strong>Where</strong> we write to. */
     @Nullable
-    private Uri mUri;
+    private Uri uri;
 
     /** <strong>How</strong> to write to the Uri. */
     @NonNull
-    private ArchiveEncoding mEncoding;
+    private ArchiveEncoding encoding;
 
     /**
      * Constructor.
      */
     public ExportHelper() {
         // set the default
-        mEncoding = ArchiveEncoding.Zip;
+        encoding = ArchiveEncoding.Zip;
         addRecordType(EnumSet.of(RecordType.Styles,
                                  RecordType.Preferences,
                                  RecordType.Certificates,
@@ -97,26 +97,26 @@ public class ExportHelper
     @VisibleForTesting
     public ExportHelper(@NonNull final ArchiveEncoding encoding,
                         @NonNull final Set<RecordType> recordTypes) {
-        mEncoding = encoding;
+        this.encoding = encoding;
         addRecordType(recordTypes);
     }
 
     @NonNull
     public ArchiveEncoding getEncoding() {
-        return mEncoding;
+        return encoding;
     }
 
     public void setEncoding(@NonNull final ArchiveEncoding encoding) {
-        mEncoding = encoding;
+        this.encoding = encoding;
     }
 
     @NonNull
     public Uri getUri() {
-        return Objects.requireNonNull(mUri, "mUri");
+        return Objects.requireNonNull(uri, "mUri");
     }
 
     public void setUri(@NonNull final Uri uri) {
-        mUri = uri;
+        this.uri = uri;
     }
 
     /**
@@ -126,7 +126,7 @@ public class ExportHelper
      * {@code false} when it's considered an export.
      */
     public boolean isBackup() {
-        return mEncoding == ArchiveEncoding.Zip;
+        return encoding == ArchiveEncoding.Zip;
     }
 
     /**
@@ -138,11 +138,11 @@ public class ExportHelper
     public LocalDateTime getLastDone() {
         if (isIncremental()) {
             final String key;
-            if (mEncoding == ArchiveEncoding.Zip) {
+            if (encoding == ArchiveEncoding.Zip) {
                 // backwards compatibility
                 key = PREF_LAST_FULL_BACKUP_DATE;
             } else {
-                key = PREF_LAST_FULL_BACKUP_DATE + "." + mEncoding.getFileExt();
+                key = PREF_LAST_FULL_BACKUP_DATE + "." + encoding.getFileExt();
             }
 
             final String lastDone = ServiceLocator.getGlobalPreferences().getString(key, null);
@@ -164,13 +164,13 @@ public class ExportHelper
 
             final SharedPreferences.Editor editor = ServiceLocator.getGlobalPreferences()
                                                                   .edit();
-            if (mEncoding == ArchiveEncoding.Zip) {
+            if (encoding == ArchiveEncoding.Zip) {
                 // backwards compatibility
                 editor.putString(PREF_LAST_FULL_BACKUP_DATE, date)
                       // reset the startup prompt-counter.
                       .putInt(PK_BACKUP_COUNTDOWN, BACKUP_COUNTDOWN_DEFAULT);
             } else {
-                editor.putString(PREF_LAST_FULL_BACKUP_DATE + "." + mEncoding.getFileExt(), date);
+                editor.putString(PREF_LAST_FULL_BACKUP_DATE + "." + encoding.getFileExt(), date);
             }
             editor.apply();
         }
@@ -186,12 +186,12 @@ public class ExportHelper
                    StorageException,
                    IOException {
 
-        Objects.requireNonNull(mUri, "mUri");
+        Objects.requireNonNull(uri, "mUri");
 
         final ExportResults results = new ExportResults();
 
         try {
-            mDataWriter = mEncoding.createWriter(context, this);
+            mDataWriter = encoding.createWriter(context, this);
             results.add(mDataWriter.write(context, progressListener));
 
         } catch (@NonNull final IOException e) {
@@ -214,7 +214,7 @@ public class ExportHelper
             // The output file is now properly closed, export it to the user Uri
             final File tmpOutput = getTempFile(context);
             try (InputStream is = new FileInputStream(tmpOutput);
-                 OutputStream os = context.getContentResolver().openOutputStream(mUri)) {
+                 OutputStream os = context.getContentResolver().openOutputStream(uri)) {
                 if (os != null) {
                     FileUtils.copy(is, os);
                 }
@@ -250,8 +250,8 @@ public class ExportHelper
     public String toString() {
         return "ExportHelper{"
                + super.toString()
-               + ", mUri=" + mUri
-               + ", mEncoding=" + mEncoding
+               + ", uri=" + uri
+               + ", encoding=" + encoding
                + '}';
     }
 }

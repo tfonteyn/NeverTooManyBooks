@@ -38,13 +38,23 @@ import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BookDetailsFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistBookFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BookshelfBooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.PublisherBooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.SeriesBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookshelfDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreCustomFieldDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
@@ -53,7 +63,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -88,7 +100,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_CALIBRE_LIBRARY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FTS_BOOK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.ISBN;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PK_ID;
 
 /**
@@ -99,7 +111,7 @@ public class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 18;
+    public static final int DATABASE_VERSION = 19;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -132,7 +144,7 @@ public class DBHelper
 
     /** DO NOT USE INSIDE THIS CLASS! ONLY FOR USE BY CLIENTS CALLING {@link #getDb()}. */
     @Nullable
-    private SynchronizedDb mSynchronizedDb;
+    private SynchronizedDb synchronizedDb;
 
     /**
      * Constructor.
@@ -229,20 +241,20 @@ public class DBHelper
     @NonNull
     public SynchronizedDb getDb() {
         synchronized (this) {
-            if (mSynchronizedDb == null) {
+            if (synchronizedDb == null) {
                 // Dev note: don't move this to the constructor, "this" must
                 // be fully constructed before we can pass it to the SynchronizedDb constructor
-                mSynchronizedDb = new SynchronizedDb(sSynchronizer, this,
-                                                     stmtCacheSize);
+                synchronizedDb = new SynchronizedDb(sSynchronizer, this,
+                                                    stmtCacheSize);
             }
         }
-        return mSynchronizedDb;
+        return synchronizedDb;
     }
 
     @Override
     public void close() {
-        if (mSynchronizedDb != null) {
-            mSynchronizedDb.close();
+        if (synchronizedDb != null) {
+            synchronizedDb.close();
         }
         super.close();
     }
@@ -494,9 +506,9 @@ public class DBHelper
         /*
          * If the ISBN of a {@link Book) is changed, reset external ID's and sync dates.
          */
-        name = "after_update_of_" + ISBN + "_on_" + TBL_BOOKS.getName();
-        body = " AFTER UPDATE OF " + ISBN + " ON " + TBL_BOOKS.getName() + " FOR EACH ROW\n"
-               + " WHEN NEW." + ISBN + " <> OLD." + ISBN + '\n'
+        name = "after_update_of_" + KEY_ISBN + "_on_" + TBL_BOOKS.getName();
+        body = " AFTER UPDATE OF " + KEY_ISBN + " ON " + TBL_BOOKS.getName() + " FOR EACH ROW\n"
+               + " WHEN NEW." + KEY_ISBN + " <> OLD." + KEY_ISBN + '\n'
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName() + " SET ";
 
@@ -736,6 +748,171 @@ public class DBHelper
         if (oldVersion < 18) {
             TBL_BOOKSHELF_FILTERS.create(db, true);
         }
+        if (oldVersion < 19) {
+            TBL_BOOKLIST_STYLES.alterTableAddColumns(
+                    db,
+                    DBDefinitions.DOM_STYLE_NAME,
+
+                    DBDefinitions.DOM_STYLE_GROUPS,
+                    DBDefinitions.DOM_STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH,
+                    DBDefinitions.DOM_STYLE_GROUPS_AUTHOR_PRIMARY_TYPE,
+                    DBDefinitions.DOM_STYLE_GROUPS_SERIES_SHOW_UNDER_EACH,
+                    DBDefinitions.DOM_STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH,
+                    DBDefinitions.DOM_STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH,
+
+                    DBDefinitions.DOM_STYLE_EXP_LEVEL,
+                    DBDefinitions.DOM_STYLE_ROW_USES_PREF_HEIGHT,
+                    DBDefinitions.DOM_STYLE_AUTHOR_SORT_BY_GIVEN_NAME,
+                    DBDefinitions.DOM_STYLE_AUTHOR_SHOW_BY_GIVEN_NAME,
+                    DBDefinitions.DOM_STYLE_TEXT_SCALE,
+                    DBDefinitions.DOM_STYLE_COVER_SCALE,
+                    DBDefinitions.DOM_STYLE_LIST_HEADER,
+                    DBDefinitions.DOM_STYLE_DETAILS_SHOW_FIELDS,
+                    DBDefinitions.DOM_STYLE_LIST_SHOW_FIELDS);
+
+            final List<String> uuids = new ArrayList<>();
+            try (final Cursor cursor = db.rawQuery(
+                    "SELECT uuid FROM " + TBL_BOOKLIST_STYLES.getName()
+                    + " WHERE " + DBKey.STYLE_IS_BUILTIN + "=0", null)) {
+                while (cursor.moveToNext()) {
+                    uuids.add(cursor.getString(0));
+                }
+            }
+
+            try (final SQLiteStatement stmt = db.compileStatement(
+                    "UPDATE " + TBL_BOOKLIST_STYLES.getName() + " SET "
+                    + DBKey.STYLE_NAME + "=?, "
+
+                    + DBKey.STYLE_GROUPS + "=?,"
+                    + DBKey.STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH + "=?,"
+                    + DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE + "=?,"
+                    + DBKey.STYLE_GROUPS_SERIES_SHOW_UNDER_EACH + "=?,"
+                    + DBKey.STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH + "=?,"
+                    + DBKey.STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH + "=?,"
+
+                    + DBKey.STYLE_EXP_LEVEL + "=?,"
+                    + DBKey.STYLE_ROW_USES_PREF_HEIGHT + "=?,"
+                    + DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME + "=?,"
+                    + DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME + "=?,"
+                    + DBKey.STYLE_TEXT_SCALE + "=?,"
+                    + DBKey.STYLE_COVER_SCALE + "=?,"
+                    + DBKey.STYLE_LIST_HEADER + "=?,"
+                    + DBKey.STYLE_DETAILS_SHOW_FIELDS + "=?,"
+                    + DBKey.STYLE_LIST_SHOW_FIELDS + "=?"
+
+                    + " WHERE " + DBKey.STYLE_UUID + "=?")) {
+
+                uuids.forEach(uuid -> {
+                    final SharedPreferences stylePrefs = context
+                            .getSharedPreferences(uuid, Context.MODE_PRIVATE);
+
+                    stmt.bindString(1, stylePrefs.getString(
+                            StyleDataStore.PK_STYLE_NAME, null));
+
+                    stmt.bindString(2, stylePrefs.getString(
+                            StyleDataStore.PK_STYLE_GROUPS, null));
+
+                    stmt.bindLong(3, stylePrefs.getBoolean(
+                            AuthorBooklistGroup.PK_SHOW_BOOKS_UNDER_EACH, false) ? 1 : 0);
+
+                    stmt.bindLong(4, StyleDataStore.convert(
+                            stylePrefs.getStringSet(AuthorBooklistGroup.PK_PRIMARY_TYPE, null),
+                            Author.TYPE_UNKNOWN));
+
+                    stmt.bindLong(5, stylePrefs.getBoolean(
+                            SeriesBooklistGroup.PK_SHOW_BOOKS_UNDER_EACH, false) ? 1 : 0);
+                    stmt.bindLong(6, stylePrefs.getBoolean(
+                            PublisherBooklistGroup.PK_SHOW_BOOKS_UNDER_EACH, false) ? 1 : 0);
+                    stmt.bindLong(7, stylePrefs.getBoolean(
+                            BookshelfBooklistGroup.PK_SHOW_BOOKS_UNDER_EACH, false) ? 1 : 0);
+
+                    stmt.bindLong(8, stylePrefs.getInt(
+                            StyleDataStore.PK_EXPANSION_LEVEL, 1));
+                    stmt.bindLong(9, stylePrefs.getBoolean(
+                            StyleDataStore.PK_GROUP_ROW_HEIGHT, true) ? 1 : 0);
+                    stmt.bindLong(10, stylePrefs.getBoolean(
+                            StyleDataStore.PK_SORT_AUTHOR_NAME_GIVEN_FIRST, false) ? 1 : 0);
+                    stmt.bindLong(11, stylePrefs.getBoolean(
+                            StyleDataStore.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST, false) ? 1 : 0);
+
+                    stmt.bindLong(12, stylePrefs.getInt(
+                            StyleDataStore.PK_TEXT_SCALE, ListStyle.DEFAULT_TEXT_SCALE));
+                    stmt.bindLong(13, stylePrefs.getInt(
+                            StyleDataStore.PK_COVER_SCALE, ListStyle.DEFAULT_COVER_SCALE));
+
+                    stmt.bindLong(14, StyleDataStore.convert(
+                            stylePrefs.getStringSet(StyleDataStore.PK_LIST_HEADER, null),
+                            BooklistHeader.BITMASK_ALL));
+
+                    final int detailFields =
+                            (stylePrefs.getBoolean(
+                                    StyleDataStore.PK_STYLE_BOOK_DETAILS_COVER[0], true)
+                             ? BookDetailsFieldVisibility.DETAILS_SHOW_COVER_0 : 0)
+                            |
+                            (stylePrefs.getBoolean(
+                                    StyleDataStore.PK_STYLE_BOOK_DETAILS_COVER[1], true)
+                             ? BookDetailsFieldVisibility.DETAILS_SHOW_COVER_1 : 0);
+
+                    stmt.bindLong(15, detailFields);
+
+                    final int listFields =
+                            (stylePrefs.getBoolean(
+                                    StyleDataStore.PK_LIST_SHOW_COVERS, true)
+                             ? BooklistBookFieldVisibility.SHOW_COVER_0 : 0)
+                            |
+                            (stylePrefs.getBoolean(
+                                    StyleDataStore.PK_LIST_SHOW_AUTHOR, true)
+                             ? BooklistBookFieldVisibility.SHOW_AUTHOR : 0)
+                            |
+                            (stylePrefs.getBoolean(
+                                    StyleDataStore.PK_LIST_SHOW_PUBLISHER, true)
+                             ? BooklistBookFieldVisibility.SHOW_PUBLISHER : 0)
+                            |
+                            (stylePrefs.getBoolean(
+                                    StyleDataStore.PK_LIST_SHOW_PUB_DATE, true)
+                             ? BooklistBookFieldVisibility.SHOW_PUB_DATE : 0)
+                            |
+                            (stylePrefs.getBoolean(
+                                    StyleDataStore.PK_LIST_SHOW_FORMAT, true)
+                             ? BooklistBookFieldVisibility.SHOW_FORMAT : 0)
+                            |
+                            (stylePrefs.getBoolean(
+                                    StyleDataStore.PK_LIST_SHOW_LOCATION, true)
+                             ? BooklistBookFieldVisibility.SHOW_LOCATION : 0)
+                            |
+                            (stylePrefs.getBoolean(
+                                    StyleDataStore.PK_LIST_SHOW_RATING, true)
+                             ? BooklistBookFieldVisibility.SHOW_RATING : 0)
+                            |
+                            (stylePrefs.getBoolean(
+                                    StyleDataStore.PK_LIST_SHOW_BOOKSHELVES, true)
+                             ? BooklistBookFieldVisibility.SHOW_BOOKSHELVES : 0)
+                            |
+                            (stylePrefs.getBoolean(
+                                    StyleDataStore.PK_LIST_SHOW_ISBN, true)
+                             ? BooklistBookFieldVisibility.SHOW_ISBN : 0);
+
+                    stmt.bindLong(16, listFields);
+
+                    stmt.bindString(17, uuid);
+                    stmt.executeUpdateDelete();
+
+                    context.deleteSharedPreferences(uuid);
+                });
+            }
+
+            // remove any global style prefs so we start in a known state after this upgrade
+            final SharedPreferences global = PreferenceManager
+                    .getDefaultSharedPreferences(context);
+            final SharedPreferences.Editor editor = global.edit();
+            global.getAll()
+                  .keySet()
+                  .stream()
+                  .filter(key -> key.startsWith("style."))
+                  .forEach(editor::remove);
+
+            editor.apply();
+        }
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table:
         // 1. remove the column "books.clb_uuid"
@@ -777,6 +954,7 @@ public class DBHelper
                          .remove("tips.tip.BOOKLIST_STYLES_EDITOR")
                          .remove("tips.tip.BOOKLIST_STYLE_GROUPS")
                          .remove("tips.tip.BOOKLIST_STYLE_PROPERTIES")
+                         .remove("tips.tip.booklist_style_menu")
 
                          .remove("bookList.style.preferred.order")
 

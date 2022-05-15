@@ -81,18 +81,18 @@ public class StartupViewModel
     /** Number of times the app has been started. */
     private static final String PK_STARTUP_COUNT = "startup.startCount";
 
-    private final MutableLiveData<LiveDataEvent<Boolean>> mFinished =
+    private final MutableLiveData<LiveDataEvent<Boolean>> finishedLiveData =
             new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> mFailure =
+    private final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> failureLiveData =
             new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskProgress>> mProgress =
+    private final MutableLiveData<LiveDataEvent<TaskProgress>> progressLiveData =
             new MutableLiveData<>();
 
     /** TaskId holder. Added when started. Removed when stopped. */
     @NonNull
-    private final Collection<Integer> mAllTasks = new HashSet<>(6);
+    private final Collection<Integer> allTasks = new HashSet<>(6);
 
-    private final TaskListener<Boolean> mTaskListener = new TaskListener<>() {
+    private final TaskListener<Boolean> taskListener = new TaskListener<>() {
         /**
          * Called when any startup task completes. If no more tasks, let the activity know.
          */
@@ -117,31 +117,31 @@ public class StartupViewModel
         }
 
         private void cleanup(final int taskId) {
-            synchronized (mAllTasks) {
-                mAllTasks.remove(taskId);
+            synchronized (allTasks) {
+                allTasks.remove(taskId);
                 if (!isRunning()) {
-                    mFinished.setValue(new LiveDataEvent<>(true));
+                    finishedLiveData.setValue(new LiveDataEvent<>(true));
                 }
             }
         }
 
         @Override
         public void onProgress(@NonNull final TaskProgress message) {
-            mProgress.setValue(new LiveDataEvent<>(message));
+            progressLiveData.setValue(new LiveDataEvent<>(message));
         }
     };
 
     /** Flag to ensure tasks are only ever started once. */
-    private boolean mStartTasks = true;
+    private boolean startTasks = true;
 
     /** stage the startup is at. */
-    private int mStartupStage;
+    private int startupStage;
 
     /** Flag we need to prompt the user to make a backup after startup. */
-    private boolean mProposeBackup;
+    private boolean proposeBackup;
 
     /** Triggers periodic maintenance tasks. */
-    private boolean mDoMaintenance;
+    private boolean maintenanceNeeded;
 
     public static void schedule(@RebuildFlag @NonNull final String key,
                                 final boolean flag) {
@@ -155,18 +155,18 @@ public class StartupViewModel
     }
 
     public boolean isRunning() {
-        return !mAllTasks.isEmpty();
+        return !allTasks.isEmpty();
     }
 
     boolean isProposeBackup() {
-        return mProposeBackup;
+        return proposeBackup;
     }
 
     int getNextStartupStage(@SuppressWarnings("SameParameterValue") final int max) {
-        if (mStartupStage < max) {
-            mStartupStage++;
+        if (startupStage < max) {
+            startupStage++;
         }
-        return mStartupStage;
+        return startupStage;
     }
 
     /**
@@ -175,7 +175,7 @@ public class StartupViewModel
      * @param context Current context
      */
     public void init(@NonNull final Context context) {
-        if (mStartTasks) {
+        if (startTasks) {
 
             cleanObsoleteDirectories(context);
 
@@ -202,21 +202,8 @@ public class StartupViewModel
                   .putInt(PK_STARTUP_COUNT, global.getInt(PK_STARTUP_COUNT, 0) + 1)
                   .apply();
 
-            mDoMaintenance = maintenanceCountdown == 0;
-            mProposeBackup = backupCountdown == 0;
-
-
-            //FIXME: there is a recurring issue where style prefs are written to the global prefs
-            // when not intended. Instead of fixing that, we'll migrate styles to the db table.
-            // Until then, remove any accidental global style prefs.
-            final SharedPreferences.Editor editor = global.edit();
-            global.getAll()
-                  .keySet()
-                  .stream()
-                  .filter(key -> key.startsWith("style."))
-                  .forEach(editor::remove);
-
-            editor.apply();
+            maintenanceNeeded = maintenanceCountdown == 0;
+            proposeBackup = backupCountdown == 0;
         }
     }
 
@@ -237,57 +224,57 @@ public class StartupViewModel
      * @param context Current context
      */
     boolean startTasks(@NonNull final Context context) {
-        if (!mStartTasks) {
+        if (!startTasks) {
             return false;
         }
 
         // Clear the flag
-        mStartTasks = false;
+        startTasks = false;
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         // unconditional
-        startTask(new BuildLanguageMappingsTask(mTaskListener));
+        startTask(new BuildLanguageMappingsTask(taskListener));
 
         boolean optimizeDb = false;
 
-        if (mDoMaintenance || global.getBoolean(PK_RUN_MAINTENANCE, false)) {
+        if (maintenanceNeeded || global.getBoolean(PK_RUN_MAINTENANCE, false)) {
             // cleaner must be started after the language mapper task,
             // but before the rebuild tasks.
-            startTask(new DBCleanerTask(mTaskListener));
+            startTask(new DBCleanerTask(taskListener));
             optimizeDb = true;
         }
 
         if (global.getBoolean(PK_REBUILD_TITLE_OB, false)) {
-            startTask(new RebuildTitleOrderByColumnTask(mTaskListener));
+            startTask(new RebuildTitleOrderByColumnTask(taskListener));
             optimizeDb = true;
         }
 
         if (global.getBoolean(PK_REBUILD_INDEXES, false)) {
-            startTask(new RebuildIndexesTask(mTaskListener));
+            startTask(new RebuildIndexesTask(taskListener));
             optimizeDb = true;
         }
 
         if (global.getBoolean(PK_REBUILD_FTS, false)) {
-            startTask(new RebuildFtsTask(mTaskListener));
+            startTask(new RebuildFtsTask(taskListener));
             optimizeDb = true;
         }
 
         // triggered by any of the above as needed
         // This should always be the last task.
         if (optimizeDb) {
-            startTask(new OptimizeDbTask(mTaskListener));
+            startTask(new OptimizeDbTask(taskListener));
         }
 
         if (!isRunning()) {
-            mFinished.setValue(new LiveDataEvent<>(true));
+            finishedLiveData.setValue(new LiveDataEvent<>(true));
         }
 
         return true;
     }
 
     private void startTask(@NonNull final StartupTask task) {
-        synchronized (mAllTasks) {
-            mAllTasks.add(task.getTaskId());
+        synchronized (allTasks) {
+            allTasks.add(task.getTaskId());
             task.start();
         }
     }
@@ -297,7 +284,7 @@ public class StartupViewModel
      */
     @NonNull
     public LiveData<LiveDataEvent<Boolean>> onFinished() {
-        return mFinished;
+        return finishedLiveData;
     }
 
     /**
@@ -307,7 +294,7 @@ public class StartupViewModel
      */
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Exception>>> onFailure() {
-        return mFailure;
+        return failureLiveData;
     }
 
     /**
@@ -317,7 +304,7 @@ public class StartupViewModel
      */
     @NonNull
     public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
-        return mProgress;
+        return progressLiveData;
     }
 
     public interface StartupTask {

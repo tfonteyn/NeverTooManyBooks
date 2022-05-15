@@ -53,18 +53,16 @@ public abstract class BaseTextField<T, V extends TextView>
         extends BaseField<T, V> {
 
     @NonNull
-    final FieldFormatter<T> mFormatter;
+    final FieldFormatter<T> formatter;
 
     @ExtEndIconDelegate.EndIconMode
-    int mEndIconMode;
+    int endIconMode;
 
-    @SuppressWarnings("FieldNotUsedInToString")
     @IdRes
-    int mTextInputLayoutId;
+    int textInputLayoutId;
 
-    @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
-    private ExtEndIconDelegate mExtEndIconDelegate;
+    private ExtEndIconDelegate endIconDelegate;
 
     /**
      * Constructor.
@@ -82,7 +80,7 @@ public abstract class BaseTextField<T, V extends TextView>
                   @NonNull final String prefKey,
                   @Nullable final FieldFormatter<T> formatter) {
         super(fragmentId, fieldViewId, fieldKey, prefKey);
-        mFormatter = Objects.requireNonNullElseGet(
+        this.formatter = Objects.requireNonNullElseGet(
                 formatter,
                 () -> (context, value) -> value != null ? String.valueOf(value) : "");
     }
@@ -92,18 +90,18 @@ public abstract class BaseTextField<T, V extends TextView>
                               @NonNull final SharedPreferences global) {
         super.setParentView(parent, global);
 
-        if (mTextInputLayoutId != 0) {
-            final TextInputLayout til = parent.findViewById(mTextInputLayoutId);
+        if (textInputLayoutId != 0) {
+            final TextInputLayout til = parent.findViewById(textInputLayoutId);
 
             // On of our own end-icon delegates?
-            if (mEndIconMode == TextInputLayout.END_ICON_CLEAR_TEXT) {
-                mExtEndIconDelegate = new ExtClearTextEndIconDelegate();
-                mExtEndIconDelegate.setOnClickConsumer(v -> {
+            if (endIconMode == TextInputLayout.END_ICON_CLEAR_TEXT) {
+                endIconDelegate = new ExtClearTextEndIconDelegate();
+                endIconDelegate.setOnClickConsumer(v -> {
                     final T previous = getValue();
                     setValue(null);
                     notifyIfChanged(previous);
                 });
-                mExtEndIconDelegate.setTextInputLayout(til);
+                endIconDelegate.setTextInputLayout(til);
 
                 // or use a default delegate?
             } else if (til.getEndIconMode() == TextInputLayout.END_ICON_CLEAR_TEXT) {
@@ -130,8 +128,8 @@ public abstract class BaseTextField<T, V extends TextView>
     @Override
     public void setValue(@Nullable final T value) {
         super.setValue(value);
-        if (mExtEndIconDelegate != null) {
-            mExtEndIconDelegate.updateEndIcon();
+        if (endIconDelegate != null) {
+            endIconDelegate.updateEndIcon();
         }
     }
 

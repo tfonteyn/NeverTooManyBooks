@@ -215,9 +215,32 @@ public final class DBKey {
 
     /** {@link DBDefinitions#TBL_BOOKLIST_STYLES}. */
     public static final String STYLE_UUID = "uuid";
+    public static final String STYLE_NAME = "name";
     public static final String STYLE_IS_BUILTIN = "builtin";
     public static final String STYLE_IS_PREFERRED = "preferred";
     public static final String STYLE_MENU_POSITION = "menu_order";
+    public static final String STYLE_EXP_LEVEL = "exp_level";
+    public static final String STYLE_ROW_USES_PREF_HEIGHT = "row_pref_height";
+    public static final String STYLE_AUTHOR_SORT_BY_GIVEN_NAME = "author_sort_gn";
+    public static final String STYLE_AUTHOR_SHOW_BY_GIVEN_NAME = "author_show_gn";
+    public static final String STYLE_TEXT_SCALE = "text_scale";
+    public static final String STYLE_COVER_SCALE = "cover_scale";
+    public static final String STYLE_LIST_HEADER = "list_header";
+    public static final String STYLE_DETAILS_SHOW_FIELDS = "detail_fields_vis";
+    public static final String STYLE_LIST_SHOW_FIELDS = "list_fields_vis";
+
+    public static final String STYLE_GROUPS = "groups";
+    public static final String STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH =
+            "groups_author_under_each";
+    public static final String STYLE_GROUPS_AUTHOR_PRIMARY_TYPE =
+            "groups_author_prim_type";
+    public static final String STYLE_GROUPS_SERIES_SHOW_UNDER_EACH =
+            "groups_series_under_each";
+    public static final String STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH =
+            "groups_publisher_under_each";
+    public static final String STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH =
+            "groups_bookshelf_under_each";
+
 
     /** Alias. */
     public static final String KEY_BOOK_COUNT = "book_count";

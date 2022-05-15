@@ -81,7 +81,7 @@ public class Booklist
      * Internal ID. Used to create unique names for the temporary tables.
      * Used in this class for logging and {@link #equals}.
      */
-    private final int mInstanceId;
+    private final int instanceId;
 
     /**
      * The temp table representing the booklist for the current bookshelf/style.
@@ -108,10 +108,10 @@ public class Booklist
     private final BooklistNodeDao mBooklistNodeDao;
 
     /** Total number of books in current list. e.g. a book can be listed under 2 authors. */
-    private int mTotalBooks = -1;
+    private int totalBooks = -1;
 
     /** Total number of unique books in current list. */
-    private int mDistinctBooks = -1;
+    private int distinctBooks = -1;
 
     /**
      * DEBUG: double check on mCloseWasCalled to control
@@ -121,7 +121,7 @@ public class Booklist
     private boolean mDebugReferenceDecremented;
 
     /** DEBUG: Indicates close() has been called. See {@link Closeable#close()}. */
-    private boolean mCloseWasCalled;
+    private boolean closeWasCalled;
 
     /** The current list cursor. */
     @SuppressWarnings("FieldNotUsedInToString")
@@ -167,7 +167,7 @@ public class Booklist
              @NonNull final TableDefinition navTable,
              @NonNull final BooklistNodeDao booklistNodeDao) {
 
-        mInstanceId = instanceId;
+        this.instanceId = instanceId;
         mDb = db;
         mListTable = listTable;
         mNavTable = navTable;
@@ -185,15 +185,15 @@ public class Booklist
      * @return count
      */
     public int countBooks() {
-        if (mTotalBooks == -1) {
+        if (totalBooks == -1) {
             try (SynchronizedStatement stmt = mDb.compileStatement(
                     SELECT_COUNT_FROM_ + mListTable.getName()
                     + _WHERE_ + DBKey.KEY_BL_NODE_GROUP + "=?")) {
                 stmt.bindLong(1, BooklistGroup.BOOK);
-                mTotalBooks = (int) stmt.simpleQueryForLongOrZero();
+                totalBooks = (int) stmt.simpleQueryForLongOrZero();
             }
         }
-        return mTotalBooks;
+        return totalBooks;
     }
 
     /**
@@ -202,17 +202,17 @@ public class Booklist
      * @return count
      */
     public int countDistinctBooks() {
-        if (mDistinctBooks == -1) {
+        if (distinctBooks == -1) {
             try (SynchronizedStatement stmt = mDb.compileStatement(
                     "SELECT COUNT(DISTINCT " + DBKey.FK_BOOK + ")"
                     + _FROM_ + mListTable.getName()
                     + _WHERE_ + DBKey.KEY_BL_NODE_GROUP + "=?")) {
 
                 stmt.bindLong(1, BooklistGroup.BOOK);
-                mDistinctBooks = (int) stmt.simpleQueryForLongOrZero();
+                distinctBooks = (int) stmt.simpleQueryForLongOrZero();
             }
         }
-        return mDistinctBooks;
+        return distinctBooks;
     }
 
     /**
@@ -629,9 +629,9 @@ public class Booklist
     @Override
     public void close() {
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "|close|mInstanceId=" + mInstanceId);
+            Log.d(TAG, "|close|mInstanceId=" + instanceId);
         }
-        mCloseWasCalled = true;
+        closeWasCalled = true;
 
         if (mCursor != null) {
             mCursor.close();
@@ -656,9 +656,9 @@ public class Booklist
     @CallSuper
     protected void finalize()
             throws Throwable {
-        if (!mCloseWasCalled) {
+        if (!closeWasCalled) {
             if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "finalize|" + mInstanceId);
+                Log.w(TAG, "finalize|" + instanceId);
             }
             close();
         }
@@ -667,7 +667,7 @@ public class Booklist
 
     @Override
     public int hashCode() {
-        return Objects.hash(mInstanceId);
+        return Objects.hash(instanceId);
     }
 
     /**
@@ -682,17 +682,17 @@ public class Booklist
             return false;
         }
         final Booklist that = (Booklist) obj;
-        return mInstanceId == that.mInstanceId;
+        return instanceId == that.instanceId;
     }
 
     @Override
     @NonNull
     public String toString() {
         return "Booklist{"
-               + "mInstanceId=" + mInstanceId
-               + ", mCloseWasCalled=" + mCloseWasCalled
-               + ", mTotalBooks=" + mTotalBooks
-               + ", mDistinctBooks=" + mDistinctBooks
+               + "instanceId=" + instanceId
+               + ", closeWasCalled=" + closeWasCalled
+               + ", totalBooks=" + totalBooks
+               + ", distinctBooks=" + distinctBooks
                + '}';
     }
 

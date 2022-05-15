@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -133,24 +132,24 @@ class BooklistBuilder {
 
     /** Style to use while building the list. */
     @NonNull
-    private final ListStyle mStyle;
+    private final ListStyle style;
 
     /** Show only books on this bookshelf. */
     @NonNull
-    private final Bookshelf mBookshelf;
+    private final Bookshelf bookshelf;
 
     @NonNull
-    private final Map<String, TableDefinition> mLeftOuterJoins = new HashMap<>();
+    private final Map<String, TableDefinition> leftOuterJoins = new HashMap<>();
 
     /** Collection of 'extra' book level domains requested by caller. */
     @NonNull
-    private final Map<String, DomainExpression> mBookDomains = new HashMap<>();
+    private final Map<String, DomainExpression> bookDomains = new HashMap<>();
 
     /** the list of Filters. */
-    private final Collection<Filter> mFilters = new ArrayList<>();
+    private final Collection<Filter> filters = new ArrayList<>();
 
     @NonNull
-    private RebuildBooklist mRebuildMode;
+    private RebuildBooklist rebuildMode;
 
     /**
      * Constructor.
@@ -172,9 +171,9 @@ class BooklistBuilder {
                   new Throwable());
         }
 
-        mStyle = style;
-        mBookshelf = bookshelf;
-        mRebuildMode = rebuildMode;
+        this.style = style;
+        this.bookshelf = bookshelf;
+        this.rebuildMode = rebuildMode;
     }
 
     /**
@@ -184,11 +183,11 @@ class BooklistBuilder {
      */
     void addLeftOuterJoin(@SuppressWarnings("SameParameterValue")
                           @NonNull final TableDefinition tableDefinition) {
-        if (mLeftOuterJoins.containsKey(tableDefinition.getName())) {
+        if (leftOuterJoins.containsKey(tableDefinition.getName())) {
             // adding a duplicate here is a bug.
             throw new IllegalArgumentException("Duplicate table=" + tableDefinition.getName());
         }
-        mLeftOuterJoins.put(tableDefinition.getName(), tableDefinition);
+        leftOuterJoins.put(tableDefinition.getName(), tableDefinition);
     }
 
     /**
@@ -198,11 +197,11 @@ class BooklistBuilder {
      */
     void addDomain(@NonNull final DomainExpression domainExpression) {
         final String key = domainExpression.getDomain().getName();
-        if (mBookDomains.containsKey(key)) {
+        if (bookDomains.containsKey(key)) {
             // adding a duplicate here is a bug.
             throw new IllegalArgumentException("Duplicate domain=" + key);
         }
-        mBookDomains.put(key, domainExpression);
+        bookDomains.put(key, domainExpression);
     }
 
     /**
@@ -211,7 +210,7 @@ class BooklistBuilder {
      * @param filter to add
      */
     void addFilter(@NonNull final Filter filter) {
-        mFilters.add(filter);
+        filters.add(filter);
     }
 
     /**
@@ -220,7 +219,7 @@ class BooklistBuilder {
      * @param filters to add
      */
     void addFilter(@NonNull final List<Filter> filters) {
-        mFilters.addAll(filters);
+        this.filters.addAll(filters);
     }
 
     /**
@@ -230,7 +229,7 @@ class BooklistBuilder {
      */
     void setRebuildMode(@SuppressWarnings("SameParameterValue")
                         @NonNull final RebuildBooklist rebuildMode) {
-        mRebuildMode = rebuildMode;
+        this.rebuildMode = rebuildMode;
     }
 
     /**
@@ -246,8 +245,8 @@ class BooklistBuilder {
 
         // Construct the list table and all needed structures.
         final TableBuilder tableBuilder = new TableBuilder(
-                instanceId, mStyle, !mBookshelf.isAllBooks(), mRebuildMode);
-        tableBuilder.preBuild(context, mLeftOuterJoins.values(), mBookDomains.values(), mFilters);
+                instanceId, style, !bookshelf.isAllBooks(), rebuildMode);
+        tableBuilder.preBuild(context, leftOuterJoins.values(), bookDomains.values(), filters);
 
         final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
@@ -258,9 +257,9 @@ class BooklistBuilder {
             final TableDefinition listTable = tables.first;
             final TableDefinition navTable = tables.second;
             final BooklistNodeDao rowStateDAO =
-                    new BooklistNodeDao(db, listTable, mStyle, mBookshelf);
+                    new BooklistNodeDao(db, listTable, style, bookshelf);
 
-            switch (mRebuildMode) {
+            switch (rebuildMode) {
                 case FromSaved:
                     // all rows will be collapsed/hidden; restore the saved state
                     rowStateDAO.restoreSavedState();
@@ -268,7 +267,7 @@ class BooklistBuilder {
 
                 case Preferred:
                     // all rows will be collapsed/hidden; now adjust as required.
-                    rowStateDAO.setAllNodes(mStyle.getExpansionLevel(), false);
+                    rowStateDAO.setAllNodes(style.getExpansionLevel(), false);
                     break;
 
                 case Expanded:
@@ -277,7 +276,7 @@ class BooklistBuilder {
                     break;
 
                 default:
-                    throw new IllegalArgumentException(String.valueOf(mRebuildMode));
+                    throw new IllegalArgumentException(String.valueOf(rebuildMode));
             }
 
             db.setTransactionSuccessful();
@@ -310,64 +309,64 @@ class BooklistBuilder {
         private static final int NANO_TO_MILLIS = 1_000_000;
 
         /** Supposed to be {@code false}. */
-        private final boolean mCollationIsCaseSensitive;
+        private final boolean collationIsCaseSensitive;
 
         @NonNull
-        private final ListStyle mStyle;
+        private final ListStyle style;
 
         /** Set to {@code true} if we're filtering on a specific {@link Bookshelf}. */
-        private final boolean mFilteredOnBookshelf;
+        private final boolean filteredOnBookshelf;
 
         /** The table we'll be generating. */
         @NonNull
-        private final TableDefinition mListTable;
+        private final TableDefinition listTable;
 
         /**
          * The navigation table we'll be generating.
          * We need this due to SQLite in Android lacking the 3.25 window functions.
          */
         @NonNull
-        private final TableDefinition mNavTable;
+        private final TableDefinition navTable;
 
         /**
          * Domains required in output table.
-         * During the build, the {@link Domain} is added to the {@link #mListTable}
+         * During the build, the {@link Domain} is added to the {@link #listTable}
          * where they will be used to create the table.
          * <p>
          * The full {@link DomainExpression} is kept this collection to build the SQL column string
          * for both the INSERT and the SELECT statement.
          */
-        private final Collection<DomainExpression> mDomainExpressions = new ArrayList<>();
+        private final Collection<DomainExpression> domainExpressions = new ArrayList<>();
 
         /** Domains belonging the current group including its outer groups. */
-        private final List<Domain> mAccumulatedDomains = new ArrayList<>();
+        private final List<Domain> accumulatedDomains = new ArrayList<>();
 
         /**
          * Domains that form part of the sort key.
          * These are typically a reduced set of the group domains since the group domains
          * may contain more than just the key
          */
-        private final List<DomainExpression> mOrderByDomains = new ArrayList<>();
+        private final List<DomainExpression> orderByDomains = new ArrayList<>();
 
         /** Guards from adding duplicates. */
-        private final Map<Domain, String> mExpressionsDupCheck = new HashMap<>();
+        private final Map<Domain, String> expressionsDupCheck = new HashMap<>();
 
         /** Guards from adding duplicates. */
-        private final Collection<String> mOrderByDupCheck = new HashSet<>();
+        private final Collection<String> orderByDupCheck = new HashSet<>();
 
         @NonNull
-        private final RebuildBooklist mRebuildMode;
+        private final RebuildBooklist rebuildMode;
 
-        private String mSqlForInitialInsert;
+        private String sqlForInitialInsert;
 
         /** Table used by the triggers to track the most recent/current row headings. */
-        private TableDefinition mTriggerHelperTable;
+        private TableDefinition triggerHelperTable;
         /** Trigger name - inserts headers for each level during the initial insert. */
-        private String[] mTriggerHelperLevelTriggerName;
+        private String[] triggerHelperLevelTriggerName;
         /** Trigger name - maintain the 'current' value during the initial insert. */
-        private String mTriggerHelperCurrentValueTriggerName;
+        private String triggerHelperCurrentValueTriggerName;
 
-        private Collection<TableDefinition> mLeftOuterJoins;
+        private Collection<TableDefinition> leftOuterJoins;
 
         /**
          * Constructor.
@@ -383,11 +382,11 @@ class BooklistBuilder {
                      final boolean isFilteredOnBookshelf,
                      @NonNull final RebuildBooklist rebuildMode) {
 
-            mStyle = style;
-            mFilteredOnBookshelf = isFilteredOnBookshelf;
-            mRebuildMode = rebuildMode;
+            this.style = style;
+            filteredOnBookshelf = isFilteredOnBookshelf;
+            this.rebuildMode = rebuildMode;
 
-            mCollationIsCaseSensitive = ServiceLocator.getInstance().isCollationCaseSensitive();
+            collationIsCaseSensitive = ServiceLocator.getInstance().isCollationCaseSensitive();
 
             /*
              * Temporary table used to store a flattened booklist tree structure.
@@ -398,23 +397,23 @@ class BooklistBuilder {
              *
              * We setup the tables here, but don't create them yet.
              */
-            mListTable = new TableDefinition("tmp_book_list_" + instanceId)
+            listTable = new TableDefinition("tmp_book_list_" + instanceId)
                     .setAlias("bl")
                     .addDomains(DOM_PK_ID)
                     .setPrimaryKey(DOM_PK_ID);
 
-            mNavTable = new TableDefinition("tmp_book_nav_" + instanceId)
+            navTable = new TableDefinition("tmp_book_nav_" + instanceId)
                     .setAlias("nav")
                     .addDomains(DOM_PK_ID, DOM_FK_BOOK, DOM_FK_BL_ROW_ID)
                     .setPrimaryKey(DOM_PK_ID);
 
             // Allow debug mode to use a standard table so we can export and inspect the content.
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_USES_STANDARD_TABLE) {
-                mListTable.setType(TableDefinition.TableType.Standard);
-                mNavTable.setType(TableDefinition.TableType.Standard);
+                listTable.setType(TableDefinition.TableType.Standard);
+                navTable.setType(TableDefinition.TableType.Standard);
             } else {
-                mListTable.setType(TableDefinition.TableType.Temporary);
-                mNavTable.setType(TableDefinition.TableType.Temporary);
+                listTable.setType(TableDefinition.TableType.Temporary);
+                navTable.setType(TableDefinition.TableType.Temporary);
             }
         }
 
@@ -435,7 +434,7 @@ class BooklistBuilder {
                       @NonNull final Collection<Filter> filters) {
 
             // Store for later use in #buildFrom
-            mLeftOuterJoins = leftOuterJoins;
+            this.leftOuterJoins = leftOuterJoins;
 
             // {@link BooklistGroup#GroupKey}.
             // The actual value is set on a by-group/book basis.
@@ -453,7 +452,7 @@ class BooklistBuilder {
 
             // The level expression; for a book this is always 1 below the #groups obviously
             addDomain(new DomainExpression(
-                    DOM_BL_NODE_LEVEL, String.valueOf(mStyle.getGroups().size() + 1)));
+                    DOM_BL_NODE_LEVEL, String.valueOf(style.getGroupCount() + 1)));
 
             // The BooklistGroup for a book is always BooklistGroup.BOOK (duh)
             addDomain(new DomainExpression(DOM_BL_NODE_GROUP, String.valueOf(BooklistGroup.BOOK)));
@@ -463,7 +462,7 @@ class BooklistBuilder {
             addDomain(new DomainExpression(DOM_FK_BOOK, TBL_BOOKS.dot(DBKey.PK_ID)));
 
             // Add style-specified groups
-            mStyle.getGroups().getGroupList().forEach(this::addGroup);
+            style.getGroupList().forEach(this::addGroup);
 
             // Add caller-specified domains
             bookDomains.forEach(this::addDomain);
@@ -476,7 +475,7 @@ class BooklistBuilder {
             // The 'AS' is for SQL readability/debug only
 
             boolean first = true;
-            for (final DomainExpression domainExpression : mDomainExpressions) {
+            for (final DomainExpression domainExpression : domainExpressions) {
                 if (first) {
                     first = false;
                 } else {
@@ -500,7 +499,7 @@ class BooklistBuilder {
 
             // PREF_REBUILD_EXPANDED must explicitly be set to 1/1
             // All others must be set to 0/0. The actual state will be set afterwards.
-            switch (mRebuildMode) {
+            switch (rebuildMode) {
                 case Collapsed:
                 case Preferred:
                 case FromSaved:
@@ -514,17 +513,17 @@ class BooklistBuilder {
                     break;
 
                 default:
-                    throw new IllegalArgumentException(String.valueOf(mRebuildMode));
+                    throw new IllegalArgumentException(String.valueOf(rebuildMode));
             }
 
-            mSqlForInitialInsert =
-                    INSERT_INTO_ + mListTable.getName() + " (" + destColumns + ") "
+            sqlForInitialInsert =
+                    INSERT_INTO_ + listTable.getName() + " (" + destColumns + ") "
                     + SELECT_ + sourceColumns
                     + _FROM_ + buildFrom() + buildWhere(context, filters)
                     + _ORDER_BY_ + buildOrderBy();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-                Log.d(TAG, "build|sql=" + mSqlForInitialInsert);
+                Log.d(TAG, "build|sql=" + sqlForInitialInsert);
             }
         }
 
@@ -538,7 +537,7 @@ class BooklistBuilder {
         @NonNull
         Pair<TableDefinition, TableDefinition> build(@NonNull final SynchronizedDb db) {
             if (BuildConfig.DEBUG /* always */) {
-                SanityCheck.requireValue(mSqlForInitialInsert, "preBuild() must be called first");
+                SanityCheck.requireValue(sqlForInitialInsert, "preBuild() must be called first");
 
                 if (!db.inTransaction()) {
                     throw new TransactionException(TransactionException.REQUIRED);
@@ -546,7 +545,7 @@ class BooklistBuilder {
             }
 
             //IMPORTANT: withDomainConstraints MUST BE false
-            db.recreate(mListTable, false);
+            db.recreate(listTable, false);
 
             // get the triggers in place, ready to act on our upcoming initial insert.
             createTriggers(db);
@@ -557,7 +556,7 @@ class BooklistBuilder {
 
             final long t0 = System.nanoTime();
 
-            try (SynchronizedStatement stmt = db.compileStatement(mSqlForInitialInsert)) {
+            try (SynchronizedStatement stmt = db.compileStatement(sqlForInitialInsert)) {
                 initialInsertCount = stmt.executeUpdateDelete();
             }
             final long t1_insert = System.nanoTime();
@@ -567,16 +566,16 @@ class BooklistBuilder {
                            + ((t1_insert - t0) / NANO_TO_MILLIS) + " ms");
             }
 
-            if (!mCollationIsCaseSensitive) {
+            if (!collationIsCaseSensitive) {
                 // can't do this, IndexDefinition class does not support DESC columns for now.
                 // mListTable.addIndex("SDI", false, helper.getSortedDomains());
                 db.execSQL(
-                        "CREATE INDEX " + mListTable.getName() + "_SDI ON " + mListTable.getName()
+                        "CREATE INDEX " + listTable.getName() + "_SDI ON " + listTable.getName()
                         + "(" + getSortedDomainsIndexColumns() + ")");
             }
 
             // The list table is now fully populated.
-            db.analyze(mListTable);
+            db.analyze(listTable);
 
             // remove the no longer needed triggers
             cleanupTriggers(db);
@@ -585,16 +584,16 @@ class BooklistBuilder {
             // This is a mapping table between row-id + book-id and a plain sequential id.
             // The latter is needed for a RecyclerView adapter.
             // Don't apply constraints (no need)
-            db.recreate(mNavTable, false);
-            db.execSQL(INSERT_INTO_ + mNavTable.getName()
+            db.recreate(navTable, false);
+            db.execSQL(INSERT_INTO_ + navTable.getName()
                        + " (" + DBKey.FK_BOOK + ',' + DBKey.FK_BL_ROW_ID + ") "
                        + SELECT_ + DBKey.FK_BOOK + ',' + DBKey.PK_ID
-                       + _FROM_ + mListTable.getName()
+                       + _FROM_ + listTable.getName()
                        + _WHERE_ + DBKey.KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK
                        + _ORDER_BY_ + DBKey.PK_ID
                       );
 
-            return new Pair<>(mListTable, mNavTable);
+            return new Pair<>(listTable, navTable);
         }
 
         /**
@@ -605,7 +604,7 @@ class BooklistBuilder {
          */
         private void createTriggers(@NonNull final SynchronizedDb db) {
 
-            mTriggerHelperTable = new TableDefinition(mListTable + "_th")
+            triggerHelperTable = new TableDefinition(listTable + "_th")
                     .setAlias("tht")
                     .setType(TableDefinition.TableType.Temporary);
 
@@ -615,18 +614,18 @@ class BooklistBuilder {
             final Collection<String> sortedDomainNames = new HashSet<>();
 
             // Build the 'current' header table definition and the sort column list
-            mOrderByDomains.stream()
-                           .map(DomainExpression::getDomain)
-                           // don't add duplicate domains
-                           .filter(domain -> !sortedDomainNames.contains(domain.getName()))
-                           .forEachOrdered(domain -> {
+            orderByDomains.stream()
+                          .map(DomainExpression::getDomain)
+                          // don't add duplicate domains
+                          .filter(domain -> !sortedDomainNames.contains(domain.getName()))
+                          .forEachOrdered(domain -> {
                                sortedDomainNames.add(domain.getName());
                                if (valuesColumns.length() > 0) {
                                    valuesColumns.append(",");
                                }
                                valuesColumns.append("NEW.").append(domain.getName());
 
-                               mTriggerHelperTable.addDomain(domain);
+                               triggerHelperTable.addDomain(domain);
                            });
 
             /*
@@ -637,11 +636,11 @@ class BooklistBuilder {
              * This is just a simple technique to provide persistent context to the trigger.
              */
             //IMPORTANT: withDomainConstraints MUST BE false
-            db.recreate(mTriggerHelperTable, false);
+            db.recreate(triggerHelperTable, false);
 
-            final int groupCount = mStyle.getGroups().size();
+            final int groupCount = style.getGroupCount();
 
-            mTriggerHelperLevelTriggerName = new String[groupCount];
+            triggerHelperLevelTriggerName = new String[groupCount];
 
             /*
              * For each grouping, starting with the lowest, build a trigger to update the next
@@ -652,7 +651,7 @@ class BooklistBuilder {
                 final int level = index + 1;
 
                 // Get the group
-                final BooklistGroup group = mStyle.getGroups().getGroupByLevel(level);
+                final BooklistGroup group = style.getGroupByLevel(level);
 
                 // Create the INSERT columns clause for the next level up
                 final StringBuilder listColumns = new StringBuilder()
@@ -664,7 +663,7 @@ class BooklistBuilder {
 
                 // PREF_REBUILD_EXPANDED must explicitly be set to 1/1
                 // All others must be set to 0/0. The actual state will be set afterwards.
-                final int expVis = (mRebuildMode == RebuildBooklist.Expanded) ? 1 : 0;
+                final int expVis = (rebuildMode == RebuildBooklist.Expanded) ? 1 : 0;
 
                 // Create the VALUES clause for the next level up
                 final StringBuilder listValues = new StringBuilder()
@@ -691,7 +690,7 @@ class BooklistBuilder {
                                  whereClause.append(_AND_);
                              }
                              whereClause.append("COALESCE(")
-                                        .append(mTriggerHelperTable.dot(domainName))
+                                        .append(triggerHelperTable.dot(domainName))
                                         .append(",'')=COALESCE(NEW.")
                                         .append(domainName)
                                         .append(",'')")
@@ -700,17 +699,17 @@ class BooklistBuilder {
                      });
 
                 // (re)Create the trigger
-                mTriggerHelperLevelTriggerName[index] = mListTable.getName() + "_TG_LEVEL_" + level;
-                db.execSQL(DROP_TRIGGER_IF_EXISTS_ + mTriggerHelperLevelTriggerName[index]);
+                triggerHelperLevelTriggerName[index] = listTable.getName() + "_TG_LEVEL_" + level;
+                db.execSQL(DROP_TRIGGER_IF_EXISTS_ + triggerHelperLevelTriggerName[index]);
                 final String levelTgSql =
-                        "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperLevelTriggerName[index]
-                        + " BEFORE INSERT ON " + mListTable.getName() + " FOR EACH ROW"
+                        "\nCREATE TEMPORARY TRIGGER " + triggerHelperLevelTriggerName[index]
+                        + " BEFORE INSERT ON " + listTable.getName() + " FOR EACH ROW"
                         + "\n WHEN NEW." + DBKey.KEY_BL_NODE_LEVEL + '=' + (level + 1)
                         + " AND NOT EXISTS("
-                        + /* */ "SELECT 1 FROM " + mTriggerHelperTable.ref() + _WHERE_ + whereClause
+                        + /* */ "SELECT 1 FROM " + triggerHelperTable.ref() + _WHERE_ + whereClause
                         + /* */ ')'
                         + "\n BEGIN"
-                        + "\n  INSERT INTO " + mListTable.getName() + " (" + listColumns + ")"
+                        + "\n  INSERT INTO " + listTable.getName() + " (" + listColumns + ")"
                         + /*             */ " VALUES(" + listValues + ");"
                         + "\n END";
 
@@ -754,16 +753,16 @@ class BooklistBuilder {
             }
 
             // Create a trigger to maintain the 'current' value
-            mTriggerHelperCurrentValueTriggerName = mListTable.getName() + "_TG_CURRENT";
-            db.execSQL(DROP_TRIGGER_IF_EXISTS_ + mTriggerHelperCurrentValueTriggerName);
+            triggerHelperCurrentValueTriggerName = listTable.getName() + "_TG_CURRENT";
+            db.execSQL(DROP_TRIGGER_IF_EXISTS_ + triggerHelperCurrentValueTriggerName);
             // This is a single row only, so delete the previous value, and insert the current one
             final String currentValueTgSql =
-                    "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperCurrentValueTriggerName
-                    + " AFTER INSERT ON " + mListTable.getName() + " FOR EACH ROW"
+                    "\nCREATE TEMPORARY TRIGGER " + triggerHelperCurrentValueTriggerName
+                    + " AFTER INSERT ON " + listTable.getName() + " FOR EACH ROW"
                     + "\n WHEN NEW." + DBKey.KEY_BL_NODE_LEVEL + '=' + groupCount
                     + "\n BEGIN"
-                    + "\n  DELETE FROM " + mTriggerHelperTable.getName() + ';'
-                    + "\n  INSERT INTO " + mTriggerHelperTable.getName()
+                    + "\n  DELETE FROM " + triggerHelperTable.getName() + ';'
+                    + "\n  INSERT INTO " + triggerHelperTable.getName()
                     + /*              */ " VALUES (" + valuesColumns + ");"
                     + "\n END";
 
@@ -776,16 +775,16 @@ class BooklistBuilder {
          * @param db Database Access
          */
         private void cleanupTriggers(@NonNull final SynchronizedDb db) {
-            if (mTriggerHelperCurrentValueTriggerName != null) {
-                db.execSQL(DROP_TRIGGER_IF_EXISTS_ + mTriggerHelperCurrentValueTriggerName);
+            if (triggerHelperCurrentValueTriggerName != null) {
+                db.execSQL(DROP_TRIGGER_IF_EXISTS_ + triggerHelperCurrentValueTriggerName);
             }
-            if (mTriggerHelperLevelTriggerName != null) {
-                Arrays.stream(mTriggerHelperLevelTriggerName)
+            if (triggerHelperLevelTriggerName != null) {
+                Arrays.stream(triggerHelperLevelTriggerName)
                       .map(name -> DROP_TRIGGER_IF_EXISTS_ + name)
                       .forEach(db::execSQL);
             }
-            if (mTriggerHelperTable != null) {
-                db.drop(mTriggerHelperTable.getName());
+            if (triggerHelperTable != null) {
+                db.drop(triggerHelperTable.getName());
             }
         }
 
@@ -797,13 +796,13 @@ class BooklistBuilder {
         @SuppressWarnings("UnusedReturnValue")
         private boolean addDomain(@NonNull final Domain domain) {
             // Add to the table, if not already there
-            return mListTable.addDomain(domain);
+            return listTable.addDomain(domain);
         }
 
         private void addIndex(@NonNull final String nameSuffix,
                               @SuppressWarnings("SameParameterValue") final boolean unique,
                               @NonNull final Domain... domains) {
-            mListTable.addIndex(nameSuffix, unique, domains);
+            listTable.addIndex(nameSuffix, unique, domains);
         }
 
         /**
@@ -818,7 +817,7 @@ class BooklistBuilder {
             final String expression = domainExpression.getExpression();
 
             // Add to the table, if not already there
-            final boolean added = mListTable.addDomain(domain);
+            final boolean added = listTable.addDomain(domain);
 
             // If the expression is {@code null},
             // then the domain is just meant for the lowest level; i.e. the book.
@@ -826,20 +825,20 @@ class BooklistBuilder {
             if (expression != null) {
                 // If the domain was already present, and it has an expression,
                 // check the expression being different (or not) from the stored expression
-                if (!added && expression.equals(mExpressionsDupCheck.get(domain))) {
+                if (!added && expression.equals(expressionsDupCheck.get(domain))) {
                     // same expression, we do NOT want to add it.
                     // This is NOT a bug, although one could argue it's an efficiency issue.
                     return;
                 }
 
-                mDomainExpressions.add(domainExpression);
-                mExpressionsDupCheck.put(domain, expression);
+                domainExpressions.add(domainExpression);
+                expressionsDupCheck.put(domain, expression);
             }
 
             // If required, add to the order-by domains, if not already there
-            if (domainExpression.isSorted() && !mOrderByDupCheck.contains(domain.getName())) {
-                mOrderByDomains.add(domainExpression);
-                mOrderByDupCheck.add(domain.getName());
+            if (domainExpression.isSorted() && !orderByDupCheck.contains(domain.getName())) {
+                orderByDomains.add(domainExpression);
+                orderByDupCheck.add(domain.getName());
             }
         }
 
@@ -861,12 +860,12 @@ class BooklistBuilder {
             // display domain first
             final DomainExpression displayDomainExpression = group.getDisplayDomainExpression();
             addDomain(displayDomainExpression);
-            mAccumulatedDomains.add(displayDomainExpression.getDomain());
+            accumulatedDomains.add(displayDomainExpression.getDomain());
 
             // then how we group
             group.getGroupDomainExpressions().forEach(domainExpression -> {
                 addDomain(domainExpression);
-                mAccumulatedDomains.add(domainExpression.getDomain());
+                accumulatedDomains.add(domainExpression.getDomain());
             });
 
             // the base domains we always need/have
@@ -883,7 +882,7 @@ class BooklistBuilder {
              * As subsequent addGroup calls will modify this collection,
              * we make a (shallow) copy of the list.
              */
-            group.setAccumulatedDomains(new ArrayList<>(mAccumulatedDomains));
+            group.setAccumulatedDomains(new ArrayList<>(accumulatedDomains));
         }
 
         /**
@@ -899,10 +898,10 @@ class BooklistBuilder {
          */
         @NonNull
         private String buildNodeKey() {
-            return mStyle.getGroups().getGroupList()
-                         .stream()
-                         .map(BooklistGroup::getNodeKeyExpression)
-                         .collect(Collectors.joining("||"));
+            return style.getGroupList()
+                        .stream()
+                        .map(BooklistGroup::getNodeKeyExpression)
+                        .collect(Collectors.joining("||"));
         }
 
         /**
@@ -918,7 +917,7 @@ class BooklistBuilder {
          *      + {@link DBDefinitions#TBL_PUBLISHERS}</li>
          *      <li>{@link DBDefinitions#TBL_BOOK_BOOKSHELF}
          *      + {@link DBDefinitions#TBL_BOOKSHELF}</li>
-         *      <li>{@link #mLeftOuterJoins}</li>
+         *      <li>{@link #leftOuterJoins}</li>
          * </ul>
          *
          * @return FROM clause
@@ -929,11 +928,9 @@ class BooklistBuilder {
             // Text of join statement
             final StringBuilder sql = new StringBuilder();
 
-            final Groups styleGroups = mStyle.getGroups();
-
             // If there is a bookshelf specified (either as group or as a filter),
             // we start the join there.
-            if (styleGroups.contains(BooklistGroup.BOOKSHELF) || mFilteredOnBookshelf) {
+            if (style.hasGroup(BooklistGroup.BOOKSHELF) || filteredOnBookshelf) {
                 sql.append(TBL_BOOKSHELF.startJoin(TBL_BOOK_BOOKSHELF, TBL_BOOKS));
             } else {
                 // Otherwise, we start with the BOOKS table.
@@ -942,18 +939,18 @@ class BooklistBuilder {
 
             joinWithAuthors(sql);
 
-            if (styleGroups.contains(BooklistGroup.SERIES)
+            if (style.hasGroup(BooklistGroup.SERIES)
                 || DBKey.isUsed(global, DBKey.SERIES_TITLE)) {
                 joinWithSeries(sql);
             }
 
-            if (styleGroups.contains(BooklistGroup.PUBLISHER)
+            if (style.hasGroup(BooklistGroup.PUBLISHER)
                 || DBKey.isUsed(global, DBKey.PUBLISHER_NAME)) {
                 joinWithPublishers(sql);
             }
 
             // Add LEFT OUTER JOIN tables as needed
-            mLeftOuterJoins.forEach(table -> sql.append(TBL_BOOKS.leftOuterJoin(table)));
+            leftOuterJoins.forEach(table -> sql.append(TBL_BOOKS.leftOuterJoin(table)));
 
             return sql.toString();
         }
@@ -963,9 +960,9 @@ class BooklistBuilder {
             sql.append(TBL_BOOKS.join(TBL_BOOK_AUTHOR));
             // Extend the join filtering on the primary Author unless
             // the user wants the book to show under all its Authors
-            if (!mStyle.isShowBooksUnderEachAuthor()) {
+            if (!style.isShowBooksUnderEachAuthor()) {
                 @Author.Type
-                final int primaryAuthorType = mStyle.getPrimaryAuthorType();
+                final int primaryAuthorType = style.getPrimaryAuthorType();
                 if (primaryAuthorType == Author.TYPE_UNKNOWN) {
                     // don't care about Author type, so just grab the first one (i.e. pos==1)
                     sql.append(_AND_)
@@ -994,7 +991,7 @@ class BooklistBuilder {
             sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_SERIES));
             // Extend the join filtering on the primary Series unless
             // the user wants the book to show under all its Series
-            if (!mStyle.isShowBooksUnderEachSeries()) {
+            if (!style.isShowBooksUnderEachSeries()) {
                 sql.append(_AND_)
                    .append(TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_POSITION))
                    .append("=1");
@@ -1008,7 +1005,7 @@ class BooklistBuilder {
             sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_PUBLISHER));
             // Extend the join filtering on the primary Publisher unless
             // the user wants the book to show under all its Publishers
-            if (!mStyle.isShowBooksUnderEachPublisher()) {
+            if (!style.isShowBooksUnderEachPublisher()) {
                 sql.append(_AND_)
                    .append(TBL_BOOK_PUBLISHER.dot(DBKey.BOOK_PUBLISHER_POSITION))
                    .append("=1");
@@ -1060,7 +1057,7 @@ class BooklistBuilder {
         private String buildOrderBy() {
             // List of column names appropriate for 'ORDER BY' clause
             final StringBuilder orderBy = new StringBuilder();
-            mOrderByDomains.forEach(sd -> {
+            orderByDomains.forEach(sd -> {
                 final Domain domain = sd.getDomain();
                 if (domain.isText()) {
                     // The order of this if/elseif/else is important, don't merge branch 1 and 3!
@@ -1068,7 +1065,7 @@ class BooklistBuilder {
                         // always use a pre-prepared order-by column as-is
                         orderBy.append(domain.getName());
 
-                    } else if (mCollationIsCaseSensitive) {
+                    } else if (collationIsCaseSensitive) {
                         // If {@link DAO#COLLATION} is case-sensitive, lowercase it.
                         // This should never happen, but see the DAO method docs.
                         orderBy.append("lower(").append(domain.getName()).append(')');
@@ -1098,7 +1095,7 @@ class BooklistBuilder {
         private String getSortedDomainsIndexColumns() {
             final StringBuilder indexCols = new StringBuilder();
 
-            mOrderByDomains.forEach(sd -> {
+            orderByDomains.forEach(sd -> {
                 final Domain domain = sd.getDomain();
                 indexCols.append(domain.getName());
                 if (domain.isText()) {

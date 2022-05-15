@@ -46,16 +46,11 @@ public class CoversDbHelper
     public static final String PK_ID = "_id";
     public static final String CACHE_ID = "key";
     public static final String BLOB_IMAGE = "image";
-    public static final String UTC_DATE_LAST_UPDATED = "last_update_date";
+    public static final String LAST_UPDATED__UTC = "last_update_date";
 
     /** DB name. */
-    public static final String DATABASE_NAME = "covers.db";
+    private static final String DATABASE_NAME = "covers.db";
 
-    /**
-     * DB Version.
-     * v2: current
-     * v1: had a redundant width/height column.
-     */
     private static final int DATABASE_VERSION = 2;
 
     /** {@link #TBL_IMAGE}. */
@@ -75,7 +70,7 @@ public class CoversDbHelper
                     .build();
 
     private static final Domain DOM_UTC_DATETIME =
-            new Domain.Builder(UTC_DATE_LAST_UPDATED, ColumnInfo.TYPE_DATETIME)
+            new Domain.Builder(LAST_UPDATED__UTC, ColumnInfo.TYPE_DATETIME)
                     .notNull()
                     .withDefaultCurrentTimeStamp()
                     .build();
@@ -96,7 +91,7 @@ public class CoversDbHelper
     static {
         TBL_IMAGE.addIndex("id", true, DOM_PK_ID)
                  .addIndex(CACHE_ID, true, DOM_CACHE_ID)
-                 .addIndex(CACHE_ID + "_" + UTC_DATE_LAST_UPDATED,
+                 .addIndex(CACHE_ID + "_" + LAST_UPDATED__UTC,
                            true, DOM_CACHE_ID, DOM_UTC_DATETIME);
     }
 

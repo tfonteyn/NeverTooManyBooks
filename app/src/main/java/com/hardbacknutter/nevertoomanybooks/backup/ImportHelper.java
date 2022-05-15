@@ -48,13 +48,13 @@ public final class ImportHelper
 
     /** <strong>Where</strong> we read from. */
     @NonNull
-    private final Uri mUri;
+    private final Uri uri;
     /** <strong>How</strong> we read from the uri. */
     @NonNull
-    private final ArchiveEncoding mEncoding;
+    private final ArchiveEncoding encoding;
 
     @NonNull
-    private final UriInfo mUriInfo;
+    private final UriInfo uriInfo;
 
     /**
      * Constructor. The encoding will be determined from the Uri.
@@ -69,14 +69,14 @@ public final class ImportHelper
                         @NonNull final Uri uri)
             throws FileNotFoundException, DataReaderException {
 
-        mUri = uri;
-        mUriInfo = new UriInfo(mUri);
-        mEncoding = ArchiveEncoding.getEncoding(context, uri).orElseThrow(
+        this.uri = uri;
+        uriInfo = new UriInfo(this.uri);
+        encoding = ArchiveEncoding.getEncoding(context, uri).orElseThrow(
                 () -> new DataReaderException(context.getString(
                         R.string.error_import_file_not_supported)));
 
         // set the defaults according to the encoding
-        switch (mEncoding) {
+        switch (encoding) {
             case Csv:
                 addRecordType(RecordType.Books);
                 setUpdateOption(DataReader.Updates.OnlyNewer);
@@ -117,7 +117,7 @@ public final class ImportHelper
      */
     @NonNull
     public ArchiveEncoding getEncoding() {
-        return mEncoding;
+        return encoding;
     }
 
     /**
@@ -127,7 +127,7 @@ public final class ImportHelper
      */
     @NonNull
     public Uri getUri() {
-        return mUri;
+        return uri;
     }
 
     /**
@@ -137,7 +137,7 @@ public final class ImportHelper
      */
     @NonNull
     public UriInfo getUriInfo() {
-        return mUriInfo;
+        return uriInfo;
     }
 
     @NonNull
@@ -147,7 +147,7 @@ public final class ImportHelper
                    CredentialsException,
                    StorageException,
                    IOException {
-        return mEncoding.createReader(context, this);
+        return encoding.createReader(context, this);
     }
 
     @Override
@@ -155,9 +155,9 @@ public final class ImportHelper
     public String toString() {
         return "ImportHelper{"
                + super.toString()
-               + ", mUri=" + mUri
-               + ", mEncoding=" + mEncoding
-               + ", mUriInfo=" + mUriInfo
+               + ", uri=" + uri
+               + ", encoding=" + encoding
+               + ", uriInfo=" + uriInfo
                + '}';
     }
 }

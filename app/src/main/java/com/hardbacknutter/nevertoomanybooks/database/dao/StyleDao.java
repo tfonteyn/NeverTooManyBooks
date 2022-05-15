@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import android.content.Context;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 import java.util.Map;
@@ -37,8 +38,9 @@ public interface StyleDao {
      *
      * @param uuid UUID of the style to find
      *
-     * @return id
+     * @return id or {@code 0} if not found
      */
+    @IntRange(from = 0)
     long getStyleIdByUuid(@NonNull String uuid);
 
     /**
@@ -62,16 +64,16 @@ public interface StyleDao {
     Map<String, BuiltinStyle> getBuiltinStyles(@NonNull Context context);
 
     /**
-     * Create a new {@link ListStyle}.
+     * Create a new {@link UserStyle}.
      *
      * @param style to insert. Will be updated with the id.
      *
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      */
-    long insert(@NonNull ListStyle style);
+    long insert(@NonNull UserStyle style);
 
     /**
-     * Update a {@link ListStyle}.
+     * Update a {@link ListStyle} - both {@link UserStyle} and {@link BuiltinStyle} can be updated.
      *
      * @param style to update
      *

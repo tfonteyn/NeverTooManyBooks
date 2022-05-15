@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -72,30 +71,30 @@ public class SearchCriteria
      * which can be re-used for the builder.
      */
     @NonNull
-    private final ArrayList<Long> mBookIdList = new ArrayList<>();
+    private final ArrayList<Long> bookIdList = new ArrayList<>();
 
     /** Book title to use in FTS search query. */
     @Nullable
-    private String mFtsBookTitle;
+    private String ftsBookTitle;
     /** Series title to use in FTS search query. */
     @Nullable
-    private String mFtsSeriesTitle;
+    private String ftsSeriesTitle;
     /** Author to use in FTS search query. */
     @Nullable
-    private String mFtsAuthor;
+    private String ftsAuthor;
     /** Publisher to use in FTS search query. */
     @Nullable
-    private String mFtsPublisher;
+    private String ftsPublisher;
     /**
      * Keywords to use in FTS search query.
      * <p>
      * Always use {@link #setFtsKeywords(String)} as we need to intercept the "." character.
      */
     @Nullable
-    private String mFtsKeywords;
+    private String ftsKeywords;
     /** Name of the person we lend books to, to use in search query. */
     @Nullable
-    private String mLoanee;
+    private String loanee;
 
     SearchCriteria() {
     }
@@ -106,25 +105,25 @@ public class SearchCriteria
      * @param in Parcel to construct the object from
      */
     private SearchCriteria(@NonNull final Parcel in) {
-        in.readList(mBookIdList, getClass().getClassLoader());
-        mFtsBookTitle = in.readString();
-        mFtsSeriesTitle = in.readString();
-        mFtsAuthor = in.readString();
-        mFtsPublisher = in.readString();
-        mFtsKeywords = in.readString();
-        mLoanee = in.readString();
+        in.readList(bookIdList, getClass().getClassLoader());
+        ftsBookTitle = in.readString();
+        ftsSeriesTitle = in.readString();
+        ftsAuthor = in.readString();
+        ftsPublisher = in.readString();
+        ftsKeywords = in.readString();
+        loanee = in.readString();
     }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeList(mBookIdList);
-        dest.writeString(mFtsBookTitle);
-        dest.writeString(mFtsSeriesTitle);
-        dest.writeString(mFtsAuthor);
-        dest.writeString(mFtsPublisher);
-        dest.writeString(mFtsKeywords);
-        dest.writeString(mLoanee);
+        dest.writeList(bookIdList);
+        dest.writeString(ftsBookTitle);
+        dest.writeString(ftsSeriesTitle);
+        dest.writeString(ftsAuthor);
+        dest.writeString(ftsPublisher);
+        dest.writeString(ftsKeywords);
+        dest.writeString(loanee);
     }
 
     @Override
@@ -133,109 +132,109 @@ public class SearchCriteria
     }
 
     public void clear() {
-        mBookIdList.clear();
-        mFtsBookTitle = null;
-        mFtsSeriesTitle = null;
-        mFtsAuthor = null;
-        mFtsPublisher = null;
-        mFtsKeywords = null;
-        mLoanee = null;
+        bookIdList.clear();
+        ftsBookTitle = null;
+        ftsSeriesTitle = null;
+        ftsAuthor = null;
+        ftsPublisher = null;
+        ftsKeywords = null;
+        loanee = null;
     }
 
     @NonNull
     public ArrayList<Long> getBookIdList() {
         // used directly!
-        return mBookIdList;
+        return bookIdList;
     }
 
     public void setBookIdList(@Nullable final List<Long> bookIdList) {
-        mBookIdList.clear();
+        this.bookIdList.clear();
         if (bookIdList != null) {
-            mBookIdList.addAll(bookIdList);
+            this.bookIdList.addAll(bookIdList);
         }
     }
 
     @NonNull
     public Optional<String> getFtsMatchQuery() {
-        return FtsDao.createMatchString(mFtsBookTitle,
-                                        mFtsSeriesTitle,
-                                        mFtsAuthor,
-                                        mFtsPublisher,
-                                        mFtsKeywords);
+        return FtsDao.createMatchString(ftsBookTitle,
+                                        ftsSeriesTitle,
+                                        ftsAuthor,
+                                        ftsPublisher,
+                                        ftsKeywords);
     }
 
     @Nullable
     public String getFtsBookTitle() {
-        return mFtsBookTitle;
+        return ftsBookTitle;
     }
 
     public void setFtsBookTitle(@Nullable final String ftsBookTitle) {
-        mFtsBookTitle = ftsBookTitle;
+        this.ftsBookTitle = ftsBookTitle;
     }
 
     @Nullable
     public String getFtsSeriesTitle() {
-        return mFtsSeriesTitle;
+        return ftsSeriesTitle;
     }
 
     public void setFtsSeriesTitle(@Nullable final String ftsSeriesTitle) {
-        mFtsSeriesTitle = ftsSeriesTitle;
+        this.ftsSeriesTitle = ftsSeriesTitle;
     }
 
     @Nullable
     public String getFtsAuthor() {
-        return mFtsAuthor;
+        return ftsAuthor;
     }
 
     public void setFtsAuthor(@Nullable final String ftsAuthor) {
-        mFtsAuthor = ftsAuthor;
+        this.ftsAuthor = ftsAuthor;
     }
 
     @Nullable
     public String getFtsPublisher() {
-        return mFtsPublisher;
+        return ftsPublisher;
     }
 
     public void setFtsPublisher(@Nullable final String ftsPublisher) {
-        mFtsPublisher = ftsPublisher;
+        this.ftsPublisher = ftsPublisher;
     }
 
     @Nullable
     public String getFtsKeywords() {
-        return mFtsKeywords;
+        return ftsKeywords;
     }
 
     public void setFtsKeywords(@Nullable final String keywords) {
         if (keywords == null || keywords.isEmpty() || ".".equals(keywords)) {
-            mFtsKeywords = null;
+            ftsKeywords = null;
         } else {
-            mFtsKeywords = keywords.trim();
+            ftsKeywords = keywords.trim();
         }
     }
 
     /** Not supported by FTS. */
     @NonNull
     public Optional<String> getLoanee() {
-        if (mLoanee != null && !mLoanee.trim().isEmpty()) {
-            return Optional.of(mLoanee.trim());
+        if (loanee != null && !loanee.trim().isEmpty()) {
+            return Optional.of(loanee.trim());
         } else {
             return Optional.empty();
         }
     }
 
     public void setLoanee(@Nullable final String loanee) {
-        mLoanee = loanee;
+        this.loanee = loanee;
     }
 
     public void search(@NonNull final FtsDao dao,
                        final int maxSuggestions) {
-        mBookIdList.clear();
-        mBookIdList.addAll(dao.search(mFtsAuthor,
-                                      mFtsBookTitle,
-                                      mFtsSeriesTitle,
-                                      mFtsPublisher,
-                                      mFtsKeywords,
-                                      maxSuggestions));
+        bookIdList.clear();
+        bookIdList.addAll(dao.search(ftsAuthor,
+                                     ftsBookTitle,
+                                     ftsSeriesTitle,
+                                     ftsPublisher,
+                                     ftsKeywords,
+                                     maxSuggestions));
     }
 
     /**
@@ -247,26 +246,26 @@ public class SearchCriteria
     public Optional<String> getDisplayText() {
         final Collection<String> list = new ArrayList<>();
 
-        if (mFtsBookTitle != null && !mFtsBookTitle.isEmpty()) {
-            list.add(mFtsBookTitle);
+        if (ftsBookTitle != null && !ftsBookTitle.isEmpty()) {
+            list.add(ftsBookTitle);
         }
-        if (mFtsSeriesTitle != null && !mFtsSeriesTitle.isEmpty()) {
-            list.add(mFtsSeriesTitle);
+        if (ftsSeriesTitle != null && !ftsSeriesTitle.isEmpty()) {
+            list.add(ftsSeriesTitle);
         }
-        if (mFtsAuthor != null && !mFtsAuthor.isEmpty()) {
-            list.add(mFtsAuthor);
+        if (ftsAuthor != null && !ftsAuthor.isEmpty()) {
+            list.add(ftsAuthor);
         }
-        if (mFtsPublisher != null && !mFtsPublisher.isEmpty()) {
-            list.add(mFtsPublisher);
+        if (ftsPublisher != null && !ftsPublisher.isEmpty()) {
+            list.add(ftsPublisher);
         }
-        if (mFtsKeywords != null && !mFtsKeywords.isEmpty()) {
-            list.add(mFtsKeywords);
+        if (ftsKeywords != null && !ftsKeywords.isEmpty()) {
+            list.add(ftsKeywords);
         }
-        if (mLoanee != null && !mLoanee.isEmpty()) {
-            list.add(mLoanee);
+        if (loanee != null && !loanee.isEmpty()) {
+            list.add(loanee);
         }
 
-        final String text = TextUtils.join(",", list);
+        final String text = String.join(",", list);
         if (text.isEmpty()) {
             return Optional.empty();
         } else {
@@ -275,26 +274,26 @@ public class SearchCriteria
     }
 
     public boolean isEmpty() {
-        return mBookIdList.isEmpty()
-               && (mFtsBookTitle == null || mFtsBookTitle.isEmpty())
-               && (mFtsSeriesTitle == null || mFtsSeriesTitle.isEmpty())
-               && (mFtsAuthor == null || mFtsAuthor.isEmpty())
-               && (mFtsPublisher == null || mFtsPublisher.isEmpty())
-               && (mFtsKeywords == null || mFtsKeywords.isEmpty())
-               && (mLoanee == null || mLoanee.isEmpty());
+        return bookIdList.isEmpty()
+               && (ftsBookTitle == null || ftsBookTitle.isEmpty())
+               && (ftsSeriesTitle == null || ftsSeriesTitle.isEmpty())
+               && (ftsAuthor == null || ftsAuthor.isEmpty())
+               && (ftsPublisher == null || ftsPublisher.isEmpty())
+               && (ftsKeywords == null || ftsKeywords.isEmpty())
+               && (loanee == null || loanee.isEmpty());
     }
 
     @Override
     @NonNull
     public String toString() {
         return "SearchCriteria{"
-               + "mFtsBookTitle=`" + mFtsBookTitle + '`'
-               + ", mFtsSeriesTitle=`" + mFtsSeriesTitle + '`'
-               + ", mFtsAuthor=`" + mFtsAuthor + '`'
-               + ", mFtsPublisher=`" + mFtsPublisher + '`'
-               + ", mFtsKeywords=`" + mFtsKeywords + '`'
-               + ", mLoanee=`" + mLoanee + '`'
-               + ", mBookIdList=" + mBookIdList
+               + "ftsBookTitle=`" + ftsBookTitle + '`'
+               + ", ftsSeriesTitle=`" + ftsSeriesTitle + '`'
+               + ", ftsAuthor=`" + ftsAuthor + '`'
+               + ", ftsPublisher=`" + ftsPublisher + '`'
+               + ", ftsKeywords=`" + ftsKeywords + '`'
+               + ", loanee=`" + loanee + '`'
+               + ", bookIdList=" + bookIdList
                + '}';
     }
 }

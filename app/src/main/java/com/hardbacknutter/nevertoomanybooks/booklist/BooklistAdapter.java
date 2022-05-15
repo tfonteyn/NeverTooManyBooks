@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
@@ -61,9 +62,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistBookFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
@@ -71,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -104,43 +105,43 @@ public class BooklistAdapter
     /**
      * 0.6 is based on a standard paperback 17.5cm x 10.6cm
      * -> width = 0.6 * maxHeight.
-     * See {@link #mCoverLongestSide}.
+     * See {@link #coverLongestSide}.
      */
     private static final float HW_RATIO = 0.6f;
 
     /** Cached locale. */
     @NonNull
-    private final Locale mUserLocale;
+    private final Locale userLocale;
     /** The padding indent (in pixels) added for each level: padding = (level-1) * mLevelIndent. */
-    private final int mLevelIndent;
+    private final int levelIndent;
     /** Cached inflater. */
     @NonNull
-    private final LayoutInflater mInflater;
+    private final LayoutInflater inflater;
     /** Whether to use the covers DAO caching. */
-    private final boolean mImageCachingEnabled;
-    private final boolean mReorderTitleForDisplaying;
+    private final boolean imageCachingEnabled;
+    private final boolean reorderTitleForDisplaying;
     /** caching the book condition strings. */
-    private final String[] mConditionDescriptions;
+    private final String[] conditionDescriptions;
     /** A collection of 'in-use' flags for the fields we might display. */
-    private FieldsInUse mFieldsInUse;
+    private FieldsInUse fieldsInUse;
     /** List style to apply. */
-    private ListStyle mStyle;
-    private int mGroupRowHeight;
-    /** Top margin to use for Level 1 <strong>if</strong> the {@link #mGroupRowHeight} is wrap. */
-    private int mGroupLevel1topMargin;
+    private ListStyle style;
+    private int groupRowHeight;
+    /** Top margin to use for Level 1 <strong>if</strong> the {@link #groupRowHeight} is wrap. */
+    private int groupLevel1topMargin;
     @LayoutRes
-    private int mBookLayoutId;
+    private int bookLayoutId;
     /** Longest side for a cover in pixels. */
-    private int mCoverLongestSide;
+    private int coverLongestSide;
     /** The cursor is the equivalent of the 'list of items'. */
     @Nullable
-    private Cursor mCursor;
+    private Cursor cursor;
     /** provides read only access to the row data. */
     @Nullable
-    private DataHolder mNodeData;
+    private DataHolder nodeData;
     /** The combined click and long-click listeners for a single row. */
     @Nullable
-    private OnRowClickedListener mOnRowClickedListener;
+    private OnRowClickedListener onRowClickedListener;
 
     /**
      * Constructor.
@@ -149,15 +150,15 @@ public class BooklistAdapter
      */
     public BooklistAdapter(@NonNull final Context context) {
 
-        mInflater = LayoutInflater.from(context);
-        mUserLocale = context.getResources().getConfiguration().getLocales().get(0);
-        mImageCachingEnabled = ImageUtils.isImageCachingEnabled();
+        inflater = LayoutInflater.from(context);
+        userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        imageCachingEnabled = ImageUtils.isImageCachingEnabled();
 
-        mLevelIndent = context.getResources()
-                              .getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
-        mConditionDescriptions = context.getResources().getStringArray(R.array.conditions_book);
+        levelIndent = context.getResources()
+                             .getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
+        conditionDescriptions = context.getResources().getStringArray(R.array.conditions_book);
 
-        mReorderTitleForDisplaying = ReorderHelper.forDisplay(context);
+        reorderTitleForDisplaying = ReorderHelper.forDisplay(context);
 
         // getItemId is implemented.
         setHasStableIds(true);
@@ -174,45 +175,53 @@ public class BooklistAdapter
                           @NonNull final Cursor cursor,
                           @NonNull final ListStyle style) {
         // First set the style and prepare the related data
-        mStyle = style;
-        mFieldsInUse = new FieldsInUse(mStyle);
+        this.style = style;
+        fieldsInUse = new FieldsInUse(this.style);
 
-        mGroupRowHeight = mStyle.getGroupRowHeight(context);
-        if (mGroupRowHeight == ViewGroup.LayoutParams.WRAP_CONTENT) {
-            mGroupLevel1topMargin = context
+        groupRowHeight = this.style.getGroupRowHeight(context);
+        if (groupRowHeight == ViewGroup.LayoutParams.WRAP_CONTENT) {
+            groupLevel1topMargin = context
                     .getResources().getDimensionPixelSize(R.dimen.bob_group_level_1_margin_top);
         }
 
-        @ListStyle.CoverScale
-        final int frontCoverScale = mStyle.getListScreenBookFields().getCoverScale();
+        if (this.style.getBooklistBookFieldVisibility().isShowField(
+                BooklistBookFieldVisibility.SHOW_COVER_0)) {
 
-        // The thumbnail scale is used to retrieve the cover dimensions
-        // We use a square space for the image so both portrait/landscape images work out.
-        final TypedArray coverSizes = context
-                .getResources().obtainTypedArray(R.array.cover_book_list_longest_side);
-        mCoverLongestSide = coverSizes.getDimensionPixelSize(frontCoverScale, 0);
-        coverSizes.recycle();
+            @ListStyle.CoverScale
+            final int frontCoverScale = this.style.getCoverScale();
 
-        // The thumbnail scale defines the Book layout file to use.
-        // The layout names ending in 2/3 are ONLY as reference,
-        // with the hardcoded values in them always replaced at runtime.
-        if (frontCoverScale > ListStyle.IMAGE_SCALE_2_MEDIUM) {
-            // Large
-            mBookLayoutId = R.layout.booksonbookshelf_row_book_scale_3;
+            // The thumbnail scale is used to retrieve the cover dimensions
+            // We use a square space for the image so both portrait/landscape images work out.
+            final TypedArray coverSizes = context
+                    .getResources().obtainTypedArray(R.array.cover_book_list_longest_side);
+            coverLongestSide = coverSizes.getDimensionPixelSize(frontCoverScale, 0);
+            coverSizes.recycle();
+
+            // The thumbnail scale defines the Book layout file to use.
+            // The layout names ending in 2/3 are ONLY as reference,
+            // with the hardcoded values in them always replaced at runtime.
+            if (frontCoverScale > ListStyle.COVER_SCALE_MEDIUM) {
+                // Large
+                bookLayoutId = R.layout.booksonbookshelf_row_book_scale_3;
+            } else {
+                // Small and Medium
+                bookLayoutId = R.layout.booksonbookshelf_row_book_scale_2;
+            }
         } else {
-            // Small and Medium
-            mBookLayoutId = R.layout.booksonbookshelf_row_book_scale_2;
+            coverLongestSide = 0;
+            fieldsInUse.cover = false;
+            bookLayoutId = R.layout.booksonbookshelf_row_book_scale_2;
         }
 
         // now the actual new cursor
-        mCursor = cursor;
-        mNodeData = new CursorRow(mCursor);
+        this.cursor = cursor;
+        nodeData = new CursorRow(this.cursor);
     }
 
     @SuppressLint("NotifyDataSetChanged")
     public void clearCursor() {
-        mCursor = null;
-        mNodeData = null;
+        cursor = null;
+        nodeData = null;
         notifyDataSetChanged();
     }
 
@@ -223,7 +232,7 @@ public class BooklistAdapter
      * @return cursor
      */
     boolean hasCursor() {
-        return mCursor != null;
+        return cursor != null;
     }
 
     /**
@@ -235,14 +244,14 @@ public class BooklistAdapter
      */
     @NonNull
     public Cursor getCursor() {
-        return Objects.requireNonNull(mCursor, "mCursor");
+        return Objects.requireNonNull(cursor, "mCursor");
     }
 
     @Override
     public long getItemId(final int position) {
-        if (mCursor != null && mCursor.moveToPosition(position)) {
+        if (cursor != null && cursor.moveToPosition(position)) {
             //noinspection ConstantConditions
-            return mNodeData.getLong(DBKey.PK_ID);
+            return nodeData.getLong(DBKey.PK_ID);
         } else {
             return RecyclerView.NO_ID;
         }
@@ -250,7 +259,7 @@ public class BooklistAdapter
 
     @Override
     public int getItemCount() {
-        return mCursor != null ? mCursor.getCount() : 0;
+        return cursor != null ? cursor.getCount() : 0;
     }
 
     /**
@@ -263,9 +272,9 @@ public class BooklistAdapter
     @Override
     @BooklistGroup.Id
     public int getItemViewType(final int position) {
-        if (mCursor != null && mCursor.moveToPosition(position)) {
+        if (cursor != null && cursor.moveToPosition(position)) {
             //noinspection ConstantConditions
-            return mNodeData.getInt(DBKey.KEY_BL_NODE_GROUP);
+            return nodeData.getInt(DBKey.KEY_BL_NODE_GROUP);
         } else {
             // bogus, should not happen
             return BooklistGroup.BOOK;
@@ -284,40 +293,37 @@ public class BooklistAdapter
         // NEWTHINGS: BooklistGroup.KEY add a new holder type if needed
         switch (groupId) {
             case BooklistGroup.BOOK:
-                holder = new BookHolder(this, itemView, mFieldsInUse, mCoverLongestSide);
+                holder = new BookHolder(this, itemView, fieldsInUse, coverLongestSide);
                 break;
 
             case BooklistGroup.AUTHOR:
-                holder = new AuthorHolder(this, itemView,
-                                          mStyle.getGroups().getGroupByIdOrCrash(groupId));
+                holder = new AuthorHolder(this, itemView, style.requireGroupById(groupId));
                 break;
 
             case BooklistGroup.SERIES:
-                holder = new SeriesHolder(this, itemView,
-                                          mStyle.getGroups().getGroupByIdOrCrash(groupId));
+                holder = new SeriesHolder(this, itemView, style.requireGroupById(groupId));
                 break;
 
             case BooklistGroup.RATING:
-                holder = new RatingHolder(itemView,
-                                          mStyle.getGroups().getGroupByIdOrCrash(groupId));
+                holder = new RatingHolder(itemView, style.requireGroupById(groupId));
                 break;
 
             default:
                 holder = new GenericStringHolder(this, itemView,
-                                                 mStyle.getGroups().getGroupByIdOrCrash(groupId));
+                                                 style.requireGroupById(groupId));
                 break;
         }
 
         // test for the mOnRowClickedListener inside the lambda, this allows changing it if needed
         holder.onClickTargetView.setOnClickListener(v -> {
-            if (mOnRowClickedListener != null) {
-                mOnRowClickedListener.onItemClick(holder.getBindingAdapterPosition());
+            if (onRowClickedListener != null) {
+                onRowClickedListener.onItemClick(holder.getBindingAdapterPosition());
             }
         });
 
         holder.onClickTargetView.setOnLongClickListener(v -> {
-            if (mOnRowClickedListener != null) {
-                return mOnRowClickedListener.onItemLongClick(v, holder.getBindingAdapterPosition());
+            if (onRowClickedListener != null) {
+                return onRowClickedListener.onItemLongClick(v, holder.getBindingAdapterPosition());
             }
             return false;
         });
@@ -338,12 +344,12 @@ public class BooklistAdapter
     private View createView(@NonNull final ViewGroup parent,
                             @BooklistGroup.Id final int groupKeyId) {
         //noinspection ConstantConditions
-        final int level = mNodeData.getInt(DBKey.KEY_BL_NODE_LEVEL);
+        final int level = nodeData.getInt(DBKey.KEY_BL_NODE_LEVEL);
 
         @LayoutRes
         final int layoutId;
         if (groupKeyId == BooklistGroup.BOOK) {
-            layoutId = mBookLayoutId;
+            layoutId = bookLayoutId;
 
         } else if (groupKeyId == BooklistGroup.RATING) {
             layoutId = R.layout.booksonbookshelf_group_rating;
@@ -365,7 +371,7 @@ public class BooklistAdapter
             }
         }
 
-        final View view = mInflater.inflate(layoutId, parent, false);
+        final View view = inflater.inflate(layoutId, parent, false);
 
         if (groupKeyId == BooklistGroup.BOOK) {
             // Don't indent books
@@ -373,25 +379,22 @@ public class BooklistAdapter
 
         } else {
             // Indent (0..) based on level (1..)
-            view.setPaddingRelative((level - 1) * mLevelIndent, 0, 0, 0);
+            view.setPaddingRelative((level - 1) * levelIndent, 0, 0, 0);
 
             final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
                     view.getLayoutParams();
 
             // Adjust the line spacing as required
-            lp.height = mGroupRowHeight;
-            if (level == 1 && mGroupLevel1topMargin != 0) {
-                lp.setMargins(0, mGroupLevel1topMargin, 0, 0);
+            lp.height = groupRowHeight;
+            if (level == 1 && groupLevel1topMargin != 0) {
+                lp.setMargins(0, groupLevel1topMargin, 0, 0);
             }
         }
 
         // Scale text/padding (recursively) if required
-        final TextScale textScale = mStyle.getTextScale();
-        if (!textScale.isDefaultScale()) {
-            final Context context = parent.getContext();
-            scaleTextViews(view,
-                           textScale.getFontSizeInSpUnits(context),
-                           textScale.getPaddingFactor(context));
+        final int textScale = style.getTextScale();
+        if (textScale != ListStyle.DEFAULT_TEXT_SCALE) {
+            scaleTextViews(view, textScale);
         }
         return view;
     }
@@ -401,11 +404,11 @@ public class BooklistAdapter
                                  final int position) {
 
         //noinspection ConstantConditions
-        mCursor.moveToPosition(position);
+        cursor.moveToPosition(position);
 
         // further binding depends on the type of row (i.e. holder).
         //noinspection ConstantConditions
-        holder.onBindViewHolder(position, mNodeData, mStyle);
+        holder.onBindViewHolder(position, nodeData, style);
     }
 
     /**
@@ -439,7 +442,7 @@ public class BooklistAdapter
                 if (text == null || text.isEmpty()) {
                     return context.getString(R.string.bob_empty_series);
 
-                } else if (mReorderTitleForDisplaying) {
+                } else if (reorderTitleForDisplaying) {
                     return ReorderHelper.reorder(context, text, locale);
                 } else {
                     return text;
@@ -449,7 +452,7 @@ public class BooklistAdapter
                 if (text == null || text.isEmpty()) {
                     return context.getString(R.string.bob_empty_publisher);
 
-                } else if (mReorderTitleForDisplaying) {
+                } else if (reorderTitleForDisplaying) {
                     return ReorderHelper.reorder(context, text, locale);
                 } else {
                     return text;
@@ -478,8 +481,8 @@ public class BooklistAdapter
                 if (text != null && !text.isEmpty()) {
                     try {
                         final int i = Integer.parseInt(text);
-                        if (i < mConditionDescriptions.length) {
-                            return mConditionDescriptions[i];
+                        if (i < conditionDescriptions.length) {
+                            return conditionDescriptions[i];
                         }
                     } catch (@NonNull final NumberFormatException ignore) {
                         // ignore
@@ -542,7 +545,7 @@ public class BooklistAdapter
                         if (m > 0 && m <= 12) {
                             return Month.of(m).getDisplayName(
                                     TextStyle.FULL_STANDALONE,
-                                    Objects.requireNonNullElse(locale, mUserLocale));
+                                    Objects.requireNonNullElse(locale, userLocale));
                         }
                     } catch (@NonNull final NumberFormatException e) {
                         if (BuildConfig.DEBUG /* always */) {
@@ -587,9 +590,9 @@ public class BooklistAdapter
      * @return the level, or {@code 0} if unknown
      */
     int getLevel(final int position) {
-        if (mCursor != null && mCursor.moveToPosition(position)) {
+        if (cursor != null && cursor.moveToPosition(position)) {
             //noinspection ConstantConditions
-            return mNodeData.getInt(DBKey.KEY_BL_NODE_LEVEL);
+            return nodeData.getInt(DBKey.KEY_BL_NODE_LEVEL);
         } else {
             return 0;
         }
@@ -597,11 +600,39 @@ public class BooklistAdapter
 
     @NonNull
     public Locale getUserLocale() {
-        return mUserLocale;
+        return userLocale;
     }
 
     private boolean isImageCachingEnabled() {
-        return mImageCachingEnabled;
+        return imageCachingEnabled;
+    }
+
+    private void scaleTextViews(@NonNull final View view,
+                                @ListStyle.TextScale final int textScale) {
+        final Resources res = view.getContext().getResources();
+        TypedArray ta;
+        final float fontSizeInSpUnits;
+        ta = res.obtainTypedArray(R.array.bob_text_size_in_sp);
+        try {
+            fontSizeInSpUnits = ta.getFloat(textScale, 0);
+        } finally {
+            ta.recycle();
+        }
+
+        final float paddingFactor;
+        ta = res.obtainTypedArray(R.array.bob_text_padding_in_percent);
+        try {
+            paddingFactor = ta.getFloat(textScale, 0);
+        } finally {
+            ta.recycle();
+        }
+
+        if (BuildConfig.DEBUG /* always */) {
+            SanityCheck.requirePositiveValue(fontSizeInSpUnits, "fontSizeInSpUnits");
+            SanityCheck.requirePositiveValue(paddingFactor, "paddingFactor");
+        }
+
+        scaleTextViews(view, fontSizeInSpUnits, paddingFactor);
     }
 
     /**
@@ -659,7 +690,7 @@ public class BooklistAdapter
 
         // sanity check.
         if (BuildConfig.DEBUG /* always */) {
-            final int groupCount = mStyle.getGroups().size() + 1;
+            final int groupCount = style.getGroupCount() + 1;
             if (level > groupCount) {
                 throw new IllegalArgumentException(
                         "level=" + level + "> (getGroupCount+1)=" + groupCount);
@@ -668,24 +699,24 @@ public class BooklistAdapter
 
         // make sure it's still in range.
         final int clampedPosition = MathUtils.clamp(position, 0, getItemCount() - 1);
-        if (mCursor == null || !mCursor.moveToPosition(clampedPosition)) {
+        if (cursor == null || !cursor.moveToPosition(clampedPosition)) {
             return null;
         }
 
         try {
-            if (level > (mStyle.getGroups().size())) {
+            if (level > (style.getGroupCount())) {
                 // it's a book; use the title (no need to take the group.format round-trip).
                 //noinspection ConstantConditions
-                return mNodeData.getString(DBKey.TITLE);
+                return nodeData.getString(DBKey.TITLE);
 
             } else {
                 // it's a group; use the display domain as the text
-                final BooklistGroup group = mStyle.getGroups().getGroupByLevel(level);
+                final BooklistGroup group = style.getGroupByLevel(level);
                 //noinspection ConstantConditions
-                final String value = mNodeData.getString(
+                final String value = nodeData.getString(
                         group.getDisplayDomainExpression().getDomain().getName());
                 if (!value.isEmpty()) {
-                    return format(mInflater.getContext(), group.getId(), value, null);
+                    return format(inflater.getContext(), group.getId(), value, null);
                 }
             }
         } catch (@NonNull final CursorIndexOutOfBoundsException e) {
@@ -698,7 +729,7 @@ public class BooklistAdapter
     }
 
     public void setOnRowClickedListener(@Nullable final OnRowClickedListener onRowClickedListener) {
-        mOnRowClickedListener = onRowClickedListener;
+        this.onRowClickedListener = onRowClickedListener;
     }
 
     /**
@@ -781,18 +812,19 @@ public class BooklistAdapter
             series = DBKey.isUsed(global, DBKey.SERIES_TITLE);
             signed = DBKey.isUsed(global, DBKey.SIGNED__BOOL);
 
-            final ListScreenBookFields bookFields = style.getListScreenBookFields();
+            final BooklistBookFieldVisibility bookFields =
+                    style.getBooklistBookFieldVisibility();
 
             // Based on style
-            author = bookFields.isShowField(global, ListScreenBookFields.PK_AUTHOR);
-            bookshelf = bookFields.isShowField(global, ListScreenBookFields.PK_BOOKSHELVES);
-            cover = bookFields.isShowField(global, ListScreenBookFields.PK_COVERS);
-            format = bookFields.isShowField(global, ListScreenBookFields.PK_FORMAT);
-            isbn = bookFields.isShowField(global, ListScreenBookFields.PK_ISBN);
-            location = bookFields.isShowField(global, ListScreenBookFields.PK_LOCATION);
-            pubDate = bookFields.isShowField(global, ListScreenBookFields.PK_PUB_DATE);
-            publisher = bookFields.isShowField(global, ListScreenBookFields.PK_PUBLISHER);
-            rating = bookFields.isShowField(global, ListScreenBookFields.PK_RATING);
+            author = bookFields.isShowField(BooklistBookFieldVisibility.SHOW_AUTHOR);
+            bookshelf = bookFields.isShowField(BooklistBookFieldVisibility.SHOW_BOOKSHELVES);
+            cover = bookFields.isShowField(BooklistBookFieldVisibility.SHOW_COVER_0);
+            format = bookFields.isShowField(BooklistBookFieldVisibility.SHOW_FORMAT);
+            isbn = bookFields.isShowField(BooklistBookFieldVisibility.SHOW_ISBN);
+            location = bookFields.isShowField(BooklistBookFieldVisibility.SHOW_LOCATION);
+            pubDate = bookFields.isShowField(BooklistBookFieldVisibility.SHOW_PUB_DATE);
+            publisher = bookFields.isShowField(BooklistBookFieldVisibility.SHOW_PUBLISHER);
+            rating = bookFields.isShowField(BooklistBookFieldVisibility.SHOW_RATING);
         }
 
         /**
@@ -873,56 +905,58 @@ public class BooklistAdapter
 
         /** The parent adapter. */
         @NonNull
-        private final BooklistAdapter mAdapter;
+        private final BooklistAdapter adapter;
         /** Format string. */
         @NonNull
-        private final String mX_bracket_Y_bracket;
+        private final String x_bracket_y_bracket;
 
-        private final int mCoverLongestSide;
+        /** Size in pixels. */
+        @IntRange(from = 0)
+        private final int coverLongestSide;
 
         /** Whether to re-order the title as per global preference. */
-        private final boolean mReorderTitle;
+        private final boolean reorderTitle;
         /** A collection of 'in-use' flags for the fields we might display. */
-        private final FieldsInUse mInUse;
+        private final FieldsInUse inUse;
 
 
         /** View that stores the related book field. */
-        private final TextView mTitleView;
+        private final TextView titleView;
         /** The "I've read it" icon. */
-        private final ImageView mReadIconView;
+        private final ImageView readIconView;
         /** The "signed" icon. */
-        private final ImageView mSignedIconView;
+        private final ImageView signedIconView;
         /** The "1th edition" icon. */
-        private final ImageView mEditionIconView;
+        private final ImageView editionIconView;
         /** The "lend out" icon. */
-        private final ImageView mLendOutIconView;
+        private final ImageView lendOutIconView;
         /** View that stores the related book field. */
-        private final ImageView mCoverView;
+        private final ImageView coverView;
         /** View that stores the Series number when it is a short piece of text. */
-        private final TextView mSeriesNumView;
+        private final TextView seriesNumView;
         /** View that stores the Series number when it is a long piece of text. */
-        private final TextView mSeriesNumLongView;
+        private final TextView seriesNumLongView;
         /** View that stores the related book field. */
-        private final RatingBar mRatingBar;
+        private final RatingBar ratingBar;
         /** View that stores the related book field. */
-        private final TextView mAuthorView;
+        private final TextView authorView;
         /** View that stores the related book field. */
-        private final TextView mPublisherView;
+        private final TextView publisherView;
         /** View that stores the related book field. */
-        private final TextView mIsbnView;
+        private final TextView isbnView;
         /** View that stores the related book field. */
-        private final TextView mFormatView;
+        private final TextView formatView;
         /** View that stores the related book field. */
-        private final TextView mLocationView;
+        private final TextView locationView;
         /** View that stores the related book field. */
-        private final TextView mBookshelvesView;
+        private final TextView bookshelvesView;
 
         /** Only active when running in debug mode; displays the "position/rowId" for a book. */
         @Nullable
-        private TextView mDbgRowIdView;
+        private TextView dbgRowIdView;
 
         @Nullable
-        private ImageViewLoader mImageLoader;
+        private ImageViewLoader imageLoader;
 
         /**
          * Constructor.
@@ -938,68 +972,68 @@ public class BooklistAdapter
         BookHolder(@NonNull final BooklistAdapter adapter,
                    @NonNull final View itemView,
                    @NonNull final FieldsInUse fieldsInUse,
-                   final int coverLongestSide) {
+                   @IntRange(from = 0) final int coverLongestSide) {
             super(itemView);
 
             final Context context = itemView.getContext();
 
-            mAdapter = adapter;
+            this.adapter = adapter;
 
             // disabled (for now?) as it makes less sense in this particular view/holder,
             // and slows down scrolling.
             // mReorderTitle = ItemWithTitle.isReorderTitleForDisplaying(context);
-            mReorderTitle = false;
+            reorderTitle = false;
 
-            mInUse = fieldsInUse;
+            inUse = fieldsInUse;
 
-            mX_bracket_Y_bracket = context.getString(R.string.a_bracket_b_bracket);
+            x_bracket_y_bracket = context.getString(R.string.a_bracket_b_bracket);
 
             // always visible
-            mTitleView = itemView.findViewById(R.id.title);
+            titleView = itemView.findViewById(R.id.title);
 
             // hidden by default
-            mReadIconView = itemView.findViewById(R.id.icon_read);
-            mSignedIconView = itemView.findViewById(R.id.icon_signed);
-            mEditionIconView = itemView.findViewById(R.id.icon_first_edition);
-            mLendOutIconView = itemView.findViewById(R.id.icon_lend_out);
+            readIconView = itemView.findViewById(R.id.icon_read);
+            signedIconView = itemView.findViewById(R.id.icon_signed);
+            editionIconView = itemView.findViewById(R.id.icon_first_edition);
+            lendOutIconView = itemView.findViewById(R.id.icon_lend_out);
 
-            mSeriesNumView = itemView.findViewById(R.id.series_num);
-            mSeriesNumLongView = itemView.findViewById(R.id.series_num_long);
+            seriesNumView = itemView.findViewById(R.id.series_num);
+            seriesNumLongView = itemView.findViewById(R.id.series_num_long);
 
-            mRatingBar = itemView.findViewById(R.id.rating);
-            mAuthorView = itemView.findViewById(R.id.author);
-            mPublisherView = itemView.findViewById(R.id.publisher);
-            mIsbnView = itemView.findViewById(R.id.isbn);
-            mFormatView = itemView.findViewById(R.id.format);
-            mLocationView = itemView.findViewById(R.id.location);
-            mBookshelvesView = itemView.findViewById(R.id.shelves);
+            ratingBar = itemView.findViewById(R.id.rating);
+            authorView = itemView.findViewById(R.id.author);
+            publisherView = itemView.findViewById(R.id.publisher);
+            isbnView = itemView.findViewById(R.id.isbn);
+            formatView = itemView.findViewById(R.id.format);
+            locationView = itemView.findViewById(R.id.location);
+            bookshelvesView = itemView.findViewById(R.id.shelves);
 
-            mCoverLongestSide = coverLongestSide;
-            mCoverView = itemView.findViewById(R.id.cover_image_0);
-            if (mInUse.cover) {
+            this.coverLongestSide = coverLongestSide;
+            coverView = itemView.findViewById(R.id.cover_image_0);
+            if (inUse.cover) {
                 // Do not go overkill here by adding a full-blown CoverHandler.
                 // We only provide zooming by clicking on the image.
-                mCoverView.setOnClickListener(this::onZoomCover);
+                coverView.setOnClickListener(this::onZoomCover);
 
-                mImageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
-                                                   mCoverLongestSide, mCoverLongestSide);
+                imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
+                                                  this.coverLongestSide, this.coverLongestSide);
             } else {
                 // hide it if not in use.
-                mCoverView.setVisibility(View.GONE);
+                coverView.setVisibility(View.GONE);
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
                 // add a text view to display the "position/rowId" for a book
-                mDbgRowIdView = new TextView(context);
-                mDbgRowIdView.setId(View.generateViewId());
-                mDbgRowIdView.setTextColor(Color.BLUE);
-                mDbgRowIdView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                dbgRowIdView = new TextView(context);
+                dbgRowIdView.setId(View.generateViewId());
+                dbgRowIdView.setTextColor(Color.BLUE);
+                dbgRowIdView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
 
                 final LinearLayout parentLayout = itemView.findViewById(R.id.icon_sidebar);
-                mDbgRowIdView.setLayoutParams(new LinearLayout.LayoutParams(
+                dbgRowIdView.setLayoutParams(new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT));
-                parentLayout.addView(mDbgRowIdView);
+                parentLayout.addView(dbgRowIdView);
             }
         }
 
@@ -1021,12 +1055,12 @@ public class BooklistAdapter
                               @NonNull final DataHolder rowData,
                               @NonNull final ListStyle style) {
             // update the in-use flags with row-data available fields. Do this once only.
-            if (!mInUse.isSet) {
-                mInUse.set(rowData);
+            if (!inUse.isSet) {
+                inUse.set(rowData);
             }
 
             final String title;
-            if (mReorderTitle) {
+            if (reorderTitle) {
                 final Context context = itemView.getContext();
                 final String language = rowData.getString(DBKey.LANGUAGE);
                 final Locale locale = Languages.toLocale(context, language);
@@ -1035,85 +1069,85 @@ public class BooklistAdapter
             } else {
                 title = rowData.getString(DBKey.TITLE);
             }
-            mTitleView.setText(title);
+            titleView.setText(title);
 
-            mReadIconView.setVisibility(rowData.getBoolean(DBKey.READ__BOOL) ? View.VISIBLE
-                                                                             : View.GONE);
+            readIconView.setVisibility(rowData.getBoolean(DBKey.READ__BOOL) ? View.VISIBLE
+                                                                            : View.GONE);
 
-            if (mInUse.signed) {
+            if (inUse.signed) {
                 final boolean isSet = rowData.getBoolean(DBKey.SIGNED__BOOL);
-                mSignedIconView.setVisibility(isSet ? View.VISIBLE : View.GONE);
+                signedIconView.setVisibility(isSet ? View.VISIBLE : View.GONE);
             }
 
-            if (mInUse.edition) {
+            if (inUse.edition) {
                 final boolean isSet = (rowData.getLong(DBKey.BITMASK_EDITION)
                                        & Book.Edition.FIRST) != 0;
-                mEditionIconView.setVisibility(isSet ? View.VISIBLE : View.GONE);
+                editionIconView.setVisibility(isSet ? View.VISIBLE : View.GONE);
             }
 
-            if (mInUse.lending) {
+            if (inUse.lending) {
                 final boolean isSet = !rowData.getString(DBKey.LOANEE_NAME).isEmpty();
-                mLendOutIconView.setVisibility(isSet ? View.VISIBLE : View.GONE);
+                lendOutIconView.setVisibility(isSet ? View.VISIBLE : View.GONE);
             }
 
-            if (mInUse.cover) {
+            if (inUse.cover) {
                 setImageView(rowData.getString(DBKey.BOOK_UUID));
             }
 
-            if (mInUse.series) {
+            if (inUse.series) {
                 final String number = rowData.getString(DBKey.SERIES_BOOK_NUMBER);
                 if (number.isEmpty()) {
-                    mSeriesNumView.setVisibility(View.GONE);
-                    mSeriesNumLongView.setVisibility(View.GONE);
+                    seriesNumView.setVisibility(View.GONE);
+                    seriesNumLongView.setVisibility(View.GONE);
                 } else {
                     // Display it in one of the views, based on the size of the text.
                     // 4 characters is based on e.g. "1.12" being considered short
                     // and e.g. "1|omnibus" being long.
                     if (number.length() > 4) {
-                        mSeriesNumView.setVisibility(View.GONE);
-                        mSeriesNumLongView.setText(number);
-                        mSeriesNumLongView.setVisibility(View.VISIBLE);
+                        seriesNumView.setVisibility(View.GONE);
+                        seriesNumLongView.setText(number);
+                        seriesNumLongView.setVisibility(View.VISIBLE);
                     } else {
-                        mSeriesNumView.setText(number);
-                        mSeriesNumView.setVisibility(View.VISIBLE);
-                        mSeriesNumLongView.setVisibility(View.GONE);
+                        seriesNumView.setText(number);
+                        seriesNumView.setVisibility(View.VISIBLE);
+                        seriesNumLongView.setVisibility(View.GONE);
                     }
                 }
             }
 
-            if (mInUse.rating) {
+            if (inUse.rating) {
                 final float rating = rowData.getFloat(DBKey.RATING);
                 if (rating > 0) {
-                    mRatingBar.setRating(rating);
-                    mRatingBar.setVisibility(View.VISIBLE);
+                    ratingBar.setRating(rating);
+                    ratingBar.setVisibility(View.VISIBLE);
                 } else {
-                    mRatingBar.setVisibility(View.GONE);
+                    ratingBar.setVisibility(View.GONE);
                 }
             }
-            if (mInUse.author) {
-                showOrHide(mAuthorView, rowData.getString(DBKey.KEY_AUTHOR_FORMATTED));
+            if (inUse.author) {
+                showOrHide(authorView, rowData.getString(DBKey.KEY_AUTHOR_FORMATTED));
             }
-            if (mInUse.publisher || mInUse.pubDate) {
-                showOrHide(mPublisherView, getPublisherAndPubDateText(rowData));
+            if (inUse.publisher || inUse.pubDate) {
+                showOrHide(publisherView, getPublisherAndPubDateText(rowData));
             }
-            if (mInUse.isbn) {
-                showOrHide(mIsbnView, rowData.getString(DBKey.KEY_ISBN));
+            if (inUse.isbn) {
+                showOrHide(isbnView, rowData.getString(DBKey.KEY_ISBN));
             }
-            if (mInUse.format) {
-                showOrHide(mFormatView, rowData.getString(DBKey.BOOK_FORMAT));
+            if (inUse.format) {
+                showOrHide(formatView, rowData.getString(DBKey.BOOK_FORMAT));
             }
-            if (mInUse.location) {
-                showOrHide(mLocationView, rowData.getString(DBKey.LOCATION));
+            if (inUse.location) {
+                showOrHide(locationView, rowData.getString(DBKey.LOCATION));
             }
-            if (mInUse.bookshelf) {
-                showOrHide(mBookshelvesView, rowData.getString(DBKey.KEY_BOOKSHELF_NAME_CSV));
+            if (inUse.bookshelf) {
+                showOrHide(bookshelvesView, rowData.getString(DBKey.KEY_BOOKSHELF_NAME_CSV));
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
-                if (mDbgRowIdView != null) {
+                if (dbgRowIdView != null) {
                     final String txt = String.valueOf(position) + '/'
                                        + rowData.getLong(DBKey.KEY_BL_LIST_VIEW_NODE_ROW_ID);
-                    mDbgRowIdView.setText(txt);
+                    dbgRowIdView.setText(txt);
                 }
             }
         }
@@ -1121,23 +1155,23 @@ public class BooklistAdapter
         @Nullable
         String getPublisherAndPubDateText(@NonNull final DataHolder rowData) {
             final String name;
-            if (mInUse.publisher) {
+            if (inUse.publisher) {
                 name = rowData.getString(DBKey.PUBLISHER_NAME);
             } else {
                 name = null;
             }
 
             final String date;
-            if (mInUse.pubDate) {
+            if (inUse.pubDate) {
                 final String dateStr = rowData.getString(DBKey.DATE_BOOK_PUBLICATION);
-                date = new PartialDate(dateStr).toDisplay(mAdapter.getUserLocale(), dateStr);
+                date = new PartialDate(dateStr).toDisplay(adapter.getUserLocale(), dateStr);
             } else {
                 date = null;
             }
 
             if (name != null && !name.isEmpty() && date != null && !date.isEmpty()) {
                 // Combine Publisher and date
-                return String.format(mX_bracket_Y_bracket, name, date);
+                return String.format(x_bracket_y_bracket, name, date);
 
             } else if (name != null && !name.isEmpty()) {
                 // there was no date, just use the publisher
@@ -1176,20 +1210,20 @@ public class BooklistAdapter
          */
         void setImageView(@NonNull final String uuid) {
             // store the uuid for use in the OnClickListener
-            mCoverView.setTag(R.id.TAG_THUMBNAIL_UUID, uuid);
+            coverView.setTag(R.id.TAG_THUMBNAIL_UUID, uuid);
 
-            final Context context = mCoverView.getContext();
+            final Context context = coverView.getContext();
 
             // 1. If caching is used, and we don't have cache building happening, check it.
-            if (mAdapter.isImageCachingEnabled()) {
+            if (adapter.isImageCachingEnabled()) {
                 final CoverCacheDao coverCacheDao = ServiceLocator.getInstance().getCoverCacheDao();
                 if (!coverCacheDao.isBusy()) {
                     final Bitmap bitmap = coverCacheDao
-                            .getCover(context, uuid, 0, mCoverLongestSide, mCoverLongestSide);
+                            .getCover(context, uuid, 0, coverLongestSide, coverLongestSide);
 
                     if (bitmap != null) {
                         //noinspection ConstantConditions
-                        mImageLoader.fromBitmap(mCoverView, bitmap);
+                        imageLoader.fromBitmap(coverView, bitmap);
                         return;
                     }
                 }
@@ -1201,29 +1235,29 @@ public class BooklistAdapter
             //noinspection SimplifyOptionalCallChains
             if (!file.isPresent()) {
                 // leave the space blank, but preserve the width BASED on the mMaxHeight!
-                final ViewGroup.LayoutParams lp = mCoverView.getLayoutParams();
-                lp.width = (int) (mCoverLongestSide * HW_RATIO);
+                final ViewGroup.LayoutParams lp = coverView.getLayoutParams();
+                lp.width = (int) (coverLongestSide * HW_RATIO);
                 lp.height = 0;
-                mCoverView.setLayoutParams(lp);
-                mCoverView.setImageDrawable(null);
+                coverView.setLayoutParams(lp);
+                coverView.setImageDrawable(null);
                 return;
             }
 
             // Once we get here, we know the file is valid
-            if (mAdapter.isImageCachingEnabled()) {
+            if (adapter.isImageCachingEnabled()) {
                 // 1. Gets the image from the file system and display it.
                 // 2. Start a subsequent task to send it to the cache.
                 //noinspection ConstantConditions
-                mImageLoader.fromFile(mCoverView, file.get(), bitmap -> {
+                imageLoader.fromFile(coverView, file.get(), bitmap -> {
                     if (bitmap != null) {
                         ServiceLocator.getInstance().getCoverCacheDao().saveCover(
-                                uuid, 0, bitmap, mCoverLongestSide, mCoverLongestSide);
+                                uuid, 0, bitmap, coverLongestSide, coverLongestSide);
                     }
                 });
             } else {
                 // Cache not used: Get the image from the file system and display it.
                 //noinspection ConstantConditions
-                mImageLoader.fromFile(mCoverView, file.get(), null);
+                imageLoader.fromFile(coverView, file.get(), null);
             }
         }
     }
@@ -1236,9 +1270,9 @@ public class BooklistAdapter
          * It's ok to store this as it's intrinsically linked with the ViewType.
          */
         @NonNull
-        private final String mKey;
+        private final String key;
         @NonNull
-        private final RatingBar mRatingBar;
+        private final RatingBar ratingBar;
 
         /**
          * Constructor.
@@ -1249,15 +1283,15 @@ public class BooklistAdapter
         RatingHolder(@NonNull final View itemView,
                      @NonNull final BooklistGroup group) {
             super(itemView);
-            mKey = group.getDisplayDomainExpression().getDomain().getName();
-            mRatingBar = itemView.findViewById(R.id.rating);
+            key = group.getDisplayDomainExpression().getDomain().getName();
+            ratingBar = itemView.findViewById(R.id.rating);
         }
 
         @Override
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
                               @NonNull final ListStyle style) {
-            mRatingBar.setRating(rowData.getInt(mKey));
+            ratingBar.setRating(rowData.getInt(key));
         }
     }
 
@@ -1271,26 +1305,26 @@ public class BooklistAdapter
 
         /*** Default resource id for the View to populate. */
         @IdRes
-        private static final int mTextViewId = R.id.name;
+        private static final int textViewId = R.id.name;
 
         /**
          * The group this holder represents.
          * It's ok to store this as it's intrinsically linked with the ViewType.
          */
         @BooklistGroup.Id
-        final int mGroupKeyId;
+        final int groupKeyId;
         /*** View to populate. */
         @NonNull
-        final TextView mTextView;
+        final TextView textView;
         /** The parent adapter. */
         @NonNull
-        final BooklistAdapter mAdapter;
+        final BooklistAdapter adapter;
         /**
          * Key of the related data column.
          * It's ok to store this as it's intrinsically linked with the ViewType.
          */
         @NonNull
-        private final String mKey;
+        private final String key;
 
         /**
          * Constructor.
@@ -1303,22 +1337,22 @@ public class BooklistAdapter
                             @NonNull final View itemView,
                             @NonNull final BooklistGroup group) {
             super(itemView);
-            mAdapter = adapter;
-            mGroupKeyId = group.getId();
-            mKey = group.getDisplayDomainExpression().getDomain().getName();
-            mTextView = itemView.findViewById(mTextViewId);
+            this.adapter = adapter;
+            groupKeyId = group.getId();
+            key = group.getDisplayDomainExpression().getDomain().getName();
+            textView = itemView.findViewById(textViewId);
         }
 
         @Override
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
                               @NonNull final ListStyle style) {
-            mTextView.setText(format(rowData.getString(mKey)));
+            textView.setText(format(rowData.getString(key)));
 
             // Debugger help: color the row according to state
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
                 final int rowId = rowData.getInt(DBKey.PK_ID);
-                final BooklistCursor cursor = (BooklistCursor) mAdapter.getCursor();
+                final BooklistCursor cursor = (BooklistCursor) adapter.getCursor();
                 itemView.setBackgroundColor(cursor.getDbgRowColor(rowId));
             }
 
@@ -1326,12 +1360,12 @@ public class BooklistAdapter
                 final String dbgText = " " + position + '/'
                                        + rowData.getLong(DBKey.KEY_BL_LIST_VIEW_NODE_ROW_ID);
 
-                final CharSequence text = mTextView.getText();
+                final CharSequence text = textView.getText();
                 final SpannableString dbg = new SpannableString(text + dbgText);
                 dbg.setSpan(new ForegroundColorSpan(Color.BLUE), text.length(), dbg.length(), 0);
                 dbg.setSpan(new RelativeSizeSpan(0.7f), text.length(), dbg.length(), 0);
 
-                mTextView.setText(dbg);
+                textView.setText(dbg);
             }
         }
 
@@ -1344,7 +1378,7 @@ public class BooklistAdapter
          */
         @NonNull
         public String format(@Nullable final String text) {
-            return mAdapter.format(itemView.getContext(), mGroupKeyId, text, null);
+            return adapter.format(itemView.getContext(), groupKeyId, text, null);
         }
     }
 
@@ -1355,9 +1389,9 @@ public class BooklistAdapter
             extends GenericStringHolder {
 
         @NonNull
-        final ImageView mIsCompleteView;
+        final ImageView completeView;
         /** Column name of related boolean column. */
-        private String mIsCompleteKey;
+        private String completeKey;
 
         /**
          * Constructor.
@@ -1372,14 +1406,14 @@ public class BooklistAdapter
                               @NonNull final BooklistGroup group) {
             super(adapter, itemView, group);
 
-            mIsCompleteView = itemView.findViewById(R.id.cbx_is_complete);
+            completeView = itemView.findViewById(R.id.cbx_is_complete);
         }
 
         /**
          * @param columnKey Column name to use for the 'isComplete' status
          */
         void setIsCompleteColumnKey(@NonNull final String columnKey) {
-            mIsCompleteKey = columnKey;
+            completeKey = columnKey;
         }
 
         @Override
@@ -1387,8 +1421,8 @@ public class BooklistAdapter
                               @NonNull final DataHolder rowData,
                               @NonNull final ListStyle style) {
             super.onBindViewHolder(position, rowData, style);
-            mIsCompleteView.setVisibility(rowData.getBoolean(
-                    mIsCompleteKey) ? View.VISIBLE : View.GONE);
+            completeView.setVisibility(rowData.getBoolean(
+                    completeKey) ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -1420,7 +1454,7 @@ public class BooklistAdapter
             extends CheckableStringHolder {
 
         /** Stores this value in between the #onBindViewHolder and the #format methods. */
-        private String mBookLanguage;
+        private String bookLanguage;
 
         /**
          * Constructor.
@@ -1441,7 +1475,7 @@ public class BooklistAdapter
                               @NonNull final DataHolder rowData,
                               @NonNull final ListStyle style) {
             // grab the book language first for use in #format
-            mBookLanguage = rowData.getString(DBKey.LANGUAGE);
+            bookLanguage = rowData.getString(DBKey.LANGUAGE);
 
             super.onBindViewHolder(position, rowData, style);
         }
@@ -1455,8 +1489,8 @@ public class BooklistAdapter
             // but as long as we don't store the Series language there is no point
             @Nullable
             final Locale bookLocale = ServiceLocator.getInstance().getAppLocale()
-                                                    .getLocale(context, mBookLanguage);
-            return mAdapter.format(context, mGroupKeyId, text, bookLocale);
+                                                    .getLocale(context, bookLanguage);
+            return adapter.format(context, groupKeyId, text, bookLocale);
         }
     }
 }

@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings.widgets;
 
-import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
@@ -66,8 +64,8 @@ public final class MultiSelectListPreferenceSummaryProvider
                              "MultiSelectListPreference:"
                              + "\n s=" + s
                              + "\n key=" + preference.getKey()
-                             + "\n entries=" + TextUtils.join(",", preference.getEntries())
-                             + "\n entryValues=" + TextUtils.join(",", preference.getEntryValues())
+                             + "\n entries=" + String.join(",", preference.getEntries())
+                             + "\n entryValues=" + String.join(",", preference.getEntryValues())
                              + "\n values=" + preference.getValues());
             }
         }

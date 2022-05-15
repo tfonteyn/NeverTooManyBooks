@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -214,18 +213,18 @@ public class Author
     }
 
     /** Row ID. */
-    private long mId;
+    private long id;
     /** Family name(s). */
     @NonNull
-    private String mFamilyName;
+    private String familyName;
     /** Given name(s). */
     @NonNull
-    private String mGivenNames;
+    private String givenNames;
     /** whether we have all we want from this Author. */
-    private boolean mIsComplete;
+    private boolean complete;
     /** Bitmask. */
     @Type
-    private int mType = TYPE_UNKNOWN;
+    private int type = TYPE_UNKNOWN;
 
     /**
      * Constructor.
@@ -235,8 +234,8 @@ public class Author
      */
     public Author(@NonNull final String familyName,
                   @NonNull final String givenNames) {
-        mFamilyName = familyName.trim();
-        mGivenNames = givenNames.trim();
+        this.familyName = familyName.trim();
+        this.givenNames = givenNames.trim();
     }
 
     /**
@@ -250,9 +249,9 @@ public class Author
     public Author(@NonNull final String familyName,
                   @NonNull final String givenNames,
                   final boolean isComplete) {
-        mFamilyName = familyName.trim();
-        mGivenNames = givenNames.trim();
-        mIsComplete = isComplete;
+        this.familyName = familyName.trim();
+        this.givenNames = givenNames.trim();
+        complete = isComplete;
     }
 
     /**
@@ -263,13 +262,13 @@ public class Author
      */
     public Author(final long id,
                   @NonNull final DataHolder rowData) {
-        mId = id;
-        mFamilyName = rowData.getString(DBKey.AUTHOR_FAMILY_NAME);
-        mGivenNames = rowData.getString(DBKey.AUTHOR_GIVEN_NAMES);
-        mIsComplete = rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE);
+        this.id = id;
+        familyName = rowData.getString(DBKey.AUTHOR_FAMILY_NAME);
+        givenNames = rowData.getString(DBKey.AUTHOR_GIVEN_NAMES);
+        complete = rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE);
 
         if (rowData.contains(DBKey.BOOK_AUTHOR_TYPE_BITMASK)) {
-            mType = rowData.getInt(DBKey.BOOK_AUTHOR_TYPE_BITMASK);
+            type = rowData.getInt(DBKey.BOOK_AUTHOR_TYPE_BITMASK);
         }
     }
 
@@ -279,13 +278,13 @@ public class Author
      * @param in Parcel to construct the object from
      */
     private Author(@NonNull final Parcel in) {
-        mId = in.readLong();
+        id = in.readLong();
         //noinspection ConstantConditions
-        mFamilyName = in.readString();
+        familyName = in.readString();
         //noinspection ConstantConditions
-        mGivenNames = in.readString();
-        mIsComplete = in.readByte() != 0;
-        mType = in.readInt();
+        givenNames = in.readString();
+        complete = in.readByte() != 0;
+        type = in.readInt();
     }
 
     @NonNull
@@ -402,11 +401,11 @@ public class Author
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeLong(mId);
-        dest.writeString(mFamilyName);
-        dest.writeString(mGivenNames);
-        dest.writeByte((byte) (mIsComplete ? 1 : 0));
-        dest.writeInt(mType);
+        dest.writeLong(id);
+        dest.writeString(familyName);
+        dest.writeString(givenNames);
+        dest.writeByte((byte) (complete ? 1 : 0));
+        dest.writeInt(type);
     }
 
     @Override
@@ -420,7 +419,7 @@ public class Author
      * @return {@code true} if the Author is complete
      */
     public boolean isComplete() {
-        return mIsComplete;
+        return complete;
     }
 
     /**
@@ -429,12 +428,12 @@ public class Author
      * @param isComplete Flag indicating the user considers this Author to be 'complete'
      */
     public void setComplete(final boolean isComplete) {
-        mIsComplete = isComplete;
+        complete = isComplete;
     }
 
     @Type
     public int getType() {
-        return mType;
+        return type;
     }
 
     /**
@@ -443,7 +442,7 @@ public class Author
      * @param type to set
      */
     public void setType(@Type final int type) {
-        mType = type & TYPE_BITMASK_ALL;
+        this.type = type & TYPE_BITMASK_ALL;
     }
 
     /**
@@ -452,16 +451,16 @@ public class Author
      * @param type to add
      */
     public void addType(@Type final int type) {
-        mType |= type & TYPE_BITMASK_ALL;
+        this.type |= type & TYPE_BITMASK_ALL;
     }
 
     @Override
     public long getId() {
-        return mId;
+        return id;
     }
 
     public void setId(final long id) {
-        mId = id;
+        this.id = id;
     }
 
     @NonNull
@@ -507,9 +506,9 @@ public class Author
                 final SharedPreferences global = PreferenceManager
                         .getDefaultSharedPreferences(context);
                 if (DBKey.isUsed(global, DBKey.BOOK_AUTHOR_TYPE_BITMASK)) {
-                    final String type = getTypeLabels(context);
-                    if (!type.isEmpty()) {
-                        label += " <small><i>" + type + "</i></small>";
+                    final String typeLabels = getTypeLabels(context);
+                    if (!typeLabels.isEmpty()) {
+                        label += " <small><i>" + typeLabels + "</i></small>";
                     }
                 }
                 return label;
@@ -518,12 +517,12 @@ public class Author
                 return getFormattedName(givenFirst);
             }
             case Short: {
-                if (mGivenNames.isEmpty()) {
-                    return mFamilyName;
+                if (givenNames.isEmpty()) {
+                    return familyName;
                 } else if (givenFirst) {
-                    return mGivenNames.substring(0, 1) + ' ' + mFamilyName;
+                    return givenNames.substring(0, 1) + ' ' + familyName;
                 } else {
-                    return mFamilyName + ' ' + mGivenNames.charAt(0);
+                    return familyName + ' ' + givenNames.charAt(0);
                 }
             }
         }
@@ -540,13 +539,13 @@ public class Author
      */
     @NonNull
     public String getFormattedName(final boolean givenNameFirst) {
-        if (mGivenNames.isEmpty()) {
-            return mFamilyName;
+        if (givenNames.isEmpty()) {
+            return familyName;
         } else {
             if (givenNameFirst) {
-                return mGivenNames + ' ' + mFamilyName;
+                return givenNames + ' ' + familyName;
             } else {
-                return mFamilyName + ", " + mGivenNames;
+                return familyName + ", " + givenNames;
             }
         }
     }
@@ -561,15 +560,15 @@ public class Author
      */
     @NonNull
     private String getTypeLabels(@NonNull final Context context) {
-        if (mType != TYPE_UNKNOWN) {
+        if (type != TYPE_UNKNOWN) {
             final List<String> list = TYPES.entrySet()
                                            .stream()
-                                           .filter(entry -> (entry.getKey() & (long) mType) != 0)
+                                           .filter(entry -> (entry.getKey() & (long) type) != 0)
                                            .map(entry -> context.getString(entry.getValue()))
                                            .collect(Collectors.toList());
 
             if (!list.isEmpty()) {
-                return context.getString(R.string.brackets, TextUtils.join(", ", list));
+                return context.getString(R.string.brackets, String.join(", ", list));
             }
         }
         return "";
@@ -583,13 +582,13 @@ public class Author
      */
     public void setName(@NonNull final String familyName,
                         @NonNull final String givenNames) {
-        mFamilyName = familyName;
-        mGivenNames = givenNames;
+        this.familyName = familyName;
+        this.givenNames = givenNames;
     }
 
     @NonNull
     public String getFamilyName() {
-        return mFamilyName;
+        return familyName;
     }
 
     /**
@@ -600,7 +599,7 @@ public class Author
      */
     @NonNull
     public String getGivenNames() {
-        return mGivenNames;
+        return givenNames;
     }
 
     /**
@@ -611,11 +610,11 @@ public class Author
      */
     public void copyFrom(@NonNull final Author source,
                          final boolean includeBookFields) {
-        mFamilyName = source.mFamilyName;
-        mGivenNames = source.mGivenNames;
-        mIsComplete = source.mIsComplete;
+        familyName = source.familyName;
+        givenNames = source.givenNames;
+        complete = source.complete;
         if (includeBookFields) {
-            mType = source.mType;
+            type = source.type;
         }
     }
 
@@ -644,11 +643,11 @@ public class Author
         final Author incoming = (Author) mergeable;
 
         // always combine the types
-        mType = mType | incoming.getType();
+        type = type | incoming.getType();
 
         // if this object has no id, and the incoming has an id, then we copy the id.
-        if (mId == 0 && incoming.getId() > 0) {
-            mId = incoming.getId();
+        if (id == 0 && incoming.getId() > 0) {
+            id = incoming.getId();
         }
         return true;
     }
@@ -659,12 +658,12 @@ public class Author
      * @return hashcode
      */
     public int asciiHashCodeNoId() {
-        return Objects.hash(ParseUtils.toAscii(mFamilyName), ParseUtils.toAscii(mGivenNames));
+        return Objects.hash(ParseUtils.toAscii(familyName), ParseUtils.toAscii(givenNames));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mId, mFamilyName, mGivenNames);
+        return Objects.hash(id, familyName, givenNames);
     }
 
     /**
@@ -687,11 +686,11 @@ public class Author
         }
         final Author that = (Author) obj;
         // if both 'exist' but have different ID's -> different.
-        if (mId != 0 && that.mId != 0 && mId != that.mId) {
+        if (id != 0 && that.id != 0 && id != that.id) {
             return false;
         }
-        return Objects.equals(mFamilyName, that.mFamilyName)
-               && Objects.equals(mGivenNames, that.mGivenNames);
+        return Objects.equals(familyName, that.familyName)
+               && Objects.equals(givenNames, that.givenNames);
     }
 
     @Override
@@ -699,68 +698,67 @@ public class Author
     public String toString() {
         final StringJoiner sj = new StringJoiner(",", "Type{", "}");
 
-        if ((mType & TYPE_WRITER) != 0) {
+        if ((type & TYPE_WRITER) != 0) {
             sj.add("TYPE_WRITER");
         }
 //        if ((mType & TYPE_ORIGINAL_SCRIPT_WRITER) != 0) {
 //            sj.add("TYPE_ORIGINAL_SCRIPT_WRITER");
 //        }
-        if ((mType & TYPE_FOREWORD) != 0) {
+        if ((type & TYPE_FOREWORD) != 0) {
             sj.add("TYPE_FOREWORD");
         }
-        if ((mType & TYPE_AFTERWORD) != 0) {
+        if ((type & TYPE_AFTERWORD) != 0) {
             sj.add("TYPE_AFTERWORD");
         }
 
 
-        if ((mType & TYPE_TRANSLATOR) != 0) {
+        if ((type & TYPE_TRANSLATOR) != 0) {
             sj.add("TYPE_TRANSLATOR");
         }
-        if ((mType & TYPE_INTRODUCTION) != 0) {
+        if ((type & TYPE_INTRODUCTION) != 0) {
             sj.add("TYPE_INTRODUCTION");
         }
-        if ((mType & TYPE_EDITOR) != 0) {
+        if ((type & TYPE_EDITOR) != 0) {
             sj.add("TYPE_EDITOR");
         }
-        if ((mType & TYPE_CONTRIBUTOR) != 0) {
+        if ((type & TYPE_CONTRIBUTOR) != 0) {
             sj.add("TYPE_CONTRIBUTOR");
         }
 
 
-        if ((mType & TYPE_COVER_ARTIST) != 0) {
+        if ((type & TYPE_COVER_ARTIST) != 0) {
             sj.add("TYPE_COVER_ARTIST");
         }
-        if ((mType & TYPE_COVER_INKING) != 0) {
+        if ((type & TYPE_COVER_INKING) != 0) {
             sj.add("TYPE_COVER_INKING");
         }
-        if ((mType & TYPE_NARRATOR) != 0) {
+        if ((type & TYPE_NARRATOR) != 0) {
             sj.add("TYPE_NARRATOR");
         }
-        if ((mType & TYPE_COVER_COLORIST) != 0) {
+        if ((type & TYPE_COVER_COLORIST) != 0) {
             sj.add("TYPE_COVER_COLORIST");
         }
 
 
-        if ((mType & TYPE_ARTIST) != 0) {
+        if ((type & TYPE_ARTIST) != 0) {
             sj.add("TYPE_ARTIST");
         }
-        if ((mType & TYPE_INKING) != 0) {
+        if ((type & TYPE_INKING) != 0) {
             sj.add("TYPE_INKING");
         }
-        if ((mType & TYPE_COLORIST) != 0) {
+        if ((type & TYPE_COLORIST) != 0) {
             sj.add("TYPE_COLORIST");
         }
-        if ((mType & TYPE_PSEUDONYM) != 0) {
+        if ((type & TYPE_PSEUDONYM) != 0) {
             sj.add("TYPE_PSEUDONYM");
         }
 
         return "Author{"
-               + "mId=" + mId
-               + ", mFamilyName=`" + mFamilyName + '`'
-               + ", mGivenNames=`" + mGivenNames + '`'
-               + ", mIsComplete=" + mIsComplete
-               + ", mType=0b" + Integer.toBinaryString(mType)
-               + ", mType=" + sj
+               + "id=" + id
+               + ", familyName=`" + familyName + '`'
+               + ", givenNames=`" + givenNames + '`'
+               + ", complete=" + complete
+               + ", type=0b" + Integer.toBinaryString(type) + ": " + sj
                + '}';
     }
 

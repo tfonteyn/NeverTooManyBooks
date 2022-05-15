@@ -34,15 +34,15 @@ class IndexDefinition {
 
     /** Table to which index applies. */
     @NonNull
-    private final TableDefinition mTable;
+    private final TableDefinition table;
     /** Domains in index. */
     @NonNull
-    private final List<Domain> mDomains;
+    private final List<Domain> domains;
     /** Flag indicating index is unique. */
-    private final boolean mUnique;
+    private final boolean unique;
     /** suffix to add to the table name. */
     @NonNull
-    private final String mNameSuffix;
+    private final String nameSuffix;
 
     /**
      * Constructor.
@@ -57,11 +57,11 @@ class IndexDefinition {
                     @NonNull final String nameSuffix,
                     final boolean unique,
                     @NonNull final List<Domain> domains) {
-        mNameSuffix = nameSuffix;
-        mUnique = unique;
-        mTable = table;
+        this.nameSuffix = nameSuffix;
+        this.unique = unique;
+        this.table = table;
         // take a COPY of the list; but the domains themselves are references only.
-        mDomains = new ArrayList<>(domains);
+        this.domains = new ArrayList<>(domains);
     }
 
     /**
@@ -70,22 +70,22 @@ class IndexDefinition {
      * @return UNIQUE flag.
      */
     boolean isUnique() {
-        return mUnique;
+        return unique;
     }
 
     /**
      * Get a copy of the list with domains.
      *
-     * @return an immutable List
+     * @return new List
      */
     @NonNull
     List<Domain> getDomains() {
-        return List.copyOf(mDomains);
+        return new ArrayList<>(domains);
     }
 
     @NonNull
     String getNameSuffix() {
-        return mNameSuffix;
+        return nameSuffix;
     }
 
     /**
@@ -117,21 +117,21 @@ class IndexDefinition {
     @NonNull
     private String def() {
         final StringBuilder sql = new StringBuilder("CREATE");
-        if (mUnique) {
+        if (unique) {
             sql.append(" UNIQUE");
         }
-        sql.append(" INDEX ").append(mTable.getName()).append("_IDX_").append(mNameSuffix)
-           .append(" ON ").append(mTable.getName())
+        sql.append(" INDEX ").append(table.getName()).append("_IDX_").append(nameSuffix)
+           .append(" ON ").append(table.getName())
            .append('(')
-           .append(mDomains.stream()
-                           .map(domain -> {
+           .append(domains.stream()
+                          .map(domain -> {
                                if (domain.isCollationLocalized()) {
                                    return domain.getName() + " COLLATE LOCALIZED";
                                } else {
                                    return domain.getName();
                                }
                            })
-                           .collect(Collectors.joining(",")))
+                          .collect(Collectors.joining(",")))
            .append(')');
 
         return sql.toString();
@@ -141,10 +141,10 @@ class IndexDefinition {
     @NonNull
     public String toString() {
         return "IndexDefinition{"
-               + "mTable=" + mTable
-               + ", mDomains=" + mDomains
-               + ", mIsUnique=" + mUnique
-               + ", mNameSuffix='" + mNameSuffix + '\''
+               + "table=" + table
+               + ", domains=" + domains
+               + ", unique=" + unique
+               + ", nameSuffix='" + nameSuffix + '\''
                + ", def=\n" + def()
                + "\n}";
     }

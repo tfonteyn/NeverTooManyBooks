@@ -149,8 +149,6 @@ android {
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "false")
             // under development
             buildConfigField("boolean", "ENABLE_KB_NL", "false")
-            // under development
-            buildConfigField("boolean", "ENABLE_BOOKSHELF_FILTERS", "false")
         }
         beta {
             initWith release
@@ -167,8 +165,6 @@ android {
             // under development; adapting to the new site format.
             // 2021-04: the site has changed technology and our engine no longer works.
             buildConfigField("boolean", "ENABLE_KB_NL", "true")
-            // under development
-            buildConfigField("boolean", "ENABLE_BOOKSHELF_FILTERS", "true")
         }
     }
 

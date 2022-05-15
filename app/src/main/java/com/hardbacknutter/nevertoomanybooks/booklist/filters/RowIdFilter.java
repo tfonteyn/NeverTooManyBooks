@@ -33,28 +33,28 @@ public class RowIdFilter
         implements Filter {
 
     @NonNull
-    private final TableDefinition mTable;
+    private final TableDefinition table;
     @NonNull
-    private final Domain mDomain;
+    private final Domain domain;
 
-    private final long mId;
+    private final long id;
 
     public RowIdFilter(@NonNull final TableDefinition table,
                        @NonNull final Domain domain,
                        final long id) {
-        mTable = table;
-        mDomain = domain;
-        mId = id;
+        this.table = table;
+        this.domain = domain;
+        this.id = id;
     }
 
     @Override
     @NonNull
     public String getExpression(@NonNull final Context context) {
-        return '(' + mTable.dot(mDomain) + '=' + mId + ')';
+        return '(' + table.dot(domain) + '=' + id + ')';
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        return mId > 0;
+        return id > 0;
     }
 }

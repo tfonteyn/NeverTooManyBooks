@@ -46,88 +46,88 @@ public class PBooleanFilter
     public static final int LAYOUT_ID = R.layout.row_edit_bookshelf_filter_boolean;
 
     @StringRes
-    private final int mLabelId;
+    private final int labelResId;
     @ArrayRes
-    private final int mAcEntries;
+    private final int acEntries;
 
     @NonNull
-    private final String mName;
+    private final String name;
     @NonNull
-    private final Domain mDomain;
+    private final Domain domain;
     @NonNull
-    private final TableDefinition mTable;
+    private final TableDefinition table;
     @Nullable
-    private Boolean mValue;
+    private Boolean value;
 
     PBooleanFilter(@NonNull final String name,
                    @StringRes final int labelId,
                    @ArrayRes final int acEntries,
                    @NonNull final TableDefinition table,
                    @NonNull final Domain domain) {
-        mLabelId = labelId;
-        mAcEntries = acEntries;
-        mDomain = domain;
-        mTable = table;
-        mName = name;
+        labelResId = labelId;
+        this.acEntries = acEntries;
+        this.domain = domain;
+        this.table = table;
+        this.name = name;
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
         if (!DBKey.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                          mDomain.getName())) {
+                          domain.getName())) {
             return false;
         }
 
-        return mValue != null;
+        return value != null;
     }
 
     @NonNull
     @Override
     public String getExpression(@NonNull final Context context) {
         //noinspection ConstantConditions
-        return mTable.dot(mDomain) + '=' + (mValue ? 1 : 0);
+        return table.dot(domain) + '=' + (value ? 1 : 0);
     }
 
     @Override
     @NonNull
     public String getPrefName() {
-        return mName;
+        return name;
     }
 
     @Nullable
     @Override
     public String getValueAsString() {
-        return mValue == null ? "-1" : mValue ? "1" : "0";
+        return value == null ? "-1" : value ? "1" : "0";
     }
 
     @Override
     public void setValueAsString(@Nullable final String value) {
-        mValue = value == null ? null : "1".equals(value);
+        this.value = value == null ? null : "1".equals(value);
     }
 
     @SuppressLint("UseValueOf")
     @Nullable
     @Override
     public Boolean getValue() {
-        if (mValue == null) {
+        if (value == null) {
             return null;
         } else {
             // ignore Lint warnings! we want a NEW instance!
             //noinspection BooleanConstructorCall,BoxingBoxedValue
-            return new Boolean(mValue);
+            return new Boolean(value);
         }
     }
 
     @Override
     public void setValue(@Nullable final Boolean value) {
-        mValue = value;
+        this.value = value;
     }
 
     @Override
     @NonNull
     public String getValueText(@NonNull final Context context,
                                @Nullable final Boolean value) {
-        final CharSequence[] textArray = context.getResources().getTextArray(mAcEntries);
+        final CharSequence[] textArray = context.getResources().getTextArray(acEntries);
         if (value == null) {
             return textArray[0].toString();
         } else {
@@ -138,7 +138,7 @@ public class PBooleanFilter
     @NonNull
     @Override
     public String getLabel(@NonNull final Context context) {
-        return context.getString(mLabelId);
+        return context.getString(labelResId);
     }
 
     @LayoutRes

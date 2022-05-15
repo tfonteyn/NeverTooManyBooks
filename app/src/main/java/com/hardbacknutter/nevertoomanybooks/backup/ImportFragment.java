@@ -89,11 +89,12 @@ public class ImportFragment
      * e.g. "text/*" does not even allow csv files in the standard Android 8.0 Files app.
      * <p>
      * So we have no choice but to accept simply all files and deal with invalid ones later.
-     * Also see {@link #mOpenUriLauncher}.
+     * Also see {@link #openUriLauncher}.
      */
     private static final String MIME_TYPES = "*/*";
+
     /** Set the hosting Activity result, and close it. */
-    private final OnBackPressedCallback mOnBackPressedCallback =
+    private final OnBackPressedCallback onBackPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
@@ -103,12 +104,12 @@ public class ImportFragment
                     getActivity().finish();
                 }
             };
-    private ToolbarMenuProvider mToolbarMenuProvider;
+    private ToolbarMenuProvider toolbarMenuProvider;
     /** The ViewModel. */
-    private ImportViewModel mVm;
+    private ImportViewModel vm;
 
     /** View Binding. */
-    private FragmentImportBinding mVb;
+    private FragmentImportBinding vb;
 
     /**
      * The launcher for picking a Uri to read from.
@@ -116,18 +117,18 @@ public class ImportFragment
      * <a href="https://developer.android.com/guide/topics/providers/document-provider.html#client">
      * Android docs</a> : use a GetContent
      */
-    private final ActivityResultLauncher<String> mOpenUriLauncher =
+    private final ActivityResultLauncher<String> openUriLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), this::onOpenUri);
 
     @Nullable
-    private ProgressDelegate mProgressDelegate;
+    private ProgressDelegate progressDelegate;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(ImportViewModel.class);
+        vm = new ViewModelProvider(getActivity()).get(ImportViewModel.class);
         // no init
     }
 
@@ -136,8 +137,8 @@ public class ImportFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentImportBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentImportBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @Override
@@ -146,64 +147,64 @@ public class ImportFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        mToolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
+        toolbarMenuProvider = new ToolbarMenuProvider();
+        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
         toolbar.setTitle(R.string.lbl_import);
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+                     .addCallback(getViewLifecycleOwner(), onBackPressedCallback);
 
-        mVm.onReadMetaDataFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
-        mVm.onReadMetaDataCancelled().observe(getViewLifecycleOwner(), this::onMetaDataCancelled);
-        mVm.onReadMetaDataFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
+        vm.onReadMetaDataFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
+        vm.onReadMetaDataCancelled().observe(getViewLifecycleOwner(), this::onMetaDataCancelled);
+        vm.onReadMetaDataFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
 
-        mVm.onReadDataFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
-        mVm.onReadDataCancelled().observe(getViewLifecycleOwner(), this::onImportCancelled);
-        mVm.onReadDataFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
+        vm.onReadDataFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
+        vm.onReadDataCancelled().observe(getViewLifecycleOwner(), this::onImportCancelled);
+        vm.onReadDataFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
 
-        mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+        vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
 
-        mVb.infNewOnly.setOnClickListener(StandardDialogs::infoPopup);
-        mVb.infNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
-        mVb.infAll.setOnClickListener(StandardDialogs::infoPopup);
+        vb.infNewOnly.setOnClickListener(StandardDialogs::infoPopup);
+        vb.infNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
+        vb.infAll.setOnClickListener(StandardDialogs::infoPopup);
 
-        mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            mVm.getDataReaderHelper().setRecordType(isChecked, RecordType.Books);
-            mVb.rbBooksGroup.setEnabled(isChecked);
+        vb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            vm.getDataReaderHelper().setRecordType(isChecked, RecordType.Books);
+            vb.rbBooksGroup.setEnabled(isChecked);
         });
 
-        mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> mVm
+        vb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> vm
                 .getDataReaderHelper().setRecordType(isChecked, RecordType.Cover));
 
-        mVb.cbxStyles.setOnCheckedChangeListener((buttonView, isChecked) -> mVm
+        vb.cbxStyles.setOnCheckedChangeListener((buttonView, isChecked) -> vm
                 .getDataReaderHelper().setRecordType(isChecked, RecordType.Styles));
 
-        mVb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            final ImportHelper helper = mVm.getDataReaderHelper();
+        vb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            final ImportHelper helper = vm.getDataReaderHelper();
             helper.setRecordType(isChecked, RecordType.Preferences);
             helper.setRecordType(isChecked, RecordType.Certificates);
         });
 
-        mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            final ImportHelper helper = mVm.getDataReaderHelper();
-            if (checkedId == mVb.rbImportNewOnly.getId()) {
+        vb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            final ImportHelper helper = vm.getDataReaderHelper();
+            if (checkedId == vb.rbImportNewOnly.getId()) {
                 helper.setUpdateOption(DataReader.Updates.Skip);
-            } else if (checkedId == mVb.rbImportNewAndUpdated.getId()) {
+            } else if (checkedId == vb.rbImportNewAndUpdated.getId()) {
                 helper.setUpdateOption(DataReader.Updates.OnlyNewer);
-            } else if (checkedId == mVb.rbImportAll.getId()) {
+            } else if (checkedId == vb.rbImportAll.getId()) {
                 helper.setUpdateOption(DataReader.Updates.Overwrite);
             }
         });
 
-        if (!mVm.isRunning()) {
-            if (mVm.hasUri()) {
+        if (!vm.isRunning()) {
+            if (vm.hasUri()) {
                 // if we already have a uri when called (from getArguments()),
                 // or e.g. after a screen rotation, just show the screen/options again
                 showOptions();
             } else {
                 // start the import process by asking the user for a Uri
-                mOpenUriLauncher.launch(MIME_TYPES);
+                openUriLauncher.launch(MIME_TYPES);
             }
         }
     }
@@ -225,7 +226,7 @@ public class ImportFragment
             final ImportHelper helper;
             try {
                 //noinspection ConstantConditions
-                helper = mVm.createDataReaderHelper(getContext(), uri);
+                helper = vm.createDataReaderHelper(getContext(), uri);
 
             } catch (@NonNull final DataReaderException e) {
                 onImportNotSupported(e.getUserMessage(getContext()));
@@ -269,10 +270,10 @@ public class ImportFragment
      * Update the screen with archive specific options and values.
      */
     private void showOptions() {
-        final ImportHelper helper = mVm.getDataReaderHelper();
+        final ImportHelper helper = vm.getDataReaderHelper();
 
         //noinspection ConstantConditions
-        mVb.archiveName.setText(helper.getUriInfo().getDisplayName(getContext()));
+        vb.archiveName.setText(helper.getUriInfo().getDisplayName(getContext()));
 
         final Optional<ArchiveMetaData> metaData = helper.getMetaData();
         if (metaData.isPresent()) {
@@ -283,42 +284,42 @@ public class ImportFragment
         }
 
         final Set<RecordType> recordTypes = helper.getRecordTypes();
-        mVb.cbxBooks.setChecked(recordTypes.contains(RecordType.Books));
-        mVb.cbxCovers.setChecked(recordTypes.contains(RecordType.Cover));
-        mVb.cbxStyles.setChecked(recordTypes.contains(RecordType.Styles));
-        mVb.cbxPrefs.setChecked(recordTypes.contains(RecordType.Preferences));
+        vb.cbxBooks.setChecked(recordTypes.contains(RecordType.Books));
+        vb.cbxCovers.setChecked(recordTypes.contains(RecordType.Cover));
+        vb.cbxStyles.setChecked(recordTypes.contains(RecordType.Styles));
+        vb.cbxPrefs.setChecked(recordTypes.contains(RecordType.Preferences));
 
         final DataReader.Updates updateOption = helper.getUpdateOption();
-        mVb.rbImportNewOnly.setChecked(updateOption == DataReader.Updates.Skip);
-        mVb.rbImportNewAndUpdated.setChecked(updateOption == DataReader.Updates.OnlyNewer);
-        mVb.rbImportAll.setChecked(updateOption == DataReader.Updates.Overwrite);
+        vb.rbImportNewOnly.setChecked(updateOption == DataReader.Updates.Skip);
+        vb.rbImportNewAndUpdated.setChecked(updateOption == DataReader.Updates.OnlyNewer);
+        vb.rbImportAll.setChecked(updateOption == DataReader.Updates.Overwrite);
 
         // Set the visibility depending on the encoding
         switch (helper.getEncoding()) {
             case Zip:
             case Tar: {
                 // all options available
-                mVb.cbxBooks.setVisibility(View.VISIBLE);
-                mVb.cbxCovers.setVisibility(View.VISIBLE);
-                mVb.cbxPrefs.setVisibility(View.VISIBLE);
-                mVb.cbxStyles.setVisibility(View.VISIBLE);
+                vb.cbxBooks.setVisibility(View.VISIBLE);
+                vb.cbxCovers.setVisibility(View.VISIBLE);
+                vb.cbxPrefs.setVisibility(View.VISIBLE);
+                vb.cbxStyles.setVisibility(View.VISIBLE);
                 break;
             }
             case Json: {
                 // all options, except covers
-                mVb.cbxBooks.setVisibility(View.VISIBLE);
-                mVb.cbxCovers.setVisibility(View.GONE);
-                mVb.cbxPrefs.setVisibility(View.VISIBLE);
-                mVb.cbxStyles.setVisibility(View.VISIBLE);
+                vb.cbxBooks.setVisibility(View.VISIBLE);
+                vb.cbxCovers.setVisibility(View.GONE);
+                vb.cbxPrefs.setVisibility(View.VISIBLE);
+                vb.cbxStyles.setVisibility(View.VISIBLE);
                 break;
             }
             case Csv:
             case SqLiteDb: {
                 // show only the book options
-                mVb.cbxBooks.setVisibility(View.GONE);
-                mVb.cbxCovers.setVisibility(View.GONE);
-                mVb.cbxPrefs.setVisibility(View.GONE);
-                mVb.cbxStyles.setVisibility(View.GONE);
+                vb.cbxBooks.setVisibility(View.GONE);
+                vb.cbxCovers.setVisibility(View.GONE);
+                vb.cbxPrefs.setVisibility(View.GONE);
+                vb.cbxStyles.setVisibility(View.GONE);
                 break;
             }
             case Xml: {
@@ -328,27 +329,28 @@ public class ImportFragment
             }
         }
 
-        mVb.getRoot().setVisibility(View.VISIBLE);
+        vb.getRoot().setVisibility(View.VISIBLE);
     }
 
     private void readMetaData() {
         // There will be no progress messages as reading the data itself is very fast, but
         // connection can take a long time, so bring up the progress dialog now
-        if (mProgressDelegate == null) {
-            mProgressDelegate = new ProgressDelegate(getProgressFrame())
+        if (progressDelegate == null) {
+            progressDelegate = new ProgressDelegate(getProgressFrame())
                     .setTitle(R.string.progress_msg_connecting)
                     .setPreventSleep(true)
                     .setIndeterminate(true)
-                    .setOnCancelListener(v -> mVm.cancelTask(R.id.TASK_ID_READ_META_DATA));
+                    .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_READ_META_DATA));
         }
         //noinspection ConstantConditions
-        mProgressDelegate.show(() -> getActivity().getWindow());
-        mVm.readMetaData();
+        progressDelegate.show(() -> getActivity().getWindow());
+        vm.readMetaData();
     }
 
     private void onMetaDataRead(@NonNull final LiveDataEvent<TaskResult<
             Optional<ArchiveMetaData>>> message) {
         closeProgressDialog();
+
         message.getData().flatMap(TaskResult::requireResult).ifPresent(this::showMetaData);
     }
 
@@ -370,10 +372,10 @@ public class ImportFragment
      */
     private void showMetaData(@Nullable final ArchiveMetaData metaData) {
         // do this here, as the menu depends on the meta-data having been fetched
-        mToolbarMenuProvider.onPrepareMenu(getToolbar().getMenu());
+        toolbarMenuProvider.onPrepareMenu(getToolbar().getMenu());
 
         if (metaData == null) {
-            mVb.archiveContent.setVisibility(View.INVISIBLE);
+            vb.archiveContent.setVisibility(View.INVISIBLE);
         } else {
             // some stats of what's inside the archive
             final StringJoiner stats = new StringJoiner("\n");
@@ -394,8 +396,8 @@ public class ImportFragment
                                    getString(R.string.lbl_covers),
                                    String.valueOf(count))));
 
-            mVb.archiveContent.setText(stats.toString());
-            mVb.archiveContent.setVisibility(View.VISIBLE);
+            vb.archiveContent.setText(stats.toString());
+            vb.archiveContent.setVisibility(View.VISIBLE);
         }
     }
 
@@ -411,15 +413,15 @@ public class ImportFragment
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.getData().ifPresent(data -> {
-            if (mProgressDelegate == null) {
+            if (progressDelegate == null) {
                 //noinspection ConstantConditions
-                mProgressDelegate = new ProgressDelegate(getProgressFrame())
+                progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.lbl_importing)
                         .setPreventSleep(true)
-                        .setOnCancelListener(v -> mVm.cancelTask(data.taskId))
+                        .setOnCancelListener(v -> vm.cancelTask(data.taskId))
                         .show(() -> getActivity().getWindow());
             }
-            mProgressDelegate.onProgress(data);
+            progressDelegate.onProgress(data);
         });
     }
 
@@ -534,8 +536,8 @@ public class ImportFragment
         if (result.styles > 0) {
             items.add(getString(R.string.name_colon_value,
                                 getString(R.string.lbl_styles),
-                                // deduct built-in styles (remember: MAX_ID is negative)
-                                String.valueOf(result.styles + BuiltinStyle.MAX_ID)));
+                                // deduct built-in styles
+                                String.valueOf(result.styles - BuiltinStyle.ALL.size() - 1)));
         }
         if (result.preferences > 0) {
             items.add(getString(R.string.lbl_settings));
@@ -579,10 +581,10 @@ public class ImportFragment
     }
 
     private void closeProgressDialog() {
-        if (mProgressDelegate != null) {
+        if (progressDelegate != null) {
             //noinspection ConstantConditions
-            mProgressDelegate.dismiss(getActivity().getWindow());
-            mProgressDelegate = null;
+            progressDelegate.dismiss(getActivity().getWindow());
+            progressDelegate = null;
         }
     }
 
@@ -606,21 +608,21 @@ public class ImportFragment
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
             menu.findItem(R.id.MENU_ACTION_CONFIRM)
-                .setEnabled(mVm.isReadyToGo());
+                .setEnabled(vm.isReadyToGo());
         }
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-                if (mProgressDelegate == null) {
-                    mProgressDelegate = new ProgressDelegate(getProgressFrame())
+                if (progressDelegate == null) {
+                    progressDelegate = new ProgressDelegate(getProgressFrame())
                             .setTitle(R.string.lbl_importing)
                             .setPreventSleep(true)
-                            .setOnCancelListener(v -> mVm.cancelTask(R.id.TASK_ID_IMPORT));
+                            .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_IMPORT));
                 }
                 //noinspection ConstantConditions
-                mProgressDelegate.show(() -> getActivity().getWindow());
-                mVm.readData();
+                progressDelegate.show(() -> getActivity().getWindow());
+                vm.readData();
                 return true;
             }
             return false;

@@ -32,10 +32,10 @@ public class FtsMatchFilter
         implements Filter {
 
     @NonNull
-    private final String mQuery;
+    private final String query;
 
     public FtsMatchFilter(@NonNull final String query) {
-        mQuery = query;
+        this.query = query;
     }
 
     @NonNull
@@ -46,12 +46,12 @@ public class FtsMatchFilter
                + "SELECT " + DBKey.FTS_BOOK_ID
                + " FROM " + TBL_FTS_BOOKS.getName()
                + " WHERE " + TBL_FTS_BOOKS.getName()
-               + " MATCH '" + mQuery + "')"
+               + " MATCH '" + query + "')"
                + ')';
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        return !mQuery.isEmpty();
+        return !query.isEmpty();
     }
 }

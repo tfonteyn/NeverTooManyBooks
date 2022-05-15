@@ -57,20 +57,20 @@ public class StyleGroupsFragment
         extends BaseFragment {
 
     /** Drag and drop support for the list view. */
-    private ItemTouchHelper mItemTouchHelper;
+    private ItemTouchHelper itemTouchHelper;
 
     /** Style we are editing. */
-    private StyleViewModel mVm;
+    private StyleViewModel vm;
 
     /**
      * Either make the groups permanent, or inform the user they need to have at least one group.
      */
-    private final OnBackPressedCallback mOnBackPressedCallback =
+    private final OnBackPressedCallback onBackPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    if (mVm.hasGroupsSelected()) {
-                        mVm.updateStyleGroups();
+                    if (vm.hasGroupsSelected()) {
+                        vm.updateStyleGroups();
                         // just pop, we're always called from a fragment
                         getParentFragmentManager().popBackStack();
 
@@ -92,14 +92,14 @@ public class StyleGroupsFragment
             };
 
     /** View Binding. */
-    private FragmentEditStyleGroupsBinding mVb;
+    private FragmentEditStyleGroupsBinding vb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(StyleViewModel.class);
+        vm = new ViewModelProvider(getActivity()).get(StyleViewModel.class);
     }
 
     @Nullable
@@ -108,8 +108,8 @@ public class StyleGroupsFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
 
-        mVb = FragmentEditStyleGroupsBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentEditStyleGroupsBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @Override
@@ -119,26 +119,26 @@ public class StyleGroupsFragment
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+                     .addCallback(getViewLifecycleOwner(), onBackPressedCallback);
 
         //noinspection ConstantConditions
-        mVb.groupList.addItemDecoration(
+        vb.groupList.addItemDecoration(
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
-        mVb.groupList.setHasFixedSize(true);
+        vb.groupList.setHasFixedSize(true);
 
         // setup the adapter
         // The adapter for the list.
         final GroupWrapperListAdapter listAdapter =
                 new GroupWrapperListAdapter(getContext(),
-                                            mVm.createWrappedGroupList(),
-                                            vh -> mItemTouchHelper.startDrag(vh));
+                                            vm.createWrappedGroupList(),
+                                            vh -> itemTouchHelper.startDrag(vh));
 
-        mVb.groupList.setAdapter(listAdapter);
+        vb.groupList.setAdapter(listAdapter);
 
         final SimpleItemTouchHelperCallback sitHelperCallback =
                 new SimpleItemTouchHelperCallback(listAdapter);
-        mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
-        mItemTouchHelper.attachToRecyclerView(mVb.groupList);
+        itemTouchHelper = new ItemTouchHelper(sitHelperCallback);
+        itemTouchHelper.attachToRecyclerView(vb.groupList);
 
         if (savedInstanceState == null) {
             TipManager.getInstance().display(getContext(), R.string.tip_booklist_style_groups,

@@ -80,9 +80,9 @@ public class ExportFragment
     /** The maximum file size for an export file for which we'll offer to send it as an email. */
     private static final int MAX_FILE_SIZE_FOR_EMAIL = 5_000_000;
     @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider mToolbarMenuProvider;
+    private MenuProvider toolbarMenuProvider;
     /** The ViewModel. */
-    private ExportViewModel mVm;
+    private ExportViewModel vm;
 
     /**
      * The launcher for picking a Uri to write to.
@@ -109,7 +109,7 @@ public class ExportFragment
         super.onCreate(savedInstanceState);
 
         //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(ExportViewModel.class);
+        vm = new ViewModelProvider(getActivity()).get(ExportViewModel.class);
         // no init
     }
 
@@ -128,34 +128,34 @@ public class ExportFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        mToolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
+        toolbarMenuProvider = new ToolbarMenuProvider();
+        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
         toolbar.setTitle(R.string.menu_backup_and_export);
 
-        mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
-        mVm.onWriteDataCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
-        mVm.onWriteDataFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
-        mVm.onWriteDataFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
+        vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+        vm.onWriteDataCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
+        vm.onWriteDataFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
+        vm.onWriteDataFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
 
-        mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> mVm
+        mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> vm
                 .getExportHelper().setRecordType(isChecked, RecordType.Cover));
-        mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> mVm
+        mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> vm
                 .getExportHelper().setIncremental(checkedId == mVb.rbExportNewAndUpdated.getId()));
 
         mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            mVm.getExportHelper().setRecordType(isChecked, RecordType.Books);
+            vm.getExportHelper().setRecordType(isChecked, RecordType.Books);
             mVb.rbBooksGroup.setEnabled(isChecked);
         });
 
         mVb.archiveFormat.setOnItemClickListener(
-                (p, v, position, id) -> updateFormatSelection(mVm.getEncoding(position)));
+                (p, v, position, id) -> updateFormatSelection(vm.getEncoding(position)));
 
         mVb.infExportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
 
-        if (!mVm.isRunning()) {
+        if (!vm.isRunning()) {
             // The task is NOT yet running.
             // Show either the full-options screen or the quick-options dialog
-            if (mVm.isQuickOptionsAlreadyShown()) {
+            if (vm.isQuickOptionsAlreadyShown()) {
                 showOptions();
             } else {
                 showQuickOptions();
@@ -164,9 +164,9 @@ public class ExportFragment
     }
 
     private void showQuickOptions() {
-        mVm.setQuickOptionsAlreadyShown();
+        vm.setQuickOptionsAlreadyShown();
 
-        final ExportHelper helper = mVm.getExportHelper();
+        final ExportHelper helper = vm.getExportHelper();
         // set the default; a backup to archive
         helper.setEncoding(ArchiveEncoding.Zip);
 
@@ -191,7 +191,7 @@ public class ExportFragment
      * Export Step 1b: Show the full options screen to the user.
      */
     private void showOptions() {
-        final ExportHelper helper = mVm.getExportHelper();
+        final ExportHelper helper = vm.getExportHelper();
 
         final Set<RecordType> recordTypes = helper.getRecordTypes();
         mVb.cbxBooks.setChecked(recordTypes.contains(RecordType.Books));
@@ -202,7 +202,7 @@ public class ExportFragment
         mVb.rbExportNewAndUpdated.setChecked(incremental);
 
         //noinspection ConstantConditions
-        final Pair<Integer, ArrayList<String>> fo = mVm.getFormatOptions(getContext());
+        final Pair<Integer, ArrayList<String>> fo = vm.getFormatOptions(getContext());
         final int initialPos = fo.first;
         final ArrayList<String> list = fo.second;
 
@@ -218,7 +218,7 @@ public class ExportFragment
 
     private void updateFormatSelection(@NonNull final ArchiveEncoding encoding) {
 
-        final ExportHelper helper = mVm.getExportHelper();
+        final ExportHelper helper = vm.getExportHelper();
         helper.setEncoding(encoding);
 
         mVb.archiveFormatInfo.setText(encoding.getShortDescResId());
@@ -308,7 +308,7 @@ public class ExportFragment
     private void exportPickUri() {
         // Create the proposed name for the archive. The user can change it.
         final String defName = "ntmb-" + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
-                               + "." + mVm.getExportHelper().getEncoding().getFileExt();
+                               + "." + vm.getExportHelper().getEncoding().getFileExt();
         mCreateDocumentLauncher.launch(defName);
     }
 
@@ -319,7 +319,7 @@ public class ExportFragment
      */
     private void exportToUri(@Nullable final Uri uri) {
         if (uri != null) {
-            mVm.startExport(uri);
+            vm.startExport(uri);
         }
     }
 
@@ -345,7 +345,7 @@ public class ExportFragment
                                     .orElse(getString(R.string.error_unknown));
 
             @StringRes
-            final int title = mVm.getExportHelper().isBackup()
+            final int title = vm.getExportHelper().isBackup()
                               ? R.string.error_backup_failed
                               : R.string.error_export_failed;
 
@@ -387,7 +387,7 @@ public class ExportFragment
                         .map(s -> getString(R.string.list_element, s))
                         .collect(Collectors.joining("\n"));
 
-                final ExportHelper helper = mVm.getExportHelper();
+                final ExportHelper helper = vm.getExportHelper();
 
 
                 @StringRes
@@ -455,8 +455,8 @@ public class ExportFragment
         if (result.styles > 0) {
             items.add(getString(R.string.name_colon_value,
                                 getString(R.string.lbl_styles),
-                                // deduct built-in styles (remember: MAX_ID is negative)
-                                String.valueOf(result.styles + BuiltinStyle.MAX_ID)));
+                                // deduct built-in styles
+                                String.valueOf(result.styles - BuiltinStyle.ALL.size() - 1)));
         }
         if (result.preferences > 0) {
             items.add(getString(R.string.lbl_settings));
@@ -479,7 +479,7 @@ public class ExportFragment
                 mProgressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.menu_backup_and_export)
                         .setPreventSleep(true)
-                        .setOnCancelListener(v -> mVm.cancelTask(data.taskId))
+                        .setOnCancelListener(v -> vm.cancelTask(data.taskId))
                         .show(() -> getActivity().getWindow());
             }
             mProgressDelegate.onProgress(data);
@@ -549,7 +549,7 @@ public class ExportFragment
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
             menu.findItem(R.id.MENU_ACTION_CONFIRM)
-                .setEnabled(mVm.isReadyToGo());
+                .setEnabled(vm.isReadyToGo());
         }
 
         @Override

@@ -171,14 +171,14 @@ public class BookDaoImpl
     private static final String ERROR_STORING_COVERS = "Failed storing the covers for book from\n";
 
     @NonNull
-    private final DateParser mDateParser;
+    private final DateParser dateParser;
 
     /**
      * Constructor.
      */
     public BookDaoImpl() {
         super(TAG);
-        mDateParser = new ISODateParser();
+        dateParser = new ISODateParser();
     }
 
     @Override
@@ -487,7 +487,8 @@ public class BookDaoImpl
         }
 
         if (book.contains(LOANEE_NAME)) {
-            ServiceLocator.getInstance().getLoaneeDao().setLoanee(book, book.getString(LOANEE_NAME));
+            ServiceLocator.getInstance().getLoaneeDao()
+                          .setLoanee(book, book.getString(LOANEE_NAME));
         }
 
         if (book.contains(CALIBRE_BOOK_UUID)) {
@@ -1211,7 +1212,7 @@ public class BookDaoImpl
         try (SynchronizedStatement stmt =
                      mDb.compileStatement(Sql.Get.LAST_UPDATE_DATE_BY_BOOK_ID)) {
             stmt.bindLong(1, id);
-            return mDateParser.parse(stmt.simpleQueryForStringOrNull());
+            return dateParser.parse(stmt.simpleQueryForStringOrNull());
         }
     }
 

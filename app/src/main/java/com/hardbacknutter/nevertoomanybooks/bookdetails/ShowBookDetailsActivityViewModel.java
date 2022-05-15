@@ -155,7 +155,7 @@ public class ShowBookDetailsActivityViewModel
         }
 
         // let the style decide
-        return style.getDetailScreenBookFields().isShowCover(global, cIdx);
+        return style.getBookDetailsFieldVisibility().isShowCover(cIdx);
     }
 
     @NonNull

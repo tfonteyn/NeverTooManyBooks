@@ -44,14 +44,13 @@ class BooklistGroupTest
         // loop starting at 1 must exclude BOOK
         assertEquals(0, BooklistGroup.BOOK);
 
-        final BooklistStyle style = BuiltinStyle.create(mContext,
-                                                        BuiltinStyle.DEFAULT_ID,
-                                                        BuiltinStyle.DEFAULT_UUID,
-                                                        true, 1);
+        final BooklistStyle style =
+                new BuiltinStyle(BuiltinStyle.ALL.get(BuiltinStyle.DEFAULT_ID),
+                                 true, 1);
 
         final Collection<String> prefixes = new HashSet<>();
         for (int id = 0; id <= BooklistGroup.GROUP_KEY_MAX; id++) {
-            final BooklistGroup group = BooklistGroup.newInstance(id, false, style);
+            final BooklistGroup group = BooklistGroup.newInstance(id, style);
             assertNotNull(group, "Missing id: " + id);
 
             final String prefix = group.getGroupKey().getKeyPrefix();

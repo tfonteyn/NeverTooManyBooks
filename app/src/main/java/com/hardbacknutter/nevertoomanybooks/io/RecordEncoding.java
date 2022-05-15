@@ -53,10 +53,10 @@ public enum RecordEncoding {
     private static final String TAG = "RecordEncoding";
 
     @NonNull
-    private final Pattern mPattern;
+    private final Pattern pattern;
 
     @NonNull
-    private final String mExtension;
+    private final String extension;
 
     /**
      * Constructor.
@@ -66,8 +66,8 @@ public enum RecordEncoding {
      */
     RecordEncoding(@NonNull final String extension,
                    @NonNull final String pattern) {
-        mExtension = extension;
-        mPattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+        this.extension = extension;
+        this.pattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     }
 
     /**
@@ -87,7 +87,7 @@ public enum RecordEncoding {
         }
 
         for (final RecordEncoding recordEncoding : values()) {
-            if (recordEncoding.mPattern.matcher(name).find()) {
+            if (recordEncoding.pattern.matcher(name).find()) {
                 return Optional.of(recordEncoding);
             }
         }
@@ -105,7 +105,7 @@ public enum RecordEncoding {
      */
     @NonNull
     public String getFileExt() {
-        return mExtension;
+        return extension;
     }
 
     @NonNull
@@ -136,7 +136,7 @@ public enum RecordEncoding {
                 return new CsvRecordReader(context);
             case Xml:
                 //noinspection deprecation
-                return new XmlRecordReader(context, importEntriesAllowed);
+                return new XmlRecordReader(context);
             case Cover:
                 // discourage creating a new CoverRecordReader for each cover.
                 throw new IllegalStateException("CoverRecordReader should be re-used");

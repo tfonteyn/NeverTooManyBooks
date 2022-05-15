@@ -34,7 +34,6 @@ import androidx.preference.PreferenceScreen;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,8 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
@@ -53,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
 
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_ADDED__UTC;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_CONDITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ACQUIRED;
@@ -65,10 +63,9 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_RATING;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_FIRST_PUBLICATION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LAST_UPDATED__UTC;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TITLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_UTC_ADDED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_UTC_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
@@ -155,9 +152,9 @@ public class BooklistGroup {
     private static final DomainExpression DATE_READ_END =
             new DomainExpression(DOM_BOOK_DATE_READ_END, null, DomainExpression.SORT_DESC);
     private static final DomainExpression DATE_ADDED =
-            new DomainExpression(DOM_UTC_ADDED, null, DomainExpression.SORT_DESC);
+            new DomainExpression(DOM_ADDED__UTC, null, DomainExpression.SORT_DESC);
     private static final DomainExpression DATE_LAST_UPDATED =
-            new DomainExpression(DOM_UTC_LAST_UPDATED, null, DomainExpression.SORT_DESC);
+            new DomainExpression(DOM_LAST_UPDATED__UTC, null, DomainExpression.SORT_DESC);
     private static final DomainExpression DATE_ACQUIRED =
             new DomainExpression(DOM_BOOK_DATE_ACQUIRED, null, DomainExpression.SORT_DESC);
 
@@ -167,91 +164,67 @@ public class BooklistGroup {
     private static final String _END = " END";
     /** Cache for the static GroupKey instances. */
     private static final Map<Integer, GroupKey> GROUP_KEYS = new UniqueMap<>();
-    /** The {@link StylePersistenceLayer} to use. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    @NonNull
-    final StylePersistenceLayer mPersistenceLayer;
-    @NonNull
-    final ListStyle mStyle;
-    /** Flag indicating we should use the persistence store. */
-    final boolean mPersisted;
+
     /** The type of row/group we represent, see {@link GroupKey}. */
     @Id
-    private final int mId;
+    private final int id;
     /** The underlying group key object. */
     @NonNull
-    private final GroupKey mGroupKey;
+    private final GroupKey groupKey;
     /**
      * The domains represented by this group.
      * Set at <strong>runtime</strong> by the BooklistBuilder
      * based on current group <strong>and its outer groups</strong>
      */
     @Nullable
-    private ArrayList<Domain> mAccumulatedDomains;
+    private ArrayList<Domain> accumulatedDomains;
 
     /**
      * Constructor.
      *
-     * @param id           of group to create
-     * @param isPersistent flag
-     * @param style        Style reference.
+     * @param id of group to create
      */
-    BooklistGroup(@Id final int id,
-                  final boolean isPersistent,
-                  @NonNull final ListStyle style) {
-        mId = id;
-        mGroupKey = initGroupKey();
-
-        mPersisted = isPersistent;
-        mStyle = style;
-        mPersistenceLayer = mStyle.getPersistenceLayer();
+    BooklistGroup(@Id final int id) {
+        this.id = id;
+        groupKey = initGroupKey();
     }
 
     /**
      * Copy constructor.
      *
-     * @param isPersistent flag
-     * @param style        Style reference.
-     * @param group        to copy from
+     * @param group to copy from
      */
-    public BooklistGroup(final boolean isPersistent,
-                         @NonNull final ListStyle style,
-                         @NonNull final BooklistGroup group) {
-        mId = group.mId;
-        mGroupKey = group.mGroupKey;
-
-        mPersisted = isPersistent;
-        mStyle = style;
-        mPersistenceLayer = mStyle.getPersistenceLayer();
+    @SuppressWarnings("CopyConstructorMissesField")
+    public BooklistGroup(@NonNull final BooklistGroup group) {
+        id = group.id;
+        groupKey = group.groupKey;
     }
 
     /**
      * Create a new BooklistGroup of the specified id, creating any specific
      * subclasses as necessary.
      *
-     * @param id           of group to create
-     * @param isPersistent flag
-     * @param style        Style reference.
+     * @param id    of group to create
+     * @param style Style reference.
      *
      * @return instance
      */
     @SuppressLint("SwitchIntDef")
     @NonNull
     public static BooklistGroup newInstance(@Id final int id,
-                                            final boolean isPersistent,
                                             @NonNull final ListStyle style) {
         switch (id) {
             case AUTHOR:
-                return new AuthorBooklistGroup(isPersistent, style);
+                return new AuthorBooklistGroup(style);
             case SERIES:
-                return new SeriesBooklistGroup(isPersistent, style);
+                return new SeriesBooklistGroup(style);
             case PUBLISHER:
-                return new PublisherBooklistGroup(isPersistent, style);
+                return new PublisherBooklistGroup(style);
             case BOOKSHELF:
-                return new BookshelfBooklistGroup(isPersistent, style);
+                return new BookshelfBooklistGroup(style);
 
             default:
-                return new BooklistGroup(id, isPersistent, style);
+                return new BooklistGroup(id);
         }
     }
 
@@ -269,7 +242,7 @@ public class BooklistGroup {
         // Get the set of all valid <strong>Group</strong> values.
         // In other words: all valid groups, <strong>except</strong> the BOOK.
         for (int id = 1; id <= GROUP_KEY_MAX; id++) {
-            list.add(newInstance(id, style.isUserDefined(), style));
+            list.add(newInstance(id, style));
         }
         return list;
     }
@@ -391,12 +364,12 @@ public class BooklistGroup {
      */
     @NonNull
     private GroupKey initGroupKey() {
-        GroupKey groupKey = GROUP_KEYS.get(mId);
-        if (groupKey == null) {
-            groupKey = createGroupKey();
-            GROUP_KEYS.put(mId, groupKey);
+        GroupKey key = GROUP_KEYS.get(id);
+        if (key == null) {
+            key = createGroupKey();
+            GROUP_KEYS.put(id, key);
         }
-        return groupKey;
+        return key;
     }
 
     /**
@@ -411,7 +384,7 @@ public class BooklistGroup {
     @NonNull
     public GroupKey createGroupKey() {
         // NEWTHINGS: BooklistGroup.KEY
-        switch (mId) {
+        switch (id) {
             // Data without a linked table uses the display name as the key domain.
             case COLOR: {
                 return new GroupKey(R.string.lbl_color, "col",
@@ -669,7 +642,7 @@ public class BooklistGroup {
                         DOM_TITLE, TBL_BOOKS.dot(DBKey.TITLE)));
             }
             default:
-                throw new IllegalArgumentException(String.valueOf(mId));
+                throw new IllegalArgumentException(String.valueOf(id));
         }
     }
 
@@ -709,13 +682,13 @@ public class BooklistGroup {
      */
     @Id
     public int getId() {
-        return mId;
+        return id;
     }
 
     @VisibleForTesting
     @NonNull
     public GroupKey getGroupKey() {
-        return mGroupKey;
+        return groupKey;
     }
 
     /**
@@ -727,7 +700,7 @@ public class BooklistGroup {
      */
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        return mGroupKey.getLabel(context);
+        return groupKey.getLabel(context);
     }
 
     /**
@@ -738,7 +711,7 @@ public class BooklistGroup {
      */
     @NonNull
     public String getNodeKeyExpression() {
-        return mGroupKey.getNodeKeyExpression();
+        return groupKey.getNodeKeyExpression();
     }
 
     /**
@@ -752,7 +725,7 @@ public class BooklistGroup {
      */
     @NonNull
     public DomainExpression getDisplayDomainExpression() {
-        return mGroupKey.getKeyDomainExpression();
+        return groupKey.getKeyDomainExpression();
     }
 
     /**
@@ -765,7 +738,7 @@ public class BooklistGroup {
      */
     @NonNull
     public ArrayList<DomainExpression> getGroupDomainExpressions() {
-        return mGroupKey.getGroupDomainExpressions();
+        return groupKey.getGroupDomainExpressions();
     }
 
     /**
@@ -778,7 +751,7 @@ public class BooklistGroup {
      */
     @NonNull
     public ArrayList<DomainExpression> getBaseDomainExpressions() {
-        return mGroupKey.getBaseDomainExpressions();
+        return groupKey.getBaseDomainExpressions();
     }
 
     /**
@@ -789,7 +762,7 @@ public class BooklistGroup {
      */
     @NonNull
     public ArrayList<Domain> getAccumulatedDomains() {
-        return Objects.requireNonNull(mAccumulatedDomains);
+        return Objects.requireNonNull(accumulatedDomains);
     }
 
     /**
@@ -798,17 +771,7 @@ public class BooklistGroup {
      * @param accumulatedDomains list of domains.
      */
     public void setAccumulatedDomains(@NonNull final ArrayList<Domain> accumulatedDomains) {
-        mAccumulatedDomains = accumulatedDomains;
-    }
-
-    /**
-     * Get the Preference objects that this group will contribute to a Style.
-     *
-     * @return list
-     */
-    @NonNull
-    public Collection<PPref<?>> getRawPreferences() {
-        return new ArrayList<>();
+        this.accumulatedDomains = accumulatedDomains;
     }
 
     /**
@@ -835,25 +798,23 @@ public class BooklistGroup {
 
         final BooklistGroup that = (BooklistGroup) o;
         // mPersisted/mStyle is NOT part of the values to compare!
-        return mId == that.mId
-               && Objects.equals(mGroupKey, that.mGroupKey)
-               && Objects.equals(mAccumulatedDomains, that.mAccumulatedDomains);
+        return id == that.id
+               && Objects.equals(groupKey, that.groupKey)
+               && Objects.equals(accumulatedDomains, that.accumulatedDomains);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mId, mGroupKey, mAccumulatedDomains);
+        return Objects.hash(id, groupKey, accumulatedDomains);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "BooklistGroup{"
-               + "mId=" + mId
-               + ", mStyle=" + mStyle.getUuid()
-               + ", mPersisted=" + mPersisted
-               + ", mGroupKey=" + mGroupKey
-               + ", mAccumulatedDomains=" + mAccumulatedDomains
+               + "id=" + id
+               + ", groupKey=" + groupKey
+               + ", accumulatedDomains=" + accumulatedDomains
                + '}';
     }
 
@@ -910,27 +871,27 @@ public class BooklistGroup {
 
         /** User displayable label resource id. */
         @StringRes
-        private final int mLabelId;
+        private final int labelResId;
         /** Unique keyPrefix used to represent a key in the hierarchy. */
         @NonNull
-        private final String mKeyPrefix;
+        private final String keyPrefix;
 
         /** They key domain, which is by default also the display-domain. */
         @NonNull
-        private final DomainExpression mKeyDomain;
+        private final DomainExpression keyDomain;
 
         /**
          * Aside of the main display domain, a group can have extra domains that should
          * be fetched/sorted.
          */
         @NonNull
-        private final ArrayList<DomainExpression> mGroupDomains = new ArrayList<>();
+        private final ArrayList<DomainExpression> groupDomains = new ArrayList<>();
 
         /**
          * A group can add domains to the lowest level (the book).
          */
         @NonNull
-        private final ArrayList<DomainExpression> mBaseDomains = new ArrayList<>();
+        private final ArrayList<DomainExpression> baseDomains = new ArrayList<>();
 
         /**
          * Constructor.
@@ -943,27 +904,27 @@ public class BooklistGroup {
         GroupKey(@StringRes final int labelId,
                  @NonNull final String keyPrefix,
                  @NonNull final DomainExpression keyDomainExpression) {
-            mLabelId = labelId;
-            mKeyPrefix = keyPrefix;
-            mKeyDomain = keyDomainExpression;
+            labelResId = labelId;
+            this.keyPrefix = keyPrefix;
+            keyDomain = keyDomainExpression;
         }
 
         @NonNull
         String getLabel(@NonNull final Context context) {
-            return context.getString(mLabelId);
+            return context.getString(labelResId);
         }
 
         @NonNull
         GroupKey addGroupDomain(@NonNull final DomainExpression domainExpression) {
             // this is a static setup. We don't check on developer mistakenly adding duplicates!
-            mGroupDomains.add(domainExpression);
+            groupDomains.add(domainExpression);
             return this;
         }
 
         @NonNull
         GroupKey addBaseDomain(@NonNull final DomainExpression domainExpression) {
             // this is a static setup. We don't check on developer mistakenly adding duplicates!
-            mBaseDomains.add(domainExpression);
+            baseDomains.add(domainExpression);
             return this;
         }
 
@@ -975,7 +936,7 @@ public class BooklistGroup {
         @VisibleForTesting
         @NonNull
         public String getKeyPrefix() {
-            return mKeyPrefix;
+            return keyPrefix;
         }
 
         /**
@@ -986,7 +947,7 @@ public class BooklistGroup {
          */
         @NonNull
         String getNodeKeyExpression() {
-            return "'/" + mKeyPrefix + "='||COALESCE(" + mKeyDomain.getExpression() + ",'')";
+            return "'/" + keyPrefix + "='||COALESCE(" + keyDomain.getExpression() + ",'')";
         }
 
         /**
@@ -996,7 +957,7 @@ public class BooklistGroup {
          */
         @NonNull
         DomainExpression getKeyDomainExpression() {
-            return mKeyDomain;
+            return keyDomain;
         }
 
         /**
@@ -1008,7 +969,7 @@ public class BooklistGroup {
          */
         @NonNull
         ArrayList<DomainExpression> getGroupDomainExpressions() {
-            return mGroupDomains;
+            return groupDomains;
         }
 
         /**
@@ -1020,7 +981,7 @@ public class BooklistGroup {
          */
         @NonNull
         ArrayList<DomainExpression> getBaseDomainExpressions() {
-            return mBaseDomains;
+            return baseDomains;
         }
 
         @Override
@@ -1032,27 +993,27 @@ public class BooklistGroup {
                 return false;
             }
             final GroupKey groupKey = (GroupKey) o;
-            return mLabelId == groupKey.mLabelId
-                   && mKeyPrefix.equals(groupKey.mKeyPrefix)
-                   && mKeyDomain.equals(groupKey.mKeyDomain)
-                   && mGroupDomains.equals(groupKey.mGroupDomains)
-                   && mBaseDomains.equals(groupKey.mBaseDomains);
+            return labelResId == groupKey.labelResId
+                   && keyPrefix.equals(groupKey.keyPrefix)
+                   && keyDomain.equals(groupKey.keyDomain)
+                   && groupDomains.equals(groupKey.groupDomains)
+                   && baseDomains.equals(groupKey.baseDomains);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(mLabelId, mKeyPrefix, mKeyDomain, mGroupDomains, mBaseDomains);
+            return Objects.hash(labelResId, keyPrefix, keyDomain, groupDomains, baseDomains);
         }
 
         @NonNull
         @Override
         public String toString() {
             return "GroupKey{"
-                   + "mLabelId=`" + ServiceLocator.getAppContext().getString(mLabelId) + '`'
-                   + ", mKeyPrefix=`" + mKeyPrefix + '`'
-                   + ", mKeyDomain=" + mKeyDomain
-                   + ", mSecondaryDomains=" + mGroupDomains
-                   + ", mBookDomains=" + mBaseDomains
+                   + "label=`" + ServiceLocator.getAppContext().getString(labelResId) + '`'
+                   + ", keyPrefix=`" + keyPrefix + '`'
+                   + ", keyDomain=" + keyDomain
+                   + ", groupDomains=" + groupDomains
+                   + ", baseDomains=" + baseDomains
                    + '}';
         }
     }

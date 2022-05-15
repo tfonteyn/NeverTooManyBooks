@@ -71,7 +71,7 @@ public class TextViewField<T>
      */
     @NonNull
     public TextViewField<T> setTextInputLayoutId(@IdRes final int viewId) {
-        mTextInputLayoutId = viewId;
+        textInputLayoutId = viewId;
         setErrorViewId(viewId);
         return this;
     }
@@ -79,7 +79,7 @@ public class TextViewField<T>
     @NonNull
     public TextViewField<T> setEndIconMode(
             @ExtEndIconDelegate.EndIconMode final int endIconMode) {
-        mEndIconMode = endIconMode;
+        this.endIconMode = endIconMode;
         return this;
     }
 
@@ -90,7 +90,7 @@ public class TextViewField<T>
         final TextView view = getView();
         if (view != null) {
             try {
-                mFormatter.apply(mRawValue, view);
+                formatter.apply(mRawValue, view);
 
             } catch (@NonNull final ClassCastException e) {
                 // Due to the way a Book loads data from the database,

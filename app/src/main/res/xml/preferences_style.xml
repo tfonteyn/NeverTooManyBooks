@@ -94,7 +94,7 @@
             app:min="1"
             />
 
-        <!-- default TextScale.TEXT_SCALE_2_MEDIUM == 2 -->
+        <!-- default ListStyle.TEXT_SCALE_2_MEDIUM == 2 -->
         <SeekBarPreference
             android:defaultValue="2"
             android:icon="@drawable/ic_baseline_format_size_24"

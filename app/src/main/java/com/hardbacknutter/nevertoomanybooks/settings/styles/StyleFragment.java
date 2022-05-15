@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
@@ -37,14 +38,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.DetailScreenBookFields;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.settings.widgets.MultiSelectListPreferenceSummaryProvider;
 
@@ -61,40 +57,37 @@ public class StyleFragment
     private static final String TAG = "StylePreferenceFragment";
     private static final String SIS_NAME_SET = TAG + ":nameSet";
 
-    /** Style - PreferenceScreen/PreferenceCategory Key. */
-    private static final String PSK_STYLE_SHOW_DETAILS = "psk_style_show_details";
+    private static final String PSK_LIST_SHOWS_BOOK_DETAILS = "psk_style_show_details";
+
     /** Set the hosting Activity result, and close it. */
-    private final OnBackPressedCallback mOnBackPressedCallback =
+    private final OnBackPressedCallback onBackPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    mVm.updateOrInsertStyle();
+                    vm.updateOrInsertStyle();
 
                     final Intent resultIntent = EditStyleContract
-                            .createResultIntent(mVm.getTemplateUuid(),
-                                                mVm.isModified(),
-                                                mVm.getStyle().getUuid());
+                            .createResultIntent(vm.getTemplateUuid(),
+                                                vm.isModified(),
+                                                vm.getStyle().getUuid());
 
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
                 }
             };
-
+    @NonNull
+    private final SwitchPreference[] pShowCoversOnDetailsScreen = new SwitchPreference[2];
     /** Flag: prompt for the name of cloned styles. */
-    private boolean mNameSet;
-
+    private boolean nameSet;
     private EditTextPreference pName;
     private Preference pCoverScale;
     private Preference pTextScale;
     private SeekBarPreference pExpansionLevel;
     private Preference pListHeader;
     private Preference pPrimaryAuthorType;
-    private Preference pShowDetails;
+    private Preference pListShowsBookDetails;
     private Preference pGroups;
-
-    @NonNull
-    private final SwitchPreference[] pShowCoversOnDetailsScreen = new SwitchPreference[2];
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -106,20 +99,22 @@ public class StyleFragment
         setPreferencesFromResource(R.xml.preferences_style, rootKey);
 
         if (savedInstanceState != null) {
-            mNameSet = savedInstanceState.getBoolean(SIS_NAME_SET);
+            nameSet = savedInstanceState.getBoolean(SIS_NAME_SET);
         }
 
-        pName = findPreference(UserStyle.PK_STYLE_NAME);
-        pExpansionLevel = findPreference(UserStyle.PK_LEVELS_EXPANSION);
-        pCoverScale = findPreference(ListScreenBookFields.PK_COVER_SCALE);
-        pTextScale = findPreference(TextScale.PK_TEXT_SCALE);
-        pListHeader = findPreference(BooklistStyle.PK_LIST_HEADER);
+        pName = findPreference(StyleDataStore.PK_STYLE_NAME);
+        pExpansionLevel = findPreference(StyleDataStore.PK_EXPANSION_LEVEL);
+        pCoverScale = findPreference(StyleDataStore.PK_COVER_SCALE);
+        pTextScale = findPreference(StyleDataStore.PK_TEXT_SCALE);
+        pListHeader = findPreference(StyleDataStore.PK_LIST_HEADER);
         pPrimaryAuthorType = findPreference(AuthorBooklistGroup.PK_PRIMARY_TYPE);
-        pShowDetails = findPreference(PSK_STYLE_SHOW_DETAILS);
-        pGroups = findPreference(Groups.PK_STYLE_GROUPS);
+        pListShowsBookDetails = findPreference(PSK_LIST_SHOWS_BOOK_DETAILS);
+        pGroups = findPreference(StyleDataStore.PK_STYLE_GROUPS);
 
-        pShowCoversOnDetailsScreen[0] = findPreference(DetailScreenBookFields.PK_COVER[0]);
-        pShowCoversOnDetailsScreen[1] = findPreference(DetailScreenBookFields.PK_COVER[1]);
+        pShowCoversOnDetailsScreen[0] = findPreference(
+                StyleDataStore.PK_STYLE_BOOK_DETAILS_COVER[0]);
+        pShowCoversOnDetailsScreen[1] = findPreference(
+                StyleDataStore.PK_STYLE_BOOK_DETAILS_COVER[1]);
 
         pName.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
         pListHeader.setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
@@ -149,7 +144,7 @@ public class StyleFragment
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+                     .addCallback(getViewLifecycleOwner(), onBackPressedCallback);
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
@@ -166,14 +161,11 @@ public class StyleFragment
         // and hide for groups we don't/no longer have.
         // Use the global style to get the groups.
 
-        final UserStyle style = mVm.getStyle();
-        final Groups styleGroups = style.getGroups();
+        final UserStyle style = vm.getStyle();
 
         final PreferenceScreen screen = getPreferenceScreen();
-        //noinspection ConstantConditions
-        for (final BooklistGroup group
-                : BooklistGroup.getAllGroups(UserStyle.createGlobal(getContext()))) {
-            group.setPreferencesVisible(screen, styleGroups.contains(group.getId()));
+        for (final BooklistGroup group : BooklistGroup.getAllGroups(UserStyle.createGlobal())) {
+            group.setPreferencesVisible(screen, style.hasGroup(group.getId()));
         }
 
         updateSummaries();
@@ -187,9 +179,9 @@ public class StyleFragment
                     new RecyclerView.OnChildAttachStateChangeListener() {
                         @Override
                         public void onChildViewAttachedToWindow(@NonNull final View view) {
-                            if (view.getId() == R.id.STYLE_NAME_VIEW && !mNameSet) {
+                            if (view.getId() == R.id.STYLE_NAME_VIEW && !nameSet) {
                                 // We only do this once. It IS legal to use the same name.
-                                mNameSet = true;
+                                nameSet = true;
                                 view.performClick();
                             }
                         }
@@ -206,28 +198,31 @@ public class StyleFragment
      * or changes to ANOTHER KEY.
      */
     private void updateSummaries() {
-        final UserStyle style = mVm.getStyle();
+        final UserStyle style = vm.getStyle();
+        final Context context = getContext();
 
-        // the 'book details' fields in use.
+        // None of these work as SummaryProvider, so keep them here!
+
         //noinspection ConstantConditions
-        pShowDetails.setSummary(style.getListScreenBookFields().getSummaryText(getContext()));
+        pListShowsBookDetails.setSummary(style.getBooklistBookFieldVisibility()
+                                              .getSummaryText(context));
 
-        // the 'groups' in use.
-        pGroups.setSummary(style.getGroups().getSummaryText(getContext()));
+        pGroups.setSummary(style.getGroupsSummaryText(context));
 
-        pCoverScale.setSummary(mVm.getStyle().getListScreenBookFields()
-                                  .getCoverScaleSummaryText(getContext()));
+        pCoverScale.setSummary(context.getResources().getStringArray(
+                R.array.pe_bob_thumbnail_scale)[style.getCoverScale()]);
 
-        pTextScale.setSummary(mVm.getStyle().getTextScale().getSummaryText(getContext()));
+        pTextScale.setSummary(context.getResources().getStringArray(
+                R.array.pe_bob_text_scale)[style.getTextScale()]);
 
         // the 'level expansion' depends on the number of groups in use
-        pExpansionLevel.setMax(style.getGroups().size());
+        pExpansionLevel.setMax(style.getGroupCount());
         pExpansionLevel.setValue(style.getExpansionLevel());
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(SIS_NAME_SET, mNameSet);
+        outState.putBoolean(SIS_NAME_SET, nameSet);
     }
 }

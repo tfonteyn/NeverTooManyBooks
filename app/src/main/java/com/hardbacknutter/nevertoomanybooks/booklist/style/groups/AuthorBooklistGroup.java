@@ -19,28 +19,25 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleSharedPreferences;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBitmask;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleDataStore;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
@@ -57,11 +54,10 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 public class AuthorBooklistGroup
         extends AbstractLinkedTableBooklistGroup {
 
-    /** The value is a {@link PBitmask}. */
     public static final String PK_PRIMARY_TYPE =
             "style.booklist.group.authors.primary.type";
 
-    /** Style - PreferenceScreen/PreferenceCategory Key. */
+    /** See {@link #setPreferencesVisible(PreferenceScreen, boolean)} */
     private static final String PSK_STYLE_AUTHOR = "psk_style_author";
 
     public static final String PK_SHOW_BOOKS_UNDER_EACH =
@@ -78,37 +74,33 @@ public class AuthorBooklistGroup
     @NonNull
     private final DomainExpression sortingDomainExpression;
     /** The primary author type the user prefers. */
-    private final PBitmask primaryAuthorType;
+    private int primaryAuthorType;
 
     /**
      * Constructor.
      *
-     * @param isPersistent flag
      * @param style        Style reference.
      */
-    AuthorBooklistGroup(final boolean isPersistent,
-                        @NonNull final ListStyle style) {
-        super(AUTHOR, isPersistent, style, PK_SHOW_BOOKS_UNDER_EACH);
-        sortingDomainExpression = createSortingDomainExpression();
+    AuthorBooklistGroup(@NonNull final ListStyle style) {
+        super(AUTHOR, style);
+        sortingDomainExpression = createSortingDomainExpression(style);
 
-        primaryAuthorType = new PBitmask(mPersisted, mPersistenceLayer, PK_PRIMARY_TYPE,
-                                         Author.TYPE_UNKNOWN, Author.TYPE_BITMASK_ALL);
+        underEach = getDefaultShowBooksUnderEach();
+        primaryAuthorType = getDefaultPrimaryType();
     }
 
     /**
      * Copy constructor.
      *
-     * @param isPersistent flag
      * @param style        Style reference.
      * @param group        to copy from
      */
-    AuthorBooklistGroup(final boolean isPersistent,
-                        @NonNull final ListStyle style,
+    AuthorBooklistGroup(@NonNull final ListStyle style,
                         @NonNull final AuthorBooklistGroup group) {
-        super(isPersistent, style, group);
-        sortingDomainExpression = createSortingDomainExpression();
+        super(style, group);
+        sortingDomainExpression = createSortingDomainExpression(style);
 
-        primaryAuthorType = new PBitmask(mPersisted, mPersistenceLayer, group.primaryAuthorType);
+        primaryAuthorType = group.primaryAuthorType;
     }
 
 
@@ -117,7 +109,7 @@ public class AuthorBooklistGroup
      *
      * @return {@code true} if we want to show a book under each of its Authors.
      */
-    public static boolean showBooksUnderEachDefault() {
+    public static boolean getDefaultShowBooksUnderEach() {
         return ServiceLocator.getGlobalPreferences().getBoolean(PK_SHOW_BOOKS_UNDER_EACH, false);
     }
 
@@ -126,8 +118,11 @@ public class AuthorBooklistGroup
      *
      * @return the type of author we consider the primary author
      */
-    public static int getPrimaryTypeGlobalDefault() {
-        return StyleSharedPreferences.getBitmaskPref(PK_PRIMARY_TYPE, Author.TYPE_UNKNOWN);
+    public static int getDefaultPrimaryType() {
+        final Set<String> stringSet = ServiceLocator.getGlobalPreferences()
+                                                    .getStringSet(PK_PRIMARY_TYPE, null);
+        return StyleDataStore.convert(stringSet, Author.TYPE_UNKNOWN);
+
     }
 
     @Override
@@ -153,16 +148,16 @@ public class AuthorBooklistGroup
 
     @Override
     @NonNull
-    protected DomainExpression createDisplayDomainExpression() {
+    protected DomainExpression createDisplayDomainExpression(@NonNull final ListStyle style) {
         // Not sorted; sort as defined in #createSortingDomainExpression
-        return AuthorDaoImpl.createDisplayDomainExpression(mStyle.isShowAuthorByGivenName());
+        return AuthorDaoImpl.createDisplayDomainExpression(style.isShowAuthorByGivenName());
     }
 
     @NonNull
-    private DomainExpression createSortingDomainExpression() {
+    private DomainExpression createSortingDomainExpression(@NonNull final ListStyle style) {
         // Sorting depends on user preference
         return new DomainExpression(DOM_SORTING,
-                                    AuthorDaoImpl.getSortAuthor(mStyle.isSortAuthorByGivenName()),
+                                    AuthorDaoImpl.getSortAuthor(style.isSortAuthorByGivenName()),
                                     DomainExpression.SORT_ASC);
     }
 
@@ -173,15 +168,6 @@ public class AuthorBooklistGroup
         final ArrayList<DomainExpression> list = new ArrayList<>();
         list.add(0, sortingDomainExpression);
         list.addAll(super.getGroupDomainExpressions());
-        return list;
-    }
-
-    @Override
-    @CallSuper
-    @NonNull
-    public Collection<PPref<?>> getRawPreferences() {
-        final Collection<PPref<?>> list = super.getRawPreferences();
-        list.add(primaryAuthorType);
         return list;
     }
 
@@ -203,11 +189,11 @@ public class AuthorBooklistGroup
      */
     @Author.Type
     public int getPrimaryType() {
-        return primaryAuthorType.getValue();
+        return primaryAuthorType;
     }
 
-    public void setPrimaryType(@Nullable final Integer value) {
-        primaryAuthorType.set(value);
+    public void setPrimaryType(final int value) {
+        primaryAuthorType = value;
     }
 
     @Override
@@ -216,8 +202,8 @@ public class AuthorBooklistGroup
             return false;
         }
         final AuthorBooklistGroup that = (AuthorBooklistGroup) o;
-        return Objects.equals(sortingDomainExpression, that.sortingDomainExpression)
-               && Objects.equals(primaryAuthorType, that.primaryAuthorType);
+        return primaryAuthorType == that.primaryAuthorType
+                && Objects.equals(sortingDomainExpression, that.sortingDomainExpression);
     }
 
     @Override
@@ -230,8 +216,8 @@ public class AuthorBooklistGroup
     public String toString() {
         return "AuthorBooklistGroup{"
                + super.toString()
-               + ", mSortedDomain=" + sortingDomainExpression
-               + ", mPrimaryType=" + primaryAuthorType
+               + ", sortingDomainExpression=" + sortingDomainExpression
+               + ", primaryAuthorType=" + primaryAuthorType
                + '}';
     }
 }

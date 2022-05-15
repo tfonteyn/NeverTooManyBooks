@@ -61,96 +61,97 @@ public class PBitmaskFilter
 
     public static final int LAYOUT_ID = R.layout.row_edit_bookshelf_filter_bitmask;
 
-    private final int mLabelId;
+    @StringRes
+    private final int labelResId;
     @NonNull
-    private final String mName;
+    private final String name;
     @NonNull
-    private final Domain mDomain;
+    private final Domain domain;
     @NonNull
-    private final TableDefinition mTable;
+    private final TableDefinition table;
     // key: int with a single bit set; value: a string resId with the user label
     @NonNull
-    private final Supplier<Map<Integer, Integer>> mBitsAndLabels;
+    private final Supplier<Map<Integer, Integer>> bitsAndLabels;
 
     @Nullable
-    private Set<Integer> mValue;
+    private Set<Integer> value;
 
     PBitmaskFilter(@NonNull final String name,
                    @StringRes final int labelId,
                    @NonNull final TableDefinition table,
                    @NonNull final Domain domain,
                    @NonNull final Supplier<Map<Integer, Integer>> bitsAndLabelSupplier) {
-        mName = name;
-        mLabelId = labelId;
-        mDomain = domain;
-        mTable = table;
-        mBitsAndLabels = bitsAndLabelSupplier;
+        this.name = name;
+        labelResId = labelId;
+        this.domain = domain;
+        this.table = table;
+        bitsAndLabels = bitsAndLabelSupplier;
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
         if (!DBKey.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                          mDomain.getName())) {
+                          domain.getName())) {
             return false;
         }
 
-        return mValue != null;
+        return value != null;
     }
 
     @NonNull
     @Override
     public String getExpression(@NonNull final Context context) {
         //noinspection ConstantConditions
-        if (mValue.isEmpty()) {
-            return "(" + mTable.dot(mDomain) + "=0)";
+        if (value.isEmpty()) {
+            return "(" + table.dot(domain) + "=0)";
         } else {
-            return "((" + mTable.dot(mDomain) + " & " + getValueAsString() + ")<>0)";
+            return "((" + table.dot(domain) + " & " + getValueAsString() + ")<>0)";
         }
     }
 
     @Override
     @NonNull
     public String getPrefName() {
-        return mName;
+        return name;
     }
 
     @NonNull
     public Map<Integer, Integer> getBitsAndLabels() {
-        return Collections.unmodifiableMap(mBitsAndLabels.get());
+        return Collections.unmodifiableMap(bitsAndLabels.get());
     }
 
     @Nullable
     @Override
     public String getValueAsString() {
-        if (mValue == null) {
+        if (value == null) {
             return null;
         } else {
-            return String.valueOf(mValue.stream()
-                                        .mapToInt(i -> i)
-                                        .reduce(0, (a, b) -> a | b));
+            return String.valueOf(value.stream()
+                                       .mapToInt(i -> i)
+                                       .reduce(0, (a, b) -> a | b));
         }
     }
 
     @Override
     public void setValueAsString(@Nullable final String value) {
         if (value == null || value.isEmpty()) {
-            mValue = null;
+            this.value = null;
         } else {
             try {
                 int tmp = (int) ParseUtils.toLong(value);
 
-                mValue = new HashSet<>();
+                this.value = new HashSet<>();
                 int bit = 1;
                 while (tmp != 0) {
                     if ((tmp & 1) == 1) {
-                        mValue.add(bit);
+                        this.value.add(bit);
                     }
                     bit *= 2;
                     // unsigned shift
                     tmp = tmp >>> 1;
                 }
             } catch (@NonNull final NumberFormatException e) {
-                mValue = null;
+                this.value = null;
             }
         }
     }
@@ -158,16 +159,16 @@ public class PBitmaskFilter
     @Nullable
     @Override
     public Set<Integer> getValue() {
-        if (mValue == null) {
+        if (value == null) {
             return null;
         } else {
-            return Set.copyOf(mValue);
+            return Set.copyOf(value);
         }
     }
 
     @Override
     public void setValue(@Nullable final Set<Integer> value) {
-        mValue = value;
+        this.value = value;
     }
 
     @Override
@@ -179,7 +180,7 @@ public class PBitmaskFilter
         } else if (value.isEmpty()) {
             return context.getString(R.string.btn_all_books);
         } else {
-            final Map<Integer, Integer> blMap = mBitsAndLabels.get();
+            final Map<Integer, Integer> blMap = bitsAndLabels.get();
             //noinspection ConstantConditions
             return blMap.keySet()
                         .stream()
@@ -193,7 +194,7 @@ public class PBitmaskFilter
     @NonNull
     @Override
     public String getLabel(@NonNull final Context context) {
-        return context.getString(mLabelId);
+        return context.getString(labelResId);
     }
 
     @LayoutRes

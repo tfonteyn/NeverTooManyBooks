@@ -48,74 +48,74 @@ public class PStringEqualityFilter
 
     public static final int LAYOUT_ID = R.layout.row_edit_bookshelf_filter_string_equality;
 
-    @SuppressWarnings("FieldNotUsedInToString")
-    private final int mLabelId;
+    @StringRes
+    private final int labelResId;
     @NonNull
-    private final String mName;
+    private final String name;
     @Nullable
-    private final Supplier<ArrayList<String>> mListSupplier;
+    private final Supplier<ArrayList<String>> listSupplier;
     @NonNull
-    private final Domain mDomain;
+    private final Domain domain;
     @NonNull
-    private final TableDefinition mTable;
+    private final TableDefinition table;
     @Nullable
-    private String mValue;
+    private String value;
 
     PStringEqualityFilter(@NonNull final String name,
                           @StringRes final int labelId,
                           @NonNull final TableDefinition table,
                           @NonNull final Domain domain,
                           @Nullable final Supplier<ArrayList<String>> listSupplier) {
-        mLabelId = labelId;
-        mDomain = domain;
-        mTable = table;
-        mName = name;
-        mListSupplier = listSupplier;
+        labelResId = labelId;
+        this.domain = domain;
+        this.table = table;
+        this.name = name;
+        this.listSupplier = listSupplier;
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
         if (!DBKey.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                          mDomain.getName())) {
+                          domain.getName())) {
             return false;
         }
-        return mValue != null;
+        return value != null;
     }
 
     @NonNull
     @Override
     public String getExpression(@NonNull final Context context) {
         //noinspection ConstantConditions
-        return mTable.dot(mDomain) + "='" + SqlEncode.string(mValue) + '\'';
+        return table.dot(domain) + "='" + SqlEncode.string(value) + '\'';
     }
 
     @Override
     @NonNull
     public String getPrefName() {
-        return mName;
+        return name;
     }
 
     @Nullable
     @Override
     public String getValueAsString() {
-        if (mValue == null || mValue.isEmpty()) {
+        if (value == null || value.isEmpty()) {
             return null;
         } else {
-            return mValue;
+            return value;
         }
     }
 
     @Override
     public void setValueAsString(@Nullable final String value) {
-        mValue = value;
+        this.value = value;
     }
 
     @Nullable
     public ExtArrayAdapter<String> createListAdapter(@NonNull final Context context) {
-        if (mListSupplier != null) {
+        if (listSupplier != null) {
             return new ExtArrayAdapter<>(context, R.layout.popup_dropdown_menu_item,
                                          ExtArrayAdapter.FilterType.Diacritic,
-                                         mListSupplier.get());
+                                         listSupplier.get());
         }
         return null;
     }
@@ -123,12 +123,12 @@ public class PStringEqualityFilter
     @Nullable
     @Override
     public String getValue() {
-        return mValue;
+        return value;
     }
 
     @Override
     public void setValue(@Nullable final String value) {
-        mValue = value;
+        this.value = value;
     }
 
     @NonNull
@@ -145,7 +145,7 @@ public class PStringEqualityFilter
     @NonNull
     @Override
     public String getLabel(@NonNull final Context context) {
-        return context.getString(mLabelId);
+        return context.getString(labelResId);
     }
 
     @LayoutRes

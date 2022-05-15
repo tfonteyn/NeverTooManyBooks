@@ -36,7 +36,7 @@ import java.util.Objects;
  * <p>
  * Parcelable: needed by BooklistGroup
  */
-@SuppressWarnings("FieldNotUsedInToString")
+@SuppressWarnings({"FieldNotUsedInToString", "NegativelyNamedBooleanVariable"})
 public class Domain
         implements Parcelable {
 
@@ -57,33 +57,33 @@ public class Domain
     private static final String CURRENT_TIMESTAMP = "current_timestamp";
 
     @NonNull
-    private final String mName;
+    private final String name;
     /** This domain represents a primary key. */
-    private final boolean mIsPrimaryKey;
+    private final boolean primaryKey;
 
     @ColumnInfo.Type
     @NonNull
-    private final String mType;
+    private final String type;
 
     /** {@code null} values not allowed. */
-    private final boolean mIsNotNull;
+    private final boolean notNull;
     /** Blank ("", 0) values not allowed. */
-    private final boolean mIsNotBlank;
+    private final boolean notBlank;
 
     /** Holds a 'DEFAULT' clause (if any). */
     @Nullable
-    private final String mDefaultClause;
+    private final String defaultClause;
     /** Holds a 'REFERENCES' clause (if any). */
     @Nullable
-    private final String mReferences;
+    private final String references;
 
     /**
      * This domain is pre-prepared for sorting;
      * i.e. the values are stripped of spaces etc.. before being stored.
      */
-    private final boolean mIsPrePreparedOrderBy;
+    private final boolean prePreparedOrderBy;
 
-    private final boolean mIsCollationLocalized;
+    private final boolean collationLocalized;
 
     /**
      * Full, private constructor.
@@ -91,16 +91,16 @@ public class Domain
      * @param builder to use
      */
     private Domain(@NonNull final Builder builder) {
-        mName = builder.mName;
-        mIsPrimaryKey = builder.mIsPrimaryKey;
-        mType = builder.mType;
-        mIsNotNull = builder.mIsNotNull;
-        mDefaultClause = builder.mDefaultClause;
-        mReferences = builder.mReferences;
-        mIsCollationLocalized = builder.mIsCollationLocalized;
-        mIsPrePreparedOrderBy = builder.mIsPrePreparedOrderBy;
+        name = builder.name;
+        primaryKey = builder.primaryKey;
+        type = builder.type;
+        notNull = builder.notNull;
+        defaultClause = builder.defaultClause;
+        references = builder.references;
+        collationLocalized = builder.collationLocalized;
+        prePreparedOrderBy = builder.prePreparedOrderBy;
 
-        mIsNotBlank = mDefaultClause != null && !"''".equals(mDefaultClause);
+        notBlank = defaultClause != null && !"''".equals(defaultClause);
     }
 
     /**
@@ -109,16 +109,16 @@ public class Domain
      * @param from object to copy
      */
     public Domain(@NonNull final Domain from) {
-        mName = from.mName;
-        mIsPrimaryKey = from.mIsPrimaryKey;
-        mType = from.mType;
-        mIsNotNull = from.mIsNotNull;
-        mDefaultClause = from.mDefaultClause;
-        mReferences = from.mReferences;
-        mIsCollationLocalized = from.mIsCollationLocalized;
-        mIsPrePreparedOrderBy = from.mIsPrePreparedOrderBy;
+        name = from.name;
+        primaryKey = from.primaryKey;
+        type = from.type;
+        notNull = from.notNull;
+        defaultClause = from.defaultClause;
+        references = from.references;
+        collationLocalized = from.collationLocalized;
+        prePreparedOrderBy = from.prePreparedOrderBy;
 
-        mIsNotBlank = from.mIsNotBlank;
+        notBlank = from.notBlank;
     }
 
     /**
@@ -128,30 +128,30 @@ public class Domain
      */
     private Domain(@NonNull final Parcel in) {
         //noinspection ConstantConditions
-        mName = in.readString();
+        name = in.readString();
         //noinspection ConstantConditions
-        mType = in.readString();
-        mIsPrimaryKey = in.readByte() != 0;
-        mIsNotNull = in.readByte() != 0;
-        mDefaultClause = in.readString();
-        mReferences = in.readString();
-        mIsCollationLocalized = in.readByte() != 0;
-        mIsPrePreparedOrderBy = in.readByte() != 0;
+        type = in.readString();
+        primaryKey = in.readByte() != 0;
+        notNull = in.readByte() != 0;
+        defaultClause = in.readString();
+        references = in.readString();
+        collationLocalized = in.readByte() != 0;
+        prePreparedOrderBy = in.readByte() != 0;
 
-        mIsNotBlank = mDefaultClause != null && !"''".equals(mDefaultClause);
+        notBlank = defaultClause != null && !"''".equals(defaultClause);
     }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeString(mName);
-        dest.writeString(mType);
-        dest.writeByte((byte) (mIsPrimaryKey ? 1 : 0));
-        dest.writeByte((byte) (mIsNotNull ? 1 : 0));
-        dest.writeString(mDefaultClause);
-        dest.writeString(mReferences);
-        dest.writeByte((byte) (mIsCollationLocalized ? 1 : 0));
-        dest.writeByte((byte) (mIsPrePreparedOrderBy ? 1 : 0));
+        dest.writeString(name);
+        dest.writeString(type);
+        dest.writeByte((byte) (primaryKey ? 1 : 0));
+        dest.writeByte((byte) (notNull ? 1 : 0));
+        dest.writeString(defaultClause);
+        dest.writeString(references);
+        dest.writeByte((byte) (collationLocalized ? 1 : 0));
+        dest.writeByte((byte) (prePreparedOrderBy ? 1 : 0));
     }
 
     /**
@@ -161,7 +161,7 @@ public class Domain
      */
     @NonNull
     public String getName() {
-        return mName;
+        return name;
     }
 
     /**
@@ -172,18 +172,18 @@ public class Domain
     @ColumnInfo.Type
     @NonNull
     public String getType() {
-        return mType;
+        return type;
     }
 
     boolean isPrimaryKey() {
-        return mIsPrimaryKey;
+        return primaryKey;
     }
 
     /**
      * {@code null} values are not allowed.
      */
     public boolean isNotNull() {
-        return mIsNotNull;
+        return notNull;
     }
 
     /**
@@ -192,30 +192,30 @@ public class Domain
      * This is basically domains which have a DEFAULT clause which is not the empty string.
      */
     public boolean isNotBlank() {
-        return mIsNotBlank;
+        return notBlank;
     }
 
     boolean isCollationLocalized() {
-        return mIsCollationLocalized;
+        return collationLocalized;
     }
 
     public boolean hasDefault() {
-        return mDefaultClause != null;
+        return defaultClause != null;
     }
 
     @Nullable
     public String getDefault() {
-        if (mDefaultClause == null) {
+        if (defaultClause == null) {
             return null;
 
-        } else if (CURRENT_TIMESTAMP.equals(mDefaultClause)) {
+        } else if (CURRENT_TIMESTAMP.equals(defaultClause)) {
             return LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
-        } else if (mDefaultClause.startsWith("'") && mDefaultClause.endsWith("'")) {
-            return mDefaultClause.substring(1, mDefaultClause.length() - 1);
+        } else if (defaultClause.startsWith("'") && defaultClause.endsWith("'")) {
+            return defaultClause.substring(1, defaultClause.length() - 1);
         }
 
-        return mDefaultClause;
+        return defaultClause;
     }
 
     /**
@@ -225,7 +225,7 @@ public class Domain
      * @return {@code true} if this domain is a TYPE_TEXT.
      */
     public boolean isText() {
-        return ColumnInfo.TYPE_TEXT.equalsIgnoreCase(mType);
+        return ColumnInfo.TYPE_TEXT.equalsIgnoreCase(type);
     }
 
     /**
@@ -234,7 +234,7 @@ public class Domain
      * @return {@code true} if this domain is a TYPE_BOOLEAN.
      */
     public boolean isBoolean() {
-        return ColumnInfo.TYPE_BOOLEAN.equalsIgnoreCase(mType);
+        return ColumnInfo.TYPE_BOOLEAN.equalsIgnoreCase(type);
     }
 
     /**
@@ -243,10 +243,9 @@ public class Domain
      * @return {@code true} if this field should be used as-is for sorting.
      */
     public boolean isPrePreparedOrderBy() {
-        return mIsPrePreparedOrderBy;
+        return prePreparedOrderBy;
     }
 
-    @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
         return 0;
@@ -254,15 +253,13 @@ public class Domain
 
     /**
      * toString() <strong>NOT DEBUG, must only ever return the table name</strong>
-     * <p>
-     * useful for using the Domain in place of a domain name.
      *
      * @return the name of the domain.
      */
     @Override
     @NonNull
     public String toString() {
-        return mName;
+        return name;
     }
 
     /**
@@ -274,20 +271,20 @@ public class Domain
      */
     @NonNull
     String def(final boolean withConstraints) {
-        final StringBuilder sql = new StringBuilder(mName + ' ' + mType);
-        if (mIsPrimaryKey) {
+        final StringBuilder sql = new StringBuilder(name + ' ' + type);
+        if (primaryKey) {
             sql.append(" PRIMARY KEY AUTOINCREMENT");
         }
 
         if (withConstraints) {
-            if (mIsNotNull) {
+            if (notNull) {
                 sql.append(" NOT NULL");
             }
-            if (mDefaultClause != null) {
-                sql.append(" DEFAULT ").append(mDefaultClause);
+            if (defaultClause != null) {
+                sql.append(" DEFAULT ").append(defaultClause);
             }
-            if (mReferences != null) {
-                sql.append(" REFERENCES ").append(mReferences);
+            if (references != null) {
+                sql.append(" REFERENCES ").append(references);
             }
         }
         return sql.toString();
@@ -302,42 +299,42 @@ public class Domain
             return false;
         }
         final Domain domain = (Domain) o;
-        return mIsPrimaryKey == domain.mIsPrimaryKey
-               && mIsNotNull == domain.mIsNotNull
-               && mIsNotBlank == domain.mIsNotBlank
-               && mIsPrePreparedOrderBy == domain.mIsPrePreparedOrderBy
-               && mIsCollationLocalized == domain.mIsCollationLocalized
-               && mName.equals(domain.mName)
-               && mType.equals(domain.mType)
-               && Objects.equals(mDefaultClause, domain.mDefaultClause)
-               && Objects.equals(mReferences, domain.mReferences);
+        return primaryKey == domain.primaryKey
+               && notNull == domain.notNull
+               && notBlank == domain.notBlank
+               && prePreparedOrderBy == domain.prePreparedOrderBy
+               && collationLocalized == domain.collationLocalized
+               && name.equals(domain.name)
+               && type.equals(domain.type)
+               && Objects.equals(defaultClause, domain.defaultClause)
+               && Objects.equals(references, domain.references);
     }
 
     @Override
     public int hashCode() {
         return Objects
-                .hash(mName, mIsPrimaryKey, mType, mIsNotNull, mIsNotBlank, mDefaultClause,
-                      mReferences,
-                      mIsPrePreparedOrderBy, mIsCollationLocalized);
+                .hash(name, primaryKey, type, notNull, notBlank, defaultClause,
+                      references,
+                      prePreparedOrderBy, collationLocalized);
     }
 
     public static class Builder {
 
         @NonNull
-        private final String mName;
+        private final String name;
 
         @ColumnInfo.Type
         @NonNull
-        private final String mType;
+        private final String type;
 
-        private boolean mIsPrimaryKey;
-        private boolean mIsNotNull;
+        private boolean primaryKey;
+        private boolean notNull;
         @Nullable
-        private String mDefaultClause;
+        private String defaultClause;
         @Nullable
-        private String mReferences;
-        private boolean mIsPrePreparedOrderBy;
-        private boolean mIsCollationLocalized;
+        private String references;
+        private boolean prePreparedOrderBy;
+        private boolean collationLocalized;
 
         /**
          * Constructor.
@@ -347,8 +344,8 @@ public class Domain
          */
         public Builder(@NonNull final String name,
                        @ColumnInfo.Type @NonNull final String type) {
-            mName = name;
-            mType = type;
+            this.name = name;
+            this.type = type;
         }
 
         /**
@@ -359,8 +356,8 @@ public class Domain
          */
         @NonNull
         public Builder primaryKey() {
-            mIsPrimaryKey = true;
-            mIsNotNull = true;
+            primaryKey = true;
+            notNull = true;
             return this;
         }
 
@@ -371,7 +368,20 @@ public class Domain
          */
         @NonNull
         public Builder notNull() {
-            mIsNotNull = true;
+            notNull = true;
+            return this;
+        }
+
+        /**
+         * Add a boolean default constraint.
+         *
+         * @param value to use as default
+         *
+         * @return {@code this} (for chaining)
+         */
+        @NonNull
+        public Builder withDefault(final boolean value) {
+            defaultClause = value ? "1" : "0";
             return this;
         }
 
@@ -384,7 +394,7 @@ public class Domain
          */
         @NonNull
         public Builder withDefault(final long value) {
-            mDefaultClause = String.valueOf(value);
+            defaultClause = String.valueOf(value);
             return this;
         }
 
@@ -397,7 +407,7 @@ public class Domain
          */
         @NonNull
         public Builder withDefault(final double value) {
-            mDefaultClause = String.valueOf(value);
+            defaultClause = String.valueOf(value);
             return this;
         }
 
@@ -410,7 +420,7 @@ public class Domain
          */
         @NonNull
         public Builder withDefault(@NonNull final String value) {
-            mDefaultClause = value;
+            defaultClause = value;
             return this;
         }
 
@@ -421,7 +431,7 @@ public class Domain
          */
         @NonNull
         public Builder withDefaultCurrentTimeStamp() {
-            mDefaultClause = CURRENT_TIMESTAMP;
+            defaultClause = CURRENT_TIMESTAMP;
             return this;
         }
 
@@ -432,13 +442,13 @@ public class Domain
          */
         @NonNull
         public Builder withDefaultEmptyString() {
-            mDefaultClause = "''";
+            defaultClause = "''";
             return this;
         }
 
         @NonNull
         public Builder localized() {
-            mIsCollationLocalized = true;
+            collationLocalized = true;
             return this;
         }
 
@@ -450,7 +460,7 @@ public class Domain
          */
         @NonNull
         public Builder prePreparedOrderBy() {
-            mIsPrePreparedOrderBy = true;
+            prePreparedOrderBy = true;
             return this;
         }
 
@@ -465,10 +475,10 @@ public class Domain
         @NonNull
         public Builder references(@NonNull final TableDefinition table,
                                   @NonNull final String actions) {
-            if (mReferences != null) {
+            if (references != null) {
                 throw new IllegalStateException("can only be called once");
             }
-            mReferences = table.getName() + ' ' + actions;
+            references = table.getName() + ' ' + actions;
             return this;
         }
 

@@ -38,12 +38,12 @@ public class NumberListFilter<T extends Number>
         implements Filter {
 
     @NonNull
-    private final Domain mDomain;
+    private final Domain domain;
     @NonNull
-    private final TableDefinition mTable;
+    private final TableDefinition table;
 
     @NonNull
-    private final List<T> mList;
+    private final List<T> list;
 
     /**
      * Constructor.
@@ -53,28 +53,28 @@ public class NumberListFilter<T extends Number>
     public NumberListFilter(@NonNull final TableDefinition table,
                             @NonNull final Domain domain,
                             @NonNull final List<T> list) {
-        mDomain = domain;
-        mTable = table;
-        mList = list;
+        this.domain = domain;
+        this.table = table;
+        this.list = list;
     }
 
     @Override
     @NonNull
     public String getExpression(@NonNull final Context context) {
-        if (mList.size() == 1) {
-            return '(' + mTable.dot(mDomain) + '=' + mList.get(0) + ')';
+        if (list.size() == 1) {
+            return '(' + table.dot(domain) + '=' + list.get(0) + ')';
         } else {
-            return mList.stream()
-                        .map(String::valueOf)
-                        .collect(Collectors.joining(
+            return list.stream()
+                       .map(String::valueOf)
+                       .collect(Collectors.joining(
                                 ",",
-                                '(' + mTable.dot(mDomain) + " IN ("
+                                '(' + table.dot(domain) + " IN ("
                                 , "))"));
         }
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        return !mList.isEmpty();
+        return !list.isEmpty();
     }
 }

@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -71,27 +70,27 @@ public class SearchOrderFragment
     private static final String TAG = "SearchOrderFragment";
     private static final String BKEY_TYPE = TAG + ":type";
 
-    private SearchSiteListAdapter mListAdapter;
-    private ItemTouchHelper mItemTouchHelper;
+    private SearchSiteListAdapter listAdapter;
+    private ItemTouchHelper itemTouchHelper;
 
     @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider mToolbarMenuProvider;
+    private MenuProvider toolbarMenuProvider;
 
     /* The View model. */
-    private SearchAdminViewModel mVm;
+    private SearchAdminViewModel vm;
 
     /** View Binding. */
-    private FragmentEditSearchOrderBinding mVb;
+    private FragmentEditSearchOrderBinding vb;
 
     /** The type of list we're handling in this fragment (tab). */
-    private Site.Type mType;
+    private Site.Type type;
 
     /**
      * The list we're handling in this fragment (tab).
      * Single-list mode: the list as passed in.
-     * All-list mode: a local <strong>deep-copy</strong> of the {@link #mType} list.
+     * All-list mode: a local <strong>deep-copy</strong> of the {@link #type} list.
      */
-    private ArrayList<Site> mSiteList;
+    private ArrayList<Site> siteList;
 
     @SuppressWarnings("TypeMayBeWeakened")
     @NonNull
@@ -108,7 +107,7 @@ public class SearchOrderFragment
         super.onCreate(savedInstanceState);
 
         //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(SearchAdminViewModel.class);
+        vm = new ViewModelProvider(getActivity()).get(SearchAdminViewModel.class);
     }
 
     @Override
@@ -116,8 +115,8 @@ public class SearchOrderFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentEditSearchOrderBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentEditSearchOrderBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @Override
@@ -126,28 +125,28 @@ public class SearchOrderFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        mToolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner(),
+        toolbarMenuProvider = new ToolbarMenuProvider();
+        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner(),
                                 Lifecycle.State.RESUMED);
         toolbar.setTitle(R.string.lbl_settings);
         toolbar.setSubtitle(R.string.lbl_websites);
 
-        mType = Objects.requireNonNull(requireArguments().getParcelable(BKEY_TYPE), BKEY_TYPE);
-        mSiteList = mVm.getList(mType);
+        type = Objects.requireNonNull(requireArguments().getParcelable(BKEY_TYPE), BKEY_TYPE);
+        siteList = vm.getList(type);
 
         //noinspection ConstantConditions
-        mVb.siteList.addItemDecoration(
+        vb.siteList.addItemDecoration(
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
-        mVb.siteList.setHasFixedSize(true);
+        vb.siteList.setHasFixedSize(true);
 
-        mListAdapter = new SearchSiteListAdapter(getContext(), mSiteList,
-                                                 vh -> mItemTouchHelper.startDrag(vh));
-        mVb.siteList.setAdapter(mListAdapter);
+        listAdapter = new SearchSiteListAdapter(getContext(), siteList,
+                                                 vh -> itemTouchHelper.startDrag(vh));
+        vb.siteList.setAdapter(listAdapter);
 
         final SimpleItemTouchHelperCallback sitHelperCallback =
-                new SimpleItemTouchHelperCallback(mListAdapter);
-        mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
-        mItemTouchHelper.attachToRecyclerView(mVb.siteList);
+                new SimpleItemTouchHelperCallback(listAdapter);
+        itemTouchHelper = new ItemTouchHelper(sitHelperCallback);
+        itemTouchHelper.attachToRecyclerView(vb.siteList);
     }
 
     /**
@@ -236,7 +235,7 @@ public class SearchOrderFragment
                     info.add(context.getString(android.R.string.search_go));
                 }
                 holder.infoView.setText(context.getString(R.string.brackets,
-                                                          TextUtils.join(", ", info)));
+                                                          String.join(", ", info)));
 
                 holder.infoView.setVisibility(View.VISIBLE);
             } else {
@@ -260,12 +259,12 @@ public class SearchOrderFragment
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             if (menuItem.getItemId() == R.id.MENU_RESET) {
                 // Reset the global/original list for the type.
-                mType.resetList(ServiceLocator.getSystemLocale(),
-                                getResources().getConfiguration().getLocales().get(0));
+                type.resetList(ServiceLocator.getSystemLocale(),
+                               getResources().getConfiguration().getLocales().get(0));
                 // and replace the content of the local list with the (new) defaults.
-                mSiteList.clear();
-                mSiteList.addAll(mType.getSites());
-                mListAdapter.notifyDataSetChanged();
+                siteList.clear();
+                siteList.addAll(type.getSites());
+                listAdapter.notifyDataSetChanged();
                 return true;
             }
             return false;

@@ -41,9 +41,9 @@ public class PublisherBooklistGroupTest
         final ListStyle s1 = styles.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
         assertNotNull(s1);
 
-        final BooklistGroup g1 = BooklistGroup.newInstance(BooklistGroup.PUBLISHER, false, s1);
+        final BooklistGroup g1 = BooklistGroup.newInstance(BooklistGroup.PUBLISHER, s1);
 
-        final BooklistGroup g2 = new PublisherBooklistGroup(false, s1, (PublisherBooklistGroup) g1);
+        final BooklistGroup g2 = new PublisherBooklistGroup(s1, (PublisherBooklistGroup) g1);
         assertEquals(g1, g2);
     }
 }

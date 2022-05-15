@@ -52,9 +52,9 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 
 import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.BLOB_IMAGE;
 import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.CACHE_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.LAST_UPDATED__UTC;
 import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.TBL_IMAGE;
-import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.UTC_DATE_LAST_UPDATED;
 
 /**
  * DB Helper for Covers DB.
@@ -82,7 +82,7 @@ public class CoverCacheDaoImpl
     /** Get a cached image. */
     private static final String SQL_GET_IMAGE =
             "SELECT " + BLOB_IMAGE + " FROM " + TBL_IMAGE.getName()
-            + " WHERE " + CACHE_ID + "=? AND " + UTC_DATE_LAST_UPDATED + ">?";
+            + " WHERE " + CACHE_ID + "=? AND " + LAST_UPDATED__UTC + ">?";
 
     /** Run a count for the desired file. 1 == exists, 0 == not there. */
     private static final String SQL_COUNT_ID =
@@ -97,13 +97,13 @@ public class CoverCacheDaoImpl
     private static final AtomicInteger RUNNING_TASKS = new AtomicInteger();
 
     @NonNull
-    private final SynchronizedDb mDb;
+    private final SynchronizedDb db;
 
     /**
      * Constructor.
      */
     public CoverCacheDaoImpl() {
-        mDb = ServiceLocator.getInstance().getCoversDb();
+        db = ServiceLocator.getInstance().getCoversDb();
     }
 
     /**
@@ -131,7 +131,7 @@ public class CoverCacheDaoImpl
     @Override
     public int count() {
         try {
-            try (SynchronizedStatement stmt = mDb.compileStatement(SQL_COUNT)) {
+            try (SynchronizedStatement stmt = db.compileStatement(SQL_COUNT)) {
                 return (int) stmt.simpleQueryForLongOrZero();
             }
         } catch (@NonNull final RuntimeException e) {
@@ -144,8 +144,8 @@ public class CoverCacheDaoImpl
     public void delete(@NonNull final String uuid) {
         try {
             // starts with the uuid, remove all sizes and indexes
-            mDb.delete(TBL_IMAGE.getName(), CACHE_ID + " LIKE ?",
-                       new String[]{uuid + '%'});
+            db.delete(TBL_IMAGE.getName(), CACHE_ID + " LIKE ?",
+                      new String[]{uuid + '%'});
         } catch (@NonNull final SQLiteException e) {
             Logger.error(TAG, e);
         }
@@ -154,7 +154,7 @@ public class CoverCacheDaoImpl
     @Override
     public void deleteAll() {
         try {
-            mDb.execSQL("DELETE FROM " + TBL_IMAGE.getName());
+            db.execSQL("DELETE FROM " + TBL_IMAGE.getName());
         } catch (@NonNull final SQLiteException e) {
             Logger.error(TAG, e);
         }
@@ -179,7 +179,7 @@ public class CoverCacheDaoImpl
 
                 final String cacheId = constructCacheId(uuid, cIdx, maxWidth, maxHeight);
 
-                try (Cursor cursor = mDb.rawQuery(
+                try (Cursor cursor = db.rawQuery(
                         SQL_GET_IMAGE, new String[]{cacheId, fileLastModified})) {
                     if (cursor.moveToFirst()) {
                         final byte[] bytes = cursor.getBlob(0);
@@ -229,13 +229,13 @@ public class CoverCacheDaoImpl
                     final String cacheId = constructCacheId(uuid, cIdx, width, height);
 
                     final boolean exists;
-                    try (SynchronizedStatement stmt = mDb.compileStatement(SQL_COUNT_ID)) {
+                    try (SynchronizedStatement stmt = db.compileStatement(SQL_COUNT_ID)) {
                         stmt.bindString(1, cacheId);
                         exists = stmt.simpleQueryForLongOrZero() == 0;
                     }
 
                     if (exists) {
-                        try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
+                        try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
                             stmt.bindString(1, cacheId);
                             stmt.bindBlob(2, out.toByteArray());
                             stmt.executeInsert();
@@ -244,10 +244,10 @@ public class CoverCacheDaoImpl
                         final ContentValues cv = new ContentValues();
                         cv.put(CACHE_ID, cacheId);
                         cv.put(BLOB_IMAGE, out.toByteArray());
-                        cv.put(UTC_DATE_LAST_UPDATED, LocalDateTime
+                        cv.put(LAST_UPDATED__UTC, LocalDateTime
                                 .now(ZoneOffset.UTC)
                                 .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-                        mDb.update(TBL_IMAGE.getName(), cv,
+                        db.update(TBL_IMAGE.getName(), cv,
                                    CACHE_ID + "=?", new String[]{cacheId});
                     }
                 }

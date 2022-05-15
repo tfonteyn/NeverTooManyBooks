@@ -59,7 +59,7 @@ public class Styles {
      * <p>
      * Key: uuid of style.
      */
-    private final Map<String, ListStyle> mCache = new LinkedHashMap<>();
+    private final Map<String, ListStyle> cache = new LinkedHashMap<>();
 
     /**
      * Get the specified style; {@code null} if not found.
@@ -183,17 +183,17 @@ public class Styles {
     @NonNull
     private Map<String, ListStyle> getAllStyles(@NonNull final Context context) {
 
-        if (mCache.isEmpty()) {
-            mCache.putAll(ServiceLocator.getInstance().getStyleDao()
-                                        .getBuiltinStyles(context));
-            mCache.putAll(ServiceLocator.getInstance().getStyleDao()
-                                        .getUserStyles(context));
+        if (cache.isEmpty()) {
+            cache.putAll(ServiceLocator.getInstance().getStyleDao()
+                                       .getBuiltinStyles(context));
+            cache.putAll(ServiceLocator.getInstance().getStyleDao()
+                                       .getUserStyles(context));
         }
-        return mCache;
+        return cache;
     }
 
     public void clearCache() {
-        mCache.clear();
+        cache.clear();
     }
 
 
@@ -256,18 +256,19 @@ public class Styles {
         final StyleDao styleDao = ServiceLocator.getInstance().getStyleDao();
 
         // resolve the id based on the UUID
-        // e.g. we're might be importing a style with a known UUID
+        // e.g. we might be importing a style with a known UUID
         style.setId(styleDao.getStyleIdByUuid(style.getUuid()));
+
         if (style.getId() == 0) {
-            if (styleDao.insert(style) > 0) {
-                if (style.isUserDefined()) {
-                    mCache.put(style.getUuid(), style);
-                }
+            // When we get here, we know it's a UserStyle.
+            if (styleDao.insert((UserStyle) style) > 0) {
+                cache.put(style.getUuid(), style);
                 return true;
             }
             return false;
 
         } else {
+            // Both BuiltinStyle and UserStyle
             return update(style);
         }
     }
@@ -289,7 +290,7 @@ public class Styles {
         }
 
         if (ServiceLocator.getInstance().getStyleDao().update(style)) {
-            mCache.put(style.getUuid(), style);
+            cache.put(style.getUuid(), style);
             return true;
         }
         return false;
@@ -298,13 +299,11 @@ public class Styles {
     /**
      * Delete the given style.
      *
-     * @param context Current context
      * @param style   to delete
      *
      * @return {@code true} on success
      */
-    public boolean delete(@NonNull final Context context,
-                          @NonNull final ListStyle style) {
+    public boolean delete(@NonNull final ListStyle style) {
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
             SanityCheck.requirePositiveValue(style.getId(),
@@ -313,8 +312,7 @@ public class Styles {
 
         if (ServiceLocator.getInstance().getStyleDao().delete(style)) {
             if (style.isUserDefined()) {
-                mCache.remove(style.getUuid());
-                ((UserStyle) style).discard(context);
+                cache.remove(style.getUuid());
             }
             return true;
         }

@@ -41,9 +41,9 @@ public class SeriesBooklistGroupTest
         final ListStyle s1 = styles.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
         assertNotNull(s1);
 
-        final BooklistGroup g1 = BooklistGroup.newInstance(BooklistGroup.SERIES, false, s1);
+        final BooklistGroup g1 = BooklistGroup.newInstance(BooklistGroup.SERIES, s1);
 
-        final BooklistGroup g2 = new SeriesBooklistGroup(false, s1, (SeriesBooklistGroup) g1);
+        final BooklistGroup g2 = new SeriesBooklistGroup(s1, (SeriesBooklistGroup) g1);
         assertEquals(g1, g2);
     }
 }

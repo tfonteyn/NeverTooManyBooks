@@ -52,7 +52,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_SERIES_TIT
 public class SeriesBooklistGroup
         extends AbstractLinkedTableBooklistGroup {
 
-    /** Style - PreferenceScreen/PreferenceCategory Key. */
+    /** See {@link #setPreferencesVisible(PreferenceScreen, boolean)} */
     private static final String PSK_STYLE_SERIES = "psk_style_series";
 
     public static final String PK_SHOW_BOOKS_UNDER_EACH =
@@ -69,25 +69,23 @@ public class SeriesBooklistGroup
     /**
      * Constructor.
      *
-     * @param isPersistent flag
      * @param style        Style reference.
      */
-    SeriesBooklistGroup(final boolean isPersistent,
-                        @NonNull final ListStyle style) {
-        super(SERIES, isPersistent, style, PK_SHOW_BOOKS_UNDER_EACH);
+    SeriesBooklistGroup(@NonNull final ListStyle style) {
+        super(SERIES, style);
+
+        underEach = getDefaultShowBooksUnderEach();
     }
 
     /**
      * Copy constructor.
      *
-     * @param isPersistent flag
      * @param style        Style reference.
      * @param group        to copy from
      */
-    SeriesBooklistGroup(final boolean isPersistent,
-                        @NonNull final ListStyle style,
+    SeriesBooklistGroup(@NonNull final ListStyle style,
                         @NonNull final SeriesBooklistGroup group) {
-        super(isPersistent, style, group);
+        super(style, group);
     }
 
     /**
@@ -95,7 +93,7 @@ public class SeriesBooklistGroup
      *
      * @return {@code true} if we want to show a book under each of its Series.
      */
-    public static boolean showBooksUnderEachDefault() {
+    public static boolean getDefaultShowBooksUnderEach() {
         return ServiceLocator.getGlobalPreferences().getBoolean(PK_SHOW_BOOKS_UNDER_EACH, false);
     }
 
@@ -142,7 +140,7 @@ public class SeriesBooklistGroup
 
     @Override
     @NonNull
-    protected DomainExpression createDisplayDomainExpression() {
+    protected DomainExpression createDisplayDomainExpression(@NonNull final ListStyle style) {
         // Not sorted; we sort on the OB domain as defined in #createGroupKey.
         return new DomainExpression(DBDefinitions.DOM_SERIES_TITLE,
                                     DBDefinitions.TBL_SERIES.dot(DBKey.SERIES_TITLE));

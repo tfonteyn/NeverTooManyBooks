@@ -50,7 +50,7 @@ public class SearchAdminViewModel
     public static final String BKEY_LIST = TAG + ":list";
 
     /** Ordered list. */
-    private final Map<Site.Type, ArrayList<Site>> mTypeAndSites = new LinkedHashMap<>();
+    private final Map<Site.Type, ArrayList<Site>> typeAndSites = new LinkedHashMap<>();
 
     /**
      * Pseudo constructor.
@@ -61,23 +61,23 @@ public class SearchAdminViewModel
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@Nullable final Bundle args) {
-        if (mTypeAndSites.isEmpty()) {
+        if (typeAndSites.isEmpty()) {
             // editing a single list ? load the TEMPORARY list of sites from the args.
             if (args != null) {
                 final ArrayList<Site> siteList = args.getParcelableArrayList(BKEY_LIST);
                 if (siteList != null && !siteList.isEmpty()) {
                     // all sites have the same type, just grab it from the first one.
-                    mTypeAndSites.put(siteList.get(0).getType(), siteList);
+                    typeAndSites.put(siteList.get(0).getType(), siteList);
                 }
             }
 
-            if (mTypeAndSites.isEmpty()) {
-                mTypeAndSites.put(Site.Type.Data,
-                                  Site.Type.Data.getSites());
-                mTypeAndSites.put(Site.Type.Covers,
-                                  Site.Type.Covers.getSites());
-                mTypeAndSites.put(Site.Type.AltEditions,
-                                  Site.Type.AltEditions.getSites());
+            if (typeAndSites.isEmpty()) {
+                typeAndSites.put(Site.Type.Data,
+                                 Site.Type.Data.getSites());
+                typeAndSites.put(Site.Type.Covers,
+                                 Site.Type.Covers.getSites());
+                typeAndSites.put(Site.Type.AltEditions,
+                                 Site.Type.AltEditions.getSites());
             }
         }
     }
@@ -85,10 +85,10 @@ public class SearchAdminViewModel
     /**
      * Get the list of types we're handling.
      *
-     * @return an immutable List
+     * @return new List
      */
     public List<Site.Type> getTypes() {
-        return List.copyOf(mTypeAndSites.keySet());
+        return new ArrayList<>(typeAndSites.keySet());
     }
 
     /**
@@ -100,7 +100,7 @@ public class SearchAdminViewModel
      */
     @NonNull
     ArrayList<Site> getList(@NonNull final Site.Type type) {
-        final ArrayList<Site> list = mTypeAndSites.get(type);
+        final ArrayList<Site> list = typeAndSites.get(type);
         if (list == null) {
             throw new IllegalStateException("type not found: " + type);
         }
@@ -115,7 +115,7 @@ public class SearchAdminViewModel
      * @return {@code true} if each list handled has at least one site enabled.
      */
     public boolean validate() {
-        for (final ArrayList<Site> list : mTypeAndSites.values()) {
+        for (final ArrayList<Site> list : typeAndSites.values()) {
             if (list.stream().noneMatch(Site::isEnabled)) {
                 return false;
             }
@@ -127,7 +127,7 @@ public class SearchAdminViewModel
      * Persist ALL lists.
      */
     void persist() {
-        for (final Map.Entry<Site.Type, ArrayList<Site>> entry : mTypeAndSites.entrySet()) {
+        for (final Map.Entry<Site.Type, ArrayList<Site>> entry : typeAndSites.entrySet()) {
             entry.getKey().setList(entry.getValue());
         }
     }

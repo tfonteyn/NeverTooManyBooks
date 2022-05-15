@@ -48,7 +48,16 @@ public final class SanityCheck {
     @SuppressWarnings("UnusedReturnValue")
     public static long requirePositiveValue(final long value,
                                             @Nullable final String message) {
-        if (value < 1) {
+        if (value <= 0) {
+            throw new MissingValueException(message);
+        }
+        return value;
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public static float requirePositiveValue(final float value,
+                                            @Nullable final String message) {
+        if (value <= 0) {
             throw new MissingValueException(message);
         }
         return value;

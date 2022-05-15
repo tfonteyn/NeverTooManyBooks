@@ -51,10 +51,10 @@ public class EditTextField<T, V extends EditText>
     private static final int REFORMAT_DELAY_MS = 500;
 
     /** Enable or disable the formatting text watcher. */
-    private final boolean mEnableReformat;
+    private final boolean enableReformat;
 
     /** Timer for the text watcher. */
-    private long mLastChange;
+    private long lastChange;
 
     /**
      * Constructor.
@@ -63,7 +63,7 @@ public class EditTextField<T, V extends EditText>
                          @IdRes final int fieldViewId,
                          @NonNull final String fieldKey) {
         super(fragmentId, fieldViewId, fieldKey, fieldKey, null);
-        mEnableReformat = false;
+        enableReformat = false;
     }
 
     /**
@@ -78,7 +78,7 @@ public class EditTextField<T, V extends EditText>
                          @NonNull final FieldFormatter<T> formatter,
                          final boolean enableReformat) {
         super(fragmentId, fieldViewId, fieldKey, fieldKey, formatter);
-        mEnableReformat = enableReformat && formatter instanceof EditFieldFormatter;
+        this.enableReformat = enableReformat && formatter instanceof EditFieldFormatter;
     }
 
     /**
@@ -88,7 +88,7 @@ public class EditTextField<T, V extends EditText>
      */
     @NonNull
     public EditTextField<T, V> setTextInputLayoutId(@IdRes final int viewId) {
-        mTextInputLayoutId = viewId;
+        textInputLayoutId = viewId;
         setErrorViewId(viewId);
         return this;
     }
@@ -96,7 +96,7 @@ public class EditTextField<T, V extends EditText>
     @NonNull
     public EditTextField<T, V> setEndIconMode(
             @ExtEndIconDelegate.EndIconMode final int endIconMode) {
-        mEndIconMode = endIconMode;
+        this.endIconMode = endIconMode;
         return this;
     }
 
@@ -116,7 +116,7 @@ public class EditTextField<T, V extends EditText>
             // We need to do this in two steps. First format the value as normal.
             String text;
             try {
-                text = mFormatter.format(view.getContext(), mRawValue);
+                text = formatter.format(view.getContext(), mRawValue);
 
             } catch (@NonNull final ClassCastException e) {
                 // Due to the way a Book loads data from the database,
@@ -165,8 +165,8 @@ public class EditTextField<T, V extends EditText>
 
         final String text = editable.toString().trim();
         // Update the actual value
-        if (mFormatter instanceof EditFieldFormatter) {
-            mRawValue = ((EditFieldFormatter<T>) mFormatter).extract(context, text);
+        if (formatter instanceof EditFieldFormatter) {
+            mRawValue = ((EditFieldFormatter<T>) formatter).extract(context, text);
         } else {
             // Without a formatter, we MUST assume <T> to be a String.
             // Make sure NOT to replace a 'null' value with an empty string
@@ -179,9 +179,9 @@ public class EditTextField<T, V extends EditText>
         // Clear any previous error. The new content will be re-checked at validation time.
         setError(null);
 
-        if (mEnableReformat) {
-            if (System.currentTimeMillis() - mLastChange > REFORMAT_DELAY_MS) {
-                final String formatted = mFormatter.format(context, mRawValue);
+        if (enableReformat) {
+            if (System.currentTimeMillis() - lastChange > REFORMAT_DELAY_MS) {
+                final String formatted = formatter.format(context, mRawValue);
                 // If different, replace the encoded value with the formatted value.
                 if (!text.equalsIgnoreCase(formatted)) {
                     view.removeTextChangedListener(this);
@@ -189,7 +189,7 @@ public class EditTextField<T, V extends EditText>
                     view.addTextChangedListener(this);
                 }
             }
-            mLastChange = System.currentTimeMillis();
+            lastChange = System.currentTimeMillis();
         }
 
         notifyIfChanged(previous);

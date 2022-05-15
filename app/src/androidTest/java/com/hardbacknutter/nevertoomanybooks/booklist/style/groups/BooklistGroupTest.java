@@ -41,10 +41,10 @@ public class BooklistGroupTest
         final ListStyle s1 = styles.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
         assertNotNull(s1);
 
-        final BooklistGroup g1 = BooklistGroup.newInstance(BooklistGroup.COLOR, false, s1);
+        final BooklistGroup g1 = BooklistGroup.newInstance(BooklistGroup.COLOR, s1);
 
         // Copy g1
-        final BooklistGroup g2 = new BooklistGroup(false, s1, g1);
+        final BooklistGroup g2 = new BooklistGroup(g1);
         assertEquals(g1, g2);
     }
 }

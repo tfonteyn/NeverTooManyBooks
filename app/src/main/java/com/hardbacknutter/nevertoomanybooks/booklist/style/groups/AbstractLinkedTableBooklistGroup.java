@@ -19,16 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Collection;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 
 /**
@@ -42,30 +38,25 @@ public abstract class AbstractLinkedTableBooklistGroup
     private final DomainExpression displayDomainExpression;
 
     /** Show a book under each item it is linked to. */
-    @NonNull
-    private final PBoolean underEach;
+    boolean underEach;
 
     AbstractLinkedTableBooklistGroup(@Id final int id,
-                                     final boolean isPersistent,
-                                     @NonNull final ListStyle style,
-                                     @NonNull final String pkUnderEach) {
-        super(id, isPersistent, style);
-        displayDomainExpression = createDisplayDomainExpression();
-
-        underEach = new PBoolean(mPersisted, mPersistenceLayer, pkUnderEach, false);
+                                     @NonNull final ListStyle style) {
+        super(id);
+        displayDomainExpression = createDisplayDomainExpression(style);
     }
 
-    AbstractLinkedTableBooklistGroup(final boolean isPersistent,
-                                     @NonNull final ListStyle style,
+    AbstractLinkedTableBooklistGroup(@NonNull final ListStyle style,
                                      @NonNull final AbstractLinkedTableBooklistGroup group) {
-        super(isPersistent, style, group);
-        displayDomainExpression = createDisplayDomainExpression();
+        super(group);
+        displayDomainExpression = createDisplayDomainExpression(style);
 
-        underEach = new PBoolean(mPersisted, mPersistenceLayer, group.underEach);
+        underEach = group.underEach;
     }
 
     @NonNull
-    protected abstract DomainExpression createDisplayDomainExpression();
+    protected abstract DomainExpression createDisplayDomainExpression(
+            @NonNull final ListStyle style);
 
     @Override
     @NonNull
@@ -79,20 +70,11 @@ public abstract class AbstractLinkedTableBooklistGroup
      * @return {@code true} if we want to show a book under each of its linked items.
      */
     public boolean showBooksUnderEach() {
-        return underEach.isTrue();
+        return underEach;
     }
 
     public void setShowBooksUnderEach(final boolean value) {
-        underEach.set(value);
-    }
-
-    @Override
-    @CallSuper
-    @NonNull
-    public Collection<PPref<?>> getRawPreferences() {
-        final Collection<PPref<?>> list = super.getRawPreferences();
-        list.add(underEach);
-        return list;
+        underEach = value;
     }
 
     @Override
@@ -102,7 +84,7 @@ public abstract class AbstractLinkedTableBooklistGroup
         }
         final AbstractLinkedTableBooklistGroup that = (AbstractLinkedTableBooklistGroup) o;
         return Objects.equals(displayDomainExpression, that.displayDomainExpression)
-               && Objects.equals(underEach, that.underEach);
+               && underEach == that.underEach;
     }
 
     @Override
@@ -114,7 +96,7 @@ public abstract class AbstractLinkedTableBooklistGroup
     @NonNull
     public String toString() {
         return super.toString()
-               + ", mDisplayDomainExpression=" + displayDomainExpression
-               + ", mUnderEach=" + underEach;
+               + ", displayDomainExpression=" + displayDomainExpression
+               + ", underEach=" + underEach;
     }
 }

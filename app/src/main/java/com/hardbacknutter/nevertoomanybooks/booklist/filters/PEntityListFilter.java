@@ -55,22 +55,20 @@ public class PEntityListFilter<T extends Entity>
 
     public static final int LAYOUT_ID = R.layout.row_edit_bookshelf_filter_entity_list;
 
-    @SuppressWarnings("FieldNotUsedInToString")
-    private final int mLabelId;
+    @StringRes
+    private final int labelResId;
     @NonNull
-    private final String mName;
+    private final String name;
     @NonNull
-    private final Domain mDomain;
+    private final Domain domain;
     @NonNull
-    private final TableDefinition mTable;
+    private final TableDefinition table;
     @NonNull
-    private final Supplier<List<T>> mListSupplier;
+    private final Supplier<List<T>> listSupplier;
+    @NonNull
+    private final Function<Long, Entity> entitySupplier;
 
-    @SuppressWarnings("FieldNotUsedInToString")
-    @NonNull
-    private final Function<Long, Entity> mEntitySupplier;
-
-    private final Set<Long> mValue = new HashSet<>();
+    private final Set<Long> value = new HashSet<>();
 
     PEntityListFilter(@NonNull final String name,
                       @StringRes final int labelId,
@@ -78,34 +76,34 @@ public class PEntityListFilter<T extends Entity>
                       @NonNull final Domain domain,
                       @NonNull final Supplier<List<T>> listSupplier,
                       @NonNull final Function<Long, Entity> entitySupplier) {
-        mName = name;
-        mLabelId = labelId;
-        mDomain = domain;
-        mTable = table;
-        mListSupplier = listSupplier;
-        mEntitySupplier = entitySupplier;
+        this.name = name;
+        labelResId = labelId;
+        this.domain = domain;
+        this.table = table;
+        this.listSupplier = listSupplier;
+        this.entitySupplier = entitySupplier;
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
         if (!DBKey.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                          mDomain.getName())) {
+                          domain.getName())) {
             return false;
         }
-        return !mValue.isEmpty();
+        return !value.isEmpty();
     }
 
     @Override
     @NonNull
     public String getExpression(@NonNull final Context context) {
-        if (mValue.size() == 1) {
-            return '(' + mTable.dot(mDomain) + '=' + mValue.toArray()[0] + ')';
+        if (value.size() == 1) {
+            return '(' + table.dot(domain) + '=' + value.toArray()[0] + ')';
         } else {
-            return mValue.stream()
-                         .map(String::valueOf)
-                         .collect(Collectors.joining(
+            return value.stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.joining(
                                  ",",
-                                 '(' + mTable.dot(mDomain) + " IN ("
+                                 '(' + table.dot(domain) + " IN ("
                                  , "))"));
         }
     }
@@ -113,43 +111,43 @@ public class PEntityListFilter<T extends Entity>
     @Override
     @NonNull
     public String getPrefName() {
-        return mName;
+        return name;
     }
 
     @Nullable
     @Override
     public String getValueAsString() {
-        return mValue.stream()
-                     .map(String::valueOf)
-                     .collect(Collectors.joining(","));
+        return value.stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(","));
     }
 
     @Override
     public void setValueAsString(@Nullable final String csvString) {
-        mValue.clear();
+        value.clear();
         if (csvString != null && !csvString.isEmpty()) {
-            mValue.addAll(Arrays.stream(csvString.split(","))
-                                .map(Long::parseLong)
-                                .collect(Collectors.toList()));
+            value.addAll(Arrays.stream(csvString.split(","))
+                               .map(Long::parseLong)
+                               .collect(Collectors.toList()));
         }
     }
 
     @NonNull
     public List<T> getEntities() {
-        return mListSupplier.get();
+        return listSupplier.get();
     }
 
     @NonNull
     @Override
     public Set<Long> getValue() {
-        return Set.copyOf(mValue);
+        return Set.copyOf(value);
     }
 
     @Override
     public void setValue(@Nullable final Set<Long> value) {
-        mValue.clear();
+        this.value.clear();
         if (value != null && !value.isEmpty()) {
-            mValue.addAll(value);
+            this.value.addAll(value);
         }
     }
 
@@ -161,7 +159,7 @@ public class PEntityListFilter<T extends Entity>
             return context.getString(R.string.bob_empty_field);
         } else {
             return value.stream()
-                        .map(mEntitySupplier)
+                        .map(entitySupplier)
                         .map(entity -> entity.getLabel(context))
                         .collect(Collectors.joining("; "));
         }
@@ -170,7 +168,7 @@ public class PEntityListFilter<T extends Entity>
     @Override
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        return context.getString(mLabelId);
+        return context.getString(labelResId);
     }
 
     @LayoutRes

@@ -80,7 +80,7 @@ public class AutoCompleteTextField
                               @NonNull final SharedPreferences global) {
         super.setParentView(parent, global);
         requireView().setAdapter(new FieldArrayAdapter(parent.getContext(),
-                                                       mListSupplier.get(), mFormatter));
+                                                       mListSupplier.get(), formatter));
     }
 
     @Override

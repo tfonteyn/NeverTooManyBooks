@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 public abstract class StyleBaseFragment
         extends BasePreferenceFragment {
 
-    StyleViewModel mVm;
+    StyleViewModel vm;
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -48,17 +48,15 @@ public abstract class StyleBaseFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
 
         //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(StyleViewModel.class);
+        vm = new ViewModelProvider(getActivity()).get(StyleViewModel.class);
         //noinspection ConstantConditions
-        mVm.init(getContext(), requireArguments());
+        vm.init(getContext(), requireArguments());
 
-        final ListStyle style = mVm.getStyle();
+        final ListStyle style = vm.getStyle();
+        // If it's not the global style, then redirect storage to the database
         if (!style.isGlobal()) {
-            // non-global, set the correct UUID SharedPreferences to use
             // This MUST be done in onCreate/onCreatePreferences
-            //getPreferenceManager().setSharedPreferencesName(style.getUuid());
-
-            getPreferenceManager().setPreferenceDataStore(mVm.getStyleDataStore());
+            getPreferenceManager().setPreferenceDataStore(vm.getStyleDataStore());
         }
     }
 
@@ -68,7 +66,7 @@ public abstract class StyleBaseFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        final ListStyle style = mVm.getStyle();
+        final ListStyle style = vm.getStyle();
         if (style.getId() == 0) {
             toolbar.setTitle(R.string.lbl_clone_style);
         } else {

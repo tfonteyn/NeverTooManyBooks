@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.TextUtils;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -34,16 +33,15 @@ import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
@@ -76,70 +74,66 @@ public class BooksOnBookshelfViewModel
     static final String BKEY_BOOKSHELF = TAG + ":bs";
 
     private static final String ERROR_NULL_BOOKLIST = "mBooklist";
-
+    /** Cache for all bookshelves. */
+    private final List<Bookshelf> bookshelfList = new ArrayList<>();
+    private final BoBTask boBTask = new BoBTask();
     /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
     @Nullable
-    private SearchCriteria mSearchCriteria;
-
-    /** Cache for all bookshelves. */
-    private final List<Bookshelf> mBookshelfList = new ArrayList<>();
-
-    private final BoBTask mBoBTask = new BoBTask();
-
+    private SearchCriteria searchCriteria;
     /** Database Access. */
-    private BookDao mBookDao;
+    private BookDao bookDao;
     /**
      * Flag (potentially) set when coming back from another Activity.
      * Indicates if list rebuild is needed in {@link BooksOnBookshelf}#onResume.
      */
-    private boolean mForceRebuildInOnResume;
+    private boolean forceRebuildInOnResume;
     /** Flag to indicate that a list has been successfully loaded. */
-    private boolean mListHasBeenLoaded;
+    private boolean listLoaded;
 
     /** Flag to prompt the user to make a backup after startup. */
-    private boolean mProposeBackup;
+    private boolean proposeBackup;
 
     /** Currently selected bookshelf. */
     @Nullable
-    private Bookshelf mBookshelf;
+    private Bookshelf bookshelf;
     /** The row id we want the new list to display more-or-less in the center. */
-    private long mCurrentCenteredBookId;
+    private long currentCenteredBookId;
     /** Preferred booklist state in next rebuild. */
-    private RebuildBooklist mRebuildMode;
+    private RebuildBooklist rebuildMode;
     /** Current displayed list. */
     @Nullable
-    private Booklist mBooklist;
+    private Booklist booklist;
 
     // Not using a list here as we need separate access to the amazon handler
     @Nullable
-    private ViewBookOnWebsiteHandler mViewBookHandler;
+    private ViewBookOnWebsiteHandler viewBookHandler;
     @Nullable
-    private AmazonHandler mAmazonHandler;
+    private AmazonHandler amazonHandler;
 
     @NonNull
     public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
-        return mBoBTask.onProgress();
+        return boBTask.onProgress();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<BoBTask.Outcome>>> onCancelled() {
-        return mBoBTask.onCancelled();
+        return boBTask.onCancelled();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Exception>>> onFailure() {
-        return mBoBTask.onFailure();
+        return boBTask.onFailure();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<BoBTask.Outcome>>> onFinished() {
-        return mBoBTask.onFinished();
+        return boBTask.onFinished();
     }
 
     @Override
     protected void onCleared() {
-        if (mBooklist != null) {
-            mBooklist.close();
+        if (booklist != null) {
+            booklist.close();
         }
 
         super.onCleared();
@@ -154,73 +148,73 @@ public class BooksOnBookshelfViewModel
     void init(@NonNull final Context context,
               @Nullable final Bundle args) {
 
-        if (mBookDao == null) {
-            mBookDao = ServiceLocator.getInstance().getBookDao();
+        if (bookDao == null) {
+            bookDao = ServiceLocator.getInstance().getBookDao();
 
             // first start of the activity, read from user preference
-            mRebuildMode = RebuildBooklist.getPreferredMode(context);
+            rebuildMode = RebuildBooklist.getPreferredMode(context);
 
             if (args != null) {
-                mProposeBackup = args.getBoolean(BKEY_PROPOSE_BACKUP, false);
+                proposeBackup = args.getBoolean(BKEY_PROPOSE_BACKUP, false);
 
                 // extract search criteria if any are present
-                mSearchCriteria = args.getParcelable(SearchCriteria.BKEY);
+                searchCriteria = args.getParcelable(SearchCriteria.BKEY);
 
                 // allow the caller to override the user preference
                 if (args.containsKey(BKEY_LIST_STATE)) {
                     // If present, must not be null
-                    mRebuildMode = Objects.requireNonNull(args.getParcelable(BKEY_LIST_STATE),
-                                                          BKEY_LIST_STATE);
+                    rebuildMode = Objects.requireNonNull(args.getParcelable(BKEY_LIST_STATE),
+                                                         BKEY_LIST_STATE);
                 }
 
                 // check for an explicit bookshelf set
                 if (args.containsKey(BKEY_BOOKSHELF)) {
                     // might be null, that's ok.
-                    mBookshelf = Bookshelf.getBookshelf(context, args.getInt(BKEY_BOOKSHELF));
+                    bookshelf = Bookshelf.getBookshelf(context, args.getInt(BKEY_BOOKSHELF));
                 }
             }
         } else {
             // always preserve the state when the hosting fragment was revived
-            mRebuildMode = RebuildBooklist.FromSaved;
+            rebuildMode = RebuildBooklist.FromSaved;
         }
 
         // create if not explicitly set above
-        if (mSearchCriteria == null) {
-            mSearchCriteria = new SearchCriteria();
+        if (searchCriteria == null) {
+            searchCriteria = new SearchCriteria();
         }
 
         // Set the last/preferred bookshelf if not explicitly set above
         // or use the default == first start of the app
-        if (mBookshelf == null) {
-            mBookshelf = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
+        if (bookshelf == null) {
+            bookshelf = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
         }
     }
 
     boolean isProposeBackup() {
         // We only offer ONCE
-        final boolean tmp = mProposeBackup;
-        mProposeBackup = false;
+        final boolean tmp = proposeBackup;
+        proposeBackup = false;
         return tmp;
     }
 
     void resetPreferredListRebuildMode(@NonNull final Context context) {
-        mRebuildMode = RebuildBooklist.getPreferredMode(context);
+        rebuildMode = RebuildBooklist.getPreferredMode(context);
     }
 
     @NonNull
     MenuHandler getViewBookHandler() {
-        if (mViewBookHandler == null) {
-            mViewBookHandler = new ViewBookOnWebsiteHandler();
+        if (viewBookHandler == null) {
+            viewBookHandler = new ViewBookOnWebsiteHandler();
         }
-        return mViewBookHandler;
+        return viewBookHandler;
     }
 
     @NonNull
     MenuHandler getAmazonHandler() {
-        if (mAmazonHandler == null) {
-            mAmazonHandler = new AmazonHandler();
+        if (amazonHandler == null) {
+            amazonHandler = new AmazonHandler();
         }
-        return mAmazonHandler;
+        return amazonHandler;
     }
 
     /**
@@ -231,7 +225,7 @@ public class BooksOnBookshelfViewModel
      */
     @NonNull
     List<Bookshelf> getBookshelfList() {
-        return mBookshelfList;
+        return bookshelfList;
     }
 
     /**
@@ -240,9 +234,9 @@ public class BooksOnBookshelfViewModel
      * @param context Current context.
      */
     void reloadBookshelfList(@NonNull final Context context) {
-        mBookshelfList.clear();
-        mBookshelfList.add(Bookshelf.getBookshelf(context, Bookshelf.ALL_BOOKS));
-        mBookshelfList.addAll(ServiceLocator.getInstance().getBookshelfDao().getAll());
+        bookshelfList.clear();
+        bookshelfList.add(Bookshelf.getBookshelf(context, Bookshelf.ALL_BOOKS));
+        bookshelfList.addAll(ServiceLocator.getInstance().getBookshelfDao().getAll());
     }
 
     /**
@@ -254,7 +248,7 @@ public class BooksOnBookshelfViewModel
      * @return the position that reflects the current bookshelf.
      */
     int getSelectedBookshelfSpinnerPosition(@NonNull final Context context) {
-        Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
+        Objects.requireNonNull(bookshelf, Bookshelf.TAG);
 
         final List<Bookshelf> bookshelfList = getBookshelfList();
         // Not strictly needed, but guard against future changes
@@ -274,7 +268,7 @@ public class BooksOnBookshelfViewModel
                 defaultPosition = i;
             }
             // find the position of the selected shelf
-            if (bookshelf.getId() == mBookshelf.getId()) {
+            if (bookshelf.getId() == this.bookshelf.getId()) {
                 selectedPosition = i;
             }
         }
@@ -289,8 +283,8 @@ public class BooksOnBookshelfViewModel
 
     @NonNull
     Bookshelf getCurrentBookshelf() {
-        Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
-        return mBookshelf;
+        Objects.requireNonNull(bookshelf, Bookshelf.TAG);
+        return bookshelf;
     }
 
     /**
@@ -301,17 +295,17 @@ public class BooksOnBookshelfViewModel
      */
     void setCurrentBookshelf(@NonNull final Context context,
                              final long id) {
-        final long previousBookshelfId = mBookshelf == null ? 0 : mBookshelf.getId();
+        final long previousBookshelfId = bookshelf == null ? 0 : bookshelf.getId();
 
-        mBookshelf = ServiceLocator.getInstance().getBookshelfDao().getById(id);
-        if (mBookshelf == null) {
-            mBookshelf = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
+        bookshelf = ServiceLocator.getInstance().getBookshelfDao().getById(id);
+        if (bookshelf == null) {
+            bookshelf = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
         }
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        mBookshelf.setAsPreferred(global);
+        bookshelf.setAsPreferred(global);
 
-        if (previousBookshelfId != mBookshelf.getId()) {
-            mCurrentCenteredBookId = 0;
+        if (previousBookshelfId != bookshelf.getId()) {
+            currentCenteredBookId = 0;
         }
     }
 
@@ -319,9 +313,9 @@ public class BooksOnBookshelfViewModel
     boolean reloadSelectedBookshelf(@NonNull final Context context) {
         final Bookshelf newBookshelf =
                 Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
-        if (!newBookshelf.equals(mBookshelf)) {
+        if (!newBookshelf.equals(bookshelf)) {
             // if it was.. switch to it.
-            mBookshelf = newBookshelf;
+            bookshelf = newBookshelf;
             return true;
         }
         return false;
@@ -337,8 +331,8 @@ public class BooksOnBookshelfViewModel
      */
     @NonNull
     ListStyle getStyle(@NonNull final Context context) {
-        Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
-        return mBookshelf.getStyle(context);
+        Objects.requireNonNull(bookshelf, Bookshelf.TAG);
+        return bookshelf.getStyle(context);
     }
 
     /**
@@ -380,14 +374,14 @@ public class BooksOnBookshelfViewModel
      */
     private void changeStyle(@NonNull final Context context,
                              @NonNull final ListStyle style) {
-        Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
+        Objects.requireNonNull(bookshelf, Bookshelf.TAG);
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         // set as the global default.
         ServiceLocator.getInstance().getStyles().setDefault(global, style.getUuid());
         // save the new bookshelf/style combination
-        mBookshelf.setAsPreferred(global);
-        mBookshelf.setStyle(context, style);
+        bookshelf.setAsPreferred(global);
+        bookshelf.setStyle(context, style);
     }
 
     /**
@@ -401,9 +395,9 @@ public class BooksOnBookshelfViewModel
     void saveListPosition(@NonNull final Context context,
                           final int position,
                           final int viewOffset) {
-        if (mListHasBeenLoaded) {
-            Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
-            mBookshelf.setFirstVisibleItemPosition(context, position, viewOffset);
+        if (listLoaded) {
+            Objects.requireNonNull(bookshelf, Bookshelf.TAG);
+            bookshelf.setFirstVisibleItemPosition(context, position, viewOffset);
         }
     }
 
@@ -413,7 +407,7 @@ public class BooksOnBookshelfViewModel
      * @return {@code true} if a rebuild is needed
      */
     boolean isForceRebuildInOnResume() {
-        return mForceRebuildInOnResume;
+        return forceRebuildInOnResume;
     }
 
     /**
@@ -422,7 +416,7 @@ public class BooksOnBookshelfViewModel
      * @param forceRebuild Flag
      */
     void setForceRebuildInOnResume(final boolean forceRebuild) {
-        mForceRebuildInOnResume = forceRebuild;
+        forceRebuildInOnResume = forceRebuild;
     }
 
     /**
@@ -431,12 +425,12 @@ public class BooksOnBookshelfViewModel
      * @return {@code true} if loaded at least once.
      */
     boolean isListLoaded() {
-        return mListHasBeenLoaded;
+        return listLoaded;
     }
 
     @IntRange(from = 0)
     public long getCurrentCenteredBookId() {
-        return mCurrentCenteredBookId;
+        return currentCenteredBookId;
     }
 
     /**
@@ -446,7 +440,7 @@ public class BooksOnBookshelfViewModel
      * @param bookId to use
      */
     void setCurrentCenteredBookId(@IntRange(from = 0) final long bookId) {
-        mCurrentCenteredBookId = bookId;
+        currentCenteredBookId = bookId;
     }
 
     /**
@@ -469,24 +463,24 @@ public class BooksOnBookshelfViewModel
 
     @NonNull
     SearchCriteria getSearchCriteria() {
-        return Objects.requireNonNull(mSearchCriteria);
+        return Objects.requireNonNull(searchCriteria);
     }
 
     void setSearchCriteria(@NonNull final SearchCriteria criteria) {
-        mSearchCriteria = criteria;
+        searchCriteria = criteria;
     }
 
     /**
      * This is used to re-display the list in onResume.
-     * i.e. {@link #mCurrentCenteredBookId} was set, but a rebuild was not needed.
+     * i.e. {@link #currentCenteredBookId} was set, but a rebuild was not needed.
      *
      * @return the node(s), can be empty, but never {@code null}
      */
     @NonNull
     List<BooklistNode> getTargetNodes() {
-        if (mCurrentCenteredBookId != 0) {
-            Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
-            return mBooklist.getVisibleBookNodes(mCurrentCenteredBookId);
+        if (currentCenteredBookId != 0) {
+            Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+            return booklist.getVisibleBookNodes(currentCenteredBookId);
         }
 
         return new ArrayList<>();
@@ -506,77 +500,37 @@ public class BooksOnBookshelfViewModel
     BooklistNode setNode(final long nodeRowId,
                          @NonNull final BooklistNode.NextState nextState,
                          final int relativeChildLevel) {
-        Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
-        return mBooklist.setNode(nodeRowId, nextState, relativeChildLevel);
+        Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+        return booklist.setNode(nodeRowId, nextState, relativeChildLevel);
     }
 
     void expandAllNodes(@IntRange(from = 1) final int topLevel,
                         final boolean expand) {
-        Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
-        mBooklist.setAllNodes(topLevel, expand);
+        Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+        booklist.setAllNodes(topLevel, expand);
     }
 
 
     @NonNull
     Optional<BooklistNode> getNextBookWithoutCover(final long rowId) {
-        Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
-        return mBooklist.getNextBookWithoutCover(rowId);
+        Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+        return booklist.getNextBookWithoutCover(rowId);
     }
 
-    @Nullable
-    String getHeaderFilterText(@NonNull final Context context) {
-        final ListStyle style = getStyle(context);
-        if (style.isShowHeader(ListStyle.HEADER_SHOW_FILTER)) {
-
-            //noinspection ConstantConditions
-            final Collection<String> filterText = mBookshelf
-                    .getFilters()
-                    .stream()
-                    .filter(f -> f.isActive(context))
-                    .map(filter -> filter.getLabel(context))
-                    .collect(Collectors.toList());
-
-            //noinspection ConstantConditions
-            mSearchCriteria.getDisplayText().ifPresent(text -> filterText.add('"' + text + '"'));
-
-            if (!filterText.isEmpty()) {
-                return context.getString(R.string.lbl_search_filtered_on_x,
-                                         TextUtils.join(", ", filterText));
-            }
-        }
-        return null;
-    }
-
-    @Nullable
-    String getHeaderStyleName(@NonNull final Context context) {
-        final ListStyle style = getStyle(context);
-        if (style.isShowHeader(ListStyle.HEADER_SHOW_STYLE_NAME)) {
-            return style.getLabel(context);
-        }
-        return null;
-    }
-
-    @Nullable
-    String getHeaderBookCount(@NonNull final Context context) {
-        final ListStyle style = getStyle(context);
-        if (style.isShowHeader(ListStyle.HEADER_SHOW_BOOK_COUNT) && mBooklist != null) {
-            final int totalBooks = mBooklist.countBooks();
-            final int distinctBooks = mBooklist.countDistinctBooks();
-            if (distinctBooks == totalBooks) {
-                return context.getResources().getQuantityString(R.plurals.displaying_n_books,
-                                                                distinctBooks, totalBooks);
-            } else {
-                return context.getString(R.string.txt_displaying_n_books_in_m_entries,
-                                         distinctBooks, totalBooks);
-            }
-        }
-        return null;
+    @NonNull
+    BooklistHeader getHeaderContent(@NonNull final Context context) {
+        Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+        Objects.requireNonNull(bookshelf, "mBookshelf");
+        return new BooklistHeader(context, getStyle(context),
+                                  booklist.countBooks(), booklist.countDistinctBooks(),
+                                  bookshelf.getFilters(),
+                                  searchCriteria);
     }
 
     @NonNull
     String getBookNavigationTableName() {
-        Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
-        return mBooklist.getNavigationTableName();
+        Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+        return booklist.getNavigationTableName();
     }
 
     /**
@@ -587,8 +541,8 @@ public class BooksOnBookshelfViewModel
      */
     @NonNull
     BooklistCursor getNewListCursor() {
-        Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
-        return mBooklist.getNewListCursor();
+        Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+        return booklist.getNewListCursor();
     }
 
     @NonNull
@@ -601,8 +555,8 @@ public class BooksOnBookshelfViewModel
                                        final boolean onlyThisShelf,
                                        @IntRange(from = 0) final long authorId) {
         if (onlyThisShelf || authorId == 0) {
-            Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
-            return mBooklist.getBookIdsForNodeKey(nodeKey);
+            Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+            return booklist.getBookIdsForNodeKey(nodeKey);
         } else {
             return ServiceLocator.getInstance().getAuthorDao().getBookIds(authorId);
         }
@@ -613,8 +567,8 @@ public class BooksOnBookshelfViewModel
                                        final boolean onlyThisShelf,
                                        @IntRange(from = 0) final long seriesId) {
         if (onlyThisShelf || seriesId == 0) {
-            Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
-            return mBooklist.getBookIdsForNodeKey(nodeKey);
+            Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+            return booklist.getBookIdsForNodeKey(nodeKey);
         } else {
             return ServiceLocator.getInstance().getSeriesDao().getBookIds(seriesId);
         }
@@ -625,8 +579,8 @@ public class BooksOnBookshelfViewModel
                                           final boolean onlyThisShelf,
                                           @IntRange(from = 0) final long publisherId) {
         if (onlyThisShelf || publisherId == 0) {
-            Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
-            return mBooklist.getBookIdsForNodeKey(nodeKey);
+            Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+            return booklist.getBookIdsForNodeKey(nodeKey);
         } else {
             return ServiceLocator.getInstance().getPublisherDao().getBookIds(publisherId);
         }
@@ -644,7 +598,7 @@ public class BooksOnBookshelfViewModel
 
     boolean setBookRead(@IntRange(from = 1) final long bookId,
                         final boolean isRead) {
-        return mBookDao.setRead(bookId, isRead);
+        return bookDao.setRead(bookId, isRead);
     }
 
     @NonNull
@@ -700,7 +654,7 @@ public class BooksOnBookshelfViewModel
      * @return {@code true} on a successful delete
      */
     boolean deleteBook(@IntRange(from = 1) final long bookId) {
-        return mBookDao.delete(bookId);
+        return bookDao.delete(bookId);
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -712,66 +666,66 @@ public class BooksOnBookshelfViewModel
     @NonNull
     int[] onBookRead(@IntRange(from = 1) final long bookId,
                      final boolean read) {
-        Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
-        return mBooklist.updateBookRead(bookId, read)
-                        .stream()
-                        .mapToInt(BooklistNode::getAdapterPosition)
-                        .toArray();
+        Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+        return booklist.updateBookRead(bookId, read)
+                       .stream()
+                       .mapToInt(BooklistNode::getAdapterPosition)
+                       .toArray();
     }
 
     @NonNull
     int[] onBookLend(@IntRange(from = 1) final long bookId,
                      @Nullable final String loanee) {
-        Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
-        return mBooklist.updateBookLoanee(bookId, loanee)
-                        .stream()
-                        .mapToInt(BooklistNode::getAdapterPosition)
-                        .toArray();
+        Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+        return booklist.updateBookLoanee(bookId, loanee)
+                       .stream()
+                       .mapToInt(BooklistNode::getAdapterPosition)
+                       .toArray();
     }
-
 
     /**
      * Queue a rebuild of the underlying cursor and data.
      */
     void buildBookList() {
-        Objects.requireNonNull(mBookshelf, ERROR_NULL_BOOKLIST);
+        Objects.requireNonNull(bookshelf, ERROR_NULL_BOOKLIST);
 
         //noinspection ConstantConditions
-        mBoBTask.build(mBookshelf, mRebuildMode, mSearchCriteria, mCurrentCenteredBookId);
+        boBTask.build(bookshelf, rebuildMode, searchCriteria, currentCenteredBookId);
     }
 
     boolean isBuilding() {
-        return mBoBTask.isRunning();
+        return boBTask.isRunning();
     }
 
     void onBuildFinished(@NonNull final BoBTask.Outcome outcome) {
         // the new build is completely done. We can safely discard the previous one.
-        if (mBooklist != null) {
-            mBooklist.close();
+        if (booklist != null) {
+            booklist.close();
         }
 
-        mBooklist = outcome.getList();
+        booklist = outcome.getList();
 
         // Save a flag to say list was loaded at least once successfully
-        mListHasBeenLoaded = true;
+        listLoaded = true;
 
         // preserve the new state by default
-        mRebuildMode = RebuildBooklist.FromSaved;
+        rebuildMode = RebuildBooklist.FromSaved;
     }
 
     void onBuildCancelled() {
         // reset the central book id.
-        mCurrentCenteredBookId = 0;
+        currentCenteredBookId = 0;
     }
 
     void onBuildFailed() {
         // reset the central book id.
-        mCurrentCenteredBookId = 0;
+        currentCenteredBookId = 0;
     }
 
     @NonNull
     public List<BooklistNode> getVisibleBookNodes(final long bookId) {
-        Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
-        return mBooklist.getVisibleBookNodes(bookId);
+        Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+        return booklist.getVisibleBookNodes(bookId);
     }
+
 }

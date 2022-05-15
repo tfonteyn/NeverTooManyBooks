@@ -53,40 +53,40 @@ public class TableDefinition {
             "SELECT COUNT(*) FROM sqlite_temp_master WHERE type='table' AND name=?";
 
     /** List of index definitions for this table. */
-    private final Collection<IndexDefinition> mIndexes = new ArrayList<>();
+    private final Collection<IndexDefinition> indexes = new ArrayList<>();
     /** Used for checking if an index has already been added. */
-    private final Collection<String> mIndexNameCheck = new HashSet<>();
+    private final Collection<String> indexNameCheck = new HashSet<>();
 
     /** List of domains in this table. */
-    private final List<Domain> mDomains = new ArrayList<>();
+    private final List<Domain> domains = new ArrayList<>();
     /** Used for checking if a domain has already been added. */
-    private final Collection<Domain> mDomainCheck = new HashSet<>();
+    private final Collection<Domain> domainCheck = new HashSet<>();
     /** Used for checking if a domain NAME has already been added. */
-    private final Collection<Integer> mDomainNameCheck = new HashSet<>();
+    private final Collection<Integer> domainNameCheck = new HashSet<>();
 
     /** List of domains forming primary key. */
-    private final List<Domain> mPrimaryKey = new ArrayList<>();
+    private final List<Domain> primaryKey = new ArrayList<>();
 
     /** List of parent tables (tables referred to by foreign keys on this table). */
-    private final Map<TableDefinition, FkReference> mParents =
+    private final Map<TableDefinition, FkReference> parents =
             Collections.synchronizedMap(new HashMap<>());
 
     /** List of child tables (tables referring to by foreign keys to this table). */
-    private final Map<TableDefinition, FkReference> mChildren =
+    private final Map<TableDefinition, FkReference> children =
             Collections.synchronizedMap(new HashMap<>());
 
     /** Table name. */
     @NonNull
-    private String mName;
+    private String name;
     /** Table alias. */
     @Nullable
-    private String mAlias;
+    private String alias;
     /** Table type. */
     @NonNull
-    private TableType mType = TableType.Standard;
+    private TableType type = TableType.Standard;
     /** Cached table structure info. */
     @Nullable
-    private TableInfo mTableInfo;
+    private TableInfo tableInfo;
 
     /**
      * Constructor.
@@ -94,58 +94,9 @@ public class TableDefinition {
      * @param name Table name; also used as alias unless the latter is overridden.
      */
     public TableDefinition(@NonNull final String name) {
-        mName = name;
-        mAlias = name;
+        this.name = name;
+        alias = name;
     }
-
-//    /** NOT IN USE - needs more work/testing on the references.
-//     * Copy constructor.
-//     *
-//     * @param from object to copy
-//     * @param name the NEW name to use
-//     */
-//    public TableDefinition(@NonNull final TableDefinition from,
-//                           @NonNull final String name) {
-//
-//        boolean withRef = false;
-//
-//        mName = name;
-//        mAlias = from.mAlias;
-//        mType = from.mType;
-//
-//        // the domains are copied as is.
-//        for (final Domain d : from.mDomains) {
-//            // use the method, so mDomainNameCheck/mDomainCheck get populated properly
-//            addDomain(d);
-//        }
-//        // the primary key is copied as is.
-//        mPrimaryKey.addAll(from.mPrimaryKey);
-//
-//
-//        if (withRef) {
-//            // copy the foreign keys the 'from' table has to other 3rd-party tables.
-//            // i.e. hook THIS table up with the same 3rd-party tables
-//            for (final FkReference fromFK : from.mParents.values()) {
-//                addReference(fromFK.mParent, fromFK.mDomains);
-//            }
-//
-//            // tell the 3rd-party tables to stop referencing the 'from' table
-//            // and that they should reference THIS table now.
-//            for (final FkReference childFK : from.mChildren.values()) {
-//                // unhook the foreign reference from the CHILDREN of the definition we're copying
-//                childFK.mChild.removeReference(from);
-//                // and create a new reference between the CHILDREN of the definition we're copying
-//                // and THIS object.
-//                childFK.mChild.addReference(this, childFK.mDomains);
-//            }
-//        }
-//
-//        // the indexes are copied as is.
-//        for (final IndexDefinition fromIndex : from.mIndexes) {
-//            // use the method, so mIndexNameCheck get populated properly
-//            addIndex(fromIndex.getNameSuffix(), fromIndex.getUnique(), fromIndex.getDomains());
-//        }
-//    }
 
     /**
      * Given a list of tables, create the database (tables + indexes).
@@ -173,7 +124,7 @@ public class TableDefinition {
      */
     public void create(@NonNull final SQLiteDatabase db,
                        final boolean withDomainConstraints) {
-        db.execSQL(def(mName, withDomainConstraints));
+        db.execSQL(def(name, withDomainConstraints));
     }
 
     /**
@@ -182,7 +133,7 @@ public class TableDefinition {
      * @param db Database Access
      */
     public void createIndices(@NonNull final SQLiteDatabase db) {
-        for (final IndexDefinition index : mIndexes) {
+        for (final IndexDefinition index : indexes) {
             index.create(db);
         }
     }
@@ -191,17 +142,17 @@ public class TableDefinition {
      * Remove all references and resources used by this table.
      */
     public void clear() {
-        mDomains.clear();
-        mDomainCheck.clear();
-        mDomainNameCheck.clear();
-        mIndexes.clear();
-        mIndexNameCheck.clear();
-        mPrimaryKey.clear();
+        domains.clear();
+        domainCheck.clear();
+        domainNameCheck.clear();
+        indexes.clear();
+        indexNameCheck.clear();
+        primaryKey.clear();
 
         // Need to make local copies to avoid 'collection modified' errors
         final Collection<TableDefinition> tmpParents = new ArrayList<>();
-        for (final FkReference fk : mParents.values()) {
-            tmpParents.add(fk.mParent);
+        for (final FkReference fk : parents.values()) {
+            tmpParents.add(fk.parent);
         }
         for (final TableDefinition parent : tmpParents) {
             removeReference(parent);
@@ -209,8 +160,8 @@ public class TableDefinition {
 
         // Need to make local copies to avoid 'collection modified' errors
         final Collection<TableDefinition> tmpChildren = new ArrayList<>();
-        for (final FkReference fk : mChildren.values()) {
-            tmpChildren.add(fk.mChild);
+        for (final FkReference fk : children.values()) {
+            tmpChildren.add(fk.child);
         }
         for (final TableDefinition child : tmpChildren) {
             child.removeReference(this);
@@ -226,7 +177,7 @@ public class TableDefinition {
      */
     @NonNull
     public TableDefinition setType(@NonNull final TableType type) {
-        mType = type;
+        this.type = type;
         return this;
     }
 
@@ -237,7 +188,7 @@ public class TableDefinition {
      */
     @NonNull
     public String getName() {
-        return mName;
+        return name;
     }
 
     /**
@@ -250,7 +201,7 @@ public class TableDefinition {
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public TableDefinition setName(@NonNull final String newName) {
-        mName = newName;
+        name = newName;
         return this;
     }
 
@@ -264,7 +215,7 @@ public class TableDefinition {
     @Override
     @NonNull
     public String toString() {
-        return mName;
+        return name;
     }
 
 
@@ -272,18 +223,18 @@ public class TableDefinition {
     @NonNull
     public String toDebugString() {
         return "TableDefinition{"
-               + "mName='" + mName + '\''
-               + ", mAlias='" + mAlias + '\''
-               + ", mType=" + mType
-               + ", mDomains=" + mDomains
-               + ", mPrimaryKey=" + mPrimaryKey
-               + "\nmParents=" + mParents
-               + "\nmChildren=" + mChildren
-               + "\nmIndexes=" + mIndexes
-               + "\nmIndexNameCheck=" + mIndexNameCheck
-               + "\nmDomainCheck=" + mDomainCheck
-               + "\nmDomainNameCheck=" + mDomainNameCheck
-               + "\nmTableInfo=" + mTableInfo
+               + "name='" + name + '\''
+               + ", alias='" + alias + '\''
+               + ", type=" + type
+               + ", domains=" + domains
+               + ", primaryKey=" + primaryKey
+               + "\nparents=" + parents
+               + "\nchildren=" + children
+               + "\nindexes=" + indexes
+               + "\nindexNameCheck=" + indexNameCheck
+               + "\ndomainCheck=" + domainCheck
+               + "\ndomainNameCheck=" + domainNameCheck
+               + "\ntableInfo=" + tableInfo
                + '}';
     }
 
@@ -294,10 +245,10 @@ public class TableDefinition {
      */
     @NonNull
     public String getAlias() {
-        if (mAlias == null || mAlias.isEmpty()) {
-            return mName;
+        if (alias == null || alias.isEmpty()) {
+            return name;
         } else {
-            return mAlias;
+            return alias;
         }
     }
 
@@ -310,7 +261,7 @@ public class TableDefinition {
      */
     @NonNull
     public TableDefinition setAlias(@Nullable final String newAlias) {
-        mAlias = newAlias;
+        alias = newAlias;
         return this;
     }
 
@@ -338,21 +289,21 @@ public class TableDefinition {
      */
     public boolean addDomain(@NonNull final Domain domain) {
         // Make sure it's not already in the table, silently ignore if it is.
-        if (mDomainCheck.contains(domain)) {
+        if (domainCheck.contains(domain)) {
             return false;
         }
 
         // avoid toLowerCase
         final int nameHash = domain.getName().hashCode();
         // Make sure one with the same name is not already in table, can't ignore that, go crash.
-        if (mDomainNameCheck.contains(nameHash)) {
+        if (domainNameCheck.contains(nameHash)) {
             throw new IllegalArgumentException("Duplicate domain=" + domain);
         }
         // Add it
-        mDomains.add(domain);
+        domains.add(domain);
 
-        mDomainCheck.add(domain);
-        mDomainNameCheck.add(nameHash);
+        domainCheck.add(domain);
+        domainNameCheck.add(nameHash);
         return true;
     }
 
@@ -363,7 +314,7 @@ public class TableDefinition {
      */
     @NonNull
     public List<Domain> getDomains() {
-        return mDomains;
+        return domains;
     }
 
     /**
@@ -375,10 +326,10 @@ public class TableDefinition {
      */
     @Nullable
     public Domain getDomain(@NonNull final String key) {
-        return mDomains.stream()
-                       .filter(domain -> domain.getName().equals(key))
-                       .findFirst()
-                       .orElse(null);
+        return domains.stream()
+                      .filter(domain -> domain.getName().equals(key))
+                      .findFirst()
+                      .orElse(null);
     }
 
     /**
@@ -388,7 +339,7 @@ public class TableDefinition {
      */
     @NonNull
     private List<Domain> getPrimaryKey() {
-        return mPrimaryKey;
+        return primaryKey;
     }
 
     /**
@@ -400,8 +351,8 @@ public class TableDefinition {
      */
     @NonNull
     public TableDefinition setPrimaryKey(@NonNull final Domain... domains) {
-        mPrimaryKey.clear();
-        Collections.addAll(mPrimaryKey, domains);
+        primaryKey.clear();
+        Collections.addAll(primaryKey, domains);
         return this;
     }
 
@@ -414,11 +365,11 @@ public class TableDefinition {
      */
     @NonNull
     private TableDefinition addReference(@NonNull final FkReference fk) {
-        if (fk.mChild != this) {
+        if (fk.child != this) {
             throw new IllegalArgumentException("Foreign key does not include this table as child");
         }
-        mParents.put(fk.mParent, fk);
-        fk.mParent.addChildReference(this, fk);
+        parents.put(fk.parent, fk);
+        fk.parent.addChildReference(this, fk);
         return this;
     }
 
@@ -481,7 +432,7 @@ public class TableDefinition {
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     private TableDefinition removeReference(@NonNull final TableDefinition parent) {
-        mParents.remove(parent);
+        parents.remove(parent);
         parent.removeChildReference(this);
         return this;
     }
@@ -498,8 +449,8 @@ public class TableDefinition {
     @SuppressWarnings("UnusedReturnValue")
     private TableDefinition addChildReference(@NonNull final TableDefinition child,
                                               @NonNull final FkReference fk) {
-        if (!mChildren.containsKey(child)) {
-            mChildren.put(child, fk);
+        if (!children.containsKey(child)) {
+            children.put(child, fk);
         }
         return this;
     }
@@ -514,7 +465,7 @@ public class TableDefinition {
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     private TableDefinition removeChildReference(@NonNull final TableDefinition child) {
-        mChildren.remove(child);
+        children.remove(child);
         return this;
     }
 
@@ -550,12 +501,12 @@ public class TableDefinition {
                                      final boolean unique,
                                      @NonNull final List<Domain> domains) {
         // Make sure not already defined
-        if (mIndexNameCheck.contains(nameSuffix)) {
+        if (indexNameCheck.contains(nameSuffix)) {
             throw new IllegalStateException("Index suffix '" + nameSuffix + "' already defined");
         }
-        mIndexes.add(new IndexDefinition(this, nameSuffix + "_" + (mIndexes.size() + 1),
-                                         unique, domains));
-        mIndexNameCheck.add(nameSuffix);
+        indexes.add(new IndexDefinition(this, nameSuffix + "_" + (indexes.size() + 1),
+                                        unique, domains));
+        indexNameCheck.add(nameSuffix);
         return this;
     }
 
@@ -616,7 +567,7 @@ public class TableDefinition {
      */
     @NonNull
     public String ref() {
-        return mName + _AS_ + getAlias();
+        return name + _AS_ + getAlias();
     }
 
     /**
@@ -682,15 +633,15 @@ public class TableDefinition {
     @NonNull
     public String fkMatch(@NonNull final TableDefinition to) {
         final FkReference fk;
-        if (mChildren.containsKey(to)) {
-            fk = mChildren.get(to);
+        if (children.containsKey(to)) {
+            fk = children.get(to);
         } else {
-            fk = mParents.get(to);
+            fk = parents.get(to);
         }
 
         // note the use of a Supplier
         Objects.requireNonNull(fk, () ->
-                "No foreign key between `" + mName + "` and `" + to.getName() + '`');
+                "No foreign key between `" + name + "` and `" + to.getName() + '`');
 
         return fk.getPredicate();
     }
@@ -704,13 +655,13 @@ public class TableDefinition {
      */
     public boolean exists(@NonNull final SQLiteDatabase db) {
         final String sql;
-        if (mType == TableType.Standard) {
+        if (type == TableType.Standard) {
             sql = TABLE_EXISTS_SQL_STANDARD;
         } else {
             sql = TABLE_EXISTS_SQL_TEMP;
         }
         try (SQLiteStatement stmt = db.compileStatement(sql)) {
-            stmt.bindString(1, mName);
+            stmt.bindString(1, name);
             return stmt.simpleQueryForLong() > 0;
         } catch (@NonNull final SQLiteDoneException ignore) {
             return false;
@@ -727,11 +678,11 @@ public class TableDefinition {
     @NonNull
     public TableInfo getTableInfo(@NonNull final SQLiteDatabase db) {
         synchronized (this) {
-            if (mTableInfo == null) {
-                mTableInfo = new TableInfo(db, mName);
+            if (tableInfo == null) {
+                tableInfo = new TableInfo(db, name);
             }
         }
-        return mTableInfo;
+        return tableInfo;
     }
 
     /**
@@ -837,8 +788,8 @@ public class TableDefinition {
                 .collect(Collectors.toList());
 
         final String sql =
-                "INSERT INTO " + destination + " (" + TextUtils.join(",", dstColumns) + ")"
-                + " SELECT " + TextUtils.join(",", srcColumns) + " FROM " + mName;
+                "INSERT INTO " + destination + " (" + String.join(",", dstColumns) + ")"
+                + " SELECT " + String.join(",", srcColumns) + " FROM " + name;
         db.execSQL(sql);
     }
 
@@ -855,16 +806,16 @@ public class TableDefinition {
                        final boolean withDomainConstraints) {
 
         final StringBuilder sql = new StringBuilder("CREATE")
-                .append(mType.getCreateModifier())
+                .append(type.getCreateModifier())
                 .append(" TABLE ")
                 .append(tableName)
-                .append(mType.getUsingModifier())
+                .append(type.getUsingModifier())
                 .append("\n(");
 
         // add the columns
         boolean hasPrimaryKey = false;
         final StringJoiner columns = new StringJoiner(",");
-        for (final Domain domain : mDomains) {
+        for (final Domain domain : domains) {
             columns.add(domain.def(withDomainConstraints));
             // remember if we added a primary key column.
             hasPrimaryKey = hasPrimaryKey || domain.isPrimaryKey();
@@ -872,18 +823,18 @@ public class TableDefinition {
         sql.append(columns);
 
         // add the primary key if not already added / needed.
-        if (!hasPrimaryKey && !mPrimaryKey.isEmpty()) {
+        if (!hasPrimaryKey && !primaryKey.isEmpty()) {
             sql.append("\n,PRIMARY KEY (")
-               .append(TextUtils.join(",", mPrimaryKey))
+               .append(TextUtils.join(",", primaryKey))
                .append(')');
         }
 
         // add foreign key TABLE constraints if any.
-        if (!mParents.isEmpty()) {
+        if (!parents.isEmpty()) {
             sql.append("\n,")
-               .append(mParents.values().stream()
-                               .map(FkReference::def)
-                               .collect(Collectors.joining("\n,")));
+               .append(parents.values().stream()
+                              .map(FkReference::def)
+                              .collect(Collectors.joining("\n,")));
         }
 
         // end of column/constraint list
@@ -980,16 +931,16 @@ public class TableDefinition {
 
         /** Owner of primary key that the FK references. */
         @NonNull
-        private final TableDefinition mParent;
+        private final TableDefinition parent;
         /** Table owning FK. */
         @NonNull
-        private final TableDefinition mChild;
+        private final TableDefinition child;
         /** Domains in the FK that reference the parent PK. */
         @NonNull
-        private final List<Domain> mDomains;
+        private final List<Domain> domains;
         /** Optional key in the parent to use instead of the PK. */
         @Nullable
-        private Domain mParentKey;
+        private Domain parentKey;
 
         /**
          * Constructor.
@@ -1004,9 +955,9 @@ public class TableDefinition {
                     @NonNull final TableDefinition child,
                     @NonNull final Domain... domains) {
             // take a COPY
-            mDomains = new ArrayList<>(Arrays.asList(domains));
-            mParent = parent;
-            mChild = child;
+            this.domains = new ArrayList<>(Arrays.asList(domains));
+            this.parent = parent;
+            this.child = child;
         }
 
         /**
@@ -1022,9 +973,9 @@ public class TableDefinition {
                     @NonNull final TableDefinition child,
                     @NonNull final List<Domain> domains) {
             // take a COPY
-            mDomains = new ArrayList<>(domains);
-            mParent = parent;
-            mChild = child;
+            this.domains = new ArrayList<>(domains);
+            this.parent = parent;
+            this.child = child;
         }
 
         /**
@@ -1041,11 +992,11 @@ public class TableDefinition {
                     @NonNull final Domain parentKey,
                     @NonNull final TableDefinition child,
                     @NonNull final Domain domain) {
-            mDomains = new ArrayList<>();
-            mDomains.add(domain);
-            mParent = parent;
-            mParentKey = parentKey;
-            mChild = child;
+            domains = new ArrayList<>();
+            domains.add(domain);
+            this.parent = parent;
+            this.parentKey = parentKey;
+            this.child = child;
         }
 
         /**
@@ -1057,24 +1008,24 @@ public class TableDefinition {
          */
         @NonNull
         String getPredicate() {
-            if (mParentKey != null) {
-                return mParent.getAlias() + '.' + mParentKey.getName()
-                       + '=' + mChild.getAlias() + '.' + mDomains.get(0).getName();
+            if (parentKey != null) {
+                return parent.getAlias() + '.' + parentKey.getName()
+                       + '=' + child.getAlias() + '.' + domains.get(0).getName();
 
             } else {
-                final List<Domain> pk = mParent.getPrimaryKey();
+                final List<Domain> pk = parent.getPrimaryKey();
                 if (pk.isEmpty()) {
                     // Should never happen... flw
-                    throw new IllegalStateException("No primary key for table: " + mParent);
+                    throw new IllegalStateException("No primary key for table: " + parent);
                 }
                 final StringBuilder sql = new StringBuilder();
                 for (int i = 0; i < pk.size(); i++) {
                     if (i > 0) {
                         sql.append(" AND ");
                     }
-                    sql.append(mParent.getAlias()).append('.').append(pk.get(i).getName());
+                    sql.append(parent.getAlias()).append('.').append(pk.get(i).getName());
                     sql.append('=');
-                    sql.append(mChild.getAlias()).append('.').append(mDomains.get(i).getName());
+                    sql.append(child.getAlias()).append('.').append(domains.get(i).getName());
                 }
                 return sql.toString();
             }
@@ -1088,13 +1039,13 @@ public class TableDefinition {
          */
         @NonNull
         String def() {
-            if (mParentKey != null) {
-                return "FOREIGN KEY (" + mDomains.get(0)
-                       + ") REFERENCES " + mParent + '(' + mParentKey + ')';
+            if (parentKey != null) {
+                return "FOREIGN KEY (" + domains.get(0)
+                       + ") REFERENCES " + parent + '(' + parentKey + ')';
             } else {
-                return "FOREIGN KEY (" + TextUtils.join(",", mDomains)
-                       + ") REFERENCES " + mParent
-                       + '(' + TextUtils.join(",", mParent.getPrimaryKey()) + ')';
+                return "FOREIGN KEY (" + TextUtils.join(",", domains)
+                       + ") REFERENCES " + parent
+                       + '(' + TextUtils.join(",", parent.getPrimaryKey()) + ')';
             }
         }
 
@@ -1102,10 +1053,10 @@ public class TableDefinition {
         @NonNull
         public String toString() {
             return "FkReference{"
-                   + "mParent=" + mParent
-                   + ", mParentKey=" + mParentKey
-                   + ", mChild=" + mChild
-                   + ", mDomains=" + mDomains
+                   + "parent=" + parent
+                   + ", parentKey=" + parentKey
+                   + ", child=" + child
+                   + ", domains=" + domains
                    + ", def=\n" + def()
                    + "\n}";
         }

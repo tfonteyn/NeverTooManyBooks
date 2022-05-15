@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -67,12 +68,12 @@ public class UserStyleTest
         assertEquals(s1.isShowAuthorByGivenName(), s2.isShowAuthorByGivenName());
         assertEquals(s1.isSortAuthorByGivenName(), s2.isSortAuthorByGivenName());
 
-        assertEquals(s1.isShowHeader(ListStyle.HEADER_SHOW_BOOK_COUNT),
-                     s2.isShowHeader(ListStyle.HEADER_SHOW_BOOK_COUNT));
-        assertEquals(s1.isShowHeader(ListStyle.HEADER_SHOW_STYLE_NAME),
-                     s2.isShowHeader(ListStyle.HEADER_SHOW_STYLE_NAME));
-        assertEquals(s1.isShowHeader(ListStyle.HEADER_SHOW_FILTER),
-                     s2.isShowHeader(ListStyle.HEADER_SHOW_FILTER));
+        assertEquals(s1.isShowHeader(BooklistHeader.SHOW_BOOK_COUNT),
+                     s2.isShowHeader(BooklistHeader.SHOW_BOOK_COUNT));
+        assertEquals(s1.isShowHeader(BooklistHeader.SHOW_STYLE_NAME),
+                     s2.isShowHeader(BooklistHeader.SHOW_STYLE_NAME));
+        assertEquals(s1.isShowHeader(BooklistHeader.SHOW_FILTERS),
+                     s2.isShowHeader(BooklistHeader.SHOW_FILTERS));
 
         assertEquals(s1.getGroupRowHeight(context), s2.getGroupRowHeight(context));
         assertEquals(s1.getExpansionLevel(), s2.getExpansionLevel());
@@ -86,9 +87,9 @@ public class UserStyleTest
 
         assertEquals(s1.getTextScale(), s2.getTextScale());
 
-        assertEquals(s1.getListScreenBookFields(), s2.getListScreenBookFields());
-        assertEquals(s1.getDetailScreenBookFields(), s2.getDetailScreenBookFields());
+        assertEquals(s1.getBooklistBookFieldVisibility(), s2.getBooklistBookFieldVisibility());
+        assertEquals(s1.getBookDetailsFieldVisibility(), s2.getBookDetailsFieldVisibility());
 
-        assertEquals(s1.getGroups(), s2.getGroups());
+        assertEquals(s1.getGroupList(), s2.getGroupList());
     }
 }

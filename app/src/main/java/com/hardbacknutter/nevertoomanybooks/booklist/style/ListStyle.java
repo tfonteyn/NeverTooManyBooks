@@ -27,39 +27,19 @@ import androidx.annotation.NonNull;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
+import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BookshelfBooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.PublisherBooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.SeriesBooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 public interface ListStyle {
 
-    /**
-     * the amount of details to show in the header.
-     * NEVER change these values, they get stored in preferences.
-     * <p>
-     * not in use: 1 << 2
-     */
-    int HEADER_SHOW_BOOK_COUNT = 1;
-    /** the amount of details to show in the header. */
-    int HEADER_SHOW_STYLE_NAME = 1 << 3;
-    /** the amount of details to show in the header. */
-    int HEADER_SHOW_FILTER = 1 << 4;
-    /** the amount of details to show in the header. */
-    int HEADER_BITMASK_ALL =
-            HEADER_SHOW_BOOK_COUNT
-            | HEADER_SHOW_STYLE_NAME
-            | HEADER_SHOW_FILTER;
-
-    /** Thumbnail Scaling. */
-    int IMAGE_SCALE_0_NOT_DISPLAYED = 0;
-    /** Thumbnail Scaling. */
-    int IMAGE_SCALE_1_SMALL = 1;
-    /** Thumbnail Scaling. */
-    int IMAGE_SCALE_2_MEDIUM = 2;
-    /** Thumbnail Scaling. */
-    int IMAGE_SCALE_3_LARGE = 3;
-
-    /** Thumbnail Scaling. */
-    int IMAGE_SCALE_DEFAULT = IMAGE_SCALE_2_MEDIUM;
     /**
      * The (arbitrary) position for a style which is not on the user preferred style list.
      * i.e. it's at the very end.
@@ -73,11 +53,30 @@ public interface ListStyle {
      */
     String BKEY_UUID = "ListStyle:uuid";
 
-    @NonNull
-    StylePersistenceLayer getPersistenceLayer();
+    /**
+     * Text Scaling.
+     * NEVER change these values, they get stored in preferences.
+     * The book title in the list is by default 'medium' (see styles.xml)
+     * Other elements are always 1 size 'less' than the title.
+     */
+    int TEXT_SCALE_0_VERY_SMALL = 0;
+    int TEXT_SCALE_1_SMALL = 1;
+    int TEXT_SCALE_2_MEDIUM = 2;
+    int TEXT_SCALE_3_LARGE = 3;
+    int TEXT_SCALE_4_VERY_LARGE = 4;
+
+    int DEFAULT_TEXT_SCALE = TEXT_SCALE_2_MEDIUM;
+
+    int COVER_SCALE_HIDDEN = 0;
+    int COVER_SCALE_SMALL = 1;
+    int COVER_SCALE_MEDIUM = 2;
+    int COVER_SCALE_LARGE = 3;
+
+    int DEFAULT_COVER_SCALE = COVER_SCALE_MEDIUM;
 
     boolean isUserDefined();
 
+    @SuppressWarnings("ClassReferencesSubclass")
     @NonNull
     UserStyle clone(@NonNull Context context);
 
@@ -151,18 +150,9 @@ public interface ListStyle {
     /**
      * Set this style as a user preferred style.
      *
-     * @param isPreferred flag
+     * @param preferred flag
      */
-    void setPreferred(boolean isPreferred);
-
-    /**
-     * Check if the style wants the specified header to be displayed.
-     *
-     * @param headerMask to check
-     *
-     * @return {@code true} if the header should be shown
-     */
-    boolean isShowHeader(@ListHeaderOption int headerMask);
+    void setPreferred(boolean preferred);
 
     /**
      * Get the default visible level for the list.
@@ -176,54 +166,13 @@ public interface ListStyle {
     int getExpansionLevel();
 
     /**
-     * Get the group row <strong>height</strong> to be applied to
-     * the {@link android.view.ViewGroup.LayoutParams}.
+     * Check if the style wants the specified header to be displayed.
      *
-     * @param context Current context
+     * @param bit to check
      *
-     * @return group row height value in pixels
+     * @return {@code true} if the header should be shown
      */
-    int getGroupRowHeight(@NonNull Context context);
-
-    /**
-     * Get the text style used by the style.
-     *
-     * @return TextScale
-     */
-    @NonNull
-    TextScale getTextScale();
-
-    /**
-     * Get the Groups style object.
-     *
-     * @return the Groups object
-     */
-    @NonNull
-    Groups getGroups();
-
-    /**
-     * Get the ListScreenBookFields style object.
-     *
-     * @return the ListScreenBookFields object
-     */
-    @NonNull
-    ListScreenBookFields getListScreenBookFields();
-
-    /**
-     * Get the DetailScreenBookFields style object.
-     *
-     * @return the DetailScreenBookFields object
-     */
-    @NonNull
-    DetailScreenBookFields getDetailScreenBookFields();
-
-    boolean isShowBooksUnderEachSeries();
-
-    boolean isShowBooksUnderEachPublisher();
-
-    boolean isShowBooksUnderEachBookshelf();
-
-    boolean isShowBooksUnderEachAuthor();
+    boolean isShowHeader(@BooklistHeader.Option int bit);
 
     /**
      * Whether the user prefers the Author names displayed by Given names, or by Family name first.
@@ -239,18 +188,163 @@ public interface ListStyle {
      */
     boolean isSortAuthorByGivenName();
 
+
+    /**
+     * Get the text scale <strong>identifier</strong> used by the style.
+     *
+     * @return scale
+     */
+    int getTextScale();
+
+    int getCoverScale();
+
+    /**
+     * Get the BooklistBookFieldVisibility style object.
+     *
+     * @return the BooklistBookFieldVisibility object
+     */
+    @NonNull
+    BooklistBookFieldVisibility getBooklistBookFieldVisibility();
+
+    /**
+     * Get the BookDetailsFieldVisibility style object.
+     *
+     * @return the BookDetailsFieldVisibility object
+     */
+    @NonNull
+    BookDetailsFieldVisibility getBookDetailsFieldVisibility();
+
+
+    /**
+     * Get the group row <strong>height</strong> to be applied to
+     * the {@link android.view.ViewGroup.LayoutParams}.
+     *
+     * @param context Current context
+     *
+     * @return group row height value in pixels
+     */
+    int getGroupRowHeight(@NonNull Context context);
+
+
+    /**
+     * Get the number of groups in this style.
+     *
+     * @return the number of groups
+     */
+    int getGroupCount();
+
+    /**
+     * Check if the given group is present, using the given group id.
+     *
+     * @param id group id
+     *
+     * @return {@code true} if present
+     */
+    boolean hasGroup(@BooklistGroup.Id final int id);
+
+    /**
+     * Get the group for the given id.
+     *
+     * @param id to get
+     *
+     * @return Optional with the group
+     */
+    @NonNull
+    Optional<BooklistGroup> getGroupById(@BooklistGroup.Id final int id);
+
+    /**
+     * Get the group for the given id.
+     *
+     * @param id to get
+     *
+     * @return group
+     *
+     * @throws NullPointerException on bug
+     */
+    @NonNull
+    default BooklistGroup requireGroupById(final int id)
+            throws NullPointerException {
+        return getGroupById(id).orElseThrow(() -> new NullPointerException(
+                "Missing group: id=" + id + ", " + getUuid()));
+    }
+
+    /**
+     * Get the group at the given level.
+     *
+     * @param level to get
+     *
+     * @return group
+     *
+     * @throws IndexOutOfBoundsException on bug
+     */
+    @NonNull
+    BooklistGroup getGroupByLevel(@IntRange(from = 1) final int level)
+            throws IndexOutOfBoundsException;
+
+    /**
+     * Get all groups assigned to this style.
+     *
+     * @return new List
+     */
+    @NonNull
+    List<BooklistGroup> getGroupList();
+
+
+    /**
+     * {@link AuthorBooklistGroup} property
+     *
+     * @return bit mask
+     */
+    @Author.Type
     int getPrimaryAuthorType();
 
-    @IntDef(flag = true, value = {HEADER_SHOW_BOOK_COUNT,
-                                  HEADER_SHOW_STYLE_NAME,
-                                  HEADER_SHOW_FILTER})
+    /**
+     * {@link AuthorBooklistGroup} property
+     */
+    boolean isShowBooksUnderEachAuthor();
+
+    /**
+     * {@link SeriesBooklistGroup} property
+     */
+    boolean isShowBooksUnderEachSeries();
+
+    /**
+     * {@link PublisherBooklistGroup} property
+     */
+    boolean isShowBooksUnderEachPublisher();
+
+    /**
+     * {@link BookshelfBooklistGroup} property
+     */
+    boolean isShowBooksUnderEachBookshelf();
+
+
+    /**
+     * Convenience method for use in the Preferences screen.
+     * Get the summary text for the in-use group names as a CSV String.
+     *
+     * @param context Current context
+     *
+     * @return summary text
+     */
+    @NonNull
+    String getGroupsSummaryText(@NonNull final Context context);
+
+
+    @IntDef({TEXT_SCALE_0_VERY_SMALL,
+             TEXT_SCALE_1_SMALL,
+             TEXT_SCALE_2_MEDIUM,
+             TEXT_SCALE_3_LARGE,
+             TEXT_SCALE_4_VERY_LARGE})
     @Retention(RetentionPolicy.SOURCE)
-    @interface ListHeaderOption {
+    @interface TextScale {
 
     }
 
-    @IntDef({IMAGE_SCALE_0_NOT_DISPLAYED,
-             IMAGE_SCALE_1_SMALL, IMAGE_SCALE_2_MEDIUM, IMAGE_SCALE_3_LARGE})
+    @IntDef({COVER_SCALE_HIDDEN,
+             COVER_SCALE_SMALL,
+             COVER_SCALE_MEDIUM,
+             COVER_SCALE_LARGE})
     @Retention(RetentionPolicy.SOURCE)
     @interface CoverScale {
 

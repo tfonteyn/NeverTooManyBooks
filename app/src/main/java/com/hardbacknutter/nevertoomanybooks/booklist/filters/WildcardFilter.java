@@ -48,12 +48,12 @@ public class WildcardFilter
         implements Filter {
 
     @NonNull
-    private final Domain mDomain;
+    private final Domain domain;
     @NonNull
-    private final TableDefinition mTable;
+    private final TableDefinition table;
 
     @NonNull
-    private final String mCriteria;
+    private final String criteria;
 
     /**
      * Constructor.
@@ -63,16 +63,16 @@ public class WildcardFilter
     public WildcardFilter(@NonNull final TableDefinition table,
                           @NonNull final Domain domain,
                           @NonNull final String criteria) {
-        mDomain = domain;
-        mTable = table;
-        mCriteria = criteria;
+        this.domain = domain;
+        this.table = table;
+        this.criteria = criteria;
     }
 
     @Override
     @NonNull
     public String getExpression(@NonNull final Context context) {
-        return '(' + mTable.dot(mDomain)
-               + " LIKE '%" + SqlEncode.string(mCriteria) + "%'"
+        return '(' + table.dot(domain)
+               + " LIKE '%" + SqlEncode.string(criteria) + "%'"
                + ')';
     }
 

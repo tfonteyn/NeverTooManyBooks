@@ -51,7 +51,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 public class BookshelfBooklistGroup
         extends AbstractLinkedTableBooklistGroup {
 
-    /** Style - PreferenceScreen/PreferenceCategory Key. */
+    /** See {@link #setPreferencesVisible(PreferenceScreen, boolean)} */
     private static final String PSK_STYLE_BOOKSHELF = "psk_style_bookshelf";
 
     public static final String PK_SHOW_BOOKS_UNDER_EACH =
@@ -67,25 +67,23 @@ public class BookshelfBooklistGroup
     /**
      * Constructor.
      *
-     * @param isPersistent flag
      * @param style        Style reference.
      */
-    BookshelfBooklistGroup(final boolean isPersistent,
-                           @NonNull final ListStyle style) {
-        super(BOOKSHELF, isPersistent, style, PK_SHOW_BOOKS_UNDER_EACH);
+    BookshelfBooklistGroup(@NonNull final ListStyle style) {
+        super(BOOKSHELF, style);
+
+        underEach = getDefaultShowBooksUnderEach();
     }
 
     /**
      * Copy constructor.
      *
-     * @param isPersistent flag
      * @param style        Style reference.
      * @param group        to copy from
      */
-    BookshelfBooklistGroup(final boolean isPersistent,
-                           @NonNull final ListStyle style,
+    BookshelfBooklistGroup(@NonNull final ListStyle style,
                            @NonNull final BookshelfBooklistGroup group) {
-        super(isPersistent, style, group);
+        super(style, group);
     }
 
     /**
@@ -93,7 +91,7 @@ public class BookshelfBooklistGroup
      *
      * @return {@code true} if we want to show a book under each of its Bookshelves.
      */
-    public static boolean showBooksUnderEachDefault() {
+    public static boolean getDefaultShowBooksUnderEach() {
         return ServiceLocator.getGlobalPreferences().getBoolean(PK_SHOW_BOOKS_UNDER_EACH, false);
     }
 
@@ -118,7 +116,7 @@ public class BookshelfBooklistGroup
 
     @Override
     @NonNull
-    protected DomainExpression createDisplayDomainExpression() {
+    protected DomainExpression createDisplayDomainExpression(@NonNull final ListStyle style) {
         // Not sorted; we sort on the OB domain as defined in #createGroupKey.
         return new DomainExpression(DOM_BOOKSHELF_NAME,
                                     TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME));

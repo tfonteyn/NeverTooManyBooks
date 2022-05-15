@@ -37,7 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleCon
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 
 public class StyleViewModel
         extends ViewModel {
@@ -73,7 +72,7 @@ public class StyleViewModel
 
                 // we're doing the global preferences, create a placeholder style
                 // with an empty uuid and let it use the standard SharedPreferences
-                style = UserStyle.createGlobal(context);
+                style = UserStyle.createGlobal();
 
             } else {
                 // ALWAYS pass the original style uuid back.
@@ -135,10 +134,8 @@ public class StyleViewModel
 
     @NonNull
     ArrayList<WrappedGroup> createWrappedGroupList() {
-        final Groups styleGroups = style.getGroups();
-
         // Build an array list with the groups already present in the style
-        wrappedGroupList = styleGroups
+        wrappedGroupList = style
                 .getGroupList()
                 .stream()
                 .map(group -> new WrappedGroup(group, true))
@@ -148,7 +145,7 @@ public class StyleViewModel
         // add them if wanted.
         BooklistGroup.getAllGroups(style)
                      .stream()
-                     .filter(group -> !styleGroups.contains(group.getId()))
+                     .filter(group -> !style.hasGroup(group.getId()))
                      .forEach(group -> wrappedGroupList.add(new WrappedGroup(group, false)));
 
         return wrappedGroupList;
@@ -166,12 +163,10 @@ public class StyleViewModel
     void updateStyleGroups() {
         Objects.requireNonNull(wrappedGroupList);
 
-        final Groups styleGroups = style.getGroups();
-        styleGroups.clear();
-        wrappedGroupList.stream()
-                        .filter(WrappedGroup::isPresent)
-                        .map(WrappedGroup::getGroup)
-                        .forEach(styleGroups::add);
+        style.setGroupList(wrappedGroupList.stream()
+                                           .filter(WrappedGroup::isPresent)
+                                           .map(WrappedGroup::getGroup)
+                                           .collect(Collectors.toList()));
     }
 
     /**

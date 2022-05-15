@@ -173,7 +173,7 @@ public class Book
     public static final String BKEY_DATA_BUNDLE = TAG + ":plainBundle";
 
     /** the stage of the book entity. */
-    private final EntityStage mStage = new EntityStage();
+    private final EntityStage stage = new EntityStage();
 
     /**
      * Constructor.
@@ -517,11 +517,11 @@ public class Book
     /**
      * Get the list of Bookshelves.
      *
-     * @return an immutable List
+     * @return new List
      */
     @NonNull
     public List<Bookshelf> getBookshelves() {
-        return List.copyOf(getParcelableArrayList(BKEY_BOOKSHELF_LIST));
+        return new ArrayList<>(getParcelableArrayList(BKEY_BOOKSHELF_LIST));
     }
 
     public void setBookshelves(@NonNull final List<Bookshelf> bookShelves) {
@@ -542,11 +542,11 @@ public class Book
     /**
      * Get the list of Authors.
      *
-     * @return an immutable List
+     * @return new List
      */
     @NonNull
     public List<Author> getAuthors() {
-        return List.copyOf(getParcelableArrayList(BKEY_AUTHOR_LIST));
+        return new ArrayList<>(getParcelableArrayList(BKEY_AUTHOR_LIST));
     }
 
     public void setAuthors(@NonNull final List<Author> authors) {
@@ -567,11 +567,11 @@ public class Book
     /**
      * Get the list of Series.
      *
-     * @return an immutable List
+     * @return new List
      */
     @NonNull
     public List<Series> getSeries() {
-        return List.copyOf(getParcelableArrayList(BKEY_SERIES_LIST));
+        return new ArrayList<>(getParcelableArrayList(BKEY_SERIES_LIST));
     }
 
     public void setSeries(@NonNull final List<Series> series) {
@@ -592,11 +592,11 @@ public class Book
     /**
      * Get the list of Publishers.
      *
-     * @return an immutable List
+     * @return new List
      */
     @NonNull
     public List<Publisher> getPublishers() {
-        return List.copyOf(getParcelableArrayList(BKEY_PUBLISHER_LIST));
+        return new ArrayList<>(getParcelableArrayList(BKEY_PUBLISHER_LIST));
     }
 
     public void setPublishers(@NonNull final List<Publisher> publishers) {
@@ -606,11 +606,11 @@ public class Book
     /**
      * Get the list of TocEntry's.
      *
-     * @return an immutable List
+     * @return new List
      */
     @NonNull
     public List<TocEntry> getToc() {
-        return List.copyOf(getParcelableArrayList(BKEY_TOC_LIST));
+        return new ArrayList<>(getParcelableArrayList(BKEY_TOC_LIST));
     }
 
     public void setToc(@NonNull final List<TocEntry> tocEntries) {
@@ -907,8 +907,8 @@ public class Book
                          @Nullable final File file)
             throws StorageException, IOException {
 
-        if (mStage.getStage() == EntityStage.Stage.WriteAble
-            || mStage.getStage() == EntityStage.Stage.Dirty) {
+        if (stage.getStage() == EntityStage.Stage.WriteAble
+            || stage.getStage() == EntityStage.Stage.Dirty) {
             // We're editing, use BKEY_TMP_FILE_SPEC storage.
 
             if (file != null) {
@@ -935,7 +935,7 @@ public class Book
             }
 
             // switch from WriteAble to Dirty (or from Dirty to Dirty)
-            mStage.setStage(EntityStage.Stage.Dirty);
+            stage.setStage(EntityStage.Stage.Dirty);
 
             // just return the incoming file, it has not been changed or renamed
             return file;
@@ -1064,21 +1064,21 @@ public class Book
 
     @NonNull
     public EntityStage.Stage getStage() {
-        return mStage.getStage();
+        return stage.getStage();
     }
 
     public void setStage(@NonNull final EntityStage.Stage stage) {
-        mStage.setStage(stage);
+        this.stage.setStage(stage);
     }
 
     /** Used exclusively during display / populating the Views when loading the book. */
     public void lockStage() {
-        mStage.lock();
+        stage.lock();
     }
 
     /** Used exclusively during display / populating the Views when loading the book. */
     public void unlockStage() {
-        mStage.unlock();
+        stage.unlock();
     }
 
 
@@ -1088,7 +1088,7 @@ public class Book
         if (!authors.isEmpty()) {
             final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
             if (authorDao.pruneList(context, authors, lookupLocale, getLocale(context))) {
-                mStage.setStage(EntityStage.Stage.Dirty);
+                stage.setStage(EntityStage.Stage.Dirty);
             }
         }
 
@@ -1099,7 +1099,7 @@ public class Book
             if (!searchText.isEmpty()) {
                 authors.add(Author.from(searchText));
                 remove(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
-                mStage.setStage(EntityStage.Stage.Dirty);
+                stage.setStage(EntityStage.Stage.Dirty);
             }
         }
     }
@@ -1125,7 +1125,7 @@ public class Book
         if (!series.isEmpty()) {
             final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
             if (seriesDao.pruneList(context, series, lookupLocale, getLocale(context))) {
-                mStage.setStage(EntityStage.Stage.Dirty);
+                stage.setStage(EntityStage.Stage.Dirty);
             }
         }
     }
@@ -1151,7 +1151,7 @@ public class Book
         if (!publishers.isEmpty()) {
             final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
             if (publisherDao.pruneList(context, publishers, lookupLocale, getLocale(context))) {
-                mStage.setStage(EntityStage.Stage.Dirty);
+                stage.setStage(EntityStage.Stage.Dirty);
             }
         }
     }

@@ -91,31 +91,31 @@ public class Bookshelf
      */
     private static final String PREF_BOOKSHELF_CURRENT = "Bookshelf.CurrentBookshelf";
     @SuppressWarnings("FieldNotUsedInToString")
-    private final List<PFilter<?>> mFilters = new ArrayList<>();
+    private final List<PFilter<?>> filters = new ArrayList<>();
 
     /** Row ID. */
-    private long mId;
+    private long id;
     /** Bookshelf name. */
     @NonNull
-    private String mName;
+    private String name;
     /**
      * the style uuid. Should never be exposed as it's not validated on its own.
      * Always call {@link #getStyle}}
      */
     @NonNull
-    private String mStyleUuid;
+    private String styleUuid;
 
     /**
      * Saved adapter position of top row.
      * See {@link BooksOnBookshelf}#displayList}
      */
-    private int mFirstVisibleItemPosition = RecyclerView.NO_POSITION;
+    private int firstVisibleItemPosition = RecyclerView.NO_POSITION;
 
     /**
      * Saved view offset of top row.
      * See {@link BooksOnBookshelf}#displayList}
      */
-    private int mFirstVisibleViewOffset;
+    private int firstVisibleViewOffset;
 
     /**
      * Constructor without ID.
@@ -125,8 +125,8 @@ public class Bookshelf
      */
     public Bookshelf(@NonNull final String name,
                      @NonNull final ListStyle style) {
-        mName = name.trim();
-        mStyleUuid = style.getUuid();
+        this.name = name.trim();
+        styleUuid = style.getUuid();
     }
 
     /**
@@ -137,8 +137,8 @@ public class Bookshelf
      */
     public Bookshelf(@NonNull final String name,
                      @NonNull final String styleUuid) {
-        mName = name.trim();
-        mStyleUuid = styleUuid;
+        this.name = name.trim();
+        this.styleUuid = styleUuid;
     }
 
     /**
@@ -149,14 +149,14 @@ public class Bookshelf
      */
     public Bookshelf(final long id,
                      @NonNull final DataHolder rowData) {
-        mId = id;
-        mName = rowData.getString(DBKey.BOOKSHELF_NAME);
-        mStyleUuid = rowData.getString(DBKey.STYLE_UUID);
+        this.id = id;
+        name = rowData.getString(DBKey.BOOKSHELF_NAME);
+        styleUuid = rowData.getString(DBKey.STYLE_UUID);
 
-        mFirstVisibleItemPosition = rowData.getInt(DBKey.BOOKSHELF_BL_TOP_POS);
-        mFirstVisibleViewOffset = rowData.getInt(DBKey.BOOKSHELF_BL_TOP_OFFSET);
+        firstVisibleItemPosition = rowData.getInt(DBKey.BOOKSHELF_BL_TOP_POS);
+        firstVisibleViewOffset = rowData.getInt(DBKey.BOOKSHELF_BL_TOP_OFFSET);
 
-        mFilters.addAll(ServiceLocator.getInstance().getBookshelfDao().getFilters(mId));
+        filters.addAll(ServiceLocator.getInstance().getBookshelfDao().getFilters(this.id));
     }
 
     /**
@@ -165,17 +165,17 @@ public class Bookshelf
      * @param in Parcel to construct the object from
      */
     private Bookshelf(@NonNull final Parcel in) {
-        mId = in.readLong();
+        id = in.readLong();
         //noinspection ConstantConditions
-        mName = in.readString();
+        name = in.readString();
         //noinspection ConstantConditions
-        mStyleUuid = in.readString();
+        styleUuid = in.readString();
 
         //ENHANCE: Filters not parcelled, just restore from database
-        mFilters.addAll(ServiceLocator.getInstance().getBookshelfDao().getFilters(mId));
+        filters.addAll(ServiceLocator.getInstance().getBookshelfDao().getFilters(id));
 
-        mFirstVisibleItemPosition = in.readInt();
-        mFirstVisibleViewOffset = in.readInt();
+        firstVisibleItemPosition = in.readInt();
+        firstVisibleViewOffset = in.readInt();
     }
 
     /**
@@ -245,31 +245,31 @@ public class Bookshelf
      * @param global Global preferences
      */
     public void setAsPreferred(@NonNull final SharedPreferences global) {
-        global.edit().putString(PREF_BOOKSHELF_CURRENT, mName).apply();
+        global.edit().putString(PREF_BOOKSHELF_CURRENT, name).apply();
     }
 
     @Override
     public long getId() {
-        return mId;
+        return id;
     }
 
     public void setId(final long id) {
-        mId = id;
+        this.id = id;
     }
 
     @Override
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        return mName;
+        return name;
     }
 
     @NonNull
     public String getName() {
-        return mName;
+        return name;
     }
 
     public void setName(@NonNull final String name) {
-        mName = name;
+        this.name = name;
     }
 
     /**
@@ -284,7 +284,7 @@ public class Bookshelf
                          @NonNull final ListStyle style) {
         SanityCheck.requireNonZero(style.getId(), "style.getId()");
 
-        mStyleUuid = style.getUuid();
+        styleUuid = style.getUuid();
 
         ServiceLocator.getInstance().getBookshelfDao().update(context, this);
 
@@ -302,26 +302,26 @@ public class Bookshelf
 
         // Always validate first
         final ListStyle style = ServiceLocator.getInstance().getStyles()
-                                              .getStyleOrDefault(context, mStyleUuid);
+                                              .getStyleOrDefault(context, styleUuid);
         // the previous uuid might have been overruled so we always refresh it
-        mStyleUuid = style.getUuid();
+        styleUuid = style.getUuid();
         return style;
     }
 
     /**
      * Get the list of filters.
      *
-     * @return an immutable List
+     * @return a new list
      */
     @NonNull
     public List<PFilter<?>> getFilters() {
-        return List.copyOf(mFilters);
+        return new ArrayList<>(filters);
     }
 
     public void setFilters(@Nullable final List<PFilter<?>> list) {
-        mFilters.clear();
+        filters.clear();
         if (list != null) {
-            mFilters.addAll(list);
+            filters.addAll(list);
         }
     }
 
@@ -332,11 +332,11 @@ public class Bookshelf
      */
     @NonNull
     public List<PFilter<?>> pruneFilters(@NonNull final Context context) {
-        final List<PFilter<?>> list = mFilters.stream()
-                                              .filter(f -> f.isActive(context))
-                                              .collect(Collectors.toList());
-        mFilters.clear();
-        mFilters.addAll(list);
+        final List<PFilter<?>> list = filters.stream()
+                                             .filter(f -> f.isActive(context))
+                                             .collect(Collectors.toList());
+        filters.clear();
+        filters.addAll(list);
         return getFilters();
     }
 
@@ -349,7 +349,7 @@ public class Bookshelf
      */
     @IntRange(from = RecyclerView.NO_POSITION)
     public int getFirstVisibleItemPosition() {
-        return mFirstVisibleItemPosition;
+        return firstVisibleItemPosition;
     }
 
     /**
@@ -360,7 +360,7 @@ public class Bookshelf
      * @return value for {@link LinearLayoutManager#scrollToPositionWithOffset(int, int)}
      */
     public int getFirstVisibleItemViewOffset() {
-        return mFirstVisibleViewOffset;
+        return firstVisibleViewOffset;
     }
 
     /**
@@ -373,8 +373,8 @@ public class Bookshelf
     public void setFirstVisibleItemPosition(@NonNull final Context context,
                                             final int position,
                                             final int viewOffset) {
-        mFirstVisibleItemPosition = position;
-        mFirstVisibleViewOffset = viewOffset;
+        firstVisibleItemPosition = position;
+        firstVisibleViewOffset = viewOffset;
 
         ServiceLocator.getInstance().getBookshelfDao().update(context, this);
     }
@@ -385,7 +385,7 @@ public class Bookshelf
      * @param context Current context
      */
     public void validateStyle(@NonNull final Context context) {
-        final String uuid = mStyleUuid;
+        final String uuid = styleUuid;
         final ListStyle style = getStyle(context);
         if (!uuid.equals(style.getUuid())) {
             ServiceLocator.getInstance().getBookshelfDao().update(context, this);
@@ -398,10 +398,10 @@ public class Bookshelf
      * @param source Bookshelf to copy from
      */
     public void copyFrom(@NonNull final Bookshelf source) {
-        mName = source.mName;
-        mStyleUuid = source.mStyleUuid;
-        mFilters.clear();
-        mFilters.addAll(source.mFilters);
+        name = source.name;
+        styleUuid = source.styleUuid;
+        filters.clear();
+        filters.addAll(source.filters);
         // don't copy the 'top' values.
     }
 
@@ -413,12 +413,12 @@ public class Bookshelf
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeLong(mId);
-        dest.writeString(mName);
-        dest.writeString(mStyleUuid);
+        dest.writeLong(id);
+        dest.writeString(name);
+        dest.writeString(styleUuid);
 
-        dest.writeInt(mFirstVisibleItemPosition);
-        dest.writeInt(mFirstVisibleViewOffset);
+        dest.writeInt(firstVisibleItemPosition);
+        dest.writeInt(firstVisibleViewOffset);
     }
 
     /**
@@ -428,7 +428,7 @@ public class Bookshelf
      */
     @NonNull
     public String getStyleUuid() {
-        return mStyleUuid;
+        return styleUuid;
     }
 
     /**
@@ -437,7 +437,7 @@ public class Bookshelf
      * @param styleUuid the unvalidated style uuid
      */
     public void setStyleUuid(@NonNull final String styleUuid) {
-        mStyleUuid = styleUuid;
+        this.styleUuid = styleUuid;
     }
 
     /**
@@ -447,7 +447,7 @@ public class Bookshelf
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isAllBooks() {
-        return mId == ALL_BOOKS;
+        return id == ALL_BOOKS;
     }
 
 
@@ -458,7 +458,7 @@ public class Bookshelf
      */
     @Override
     public int asciiHashCodeNoId() {
-        return Objects.hash(ParseUtils.toAscii(mName));
+        return Objects.hash(ParseUtils.toAscii(name));
     }
 
 
@@ -469,7 +469,7 @@ public class Bookshelf
      */
     @Override
     public int hashCode() {
-        return Objects.hash(mId, mName);
+        return Objects.hash(id, name);
     }
 
     /**
@@ -493,21 +493,21 @@ public class Bookshelf
         }
         final Bookshelf that = (Bookshelf) obj;
         // if both 'exist' but have different ID's -> different.
-        if (mId != 0 && that.mId != 0 && mId != that.mId) {
+        if (id != 0 && that.id != 0 && id != that.id) {
             return false;
         }
-        return Objects.equals(mName, that.mName);
+        return Objects.equals(name, that.name);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "Bookshelf{"
-               + "mId=" + mId
-               + ", mName=`" + mName + '`'
-               + ", mFirstVisibleItemPosition=" + mFirstVisibleItemPosition
-               + ", mFirstVisibleViewOffset=" + mFirstVisibleViewOffset
-               + ", mStyleUuid=" + mStyleUuid
+               + "id=" + id
+               + ", name=`" + name + '`'
+               + ", firstVisibleItemPosition=" + firstVisibleItemPosition
+               + ", firstVisibleViewOffset=" + firstVisibleViewOffset
+               + ", styleUuid=" + styleUuid
                + '}';
     }
 

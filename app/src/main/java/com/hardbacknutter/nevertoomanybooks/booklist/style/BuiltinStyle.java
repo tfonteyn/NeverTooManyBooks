@@ -21,14 +21,15 @@ package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 import android.content.Context;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -43,12 +44,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 public final class BuiltinStyle
         extends BooklistStyle {
 
-    // NEWTHINGS: ListStyle. Make sure to update the max id when adding a style!
-    // and make sure a row is added to the database styles table.
-    // next max is -20
-    public static final int MAX_ID = -19;
-
     private static final int ID_AUTHOR_THEN_SERIES = -1;
+    /**
+     * Absolute/initial default.
+     */
+    public static final int DEFAULT_ID = ID_AUTHOR_THEN_SERIES;
+
+    //FIXME: used to be filtered on being "unread"; remove this style
     @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     private static final int ID_UNREAD_AUTHOR_THEN_SERIES = -2;
@@ -71,66 +73,135 @@ public final class BuiltinStyle
     private static final int ID_DATE_LAST_UPDATE = -19;
 
     /**
-     * Absolute/initial default.
+     * Use the NEGATIVE builtin style id to get the definition for it.
+     * Element 0 is not used.
+     * NEVER change the order.
+     * NEVER change the UUID values.
      */
-    public static final int DEFAULT_ID = ID_AUTHOR_THEN_SERIES;
+    @SuppressWarnings("ZeroLengthArrayAllocation")
+    public static List<Definition> ALL = List.of(
+            // not used.
+            new Definition(0, "", 0, new int[0]),
+
+            new Definition(ID_AUTHOR_THEN_SERIES,
+                           "6a82c4c0-48f1-4130-8a62-bbf478ffe184",
+                           R.string.style_builtin_author_series,
+                           new int[]{BooklistGroup.AUTHOR,
+                                     BooklistGroup.SERIES}),
+            new Definition(ID_UNREAD_AUTHOR_THEN_SERIES,
+                           "f479e979-c43f-4b0b-9c5b-6942964749df",
+                           R.string.style_builtin_unread,
+                           new int[]{BooklistGroup.AUTHOR,
+                                     BooklistGroup.SERIES}),
+            new Definition(ID_COMPACT,
+                           "5e4c3137-a05f-4c4c-853a-bd1dacb6cd16",
+                           R.string.style_builtin_compact,
+                           new int[]{BooklistGroup.AUTHOR}),
+            new Definition(ID_BOOK_TITLE_FIRST_LETTER,
+                           "16b4ecdf-edef-4bf2-a682-23f7230446c8",
+                           R.string.style_builtin_first_letter_book_title,
+                           new int[]{BooklistGroup.BOOK_TITLE_1ST_LETTER}),
+            new Definition(ID_SERIES,
+                           "ad55ebc3-f79d-4cc2-a27d-f06ff0bf2335",
+                           R.string.style_builtin_series,
+                           new int[]{BooklistGroup.SERIES}),
+
+            new Definition(ID_GENRE,
+                           "edc5c178-60f0-40e7-9674-e08445b6c942",
+                           R.string.style_builtin_genre,
+                           new int[]{BooklistGroup.GENRE,
+                                     BooklistGroup.AUTHOR,
+                                     BooklistGroup.SERIES}),
+            new Definition(ID_LENDING,
+                           "e4f1c364-2cbe-467e-a0c1-3ae71bd56fa3",
+                           R.string.style_builtin_lending,
+                           new int[]{BooklistGroup.LENDING,
+                                     BooklistGroup.AUTHOR,
+                                     BooklistGroup.SERIES}),
+            new Definition(ID_READ_AND_UNREAD,
+                           "e3678890-7785-4870-9213-333a68293a49",
+                           R.string.style_builtin_read_and_unread,
+                           new int[]{BooklistGroup.READ_STATUS,
+                                     BooklistGroup.AUTHOR,
+                                     BooklistGroup.SERIES}),
+            new Definition(ID_PUBLICATION_DATA,
+                           "182f5d3c-8fd7-4f3a-b5b0-0c93551d1796",
+                           R.string.style_builtin_publication_date,
+                           new int[]{BooklistGroup.DATE_PUBLISHED_YEAR,
+                                     BooklistGroup.DATE_PUBLISHED_MONTH,
+                                     BooklistGroup.AUTHOR,
+                                     BooklistGroup.SERIES}),
+            new Definition(ID_DATE_ADDED,
+                           "95d7afc0-a70a-4f1f-8d77-aa7ebc60e521",
+                           R.string.style_builtin_added_date,
+                           new int[]{BooklistGroup.DATE_ADDED_YEAR,
+                                     BooklistGroup.DATE_ADDED_MONTH,
+                                     BooklistGroup.DATE_ADDED_DAY,
+                                     BooklistGroup.AUTHOR}),
+
+            new Definition(ID_DATE_ACQUIRED,
+                           "b3255b1f-5b07-4b3e-9700-96c0f8f35a58",
+                           R.string.style_builtin_acquired_date,
+                           new int[]{BooklistGroup.DATE_ACQUIRED_YEAR,
+                                     BooklistGroup.DATE_ACQUIRED_MONTH,
+                                     BooklistGroup.DATE_ACQUIRED_DAY,
+                                     BooklistGroup.AUTHOR}),
+            new Definition(ID_AUTHOR_AND_YEAR,
+                           "7c9ad91e-df7c-415a-a205-cdfabff5465d",
+                           R.string.style_builtin_author_year,
+                           new int[]{BooklistGroup.AUTHOR,
+                                     BooklistGroup.DATE_PUBLISHED_YEAR,
+                                     BooklistGroup.SERIES}),
+            new Definition(ID_FORMAT,
+                           "bdc43f17-2a95-42ef-b0f8-c750ef920f28",
+                           R.string.style_builtin_format,
+                           new int[]{BooklistGroup.FORMAT}),
+            new Definition(ID_DATE_READ,
+                           "034fe547-879b-4fa0-997a-28d769ba5a84",
+                           R.string.style_builtin_read_date,
+                           new int[]{BooklistGroup.DATE_READ_YEAR,
+                                     BooklistGroup.DATE_READ_MONTH,
+                                     BooklistGroup.AUTHOR}),
+            new Definition(ID_LOCATION,
+                           "e21a90c9-5150-49ee-a204-0cab301fc5a1",
+                           R.string.style_builtin_location,
+                           new int[]{BooklistGroup.LOCATION,
+                                     BooklistGroup.AUTHOR,
+                                     BooklistGroup.SERIES}),
+
+            new Definition(ID_LANGUAGE,
+                           "00379d95-6cb2-40e6-8c3b-f8278f34750a",
+                           R.string.style_builtin_language,
+                           new int[]{BooklistGroup.LANGUAGE,
+                                     BooklistGroup.AUTHOR,
+                                     BooklistGroup.SERIES}),
+            new Definition(ID_RATING,
+                           "20a2ebdf-81a7-4eca-a3a9-7275062b907a",
+                           R.string.style_builtin_rating,
+                           new int[]{BooklistGroup.RATING,
+                                     BooklistGroup.AUTHOR,
+                                     BooklistGroup.SERIES}),
+            new Definition(ID_BOOKSHELF,
+                           "999d383e-6e76-416a-86f9-960c729aa718",
+                           R.string.style_builtin_bookshelf,
+                           new int[]{BooklistGroup.BOOKSHELF,
+                                     BooklistGroup.AUTHOR,
+                                     BooklistGroup.SERIES}),
+            new Definition(ID_DATE_LAST_UPDATE,
+                           "427a0da5-0779-44b6-89e9-82772e5ad5ef",
+                           R.string.style_builtin_update_date,
+                           new int[]{BooklistGroup.DATE_LAST_UPDATE_YEAR,
+                                     BooklistGroup.DATE_LAST_UPDATE_MONTH,
+                                     BooklistGroup.DATE_LAST_UPDATE_DAY})
+                                                );
 
     /**
-     * Use the NEGATIVE builtin style id to get the UUID for it. Element 0 is not used.
-     * NEVER change the order; NEVER change the UUID values.
-     */
-    private static final String[] ID_UUID = {
-            "",
-            //  1: ID_AUTHOR_THEN_SERIES
-            "6a82c4c0-48f1-4130-8a62-bbf478ffe184",
-            //Deprecated  2: ID_UNREAD_AUTHOR_THEN_SERIES
-            "f479e979-c43f-4b0b-9c5b-6942964749df",
-            //  3: ID_COMPACT
-            "5e4c3137-a05f-4c4c-853a-bd1dacb6cd16",
-            //  4: ID_BOOK_TITLE_FIRST_LETTER
-            "16b4ecdf-edef-4bf2-a682-23f7230446c8",
-            //  5: ID_SERIES
-            "ad55ebc3-f79d-4cc2-a27d-f06ff0bf2335",
-
-            //  6: ID_GENRE
-            "edc5c178-60f0-40e7-9674-e08445b6c942",
-            //  7: ID_LENDING
-            "e4f1c364-2cbe-467e-a0c1-3ae71bd56fa3",
-            //  8: ID_READ_AND_UNREAD
-            "e3678890-7785-4870-9213-333a68293a49",
-            //  9: ID_PUBLICATION_DATA
-            "182f5d3c-8fd7-4f3a-b5b0-0c93551d1796",
-            // 10: ID_DATE_ADDED
-            "95d7afc0-a70a-4f1f-8d77-aa7ebc60e521",
-
-            // 11: ID_DATE_ACQUIRED
-            "b3255b1f-5b07-4b3e-9700-96c0f8f35a58",
-            // 12: ID_AUTHOR_AND_YEAR
-            "7c9ad91e-df7c-415a-a205-cdfabff5465d",
-            // 13: ID_FORMAT
-            "bdc43f17-2a95-42ef-b0f8-c750ef920f28",
-            // 14: ID_DATE_READ
-            "034fe547-879b-4fa0-997a-28d769ba5a84",
-            // 15: ID_LOCATION
-            "e21a90c9-5150-49ee-a204-0cab301fc5a1",
-
-            // 16: ID_LANGUAGE
-            "00379d95-6cb2-40e6-8c3b-f8278f34750a",
-            // 17: ID_RATING
-            "20a2ebdf-81a7-4eca-a3a9-7275062b907a",
-            // 18: ID_BOOKSHELF
-            "999d383e-6e76-416a-86f9-960c729aa718",
-            // 19: ID_DATE_LAST_UPDATE
-            "427a0da5-0779-44b6-89e9-82772e5ad5ef",
-            };
-    /**
      * Absolute/initial default.
      */
-    public static final String DEFAULT_UUID = ID_UUID[-ID_AUTHOR_THEN_SERIES];
-
+    public static final String DEFAULT_UUID = ALL.get(-ID_AUTHOR_THEN_SERIES).uuid;
     /** We need a random style with a filter for testing. */
     @VisibleForTesting
-    public static final String UUID_FOR_TESTING_ONLY = ID_UUID[-ID_PUBLICATION_DATA];
+    public static final String UUID_FOR_TESTING_ONLY = ALL.get(-ID_PUBLICATION_DATA).uuid;
 
     /**
      * Display name of this style.
@@ -141,35 +212,26 @@ public final class BuiltinStyle
     /**
      * Constructor.
      *
-     * @param context      Current context
-     * @param id           a negative int
-     * @param uuid         UUID for the builtin style.
-     * @param labelResId   the resource id for the name
+     * @param definition   to use
      * @param isPreferred  flag
      * @param menuPosition to set
-     * @param groupIds     a list of groups to attach to this style
      */
-    private BuiltinStyle(@NonNull final Context context,
-                         @IntRange(from = MAX_ID, to = -1) final long id,
-                         @NonNull final String uuid,
-                         @StringRes final int labelResId,
-                         final boolean isPreferred,
-                         final int menuPosition,
-                         @NonNull final int... groupIds) {
-        super(context, uuid, false);
-        this.id = id;
+    @VisibleForTesting
+    public BuiltinStyle(@NonNull final Definition definition,
+                        final boolean isPreferred,
+                        final int menuPosition) {
+        super(definition.uuid);
+        this.id = definition.id;
 
-        this.labelResId = labelResId;
+        this.labelResId = definition.labelResId;
 
         preferred = isPreferred;
         this.menuPosition = menuPosition;
 
-        initPrefs(false);
-
-        Arrays.stream(groupIds)
-              .forEach(groupId -> groups.add(BooklistGroup.newInstance(groupId, false, this)));
+        setGroupIds(Arrays.stream(definition.groupIds)
+                          .boxed()
+                          .collect(Collectors.toList()));
     }
-
 
     /**
      * Check if the given UUID is a builtin Style.
@@ -179,219 +241,40 @@ public final class BuiltinStyle
      * @return {@code true} if it is
      */
     public static boolean isBuiltin(@NonNull final String uuid) {
-        // Use the array, not the cache!
-        return !uuid.isEmpty() && Arrays.asList(ID_UUID).contains(uuid);
+        // Use the definitions-list, not the cache!
+        return !uuid.isEmpty() && ALL.stream()
+                                     .map(definition -> definition.uuid)
+                                     .collect(Collectors.toList())
+                                     .contains(uuid);
     }
 
     /**
      * Only used during App setup to create the styles table.
      *
-     * @param id to lookup
+     * @param id the negative id to lookup
      *
      * @return the uuid
      */
     @NonNull
     public static String getUuidById(final int id) {
-        return ID_UUID[id];
+        return ALL.get(-id).uuid;
     }
 
     @NonNull
-    public static BuiltinStyle createFromDatabase(@NonNull final Context context,
-                                                  @NonNull final DataHolder rowData) {
+    public static BuiltinStyle createFromDatabase(@NonNull final DataHolder rowData) {
 
-        // Dev Note: the way we construct these is not optimal, but it mimics the
-        // way we create user-styles. The intention is that eventually all configuration
-        // goes into the database.
         final int id = rowData.getInt(DBKey.PK_ID);
-        final String uuid = rowData.getString(DBKey.STYLE_UUID);
-        final boolean isPreferred = rowData.getBoolean(DBKey.STYLE_IS_PREFERRED);
+        final boolean preferred = rowData.getBoolean(DBKey.STYLE_IS_PREFERRED);
         final int menuPosition = rowData.getInt(DBKey.STYLE_MENU_POSITION);
 
-        return create(context, id, uuid, isPreferred, menuPosition);
-    }
+        final BuiltinStyle style = new BuiltinStyle(ALL.get(-id), preferred, menuPosition);
 
-    @VisibleForTesting
-    @NonNull
-    public static BuiltinStyle create(@NonNull final Context context,
-                                      final int id,
-                                      @NonNull final String uuid,
-                                      final boolean isPreferred,
-                                      final int menuPosition) {
-        final BuiltinStyle style;
-        switch (id) {
-            case ID_AUTHOR_THEN_SERIES:
-                style = new BuiltinStyle(context, id, uuid,
-                                         R.string.style_builtin_author_series,
-                                         isPreferred, menuPosition,
-                                         BooklistGroup.AUTHOR,
-                                         BooklistGroup.SERIES);
-                break;
-
-            case ID_UNREAD_AUTHOR_THEN_SERIES:
-                //FIXME: used to be filtered on being "unread"; remove this style
-                style = new BuiltinStyle(context, id, uuid,
-                                         R.string.style_builtin_unread,
-                                         isPreferred, menuPosition,
-                                         BooklistGroup.AUTHOR,
-                                         BooklistGroup.SERIES);
-                break;
-
-            case ID_COMPACT:
-                style = new BuiltinStyle(context, id, uuid,
-                                         R.string.style_builtin_compact,
-                                         isPreferred, menuPosition,
-                                         BooklistGroup.AUTHOR);
-                style.getTextScale().setScale(TextScale.TEXT_SCALE_1_SMALL);
-                style.getListScreenBookFields()
-                     .setValue(ListScreenBookFields.PK_COVERS, false);
-                break;
-
-            case ID_BOOK_TITLE_FIRST_LETTER:
-                style = new BuiltinStyle(context, id, uuid,
-                                         R.string.style_builtin_first_letter_book_title,
-                                         isPreferred, menuPosition,
-                                         BooklistGroup.BOOK_TITLE_1ST_LETTER);
-                break;
-
-            case ID_SERIES:
-                style = new BuiltinStyle(context, id, uuid,
-                                         R.string.style_builtin_series,
-                                         isPreferred, menuPosition,
-                                         BooklistGroup.SERIES);
-                break;
-
-            case ID_GENRE:
-                style = new BuiltinStyle(context, id, uuid,
-                                         R.string.style_builtin_genre,
-                                         isPreferred, menuPosition,
-                                         BooklistGroup.GENRE,
-                                         BooklistGroup.AUTHOR,
-                                         BooklistGroup.SERIES);
-                break;
-
-            case ID_LENDING:
-                style = new BuiltinStyle(context, id, uuid,
-                                         R.string.style_builtin_lending,
-                                         isPreferred, menuPosition,
-                                         BooklistGroup.LENDING,
-                                         BooklistGroup.AUTHOR,
-                                         BooklistGroup.SERIES);
-                break;
-
-            case ID_READ_AND_UNREAD:
-                style = new BuiltinStyle(context, id, uuid,
-                                         R.string.style_builtin_read_and_unread,
-                                         isPreferred, menuPosition,
-                                         BooklistGroup.READ_STATUS,
-                                         BooklistGroup.AUTHOR,
-                                         BooklistGroup.SERIES);
-                break;
-
-            case ID_PUBLICATION_DATA:
-                style = new BuiltinStyle(context, id, uuid,
-                                         R.string.style_builtin_publication_date,
-                                         isPreferred, menuPosition,
-                                         BooklistGroup.DATE_PUBLISHED_YEAR,
-                                         BooklistGroup.DATE_PUBLISHED_MONTH,
-                                         BooklistGroup.AUTHOR,
-                                         BooklistGroup.SERIES);
-                break;
-
-            case ID_DATE_ADDED:
-                style = new BuiltinStyle(context, id, uuid,
-                                         R.string.style_builtin_added_date,
-                                         isPreferred, menuPosition,
-                                         BooklistGroup.DATE_ADDED_YEAR,
-                                         BooklistGroup.DATE_ADDED_MONTH,
-                                         BooklistGroup.DATE_ADDED_DAY,
-                                         BooklistGroup.AUTHOR);
-                break;
-
-            case ID_DATE_ACQUIRED:
-                style = new BuiltinStyle(context, id, uuid,
-                                         R.string.style_builtin_acquired_date,
-                                         isPreferred, menuPosition,
-                                         BooklistGroup.DATE_ACQUIRED_YEAR,
-                                         BooklistGroup.DATE_ACQUIRED_MONTH,
-                                         BooklistGroup.DATE_ACQUIRED_DAY,
-                                         BooklistGroup.AUTHOR);
-                break;
-
-            case ID_AUTHOR_AND_YEAR:
-                style = new BuiltinStyle(context, id, uuid,
-                                         R.string.style_builtin_author_year,
-                                         isPreferred, menuPosition,
-                                         BooklistGroup.AUTHOR,
-                                         BooklistGroup.DATE_PUBLISHED_YEAR,
-                                         BooklistGroup.SERIES);
-                break;
-
-            case ID_FORMAT:
-                style = new BuiltinStyle(context, id, uuid,
-                                         R.string.style_builtin_format,
-                                         isPreferred, menuPosition,
-                                         BooklistGroup.FORMAT);
-                break;
-
-            case ID_DATE_READ:
-                style = new BuiltinStyle(context, id, uuid,
-                                         R.string.style_builtin_read_date,
-                                         isPreferred, menuPosition,
-                                         BooklistGroup.DATE_READ_YEAR,
-                                         BooklistGroup.DATE_READ_MONTH,
-                                         BooklistGroup.AUTHOR);
-                break;
-
-            case ID_LOCATION:
-                style = new BuiltinStyle(context, id, uuid,
-                                         R.string.style_builtin_location,
-                                         isPreferred, menuPosition,
-                                         BooklistGroup.LOCATION,
-                                         BooklistGroup.AUTHOR,
-                                         BooklistGroup.SERIES);
-                break;
-
-            case ID_LANGUAGE:
-                style = new BuiltinStyle(context, id, uuid,
-                                         R.string.style_builtin_language,
-                                         isPreferred, menuPosition,
-                                         BooklistGroup.LANGUAGE,
-                                         BooklistGroup.AUTHOR,
-                                         BooklistGroup.SERIES);
-                break;
-
-            case ID_RATING:
-                style = new BuiltinStyle(context, id, uuid,
-                                         R.string.style_builtin_rating,
-                                         isPreferred, menuPosition,
-                                         BooklistGroup.RATING,
-                                         BooklistGroup.AUTHOR,
-                                         BooklistGroup.SERIES);
-                break;
-
-            case ID_BOOKSHELF:
-                style = new BuiltinStyle(context, id, uuid,
-                                         R.string.style_builtin_bookshelf,
-                                         isPreferred, menuPosition,
-                                         BooklistGroup.BOOKSHELF,
-                                         BooklistGroup.AUTHOR,
-                                         BooklistGroup.SERIES);
-                break;
-
-            case ID_DATE_LAST_UPDATE:
-                style = new BuiltinStyle(context, id, uuid,
-                                         R.string.style_builtin_update_date,
-                                         isPreferred, menuPosition,
-                                         BooklistGroup.DATE_LAST_UPDATE_YEAR,
-                                         BooklistGroup.DATE_LAST_UPDATE_MONTH,
-                                         BooklistGroup.DATE_LAST_UPDATE_DAY);
-                style.getListScreenBookFields()
-                     .setValue(ListScreenBookFields.PK_AUTHOR, true);
-                break;
-
-            // NEWTHINGS: BuiltinStyle: add a new builtin style
-            default:
-                throw new IllegalStateException("style id=" + id);
+        // NEWTHINGS: BuiltinStyle: add a new builtin style if needed
+        if (id == ID_COMPACT) {
+            // The predefined "Compact" style: smaller text, no images.
+            style.setTextScale(ListStyle.TEXT_SCALE_1_SMALL);
+            style.getBooklistBookFieldVisibility()
+                 .setShowField(BooklistBookFieldVisibility.SHOW_COVER_0, false);
         }
         return style;
     }
@@ -431,5 +314,26 @@ public final class BuiltinStyle
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), labelResId);
+    }
+
+    public static class Definition {
+
+        public final int id;
+        @NonNull
+        public final String uuid;
+        @NonNull
+        public final int[] groupIds;
+        @StringRes
+        final int labelResId;
+
+        Definition(final int id,
+                   @NonNull final String uuid,
+                   final int labelResId,
+                   @NonNull final int[] groupIds) {
+            this.id = id;
+            this.uuid = uuid;
+            this.labelResId = labelResId;
+            this.groupIds = groupIds;
+        }
     }
 }

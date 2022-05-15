@@ -22,16 +22,15 @@ package com.hardbacknutter.nevertoomanybooks.booklist.style;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBitmask;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInteger;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
@@ -42,55 +41,77 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 public class UserStyle
         extends BooklistStyle {
 
-    /** Style display name. */
-    public static final String PK_STYLE_NAME = "style.booklist.name";
+    @Nullable
+    private String name;
 
     /**
      * Constructor for <strong>Global defaults</strong>.
-     *
-     * @param context Current context
      */
-    private UserStyle(@NonNull final Context context) {
+    private UserStyle() {
         // empty uuid indicates global
-        super(context, "", true);
-
+        super("");
         // negative == builtin; MIN_VALUE because why not....
         id = Integer.MIN_VALUE;
-
-        initPrefs(true);
     }
 
     /**
      * Constructor for <strong>importing</strong> styles.
      *
-     * @param context Current context
      * @param uuid    UUID of the style
      *
      * @see com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder
      */
-    private UserStyle(@NonNull final Context context,
-                      @NonNull final String uuid) {
-        super(context, uuid, true);
+    private UserStyle(@NonNull final String uuid) {
+        super(uuid);
         id = 0;
-
-        initPrefs(true);
     }
 
     /**
      * Constructor for styles <strong>loaded from database</strong>.
      *
-     * @param context Current context
      * @param rowData with data
      */
-    private UserStyle(@NonNull final Context context,
-                      @NonNull final DataHolder rowData) {
-        super(context, rowData.getString(DBKey.STYLE_UUID), true);
+    private UserStyle(@NonNull final DataHolder rowData) {
+        super(rowData.getString(DBKey.STYLE_UUID));
 
         id = rowData.getLong(DBKey.PK_ID);
         preferred = rowData.getBoolean(DBKey.STYLE_IS_PREFERRED);
         menuPosition = rowData.getInt(DBKey.STYLE_MENU_POSITION);
 
-        initPrefs(true);
+        name = rowData.getString(DBKey.STYLE_NAME);
+
+        List<Integer> groupIds;
+        try {
+            groupIds = Arrays.stream(rowData.getString(DBKey.STYLE_GROUPS).split(","))
+                             .map(Integer::parseInt)
+                             .collect(Collectors.toList());
+        } catch (@NonNull final NumberFormatException ignore) {
+            // we should never get here... flw... try to recover.
+            groupIds = List.of(BooklistGroup.AUTHOR);
+        }
+        setGroupIds(groupIds);
+        setShowBooksUnderEachAuthor(rowData.getBoolean(
+                DBKey.STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH));
+        setPrimaryAuthorTypes(rowData.getInt(DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE));
+        setShowBooksUnderEachSeries(rowData.getBoolean(
+                DBKey.STYLE_GROUPS_SERIES_SHOW_UNDER_EACH));
+        setShowBooksUnderEachPublisher(rowData.getBoolean(
+                DBKey.STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH));
+        setShowBooksUnderEachBookshelf(rowData.getBoolean(
+                DBKey.STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH));
+
+        expansionLevel = rowData.getInt(DBKey.STYLE_EXP_LEVEL);
+        useGroupRowPreferredHeight = rowData.getBoolean(DBKey.STYLE_ROW_USES_PREF_HEIGHT);
+
+        sortAuthorByGivenName = rowData.getBoolean(DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME);
+        showAuthorByGivenName = rowData.getBoolean(DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME);
+
+        textScale = rowData.getInt(DBKey.STYLE_TEXT_SCALE);
+        coverScale = rowData.getInt(DBKey.STYLE_COVER_SCALE);
+
+        showHeaderInfo = rowData.getInt(DBKey.STYLE_LIST_HEADER);
+        bookDetailsFieldVisibility.setValue(rowData.getInt(DBKey.STYLE_DETAILS_SHOW_FIELDS));
+        booklistBookFieldVisibility.setValue(rowData.getInt(DBKey.STYLE_LIST_SHOW_FIELDS));
     }
 
     /**
@@ -108,111 +129,64 @@ public class UserStyle
                         @NonNull final BooklistStyle style,
                         final long id,
                         @NonNull final String uuid) {
-        super(context, uuid, true);
+        super(uuid);
 
         this.id = id;
-
-        // Store the new name.
-        persistenceLayer.setString(PK_STYLE_NAME, style.getLabel(context));
-
-        // copy the basic settings (i.e. non-preferences)
         preferred = style.isPreferred();
         menuPosition = style.getMenuPosition();
 
-        // clone the preferences
-        showAuthorByGivenName = new PBoolean(true, persistenceLayer,
-                                             style.showAuthorByGivenName);
-        sortAuthorByGivenName = new PBoolean(true, persistenceLayer,
-                                             style.sortAuthorByGivenName);
+        // Store the new name.
+        name = style.getLabel(context);
 
-        expansionLevel = new PInteger(true, persistenceLayer, style.expansionLevel);
-        showHeaderInfo = new PBitmask(true, persistenceLayer, style.showHeaderInfo);
-        useGroupRowPreferredHeight = new PBoolean(true, persistenceLayer,
-                                                  style.useGroupRowPreferredHeight);
+        setGroupList(style.getGroupList());
+        setShowBooksUnderEachAuthor(style.isShowBooksUnderEachAuthor());
+        setPrimaryAuthorTypes(style.getPrimaryAuthorType());
+        setShowBooksUnderEachSeries(style.isShowBooksUnderEachSeries());
+        setShowBooksUnderEachPublisher(style.isShowBooksUnderEachPublisher());
+        setShowBooksUnderEachBookshelf(style.isShowBooksUnderEachBookshelf());
 
-        textScale = new TextScale(true, persistenceLayer, style.textScale);
+        expansionLevel = style.expansionLevel;
+        useGroupRowPreferredHeight = style.useGroupRowPreferredHeight;
 
-        listScreenBookFields = new ListScreenBookFields(true, persistenceLayer,
-                                                        style.listScreenBookFields);
+        showAuthorByGivenName = style.showAuthorByGivenName;
+        sortAuthorByGivenName = style.sortAuthorByGivenName;
 
-        detailScreenBookFields = new DetailScreenBookFields(true, persistenceLayer,
-                                                            style.detailScreenBookFields);
+        textScale = style.textScale;
+        coverScale = style.coverScale;
 
-        groups = new Groups(true, this, style.groups);
+        showHeaderInfo = style.showHeaderInfo;
+        booklistBookFieldVisibility.setValue(style.booklistBookFieldVisibility.getValue());
+        bookDetailsFieldVisibility.setValue(style.bookDetailsFieldVisibility.getValue());
     }
 
     @NonNull
-    public static UserStyle createGlobal(@NonNull final Context context) {
-        return new UserStyle(context);
+    public static UserStyle createGlobal() {
+        return new UserStyle();
     }
 
     @NonNull
-    public static UserStyle createFromDatabase(@NonNull final Context context,
-                                               @NonNull final DataHolder rowData) {
-        return new UserStyle(context, rowData);
+    public static UserStyle createFromDatabase(@NonNull final DataHolder rowData) {
+        return new UserStyle(rowData);
     }
 
     @NonNull
-    public static UserStyle createFromImport(@NonNull final Context context,
-                                             @NonNull final String uuid) {
-        return new UserStyle(context, uuid);
-    }
-
-    /**
-     * Discard this style by deleting the SharedPreferences file.
-     * This can only be done for a cloned (new) style which have not been
-     * persisted to the database.
-     *
-     * @param context Current context
-     */
-    public void discard(@NonNull final Context context) {
-        if (getId() != 0) {
-            throw new IllegalArgumentException("Style already persisted");
-        }
-        context.deleteSharedPreferences(getUuid());
+    public static UserStyle createFromImport(@NonNull final String uuid) {
+        return new UserStyle(uuid);
     }
 
     @NonNull
     public String getName() {
-        //noinspection ConstantConditions
-        return persistenceLayer.getNonGlobalString(PK_STYLE_NAME);
+        return Objects.requireNonNull(name, "name");
     }
 
     public void setName(@NonNull final String name) {
-        persistenceLayer.setString(PK_STYLE_NAME, name);
+        this.name = name;
     }
 
     @Override
     public boolean isUserDefined() {
         return true;
     }
-
-    /**
-     * Get a flat list with accumulated preferences for this object and it's groups.<br>
-     * Provides low-level access to all preferences.<br>
-     * This should only be called for export/import.
-     *
-     * @return list
-     */
-    @NonNull
-    public Collection<PPref<?>> getRawPreferences() {
-        final Collection<PPref<?>> list = new ArrayList<>();
-        list.add(expansionLevel);
-        list.add(useGroupRowPreferredHeight);
-        list.add(showHeaderInfo);
-
-        list.add(showAuthorByGivenName);
-        list.add(sortAuthorByGivenName);
-
-        list.addAll(textScale.getRawPreferences());
-        list.addAll(listScreenBookFields.getRawPreferences());
-        list.addAll(detailScreenBookFields.getRawPreferences());
-
-        list.addAll(groups.getRawPreferences());
-
-        return list;
-    }
-
 
     @Override
     @NonNull

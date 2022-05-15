@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
@@ -44,11 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.STYLE_IS_BUILTIN;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.STYLE_IS_PREFERRED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.STYLE_MENU_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.STYLE_UUID;
 
 public class StyleDaoImpl
         extends BaseDaoImpl
@@ -79,7 +75,35 @@ public class StyleDaoImpl
             + ',' + DBKey.STYLE_IS_BUILTIN
             + ',' + DBKey.STYLE_IS_PREFERRED
             + ',' + DBKey.STYLE_MENU_POSITION
-            + ") VALUES (?,?,?,?)";
+            + ',' + DBKey.STYLE_NAME
+
+            + ',' + DBKey.STYLE_GROUPS
+            + ',' + DBKey.STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH
+            + ',' + DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE
+            + ',' + DBKey.STYLE_GROUPS_SERIES_SHOW_UNDER_EACH
+            + ',' + DBKey.STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH
+            + ',' + DBKey.STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH
+
+            + ',' + DBKey.STYLE_EXP_LEVEL
+            + ',' + DBKey.STYLE_ROW_USES_PREF_HEIGHT
+            + ',' + DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME
+            + ',' + DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME
+
+            + ',' + DBKey.STYLE_TEXT_SCALE
+            + ',' + DBKey.STYLE_COVER_SCALE
+            + ',' + DBKey.STYLE_LIST_HEADER
+            + ',' + DBKey.STYLE_DETAILS_SHOW_FIELDS
+            + ',' + DBKey.STYLE_LIST_SHOW_FIELDS
+            + ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+    private static final String INSERT_BUILTIN_STYLE =
+            INSERT_INTO_ + TBL_BOOKLIST_STYLES.getName()
+            + '(' + DBKey.PK_ID
+            + ',' + DBKey.STYLE_UUID
+            + ',' + DBKey.STYLE_IS_BUILTIN
+            + ',' + DBKey.STYLE_IS_PREFERRED
+            + ',' + DBKey.STYLE_MENU_POSITION
+            + ") VALUES(?,?,?,?,?)";
 
     /** Delete a {@link ListStyle}. */
     private static final String DELETE_STYLE_BY_ID =
@@ -98,33 +122,26 @@ public class StyleDaoImpl
     }
 
     /**
-     * Run at installation time to add the builtin style ID's to the database.
-     * This allows foreign keys to work.
+     * Run at <strong>installation</strong> time to add the builtin style ID's to the database.
      *
      * @param db Database Access
      */
     public static void onPostCreate(@NonNull final SQLiteDatabase db) {
-        final String sqlInsertStyles =
-                "INSERT INTO " + TBL_BOOKLIST_STYLES
-                + '(' + PK_ID
-                // 1==true
-                + ',' + STYLE_IS_BUILTIN
-                // 0==false
-                + ',' + STYLE_IS_PREFERRED
-                + ',' + STYLE_MENU_POSITION
-                + ',' + STYLE_UUID
-                + ") VALUES(?,1,0,?,?)";
-        try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
-            for (int id = BuiltinStyle.MAX_ID; id < 0; id++) {
-                // remember, the id is negative -1..
-                stmt.bindLong(1, id);
-                // menu position, initially just as defined but with a positive number
-                stmt.bindLong(2, -id);
-                stmt.bindString(3, BuiltinStyle.getUuidById(-id));
+        try (SQLiteStatement stmt = db.compileStatement(INSERT_BUILTIN_STYLE)) {
+            for (final BuiltinStyle.Definition styleDef : BuiltinStyle.ALL) {
+                stmt.bindLong(1, styleDef.id);
+                stmt.bindString(2, styleDef.uuid);
+                // builtin: true
+                stmt.bindLong(3, 1);
+                // preferred: false
+                stmt.bindLong(4, 0);
+                // menu position, initially just in the order defined.
+                // ( negate the id to get a positive number)
+                stmt.bindLong(5, -styleDef.id);
 
                 // after inserting '-1' our debug logging will claim that the insert failed.
                 if (BuildConfig.DEBUG /* always */) {
-                    if (id == -1) {
+                    if (styleDef.id == -1) {
                         Log.d(TAG, "onPostCreate|Ignore debug message inserting -1 ^^^");
                     }
                 }
@@ -150,7 +167,7 @@ public class StyleDaoImpl
                                           new String[]{String.valueOf(0)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                final UserStyle style = UserStyle.createFromDatabase(context, rowData);
+                final UserStyle style = UserStyle.createFromDatabase(rowData);
                 map.put(style.getUuid(), style);
             }
         }
@@ -167,7 +184,7 @@ public class StyleDaoImpl
                                           new String[]{String.valueOf(1)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                final BuiltinStyle style = BuiltinStyle.createFromDatabase(context, rowData);
+                final BuiltinStyle style = BuiltinStyle.createFromDatabase(rowData);
                 map.put(style.getUuid(), style);
             }
         }
@@ -175,13 +192,43 @@ public class StyleDaoImpl
         return map;
     }
 
+
+    @NonNull
+    private String getGroupIdsAsCsv(@NonNull final ListStyle style) {
+        return style.getGroupList()
+                    .stream()
+                    .map(group -> String.valueOf(group.getId()))
+                    .collect(Collectors.joining(","));
+    }
+
     @Override
-    public long insert(@NonNull final ListStyle style) {
+    public long insert(@NonNull final UserStyle style) {
+
         try (SynchronizedStatement stmt = mDb.compileStatement(INSERT_STYLE)) {
             stmt.bindString(1, style.getUuid());
             stmt.bindBoolean(2, !style.isUserDefined());
             stmt.bindBoolean(3, style.isPreferred());
             stmt.bindLong(4, style.getMenuPosition());
+            stmt.bindString(5, style.getName());
+
+            stmt.bindString(6, getGroupIdsAsCsv(style));
+            stmt.bindBoolean(7, style.isShowBooksUnderEachAuthor());
+            stmt.bindLong(8, style.getPrimaryAuthorType());
+            stmt.bindBoolean(9, style.isShowBooksUnderEachSeries());
+            stmt.bindBoolean(10, style.isShowBooksUnderEachPublisher());
+            stmt.bindBoolean(11, style.isShowBooksUnderEachBookshelf());
+
+            stmt.bindLong(12, style.getExpansionLevel());
+            stmt.bindBoolean(13, style.isGroupRowUsesPreferredHeight());
+            stmt.bindBoolean(14, style.isSortAuthorByGivenName());
+            stmt.bindBoolean(15, style.isShowAuthorByGivenName());
+
+            stmt.bindLong(16, style.getTextScale());
+            stmt.bindLong(17, style.getCoverScale());
+            stmt.bindLong(18, style.getShowHeaderFields());
+            stmt.bindLong(19, style.getBookDetailsFieldVisibility().getValue());
+            stmt.bindLong(20, style.getBooklistBookFieldVisibility().getValue());
+
             final long iId = stmt.executeInsert();
             if (iId > 0) {
                 style.setId(iId);
@@ -192,14 +239,49 @@ public class StyleDaoImpl
 
     @Override
     public boolean update(@NonNull final ListStyle style) {
-
         final ContentValues cv = new ContentValues();
         cv.put(DBKey.STYLE_IS_PREFERRED, style.isPreferred());
         cv.put(DBKey.STYLE_MENU_POSITION, style.getMenuPosition());
 
+        if (style.isUserDefined()) {
+            final UserStyle userStyle = (UserStyle) style;
+
+            cv.put(DBKey.STYLE_NAME, userStyle.getName());
+
+            cv.put(DBKey.STYLE_GROUPS, getGroupIdsAsCsv(style));
+            cv.put(DBKey.STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH,
+                   style.isShowBooksUnderEachAuthor());
+            cv.put(DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE,
+                   style.getPrimaryAuthorType());
+            cv.put(DBKey.STYLE_GROUPS_SERIES_SHOW_UNDER_EACH,
+                   style.isShowBooksUnderEachSeries());
+            cv.put(DBKey.STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH,
+                   style.isShowBooksUnderEachPublisher());
+            cv.put(DBKey.STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH,
+                   style.isShowBooksUnderEachBookshelf());
+
+            cv.put(DBKey.STYLE_EXP_LEVEL, style.getExpansionLevel());
+            cv.put(DBKey.STYLE_ROW_USES_PREF_HEIGHT,
+                   userStyle.isGroupRowUsesPreferredHeight());
+            cv.put(DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME,
+                   style.isSortAuthorByGivenName());
+            cv.put(DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME,
+                   style.isShowAuthorByGivenName());
+
+            cv.put(DBKey.STYLE_TEXT_SCALE, style.getTextScale());
+            cv.put(DBKey.STYLE_COVER_SCALE, style.getCoverScale());
+            cv.put(DBKey.STYLE_LIST_HEADER, userStyle.getShowHeaderFields());
+            cv.put(DBKey.STYLE_DETAILS_SHOW_FIELDS,
+                   style.getBookDetailsFieldVisibility().getValue());
+
+            cv.put(DBKey.STYLE_LIST_SHOW_FIELDS,
+                   style.getBooklistBookFieldVisibility().getValue());
+        }
+
         return 0 < mDb.update(TBL_BOOKLIST_STYLES.getName(), cv, DBKey.PK_ID + "=?",
                               new String[]{String.valueOf(style.getId())});
     }
+
 
     @Override
     @SuppressWarnings("UnusedReturnValue")

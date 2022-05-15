@@ -48,7 +48,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_PUBLISHER_
 public class PublisherBooklistGroup
         extends AbstractLinkedTableBooklistGroup {
 
-    /** Style - PreferenceScreen/PreferenceCategory Key. */
+    /** See {@link #setPreferencesVisible(PreferenceScreen, boolean)} */
     private static final String PSK_STYLE_PUBLISHER = "psk_style_publisher";
     public static final String PK_SHOW_BOOKS_UNDER_EACH =
             "style.booklist.group.publisher.show.all";
@@ -64,25 +64,23 @@ public class PublisherBooklistGroup
     /**
      * Constructor.
      *
-     * @param isPersistent flag
      * @param style        Style reference.
      */
-    PublisherBooklistGroup(final boolean isPersistent,
-                           @NonNull final ListStyle style) {
-        super(PUBLISHER, isPersistent, style, PK_SHOW_BOOKS_UNDER_EACH);
+    PublisherBooklistGroup(@NonNull final ListStyle style) {
+        super(PUBLISHER, style);
+
+        underEach = getDefaultShowBooksUnderEach();
     }
 
     /**
      * Copy constructor.
      *
-     * @param isPersistent flag
      * @param style        Style reference.
      * @param group        to copy from
      */
-    PublisherBooklistGroup(final boolean isPersistent,
-                           @NonNull final ListStyle style,
+    PublisherBooklistGroup(@NonNull final ListStyle style,
                            @NonNull final PublisherBooklistGroup group) {
-        super(isPersistent, style, group);
+        super(style, group);
     }
 
     /**
@@ -90,7 +88,7 @@ public class PublisherBooklistGroup
      *
      * @return {@code true} if we want to show a book under each of its Publishers.
      */
-    public static boolean showBooksUnderEachDefault() {
+    public static boolean getDefaultShowBooksUnderEach() {
         return ServiceLocator.getGlobalPreferences().getBoolean(PK_SHOW_BOOKS_UNDER_EACH, false);
     }
 
@@ -116,7 +114,7 @@ public class PublisherBooklistGroup
 
     @Override
     @NonNull
-    protected DomainExpression createDisplayDomainExpression() {
+    protected DomainExpression createDisplayDomainExpression(@NonNull final ListStyle style) {
         // Not sorted; we sort on the OB domain as defined in #createGroupKey.
         return new DomainExpression(DBDefinitions.DOM_PUBLISHER_NAME,
                                     DBDefinitions.TBL_PUBLISHERS.dot(DBKey.PUBLISHER_NAME));
