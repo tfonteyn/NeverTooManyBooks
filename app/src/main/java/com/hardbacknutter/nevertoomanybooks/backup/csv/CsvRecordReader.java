@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDoneException;
-import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.AnyThread;
@@ -116,9 +115,9 @@ public class CsvRecordReader
     private static final String TAG = "CsvRecordReader";
 
     @NonNull
-    private final Locale mUserLocale;
+    private final Locale userLocale;
     @NonNull
-    private final BookCoder mBookCoder;
+    private final BookCoder bookCoder;
 
     /**
      * Constructor.
@@ -131,8 +130,8 @@ public class CsvRecordReader
     public CsvRecordReader(@NonNull final Context context) {
         super(context);
 
-        mBookCoder = new BookCoder(context);
-        mUserLocale = context.getResources().getConfiguration().getLocales().get(0);
+        bookCoder = new BookCoder(context);
+        userLocale = context.getResources().getConfiguration().getLocales().get(0);
     }
 
     @Override
@@ -189,7 +188,7 @@ public class CsvRecordReader
         final String[] csvColumnNames = parse(context, 0, books.get(0));
         // sanity check: make sure they are lower case
         for (int i = 0; i < csvColumnNames.length; i++) {
-            csvColumnNames[i] = csvColumnNames[i].toLowerCase(mUserLocale);
+            csvColumnNames[i] = csvColumnNames[i].toLowerCase(userLocale);
         }
         // check for required columns
         final List<String> csvColumnNamesList = Arrays.asList(csvColumnNames);
@@ -227,7 +226,7 @@ public class CsvRecordReader
                             R.string.error_import_csv_column_count_mismatch, row));
                 }
 
-                final Book book = mBookCoder.decode(context, csvColumnNames, csvDataRow);
+                final Book book = bookCoder.decode(context, csvColumnNames, csvDataRow);
 
                 // Do we have a DBDefinitions.KEY_BOOK_UUID in the import ?
                 final boolean hasUuid = handleUuid(book);
@@ -626,6 +625,6 @@ public class CsvRecordReader
         }
 
         throw new DataReaderException(context.getString(
-                R.string.error_import_csv_missing_columns_x, TextUtils.join(",", names)));
+                R.string.error_import_csv_missing_columns_x, String.join(",", names)));
     }
 }
