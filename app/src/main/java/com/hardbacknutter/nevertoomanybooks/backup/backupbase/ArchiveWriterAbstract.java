@@ -101,10 +101,10 @@ public abstract class ArchiveWriterAbstract
 
     /** Export configuration. */
     @NonNull
-    private final ExportHelper mHelper;
+    private final ExportHelper exportHelper;
     /** The accumulated results. */
     @NonNull
-    private final ExportResults mResults = new ExportResults();
+    private final ExportResults results = new ExportResults();
 
     /**
      * Constructor.
@@ -112,7 +112,7 @@ public abstract class ArchiveWriterAbstract
      * @param helper export configuration
      */
     protected ArchiveWriterAbstract(@NonNull final ExportHelper helper) {
-        mHelper = helper;
+        exportHelper = helper;
     }
 
     /**
@@ -138,16 +138,16 @@ public abstract class ArchiveWriterAbstract
         // do a cleanup before we start writing
         ServiceLocator.getInstance().getMaintenanceDao().purge();
 
-        final Set<RecordType> recordTypes = mHelper.getRecordTypes();
+        final Set<RecordType> recordTypes = exportHelper.getRecordTypes();
         RecordType.addRelatedTypes(recordTypes);
 
-        final LocalDateTime dateSince = mHelper.getLastDone();
+        final LocalDateTime dateSince = exportHelper.getLastDone(context);
 
         try {
             int steps = ServiceLocator.getInstance().getBookDao().countBooksForExport(dateSince);
             if (steps == 0) {
                 // nothing to backup.
-                return mResults;
+                return results;
             }
 
             final boolean writeCovers = this instanceof SupportsCovers
@@ -169,12 +169,12 @@ public abstract class ArchiveWriterAbstract
 
             // Recalculate the progress max value using the exact number of books/covers
             // which will now include the back-covers.
-            progressListener.setMaxPos(mResults.getBookCount()
-                                       + mResults.getCoverCount()
+            progressListener.setMaxPos(results.getBookCount()
+                                       + results.getCoverCount()
                                        + EXTRA_STEPS);
 
             // Start with the archive header
-            writeMetaData(context, mResults);
+            writeMetaData(context, results);
 
             // The order we're writing is important:
             // Write styles first, and preferences next! This will facilitate & speedup
@@ -187,7 +187,7 @@ public abstract class ArchiveWriterAbstract
                                                       RecordType.CalibreCustomFields);
             for (final RecordType type : typeList) {
                 if (!progressListener.isCancelled() && recordTypes.contains(type)) {
-                    mResults.add(writeRecord(context, type, progressListener));
+                    results.add(writeRecord(context, type, progressListener));
                 }
             }
 
@@ -203,7 +203,7 @@ public abstract class ArchiveWriterAbstract
             }
 
             // Always do the covers as the last step
-            if (!progressListener.isCancelled() && writeCovers && mResults.has(RecordType.Cover)) {
+            if (!progressListener.isCancelled() && writeCovers && results.has(RecordType.Cover)) {
                 ((SupportsCovers) this).writeCovers(context, progressListener);
             }
 
@@ -217,9 +217,9 @@ public abstract class ArchiveWriterAbstract
         }
 
         // If the backup was a full backup remember that.
-        mHelper.setLastDone();
+        exportHelper.setLastDone(context);
 
-        return mResults;
+        return results;
     }
 
     /**
@@ -247,10 +247,10 @@ public abstract class ArchiveWriterAbstract
         // Filter to valid options for this step.
         final Set<RecordType> recordTypes = EnumSet.noneOf(RecordType.class);
 
-        if (mHelper.getRecordTypes().contains(RecordType.Books)) {
+        if (exportHelper.getRecordTypes().contains(RecordType.Books)) {
             recordTypes.add(RecordType.Books);
         }
-        if (mHelper.getRecordTypes().contains(RecordType.Cover)) {
+        if (exportHelper.getRecordTypes().contains(RecordType.Cover)) {
             recordTypes.add(RecordType.Cover);
         }
 
@@ -260,7 +260,7 @@ public abstract class ArchiveWriterAbstract
              Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
              RecordWriter recordWriter = encoding.createWriter(dateSince)) {
-            mResults.add(recordWriter.write(context, bw, recordTypes, progressListener));
+            results.add(recordWriter.write(context, bw, recordTypes, progressListener));
         }
 
         return file;
@@ -366,7 +366,7 @@ public abstract class ArchiveWriterAbstract
         final File coverDir = CoverDir.getDir(context);
 
         final String coverStr = context.getString(R.string.lbl_covers);
-        for (final String filename : mResults.getCoverFileNames()) {
+        for (final String filename : results.getCoverFileNames()) {
             if (progressListener.isCancelled()) {
                 return;
             }

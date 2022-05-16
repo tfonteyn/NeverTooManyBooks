@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -301,8 +301,7 @@ public class BooksOnBookshelfViewModel
         if (bookshelf == null) {
             bookshelf = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
         }
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        bookshelf.setAsPreferred(global);
+        bookshelf.setAsPreferred();
 
         if (previousBookshelfId != bookshelf.getId()) {
             currentCenteredBookId = 0;
@@ -330,7 +329,7 @@ public class BooksOnBookshelfViewModel
      * @return style
      */
     @NonNull
-    ListStyle getStyle(@NonNull final Context context) {
+    Style getStyle(@NonNull final Context context) {
         Objects.requireNonNull(bookshelf, Bookshelf.TAG);
         return bookshelf.getStyle(context);
     }
@@ -344,8 +343,8 @@ public class BooksOnBookshelfViewModel
     void onStyleEdited(@NonNull final Context context,
                        @NonNull final String uuid) {
         // The uuid/style SHOULD be valid as we just edited finished editing it.
-        final ListStyle style = ServiceLocator.getInstance().getStyles()
-                                              .getStyle(context, uuid);
+        final Style style = ServiceLocator.getInstance().getStyles()
+                                          .getStyle(context, uuid);
         //noinspection ConstantConditions
         changeStyle(context, style);
     }
@@ -360,8 +359,8 @@ public class BooksOnBookshelfViewModel
     void onStyleChanged(@NonNull final Context context,
                         @NonNull final String styleUuid) {
         // Always validate first
-        final ListStyle style = ServiceLocator.getInstance().getStyles()
-                                              .getStyleOrDefault(context, styleUuid);
+        final Style style = ServiceLocator.getInstance().getStyles()
+                                          .getStyleOrDefault(context, styleUuid);
         changeStyle(context, style);
     }
 
@@ -373,14 +372,14 @@ public class BooksOnBookshelfViewModel
      * @param style   the style to apply
      */
     private void changeStyle(@NonNull final Context context,
-                             @NonNull final ListStyle style) {
+                             @NonNull final Style style) {
         Objects.requireNonNull(bookshelf, Bookshelf.TAG);
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         // set as the global default.
-        ServiceLocator.getInstance().getStyles().setDefault(global, style.getUuid());
+        ServiceLocator.getInstance().getStyles().setDefault(style.getUuid());
         // save the new bookshelf/style combination
-        bookshelf.setAsPreferred(global);
+        bookshelf.setAsPreferred();
         bookshelf.setStyle(context, style);
     }
 

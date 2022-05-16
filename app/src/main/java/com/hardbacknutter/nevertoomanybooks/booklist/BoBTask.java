@@ -20,13 +20,11 @@
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,8 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.RowIdFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistBookFieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -174,8 +171,7 @@ public class BoBTask
     @WorkerThread
     protected Outcome doWork(@NonNull final Context context) {
 
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        final ListStyle style = bookshelf.getStyle(context);
+        final Style style = bookshelf.getStyle(context);
 
         Booklist booklist = null;
         try {
@@ -187,12 +183,11 @@ public class BoBTask
                 builder.addDomain(domainDetails);
             }
 
-            if (CalibreHandler.isSyncEnabled(global)) {
+            if (CalibreHandler.isSyncEnabled()) {
                 addCalibreDomains(builder);
             }
 
-            addConditionalGlobalDomains(builder, global);
-            addConditionalStyleDomains(builder, style);
+            addConditionalDomains(builder, style);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
                 Log.d(TAG, "mSearchCriteria=" + searchCriteria);
@@ -267,7 +262,7 @@ public class BoBTask
 
             // pre-count and cache (in the builder) these while we're in the background.
             // They are used for the header, and will not change even if the list cursor changes.
-            if (style.isShowHeader(BooklistHeader.SHOW_BOOK_COUNT)) {
+            if (style.isShowHeaderField(BooklistHeader.SHOW_BOOK_COUNT)) {
                 booklist.countBooks();
                 booklist.countDistinctBooks();
             }
@@ -283,41 +278,36 @@ public class BoBTask
         }
     }
 
-    private void addConditionalGlobalDomains(final BooklistBuilder builder,
-                                             final SharedPreferences global) {
-        if (DBKey.isUsed(global, DBKey.BITMASK_EDITION)) {
+    private void addConditionalDomains(@NonNull final BooklistBuilder builder,
+                                       @NonNull final Style style) {
+        if (style.isShowField(Style.Screen.List, DBKey.BITMASK_EDITION)) {
             // The edition bitmask
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_BOOK_EDITION_BITMASK,
                     DBDefinitions.TBL_BOOKS.dot(DBKey.BITMASK_EDITION)));
         }
 
-        if (DBKey.isUsed(global, DBKey.SIGNED__BOOL)) {
+        if (style.isShowField(Style.Screen.List, DBKey.SIGNED__BOOL)) {
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_BOOK_SIGNED,
                     DBDefinitions.TBL_BOOKS.dot(DBKey.SIGNED__BOOL)));
         }
 
-        if (DBKey.isUsed(global, DBKey.BOOK_CONDITION)) {
+        if (style.isShowField(Style.Screen.List, DBKey.BOOK_CONDITION)) {
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_BOOK_CONDITION,
                     DBDefinitions.TBL_BOOKS.dot(DBKey.BOOK_CONDITION)));
         }
 
-        if (DBKey.isUsed(global, DBKey.LOANEE_NAME)) {
+        if (style.isShowField(Style.Screen.List, DBKey.LOANEE_NAME)) {
             // Used to display/hide the 'lend' icon for each book.
             builder.addLeftOuterJoin(DBDefinitions.TBL_BOOK_LOANEE);
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_LOANEE,
                     DBDefinitions.TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME)));
         }
-    }
 
-    private void addConditionalStyleDomains(@NonNull final BooklistBuilder builder,
-                                            @NonNull final ListStyle style) {
-        final BooklistBookFieldVisibility bookFields = style.getBooklistBookFieldVisibility();
-
-        if (bookFields.isShowField(BooklistBookFieldVisibility.SHOW_BOOKSHELVES)) {
+        if (style.isShowField(Style.Screen.List, DBKey.FK_BOOKSHELF)) {
             // This collects a CSV list of the bookshelves the book is on.
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_BOOKSHELF_NAME_CSV,
@@ -325,45 +315,45 @@ public class BoBTask
         }
 
         // we fetch ONLY the primary author to show on the Book level
-        if (bookFields.isShowField(BooklistBookFieldVisibility.SHOW_AUTHOR)) {
+        if (style.isShowField(Style.Screen.List, DBKey.FK_AUTHOR)) {
             builder.addDomain(AuthorDaoImpl.createDisplayDomainExpression(
                     style.isShowAuthorByGivenName()));
         }
 
         // for now, don't get the author type.
-//              if (bookFields.isShowField(BooklistBookFieldVisibility.LIST_AUTHOR_TYPE)) {
-//                  builder.addDomain(new DomainExpression(
-//                          DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
-//                          DBDefinitions.TBL_BOOK_AUTHOR
-//                          .dot(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)));
-//              }
+//        if (style.isBooklistShowsField(DBKey.BOOK_AUTHOR_TYPE_BITMASK)) {
+//            builder.addDomain(new DomainExpression(
+//                    DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
+//                    DBDefinitions.TBL_BOOK_AUTHOR
+//                            .dot(DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK)));
+//        }
 
-        if (bookFields.isShowField(BooklistBookFieldVisibility.SHOW_PUBLISHER)) {
+        if (style.isShowField(Style.Screen.List, DBKey.FK_PUBLISHER)) {
             // Collect a CSV list of the publishers of the book
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_PUBLISHER_NAME_CSV,
                     BooklistBuilder.EXP_PUBLISHER_NAME_CSV));
         }
 
-        if (bookFields.isShowField(BooklistBookFieldVisibility.SHOW_PUB_DATE)) {
+        if (style.isShowField(Style.Screen.List, DBKey.DATE_BOOK_PUBLICATION)) {
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
                     DBDefinitions.TBL_BOOKS.dot(DBKey.DATE_BOOK_PUBLICATION)));
         }
 
-        if (bookFields.isShowField(BooklistBookFieldVisibility.SHOW_FORMAT)) {
+        if (style.isShowField(Style.Screen.List, DBKey.BOOK_FORMAT)) {
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_BOOK_FORMAT,
                     DBDefinitions.TBL_BOOKS.dot(DBKey.BOOK_FORMAT)));
         }
 
-        if (bookFields.isShowField(BooklistBookFieldVisibility.SHOW_LOCATION)) {
+        if (style.isShowField(Style.Screen.List, DBKey.LOCATION)) {
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_BOOK_LOCATION,
                     DBDefinitions.TBL_BOOKS.dot(DBKey.LOCATION)));
         }
 
-        if (bookFields.isShowField(BooklistBookFieldVisibility.SHOW_RATING)) {
+        if (style.isShowField(Style.Screen.List, DBKey.RATING)) {
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_BOOK_RATING,
                     DBDefinitions.TBL_BOOKS.dot(DBKey.RATING)));

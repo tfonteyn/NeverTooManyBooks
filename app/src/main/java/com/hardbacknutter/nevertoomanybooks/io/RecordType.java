@@ -26,7 +26,7 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -65,7 +65,7 @@ public enum RecordType {
     MetaData("info"),
 
     /**
-     * {@link ListStyle} element(s).
+     * {@link Style} element(s).
      * ONLY ONE PER ARCHIVE.
      */
     Styles("styles"),

@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
@@ -79,14 +78,12 @@ public final class CameraDetection {
      * Get the user preferred camera id.
      *
      * @param context Current context
-     * @param global  Global preferences
      *
      * @return camera id, or {@code -1} for no-preference
      */
-    public static int getPreferredCameraId(@NonNull final Context context,
-                                           @NonNull final SharedPreferences global) {
+    public static int getPreferredCameraId(@NonNull final Context context) {
         // By default -1, which for the scanner IntentIntegrator call means 'no preference'
-        int cameraId = Prefs.getIntListPref(global, Prefs.pk_camera_id_scan_barcode, -1);
+        int cameraId = Prefs.getIntListPref(context, Prefs.pk_camera_id_scan_barcode, -1);
         // we must verify the id, as the preference could have been imported from another device
         if (!getCameras(context).containsKey(String.valueOf(cameraId))) {
             cameraId = -1;

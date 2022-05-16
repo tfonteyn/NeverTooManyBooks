@@ -27,7 +27,7 @@ import androidx.annotation.Nullable;
 import java.util.Locale;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 /**
@@ -67,7 +67,7 @@ public interface Entity {
     @NonNull
     default String getLabel(@NonNull final Context context,
                             @NonNull final Details details,
-                            @Nullable final ListStyle style) {
+                            @Nullable final Style style) {
         return getLabel(context);
     }
 

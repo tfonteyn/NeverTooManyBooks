@@ -51,35 +51,35 @@ public class SearchAdminFragment
 
     public static final String TAG = "SearchAdminFragment";
 
-    private TabAdapter mTabAdapter;
+    private TabAdapter tabAdapter;
 
-    private SearchAdminViewModel mVm;
+    private SearchAdminViewModel vm;
     /** View Binding. */
-    private FragmentAdminSearchBinding mVb;
+    private FragmentAdminSearchBinding vb;
 
-    private final OnBackPressedCallback mOnBackPressedCallback =
+    private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    final boolean hasSites = mVm.validate();
+                    final boolean hasSites = vm.validate();
                     if (hasSites) {
-                        if (mVm.getTypes().size() == 1) {
+                        if (vm.getTypes().size() == 1) {
                             // single-list is NOT persisted, just returned for temporary usage.
-                            final Site.Type type = mVm.getTypes().get(0);
+                            final Site.Type type = vm.getTypes().get(0);
                             final Intent resultIntent = new Intent()
                                     .putParcelableArrayListExtra(type.getBundleKey(),
-                                                                 mVm.getList(type));
+                                                                 vm.getList(type));
                             //noinspection ConstantConditions
                             getActivity().setResult(Activity.RESULT_OK, resultIntent);
 
                         } else {
-                            mVm.persist();
+                            vm.persist();
                         }
                         //noinspection ConstantConditions
                         getActivity().finish();
 
                     } else {
-                        Snackbar.make(mVb.pager, R.string.warning_enable_at_least_1_website,
+                        Snackbar.make(vb.pager, R.string.warning_enable_at_least_1_website,
                                       Snackbar.LENGTH_LONG).show();
                     }
                 }
@@ -90,8 +90,8 @@ public class SearchAdminFragment
         super.onCreate(savedInstanceState);
 
         //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(SearchAdminViewModel.class);
-        mVm.init(getArguments());
+        vm = new ViewModelProvider(getActivity()).get(SearchAdminViewModel.class);
+        vm.init(getArguments());
     }
 
     @Nullable
@@ -99,8 +99,8 @@ public class SearchAdminFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentAdminSearchBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentAdminSearchBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @Override
@@ -110,24 +110,24 @@ public class SearchAdminFragment
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
-        final List<Site.Type> types = mVm.getTypes();
-        mTabAdapter = new TabAdapter(getActivity(), types);
+        final List<Site.Type> types = vm.getTypes();
+        tabAdapter = new TabAdapter(getActivity(), types);
 
         final TabLayout tabPanel = getActivity().findViewById(R.id.tab_panel);
 
         if (types.size() == 1) {
-            getToolbar().setSubtitle(types.get(0).getLabelId());
+            getToolbar().setSubtitle(types.get(0).getLabelResId());
             tabPanel.setVisibility(View.GONE);
         }
 
         // We do NOT want any page recycled/reused - hence cache/keep ALL pages.
-        mVb.pager.setOffscreenPageLimit(mTabAdapter.getItemCount());
+        vb.pager.setOffscreenPageLimit(tabAdapter.getItemCount());
 
-        mVb.pager.setAdapter(mTabAdapter);
-        new TabLayoutMediator(tabPanel, mVb.pager, (tab, position) ->
-                tab.setText(getString(mTabAdapter.getTabTitle(position))))
+        vb.pager.setAdapter(tabAdapter);
+        new TabLayoutMediator(tabPanel, vb.pager, (tab, position) ->
+                tab.setText(getString(tabAdapter.getTabTitle(position))))
                 .attach();
     }
 
@@ -165,7 +165,7 @@ public class SearchAdminFragment
 
         @StringRes
         int getTabTitle(final int position) {
-            return mTypes.get(position).getLabelId();
+            return mTypes.get(position).getLabelResId();
         }
     }
 }

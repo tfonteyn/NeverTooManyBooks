@@ -369,7 +369,7 @@ public class SearchBookUpdatesFragment
                 final SyncField fs = mSyncFields[holder.getBindingAdapterPosition()];
                 fs.nextState();
                 vb.cbxUsage.setChecked(fs.getAction() != SyncAction.Skip);
-                vb.cbxUsage.setText(fs.getActionLabelId());
+                vb.cbxUsage.setText(fs.getActionLabelResId());
             });
             return holder;
         }
@@ -380,9 +380,9 @@ public class SearchBookUpdatesFragment
 
             final SyncField syncField = mSyncFields[position];
 
-            holder.vb.field.setText(syncField.getFieldLabelId());
+            holder.vb.field.setText(syncField.getFieldLabelResId());
             holder.vb.cbxUsage.setChecked(syncField.getAction() != SyncAction.Skip);
-            holder.vb.cbxUsage.setText(syncField.getActionLabelId());
+            holder.vb.cbxUsage.setText(syncField.getActionLabelResId());
         }
 
         @Override

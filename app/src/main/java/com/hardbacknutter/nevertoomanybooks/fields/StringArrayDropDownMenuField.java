@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.fields;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 
@@ -71,9 +70,8 @@ public class StringArrayDropDownMenuField
     }
 
     @Override
-    public void setParentView(@NonNull final View parent,
-                              @NonNull final SharedPreferences global) {
-        super.setParentView(parent, global);
+    public void setParentView(@NonNull final View parent) {
+        super.setParentView(parent);
 
         final AutoCompleteTextView view = requireView();
         view.setAdapter(mAdapter);

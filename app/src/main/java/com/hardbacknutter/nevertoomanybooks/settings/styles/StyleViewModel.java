@@ -34,9 +34,11 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 public class StyleViewModel
         extends ViewModel {
@@ -62,43 +64,31 @@ public class StyleViewModel
     void init(@NonNull final Context context,
               @NonNull final Bundle args) {
         if (style == null) {
+            final String uuid = SanityCheck.requireValue(args.getString(Style.BKEY_UUID),
+                                                         Style.BKEY_UUID);
+            // ALWAYS pass the original style uuid back.
+            templateUuid = uuid;
 
-            final String uuid = Objects.requireNonNull(args.getString(ListStyle.BKEY_UUID),
-                                                       ListStyle.BKEY_UUID);
+            final Style dbStyle = ServiceLocator.getInstance().getStyles()
+                                                .getStyle(context, uuid);
+            Objects.requireNonNull(dbStyle, "uuid not found: " + uuid);
 
-            if (uuid.isEmpty()) {
-                //TODO: handling global style settings is work-in-progress
-                // and not guaranteed to work.
+            @EditStyleContract.EditAction
+            final int action = args.getInt(EditStyleContract.BKEY_ACTION,
+                                           EditStyleContract.ACTION_EDIT);
 
-                // we're doing the global preferences, create a placeholder style
-                // with an empty uuid and let it use the standard SharedPreferences
-                style = UserStyle.createGlobal();
-
+            if (action == EditStyleContract.ACTION_CLONE || !dbStyle.isUserDefined()) {
+                style = dbStyle.clone(context);
             } else {
-                // ALWAYS pass the original style uuid back.
-                templateUuid = uuid;
-
-                final ListStyle dbStyle = ServiceLocator.getInstance().getStyles()
-                                                        .getStyle(context, uuid);
-                Objects.requireNonNull(dbStyle, "uuid not found: " + uuid);
-
-                @EditStyleContract.EditAction
-                final int action = args.getInt(EditStyleContract.BKEY_ACTION,
-                                               EditStyleContract.ACTION_EDIT);
-
-                if (action == EditStyleContract.ACTION_CLONE || !dbStyle.isUserDefined()) {
-                    style = dbStyle.clone(context);
-                } else {
-                    style = (UserStyle) dbStyle;
-                }
-
-                // Only set if true, don't overwrite
-                if (args.getBoolean(EditStyleContract.BKEY_SET_AS_PREFERRED)) {
-                    style.setPreferred(true);
-                }
-
-                styleDataStore = new StyleDataStore(style);
+                style = (UserStyle) dbStyle;
             }
+
+            // Only set if true, don't overwrite
+            if (args.getBoolean(EditStyleContract.BKEY_SET_AS_PREFERRED)) {
+                style.setPreferred(true);
+            }
+
+            styleDataStore = new StyleDataStore(style);
         }
     }
 

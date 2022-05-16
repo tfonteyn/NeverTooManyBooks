@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,6 +47,7 @@ import java.security.cert.CertificateException;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -69,23 +69,23 @@ public class CalibreHandler {
     public static final String PK_ENABLED = CalibreContentServer.PREF_KEY + ".enabled";
 
     @NonNull
-    private final CalibreHandlerViewModel mVm;
+    private final CalibreHandlerViewModel vm;
 
     /** Let the user pick the 'root' folder for storing Calibre downloads. */
-    private ActivityResultLauncher<Uri> mPickFolderLauncher;
+    private ActivityResultLauncher<Uri> folderPickerLauncher;
 
     /** The host Window. */
-    private Window mWindow;
+    private Window hostWindow;
 
     /** The host view; used for context, resources. */
-    private View mView;
+    private View hostView;
 
     /** Optionally set during initializing. */
     @Nullable
-    private View mProgressFrame;
+    private View progressFrame;
     /** Created only when actually needed. */
     @Nullable
-    private ProgressDelegate mProgressDelegate;
+    private ProgressDelegate progressDelegate;
 
     /**
      * Constructor.
@@ -98,20 +98,18 @@ public class CalibreHandler {
                           @NonNull final ViewModelStoreOwner viewModelStoreOwner)
             throws CertificateException {
 
-        mVm = new ViewModelProvider(viewModelStoreOwner).get(CalibreHandlerViewModel.class);
-        mVm.init(context);
+        vm = new ViewModelProvider(viewModelStoreOwner).get(CalibreHandlerViewModel.class);
+        vm.init(context);
     }
 
     /**
      * Check if SYNC menus should be shown at all.
      *
-     * @param global Global preferences
-     *
      * @return {@code true} if menus should be shown
      */
     @AnyThread
-    public static boolean isSyncEnabled(@NonNull final SharedPreferences global) {
-        return global.getBoolean(PK_ENABLED, false);
+    public static boolean isSyncEnabled() {
+        return ServiceLocator.getPreferences().getBoolean(PK_ENABLED, false);
     }
 
     /**
@@ -151,21 +149,21 @@ public class CalibreHandler {
                                @NonNull final View view,
                                @NonNull final LifecycleOwner lifecycleOwner,
                                @NonNull final ActivityResultCaller caller) {
-        mWindow = window;
-        mView = view;
+        hostWindow = window;
+        hostView = view;
 
-        mPickFolderLauncher = caller.registerForActivityResult(
+        folderPickerLauncher = caller.registerForActivityResult(
                 new ActivityResultContracts.OpenDocumentTree(), uri -> {
                     if (uri != null) {
-                        CalibreContentServer.setFolderUri(mView.getContext(), uri);
-                        mVm.startDownload(mVm.getAndResetTempBook(), uri);
+                        CalibreContentServer.setFolderUri(hostView.getContext(), uri);
+                        vm.startDownload(vm.getAndResetTempBook(), uri);
                     }
                 });
 
-        mVm.onFinished().observe(lifecycleOwner, this::onFinished);
-        mVm.onCancelled().observe(lifecycleOwner, this::onCancelled);
-        mVm.onFailure().observe(lifecycleOwner, this::onFailure);
-        mVm.onProgress().observe(lifecycleOwner, this::onProgress);
+        vm.onFinished().observe(lifecycleOwner, this::onFinished);
+        vm.onCancelled().observe(lifecycleOwner, this::onCancelled);
+        vm.onFailure().observe(lifecycleOwner, this::onFailure);
+        vm.onProgress().observe(lifecycleOwner, this::onProgress);
     }
 
     public void onCreateMenu(@NonNull final Menu menu,
@@ -192,7 +190,7 @@ public class CalibreHandler {
             if (CalibreContentServer.getFolderUri(context).isPresent()) {
                 // conditional
                 menu.findItem(R.id.MENU_CALIBRE_READ)
-                    .setVisible(mVm.existsLocally(context, book));
+                    .setVisible(vm.existsLocally(context, book));
 
                 // always shown
                 menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD)
@@ -248,21 +246,22 @@ public class CalibreHandler {
             // Open the given book for reading.
             // This only works if the user has not renamed the file outside of this app.
             try {
-                final Uri uri = mVm.getDocumentUri(context, book);
+                final Uri uri = vm.getDocumentUri(context, book);
                 openBookUri(context, uri);
             } catch (@NonNull final FileNotFoundException e) {
-                Snackbar.make(mView, R.string.httpErrorFileNotFound, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(hostView, R.string.httpErrorFileNotFound,
+                              Snackbar.LENGTH_LONG).show();
             }
             return true;
 
         } else if (itemId == R.id.MENU_CALIBRE_DOWNLOAD) {
             final Optional<Uri> optionalUri = CalibreContentServer.getFolderUri(context);
             if (optionalUri.isPresent()) {
-                mVm.startDownload(book, optionalUri.get());
+                vm.startDownload(book, optionalUri.get());
             } else {
                 // ask for a download folder
-                mVm.setTempBook(book);
-                mPickFolderLauncher.launch(null);
+                vm.setTempBook(book);
+                folderPickerLauncher.launch(null);
             }
             return true;
 
@@ -283,7 +282,7 @@ public class CalibreHandler {
         closeProgressDialog();
 
         message.getData().map(TaskResult::requireResult).ifPresent(result -> Snackbar
-                .make(mView, R.string.progress_end_download_successful, Snackbar.LENGTH_LONG)
+                .make(hostView, R.string.progress_end_download_successful, Snackbar.LENGTH_LONG)
                 .setAction(R.string.lbl_read, v -> openBookUri(v.getContext(), result))
                 .show());
     }
@@ -292,48 +291,48 @@ public class CalibreHandler {
         closeProgressDialog();
 
         message.getData().ifPresent(data -> Snackbar
-                .make(mView, R.string.cancelled, Snackbar.LENGTH_LONG).show());
+                .make(hostView, R.string.cancelled, Snackbar.LENGTH_LONG).show());
     }
 
     private void onFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         closeProgressDialog();
 
         message.getData().ifPresent(data -> {
-            final Context context = mView.getContext();
+            final Context context = hostView.getContext();
             final String msg = ExMsg
                     .map(context, data.getResult())
                     .orElse(context.getString(R.string.error_network_site_access_failed,
-                                              CalibreContentServer.getHostUrl()));
+                                              CalibreContentServer.getHostUrl(context)));
 
-            Snackbar.make(mView, msg, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(hostView, msg, Snackbar.LENGTH_LONG).show();
         });
     }
 
     public CalibreHandler setProgressFrame(@NonNull final View progressFrame) {
-        mProgressFrame = progressFrame;
+        this.progressFrame = progressFrame;
         return this;
     }
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.getData().ifPresent(data -> {
-            if (mProgressFrame != null) {
-                if (mProgressDelegate == null) {
-                    mProgressDelegate = new ProgressDelegate(mProgressFrame)
+            if (progressFrame != null) {
+                if (progressDelegate == null) {
+                    progressDelegate = new ProgressDelegate(progressFrame)
                             .setTitle(R.string.progress_msg_downloading)
                             .setPreventSleep(true)
                             .setIndeterminate(true)
-                            .setOnCancelListener(v -> mVm.cancelTask(data.taskId))
-                            .show(() -> mWindow);
+                            .setOnCancelListener(v -> vm.cancelTask(data.taskId))
+                            .show(() -> hostWindow);
                 }
-                mProgressDelegate.onProgress(data);
+                progressDelegate.onProgress(data);
             }
         });
     }
 
     private void closeProgressDialog() {
-        if (mProgressDelegate != null) {
-            mProgressDelegate.dismiss(mWindow);
-            mProgressDelegate = null;
+        if (progressDelegate != null) {
+            progressDelegate.dismiss(hostWindow);
+            progressDelegate = null;
         }
     }
 }

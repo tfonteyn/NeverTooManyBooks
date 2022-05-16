@@ -20,11 +20,9 @@
 package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -40,8 +38,7 @@ public class BookshelfMapper {
     @Nullable
     private static Bookshelf getBookshelf(@NonNull final Context context,
                                           @NonNull final String key) {
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        final int id = Prefs.getIntListPref(global, key, Bookshelf.DEFAULT);
+        final int id = Prefs.getIntListPref(context, key, Bookshelf.DEFAULT);
         return Bookshelf.getBookshelf(context, id);
     }
 

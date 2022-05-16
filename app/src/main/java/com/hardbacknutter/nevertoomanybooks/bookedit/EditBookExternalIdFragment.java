@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +30,7 @@ import androidx.annotation.Nullable;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
@@ -40,8 +40,9 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 public class EditBookExternalIdFragment
         extends EditBookBaseFragment {
 
-    public static boolean isShowTab(@NonNull final SharedPreferences global) {
-        return global.getBoolean(Prefs.pk_edit_book_tabs_external_id, false);
+    public static boolean isShowTab() {
+        return ServiceLocator.getPreferences()
+                             .getBoolean(Prefs.pk_edit_book_tabs_external_id, false);
     }
 
     @NonNull
@@ -64,20 +65,19 @@ public class EditBookExternalIdFragment
         super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
-        mVm.initFields(getContext(), FragmentId.ExternalId, FieldGroup.ExternalId);
+        vm.initFields(getContext(), FragmentId.ExternalId, FieldGroup.ExternalId);
     }
 
     @Override
-    void onPopulateViews(@NonNull final SharedPreferences global,
-                         @NonNull final List<Field<?, ? extends View>> fields,
+    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
-        super.onPopulateViews(global, fields, book);
+        super.onPopulateViews(fields, book);
 
         getFab().setVisibility(View.INVISIBLE);
 
         // Force hidden fields to stay hidden; this will allow us to temporarily remove
         // some sites without removing the data.
         //noinspection ConstantConditions
-        fields.forEach(field -> field.setVisibility(getView(), global, false, true));
+        fields.forEach(field -> field.setVisibility(getView(), false, true));
     }
 }

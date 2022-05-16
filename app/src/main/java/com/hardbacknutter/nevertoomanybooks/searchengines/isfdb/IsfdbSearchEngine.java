@@ -29,6 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import java.io.BufferedInputStream;
 import java.io.EOFException;
@@ -226,14 +227,14 @@ public class IsfdbSearchEngine
 
     /** set during book load, used during content table load. */
     @Nullable
-    private String mTitle;
+    private String bookTitle;
     /** with some luck we'll get these as well. */
     @Nullable
-    private String mFirstPublicationYear;
+    private String firstPublicationYear;
     /** The ISBN we searched for. Not guaranteed to be identical to the book we find. */
-    private String mIsbn;
+    private String searchForIsbn;
     @Nullable
-    private FutureHttpGet<Boolean> mFutureHttpGet;
+    private FutureHttpGet<Boolean> futureHttpGet;
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -347,7 +348,8 @@ public class IsfdbSearchEngine
             }
 
             // as per user settings.
-            if (ServiceLocator.getGlobalPreferences().getBoolean(PK_USE_PUBLISHER, false)) {
+            if (PreferenceManager.getDefaultSharedPreferences(context)
+                                 .getBoolean(PK_USE_PUBLISHER, false)) {
                 if (publisher != null && !publisher.isEmpty()) {
                     index++;
                     args += "&USE_" + index + "=pub_publisher"
@@ -452,8 +454,8 @@ public class IsfdbSearchEngine
     private ArrayList<TocEntry> parseToc(@NonNull final Context context,
                                          @NonNull final Document document) {
 
-        final boolean addSeriesFromToc = ServiceLocator.getGlobalPreferences()
-                                                       .getBoolean(PK_SERIES_FROM_TOC, false);
+        final boolean addSeriesFromToc = PreferenceManager.getDefaultSharedPreferences(context)
+                                                          .getBoolean(PK_SERIES_FROM_TOC, false);
         final ArrayList<TocEntry> toc = new ArrayList<>();
 
         // <div class="ContentBox"> but there are two, so get last one
@@ -587,9 +589,9 @@ public class IsfdbSearchEngine
                 final String year = matcher.find() ? matcher.group(2) : "";
                 // see if we can use it as the first publication year for the book.
                 // i.e. if this entry has the same title as the book title
-                if ((mFirstPublicationYear == null || mFirstPublicationYear.isEmpty())
-                    && title.equalsIgnoreCase(mTitle)) {
-                    mFirstPublicationYear = ParseUtils.digits(year);
+                if ((firstPublicationYear == null || firstPublicationYear.isEmpty())
+                    && title.equalsIgnoreCase(bookTitle)) {
+                    firstPublicationYear = ParseUtils.digits(year);
                 }
 
                 toc.add(new TocEntry(author, title, year));
@@ -820,8 +822,8 @@ public class IsfdbSearchEngine
                         case "Publication:": {
                             nextSibling = labelElement.nextSibling();
                             if (nextSibling != null) {
-                                mTitle = nextSibling.toString().trim();
-                                bookData.putString(DBKey.TITLE, mTitle);
+                                bookTitle = nextSibling.toString().trim();
+                                bookData.putString(DBKey.TITLE, bookTitle);
                             }
                             break;
                         }
@@ -1059,8 +1061,8 @@ public class IsfdbSearchEngine
             }
         } else if (toc.size() > 1) {
             // we gamble and take what we found while parsing the TOC (first entry with a year)
-            if (mFirstPublicationYear != null) {
-                bookData.putString(DBKey.DATE_FIRST_PUBLICATION, mFirstPublicationYear);
+            if (firstPublicationYear != null) {
+                bookData.putString(DBKey.DATE_FIRST_PUBLICATION, firstPublicationYear);
             }
         }
 
@@ -1148,7 +1150,7 @@ public class IsfdbSearchEngine
     List<Edition> fetchEditionsByIsbn(@NonNull final Context context,
                                       @NonNull final String validIsbn)
             throws SearchException, CredentialsException {
-        mIsbn = validIsbn;
+        searchForIsbn = validIsbn;
 
         final String url = getSiteUrl() + String.format(CGI_EDITIONS, validIsbn);
         return fetchEditions(context, url);
@@ -1173,7 +1175,7 @@ public class IsfdbSearchEngine
 
         if (pageUrl.contains(CGI_PL)) {
             // We got redirected to a book. Populate with the doc (web page) we got back.
-            editions.add(new Edition(stripNumber(pageUrl, '?'), mIsbn, null, document));
+            editions.add(new Edition(stripNumber(pageUrl, '?'), searchForIsbn, null, document));
 
         } else if (pageUrl.contains(CGI_TITLE)
                    || pageUrl.contains(CGI_SE)
@@ -1464,8 +1466,8 @@ public class IsfdbSearchEngine
     public void cancel() {
         synchronized (this) {
             super.cancel();
-            if (mFutureHttpGet != null) {
-                mFutureHttpGet.cancel();
+            if (futureHttpGet != null) {
+                futureHttpGet.cancel();
             }
         }
     }
@@ -1488,7 +1490,7 @@ public class IsfdbSearchEngine
             throws StorageException,
                    SearchException {
 
-        mFutureHttpGet = createFutureGetRequest();
+        futureHttpGet = createFutureGetRequest();
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
 
@@ -1500,7 +1502,7 @@ public class IsfdbSearchEngine
         try {
             final SAXParser parser = factory.newSAXParser();
 
-            mFutureHttpGet.get(url, request -> {
+            futureHttpGet.get(url, request -> {
                 try (BufferedInputStream bis = new BufferedInputStream(request.getInputStream())) {
                     parser.parse(bis, listHandler);
                     return true;

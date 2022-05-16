@@ -52,18 +52,8 @@ import com.hardbacknutter.org.json.JSONException;
 public class CsvRecordWriter
         implements RecordWriter {
 
-    /**
-     * The format version of this RecordWriter.
-     * <p>
-     * Not used; technically we could add some sort of header to the CSV file,
-     * but that defeats the CSV format. The {@link CsvRecordReader} is (should be)
-     * capable of detecting the format based on the data.
-     * (which is why we're moving to the JSON format)
-     */
-    private static final int VERSION = 1;
-
     @Nullable
-    private final LocalDateTime mUtcSinceDateTime;
+    private final LocalDateTime utcSinceDateTime;
 
     /**
      * Constructor.
@@ -73,7 +63,7 @@ public class CsvRecordWriter
      */
     @AnyThread
     public CsvRecordWriter(@Nullable final LocalDateTime utcSinceDateTime) {
-        mUtcSinceDateTime = utcSinceDateTime;
+        this.utcSinceDateTime = utcSinceDateTime;
     }
 
     @Override
@@ -97,7 +87,7 @@ public class CsvRecordWriter
                 long lastUpdate = 0;
 
                 final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
-                try (Cursor cursor = bookDao.fetchBooksForExport(mUtcSinceDateTime)) {
+                try (Cursor cursor = bookDao.fetchBooksForExport(utcSinceDateTime)) {
 
                     writer.write(bookCoder.createHeader());
                     writer.write("\n");

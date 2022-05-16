@@ -52,10 +52,10 @@ public class Publisher
     };
 
     /** Row ID. */
-    private long mId;
+    private long id;
     /** Publisher name. */
     @NonNull
-    private String mName;
+    private String name;
 
     /**
      * Constructor.
@@ -63,7 +63,7 @@ public class Publisher
      * @param name of publisher.
      */
     public Publisher(@NonNull final String name) {
-        mName = name.trim();
+        this.name = name.trim();
     }
 
     /**
@@ -74,8 +74,8 @@ public class Publisher
      */
     public Publisher(final long id,
                      @NonNull final DataHolder rowData) {
-        mId = id;
-        mName = rowData.getString(DBKey.PUBLISHER_NAME);
+        this.id = id;
+        name = rowData.getString(DBKey.PUBLISHER_NAME);
     }
 
     /**
@@ -84,9 +84,9 @@ public class Publisher
      * @param in Parcel to construct the object from
      */
     private Publisher(@NonNull final Parcel in) {
-        mId = in.readLong();
+        id = in.readLong();
         //noinspection ConstantConditions
-        mName = in.readString();
+        name = in.readString();
     }
 
     /**
@@ -100,7 +100,6 @@ public class Publisher
         return new Publisher(name);
     }
 
-    @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
         return 0;
@@ -109,17 +108,17 @@ public class Publisher
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeLong(mId);
-        dest.writeString(mName);
+        dest.writeLong(id);
+        dest.writeString(name);
     }
 
     @Override
     public long getId() {
-        return mId;
+        return id;
     }
 
     public void setId(final long id) {
-        mId = id;
+        this.id = id;
     }
 
     /**
@@ -132,7 +131,7 @@ public class Publisher
     @NonNull
     public String getLabel(@NonNull final Context context) {
         // Using the locale here is overkill;  see #getLocale(..)
-        return getLabel(context, mName, () -> null);
+        return getLabel(context, name, () -> null);
     }
 
     /**
@@ -142,7 +141,7 @@ public class Publisher
      */
     @NonNull
     public String getName() {
-        return mName;
+        return name;
     }
 
     /**
@@ -151,7 +150,7 @@ public class Publisher
      * @param name to use
      */
     public void setName(@NonNull final String name) {
-        mName = name;
+        this.name = name;
     }
 
     /**
@@ -160,7 +159,7 @@ public class Publisher
      * @param source publisher to copy from
      */
     public void copyFrom(@NonNull final Publisher source) {
-        mName = source.mName;
+        name = source.name;
     }
 
     @Override
@@ -173,12 +172,12 @@ public class Publisher
 
     @Override
     public int asciiHashCodeNoId() {
-        return Objects.hash(ParseUtils.toAscii(mName));
+        return Objects.hash(ParseUtils.toAscii(name));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mId, mName);
+        return Objects.hash(id, name);
     }
 
     /**
@@ -203,18 +202,18 @@ public class Publisher
         }
         final Publisher that = (Publisher) obj;
         // if both 'exist' but have different ID's -> different.
-        if (mId != 0 && that.mId != 0 && mId != that.mId) {
+        if (id != 0 && that.id != 0 && id != that.id) {
             return false;
         }
-        return Objects.equals(mName, that.mName);
+        return Objects.equals(name, that.name);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "Publisher{"
-               + "mId=" + mId
-               + ", mName=`" + mName + '`'
+               + "id=" + id
+               + ", name=`" + name + '`'
                + '}';
     }
 }

@@ -100,24 +100,24 @@ public abstract class ArchiveReaderAbstract
 
     /** Import configuration. */
     @NonNull
-    private final ImportHelper mHelper;
+    private final ImportHelper importHelper;
     /** Provide access to the Uri InputStream. */
     @NonNull
-    private final ContentResolver mContentResolver;
+    private final ContentResolver contentResolver;
     /** progress message. */
-    private final String mCoversText;
+    private final String coversText;
     /** progress message. */
-    private final String mProgressMessage;
+    private final String progressMessage;
     /** The accumulated results. */
     @NonNull
-    private final ImportResults mResults = new ImportResults();
+    private final ImportResults results = new ImportResults();
 
     /** Re-usable cover reader. */
     @Nullable
-    private RecordReader mCoverReader;
+    private RecordReader coverReader;
     /** The INFO data read from the start of the archive. */
     @Nullable
-    private ArchiveMetaData mMetaData;
+    private ArchiveMetaData metaData;
 
     /**
      * Constructor.
@@ -127,32 +127,32 @@ public abstract class ArchiveReaderAbstract
      */
     protected ArchiveReaderAbstract(@NonNull final Context context,
                                     @NonNull final ImportHelper helper) {
-        mHelper = helper;
-        mContentResolver = context.getContentResolver();
+        importHelper = helper;
+        contentResolver = context.getContentResolver();
 
-        mCoversText = context.getString(R.string.lbl_covers);
-        mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
+        coversText = context.getString(R.string.lbl_covers);
+        progressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
     }
 
     @WorkerThread
     @Override
     public void validate(@NonNull final Context context)
             throws DataReaderException, IOException {
-        if (mMetaData == null) {
+        if (metaData == null) {
             // reading it will either assign a value to mMetaData, or throw exceptions
             readMetaData(context);
         }
 
         // the info block will/can do more checks.
-        mMetaData.validate(context);
+        metaData.validate(context);
     }
 
     @NonNull
     protected InputStream openInputStream()
             throws FileNotFoundException {
-        final InputStream is = mContentResolver.openInputStream(mHelper.getUri());
+        final InputStream is = contentResolver.openInputStream(importHelper.getUri());
         if (is == null) {
-            throw new FileNotFoundException(mHelper.getUri().toString());
+            throw new FileNotFoundException(importHelper.getUri().toString());
         }
         return new BufferedInputStream(is, RecordReader.BUFFER_SIZE);
     }
@@ -163,7 +163,7 @@ public abstract class ArchiveReaderAbstract
     public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context)
             throws DataReaderException, IOException {
 
-        if (mMetaData == null) {
+        if (metaData == null) {
             final ArchiveReaderRecord record = seek(RecordType.MetaData)
                     .orElseThrow(() -> new DataReaderException(
                             context.getString(R.string.error_file_not_recognized)));
@@ -172,7 +172,7 @@ public abstract class ArchiveReaderAbstract
             if (encoding.isPresent()) {
                 try (RecordReader recordReader = encoding
                         .get().createReader(context, EnumSet.of(RecordType.MetaData))) {
-                    mMetaData = recordReader.readMetaData(context, record).orElse(null);
+                    metaData = recordReader.readMetaData(context, record).orElse(null);
                 }
             }
 
@@ -180,13 +180,13 @@ public abstract class ArchiveReaderAbstract
             closeInputStream();
 
             // An archive based on this class <strong>must</strong> have an info block.
-            if (mMetaData == null) {
+            if (metaData == null) {
                 throw new DataReaderException(context.getString(
                         R.string.error_file_not_recognized));
             }
         }
 
-        return Optional.of(mMetaData);
+        return Optional.of(metaData);
     }
 
     /**
@@ -215,15 +215,15 @@ public abstract class ArchiveReaderAbstract
 
         // Sanity check: the archive info should have been read during the validate phase
         // This is also a check that the validate method has been called.
-        Objects.requireNonNull(mMetaData, "mMetaData");
+        Objects.requireNonNull(metaData, "mMetaData");
 
-        final int archiveVersion = mMetaData.getArchiveVersion();
+        final int archiveVersion = metaData.getArchiveVersion();
         switch (archiveVersion) {
             case 4:
             case 3:
             case 2:
                 // The reader is flexible enough to detect the different versions for now.
-                readV2(context, mMetaData, progressListener);
+                readV2(context, metaData, progressListener);
                 break;
 
             case 1:
@@ -232,7 +232,7 @@ public abstract class ArchiveReaderAbstract
                         R.string.error_unsupported_version_v, archiveVersion));
         }
 
-        return mResults;
+        return results;
     }
 
     private void readV2(@NonNull final Context context,
@@ -240,14 +240,14 @@ public abstract class ArchiveReaderAbstract
                         @NonNull final ProgressListener progressListener)
             throws DataReaderException, IOException, StorageException {
 
-        final Set<RecordType> recordTypes = mHelper.getRecordTypes();
+        final Set<RecordType> recordTypes = importHelper.getRecordTypes();
         RecordType.addRelatedTypes(recordTypes);
 
         int estimatedSteps = 1 + metaData.getBookCount().orElse(0);
 
         final boolean readCovers = recordTypes.contains(RecordType.Cover);
         if (readCovers) {
-            mCoverReader = new CoverRecordReader();
+            coverReader = new CoverRecordReader();
 
             final Optional<Integer> coverCount = metaData.getCoverCount();
             if (coverCount.isPresent()) {
@@ -335,13 +335,13 @@ public abstract class ArchiveReaderAbstract
             // there will be many covers... we're re-using a single RecordReader
             if (encoding.get() == RecordEncoding.Cover) {
                 //noinspection ConstantConditions
-                mResults.add(mCoverReader.read(context, record, mHelper, progressListener));
+                results.add(coverReader.read(context, record, importHelper, progressListener));
                 // send accumulated progress for the total nr of covers
-                final String msg = String.format(mProgressMessage,
-                                                 mCoversText,
-                                                 mResults.coversCreated,
-                                                 mResults.coversUpdated,
-                                                 mResults.coversSkipped);
+                final String msg = String.format(progressMessage,
+                                                 coversText,
+                                                 results.coversCreated,
+                                                 results.coversUpdated,
+                                                 results.coversSkipped);
                 progressListener.publishProgress(1, msg);
 
             } else {
@@ -349,7 +349,7 @@ public abstract class ArchiveReaderAbstract
                 try (RecordReader recordReader = encoding
                         .get().createReader(context, importEntriesAllowed)) {
 
-                    mResults.add(recordReader.read(context, record, mHelper, progressListener));
+                    results.add(recordReader.read(context, record, importHelper, progressListener));
                 }
             }
         }
@@ -366,8 +366,8 @@ public abstract class ArchiveReaderAbstract
             throws IOException {
         closeInputStream();
 
-        if (mCoverReader != null) {
-            mCoverReader.close();
+        if (coverReader != null) {
+            coverReader.close();
         }
 
         ServiceLocator.getInstance().getMaintenanceDao().purge();

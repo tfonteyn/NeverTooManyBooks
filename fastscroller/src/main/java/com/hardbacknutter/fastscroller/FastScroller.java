@@ -73,7 +73,7 @@ public final class FastScroller {
      * @param overlayType  Optional overlay
      */
     public static void attach(@NonNull final RecyclerView recyclerView,
-                              @OverlayProviderFactory.Style final int overlayType) {
+                              @OverlayProviderFactory.OverlayType final int overlayType) {
 
         if (!(recyclerView.getLayoutManager() instanceof LinearLayoutManager)) {
             throw new IllegalArgumentException("Not a LinearLayoutManager");

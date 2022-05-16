@@ -136,7 +136,7 @@ public final class Site
      * @param sites to filter
      *
      * @return new list instance containing the <strong>original</strong> site objects;
-     * filtered for being enabled. The order is the same.
+     *         filtered for being enabled. The order is the same.
      */
     @NonNull
     public static List<Site> filterForEnabled(@NonNull final Collection<Site> sites) {
@@ -268,12 +268,12 @@ public final class Site
         return PREF_PREFIX
                + SearchEngineRegistry.getInstance().getByEngineId(engineId).getPreferenceKey()
                + '.'
-               + mType.mTypeName
+               + mType.typeName
                + '.';
     }
 
-    private void loadFromPrefs(@NonNull final SharedPreferences global) {
-        mEnabled = global.getBoolean(getPrefPrefix() + PREF_SUFFIX_ENABLED, mEnabled);
+    private void loadFromPrefs(@NonNull final SharedPreferences prefs) {
+        mEnabled = prefs.getBoolean(getPrefPrefix() + PREF_SUFFIX_ENABLED, mEnabled);
     }
 
     private void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
@@ -333,22 +333,22 @@ public final class Site
         /** Log tag. */
         private static final String TAG = "Site.Type";
         /** Internal name (for prefs). */
-        final String mTypeName;
+        final String typeName;
         /** User displayable name. */
         @StringRes
-        private final int mLabelId;
-        private final Collection<Site> mList = new ArrayList<>();
+        private final int labelResId;
+        private final Collection<Site> siteList = new ArrayList<>();
 
         /**
          * Constructor.
          *
-         * @param labelId  for displaying the type name to the user
-         * @param typeName for internal usage
+         * @param labelResId for displaying the type name to the user
+         * @param typeName   for internal usage
          */
-        Type(@StringRes final int labelId,
+        Type(@StringRes final int labelResId,
              @NonNull final String typeName) {
-            mLabelId = labelId;
-            mTypeName = typeName;
+            this.labelResId = labelResId;
+            this.typeName = typeName;
         }
 
         /**
@@ -420,7 +420,7 @@ public final class Site
                                 @NonNull final Locale userLocale) {
 
             // re-create the global list for the type
-            mList.clear();
+            siteList.clear();
             SearchSites.createSiteList(systemLocale, userLocale, this);
 
             // apply stored user preferences to the list
@@ -437,7 +437,7 @@ public final class Site
                               @NonNull final Locale userLocale) {
 
             // re-create the global list for the type
-            mList.clear();
+            siteList.clear();
             SearchSites.createSiteList(systemLocale, userLocale, this);
 
             // overwrite stored user preferences with the defaults from the list
@@ -449,10 +449,10 @@ public final class Site
          *
          * @param sites list to use
          */
-        public void setList(@NonNull final Collection<Site> sites) {
-            mList.clear();
+        public void setSiteList(@NonNull final Collection<Site> sites) {
+            siteList.clear();
             for (final Site site : sites) {
-                mList.add(new Site(site));
+                siteList.add(new Site(site));
             }
             savePrefs();
         }
@@ -466,7 +466,7 @@ public final class Site
          */
         @NonNull
         public Site getSite(@SearchSites.EngineId final int engineId) {
-            for (final Site site : mList) {
+            for (final Site site : siteList) {
                 if (site.engineId == engineId) {
                     return new Site(site);
                 }
@@ -484,7 +484,7 @@ public final class Site
         @NonNull
         public ArrayList<Site> getSites() {
             final ArrayList<Site> list = new ArrayList<>();
-            for (final Site site : mList) {
+            for (final Site site : this.siteList) {
                 list.add(new Site(site));
             }
             return list;
@@ -496,7 +496,7 @@ public final class Site
          * @param engineId the search engine id
          */
         public void addSite(@SearchSites.EngineId final int engineId) {
-            mList.add(new Site(this, engineId, true));
+            siteList.add(new Site(this, engineId, true));
         }
 
         /**
@@ -507,7 +507,7 @@ public final class Site
          */
         public void addSite(@SearchSites.EngineId final int engineId,
                             final boolean enabled) {
-            mList.add(new Site(this, engineId, enabled));
+            siteList.add(new Site(this, engineId, enabled));
         }
 
         /**
@@ -516,21 +516,21 @@ public final class Site
         @VisibleForTesting
         public void loadPrefs() {
 
-            final SharedPreferences global = ServiceLocator.getGlobalPreferences();
-            for (final Site site : mList) {
-                site.loadFromPrefs(global);
+            final SharedPreferences prefs = ServiceLocator.getPreferences();
+            for (final Site site : siteList) {
+                site.loadFromPrefs(prefs);
             }
 
-            final String order = global.getString(PREFS_ORDER_PREFIX + mTypeName, null);
+            final String order = prefs.getString(PREFS_ORDER_PREFIX + typeName, null);
             if (order != null) {
                 // Reorder keeps the original list members.
-                final List<Site> reorderedList = reorder(mList, order);
+                final List<Site> reorderedList = reorder(siteList, order);
 
-                if (reorderedList.size() < mList.size()) {
+                if (reorderedList.size() < siteList.size()) {
                     // This is a fringe case: a new engine was added, and the user upgraded
                     // this app. The stored order will lack the new engine.
                     // Add any sites not added yet to the end of the list
-                    for (final Site site : mList) {
+                    for (final Site site : siteList) {
                         if (!reorderedList.contains(site)) {
                             reorderedList.add(site);
                         }
@@ -539,8 +539,8 @@ public final class Site
                 }
 
                 // simply replace in the new order.
-                mList.clear();
-                mList.addAll(reorderedList);
+                siteList.clear();
+                siteList.addAll(reorderedList);
             }
         }
 
@@ -550,18 +550,18 @@ public final class Site
         public void savePrefs() {
             // Save the order of the given list (ID's) and
             // the individual site settings to preferences.
-            final SharedPreferences.Editor ed = ServiceLocator.getGlobalPreferences().edit();
+            final SharedPreferences.Editor ed = ServiceLocator.getPreferences().edit();
 
-            final String order = mList.stream()
-                                      .map(site -> {
-                                          // store individual site settings
-                                          site.saveToPrefs(ed);
-                                          // and collect the id for the order string
-                                          return String.valueOf(site.engineId);
-                                      })
-                                      .collect(Collectors.joining(","));
+            final String order = siteList.stream()
+                                         .map(site -> {
+                                             // store individual site settings
+                                             site.saveToPrefs(ed);
+                                             // and collect the id for the order string
+                                             return String.valueOf(site.engineId);
+                                         })
+                                         .collect(Collectors.joining(","));
 
-            ed.putString(PREFS_ORDER_PREFIX + mTypeName, order);
+            ed.putString(PREFS_ORDER_PREFIX + typeName, order);
             ed.apply();
 
             // for reference, the prefs will look somewhat like this:
@@ -588,13 +588,13 @@ public final class Site
 
 
         @StringRes
-        public int getLabelId() {
-            return mLabelId;
+        public int getLabelResId() {
+            return labelResId;
         }
 
         @NonNull
         public String getBundleKey() {
-            return TAG + ":" + mTypeName;
+            return TAG + ":" + typeName;
         }
 
         @Override

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,6 +23,7 @@ import android.content.Context;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
@@ -35,15 +36,15 @@ public class BooleanValidator
         implements DataValidator {
 
     /** Default to apply if the field is empty. */
-    private final boolean mDefaultValue;
+    private final boolean defaultValue;
 
     /**
      * Constructor with default value.
      *
-     * @param defValue Default to apply
+     * @param defaultValue Default to apply
      */
-    public BooleanValidator(final boolean defValue) {
-        mDefaultValue = defValue;
+    public BooleanValidator(final boolean defaultValue) {
+        this.defaultValue = defaultValue;
     }
 
     @Override
@@ -51,19 +52,19 @@ public class BooleanValidator
     public void validate(@NonNull final Context context,
                          @NonNull final DataManager dataManager,
                          @NonNull final String key,
-                         final int errorLabelId)
+                         @StringRes final int errorLabelResId)
             throws ValidatorException {
 
         final Object o = dataManager.get(key);
         if (o == null || o.toString().trim().isEmpty()) {
-            dataManager.putBoolean(key, mDefaultValue);
+            dataManager.putBoolean(key, defaultValue);
             return;
         }
         try {
             ParseUtils.toBoolean(o);
         } catch (@NonNull final NumberFormatException e) {
             throw new ValidatorException(context.getString(R.string.vldt_boolean_expected_for_x,
-                                                           context.getString(errorLabelId)));
+                                                           context.getString(errorLabelResId)));
         }
     }
 }

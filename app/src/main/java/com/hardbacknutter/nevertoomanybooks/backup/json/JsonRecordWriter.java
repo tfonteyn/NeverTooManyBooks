@@ -46,9 +46,9 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CalibreCustomFiel
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CalibreLibraryCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CertificateCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
-import com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -81,7 +81,7 @@ public class JsonRecordWriter
         implements RecordWriter {
 
     @Nullable
-    private final LocalDateTime mUtcSinceDateTime;
+    private final LocalDateTime utcSinceDateTime;
 
     /**
      * Constructor.
@@ -91,7 +91,7 @@ public class JsonRecordWriter
      */
     @AnyThread
     public JsonRecordWriter(@Nullable final LocalDateTime utcSinceDateTime) {
-        mUtcSinceDateTime = utcSinceDateTime;
+        this.utcSinceDateTime = utcSinceDateTime;
     }
 
     @Override
@@ -137,10 +137,10 @@ public class JsonRecordWriter
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(R.string.lbl_styles));
 
-                final List<ListStyle> styles =
+                final List<Style> styles =
                         ServiceLocator.getInstance().getStyles().getStyles(context, true);
                 if (!styles.isEmpty()) {
-                    final JsonCoder<ListStyle> coder = new ListStyleCoder(context);
+                    final JsonCoder<Style> coder = new StyleCoder(context);
                     jsonData.put(RecordType.Styles.getName(), coder.encode(styles));
                 }
                 results.styles = styles.size();
@@ -151,8 +151,8 @@ public class JsonRecordWriter
                 progressListener.publishProgress(1, context.getString(R.string.lbl_settings));
 
                 final JsonCoder<SharedPreferences> coder = new SharedPreferencesCoder();
-                jsonData.put(RecordType.Preferences.getName(),
-                             coder.encode(PreferenceManager.getDefaultSharedPreferences(context)));
+                jsonData.put(RecordType.Preferences.getName(), coder.encode(
+                        PreferenceManager.getDefaultSharedPreferences(context)));
                 results.preferences = 1;
             }
 
@@ -232,7 +232,7 @@ public class JsonRecordWriter
 
                 final JSONArray bookArray = new JSONArray();
                 final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
-                try (Cursor cursor = bookDao.fetchBooksForExport(mUtcSinceDateTime)) {
+                try (Cursor cursor = bookDao.fetchBooksForExport(utcSinceDateTime)) {
                     while (cursor.moveToNext() && !progressListener.isCancelled()) {
                         final Book book = Book.from(cursor);
                         bookArray.put(coder.encode(book));

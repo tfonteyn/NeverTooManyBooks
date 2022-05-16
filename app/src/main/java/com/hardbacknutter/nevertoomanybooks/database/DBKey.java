@@ -19,14 +19,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
-import android.content.SharedPreferences;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 
 /**
@@ -329,14 +328,13 @@ public final class DBKey {
     /**
      * Is the field in use; i.e. is it enabled in the user-preferences.
      *
-     * @param global Global preferences
      * @param dbdKey DBKey.KEY_x to lookup
      *
      * @return {@code true} if the user wants to use this field.
      */
-    public static boolean isUsed(@NonNull final SharedPreferences global,
-                                 @NonNull final String dbdKey) {
-        return global.getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + dbdKey, true);
+    public static boolean isUsed(@NonNull final String dbdKey) {
+        return ServiceLocator.getPreferences()
+                             .getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + dbdKey, true);
     }
 
     public static boolean isMoneyKey(@NonNull final CharSequence key) {

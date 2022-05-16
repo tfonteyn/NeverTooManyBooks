@@ -143,9 +143,13 @@ public class StartupViewModel
     /** Triggers periodic maintenance tasks. */
     private boolean maintenanceNeeded;
 
-    public static void schedule(@RebuildFlag @NonNull final String key,
+
+    public static void schedule(@NonNull final Context context,
+                                @RebuildFlag @NonNull final String key,
                                 final boolean flag) {
-        final SharedPreferences.Editor ed = ServiceLocator.getGlobalPreferences().edit();
+        final SharedPreferences.Editor ed = PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .edit();
         if (flag) {
             ed.putBoolean(key, true);
         } else {
@@ -182,25 +186,25 @@ public class StartupViewModel
             // from here on, we have access to our log file
             Logger.cycleLogs();
 
-            final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
             // prepare the maintenance flags and counters.
-            final int maintenanceCountdown = global.getInt(PK_MAINTENANCE_COUNTDOWN,
-                                                           MAINTENANCE_COUNTDOWN);
-            final int backupCountdown = global.getInt(ExportHelper.PK_BACKUP_COUNTDOWN,
-                                                      ExportHelper.BACKUP_COUNTDOWN_DEFAULT);
+            final int maintenanceCountdown = prefs.getInt(PK_MAINTENANCE_COUNTDOWN,
+                                                          MAINTENANCE_COUNTDOWN);
+            final int backupCountdown = prefs.getInt(ExportHelper.PK_BACKUP_COUNTDOWN,
+                                                     ExportHelper.BACKUP_COUNTDOWN_DEFAULT);
 
-            global.edit()
-                  .putInt(PK_MAINTENANCE_COUNTDOWN,
-                          maintenanceCountdown == 0 ? MAINTENANCE_COUNTDOWN
-                                                    : maintenanceCountdown - 1)
-                  .putInt(ExportHelper.PK_BACKUP_COUNTDOWN,
-                          backupCountdown == 0 ? ExportHelper.BACKUP_COUNTDOWN_DEFAULT
-                                               : backupCountdown - 1)
+            prefs.edit()
+                 .putInt(PK_MAINTENANCE_COUNTDOWN,
+                         maintenanceCountdown == 0 ? MAINTENANCE_COUNTDOWN
+                                                   : maintenanceCountdown - 1)
+                 .putInt(ExportHelper.PK_BACKUP_COUNTDOWN,
+                         backupCountdown == 0 ? ExportHelper.BACKUP_COUNTDOWN_DEFAULT
+                                              : backupCountdown - 1)
 
-                  // The number of times the app was opened.
-                  .putInt(PK_STARTUP_COUNT, global.getInt(PK_STARTUP_COUNT, 0) + 1)
-                  .apply();
+                 // The number of times the app was opened.
+                 .putInt(PK_STARTUP_COUNT, prefs.getInt(PK_STARTUP_COUNT, 0) + 1)
+                 .apply();
 
             maintenanceNeeded = maintenanceCountdown == 0;
             proposeBackup = backupCountdown == 0;
@@ -231,30 +235,30 @@ public class StartupViewModel
         // Clear the flag
         startTasks = false;
 
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         // unconditional
         startTask(new BuildLanguageMappingsTask(taskListener));
 
         boolean optimizeDb = false;
 
-        if (maintenanceNeeded || global.getBoolean(PK_RUN_MAINTENANCE, false)) {
+        if (maintenanceNeeded || prefs.getBoolean(PK_RUN_MAINTENANCE, false)) {
             // cleaner must be started after the language mapper task,
             // but before the rebuild tasks.
             startTask(new DBCleanerTask(taskListener));
             optimizeDb = true;
         }
 
-        if (global.getBoolean(PK_REBUILD_TITLE_OB, false)) {
+        if (prefs.getBoolean(PK_REBUILD_TITLE_OB, false)) {
             startTask(new RebuildTitleOrderByColumnTask(taskListener));
             optimizeDb = true;
         }
 
-        if (global.getBoolean(PK_REBUILD_INDEXES, false)) {
+        if (prefs.getBoolean(PK_REBUILD_INDEXES, false)) {
             startTask(new RebuildIndexesTask(taskListener));
             optimizeDb = true;
         }
 
-        if (global.getBoolean(PK_REBUILD_FTS, false)) {
+        if (prefs.getBoolean(PK_REBUILD_FTS, false)) {
             startTask(new RebuildFtsTask(taskListener));
             optimizeDb = true;
         }

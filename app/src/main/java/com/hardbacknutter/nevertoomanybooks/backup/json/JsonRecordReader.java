@@ -25,6 +25,7 @@ import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,9 +51,9 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CalibreCustomFiel
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CalibreLibraryCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CertificateCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
-import com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreCustomFieldDao;
@@ -117,7 +118,7 @@ public class JsonRecordReader
     private static final String TAG = "JsonRecordReader";
 
     @NonNull
-    private final Set<RecordType> mImportEntriesAllowed;
+    private final Set<RecordType> importEntriesAllowed;
 
     /**
      * Constructor.
@@ -129,7 +130,7 @@ public class JsonRecordReader
     public JsonRecordReader(@NonNull final Context context,
                             @NonNull final Set<RecordType> importEntriesAllowed) {
         super(context);
-        mImportEntriesAllowed = importEntriesAllowed;
+        this.importEntriesAllowed = importEntriesAllowed;
     }
 
     @Override
@@ -185,7 +186,7 @@ public class JsonRecordReader
                    StorageException,
                    IOException {
 
-        mResults = new ImportResults();
+        results = new ImportResults();
 
         if (record.getType().isPresent()) {
             final RecordType recordType = record.getType().get();
@@ -205,7 +206,7 @@ public class JsonRecordReader
                                .getJSONObject(RecordType.AutoDetect.getName());
                 }
 
-                if (mImportEntriesAllowed.contains(recordType)
+                if (importEntriesAllowed.contains(recordType)
                     || recordType == RecordType.AutoDetect) {
 
                     if (recordType == RecordType.Styles
@@ -215,7 +216,7 @@ public class JsonRecordReader
 
                     if (recordType == RecordType.Preferences
                         || recordType == RecordType.AutoDetect) {
-                        readPreferences(root);
+                        readPreferences(context, root);
                     }
 
                     if (recordType == RecordType.Certificates
@@ -260,7 +261,7 @@ public class JsonRecordReader
                 throw new IOException(e);
             }
         }
-        return mResults;
+        return results;
     }
 
     private void readStyles(@NonNull final Context context,
@@ -268,22 +269,23 @@ public class JsonRecordReader
             throws JSONException {
         final JSONArray jsonRoot = root.optJSONArray(RecordType.Styles.getName());
         if (jsonRoot != null) {
-            final Styles styles = ServiceLocator.getInstance().getStyles();
-            new ListStyleCoder(context)
+            final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
+            new StyleCoder(context)
                     .decode(jsonRoot)
-                    .forEach(styles::updateOrInsert);
-            mResults.styles = jsonRoot.length();
+                    .forEach(stylesHelper::updateOrInsert);
+            results.styles = jsonRoot.length();
         }
     }
 
-    private void readPreferences(@NonNull final JSONObject root)
+    private void readPreferences(@NonNull final Context context,
+                                 @NonNull final JSONObject root)
             throws JSONException {
         final JSONObject jsonRoot = root.optJSONObject(RecordType.Preferences.getName());
         if (jsonRoot != null) {
             // The coder itself will set/update the values directly.
-            new SharedPreferencesCoder(ServiceLocator.getGlobalPreferences())
+            new SharedPreferencesCoder(PreferenceManager.getDefaultSharedPreferences(context))
                     .decode(jsonRoot);
-            mResults.preferences = 1;
+            results.preferences = 1;
         }
     }
 
@@ -299,7 +301,7 @@ public class JsonRecordReader
             if (calibreCA != null) {
                 try {
                     CalibreContentServer.setCertificate(context, coder.decode(calibreCA));
-                    mResults.certificates++;
+                    results.certificates++;
                 } catch (@NonNull final CertificateEncodingException e) {
                     // log but don't quit
                     Logger.error(TAG, e);
@@ -462,26 +464,26 @@ public class JsonRecordReader
             final long now = System.currentTimeMillis();
             if ((now - lastUpdateTime) > progressListener.getUpdateIntervalInMs()
                 && !progressListener.isCancelled()) {
-                final String msg = String.format(mProgressMessage,
-                                                 mBooksString,
-                                                 mResults.booksCreated,
-                                                 mResults.booksUpdated,
-                                                 mResults.booksSkipped);
+                final String msg = String.format(progressMessage,
+                                                 booksString,
+                                                 results.booksCreated,
+                                                 results.booksUpdated,
+                                                 results.booksSkipped);
                 progressListener.publishProgress(delta, msg);
                 lastUpdateTime = now;
                 delta = 0;
             }
         }
         // minus 1 to compensate for the last increment
-        mResults.booksProcessed = row - 1;
+        results.booksProcessed = row - 1;
     }
 
     private void handleRowException(final int row,
                                     @NonNull final Exception e,
                                     @NonNull final String msg) {
-        mResults.booksFailed++;
-        mResults.failedLinesMessage.add(msg);
-        mResults.failedLinesNr.add(row);
+        results.booksFailed++;
+        results.failedLinesMessage.add(msg);
+        results.failedLinesNr.add(row);
 
         if (BuildConfig.DEBUG /* always */) {
             if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {

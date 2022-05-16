@@ -222,7 +222,7 @@ public class SearchBookByExternalIdFragment
         //noinspection ConstantConditions
         final String externalId = mVb.externalId.getText().toString().trim();
         //noinspection ConstantConditions
-        return mCoordinator.searchByExternalId(mSelectedSearchEngine, externalId);
+        return coordinator.searchByExternalId(mSelectedSearchEngine, externalId);
     }
 
     @Override

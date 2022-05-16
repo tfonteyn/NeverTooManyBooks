@@ -25,7 +25,6 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.function.Supplier;
@@ -62,21 +61,20 @@ public class PStringEqualityFilter
     private String value;
 
     PStringEqualityFilter(@NonNull final String name,
-                          @StringRes final int labelId,
+                          @StringRes final int labelResId,
                           @NonNull final TableDefinition table,
                           @NonNull final Domain domain,
                           @Nullable final Supplier<ArrayList<String>> listSupplier) {
-        labelResId = labelId;
-        this.domain = domain;
-        this.table = table;
         this.name = name;
+        this.labelResId = labelResId;
+        this.table = table;
+        this.domain = domain;
         this.listSupplier = listSupplier;
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        if (!DBKey.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                          domain.getName())) {
+        if (!DBKey.isUsed(domain.getName())) {
             return false;
         }
         return value != null;

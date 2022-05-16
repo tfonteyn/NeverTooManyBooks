@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,12 +41,9 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 /**
  * Helper class encapsulating {@link StyleDao} access and internal in-memory caches.
  */
-public class Styles {
+public class StylesHelper {
 
-    /**
-     * Preference for the current default style UUID to use.
-     * Stored in global shared preferences.
-     */
+    /** Preference for the current default style UUID to use. */
     private static final String PREF_BL_STYLE_CURRENT_DEFAULT = "bookList.style.current";
 
     private static final String ERROR_MISSING_UUID = "style.getUuid()";
@@ -59,7 +55,7 @@ public class Styles {
      * <p>
      * Key: uuid of style.
      */
-    private final Map<String, ListStyle> cache = new LinkedHashMap<>();
+    private final Map<String, Style> cache = new LinkedHashMap<>();
 
     /**
      * Get the specified style; {@code null} if not found.
@@ -70,8 +66,8 @@ public class Styles {
      * @return the style, or {@code null} if not found
      */
     @Nullable
-    public ListStyle getStyle(@NonNull final Context context,
-                              @NonNull final String uuid) {
+    public Style getStyle(@NonNull final Context context,
+                          @NonNull final String uuid) {
         return getAllStyles(context).get(uuid);
     }
 
@@ -84,11 +80,11 @@ public class Styles {
      * @return the style, or the default style if not found
      */
     @NonNull
-    public ListStyle getStyleOrDefault(@NonNull final Context context,
-                                       @Nullable final String uuid) {
+    public Style getStyleOrDefault(@NonNull final Context context,
+                                   @Nullable final String uuid) {
         if (uuid != null) {
             // Try to get user or builtin style
-            final ListStyle style = getAllStyles(context).get(uuid);
+            final Style style = getAllStyles(context).get(uuid);
             if (style != null) {
                 return style;
             }
@@ -101,12 +97,11 @@ public class Styles {
     /**
      * store the given style as the user default one.
      *
-     * @param global the <strong>GLOBAL</strong> preferences
-     * @param uuid   style to set
+     * @param uuid style to set
      */
-    public void setDefault(@NonNull final SharedPreferences global,
-                           @NonNull final String uuid) {
-        global.edit().putString(PREF_BL_STYLE_CURRENT_DEFAULT, uuid).apply();
+    public void setDefault(@NonNull final String uuid) {
+        ServiceLocator.getPreferences()
+                      .edit().putString(PREF_BL_STYLE_CURRENT_DEFAULT, uuid).apply();
     }
 
     /**
@@ -117,8 +112,8 @@ public class Styles {
      * @return the style.
      */
     @NonNull
-    public ListStyle getDefault(@NonNull final Context context) {
-        final Map<String, ListStyle> allStyles = getAllStyles(context);
+    public Style getDefault(@NonNull final Context context) {
+        final Map<String, Style> allStyles = getAllStyles(context);
 
         // read the global user default, or if not present the hardcoded default.
         final String uuid = PreferenceManager
@@ -126,7 +121,7 @@ public class Styles {
                 .getString(PREF_BL_STYLE_CURRENT_DEFAULT, BuiltinStyle.DEFAULT_UUID);
 
         // Get the user or builtin or worst case the builtin default.
-        final ListStyle style = allStyles.get(uuid);
+        final Style style = allStyles.get(uuid);
         //noinspection ConstantConditions
         return style != null ? style : allStyles.get(BuiltinStyle.DEFAULT_UUID);
     }
@@ -143,26 +138,26 @@ public class Styles {
      * @return LinkedHashMap, key: uuid, value: style
      */
     @NonNull
-    public List<ListStyle> getStyles(@NonNull final Context context,
-                                     final boolean all) {
+    public List<Style> getStyles(@NonNull final Context context,
+                                 final boolean all) {
 
         // combine all styles in a NEW list; we need to keep the original lists as-is.
-        final Collection<ListStyle> list = new ArrayList<>(getAllStyles(context).values());
+        final Collection<Style> list = new ArrayList<>(getAllStyles(context).values());
 
         // and sort them in the user preferred order
         // The styles marked as preferred will have a menu-position < 1000,
         // while the non-preferred styles will be 1000.
-        final List<ListStyle> allStyles = list
+        final List<Style> allStyles = list
                 .stream()
-                .sorted(Comparator.comparingInt(ListStyle::getMenuPosition))
+                .sorted(Comparator.comparingInt(Style::getMenuPosition))
                 .collect(Collectors.toList());
         if (all) {
             return allStyles;
         }
 
-        final List<ListStyle> preferredStyles = allStyles
+        final List<Style> preferredStyles = allStyles
                 .stream()
-                .filter(ListStyle::isPreferred)
+                .filter(Style::isPreferred)
                 .collect(Collectors.toList());
 
         if (preferredStyles.isEmpty()) {
@@ -181,7 +176,7 @@ public class Styles {
      * @return an ordered Map of styles
      */
     @NonNull
-    private Map<String, ListStyle> getAllStyles(@NonNull final Context context) {
+    private Map<String, Style> getAllStyles(@NonNull final Context context) {
 
         if (cache.isEmpty()) {
             cache.putAll(ServiceLocator.getInstance().getStyleDao()
@@ -211,13 +206,13 @@ public class Styles {
      *
      * @param styles list to sort and update
      */
-    public void updateMenuOrder(@NonNull final Collection<ListStyle> styles) {
+    public void updateMenuOrder(@NonNull final Collection<Style> styles) {
         int order = 0;
 
         final StyleDao styleDao = ServiceLocator.getInstance().getStyleDao();
 
         // sort the preferred styles at the top
-        for (final ListStyle style : styles) {
+        for (final Style style : styles) {
             if (style.isPreferred()) {
                 style.setMenuPosition(order);
                 styleDao.update(style);
@@ -225,7 +220,7 @@ public class Styles {
             }
         }
         // followed by the non preferred styles
-        for (final ListStyle style : styles) {
+        for (final Style style : styles) {
             if (!style.isPreferred()) {
                 style.setMenuPosition(order);
                 styleDao.update(style);
@@ -248,7 +243,7 @@ public class Styles {
      * @return {@code true} on success
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean updateOrInsert(@NonNull final ListStyle style) {
+    public boolean updateOrInsert(@NonNull final Style style) {
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
         }
@@ -280,7 +275,7 @@ public class Styles {
      *
      * @return {@code true} on success
      */
-    public boolean update(@NonNull final ListStyle style) {
+    public boolean update(@NonNull final Style style) {
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
             // Reminder: do NOT use requirePositiveValue here!
@@ -299,11 +294,11 @@ public class Styles {
     /**
      * Delete the given style.
      *
-     * @param style   to delete
+     * @param style to delete
      *
      * @return {@code true} on success
      */
-    public boolean delete(@NonNull final ListStyle style) {
+    public boolean delete(@NonNull final Style style) {
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
             SanityCheck.requirePositiveValue(style.getId(),

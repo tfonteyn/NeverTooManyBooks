@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.datamanager.validators;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 public class OrValidator
         implements DataValidator {
 
-    private final Collection<DataValidator> mList = new ArrayList<>();
+    private final Collection<DataValidator> validators = new ArrayList<>();
 
     /**
      * Constructor.
@@ -44,19 +45,19 @@ public class OrValidator
      * @param validators list of validators
      */
     public OrValidator(@NonNull final DataValidator... validators) {
-        mList.addAll(Arrays.asList(validators));
+        this.validators.addAll(Arrays.asList(validators));
     }
 
     @Override
     public void validate(@NonNull final Context context,
                          @NonNull final DataManager dataManager,
                          @NonNull final String key,
-                         final int errorLabelId)
+                         @StringRes final int errorLabelResId)
             throws ValidatorException {
         ValidatorException lastException = null;
-        for (final DataValidator validator : mList) {
+        for (final DataValidator validator : validators) {
             try {
-                validator.validate(context, dataManager, key, errorLabelId);
+                validator.validate(context, dataManager, key, errorLabelResId);
                 // as soon as one is reporting 'ok' by NOT throwing an exception, we're done.
                 return;
             } catch (@NonNull final ValidatorException e) {

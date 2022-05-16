@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields;
 
-import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.Checkable;
 
@@ -46,7 +45,6 @@ public class BooleanIndicatorField
 
     @Override
     public void setVisibility(@NonNull final View parent,
-                              @NonNull final SharedPreferences global,
                               final boolean hideEmptyFields,
                               final boolean keepHiddenFieldsHidden) {
         // The field view is handled when the value is set.

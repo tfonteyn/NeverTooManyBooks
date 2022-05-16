@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields;
 
-import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.CompoundButton;
 
@@ -53,9 +52,8 @@ public class CompoundButtonField
     }
 
     @Override
-    public void setParentView(@NonNull final View parent,
-                              @NonNull final SharedPreferences global) {
-        super.setParentView(parent, global);
+    public void setParentView(@NonNull final View parent) {
+        super.setParentView(parent);
         requireView().setOnCheckedChangeListener((buttonView, isChecked) -> {
             final Boolean previous = mRawValue;
             mRawValue = isChecked;

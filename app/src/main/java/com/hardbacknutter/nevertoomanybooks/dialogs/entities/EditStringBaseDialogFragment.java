@@ -51,34 +51,34 @@ public abstract class EditStringBaseDialogFragment
     static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     @StringRes
-    private final int mDialogTitleId;
+    private final int dialogTitleId;
     @StringRes
-    private final int mLabelId;
+    private final int labelResId;
     @NonNull
-    private final String mDataKey;
+    private final String dataKey;
     /** FragmentResultListener request key to use for our response. */
-    private String mRequestKey;
+    private String requestKey;
     /** View Binding. */
-    private DialogEditStringBinding mVb;
+    private DialogEditStringBinding vb;
     /** The text we're editing. */
-    private String mOriginalText;
+    private String originalText;
     /** Current edit. */
-    private String mCurrentText;
+    private String currentText;
 
     /**
      * Constructor; only used by the child class no-args constructor.
      *
-     * @param titleId for the dialog (i.e. the toolbar)
-     * @param label   to use for the 'hint' of the input field
+     * @param titleId    for the dialog (i.e. the toolbar)
+     * @param labelResId to use for the 'hint' of the input field
      */
     EditStringBaseDialogFragment(@StringRes final int titleId,
-                                 @StringRes final int label,
+                                 @StringRes final int labelResId,
                                  @NonNull final String dataKey) {
         super(R.layout.dialog_edit_string);
 
-        mDialogTitleId = titleId;
-        mLabelId = label;
-        mDataKey = dataKey;
+        dialogTitleId = titleId;
+        this.labelResId = labelResId;
+        this.dataKey = dataKey;
     }
 
     @Override
@@ -86,13 +86,13 @@ public abstract class EditStringBaseDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
-        mOriginalText = args.getString(BKEY_TEXT, "");
+        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        originalText = args.getString(BKEY_TEXT, "");
 
         if (savedInstanceState == null) {
-            mCurrentText = mOriginalText;
+            currentText = originalText;
         } else {
-            mCurrentText = savedInstanceState.getString(BKEY_TEXT, "");
+            currentText = savedInstanceState.getString(BKEY_TEXT, "");
         }
     }
 
@@ -100,17 +100,17 @@ public abstract class EditStringBaseDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mVb = DialogEditStringBinding.bind(view);
+        vb = DialogEditStringBinding.bind(view);
 
-        mVb.toolbar.setTitle(mDialogTitleId);
+        vb.toolbar.setTitle(dialogTitleId);
 
-        mVb.lblEditString.setHint(getString(mLabelId));
-        mVb.lblEditString.setErrorEnabled(true);
+        vb.lblEditString.setHint(getString(labelResId));
+        vb.lblEditString.setErrorEnabled(true);
 
-        mVb.editString.setText(mCurrentText);
+        vb.editString.setText(currentText);
 
         // soft-keyboards 'done' button act as a shortcut to confirming/saving the changes
-        mVb.editString.setOnEditorActionListener((v, actionId, event) -> {
+        vb.editString.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (saveChanges()) {
                     dismiss();
@@ -124,9 +124,9 @@ public abstract class EditStringBaseDialogFragment
         final ExtArrayAdapter<String> adapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, getList());
-        mVb.editString.setAdapter(adapter);
+        vb.editString.setAdapter(adapter);
 
-        mVb.editString.requestFocus();
+        vb.editString.requestFocus();
     }
 
     @Override
@@ -152,24 +152,24 @@ public abstract class EditStringBaseDialogFragment
 
     private boolean saveChanges() {
         viewToModel();
-        if (mCurrentText.isEmpty()) {
-            showError(mVb.lblEditString, R.string.vldt_non_blank_required);
+        if (currentText.isEmpty()) {
+            showError(vb.lblEditString, R.string.vldt_non_blank_required);
             return false;
         }
 
         // anything actually changed ?
-        if (mCurrentText.equals(mOriginalText)) {
+        if (currentText.equals(originalText)) {
             return true;
         }
 
-        onSave(mOriginalText, mCurrentText);
+        onSave(originalText, currentText);
 
-        RowChangedListener.setResult(this, mRequestKey, mDataKey, 0);
+        RowChangedListener.setResult(this, requestKey, dataKey, 0);
         return true;
     }
 
     private void viewToModel() {
-        mCurrentText = mVb.editString.getText().toString().trim();
+        currentText = vb.editString.getText().toString().trim();
     }
 
     /**
@@ -184,7 +184,7 @@ public abstract class EditStringBaseDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(BKEY_TEXT, mCurrentText);
+        outState.putString(BKEY_TEXT, currentText);
     }
 
     @Override

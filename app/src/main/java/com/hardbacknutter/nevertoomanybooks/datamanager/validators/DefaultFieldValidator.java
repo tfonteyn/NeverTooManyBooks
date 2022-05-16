@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,6 +23,7 @@ import android.content.Context;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
@@ -34,36 +35,36 @@ public class DefaultFieldValidator
 
     /** Default to apply if the field is empty. */
     @NonNull
-    private final String mDefaultValue;
+    private final String defaultValue;
 
     /**
      * Constructor with default value.
      *
-     * @param defValue Default to apply if the field is empty
+     * @param defaultValue Default to apply if the field is empty
      */
-    DefaultFieldValidator(@NonNull final String defValue) {
-        mDefaultValue = defValue;
+    DefaultFieldValidator(@NonNull final String defaultValue) {
+        this.defaultValue = defaultValue;
     }
 
     /**
      * Gets the current value, and if {@code null} or empty,
      * replaces it with the mDefaultValue value.
      *
-     * @param context      Current context
-     * @param dataManager  The DataManager object
-     * @param key          key for the data to validate
-     * @param errorLabelId not used.
+     * @param context         Current context
+     * @param dataManager     The DataManager object
+     * @param key             key for the data to validate
+     * @param errorLabelResId not used.
      */
     @Override
     @CallSuper
     public void validate(@NonNull final Context context,
                          @NonNull final DataManager dataManager,
                          @NonNull final String key,
-                         final int errorLabelId) {
+                         @StringRes final int errorLabelResId) {
 
         final Object value = dataManager.get(key);
         if (value != null && value.toString().trim().isEmpty()) {
-            dataManager.putString(key, mDefaultValue);
+            dataManager.putString(key, defaultValue);
         }
     }
 }

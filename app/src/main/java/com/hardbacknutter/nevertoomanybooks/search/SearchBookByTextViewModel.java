@@ -25,6 +25,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
+import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,38 +43,40 @@ public class SearchBookByTextViewModel
      * A list of author names we have already searched for in this session.
      */
     @NonNull
-    private final Collection<String> mRecentAuthorNames = new ArrayList<>();
+    private final Collection<String> recentAuthorNames = new ArrayList<>();
     /**
      * A list of Publisher names we have already searched for in this session.
      */
     @NonNull
-    private final Collection<String> mRecentPublisherNames = new ArrayList<>();
+    private final Collection<String> recentPublisherNames = new ArrayList<>();
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    private final Bundle mResultData = ServiceLocator.newBundle();
+    private final Bundle resultData = ServiceLocator.newBundle();
     /** Flag: allow/provide searching by publisher. */
-    private Boolean mUsePublisher;
+    private Boolean usePublisher;
 
     @NonNull
     public Bundle getResultData() {
-        return mResultData;
+        return resultData;
     }
 
     /**
      * Pseudo constructor.
+     *
+     * @param context Current context
      */
-    void init() {
-        if (mUsePublisher == null) {
+    void init(@NonNull final Context context) {
+        if (usePublisher == null) {
             // Hardcoded to ISFDB only for now, as that's the only site supporting this flag.
             // This will be refactored/moved/... at some point.
-            mUsePublisher = ServiceLocator.getGlobalPreferences()
-                                          .getBoolean(IsfdbSearchEngine.PK_USE_PUBLISHER, false);
+            usePublisher = PreferenceManager.getDefaultSharedPreferences(context)
+                                            .getBoolean(IsfdbSearchEngine.PK_USE_PUBLISHER, false);
         }
     }
 
     boolean addAuthorName(@NonNull final String searchText) {
-        if (mRecentAuthorNames.stream().noneMatch(s -> s.equalsIgnoreCase(searchText))) {
-            mRecentAuthorNames.add(searchText);
+        if (recentAuthorNames.stream().noneMatch(s -> s.equalsIgnoreCase(searchText))) {
+            recentAuthorNames.add(searchText);
             return true;
         }
         return false;
@@ -102,7 +105,7 @@ public class SearchBookByTextViewModel
         }
 
         // Add the names the user has already tried (to handle errors and mistakes)
-        for (final String s : mRecentAuthorNames) {
+        for (final String s : recentAuthorNames) {
             if (!uniqueNames.contains(s.toLowerCase(userLocale))) {
                 authors.add(s);
             }
@@ -117,12 +120,12 @@ public class SearchBookByTextViewModel
      * @return flag
      */
     boolean usePublisher() {
-        return mUsePublisher;
+        return usePublisher;
     }
 
     boolean addPublisherName(@NonNull final String searchText) {
-        if (mRecentPublisherNames.stream().noneMatch(s -> s.equalsIgnoreCase(searchText))) {
-            mRecentPublisherNames.add(searchText);
+        if (recentPublisherNames.stream().noneMatch(s -> s.equalsIgnoreCase(searchText))) {
+            recentPublisherNames.add(searchText);
             return true;
         }
         return false;
@@ -148,7 +151,7 @@ public class SearchBookByTextViewModel
         }
 
         // Add the names the user has already tried (to handle errors and mistakes)
-        for (final String s : mRecentPublisherNames) {
+        for (final String s : recentPublisherNames) {
             if (!uniqueNames.contains(s.toLowerCase(userLocale))) {
                 publishers.add(s);
             }

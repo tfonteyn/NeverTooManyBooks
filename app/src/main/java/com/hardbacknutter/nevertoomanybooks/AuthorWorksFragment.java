@@ -23,7 +23,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -44,7 +43,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.divider.MaterialDividerItemDecoration;
@@ -88,43 +86,43 @@ public class AuthorWorksFragment
     /** Optional. Show the books. Defaults to {@code true}. */
     static final String BKEY_WITH_BOOKS = TAG + ":books";
 
-    private ToolbarMenuProvider mToolbarMenuProvider;
+    private ToolbarMenuProvider toolbarMenuProvider;
     /** The Fragment ViewModel. */
-    private AuthorWorksViewModel mVm;
+    private AuthorWorksViewModel vm;
     /** Display a Book. */
-    private final ActivityResultLauncher<ShowBookPagerContract.Input> mDisplayBookLauncher =
+    private final ActivityResultLauncher<ShowBookPagerContract.Input> displayBookLauncher =
             registerForActivityResult(new ShowBookPagerContract(), this::onBookEditFinished);
     /** Set the hosting Activity result, and close it. */
-    private final OnBackPressedCallback mOnBackPressedCallback =
+    private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
                     final Intent resultIntent = EditBookOutput
-                            .createResultIntent(0, mVm.isDataModified());
+                            .createResultIntent(0, vm.isDataModified());
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
                 }
             };
     /** React to changes in the adapter. */
-    private final SimpleAdapterDataObserver mAdapterDataObserver =
+    private final SimpleAdapterDataObserver adapterDataObserver =
             new SimpleAdapterDataObserver() {
                 @Override
                 public void onChanged() {
-                    mToolbarMenuProvider.onPrepareMenu(getToolbar().getMenu());
+                    toolbarMenuProvider.onPrepareMenu(getToolbar().getMenu());
                 }
             };
 
     /** The Adapter. */
-    private TocAdapter mListAdapter;
+    private TocAdapter adapter;
     /** View Binding. */
-    private RecyclerView mWorksListView;
-    private ExtPopupMenu mContextMenu;
+    private RecyclerView worksListView;
+    private ExtPopupMenu contextMenu;
 
     private void onBookEditFinished(@Nullable final EditBookOutput data) {
         // ignore the data.bookId
         if (data != null && data.modified) {
-            mVm.setDataModified();
+            vm.setDataModified();
         }
     }
 
@@ -132,9 +130,9 @@ public class AuthorWorksFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mVm = new ViewModelProvider(this).get(AuthorWorksViewModel.class);
+        vm = new ViewModelProvider(this).get(AuthorWorksViewModel.class);
         //noinspection ConstantConditions
-        mVm.init(getContext(), requireArguments());
+        vm.init(getContext(), requireArguments());
     }
 
     @Nullable
@@ -143,7 +141,7 @@ public class AuthorWorksFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_author_works, container, false);
-        mWorksListView = view.findViewById(R.id.author_works);
+        worksListView = view.findViewById(R.id.author_works);
         return view;
     }
 
@@ -155,34 +153,33 @@ public class AuthorWorksFragment
         final Context context = getContext();
 
         final Toolbar toolbar = getToolbar();
-        mToolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
+        toolbarMenuProvider = new ToolbarMenuProvider();
+        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
         //noinspection ConstantConditions
-        toolbar.setTitle(mVm.getScreenTitle(context));
-        toolbar.setSubtitle(mVm.getScreenSubtitle(context));
+        toolbar.setTitle(vm.getScreenTitle(context));
+        toolbar.setSubtitle(vm.getScreenSubtitle(context));
 
         // Popup the search widget when the user starts to type.
         //noinspection ConstantConditions
         getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
 
         getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
-        mWorksListView.setHasFixedSize(true);
-        mWorksListView.addItemDecoration(
+        worksListView.setHasFixedSize(true);
+        worksListView.addItemDecoration(
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
 
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         // Optional overlay
-        final int overlayType = Prefs.getFastScrollerOverlayType(global);
-        FastScroller.attach(mWorksListView, overlayType);
+        final int overlayType = Prefs.getFastScrollerOverlayType(context);
+        FastScroller.attach(worksListView, overlayType);
 
-        mListAdapter = new TocAdapter(context, mVm.getList());
-        mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
-        mWorksListView.setAdapter(mListAdapter);
+        adapter = new TocAdapter(context, vm.getList());
+        adapter.registerAdapterDataObserver(adapterDataObserver);
+        worksListView.setAdapter(adapter);
 
-        mContextMenu = new ExtPopupMenu(context);
-        final Menu menu = mContextMenu.getMenu();
+        contextMenu = new ExtPopupMenu(context);
+        final Menu menu = contextMenu.getMenu();
         final Resources res = getResources();
         menu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
                  R.string.action_delete)
@@ -205,7 +202,7 @@ public class AuthorWorksFragment
                                        final int position) {
         final int itemId = menuItem.getItemId();
 
-        final AuthorWork work = mVm.getList().get(position);
+        final AuthorWork work = vm.getList().get(position);
 
         if (itemId == R.id.MENU_DELETE) {
             deleteWork(position, work);
@@ -222,8 +219,8 @@ public class AuthorWorksFragment
                 StandardDialogs.deleteTocEntry(
                         getContext(), work.getLabel(getContext()),
                         work.getPrimaryAuthor(), () -> {
-                            mVm.delete(getContext(), work);
-                            mListAdapter.notifyItemRemoved(position);
+                            vm.delete(getContext(), work);
+                            adapter.notifyItemRemoved(position);
                         });
                 break;
             }
@@ -233,8 +230,8 @@ public class AuthorWorksFragment
                 StandardDialogs.deleteBook(
                         getContext(), work.getLabel(getContext()),
                         Collections.singletonList(work.getPrimaryAuthor()), () -> {
-                            mVm.delete(getContext(), work);
-                            mListAdapter.notifyItemRemoved(position);
+                            vm.delete(getContext(), work);
+                            adapter.notifyItemRemoved(position);
                         });
                 break;
             }
@@ -249,15 +246,15 @@ public class AuthorWorksFragment
      * @param position in the list
      */
     private void gotoBook(final int position) {
-        final AuthorWork work = mVm.getList().get(position);
+        final AuthorWork work = vm.getList().get(position);
 
         switch (work.getWorkType()) {
             case TocEntry: {
                 final TocEntry tocEntry = (TocEntry) work;
-                final ArrayList<Long> bookIdList = mVm.getBookIds(tocEntry);
+                final ArrayList<Long> bookIdList = vm.getBookIds(tocEntry);
                 if (bookIdList.size() == 1) {
-                    mDisplayBookLauncher.launch(new ShowBookPagerContract.Input(
-                            bookIdList.get(0), mVm.getStyle().getUuid(), null, 0));
+                    displayBookLauncher.launch(new ShowBookPagerContract.Input(
+                            bookIdList.get(0), vm.getStyle().getUuid(), null, 0));
 
                 } else {
                     // multiple books, open the list as a NEW ACTIVITY
@@ -269,7 +266,7 @@ public class AuthorWorksFragment
                             .putExtra(BooksOnBookshelfViewModel.BKEY_LIST_STATE,
                                       (Parcelable) RebuildBooklist.Expanded);
 
-                    if (mVm.isAllBookshelves()) {
+                    if (vm.isAllBookshelves()) {
                         intent.putExtra(BooksOnBookshelfViewModel.BKEY_BOOKSHELF,
                                         Bookshelf.ALL_BOOKS);
                     }
@@ -279,8 +276,8 @@ public class AuthorWorksFragment
             }
             case Book:
             case BookLight: {
-                mDisplayBookLauncher.launch(new ShowBookPagerContract.Input(
-                        work.getId(), mVm.getStyle().getUuid(), null, 0));
+                displayBookLauncher.launch(new ShowBookPagerContract.Input(
+                        work.getId(), vm.getStyle().getUuid(), null, 0));
 
                 break;
             }
@@ -339,8 +336,8 @@ public class AuthorWorksFragment
             // show if we got here with a specific bookshelf selected.
             // hide if the bookshelf was set to Bookshelf.ALL_BOOKS.
             menu.findItem(R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES)
-                .setVisible(mVm.getBookshelfId() != Bookshelf.ALL_BOOKS)
-                .setChecked(mVm.isAllBookshelves());
+                .setVisible(vm.getBookshelfId() != Bookshelf.ALL_BOOKS)
+                .setChecked(vm.isAllBookshelves());
         }
 
         @SuppressLint("NotifyDataSetChanged")
@@ -350,33 +347,33 @@ public class AuthorWorksFragment
 
             if (itemId == R.id.MENU_AUTHOR_WORKS_ALL) {
                 menuItem.setChecked(true);
-                mVm.reloadWorkList(true, true);
-                mListAdapter.notifyDataSetChanged();
+                vm.reloadWorkList(true, true);
+                adapter.notifyDataSetChanged();
                 return true;
 
             } else if (itemId == R.id.MENU_AUTHOR_WORKS_TOC) {
                 menuItem.setChecked(true);
-                mVm.reloadWorkList(true, false);
-                mListAdapter.notifyDataSetChanged();
+                vm.reloadWorkList(true, false);
+                adapter.notifyDataSetChanged();
                 return true;
 
             } else if (itemId == R.id.MENU_AUTHOR_WORKS_BOOKS) {
                 menuItem.setChecked(true);
-                mVm.reloadWorkList(false, true);
-                mListAdapter.notifyDataSetChanged();
+                vm.reloadWorkList(false, true);
+                adapter.notifyDataSetChanged();
                 return true;
 
             } else if (itemId == R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES) {
                 final boolean checked = !menuItem.isChecked();
                 menuItem.setChecked(checked);
-                mVm.setAllBookshelves(checked);
-                mVm.reloadWorkList();
-                mListAdapter.notifyDataSetChanged();
+                vm.setAllBookshelves(checked);
+                vm.reloadWorkList();
+                adapter.notifyDataSetChanged();
 
                 final Toolbar toolbar = getToolbar();
                 //noinspection ConstantConditions
-                toolbar.setTitle(mVm.getScreenTitle(getContext()));
-                toolbar.setSubtitle(mVm.getScreenSubtitle(getContext()));
+                toolbar.setTitle(vm.getScreenTitle(getContext()));
+                toolbar.setSubtitle(vm.getScreenSubtitle(getContext()));
                 return true;
             }
 
@@ -411,7 +408,7 @@ public class AuthorWorksFragment
             holder.itemView.setOnClickListener(v -> gotoBook(holder.getBindingAdapterPosition()));
 
             holder.itemView.setOnLongClickListener(v -> {
-                mContextMenu.showAsDropDown(v, menuItem ->
+                contextMenu.showAsDropDown(v, menuItem ->
                         onMenuItemSelected(menuItem, holder.getBindingAdapterPosition()));
                 return true;
             });

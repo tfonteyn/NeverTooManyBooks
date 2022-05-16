@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,7 +43,6 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterHelperBase;
@@ -123,7 +123,7 @@ public class ExportHelper
      * Is this a backup or an export.
      *
      * @return {@code true} when this is considered a backup,
-     * {@code false} when it's considered an export.
+     *         {@code false} when it's considered an export.
      */
     public boolean isBackup() {
         return encoding == ArchiveEncoding.Zip;
@@ -132,10 +132,12 @@ public class ExportHelper
     /**
      * Get the last time we made a full export in the currently set encoding.
      *
+     * @param context Current context
+     *
      * @return LocalDateTime(ZoneOffset.UTC), or {@code null} if not set
      */
     @Nullable
-    public LocalDateTime getLastDone() {
+    public LocalDateTime getLastDone(@NonNull final Context context) {
         if (isIncremental()) {
             final String key;
             if (encoding == ArchiveEncoding.Zip) {
@@ -145,7 +147,8 @@ public class ExportHelper
                 key = PREF_LAST_FULL_BACKUP_DATE + "." + encoding.getFileExt();
             }
 
-            final String lastDone = ServiceLocator.getGlobalPreferences().getString(key, null);
+            final String lastDone = PreferenceManager.getDefaultSharedPreferences(context)
+                                                     .getString(key, null);
             if (lastDone != null && !lastDone.isEmpty()) {
                 return new ISODateParser().parse(lastDone);
             }
@@ -156,14 +159,17 @@ public class ExportHelper
     /**
      * Store the LocalDateTime(ZoneOffset.UTC) of the last full backup/export
      * in the given encoding.
+     *
+     * @param context Current context
      */
-    public void setLastDone() {
+    public void setLastDone(@NonNull final Context context) {
         if (!isIncremental()) {
             final String date = LocalDateTime.now(ZoneOffset.UTC)
                                              .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
-            final SharedPreferences.Editor editor = ServiceLocator.getGlobalPreferences()
-                                                                  .edit();
+            final SharedPreferences.Editor editor = PreferenceManager
+                    .getDefaultSharedPreferences(context)
+                    .edit();
             if (encoding == ArchiveEncoding.Zip) {
                 // backwards compatibility
                 editor.putString(PREF_LAST_FULL_BACKUP_DATE, date)

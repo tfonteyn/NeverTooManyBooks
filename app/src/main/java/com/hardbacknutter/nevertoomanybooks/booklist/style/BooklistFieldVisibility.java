@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -32,19 +31,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 /**
  * Encapsulate the Book fields which can be shown on the Book-list screen.
  * <p>
- * Globally hidden field settings are ignored!
+ * The defaults obey the global user preference.
  */
-public class BooklistBookFieldVisibility {
+public class BooklistFieldVisibility {
 
     public static final String PK_VISIBILITY = "style.list.show.fields";
 
     public static final int SHOW_COVER_0 = 1;
+    public static final int SHOW_COVER_1 = 1 << 1;
     public static final int SHOW_AUTHOR = 1 << 2;
     public static final int SHOW_PUBLISHER = 1 << 3;
     public static final int SHOW_PUB_DATE = 1 << 4;
@@ -53,12 +55,6 @@ public class BooklistBookFieldVisibility {
     public static final int SHOW_LOCATION = 1 << 7;
     public static final int SHOW_RATING = 1 << 8;
     public static final int SHOW_BOOKSHELVES = 1 << 9;
-
-    /** by default, only show the cover. Other fields are hidden. */
-    public static final int DEFAULT = SHOW_COVER_0;
-
-    // not currently used
-    private static final int SHOW_COVER_1 = 1 << 1;
 
     public static final int BITMASK_ALL = SHOW_COVER_0
                                           | SHOW_COVER_1
@@ -70,13 +66,27 @@ public class BooklistBookFieldVisibility {
                                           | SHOW_LOCATION
                                           | SHOW_RATING
                                           | SHOW_BOOKSHELVES;
-    private int bits;
+
+    /** by default, only show the cover. Other fields are hidden. */
+    public static final int DEFAULT = SHOW_COVER_0;
+
+    private int bits = DEFAULT;
 
     /**
      * Constructor.
      */
-    BooklistBookFieldVisibility(@NonNull final SharedPreferences global) {
-        bits = global.getInt(PK_VISIBILITY, DEFAULT);
+    BooklistFieldVisibility() {
+        // Load the defaults from the global Visibility preferences
+        setShowField(SHOW_COVER_0, DBKey.isUsed(DBKey.COVER_IS_USED[0]));
+        setShowField(SHOW_COVER_1, DBKey.isUsed(DBKey.COVER_IS_USED[1]));
+        setShowField(SHOW_AUTHOR, DBKey.isUsed(DBKey.FK_AUTHOR));
+        setShowField(SHOW_PUBLISHER, DBKey.isUsed(DBKey.FK_PUBLISHER));
+        setShowField(SHOW_PUB_DATE, DBKey.isUsed(DBKey.DATE_BOOK_PUBLICATION));
+        setShowField(SHOW_ISBN, DBKey.isUsed(DBKey.KEY_ISBN));
+        setShowField(SHOW_FORMAT, DBKey.isUsed(DBKey.BOOK_FORMAT));
+        setShowField(SHOW_LOCATION, DBKey.isUsed(DBKey.LOCATION));
+        setShowField(SHOW_RATING, DBKey.isUsed(DBKey.RATING));
+        setShowField(SHOW_BOOKSHELVES, DBKey.isUsed(DBKey.FK_BOOKSHELF));
     }
 
     /**
@@ -132,7 +142,7 @@ public class BooklistBookFieldVisibility {
      * @return summary text
      */
     @NonNull
-    public String getSummaryText(@NonNull final Context context) {
+    String getSummaryText(@NonNull final Context context) {
         final List<String> labels = getLabels(context);
         if (labels.isEmpty()) {
             return context.getString(R.string.none);
@@ -144,12 +154,79 @@ public class BooklistBookFieldVisibility {
     /**
      * Check if the given field should be displayed.
      *
-     * @param bit to check
+     * @param dbKey to check - one of the {@link DBKey} constants.
      *
      * @return {@code true} if in use
      */
-    public boolean isShowField(@Option final int bit) {
+    @NonNull
+    public Optional<Boolean> isShowField(@NonNull final String dbKey) {
+        if (DBKey.COVER_IS_USED[0].equals(dbKey)) {
+            return Optional.of(isShowField(SHOW_COVER_0));
+        } else if (DBKey.COVER_IS_USED[1].equals(dbKey)) {
+            return Optional.of(isShowField(SHOW_COVER_1));
+        }
+        switch (dbKey) {
+            case DBKey.FK_AUTHOR:
+                return Optional.of(isShowField(SHOW_AUTHOR));
+            case DBKey.FK_BOOKSHELF:
+                return Optional.of(isShowField(SHOW_BOOKSHELVES));
+            case DBKey.FK_PUBLISHER:
+                return Optional.of(isShowField(SHOW_PUBLISHER));
+
+            case DBKey.BOOK_FORMAT:
+                return Optional.of(isShowField(SHOW_FORMAT));
+            case DBKey.KEY_ISBN:
+                return Optional.of(isShowField(SHOW_ISBN));
+            case DBKey.LOCATION:
+                return Optional.of(isShowField(SHOW_LOCATION));
+            case DBKey.DATE_BOOK_PUBLICATION:
+                return Optional.of(isShowField(SHOW_PUB_DATE));
+            case DBKey.RATING:
+                return Optional.of(isShowField(SHOW_RATING));
+            default:
+                return Optional.empty();
+        }
+    }
+
+    private boolean isShowField(@Option final int bit) {
         return (bits & bit) != 0;
+    }
+
+    public void setShowField(@NonNull final String dbKey,
+                             final boolean show) {
+        if (DBKey.COVER_IS_USED[0].equals(dbKey)) {
+            setShowField(SHOW_COVER_0, show);
+        } else if (DBKey.COVER_IS_USED[1].equals(dbKey)) {
+            setShowField(SHOW_COVER_1, show);
+        }
+        //noinspection SwitchStatementWithoutDefaultBranch
+        switch (dbKey) {
+            case DBKey.FK_AUTHOR:
+                setShowField(SHOW_AUTHOR, show);
+                break;
+            case DBKey.FK_BOOKSHELF:
+                setShowField(SHOW_BOOKSHELVES, show);
+                break;
+            case DBKey.FK_PUBLISHER:
+                setShowField(SHOW_PUBLISHER, show);
+                break;
+
+            case DBKey.BOOK_FORMAT:
+                setShowField(SHOW_FORMAT, show);
+                break;
+            case DBKey.KEY_ISBN:
+                setShowField(SHOW_ISBN, show);
+                break;
+            case DBKey.LOCATION:
+                setShowField(SHOW_LOCATION, show);
+                break;
+            case DBKey.DATE_BOOK_PUBLICATION:
+                setShowField(SHOW_PUB_DATE, show);
+                break;
+            case DBKey.RATING:
+                setShowField(SHOW_RATING, show);
+                break;
+        }
     }
 
     public void setShowField(@Option final int bit,
@@ -172,7 +249,7 @@ public class BooklistBookFieldVisibility {
     @Override
     @NonNull
     public String toString() {
-        return "BooklistBookFieldVisibility{"
+        return "BooklistFieldVisibility{"
                + "bits=0b" + Integer.toBinaryString(bits)
                + '}';
     }
@@ -185,7 +262,7 @@ public class BooklistBookFieldVisibility {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final BooklistBookFieldVisibility that = (BooklistBookFieldVisibility) o;
+        final BooklistFieldVisibility that = (BooklistFieldVisibility) o;
         return bits == that.bits;
     }
 

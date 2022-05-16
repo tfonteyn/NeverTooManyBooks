@@ -65,7 +65,7 @@ public class StyleGroupsFragment
     /**
      * Either make the groups permanent, or inform the user they need to have at least one group.
      */
-    private final OnBackPressedCallback onBackPressedCallback =
+    private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
@@ -119,7 +119,7 @@ public class StyleGroupsFragment
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), onBackPressedCallback);
+                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
         //noinspection ConstantConditions
         vb.groupList.addItemDecoration(

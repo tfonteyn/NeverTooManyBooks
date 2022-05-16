@@ -38,6 +38,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -60,7 +61,7 @@ public class StyleFragment
     private static final String PSK_LIST_SHOWS_BOOK_DETAILS = "psk_style_show_details";
 
     /** Set the hosting Activity result, and close it. */
-    private final OnBackPressedCallback onBackPressedCallback =
+    private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
@@ -86,7 +87,7 @@ public class StyleFragment
     private SeekBarPreference pExpansionLevel;
     private Preference pListHeader;
     private Preference pPrimaryAuthorType;
-    private Preference pListShowsBookDetails;
+    private Preference pListFieldVisibility;
     private Preference pGroups;
 
     @SuppressWarnings("ConstantConditions")
@@ -102,19 +103,19 @@ public class StyleFragment
             nameSet = savedInstanceState.getBoolean(SIS_NAME_SET);
         }
 
-        pName = findPreference(StyleDataStore.PK_STYLE_NAME);
+        pName = findPreference(StyleDataStore.PK_NAME);
         pExpansionLevel = findPreference(StyleDataStore.PK_EXPANSION_LEVEL);
         pCoverScale = findPreference(StyleDataStore.PK_COVER_SCALE);
         pTextScale = findPreference(StyleDataStore.PK_TEXT_SCALE);
         pListHeader = findPreference(StyleDataStore.PK_LIST_HEADER);
         pPrimaryAuthorType = findPreference(AuthorBooklistGroup.PK_PRIMARY_TYPE);
-        pListShowsBookDetails = findPreference(PSK_LIST_SHOWS_BOOK_DETAILS);
-        pGroups = findPreference(StyleDataStore.PK_STYLE_GROUPS);
+        pListFieldVisibility = findPreference(PSK_LIST_SHOWS_BOOK_DETAILS);
+        pGroups = findPreference(StyleDataStore.PK_GROUPS);
 
         pShowCoversOnDetailsScreen[0] = findPreference(
-                StyleDataStore.PK_STYLE_BOOK_DETAILS_COVER[0]);
+                StyleDataStore.PK_DETAILS_SHOW_COVER[0]);
         pShowCoversOnDetailsScreen[1] = findPreference(
-                StyleDataStore.PK_STYLE_BOOK_DETAILS_COVER[1]);
+                StyleDataStore.PK_DETAILS_SHOW_COVER[1]);
 
         pName.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
         pListHeader.setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
@@ -144,7 +145,7 @@ public class StyleFragment
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), onBackPressedCallback);
+                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
@@ -159,12 +160,10 @@ public class StyleFragment
 
         // loop over all groups, add the preferences for groups we have
         // and hide for groups we don't/no longer have.
-        // Use the global style to get the groups.
-
         final UserStyle style = vm.getStyle();
 
         final PreferenceScreen screen = getPreferenceScreen();
-        for (final BooklistGroup group : BooklistGroup.getAllGroups(UserStyle.createGlobal())) {
+        for (final BooklistGroup group : BooklistGroup.getAllGroups(style)) {
             group.setPreferencesVisible(screen, style.hasGroup(group.getId()));
         }
 
@@ -196,16 +195,14 @@ public class StyleFragment
     /**
      * The summary for these Preference's reflect what is selected on ANOTHER screen
      * or changes to ANOTHER KEY.
+     * (this also means we cannot use SummaryProvider's for these)
      */
     private void updateSummaries() {
         final UserStyle style = vm.getStyle();
         final Context context = getContext();
 
-        // None of these work as SummaryProvider, so keep them here!
-
         //noinspection ConstantConditions
-        pListShowsBookDetails.setSummary(style.getBooklistBookFieldVisibility()
-                                              .getSummaryText(context));
+        pListFieldVisibility.setSummary(style.getFieldVisibilitySummaryText(context));
 
         pGroups.setSummary(style.getGroupsSummaryText(context));
 

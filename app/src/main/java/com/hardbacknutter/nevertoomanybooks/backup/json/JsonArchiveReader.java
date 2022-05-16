@@ -56,10 +56,10 @@ public class JsonArchiveReader
 
     /** Import configuration. */
     @NonNull
-    private final ImportHelper mHelper;
+    private final ImportHelper importHelper;
 
     @Nullable
-    private ArchiveMetaData mMetaData;
+    private ArchiveMetaData metaData;
 
     /**
      * Constructor.
@@ -67,7 +67,7 @@ public class JsonArchiveReader
      * @param helper import configuration
      */
     public JsonArchiveReader(@NonNull final ImportHelper helper) {
-        mHelper = helper;
+        importHelper = helper;
     }
 
     @WorkerThread
@@ -75,13 +75,13 @@ public class JsonArchiveReader
     public void validate(@NonNull final Context context)
             throws DataReaderException,
                    IOException {
-        if (mMetaData == null) {
+        if (metaData == null) {
             // reading it will either assign a value to mMetaData, or throw exceptions
             readMetaData(context);
         }
 
         // the info block will/can do more checks.
-        mMetaData.validate(context);
+        metaData.validate(context);
     }
 
     @NonNull
@@ -90,11 +90,12 @@ public class JsonArchiveReader
             throws DataReaderException,
                    IOException {
 
-        if (mMetaData == null) {
+        if (metaData == null) {
             @Nullable
-            final InputStream is = context.getContentResolver().openInputStream(mHelper.getUri());
+            final InputStream is = context.getContentResolver().openInputStream(
+                    importHelper.getUri());
             if (is == null) {
-                throw new FileNotFoundException(mHelper.getUri().toString());
+                throw new FileNotFoundException(importHelper.getUri().toString());
             }
 
             //noinspection TryFinallyCanBeTryWithResources
@@ -102,20 +103,20 @@ public class JsonArchiveReader
                     context, EnumSet.of(RecordType.MetaData))) {
                 // wrap the entire input into a single record.
                 final ArchiveReaderRecord record = new JsonArchiveRecord(
-                        mHelper.getUriInfo().getDisplayName(context), is);
+                        importHelper.getUriInfo().getDisplayName(context), is);
 
-                mMetaData = recordReader.readMetaData(context, record).orElse(null);
+                metaData = recordReader.readMetaData(context, record).orElse(null);
             } finally {
                 is.close();
             }
 
             // An archive based on this class <strong>must</strong> have an info block.
-            if (mMetaData == null) {
+            if (metaData == null) {
                 throw new DataReaderException(context.getString(
                         R.string.error_file_not_recognized));
             }
         }
-        return Optional.of(mMetaData);
+        return Optional.of(metaData);
     }
 
     @NonNull
@@ -128,20 +129,20 @@ public class JsonArchiveReader
                    IOException {
 
         @Nullable
-        final InputStream is = context.getContentResolver().openInputStream(mHelper.getUri());
+        final InputStream is = context.getContentResolver().openInputStream(importHelper.getUri());
         if (is == null) {
-            throw new FileNotFoundException(mHelper.getUri().toString());
+            throw new FileNotFoundException(importHelper.getUri().toString());
         }
 
-        final Set<RecordType> recordTypes = mHelper.getRecordTypes();
+        final Set<RecordType> recordTypes = importHelper.getRecordTypes();
         RecordType.addRelatedTypes(recordTypes);
 
         try (RecordReader recordReader = new JsonRecordReader(context, recordTypes)) {
             // wrap the entire input into a single record.
             final ArchiveReaderRecord record = new JsonArchiveRecord(
-                    mHelper.getUriInfo().getDisplayName(context), is);
+                    importHelper.getUriInfo().getDisplayName(context), is);
 
-            return recordReader.read(context, record, mHelper, progressListener);
+            return recordReader.read(context, record, importHelper, progressListener);
         } finally {
             is.close();
         }

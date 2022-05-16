@@ -31,7 +31,7 @@ import androidx.lifecycle.ViewModel;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -50,21 +50,21 @@ public class AuthorWorksViewModel
     private final ArrayList<AuthorWork> mList = new ArrayList<>();
 
     /** Database Access. */
-    private BookDao mBookDao;
+    private BookDao bookDao;
     /** Author is set in {@link #init}. */
-    private Author mAuthor;
+    private Author author;
     /** Initial Bookshelf is set in {@link #init}. */
-    private Bookshelf mBookshelf;
+    private Bookshelf bookshelf;
     /** Initially we get toc entries and books. */
-    private boolean mWithTocEntries = true;
+    private boolean withTocEntries = true;
     /** Initially we get toc entries and books. */
-    private boolean mWithBooks = true;
+    private boolean withBooks = true;
     /** Show all shelves, or only the initially selected shelf. */
-    private boolean mAllBookshelves;
+    private boolean allBookshelves;
     /** Set to {@code true} when ... used to report back to BoB to decide rebuilding BoB list. */
-    private boolean mDataModified;
+    private boolean dataModified;
 
-    private ListStyle mStyle;
+    private Style style;
 
     /**
      * Pseudo constructor.
@@ -75,62 +75,62 @@ public class AuthorWorksViewModel
     void init(@NonNull final Context context,
               @NonNull final Bundle args) {
 
-        if (mBookDao == null) {
-            mBookDao = ServiceLocator.getInstance().getBookDao();
+        if (bookDao == null) {
+            bookDao = ServiceLocator.getInstance().getBookDao();
 
             // the style is allowed to be 'null' here. If it is, the default will be used.
-            final String styleUuid = args.getString(ListStyle.BKEY_UUID);
-            mStyle = ServiceLocator.getInstance().getStyles().getStyleOrDefault(context, styleUuid);
+            final String styleUuid = args.getString(Style.BKEY_UUID);
+            style = ServiceLocator.getInstance().getStyles().getStyleOrDefault(context, styleUuid);
 
             final long authorId = args.getLong(DBKey.FK_AUTHOR, 0);
             SanityCheck.requirePositiveValue(authorId, DBKey.FK_AUTHOR);
-            mAuthor = Objects.requireNonNull(
+            author = Objects.requireNonNull(
                     ServiceLocator.getInstance().getAuthorDao().getById(authorId),
                     String.valueOf(authorId));
 
             final long bookshelfId = args.getLong(DBKey.FK_BOOKSHELF, Bookshelf.ALL_BOOKS);
-            mBookshelf = Bookshelf.getBookshelf(context, bookshelfId, Bookshelf.ALL_BOOKS);
-            mAllBookshelves = mBookshelf.getId() == Bookshelf.ALL_BOOKS;
+            bookshelf = Bookshelf.getBookshelf(context, bookshelfId, Bookshelf.ALL_BOOKS);
+            allBookshelves = bookshelf.getId() == Bookshelf.ALL_BOOKS;
 
-            mWithTocEntries = args.getBoolean(AuthorWorksFragment.BKEY_WITH_TOC, mWithTocEntries);
-            mWithBooks = args.getBoolean(AuthorWorksFragment.BKEY_WITH_BOOKS, mWithBooks);
+            withTocEntries = args.getBoolean(AuthorWorksFragment.BKEY_WITH_TOC, withTocEntries);
+            withBooks = args.getBoolean(AuthorWorksFragment.BKEY_WITH_BOOKS, withBooks);
             reloadWorkList();
         }
     }
 
     void reloadWorkList(final boolean withTocEntries,
                         final boolean withBooks) {
-        mWithTocEntries = withTocEntries;
-        mWithBooks = withBooks;
+        this.withTocEntries = withTocEntries;
+        this.withBooks = withBooks;
         reloadWorkList();
     }
 
     void reloadWorkList() {
         mList.clear();
-        final long bookshelfId = mAllBookshelves ? Bookshelf.ALL_BOOKS : mBookshelf.getId();
+        final long bookshelfId = allBookshelves ? Bookshelf.ALL_BOOKS : bookshelf.getId();
 
         final ArrayList<AuthorWork> authorWorks =
                 ServiceLocator.getInstance().getAuthorDao()
-                              .getAuthorWorks(mAuthor, bookshelfId, mWithTocEntries, mWithBooks);
+                              .getAuthorWorks(author, bookshelfId, withTocEntries, withBooks);
 
         mList.addAll(authorWorks);
     }
 
     @NonNull
-    public ListStyle getStyle() {
-        return mStyle;
+    public Style getStyle() {
+        return style;
     }
 
     long getBookshelfId() {
-        return mBookshelf.getId();
+        return bookshelf.getId();
     }
 
     boolean isAllBookshelves() {
-        return mAllBookshelves;
+        return allBookshelves;
     }
 
     void setAllBookshelves(final boolean all) {
-        mAllBookshelves = all;
+        allBookshelves = all;
     }
 
     @NonNull
@@ -163,16 +163,16 @@ public class AuthorWorksViewModel
                 break;
             }
             case Book: {
-                success = mBookDao.delete((Book) work);
+                success = bookDao.delete((Book) work);
                 if (success) {
-                    mDataModified = true;
+                    dataModified = true;
                 }
                 break;
             }
             case BookLight: {
-                success = mBookDao.delete((BookLight) work);
+                success = bookDao.delete((BookLight) work);
                 if (success) {
-                    mDataModified = true;
+                    dataModified = true;
                 }
                 break;
             }
@@ -196,7 +196,7 @@ public class AuthorWorksViewModel
     @NonNull
     String getScreenTitle(@NonNull final Context context) {
         return context.getString(R.string.name_hash_nr,
-                                 mAuthor.getLabel(context), getList().size());
+                                 author.getLabel(context), getList().size());
     }
 
     /**
@@ -208,20 +208,20 @@ public class AuthorWorksViewModel
      */
     @Nullable
     String getScreenSubtitle(@NonNull final Context context) {
-        if (mAllBookshelves) {
+        if (allBookshelves) {
             return null;
         } else {
             return context.getString(R.string.name_colon_value,
                                      context.getString(R.string.lbl_bookshelf),
-                                     mBookshelf.getName());
+                                     bookshelf.getName());
         }
     }
 
     boolean isDataModified() {
-        return mDataModified;
+        return dataModified;
     }
 
     public void setDataModified() {
-        mDataModified = true;
+        dataModified = true;
     }
 }

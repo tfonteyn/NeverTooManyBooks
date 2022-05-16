@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -38,7 +37,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -262,11 +260,9 @@ public class SearchCoordinator
             mListElementPrefixString = context.getString(R.string.list_element);
 
             if (args != null) {
-                final SharedPreferences global = PreferenceManager
-                        .getDefaultSharedPreferences(context);
                 mFetchCover = new boolean[]{
-                        DBKey.isUsed(global, DBKey.COVER_IS_USED[0]),
-                        DBKey.isUsed(global, DBKey.COVER_IS_USED[1])
+                        DBKey.isUsed(DBKey.COVER_IS_USED[0]),
+                        DBKey.isUsed(DBKey.COVER_IS_USED[1])
                 };
 
                 mIsbnSearchText = args.getString(DBKey.KEY_ISBN, "");
@@ -1100,11 +1096,10 @@ public class SearchCoordinator
         ResultsAccumulator(@NonNull final Context context) {
             mDateParser = new FullDateParser(context);
 
-            final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-            if (FormatMapper.isMappingAllowed(global)) {
+            if (FormatMapper.isMappingAllowed()) {
                 mMappers.add(new FormatMapper());
             }
-            if (ColorMapper.isMappingAllowed(global)) {
+            if (ColorMapper.isMappingAllowed()) {
                 mMappers.add(new ColorMapper());
             }
         }

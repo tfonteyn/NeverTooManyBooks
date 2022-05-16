@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
@@ -48,7 +48,7 @@ public class ListFormatter<T extends Entity>
     @NonNull
     private final String delimiter;
     @Nullable
-    private final ListStyle style;
+    private final Style style;
 
     /**
      * Constructor.
@@ -57,7 +57,7 @@ public class ListFormatter<T extends Entity>
      * @param style   (optional) to use
      */
     public ListFormatter(@NonNull final Details details,
-                         @Nullable final ListStyle style) {
+                         @Nullable final Style style) {
         this(details, DEFAULT_DELIMITER, style);
     }
 
@@ -71,7 +71,7 @@ public class ListFormatter<T extends Entity>
     @SuppressWarnings("WeakerAccess")
     public ListFormatter(@NonNull final Details details,
                          @NonNull final String delimiter,
-                         @Nullable final ListStyle style) {
+                         @Nullable final Style style) {
         this.details = details;
         this.delimiter = delimiter;
         this.style = style;

@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +42,7 @@ public class EditBookPublicationFragment
         extends EditBookBaseFragment {
 
     /** View Binding. */
-    private FragmentEditBookPublicationBinding mVb;
+    private FragmentEditBookPublicationBinding vb;
 
     @NonNull
     @Override
@@ -56,8 +55,8 @@ public class EditBookPublicationFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentEditBookPublicationBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentEditBookPublicationBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @Override
@@ -68,19 +67,19 @@ public class EditBookPublicationFragment
         final Context context = getContext();
 
         //noinspection ConstantConditions
-        mVm.initFields(context, FragmentId.Publication, FieldGroup.Publication);
+        vm.initFields(context, FragmentId.Publication, FieldGroup.Publication);
         // on EXPANDED screens the notes fields are incorporated in the publication fragment
         if (WindowClass.getCurrent(context) == WindowClass.EXPANDED) {
-            mVm.initFields(context, FragmentId.Publication, FieldGroup.Notes);
+            vm.initFields(context, FragmentId.Publication, FieldGroup.Notes);
         }
 
-        mVm.onPublisherList().observe(getViewLifecycleOwner(), publishers ->
-                mVm.requireField(R.id.publisher).setValue(publishers));
+        vm.onPublisherList().observe(getViewLifecycleOwner(), publishers ->
+                vm.requireField(R.id.publisher).setValue(publishers));
 
         // Publisher editor (screen)
         // no listener/callback. We share the book view model in the Activity scope
-        mVb.lblPublisher.setEndIconOnClickListener(v -> editPublisher());
-        mVb.publisher.setOnClickListener(v -> editPublisher());
+        vb.lblPublisher.setEndIconOnClickListener(v -> editPublisher());
+        vb.publisher.setOnClickListener(v -> editPublisher());
     }
 
     private void editPublisher() {
@@ -89,17 +88,16 @@ public class EditBookPublicationFragment
 
 
     @Override
-    void onPopulateViews(@NonNull final SharedPreferences global,
-                         @NonNull final List<Field<?, ? extends View>> fields,
+    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
         //noinspection ConstantConditions
-        mVm.getBook().prunePublishers(getContext(), true);
+        vm.getBook().prunePublishers(getContext(), true);
 
-        super.onPopulateViews(global, fields, book);
+        super.onPopulateViews(fields, book);
 
         getFab().setVisibility(View.INVISIBLE);
 
         //noinspection ConstantConditions
-        fields.forEach(field -> field.setVisibility(getView(), global, false, false));
+        fields.forEach(field -> field.setVisibility(getView(), false, false));
     }
 }

@@ -73,7 +73,7 @@ public class DBCleanerTask
 
         } finally {
             // regardless of result, always disable as we do not want to rebuild/fail/rebuild...
-            StartupViewModel.schedule(StartupViewModel.PK_RUN_MAINTENANCE, false);
+            StartupViewModel.schedule(context, StartupViewModel.PK_RUN_MAINTENANCE, false);
         }
     }
 }

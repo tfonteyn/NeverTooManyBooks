@@ -23,6 +23,7 @@ import android.content.Context;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -39,15 +40,15 @@ public class DateValidator
 
     /** Default to apply if the field is empty. */
     @NonNull
-    private final String mDefaultValue;
+    private final String defaultValue;
 
     /**
      * Constructor with default value.
      *
-     * @param defValue Default to apply if the field is empty
+     * @param defaultValue Default to apply if the field is empty
      */
-    public DateValidator(@NonNull final String defValue) {
-        mDefaultValue = defValue;
+    public DateValidator(@NonNull final String defaultValue) {
+        this.defaultValue = defaultValue;
     }
 
     @Override
@@ -55,19 +56,19 @@ public class DateValidator
     public void validate(@NonNull final Context context,
                          @NonNull final DataManager dataManager,
                          @NonNull final String key,
-                         final int errorLabelId)
+                         @StringRes final int errorLabelResId)
             throws ValidatorException {
 
         String value = dataManager.getString(key);
         if (value.isEmpty()) {
-            value = mDefaultValue;
+            value = defaultValue;
         } else {
             final LocalDateTime date = new FullDateParser(context).parse(value);
             if (date != null) {
                 value = date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             } else {
                 throw new ValidatorException(context.getString(R.string.vldt_date_expected_for_x,
-                                                               context.getString(errorLabelId)));
+                                                               context.getString(errorLabelResId)));
             }
         }
         dataManager.putString(key, value);

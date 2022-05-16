@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,21 +39,21 @@ public class NonBlankValidator
     public void validate(@NonNull final Context context,
                          @NonNull final DataManager dataManager,
                          @NonNull final String key,
-                         @StringRes final int errorLabelId)
+                         @StringRes final int errorLabelResId)
             throws ValidatorException {
 
         final Object o = dataManager.get(key);
         if (o == null) {
             throw new ValidatorException(context.getString(R.string.vldt_non_blank_required_for_x,
-                                                           context.getString(errorLabelId)));
+                                                           context.getString(errorLabelResId)));
 
         } else if ((o instanceof String) && (dataManager.getString(key).trim().isEmpty())) {
             throw new ValidatorException(context.getString(R.string.vldt_non_blank_required_for_x,
-                                                           context.getString(errorLabelId)));
+                                                           context.getString(errorLabelResId)));
         } else if ((o instanceof ArrayList)
                    && (dataManager.getParcelableArrayList(key).isEmpty())) {
             throw new ValidatorException(context.getString(R.string.vldt_non_blank_required_for_x,
-                                                           context.getString(errorLabelId)));
+                                                           context.getString(errorLabelResId)));
         }
     }
 }

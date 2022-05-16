@@ -39,8 +39,8 @@ public class UserStyleTest
     @Test
     public void clone01() {
         final Context context = mSl.getLocalizedAppContext();
-        final Styles styles = mSl.getStyles();
-        final ListStyle s1 = styles.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
+        final StylesHelper stylesHelper = mSl.getStyles();
+        final Style s1 = stylesHelper.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
 
         assertNotNull(s1);
 
@@ -52,8 +52,8 @@ public class UserStyleTest
     }
 
     private void compare(@NonNull final Context context,
-                         @NonNull final ListStyle s1,
-                         @NonNull final ListStyle s2) {
+                         @NonNull final Style s1,
+                         @NonNull final Style s2) {
         // new style, so no id, and a new uuid
         assertEquals(0, s2.getId());
         assertNotEquals(s1.getUuid(), s2.getUuid());
@@ -63,17 +63,16 @@ public class UserStyleTest
 
         assertEquals(s1.isPreferred(), s2.isPreferred());
         assertEquals(s1.getMenuPosition(), s2.getMenuPosition());
-        assertEquals(s1.isGlobal(), s2.isGlobal());
 
         assertEquals(s1.isShowAuthorByGivenName(), s2.isShowAuthorByGivenName());
         assertEquals(s1.isSortAuthorByGivenName(), s2.isSortAuthorByGivenName());
 
-        assertEquals(s1.isShowHeader(BooklistHeader.SHOW_BOOK_COUNT),
-                     s2.isShowHeader(BooklistHeader.SHOW_BOOK_COUNT));
-        assertEquals(s1.isShowHeader(BooklistHeader.SHOW_STYLE_NAME),
-                     s2.isShowHeader(BooklistHeader.SHOW_STYLE_NAME));
-        assertEquals(s1.isShowHeader(BooklistHeader.SHOW_FILTERS),
-                     s2.isShowHeader(BooklistHeader.SHOW_FILTERS));
+        assertEquals(s1.isShowHeaderField(BooklistHeader.SHOW_BOOK_COUNT),
+                     s2.isShowHeaderField(BooklistHeader.SHOW_BOOK_COUNT));
+        assertEquals(s1.isShowHeaderField(BooklistHeader.SHOW_STYLE_NAME),
+                     s2.isShowHeaderField(BooklistHeader.SHOW_STYLE_NAME));
+        assertEquals(s1.isShowHeaderField(BooklistHeader.SHOW_FILTERS),
+                     s2.isShowHeaderField(BooklistHeader.SHOW_FILTERS));
 
         assertEquals(s1.getGroupRowHeight(context), s2.getGroupRowHeight(context));
         assertEquals(s1.getExpansionLevel(), s2.getExpansionLevel());
@@ -87,8 +86,10 @@ public class UserStyleTest
 
         assertEquals(s1.getTextScale(), s2.getTextScale());
 
-        assertEquals(s1.getBooklistBookFieldVisibility(), s2.getBooklistBookFieldVisibility());
-        assertEquals(s1.getBookDetailsFieldVisibility(), s2.getBookDetailsFieldVisibility());
+        assertEquals(s1.getFieldVisibility(Style.Screen.List),
+                     s2.getFieldVisibility(Style.Screen.List));
+        assertEquals(s1.getFieldVisibility(Style.Screen.Detail),
+                     s2.getFieldVisibility(Style.Screen.Detail));
 
         assertEquals(s1.getGroupList(), s2.getGroupList());
     }

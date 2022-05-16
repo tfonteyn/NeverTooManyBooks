@@ -23,7 +23,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.BitmapFactory;
@@ -49,7 +48,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
-import androidx.preference.PreferenceManager;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
@@ -572,12 +570,9 @@ public class CoverHandler {
             }
 
             if (file != null && file.exists()) {
-                final SharedPreferences global = PreferenceManager
-                        .getDefaultSharedPreferences(context);
-
                 // Should we apply an explicit rotation angle?
                 final int explicitRotation = Prefs
-                        .getIntListPref(global, Prefs.pk_camera_image_autorotate, 0);
+                        .getIntListPref(context, Prefs.pk_camera_image_autorotate, 0);
 
                 final int surfaceRotation;
                 if (Build.VERSION.SDK_INT >= 30) {
@@ -590,7 +585,7 @@ public class CoverHandler {
                 }
 
                 // What action (if any) should we take after we're done?
-                final NextAction action = NextAction.getLevel(global);
+                final NextAction action = NextAction.getLevel(context);
 
                 showProgress();
                 mVm.execute(new Transformation(file)
@@ -722,14 +717,14 @@ public class CoverHandler {
         /**
          * Get the user preferred ISBN validity level check for (by the user) editing ISBN codes.
          *
-         * @param global Global preferences
+         * @param context Current context
          *
          * @return Validity level
          */
         @NonNull
-        public static NextAction getLevel(@NonNull final SharedPreferences global) {
+        public static NextAction getLevel(@NonNull final Context context) {
 
-            final int value = Prefs.getIntListPref(global, Prefs.pk_camera_image_action,
+            final int value = Prefs.getIntListPref(context, Prefs.pk_camera_image_action,
                                                    Done.value);
             switch (value) {
                 case 2:

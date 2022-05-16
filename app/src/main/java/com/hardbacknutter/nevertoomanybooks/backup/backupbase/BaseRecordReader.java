@@ -49,25 +49,25 @@ public abstract class BaseRecordReader
 
     /** Database Access. */
     @NonNull
-    protected final BookDao mBookDao;
+    protected final BookDao bookDao;
 
     @NonNull
-    protected final DateParser mDateParser;
+    protected final DateParser dateParser;
     /** cached localized "Books" string. */
     @NonNull
-    protected final String mBooksString;
+    protected final String booksString;
     /** cached localized progress string. */
     @NonNull
-    protected final String mProgressMessage;
+    protected final String progressMessage;
 
-    protected ImportResults mResults;
+    protected ImportResults results;
 
     protected BaseRecordReader(@NonNull final Context context) {
-        mBookDao = ServiceLocator.getInstance().getBookDao();
-        mDateParser = new ISODateParser();
+        bookDao = ServiceLocator.getInstance().getBookDao();
+        dateParser = new ISODateParser();
 
-        mBooksString = context.getString(R.string.lbl_books);
-        mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
+        booksString = context.getString(R.string.lbl_books);
+        progressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
     }
 
     /**
@@ -89,7 +89,7 @@ public abstract class BaseRecordReader
         final String uuid = book.getString(DBKey.BOOK_UUID);
 
         // check if the book exists in our database, and fetch it's id.
-        final long databaseBookId = mBookDao.getBookIdByUuid(uuid);
+        final long databaseBookId = bookDao.getBookIdByUuid(uuid);
         if (databaseBookId > 0) {
             // The book exists in our database (matching UUID).
             // We'll use a delta: explicitly set the EXISTING id on the book
@@ -100,9 +100,9 @@ public abstract class BaseRecordReader
             final DataReader.Updates updateOption = helper.getUpdateOption();
             switch (updateOption) {
                 case Overwrite: {
-                    mBookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                                   | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
-                    mResults.booksUpdated++;
+                    bookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                                  | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                    results.booksUpdated++;
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                         Log.d(TAG, "UUID=" + uuid
                                    + "|databaseBookId=" + databaseBookId
@@ -111,17 +111,17 @@ public abstract class BaseRecordReader
                     break;
                 }
                 case OnlyNewer: {
-                    final LocalDateTime localDate = mBookDao.getLastUpdateDate(databaseBookId);
+                    final LocalDateTime localDate = bookDao.getLastUpdateDate(databaseBookId);
                     if (localDate != null) {
-                        final LocalDateTime importDate = mDateParser.parse(
+                        final LocalDateTime importDate = dateParser.parse(
                                 book.getString(DBKey.DATE_LAST_UPDATED__UTC));
 
                         if (importDate != null && importDate.isAfter(localDate)) {
 
-                            mBookDao.update(context, book,
-                                            BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                            | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
-                            mResults.booksUpdated++;
+                            bookDao.update(context, book,
+                                           BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                           | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                            results.booksUpdated++;
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                                 Log.d(TAG, "UUID=" + uuid
                                            + "|databaseBookId=" + databaseBookId
@@ -132,7 +132,7 @@ public abstract class BaseRecordReader
                     break;
                 }
                 case Skip: {
-                    mResults.booksSkipped++;
+                    results.booksSkipped++;
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                         Log.d(TAG, "UUID=" + uuid
                                    + "|databaseBookId=" + databaseBookId
@@ -145,7 +145,7 @@ public abstract class BaseRecordReader
             // The book does NOT exist in our database (no match for the UUID), insert it.
 
             // If we have an importBookId, and it does not already exist, we reuse it.
-            if (importNumericId > 0 && !mBookDao.bookExistsById(importNumericId)) {
+            if (importNumericId > 0 && !bookDao.bookExistsById(importNumericId)) {
                 book.putLong(DBKey.PK_ID, importNumericId);
             }
 
@@ -153,9 +153,9 @@ public abstract class BaseRecordReader
             // - valid DBDefinitions.KEY_BOOK_UUID not existent in the database
             // - NO id, OR an id which does not exist in the database yet.
             // INSERT, explicitly allowing the id to be reused if present
-            mBookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                           | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
-            mResults.booksCreated++;
+            bookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                          | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
+            results.booksCreated++;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                 Log.d(TAG, "UUID=" + book.getString(DBKey.BOOK_UUID)
                            + "|importNumericId=" + importNumericId

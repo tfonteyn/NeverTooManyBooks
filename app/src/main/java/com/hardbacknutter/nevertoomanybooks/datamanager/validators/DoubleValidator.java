@@ -23,6 +23,7 @@ import android.content.Context;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -39,7 +40,7 @@ public class DoubleValidator
         implements DataValidator {
 
     /** Default to apply if the field is {@code null} or empty. */
-    private final double mDefaultValue;
+    private final double defaultValue;
 
     /**
      * Constructor; default value is 0d.
@@ -47,7 +48,7 @@ public class DoubleValidator
      * getSystemLocale: the user types it in (or it came from an external source)
      */
     public DoubleValidator() {
-        mDefaultValue = 0d;
+        defaultValue = 0d;
     }
 
     @Override
@@ -55,19 +56,19 @@ public class DoubleValidator
     public void validate(@NonNull final Context context,
                          @NonNull final DataManager dataManager,
                          @NonNull final String key,
-                         final int errorLabelId)
+                         @StringRes final int errorLabelResId)
             throws ValidatorException {
 
         final double value;
         final Object obj = dataManager.get(key);
         if (obj == null) {
-            value = mDefaultValue;
+            value = defaultValue;
         } else if (obj instanceof Number) {
             value = ((Number) obj).doubleValue();
         } else {
             final String stringValue = obj.toString().trim();
             if (stringValue.isEmpty()) {
-                value = mDefaultValue;
+                value = defaultValue;
             } else {
                 try {
                     value = ParseUtils.parseDouble(stringValue, ServiceLocator.getSystemLocale());
@@ -75,7 +76,7 @@ public class DoubleValidator
                 } catch (@NonNull final NumberFormatException e) {
                     throw new ValidatorException(
                             context.getString(R.string.vldt_real_expected_for_x,
-                                              context.getString(errorLabelId)));
+                                              context.getString(errorLabelResId)));
                 }
             }
         }

@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -39,27 +40,17 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
  * Use the factory methods instead for clarity.
  */
 public class UserStyle
-        extends BooklistStyle {
+        extends BaseStyle {
 
     @Nullable
     private String name;
 
     /**
-     * Constructor for <strong>Global defaults</strong>.
-     */
-    private UserStyle() {
-        // empty uuid indicates global
-        super("");
-        // negative == builtin; MIN_VALUE because why not....
-        id = Integer.MIN_VALUE;
-    }
-
-    /**
      * Constructor for <strong>importing</strong> styles.
      *
-     * @param uuid    UUID of the style
+     * @param uuid UUID of the style
      *
-     * @see com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder
+     * @see StyleCoder
      */
     private UserStyle(@NonNull final String uuid) {
         super(uuid);
@@ -101,7 +92,7 @@ public class UserStyle
                 DBKey.STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH));
 
         expansionLevel = rowData.getInt(DBKey.STYLE_EXP_LEVEL);
-        useGroupRowPreferredHeight = rowData.getBoolean(DBKey.STYLE_ROW_USES_PREF_HEIGHT);
+        groupRowUsesPreferredHeight = rowData.getBoolean(DBKey.STYLE_ROW_USES_PREF_HEIGHT);
 
         sortAuthorByGivenName = rowData.getBoolean(DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME);
         showAuthorByGivenName = rowData.getBoolean(DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME);
@@ -109,9 +100,9 @@ public class UserStyle
         textScale = rowData.getInt(DBKey.STYLE_TEXT_SCALE);
         coverScale = rowData.getInt(DBKey.STYLE_COVER_SCALE);
 
-        showHeaderInfo = rowData.getInt(DBKey.STYLE_LIST_HEADER);
-        bookDetailsFieldVisibility.setValue(rowData.getInt(DBKey.STYLE_DETAILS_SHOW_FIELDS));
-        booklistBookFieldVisibility.setValue(rowData.getInt(DBKey.STYLE_LIST_SHOW_FIELDS));
+        headerFieldVisibility = rowData.getInt(DBKey.STYLE_LIST_HEADER);
+        listFieldVisibility.setValue(rowData.getInt(DBKey.STYLE_LIST_SHOW_FIELDS));
+        detailsFieldVisibility.setValue(rowData.getInt(DBKey.STYLE_DETAILS_SHOW_FIELDS));
     }
 
     /**
@@ -126,14 +117,14 @@ public class UserStyle
      * @param uuid    for the new style
      */
     protected UserStyle(@NonNull final Context context,
-                        @NonNull final BooklistStyle style,
+                        @NonNull final BaseStyle style,
                         final long id,
                         @NonNull final String uuid) {
         super(uuid);
 
         this.id = id;
-        preferred = style.isPreferred();
-        menuPosition = style.getMenuPosition();
+        preferred = style.preferred;
+        menuPosition = style.menuPosition;
 
         // Store the new name.
         name = style.getLabel(context);
@@ -146,7 +137,7 @@ public class UserStyle
         setShowBooksUnderEachBookshelf(style.isShowBooksUnderEachBookshelf());
 
         expansionLevel = style.expansionLevel;
-        useGroupRowPreferredHeight = style.useGroupRowPreferredHeight;
+        groupRowUsesPreferredHeight = style.groupRowUsesPreferredHeight;
 
         showAuthorByGivenName = style.showAuthorByGivenName;
         sortAuthorByGivenName = style.sortAuthorByGivenName;
@@ -154,14 +145,9 @@ public class UserStyle
         textScale = style.textScale;
         coverScale = style.coverScale;
 
-        showHeaderInfo = style.showHeaderInfo;
-        booklistBookFieldVisibility.setValue(style.booklistBookFieldVisibility.getValue());
-        bookDetailsFieldVisibility.setValue(style.bookDetailsFieldVisibility.getValue());
-    }
-
-    @NonNull
-    public static UserStyle createGlobal() {
-        return new UserStyle();
+        headerFieldVisibility = style.headerFieldVisibility;
+        listFieldVisibility.setValue(style.listFieldVisibility.getValue());
+        detailsFieldVisibility.setValue(style.detailsFieldVisibility.getValue());
     }
 
     @NonNull

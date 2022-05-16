@@ -192,34 +192,34 @@ public class CalibreContentServer
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "CL";
     @NonNull
-    private final Uri mServerUri;
+    private final Uri serverUri;
     /** The header string: "Basic user:password". (in base64) */
     @Nullable
-    private final String mAuthHeader;
+    private final String authHeader;
     @Nullable
-    private final SSLContext mSslContext;
+    private final SSLContext sslContext;
 
     /** As read from the Content Server. */
     @NonNull
-    private final ArrayList<CalibreLibrary> mLibraries = new ArrayList<>();
+    private final ArrayList<CalibreLibrary> libraries = new ArrayList<>();
 
-    private final Set<CalibreCustomField> mCalibreCustomFields = new HashSet<>();
+    private final Set<CalibreCustomField> calibreCustomFields = new HashSet<>();
 
-    private final int mConnectTimeoutInMs;
-    private final int mReadTimeoutInMs;
+    private final int connectTimeoutInMs;
+    private final int readTimeoutInMs;
 
     @Nullable
-    private FutureHttpPost<Void> mFutureHttpPost;
+    private FutureHttpPost<Void> futureHttpPost;
     @Nullable
-    private FutureHttpGet<String> mFutureJsonFetchRequest;
+    private FutureHttpGet<String> futureJsonFetchRequest;
     @Nullable
-    private FutureHttpGet<Uri> mFutureFileFetchRequest;
+    private FutureHttpGet<Uri> futureFileFetchRequest;
     @Nullable
-    private ImageDownloader mImageDownloader;
+    private ImageDownloader imageDownloader;
     /** As read from the Content Server. */
     @Nullable
-    private CalibreLibrary mDefaultLibrary;
-    private boolean mCalibreExtensionInstalled;
+    private CalibreLibrary defaultLibrary;
+    private boolean calibreExtensionInstalled;
 
     /**
      * Constructor.
@@ -232,7 +232,7 @@ public class CalibreContentServer
     @AnyThread
     public CalibreContentServer(@NonNull final Context context)
             throws CertificateException {
-        this(context, Uri.parse(getHostUrl()));
+        this(context, Uri.parse(getHostUrl(context)));
     }
 
     /**
@@ -248,50 +248,53 @@ public class CalibreContentServer
                                 @NonNull final Uri uri)
             throws CertificateException {
 
-        mServerUri = uri;
+        serverUri = uri;
 
         // We're assuming Calibre will be setup with basic-auth as per their SSL recommendations
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        final String username = global.getString(PK_HOST_USER, "");
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final String username = prefs.getString(PK_HOST_USER, "");
         //noinspection ConstantConditions
         if (username.isEmpty()) {
-            mAuthHeader = null;
+            authHeader = null;
         } else {
-            final String password = global.getString(PK_HOST_PASS, "");
+            final String password = prefs.getString(PK_HOST_PASS, "");
             //noinspection ConstantConditions
-            mAuthHeader = createBasicAuthHeader(username, password);
+            authHeader = createBasicAuthHeader(username, password);
         }
 
         // accommodate the (usually) self-signed CA certificate
-        if ("https".equals(mServerUri.getScheme())) {
+        if ("https".equals(serverUri.getScheme())) {
             // *if* a certificate is configured *then*
             // we might get a CertificateException.... which we MUST propagate!
-            mSslContext = getSslContext(context);
+            sslContext = getSslContext(context);
         } else {
-            mSslContext = null;
+            sslContext = null;
         }
 
-        mConnectTimeoutInMs = Prefs.getTimeoutValueInMs(
-                global, PREF_KEY + Prefs.pk_suffix_timeout_connect_in_seconds,
+        connectTimeoutInMs = Prefs.getTimeoutValueInMs(
+                PREF_KEY + Prefs.pk_suffix_timeout_connect_in_seconds,
                 CONNECT_TIMEOUT_IN_MS);
-        mReadTimeoutInMs = Prefs.getTimeoutValueInMs(
-                global, PREF_KEY + Prefs.pk_suffix_timeout_read_in_seconds,
+        readTimeoutInMs = Prefs.getTimeoutValueInMs(
+                PREF_KEY + Prefs.pk_suffix_timeout_read_in_seconds,
                 READ_TIMEOUT_IN_MS);
 
-        mCalibreCustomFields.addAll(ServiceLocator.getInstance().getCalibreCustomFieldDao()
-                                                  .getCustomFields());
+        calibreCustomFields.addAll(ServiceLocator.getInstance().getCalibreCustomFieldDao()
+                                                 .getCustomFields());
     }
 
     /**
      * Get the default/stored host url.
      *
+     * @param context Current context
+     *
      * @return url
      */
     @NonNull
     @AnyThread
-    public static String getHostUrl() {
+    public static String getHostUrl(@NonNull final Context context) {
         //noinspection ConstantConditions
-        return ServiceLocator.getGlobalPreferences().getString(PK_HOST_URL, "");
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getString(PK_HOST_URL, "");
     }
 
     @AnyThread
@@ -300,10 +303,10 @@ public class CalibreContentServer
             throws SecurityException {
         final ContentResolver contentResolver = context.getContentResolver();
 
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         // If the old one is different then the current selection, release the previous Uri
-        final String oldFolder = global.getString(PK_LOCAL_FOLDER_URI, "");
+        final String oldFolder = prefs.getString(PK_LOCAL_FOLDER_URI, "");
         //noinspection ConstantConditions
         if (!oldFolder.equals(uri.toString())) {
             getFolderUri(context).ifPresent(
@@ -318,9 +321,9 @@ public class CalibreContentServer
                     uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
                          | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
-            global.edit()
-                  .putString(PK_LOCAL_FOLDER_URI, uri.toString())
-                  .apply();
+            prefs.edit()
+                 .putString(PK_LOCAL_FOLDER_URI, uri.toString())
+                 .apply();
         } catch (@NonNull final SecurityException e) {
             Logger.error(TAG, e, "uri=" + uri);
             throw e;
@@ -421,41 +424,34 @@ public class CalibreContentServer
     @NonNull
     private <FRT> FutureHttpGet<FRT> createFutureGetRequest() {
         final FutureHttpGet<FRT> httpGet = new FutureHttpGet<>(R.string.site_calibre);
-        httpGet.setConnectTimeout(mConnectTimeoutInMs)
-               .setReadTimeout(mReadTimeoutInMs)
-               .setRequestProperty(HttpUtils.AUTHORIZATION, mAuthHeader)
-               .setSSLContext(mSslContext);
+        httpGet.setConnectTimeout(connectTimeoutInMs)
+               .setReadTimeout(readTimeoutInMs)
+               .setRequestProperty(HttpUtils.AUTHORIZATION, authHeader)
+               .setSSLContext(sslContext);
         return httpGet;
     }
 
     @NonNull
     private <FRT> FutureHttpPost<FRT> createFuturePostRequest() {
         final FutureHttpPost<FRT> httpPost = new FutureHttpPost<>(R.string.site_calibre);
-        httpPost.setConnectTimeout(mConnectTimeoutInMs)
-                .setReadTimeout(mReadTimeoutInMs)
+        httpPost.setConnectTimeout(connectTimeoutInMs)
+                .setReadTimeout(readTimeoutInMs)
                 .setRequestProperty(HttpUtils.CONTENT_TYPE, HttpUtils.CONTENT_TYPE_JSON)
-                .setRequestProperty(HttpUtils.AUTHORIZATION, mAuthHeader)
-                .setSSLContext(mSslContext);
+                .setRequestProperty(HttpUtils.AUTHORIZATION, authHeader)
+                .setSSLContext(sslContext);
         return httpPost;
     }
 
-    /**
-     * Make a short call to test the connection.
-     *
-     * @return {@code true} if al is well.
-     *
-     * @throws IOException on failure
-     */
     @WorkerThread
     @Override
-    public boolean validateConnection()
+    public boolean validateConnection(@NonNull final Context context)
             throws StorageException,
                    IOException {
-        return !fetch(mServerUri + ULR_AJAX_LIBRARY_INFO, BUFFER_SMALL).isEmpty();
+        return !fetch(serverUri + ULR_AJAX_LIBRARY_INFO, BUFFER_SMALL).isEmpty();
     }
 
     boolean isMetaDataRead() {
-        return mDefaultLibrary != null;
+        return defaultLibrary != null;
     }
 
     /**
@@ -474,7 +470,7 @@ public class CalibreContentServer
      * }
      * </pre>
      * <p>
-     * populates {@link #mDefaultLibrary} + {@link #mLibraries}
+     * populates {@link #defaultLibrary} + {@link #libraries}
      *
      * @param context Current context
      *
@@ -486,8 +482,8 @@ public class CalibreContentServer
                    StorageException,
                    JSONException {
 
-        mLibraries.clear();
-        mDefaultLibrary = null;
+        libraries.clear();
+        defaultLibrary = null;
 
         final CalibreLibraryDao libraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
 
@@ -495,13 +491,13 @@ public class CalibreContentServer
                 .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
 
         final JSONObject source = new JSONObject(
-                fetch(mServerUri + ULR_AJAX_LIBRARY_INFO, BUFFER_SMALL));
+                fetch(serverUri + ULR_AJAX_LIBRARY_INFO, BUFFER_SMALL));
 
         final JSONObject libraryMap = source.getJSONObject("library_map");
         final String defaultLibraryId = source.getString("default_library");
         // only present if our extension is installed
         final JSONObject libraryDetails = source.optJSONObject("library_details");
-        mCalibreExtensionInstalled = libraryDetails != null;
+        calibreExtensionInstalled = libraryDetails != null;
 
         final Iterator<String> it = libraryMap.keys();
         while (it.hasNext()) {
@@ -557,10 +553,10 @@ public class CalibreContentServer
             }
 
             // add to cached list
-            mLibraries.add(library);
+            libraries.add(library);
             // and set as default if it is.
             if (libraryId.equals(defaultLibraryId)) {
-                mDefaultLibrary = library;
+                defaultLibrary = library;
             }
 
             // read the first book available to get the customs fields (if any)
@@ -575,7 +571,7 @@ public class CalibreContentServer
         }
 
         // Sanity check
-        Objects.requireNonNull(mDefaultLibrary, "mDefaultLibrary");
+        Objects.requireNonNull(defaultLibrary, "mDefaultLibrary");
     }
 
     private void processVirtualLibraries(@NonNull final CalibreLibraryDao dao,
@@ -614,7 +610,7 @@ public class CalibreContentServer
         final JSONObject userMetaData = calibreBook.optJSONObject(CalibreBook.USER_METADATA);
         if (userMetaData != null) {
             // check the supported fields
-            for (final CalibreCustomField cf : mCalibreCustomFields) {
+            for (final CalibreCustomField cf : this.calibreCustomFields) {
                 final JSONObject data = userMetaData.optJSONObject(cf.calibreKey);
                 // do we have a match? (this check is needed, it's NOT a sanity check)
                 if (data != null && cf.type.equals(data.getString(
@@ -630,7 +626,7 @@ public class CalibreContentServer
     @SuppressWarnings("unused")
     @AnyThread
     public boolean isExtensionInstalled() {
-        return mCalibreExtensionInstalled;
+        return calibreExtensionInstalled;
     }
 
     /**
@@ -641,7 +637,7 @@ public class CalibreContentServer
     @NonNull
     @AnyThread
     public ArrayList<CalibreLibrary> getLibraries() {
-        return mLibraries;
+        return libraries;
     }
 
     /**
@@ -651,7 +647,7 @@ public class CalibreContentServer
      */
     @NonNull
     public CalibreLibrary getDefaultLibrary() {
-        return Objects.requireNonNull(mDefaultLibrary, "mDefaultLibrary");
+        return Objects.requireNonNull(defaultLibrary, "mDefaultLibrary");
     }
 
     /**
@@ -684,11 +680,11 @@ public class CalibreContentServer
             throws IOException,
                    StorageException,
                    JSONException {
-        if (!mCalibreExtensionInstalled) {
+        if (!calibreExtensionInstalled) {
             return null;
         }
 
-        final String url = mServerUri + "/ntmb/virtual-libraries-for-books/"
+        final String url = serverUri + "/ntmb/virtual-libraries-for-books/"
                            + getCsvIds(calibreIds) + "/" + libraryId;
         return new JSONObject(fetch(url, BUFFER_SMALL));
     }
@@ -732,7 +728,7 @@ public class CalibreContentServer
                    IOException,
                    JSONException {
 
-        final String url = mServerUri + "/ajax/category/616c6c626f6f6b73/" + libraryId
+        final String url = serverUri + "/ajax/category/616c6c626f6f6b73/" + libraryId
                            + "?num=" + num + "&offset=" + offset;
         return new JSONObject(fetch(url, BUFFER_SMALL));
     }
@@ -772,7 +768,7 @@ public class CalibreContentServer
                              @NonNull final String query)
             throws StorageException, IOException, JSONException {
 
-        final String url = mServerUri + "/ajax/search/" + libraryId
+        final String url = serverUri + "/ajax/search/" + libraryId
                            + "?num=" + num + "&offset=" + offset + "&query=" + query;
         return new JSONObject(fetch(url, BUFFER_BOOK_LIST));
     }
@@ -1054,7 +1050,7 @@ public class CalibreContentServer
                                @NonNull final JSONArray calibreIds)
             throws StorageException, IOException, JSONException {
 
-        final String url = mServerUri + "/ajax/books/" + libraryId
+        final String url = serverUri + "/ajax/books/" + libraryId
                            + "?category_urls=false&ids=" + getCsvIds(calibreIds);
         return new JSONObject(fetch(url, BUFFER_BOOK_LIST));
     }
@@ -1095,7 +1091,7 @@ public class CalibreContentServer
                               @NonNull final String calibreUuid)
             throws StorageException, IOException, JSONException {
 
-        final String url = mServerUri + "/ajax/book/" + calibreUuid + '/' + libraryId
+        final String url = serverUri + "/ajax/book/" + calibreUuid + '/' + libraryId
                            + "?id_is_uuid=true";
         return new JSONObject(fetch(url, BUFFER_BOOK));
     }
@@ -1116,7 +1112,7 @@ public class CalibreContentServer
                               final int calibreId)
             throws StorageException, IOException, JSONException {
 
-        final String url = mServerUri + "/ajax/book/" + calibreId + '/' + libraryId;
+        final String url = serverUri + "/ajax/book/" + calibreId + '/' + libraryId;
         return new JSONObject(fetch(url, BUFFER_BOOK));
     }
 
@@ -1127,14 +1123,14 @@ public class CalibreContentServer
             throws StorageException {
 
         synchronized (this) {
-            if (mImageDownloader == null) {
-                mImageDownloader = new ImageDownloader(createFutureGetRequest());
+            if (imageDownloader == null) {
+                imageDownloader = new ImageDownloader(createFutureGetRequest());
             }
         }
-        final File tmpFile = mImageDownloader
+        final File tmpFile = imageDownloader
                 .getTempFile(FILENAME_SUFFIX, String.valueOf(calibreId), 0, null);
 
-        return mImageDownloader.fetch(mServerUri + coverUrl, tmpFile);
+        return imageDownloader.fetch(serverUri + coverUrl, tmpFile);
     }
 
     /**
@@ -1158,11 +1154,11 @@ public class CalibreContentServer
                    SocketTimeoutException,
                    IOException {
         synchronized (this) {
-            if (mFutureJsonFetchRequest == null) {
-                mFutureJsonFetchRequest = createFutureGetRequest();
+            if (futureJsonFetchRequest == null) {
+                futureJsonFetchRequest = createFutureGetRequest();
             }
         }
-        return mFutureJsonFetchRequest.get(url, request -> {
+        return futureJsonFetchRequest.get(url, request -> {
             try (BufferedInputStream bis = new BufferedInputStream(
                     request.getInputStream());
                  InputStreamReader isr = new InputStreamReader(bis, StandardCharsets.UTF_8);
@@ -1205,7 +1201,7 @@ public class CalibreContentServer
         final String format = book.getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT);
         final long libraryId = book.getLong(DBKey.FK_CALIBRE_LIBRARY);
 
-        final CalibreLibrary calibreLibrary = mLibraries
+        final CalibreLibrary calibreLibrary = libraries
                 .stream()
                 .filter(library -> library.getId() == libraryId)
                 .findFirst()
@@ -1213,17 +1209,17 @@ public class CalibreContentServer
                         context.getString(R.string.error_file_not_found,
                                           String.valueOf(libraryId))));
 
-        final String url = mServerUri + "/get/" + format + "/" + id + "/"
+        final String url = serverUri + "/get/" + format + "/" + id + "/"
                            + calibreLibrary.getLibraryStringId();
 
         final Uri destUri = destFile.getUri();
 
         synchronized (this) {
-            if (mFutureFileFetchRequest == null) {
-                mFutureFileFetchRequest = createFutureGetRequest();
+            if (futureFileFetchRequest == null) {
+                futureFileFetchRequest = createFutureGetRequest();
             }
         }
-        return mFutureFileFetchRequest.get(url, request -> {
+        return futureFileFetchRequest.get(url, request -> {
             try (OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
                 if (os != null) {
                     try (BufferedOutputStream bos = new BufferedOutputStream(os);
@@ -1367,33 +1363,33 @@ public class CalibreContentServer
         final JSONArray loadedBookIds = new JSONArray()
                 .put(calibreId);
 
-        final String url = mServerUri + "/cdb/set-fields/" + calibreId + '/' + libraryId;
+        final String url = serverUri + "/cdb/set-fields/" + calibreId + '/' + libraryId;
         final String postBody = new JSONObject()
                 .put("changes", changes)
                 .put("loaded_book_ids", loadedBookIds)
                 .toString();
 
         synchronized (this) {
-            if (mFutureHttpPost == null) {
-                mFutureHttpPost = createFuturePostRequest();
+            if (futureHttpPost == null) {
+                futureHttpPost = createFuturePostRequest();
             }
         }
-        mFutureHttpPost.post(url, postBody, null);
+        futureHttpPost.post(url, postBody, null);
     }
 
     public void cancel() {
         synchronized (this) {
-            if (mFutureJsonFetchRequest != null) {
-                mFutureJsonFetchRequest.cancel();
+            if (futureJsonFetchRequest != null) {
+                futureJsonFetchRequest.cancel();
             }
-            if (mFutureFileFetchRequest != null) {
-                mFutureFileFetchRequest.cancel();
+            if (futureFileFetchRequest != null) {
+                futureFileFetchRequest.cancel();
             }
-            if (mImageDownloader != null) {
-                mImageDownloader.cancel();
+            if (imageDownloader != null) {
+                imageDownloader.cancel();
             }
-            if (mFutureHttpPost != null) {
-                mFutureHttpPost.cancel();
+            if (futureHttpPost != null) {
+                futureHttpPost.cancel();
             }
         }
     }

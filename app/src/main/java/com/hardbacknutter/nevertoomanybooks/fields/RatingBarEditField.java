@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields;
 
-import android.content.SharedPreferences;
 import android.view.View;
 
 import androidx.annotation.IdRes;
@@ -40,9 +39,8 @@ public class RatingBarEditField
     }
 
     @Override
-    public void setParentView(@NonNull final View parent,
-                              @NonNull final SharedPreferences global) {
-        super.setParentView(parent, global);
+    public void setParentView(@NonNull final View parent) {
+        super.setParentView(parent);
         requireView().setOnRatingBarChangeListener((ratingBar, rating, fromUser) -> {
             if (fromUser) {
                 final Float previous = mRawValue;

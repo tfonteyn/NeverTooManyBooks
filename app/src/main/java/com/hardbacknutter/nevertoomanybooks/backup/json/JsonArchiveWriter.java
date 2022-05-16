@@ -65,7 +65,7 @@ public class JsonArchiveWriter
 
     /** Export configuration. */
     @NonNull
-    private final ExportHelper mHelper;
+    private final ExportHelper exportHelper;
 
     /**
      * Constructor.
@@ -73,7 +73,7 @@ public class JsonArchiveWriter
      * @param helper export configuration
      */
     public JsonArchiveWriter(@NonNull final ExportHelper helper) {
-        mHelper = helper;
+        exportHelper = helper;
     }
 
     @NonNull
@@ -83,7 +83,7 @@ public class JsonArchiveWriter
             throws DataWriterException,
                    IOException {
 
-        final LocalDateTime dateSince = mHelper.getLastDone();
+        final LocalDateTime dateSince = exportHelper.getLastDone(context);
 
         final int booksToExport = ServiceLocator.getInstance().getBookDao()
                                                 .countBooksForExport(dateSince);
@@ -93,10 +93,10 @@ public class JsonArchiveWriter
 
             final ExportResults results;
 
-            final Set<RecordType> recordTypes = mHelper.getRecordTypes();
+            final Set<RecordType> recordTypes = exportHelper.getRecordTypes();
             RecordType.addRelatedTypes(recordTypes);
 
-            try (OutputStream os = mHelper.createOutputStream(context);
+            try (OutputStream os = exportHelper.createOutputStream(context);
                  Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
                  Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
                  RecordWriter recordWriter = new JsonRecordWriter(dateSince)) {
@@ -122,7 +122,7 @@ public class JsonArchiveWriter
             }
 
             // If the backup was a full backup remember that.
-            mHelper.setLastDone();
+            exportHelper.setLastDone(context);
 
             return results;
         } else {

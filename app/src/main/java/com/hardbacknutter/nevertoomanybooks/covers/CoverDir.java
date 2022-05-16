@@ -198,8 +198,7 @@ public final class CoverDir {
     }
 
     public static int getVolume(@NonNull final Context context) {
-        return Prefs.getIntListPref(PreferenceManager.getDefaultSharedPreferences(context),
-                                    Prefs.pk_storage_volume, 0);
+        return Prefs.getIntListPref(context, Prefs.pk_storage_volume, 0);
     }
 
     private static void dumpStorageInfo(@NonNull final Context context,

@@ -25,7 +25,6 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.preference.PreferenceManager;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -71,23 +70,22 @@ public class PEntityListFilter<T extends Entity>
     private final Set<Long> value = new HashSet<>();
 
     PEntityListFilter(@NonNull final String name,
-                      @StringRes final int labelId,
+                      @StringRes final int labelResId,
                       @NonNull final TableDefinition table,
                       @NonNull final Domain domain,
                       @NonNull final Supplier<List<T>> listSupplier,
                       @NonNull final Function<Long, Entity> entitySupplier) {
         this.name = name;
-        labelResId = labelId;
-        this.domain = domain;
+        this.labelResId = labelResId;
         this.table = table;
+        this.domain = domain;
         this.listSupplier = listSupplier;
         this.entitySupplier = entitySupplier;
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        if (!DBKey.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                          domain.getName())) {
+        if (!DBKey.isUsed(domain.getName())) {
             return false;
         }
         return !value.isEmpty();

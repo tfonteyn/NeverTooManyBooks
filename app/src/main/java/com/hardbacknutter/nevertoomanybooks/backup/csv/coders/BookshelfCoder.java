@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.org.json.JSONException;
@@ -43,7 +43,7 @@ public class BookshelfCoder
 
     private static final char[] ESCAPE_CHARS = {'(', ')'};
     @NonNull
-    private final ListStyle mDefaultStyle;
+    private final Style mDefaultStyle;
 
     /**
      * Constructor.

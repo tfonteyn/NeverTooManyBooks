@@ -24,8 +24,7 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
@@ -53,6 +52,8 @@ public class PublisherBooklistGroup
     public static final String PK_SHOW_BOOKS_UNDER_EACH =
             "style.booklist.group.publisher.show.all";
 
+    public static final boolean DEFAULT_SHOW_BOOKS_UNDER_EACH = false;
+
     /** For sorting. */
     private static final Domain DOM_SORTING;
 
@@ -64,12 +65,12 @@ public class PublisherBooklistGroup
     /**
      * Constructor.
      *
-     * @param style        Style reference.
+     * @param style Style reference.
      */
-    PublisherBooklistGroup(@NonNull final ListStyle style) {
+    PublisherBooklistGroup(@NonNull final Style style) {
         super(PUBLISHER, style);
 
-        underEach = getDefaultShowBooksUnderEach();
+        underEach = DEFAULT_SHOW_BOOKS_UNDER_EACH;
     }
 
     /**
@@ -78,18 +79,9 @@ public class PublisherBooklistGroup
      * @param style        Style reference.
      * @param group        to copy from
      */
-    PublisherBooklistGroup(@NonNull final ListStyle style,
+    PublisherBooklistGroup(@NonNull final Style style,
                            @NonNull final PublisherBooklistGroup group) {
         super(style, group);
-    }
-
-    /**
-     * Get the global default for this preference.
-     *
-     * @return {@code true} if we want to show a book under each of its Publishers.
-     */
-    public static boolean getDefaultShowBooksUnderEach() {
-        return ServiceLocator.getGlobalPreferences().getBoolean(PK_SHOW_BOOKS_UNDER_EACH, false);
     }
 
     @Override
@@ -114,7 +106,7 @@ public class PublisherBooklistGroup
 
     @Override
     @NonNull
-    protected DomainExpression createDisplayDomainExpression(@NonNull final ListStyle style) {
+    protected DomainExpression createDisplayDomainExpression(@NonNull final Style style) {
         // Not sorted; we sort on the OB domain as defined in #createGroupKey.
         return new DomainExpression(DBDefinitions.DOM_PUBLISHER_NAME,
                                     DBDefinitions.TBL_PUBLISHERS.dot(DBKey.PUBLISHER_NAME));

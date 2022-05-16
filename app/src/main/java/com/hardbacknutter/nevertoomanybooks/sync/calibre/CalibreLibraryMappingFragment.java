@@ -61,17 +61,17 @@ public class CalibreLibraryMappingFragment
     /** Log tag. */
     public static final String TAG = "CalibreLibraryMapFrag";
 
-    private CalibreLibraryMappingViewModel mVm;
+    private CalibreLibraryMappingViewModel vm;
 
     /** View Binding. */
-    private FragmentCalibreLibraryMapperBinding mVb;
+    private FragmentCalibreLibraryMapperBinding vb;
 
-    private List<Bookshelf> mBookshelfList;
-    private ExtArrayAdapter<CalibreLibrary> mLibraryArrayAdapter;
-    private ExtArrayAdapter<Bookshelf> mBookshelfAdapter;
+    private List<Bookshelf> bookshelfList;
+    private ExtArrayAdapter<CalibreLibrary> libraryAdapter;
+    private ExtArrayAdapter<Bookshelf> bookshelfAdapter;
 
     @Nullable
-    private ProgressDelegate mProgressDelegate;
+    private ProgressDelegate progressDelegate;
 
     @NonNull
     public static Fragment create() {
@@ -87,8 +87,8 @@ public class CalibreLibraryMappingFragment
         super.onCreate(savedInstanceState);
 
         //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(CalibreLibraryMappingViewModel.class);
-        mVm.init(requireArguments());
+        vm = new ViewModelProvider(getActivity()).get(CalibreLibraryMappingViewModel.class);
+        vm.init(requireArguments());
     }
 
     @Nullable
@@ -96,8 +96,8 @@ public class CalibreLibraryMappingFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentCalibreLibraryMapperBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentCalibreLibraryMapperBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @Override
@@ -105,42 +105,42 @@ public class CalibreLibraryMappingFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mVm.onReadMetaDataFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
-        mVm.onReadMetaDataCancelled().observe(getViewLifecycleOwner(), this::onMetaDataCancelled);
-        mVm.onReadMetaDataFailure().observe(getViewLifecycleOwner(), this::onMetaDataFailure);
+        vm.onReadMetaDataFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
+        vm.onReadMetaDataCancelled().observe(getViewLifecycleOwner(), this::onMetaDataCancelled);
+        vm.onReadMetaDataFailure().observe(getViewLifecycleOwner(), this::onMetaDataFailure);
 
         //noinspection ConstantConditions
-        mLibraryArrayAdapter = new EntityArrayAdapter<>(getContext(), mVm.getLibraries());
-        mVb.libraryName.setAdapter(mLibraryArrayAdapter);
-        mVb.libraryName.setOnItemClickListener(
+        libraryAdapter = new EntityArrayAdapter<>(getContext(), vm.getLibraries());
+        vb.libraryName.setAdapter(libraryAdapter);
+        vb.libraryName.setOnItemClickListener(
                 (av, v, position, id) -> onLibrarySelected(position));
 
-        mBookshelfList = mVm.getBookshelfList();
-        mBookshelfAdapter = new EntityArrayAdapter<>(getContext(), mBookshelfList);
-        mVb.bookshelf.setAdapter(mBookshelfAdapter);
-        mVb.bookshelf.setOnItemClickListener((av, v, position, id) -> {
-            final Bookshelf bookshelf = mBookshelfAdapter.getItem(position);
+        bookshelfList = vm.getBookshelfList();
+        bookshelfAdapter = new EntityArrayAdapter<>(getContext(), bookshelfList);
+        vb.bookshelf.setAdapter(bookshelfAdapter);
+        vb.bookshelf.setOnItemClickListener((av, v, position, id) -> {
+            final Bookshelf bookshelf = bookshelfAdapter.getItem(position);
             //noinspection ConstantConditions
-            mVm.mapBookshelfToLibrary(bookshelf);
-            mVb.bookshelf.setText(bookshelf.getName());
+            vm.mapBookshelfToLibrary(bookshelf);
+            vb.bookshelf.setText(bookshelf.getName());
         });
 
-        mVb.infExtNotInstalled.setOnClickListener(StandardDialogs::infoPopup);
+        vb.infExtNotInstalled.setOnClickListener(StandardDialogs::infoPopup);
 
-        mVb.btnCreate.setOnClickListener(btn -> {
+        vb.btnCreate.setOnClickListener(btn -> {
             try {
                 btn.setEnabled(false);
-                final Bookshelf bookshelf = mVm.createLibraryAsBookshelf(getContext());
-                addBookshelf(bookshelf, mVb.bookshelf);
+                final Bookshelf bookshelf = vm.createLibraryAsBookshelf(getContext());
+                addBookshelf(bookshelf, vb.bookshelf);
 
             } catch (@NonNull final DaoWriteException e) {
-                Snackbar.make(mVb.getRoot(), e.getUserMessage(getContext()),
+                Snackbar.make(vb.getRoot(), e.getUserMessage(getContext()),
                               Snackbar.LENGTH_LONG).show();
             }
         });
 
         // We're only using the meta-data task, so just check if we already have libraries
-        if (mVm.getLibraries().isEmpty()) {
+        if (vm.getLibraries().isEmpty()) {
             readMetaData();
         } else {
             showOptions();
@@ -150,16 +150,16 @@ public class CalibreLibraryMappingFragment
     private void readMetaData() {
         // There will be no progress messages as reading the data itself is very fast, but
         // connection can take a long time, so bring up the progress dialog now
-        if (mProgressDelegate == null) {
-            mProgressDelegate = new ProgressDelegate(getProgressFrame())
+        if (progressDelegate == null) {
+            progressDelegate = new ProgressDelegate(getProgressFrame())
                     .setTitle(R.string.progress_msg_connecting)
                     .setPreventSleep(true)
                     .setIndeterminate(true)
-                    .setOnCancelListener(v -> mVm.cancelTask(R.id.TASK_ID_READ_META_DATA));
+                    .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_READ_META_DATA));
         }
         //noinspection ConstantConditions
-        mProgressDelegate.show(() -> getActivity().getWindow());
-        mVm.readMetaData();
+        progressDelegate.show(() -> getActivity().getWindow());
+        vm.readMetaData();
     }
 
     private void onMetaDataRead(@NonNull final LiveDataEvent<TaskResult<
@@ -167,8 +167,8 @@ public class CalibreLibraryMappingFragment
         closeProgressDialog();
 
         message.getData().flatMap(TaskResult::requireResult).ifPresent(result -> {
-            mVm.extractLibraryData(result);
-            mLibraryArrayAdapter.notifyDataSetChanged();
+            vm.extractLibraryData(result);
+            libraryAdapter.notifyDataSetChanged();
 
             showOptions();
         });
@@ -195,7 +195,7 @@ public class CalibreLibraryMappingFragment
             //noinspection ConstantConditions
             final String msg = ExMsg.map(context, data.getResult())
                                     .orElse(getString(R.string.error_network_site_access_failed,
-                                                      CalibreContentServer.getHostUrl()));
+                                                      CalibreContentServer.getHostUrl(context)));
 
             new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_error_24)
@@ -216,54 +216,54 @@ public class CalibreLibraryMappingFragment
      */
     private void showOptions() {
         onLibrarySelected(0);
-        mVb.getRoot().setVisibility(View.VISIBLE);
+        vb.getRoot().setVisibility(View.VISIBLE);
 
-        mVb.infExtNotInstalled.setVisibility(mVm.isExtInstalled() ? View.GONE : View.VISIBLE);
+        vb.infExtNotInstalled.setVisibility(vm.isExtInstalled() ? View.GONE : View.VISIBLE);
     }
 
     private void addBookshelf(@NonNull final Bookshelf bookshelf,
                               @NonNull final AutoCompleteTextView view) {
-        mBookshelfAdapter.add(bookshelf);
+        bookshelfAdapter.add(bookshelf);
         view.setText(bookshelf.getName(), false);
         // ESSENTIAL STEP: force the internal filtered list to ALSO add the new object
         // See internal code for ArrayAdapter#add and the use of mObjects/mOriginalValues
-        mBookshelfAdapter.getFilter().filter(bookshelf.getName());
+        bookshelfAdapter.getFilter().filter(bookshelf.getName());
     }
 
     private void onLibrarySelected(final int position) {
         // remember and display data for the selected library
-        mVm.setCurrentLibrary(position);
-        final CalibreLibrary library = mVm.getCurrentLibrary();
-        mVb.libraryName.setText(library.getName(), false);
+        vm.setCurrentLibrary(position);
+        final CalibreLibrary library = vm.getCurrentLibrary();
+        vb.libraryName.setText(library.getName(), false);
 
-        mBookshelfList.stream()
-                      .filter(bookshelf -> bookshelf.getId() == library.getMappedBookshelfId())
-                      .map(Bookshelf::getName)
-                      .findFirst()
-                      .ifPresent(mVb.bookshelf::setText);
+        bookshelfList.stream()
+                     .filter(bookshelf -> bookshelf.getId() == library.getMappedBookshelfId())
+                     .map(Bookshelf::getName)
+                     .findFirst()
+                     .ifPresent(vb.bookshelf::setText);
 
-        mVb.btnCreate.setEnabled(mBookshelfList.stream()
-                                               .map(Bookshelf::getName)
-                                               .noneMatch(name -> name.equals(library.getName())));
+        vb.btnCreate.setEnabled(bookshelfList.stream()
+                                             .map(Bookshelf::getName)
+                                             .noneMatch(name -> name.equals(library.getName())));
 
         if (library.getVirtualLibraries().isEmpty()) {
-            mVb.headerVlibs.setVisibility(View.GONE);
-            mVb.virtualLibraries.setVisibility(View.GONE);
-            mVb.virtualLibraries.setAdapter(null);
+            vb.headerVlibs.setVisibility(View.GONE);
+            vb.virtualLibraries.setVisibility(View.GONE);
+            vb.virtualLibraries.setAdapter(null);
 
         } else {
-            mVb.headerVlibs.setVisibility(View.VISIBLE);
-            mVb.virtualLibraries.setVisibility(View.VISIBLE);
+            vb.headerVlibs.setVisibility(View.VISIBLE);
+            vb.virtualLibraries.setVisibility(View.VISIBLE);
             //noinspection ConstantConditions
-            mVb.virtualLibraries.setAdapter(new VirtualLibraryMapperAdapter(getContext()));
+            vb.virtualLibraries.setAdapter(new VirtualLibraryMapperAdapter(getContext()));
         }
     }
 
     private void closeProgressDialog() {
-        if (mProgressDelegate != null) {
+        if (progressDelegate != null) {
             //noinspection ConstantConditions
-            mProgressDelegate.dismiss(getActivity().getWindow());
-            mProgressDelegate = null;
+            progressDelegate.dismiss(getActivity().getWindow());
+            progressDelegate = null;
         }
     }
 
@@ -302,11 +302,11 @@ public class CalibreLibraryMappingFragment
                     .inflate(R.layout.row_edit_calibre_library, parent, false);
             final Holder holder = new Holder(itemView);
 
-            holder.mVb.bookshelf.setAdapter(mBookshelfAdapter);
+            holder.mVb.bookshelf.setAdapter(bookshelfAdapter);
             holder.mVb.bookshelf.setOnItemClickListener((av, v, position, id) -> {
-                final Bookshelf bookshelf = mBookshelfAdapter.getItem(position);
+                final Bookshelf bookshelf = bookshelfAdapter.getItem(position);
                 //noinspection ConstantConditions
-                mVm.mapBookshelfToVirtualLibrary(bookshelf, holder.getBindingAdapterPosition());
+                vm.mapBookshelfToVirtualLibrary(bookshelf, holder.getBindingAdapterPosition());
                 holder.mVb.bookshelf.setText(bookshelf.getName());
             });
 
@@ -314,7 +314,7 @@ public class CalibreLibraryMappingFragment
                 try {
                     btn.setEnabled(false);
                     //noinspection ConstantConditions
-                    final Bookshelf bookshelf = mVm.createVirtualLibraryAsBookshelf(
+                    final Bookshelf bookshelf = vm.createVirtualLibraryAsBookshelf(
                             getContext(), holder.getBindingAdapterPosition());
                     addBookshelf(bookshelf, holder.mVb.bookshelf);
 
@@ -330,24 +330,24 @@ public class CalibreLibraryMappingFragment
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-            final CalibreVirtualLibrary vlib = mVm.getVirtualLibrary(position);
+            final CalibreVirtualLibrary vlib = vm.getVirtualLibrary(position);
             holder.mVb.libraryName.setText(vlib.getName());
 
-            mBookshelfList.stream()
-                          .filter(bookshelf -> bookshelf.getId() == vlib.getMappedBookshelfId())
-                          .map(Bookshelf::getName)
-                          .findFirst()
-                          .ifPresent(holder.mVb.bookshelf::setText);
+            bookshelfList.stream()
+                         .filter(bookshelf -> bookshelf.getId() == vlib.getMappedBookshelfId())
+                         .map(Bookshelf::getName)
+                         .findFirst()
+                         .ifPresent(holder.mVb.bookshelf::setText);
 
             holder.mVb.btnCreate.setEnabled(
-                    mBookshelfList.stream()
-                                  .map(Bookshelf::getName)
-                                  .noneMatch(name -> name.equals(vlib.getName())));
+                    bookshelfList.stream()
+                                 .map(Bookshelf::getName)
+                                 .noneMatch(name -> name.equals(vlib.getName())));
         }
 
         @Override
         public int getItemCount() {
-            return mVm.getCurrentLibrary().getVirtualLibraries().size();
+            return vm.getCurrentLibrary().getVirtualLibraries().size();
         }
     }
 }

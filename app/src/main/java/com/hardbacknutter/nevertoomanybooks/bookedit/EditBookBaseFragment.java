@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,7 +37,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -78,10 +76,10 @@ public abstract class EditBookBaseFragment
     private static final String RK_DATE_PICKER_PARTIAL =
             TAG + ":rk:" + PartialDatePickerDialogFragment.TAG;
     /** The view model. */
-    EditBookViewModel mVm;
+    EditBookViewModel vm;
     /** MUST keep a strong reference. */
-    private final DatePickerListener mDatePickerListener = this::onDateSet;
-    private final PartialDatePickerDialogFragment.Launcher mPartialDatePickerLauncher =
+    private final DatePickerListener datePickerListener = this::onDateSet;
+    private final PartialDatePickerDialogFragment.Launcher partialDatePickerLauncher =
             new PartialDatePickerDialogFragment.Launcher() {
                 @Override
                 public void onResult(@IdRes final int fieldId,
@@ -89,17 +87,17 @@ public abstract class EditBookBaseFragment
                     onDateSet(fieldId, date.getIsoString());
                 }
             };
-    private DateParser mDateParser;
-    private MenuHandlersMenuProvider mMenuHandlersMenuProvider;
+    private DateParser dateParser;
+    private MenuHandlersMenuProvider menuHandlersMenuProvider;
     /** Listener for all field changes. MUST keep strong reference. */
-    private final Field.AfterChangedListener mAfterChangedListener =
+    private final Field.AfterChangedListener afterChangedListener =
             this::onAfterFieldChange;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
+        vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
     }
 
     @Override
@@ -109,15 +107,15 @@ public abstract class EditBookBaseFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        mMenuHandlersMenuProvider = new MenuHandlersMenuProvider();
-        toolbar.addMenuProvider(mMenuHandlersMenuProvider, getViewLifecycleOwner(),
+        menuHandlersMenuProvider = new MenuHandlersMenuProvider();
+        toolbar.addMenuProvider(menuHandlersMenuProvider, getViewLifecycleOwner(),
                                 Lifecycle.State.RESUMED);
 
         //noinspection ConstantConditions
-        mDateParser = new FullDateParser(getContext());
+        dateParser = new FullDateParser(getContext());
 
-        mPartialDatePickerLauncher.registerForFragmentResult(getChildFragmentManager(),
-                                                             RK_DATE_PICKER_PARTIAL, this);
+        partialDatePickerLauncher.registerForFragmentResult(getChildFragmentManager(),
+                                                            RK_DATE_PICKER_PARTIAL, this);
     }
 
     @CallSuper
@@ -125,11 +123,7 @@ public abstract class EditBookBaseFragment
     public void onResume() {
         super.onResume();
 
-        final Context context = getContext();
-        //noinspection ConstantConditions
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-
-        final Book book = mVm.getBook();
+        final Book book = vm.getBook();
 
         // Not sure this is really needed; but it does no harm.
         // In theory, the editing fragment can trigger an internet search,
@@ -137,14 +131,14 @@ public abstract class EditBookBaseFragment
         // BUT: that new data would not be in the fragment arguments?
         //TODO: double check having book-data bundle in onResume.
         if (book.isNew()) {
-            mVm.addFieldsFromBundle(getArguments());
+            vm.addFieldsFromBundle(getArguments());
         }
 
         // update the Fields for THIS fragment with their current View instances
-        final List<Field<?, ? extends View>> fields = mVm.getFields(getFragmentId());
+        final List<Field<?, ? extends View>> fields = vm.getFields(getFragmentId());
         fields.forEach(field -> {
             //noinspection ConstantConditions
-            field.setParentView(getView(), global);
+            field.setParentView(getView());
             field.setAfterFieldChangeListener(null);
         });
 
@@ -152,12 +146,12 @@ public abstract class EditBookBaseFragment
         book.lockStage();
         // make it so! Child classes should override this method,
         // and run 'field.setVisibility' with the flags they need
-        onPopulateViews(global, fields, book);
+        onPopulateViews(fields, book);
 
         book.unlockStage();
 
         // Dev note: DO NOT use a 'this' reference directly
-        fields.forEach(field -> field.setAfterFieldChangeListener(mAfterChangedListener));
+        fields.forEach(field -> field.setAfterFieldChangeListener(afterChangedListener));
 
         // All views should now have proper visibility set, so fix their focus order.
         //noinspection ConstantConditions
@@ -176,10 +170,10 @@ public abstract class EditBookBaseFragment
                 title = "[" + book.getId() + "] " + title;
             }
             toolbar.setTitle(title);
-            toolbar.setSubtitle(Author.getCondensedNames(context, book.getAuthors()));
+            toolbar.setSubtitle(Author.getCondensedNames(getContext(), book.getAuthors()));
         }
 
-        mMenuHandlersMenuProvider.onPrepareMenu(toolbar.getMenu());
+        menuHandlersMenuProvider.onPrepareMenu(toolbar.getMenu());
     }
 
     /**
@@ -194,16 +188,15 @@ public abstract class EditBookBaseFragment
      * @param book   loaded book
      */
     @CallSuper
-    void onPopulateViews(@NonNull final SharedPreferences global,
-                         @NonNull final List<Field<?, ? extends View>> fields,
+    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
         if (book.isNew()) {
-            if (mVm.handlesField(getFragmentId(), R.id.date_acquired)) {
+            if (vm.handlesField(getFragmentId(), R.id.date_acquired)) {
                 book.putString(DBKey.DATE_ACQUIRED, SqlEncode.date(LocalDateTime.now()));
             }
 
-            if (mVm.handlesField(getFragmentId(), R.id.condition)) {
-                if (DBKey.isUsed(global, DBKey.BOOK_CONDITION)) {
+            if (vm.handlesField(getFragmentId(), R.id.condition)) {
+                if (DBKey.isUsed(DBKey.BOOK_CONDITION)) {
                     book.putInt(DBKey.BOOK_CONDITION, Book.CONDITION_AS_NEW);
                 }
             }
@@ -219,25 +212,25 @@ public abstract class EditBookBaseFragment
         // With all Views populated, (re-)add the date helpers
         // which rely on fields having valid views
 
-        if (mVm.handlesField(getFragmentId(), R.id.date_published)) {
-            addPartialDatePicker(global, R.string.lbl_date_published, R.id.date_published);
+        if (vm.handlesField(getFragmentId(), R.id.date_published)) {
+            addPartialDatePicker(R.string.lbl_date_published, R.id.date_published);
         }
 
-        if (mVm.handlesField(getFragmentId(), R.id.first_publication)) {
-            addPartialDatePicker(global, R.string.lbl_first_publication, R.id.first_publication);
+        if (vm.handlesField(getFragmentId(), R.id.first_publication)) {
+            addPartialDatePicker(R.string.lbl_first_publication, R.id.first_publication);
         }
 
-        if (mVm.handlesField(getFragmentId(), R.id.date_acquired)) {
-            addDatePicker(global, R.string.lbl_date_acquired, R.id.date_acquired);
+        if (vm.handlesField(getFragmentId(), R.id.date_acquired)) {
+            addDatePicker(R.string.lbl_date_acquired, R.id.date_acquired);
         }
 
-        if (mVm.handlesField(getFragmentId(), R.id.read_end)) {
-            addDateRangePicker(global, R.string.lbl_read,
+        if (vm.handlesField(getFragmentId(), R.id.read_end)) {
+            addDateRangePicker(R.string.lbl_read,
                                R.string.lbl_read_start, R.id.read_start,
                                R.string.lbl_read_end, R.id.read_end);
         }
 
-        if (mVm.handlesField(getFragmentId(), R.id.cbx_read)) {
+        if (vm.handlesField(getFragmentId(), R.id.cbx_read)) {
             addReadCheckboxOnClickListener();
         }
     }
@@ -245,7 +238,7 @@ public abstract class EditBookBaseFragment
     /** Listener for all field changes. */
     @CallSuper
     public void onAfterFieldChange(@NonNull final Field<?, ? extends View> field) {
-        final Book book = mVm.getBook();
+        final Book book = vm.getBook();
 
         book.setStage(EntityStage.Stage.Dirty);
 
@@ -253,22 +246,22 @@ public abstract class EditBookBaseFragment
         // These fields might not be initialized, so use the 'Optional' returning method.
         if (book.isNew()) {
             if (field.getFieldViewId() == R.id.price_listed_currency) {
-                mVm.getField(R.id.price_paid_currency).ifPresent(paidField -> {
+                vm.getField(R.id.price_paid_currency).ifPresent(paidField -> {
                     if (!field.isEmpty() && paidField.isEmpty()) {
                         final String value = (String) field.getValue();
                         //noinspection ConstantConditions
-                        mVm.getBook().putString(DBKey.PRICE_PAID_CURRENCY, value);
+                        vm.getBook().putString(DBKey.PRICE_PAID_CURRENCY, value);
                         //noinspection unchecked
                         ((Field<String, ? extends View>) paidField).setValue(value);
                     }
                 });
 
             } else if (field.getFieldViewId() == R.id.price_listed) {
-                mVm.getField(R.id.price_paid).ifPresent(paidField -> {
+                vm.getField(R.id.price_paid).ifPresent(paidField -> {
                     if (!field.isEmpty() && paidField.isEmpty()) {
                         // Normally its always a double; but technically it might not be.
                         final Double value = ParseUtils.toDouble(field.getValue(), null);
-                        mVm.getBook().put(DBKey.PRICE_PAID, value);
+                        vm.getBook().put(DBKey.PRICE_PAID, value);
                         //noinspection unchecked
                         ((Field<Double, ? extends View>) paidField).setValue(value);
                     }
@@ -276,15 +269,15 @@ public abstract class EditBookBaseFragment
             }
         }
 
-        mMenuHandlersMenuProvider.onPrepareMenu(getToolbar().getMenu());
+        menuHandlersMenuProvider.onPrepareMenu(getToolbar().getMenu());
     }
 
     @Override
     @CallSuper
     public void onPause() {
-        mVm.setUnfinishedEdits(getFragmentId(), hasUnfinishedEdits());
-        if (mVm.getBook().getStage() == EntityStage.Stage.Dirty) {
-            onSaveFields(mVm.getBook());
+        vm.setUnfinishedEdits(getFragmentId(), hasUnfinishedEdits());
+        if (vm.getBook().getStage() == EntityStage.Stage.Dirty) {
+            onSaveFields(vm.getBook());
         }
         super.onPause();
     }
@@ -301,7 +294,7 @@ public abstract class EditBookBaseFragment
     @CallSuper
     @Override
     public void onSaveFields(@NonNull final Book book) {
-        mVm.saveFields(getFragmentId(), book);
+        vm.saveFields(getFragmentId(), book);
     }
 
 
@@ -311,9 +304,9 @@ public abstract class EditBookBaseFragment
      * When user checks 'read', set the read-end date to today (unless set before)
      */
     private void addReadCheckboxOnClickListener() {
-        mVm.requireField(R.id.cbx_read).requireView().setOnClickListener(v -> {
+        vm.requireField(R.id.cbx_read).requireView().setOnClickListener(v -> {
             if (((Checkable) v).isChecked()) {
-                final Field<String, TextView> readEnd = mVm.requireField(R.id.read_end);
+                final Field<String, TextView> readEnd = vm.requireField(R.id.read_end);
                 if (readEnd.isEmpty()) {
                     readEnd.setValue(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
                     readEnd.notifyIfChanged("");
@@ -330,28 +323,26 @@ public abstract class EditBookBaseFragment
      * <p>
      * If only one field is used, we just display a single date picker.
      *
-     * @param global       Global preferences
      * @param titleId      title for the picker
      * @param startTitleId title of the picker if the end-date is not in use
      * @param startFieldId to setup for the start-date
      * @param endTitleId   title of the picker if the start-date is not in use
      * @param endFieldId   to setup for the end-date
      */
-    private void addDateRangePicker(@NonNull final SharedPreferences global,
-                                    @StringRes final int titleId,
+    private void addDateRangePicker(@StringRes final int titleId,
                                     final int startTitleId,
                                     @IdRes final int startFieldId,
                                     final int endTitleId,
                                     @IdRes final int endFieldId) {
 
-        final Field<String, TextView> startField = mVm.requireField(startFieldId);
-        final boolean startFieldIsUsed = startField.isUsed(global);
-        final Field<String, TextView> endField = mVm.requireField(endFieldId);
-        final boolean endFieldIsUsed = endField.isUsed(global);
+        final Field<String, TextView> startField = vm.requireField(startFieldId);
+        final boolean startFieldIsUsed = startField.isUsed();
+        final Field<String, TextView> endField = vm.requireField(endFieldId);
+        final boolean endFieldIsUsed = endField.isUsed();
 
         if (startFieldIsUsed) {
             // Always a single date picker for the start-date
-            addDatePicker(global, startTitleId, startFieldId);
+            addDatePicker(startTitleId, startFieldId);
         }
 
         if (endFieldIsUsed) {
@@ -359,14 +350,14 @@ public abstract class EditBookBaseFragment
             if (startFieldIsUsed) {
                 final DateRangePicker dp = new DateRangePicker(getChildFragmentManager(),
                                                                titleId, startFieldId, endFieldId);
-                dp.setDateParser(mDateParser, true);
-                dp.onResume(mDatePickerListener);
+                dp.setDateParser(dateParser, true);
+                dp.onResume(datePickerListener);
 
                 endField.requireView().setOnClickListener(v -> dp
-                        .launch(startField.getValue(), endField.getValue(), mDatePickerListener));
+                        .launch(startField.getValue(), endField.getValue(), datePickerListener));
             } else {
                 // without using a start-date, single date picker for the end-date
-                addDatePicker(global, endTitleId, endFieldId);
+                addDatePicker(endTitleId, endFieldId);
             }
         }
     }
@@ -374,39 +365,35 @@ public abstract class EditBookBaseFragment
     /**
      * Setup a date picker for selecting a single, full date.
      *
-     * @param global        Global preferences
      * @param pickerTitleId title for the picker window
      * @param fieldId       the field to hookup
      */
-    private void addDatePicker(@NonNull final SharedPreferences global,
-                               @StringRes final int pickerTitleId,
+    private void addDatePicker(@StringRes final int pickerTitleId,
                                @IdRes final int fieldId) {
 
-        final Field<String, TextView> field = mVm.requireField(fieldId);
-        if (field.isUsed(global)) {
+        final Field<String, TextView> field = vm.requireField(fieldId);
+        if (field.isUsed()) {
             final SingleDatePicker dp = new SingleDatePicker(getChildFragmentManager(),
                                                              pickerTitleId, fieldId);
-            dp.setDateParser(mDateParser, true);
-            dp.onResume(mDatePickerListener);
+            dp.setDateParser(dateParser, true);
+            dp.onResume(datePickerListener);
 
             field.requireView().setOnClickListener(v -> dp
-                    .launch(field.getValue(), mDatePickerListener));
+                    .launch(field.getValue(), datePickerListener));
         }
     }
 
     /**
      * Setup a date picker for selecting a partial date.
      *
-     * @param global        Global preferences
      * @param pickerTitleId title for the picker window
      * @param fieldId       the field to hookup
      */
-    private void addPartialDatePicker(@NonNull final SharedPreferences global,
-                                      @StringRes final int pickerTitleId,
+    private void addPartialDatePicker(@StringRes final int pickerTitleId,
                                       @IdRes final int fieldId) {
-        final Field<String, TextView> field = mVm.requireField(fieldId);
-        if (field.isUsed(global)) {
-            field.requireView().setOnClickListener(v -> mPartialDatePickerLauncher
+        final Field<String, TextView> field = vm.requireField(fieldId);
+        if (field.isUsed()) {
+            field.requireView().setOnClickListener(v -> partialDatePickerLauncher
                     .launch(pickerTitleId, field.getFieldViewId(), field.getValue(), false));
         }
     }
@@ -427,14 +414,14 @@ public abstract class EditBookBaseFragment
     private void onDateSet(@IdRes final int fieldId,
                            @NonNull final String dateStr) {
 
-        final Field<String, TextView> field = mVm.requireField(fieldId);
+        final Field<String, TextView> field = vm.requireField(fieldId);
         final String previous = field.getValue();
         field.setValue(dateStr);
         field.notifyIfChanged(previous);
 
         // special case, if a read-end date is set, then obviously we must set the read-flag
         if (fieldId == R.id.read_end) {
-            mVm.requireField(R.id.cbx_read).setValue(true);
+            vm.requireField(R.id.cbx_read).setValue(true);
         }
     }
 
@@ -444,26 +431,26 @@ public abstract class EditBookBaseFragment
         @Override
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
-            mVm.getMenuHandlers().forEach(h -> h.onCreateMenu(menu, menuInflater));
+            vm.getMenuHandlers().forEach(h -> h.onCreateMenu(menu, menuInflater));
 
             onPrepareMenu(menu);
         }
 
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
-            final Book book = mVm.getBook();
+            final Book book = vm.getBook();
 
-            mVm.getMenuHandlers().forEach(h -> h.onPrepareMenu(menu, book));
+            vm.getMenuHandlers().forEach(h -> h.onPrepareMenu(menu, book));
         }
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             final Context context = getContext();
-            final Book book = mVm.getBook();
+            final Book book = vm.getBook();
 
             //noinspection ConstantConditions
-            return mVm.getMenuHandlers().stream()
-                      .anyMatch(h -> h.onMenuItemSelected(context, menuItem, book));
+            return vm.getMenuHandlers().stream()
+                     .anyMatch(h -> h.onMenuItemSelected(context, menuItem, book));
         }
     }
 }

@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.bookdetails;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +34,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.divider.MaterialDividerItemDecoration;
@@ -134,8 +132,7 @@ public class TocFragment
         vb.toc.addItemDecoration(
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
 
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        final int overlayType = Prefs.getFastScrollerOverlayType(global);
+        final int overlayType = Prefs.getFastScrollerOverlayType(context);
         FastScroller.attach(vb.toc, overlayType);
 
         adapter = new TocAdapter(context, vm.getWorks());

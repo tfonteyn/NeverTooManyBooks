@@ -53,7 +53,7 @@ public class ShowBookPagerFragment
     private ShowBookPagerViewModel vm;
 
     /** Set the hosting Activity result, and close it. */
-    private final OnBackPressedCallback onBackPressedCallback =
+    private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
@@ -100,7 +100,7 @@ public class ShowBookPagerFragment
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), onBackPressedCallback);
+                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
         final ShowBookPagerAdapter adapter = new ShowBookPagerAdapter(this);
         viewPager.setAdapter(adapter);

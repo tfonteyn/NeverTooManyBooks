@@ -136,7 +136,7 @@ public class SearchBookByIsbnFragment
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
         toolbar.setTitle(R.string.lbl_search_isbn);
 
-        mVb.isbn.setText(mCoordinator.getIsbnSearchText());
+        mVb.isbn.setText(coordinator.getIsbnSearchText());
 
         mVb.key0.setOnClickListener(v -> mVb.isbn.onKey('0'));
         mVb.key1.setOnClickListener(v -> mVb.isbn.onKey('1'));
@@ -157,8 +157,8 @@ public class SearchBookByIsbnFragment
         });
 
         // The search preference determines the level here; NOT the 'edit book'
-        final ISBN.Validity isbnValidityCheck = mCoordinator.isStrictIsbn() ? ISBN.Validity.Strict
-                                                                            : ISBN.Validity.None;
+        final ISBN.Validity isbnValidityCheck = coordinator.isStrictIsbn() ? ISBN.Validity.Strict
+                                                                           : ISBN.Validity.None;
 
         mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(mVb.isbn, isbnValidityCheck);
         mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
@@ -177,7 +177,7 @@ public class SearchBookByIsbnFragment
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
-            Site.promptToRegister(getContext(), mCoordinator.getSiteList(),
+            Site.promptToRegister(getContext(), coordinator.getSiteList(),
                                   "searchByIsbn", this::afterOnViewCreated);
         } else {
             afterOnViewCreated();
@@ -216,7 +216,7 @@ public class SearchBookByIsbnFragment
         }
 
         if (barCode != null) {
-            final boolean strictIsbn = mCoordinator.isStrictIsbn();
+            final boolean strictIsbn = coordinator.isStrictIsbn();
             final ISBN code = new ISBN(barCode, strictIsbn);
 
             if (code.isValid(strictIsbn)) {
@@ -266,7 +266,7 @@ public class SearchBookByIsbnFragment
     public void onPause() {
         super.onPause();
         //noinspection ConstantConditions
-        mCoordinator.setIsbnSearchText(mVb.isbn.getText().toString().trim());
+        coordinator.setIsbnSearchText(mVb.isbn.getText().toString().trim());
     }
 
     @Override
@@ -291,7 +291,7 @@ public class SearchBookByIsbnFragment
      * @param code to search for
      */
     private void prepareSearch(@NonNull final ISBN code) {
-        mCoordinator.setIsbnSearchText(code.asText());
+        coordinator.setIsbnSearchText(code.asText());
 
         // See if ISBN already exists in our database, if not then start the search.
         final ArrayList<Pair<Long, String>> existingIds = mVm.getBookIdAndTitlesByIsbn(code);
@@ -335,7 +335,7 @@ public class SearchBookByIsbnFragment
     private void onBarcodeEntered(@NonNull final View btn) {
         //noinspection ConstantConditions
         final String userEntry = mVb.isbn.getText().toString().trim();
-        final boolean strictIsbn = mCoordinator.isStrictIsbn();
+        final boolean strictIsbn = coordinator.isStrictIsbn();
         final ISBN code = new ISBN(userEntry, strictIsbn);
 
         if (code.isValid(strictIsbn)) {
@@ -382,6 +382,20 @@ public class SearchBookByIsbnFragment
         //mVb.isbn.setText("");
     }
 
+    private void onOpenUri(@Nullable final Uri uri) {
+        if (uri != null) {
+            try {
+                //noinspection ConstantConditions
+                mVm.readQueue(getContext(), uri, coordinator.isStrictIsbn());
+            } catch (@NonNull final IOException ignore) {
+                Snackbar.make(mVb.getRoot(), R.string.error_import_failed,
+                              Snackbar.LENGTH_LONG).show();
+            }
+
+            populateQueueView();
+        }
+    }
+
     private class ToolbarMenuProvider
             implements MenuProvider {
 
@@ -396,7 +410,7 @@ public class SearchBookByIsbnFragment
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
             menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT)
-                .setChecked(mCoordinator.isStrictIsbn());
+                .setChecked(coordinator.isStrictIsbn());
         }
 
         @Override
@@ -419,7 +433,7 @@ public class SearchBookByIsbnFragment
 
             } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
                 final boolean checked = !menuItem.isChecked();
-                mCoordinator.setStrictIsbn(checked);
+                coordinator.setStrictIsbn(checked);
                 onPrepareMenu(getToolbar().getMenu());
 
                 final ISBN.Validity validity = checked ? ISBN.Validity.Strict : ISBN.Validity.None;
@@ -429,20 +443,6 @@ public class SearchBookByIsbnFragment
             }
 
             return false;
-        }
-    }
-
-    private void onOpenUri(@Nullable final Uri uri) {
-        if (uri != null) {
-            try {
-                //noinspection ConstantConditions
-                mVm.readQueue(getContext(), uri, mCoordinator.isStrictIsbn());
-            } catch (@NonNull final IOException ignore) {
-                Snackbar.make(mVb.getRoot(), R.string.error_import_failed,
-                              Snackbar.LENGTH_LONG).show();
-            }
-
-            populateQueueView();
         }
     }
 

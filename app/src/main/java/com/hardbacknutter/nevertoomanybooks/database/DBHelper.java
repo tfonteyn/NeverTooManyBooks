@@ -49,8 +49,9 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BookDetailsFieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistBookFieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BookshelfBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.PublisherBooklistGroup;
@@ -65,7 +66,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -807,10 +807,10 @@ public class DBHelper
                             .getSharedPreferences(uuid, Context.MODE_PRIVATE);
 
                     stmt.bindString(1, stylePrefs.getString(
-                            StyleDataStore.PK_STYLE_NAME, null));
+                            StyleDataStore.PK_NAME, null));
 
                     stmt.bindString(2, stylePrefs.getString(
-                            StyleDataStore.PK_STYLE_GROUPS, null));
+                            StyleDataStore.PK_GROUPS, null));
 
                     stmt.bindLong(3, stylePrefs.getBoolean(
                             AuthorBooklistGroup.PK_SHOW_BOOKS_UNDER_EACH, false) ? 1 : 0);
@@ -836,9 +836,9 @@ public class DBHelper
                             StyleDataStore.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST, false) ? 1 : 0);
 
                     stmt.bindLong(12, stylePrefs.getInt(
-                            StyleDataStore.PK_TEXT_SCALE, ListStyle.DEFAULT_TEXT_SCALE));
+                            StyleDataStore.PK_TEXT_SCALE, Style.DEFAULT_TEXT_SCALE));
                     stmt.bindLong(13, stylePrefs.getInt(
-                            StyleDataStore.PK_COVER_SCALE, ListStyle.DEFAULT_COVER_SCALE));
+                            StyleDataStore.PK_COVER_SCALE, Style.DEFAULT_COVER_SCALE));
 
                     stmt.bindLong(14, StyleDataStore.convert(
                             stylePrefs.getStringSet(StyleDataStore.PK_LIST_HEADER, null),
@@ -846,51 +846,51 @@ public class DBHelper
 
                     final int detailFields =
                             (stylePrefs.getBoolean(
-                                    StyleDataStore.PK_STYLE_BOOK_DETAILS_COVER[0], true)
-                             ? BookDetailsFieldVisibility.DETAILS_SHOW_COVER_0 : 0)
+                                    StyleDataStore.PK_DETAILS_SHOW_COVER[0], true)
+                             ? BookDetailsFieldVisibility.SHOW_COVER_0 : 0)
                             |
                             (stylePrefs.getBoolean(
-                                    StyleDataStore.PK_STYLE_BOOK_DETAILS_COVER[1], true)
-                             ? BookDetailsFieldVisibility.DETAILS_SHOW_COVER_1 : 0);
+                                    StyleDataStore.PK_DETAILS_SHOW_COVER[1], true)
+                             ? BookDetailsFieldVisibility.SHOW_COVER_1 : 0);
 
                     stmt.bindLong(15, detailFields);
 
                     final int listFields =
                             (stylePrefs.getBoolean(
                                     StyleDataStore.PK_LIST_SHOW_COVERS, true)
-                             ? BooklistBookFieldVisibility.SHOW_COVER_0 : 0)
+                             ? BooklistFieldVisibility.SHOW_COVER_0 : 0)
                             |
                             (stylePrefs.getBoolean(
                                     StyleDataStore.PK_LIST_SHOW_AUTHOR, true)
-                             ? BooklistBookFieldVisibility.SHOW_AUTHOR : 0)
+                             ? BooklistFieldVisibility.SHOW_AUTHOR : 0)
                             |
                             (stylePrefs.getBoolean(
                                     StyleDataStore.PK_LIST_SHOW_PUBLISHER, true)
-                             ? BooklistBookFieldVisibility.SHOW_PUBLISHER : 0)
+                             ? BooklistFieldVisibility.SHOW_PUBLISHER : 0)
                             |
                             (stylePrefs.getBoolean(
                                     StyleDataStore.PK_LIST_SHOW_PUB_DATE, true)
-                             ? BooklistBookFieldVisibility.SHOW_PUB_DATE : 0)
+                             ? BooklistFieldVisibility.SHOW_PUB_DATE : 0)
                             |
                             (stylePrefs.getBoolean(
                                     StyleDataStore.PK_LIST_SHOW_FORMAT, true)
-                             ? BooklistBookFieldVisibility.SHOW_FORMAT : 0)
+                             ? BooklistFieldVisibility.SHOW_FORMAT : 0)
                             |
                             (stylePrefs.getBoolean(
                                     StyleDataStore.PK_LIST_SHOW_LOCATION, true)
-                             ? BooklistBookFieldVisibility.SHOW_LOCATION : 0)
+                             ? BooklistFieldVisibility.SHOW_LOCATION : 0)
                             |
                             (stylePrefs.getBoolean(
                                     StyleDataStore.PK_LIST_SHOW_RATING, true)
-                             ? BooklistBookFieldVisibility.SHOW_RATING : 0)
+                             ? BooklistFieldVisibility.SHOW_RATING : 0)
                             |
                             (stylePrefs.getBoolean(
                                     StyleDataStore.PK_LIST_SHOW_BOOKSHELVES, true)
-                             ? BooklistBookFieldVisibility.SHOW_BOOKSHELVES : 0)
+                             ? BooklistFieldVisibility.SHOW_BOOKSHELVES : 0)
                             |
                             (stylePrefs.getBoolean(
                                     StyleDataStore.PK_LIST_SHOW_ISBN, true)
-                             ? BooklistBookFieldVisibility.SHOW_ISBN : 0);
+                             ? BooklistFieldVisibility.SHOW_ISBN : 0);
 
                     stmt.bindLong(16, listFields);
 
@@ -901,15 +901,15 @@ public class DBHelper
                 });
             }
 
-            // remove any global style prefs so we start in a known state after this upgrade
-            final SharedPreferences global = PreferenceManager
+            // one last time, remove any global style prefs as we no longer use them.
+            final SharedPreferences prefs = PreferenceManager
                     .getDefaultSharedPreferences(context);
-            final SharedPreferences.Editor editor = global.edit();
-            global.getAll()
-                  .keySet()
-                  .stream()
-                  .filter(key -> key.startsWith("style."))
-                  .forEach(editor::remove);
+            final SharedPreferences.Editor editor = prefs.edit();
+            prefs.getAll()
+                 .keySet()
+                 .stream()
+                 .filter(key -> key.startsWith("style."))
+                 .forEach(editor::remove);
 
             editor.apply();
         }

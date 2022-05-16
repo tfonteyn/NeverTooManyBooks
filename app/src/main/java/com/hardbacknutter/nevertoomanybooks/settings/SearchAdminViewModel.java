@@ -128,7 +128,7 @@ public class SearchAdminViewModel
      */
     void persist() {
         for (final Map.Entry<Site.Type, ArrayList<Site>> entry : typeAndSites.entrySet()) {
-            entry.getKey().setList(entry.getValue());
+            entry.getKey().setSiteList(entry.getValue());
         }
     }
 

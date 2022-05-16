@@ -43,100 +43,100 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 public final class SearchEngineConfig {
 
     @NonNull
-    private final Class<? extends SearchEngine> mClass;
+    private final Class<? extends SearchEngine> clazz;
 
     @SearchSites.EngineId
-    private final int mId;
+    private final int id;
 
     @StringRes
-    private final int mLabelId;
+    private final int labelResId;
 
     @NonNull
-    private final String mPrefKey;
+    private final String prefKey;
 
     @NonNull
-    private final String mHostUrl;
+    private final String hostUrl;
 
     /** Constructed from language+country. */
     @NonNull
-    private final Locale mLocale;
+    private final Locale locale;
 
     /** {@link SearchEngine.ByExternalId} only. */
     @Nullable
-    private final Domain mExternalIdDomain;
+    private final Domain externalIdDomain;
 
     @IdRes
-    private final int mDomainViewId;
+    private final int domainViewId;
 
     @IdRes
-    private final int mDomainMenuId;
+    private final int domainMenuId;
 
     /** The DEFAULT for the engine. */
-    private final int mConnectTimeoutMs;
+    private final int connectTimeoutMs;
     /** The DEFAULT for the engine. */
-    private final int mReadTimeoutMs;
+    private final int readTimeoutMs;
     /**
      * This is a reference to the <strong>static</strong> object created in the SearchEngine
      * implementation class.
      */
     @Nullable
-    private final Throttler mStaticThrottler;
+    private final Throttler throttler;
 
     /** {@link SearchEngine.CoverByIsbn} only. */
-    private final boolean mSupportsMultipleCoverSizes;
+    private final boolean supportsMultipleCoverSizes;
 
     /** file suffix for cover files. */
     @NonNull
-    private final String mFilenameSuffix;
+    private final String filenameSuffix;
 
 
     /**
      * Constructor.
      */
     private SearchEngineConfig(@NonNull final Builder builder) {
-        mClass = builder.mClass;
-        mId = builder.mId;
-        mLabelId = builder.mLabelId;
-        mPrefKey = builder.mPrefKey;
-        mHostUrl = builder.mHostUrl;
+        clazz = builder.clazz;
+        id = builder.id;
+        labelResId = builder.labelResId;
+        prefKey = builder.prefKey;
+        hostUrl = builder.hostUrl;
 
-        if (builder.mLang != null && !builder.mLang.isEmpty()
-            && builder.mCountry != null && !builder.mCountry.isEmpty()) {
-            mLocale = new Locale(builder.mLang, builder.mCountry.toUpperCase(Locale.ENGLISH));
+        if (builder.lang != null && !builder.lang.isEmpty()
+            && builder.country != null && !builder.country.isEmpty()) {
+            locale = new Locale(builder.lang, builder.country.toUpperCase(Locale.ENGLISH));
 
         } else {
             // be lenient...
-            mLocale = Locale.US;
+            locale = Locale.US;
         }
 
-        if (builder.mDomainKey == null || builder.mDomainKey.isEmpty()) {
-            mExternalIdDomain = null;
+        if (builder.domainKey == null || builder.domainKey.isEmpty()) {
+            externalIdDomain = null;
         } else {
-            mExternalIdDomain = DBDefinitions.TBL_BOOKS.getDomain(builder.mDomainKey);
+            externalIdDomain = DBDefinitions.TBL_BOOKS.getDomain(builder.domainKey);
         }
 
-        mDomainViewId = builder.mDomainViewId;
-        mDomainMenuId = builder.mDomainMenuId;
+        domainViewId = builder.domainViewId;
+        domainMenuId = builder.domainMenuId;
 
-        mConnectTimeoutMs = builder.mConnectTimeoutMs;
-        mReadTimeoutMs = builder.mReadTimeoutMs;
+        connectTimeoutMs = builder.connectTimeoutMs;
+        readTimeoutMs = builder.readTimeoutMs;
 
-        mStaticThrottler = builder.mStaticThrottler;
+        throttler = builder.throttler;
 
-        mSupportsMultipleCoverSizes = builder.mSupportsMultipleCoverSizes;
-        mFilenameSuffix = builder.mFilenameSuffix != null ? builder.mFilenameSuffix : "";
+        supportsMultipleCoverSizes = builder.supportsMultipleCoverSizes;
+        filenameSuffix = builder.filenameSuffix != null ? builder.filenameSuffix : "";
     }
 
     @NonNull
     SearchEngine createSearchEngine() {
         try {
-            final Constructor<? extends SearchEngine> c = mClass.getConstructor(
+            final Constructor<? extends SearchEngine> c = clazz.getConstructor(
                     SearchEngineConfig.class);
             return c.newInstance(this);
 
         } catch (@NonNull final NoSuchMethodException | IllegalAccessException
                 | InstantiationException | InvocationTargetException e) {
-            throw new IllegalStateException(mClass + " must implement SearchEngine(int)", e);
+            throw new IllegalStateException(clazz + " must implement SearchEngine(int)", e);
         }
     }
 
@@ -147,7 +147,7 @@ public final class SearchEngineConfig {
      */
     @SearchSites.EngineId
     public int getEngineId() {
-        return mId;
+        return id;
     }
 
     /**
@@ -156,34 +156,36 @@ public final class SearchEngineConfig {
      * @return the displayable name resource id
      */
     @StringRes
-    public int getLabelId() {
-        return mLabelId;
+    public int getLabelResId() {
+        return labelResId;
     }
 
     /**
      * Get the name for this engine.
      *
+     * @param context Current context
+     *
      * @return name
      */
     public String getName(@NonNull final Context context) {
-        return context.getString(mLabelId);
+        return context.getString(labelResId);
     }
 
     @NonNull
     String getPreferenceKey() {
-        return mPrefKey;
+        return prefKey;
     }
 
     @NonNull
     String getFilenameSuffix() {
-        return mFilenameSuffix;
+        return filenameSuffix;
     }
 
     @NonNull
     public String getHostUrl() {
         //noinspection ConstantConditions
-        return ServiceLocator.getGlobalPreferences().getString(
-                mPrefKey + Prefs.pk_suffix_host_url, mHostUrl);
+        return ServiceLocator.getPreferences().getString(
+                prefKey + Prefs.pk_suffix_host_url, hostUrl);
     }
 
     /**
@@ -193,22 +195,22 @@ public final class SearchEngineConfig {
      */
     @NonNull
     public Locale getLocale() {
-        return mLocale;
+        return locale;
     }
 
     @Nullable
     public Domain getExternalIdDomain() {
-        return mExternalIdDomain;
+        return externalIdDomain;
     }
 
     @IdRes
     int getDomainViewId() {
-        return mDomainViewId;
+        return domainViewId;
     }
 
     @IdRes
     int getDomainMenuId() {
-        return mDomainMenuId;
+        return domainMenuId;
     }
 
     /**
@@ -217,10 +219,8 @@ public final class SearchEngineConfig {
      * @return milli seconds
      */
     public int getConnectTimeoutInMs() {
-        return Prefs.getTimeoutValueInMs(
-                ServiceLocator.getGlobalPreferences(),
-                mPrefKey + Prefs.pk_suffix_timeout_connect_in_seconds,
-                mConnectTimeoutMs);
+        return Prefs.getTimeoutValueInMs(prefKey + Prefs.pk_suffix_timeout_connect_in_seconds,
+                                         connectTimeoutMs);
     }
 
     /**
@@ -229,10 +229,8 @@ public final class SearchEngineConfig {
      * @return milli seconds
      */
     public int getReadTimeoutInMs() {
-        return Prefs.getTimeoutValueInMs(
-                ServiceLocator.getGlobalPreferences(),
-                mPrefKey + Prefs.pk_suffix_timeout_read_in_seconds,
-                mReadTimeoutMs);
+        return Prefs.getTimeoutValueInMs(prefKey + Prefs.pk_suffix_timeout_read_in_seconds,
+                                         readTimeoutMs);
     }
 
     /**
@@ -244,7 +242,7 @@ public final class SearchEngineConfig {
      */
     @Nullable
     public Throttler getThrottler() {
-        return mStaticThrottler;
+        return throttler;
     }
 
     /**
@@ -255,27 +253,27 @@ public final class SearchEngineConfig {
      * @return {@code true} if multiple sizes are supported.
      */
     public boolean supportsMultipleCoverSizes() {
-        return mSupportsMultipleCoverSizes;
+        return supportsMultipleCoverSizes;
     }
 
     @NonNull
     @Override
     public String toString() {
         return "SearchEngineConfig{"
-               + "mClass=" + mClass
-               + ", mId=" + mId
-               + ", mName=`" + mLabelId + '`'
-               + ", mPrefKey=`" + mPrefKey + '`'
-               + ", mUrl=`" + mHostUrl + '`'
-               + ", mLocale=" + mLocale
-               + ", mExternalIdDomain=" + mExternalIdDomain
-               + ", mDomainViewId=" + mDomainViewId
-               + ", mDomainMenuId=" + mDomainMenuId
-               + ", mConnectTimeoutMs=" + mConnectTimeoutMs
-               + ", mReadTimeoutMs=" + mReadTimeoutMs
-               + ", mStaticThrottler=" + mStaticThrottler
-               + ", mSupportsMultipleCoverSizes=" + mSupportsMultipleCoverSizes
-               + ", mFilenameSuffix=`" + mFilenameSuffix + '`'
+               + "clazz=" + clazz
+               + ", id=" + id
+               + ", labelResId=`" + labelResId + '`'
+               + ", prefKey=`" + prefKey + '`'
+               + ", hostUrl=`" + hostUrl + '`'
+               + ", locale=" + locale
+               + ", externalIdDomain=" + externalIdDomain
+               + ", domainViewId=" + domainViewId
+               + ", domainMenuId=" + domainMenuId
+               + ", connectTimeoutMs=" + connectTimeoutMs
+               + ", readTimeoutMs=" + readTimeoutMs
+               + ", throttler=" + throttler
+               + ", supportsMultipleCoverSizes=" + supportsMultipleCoverSizes
+               + ", filenameSuffix=`" + filenameSuffix + '`'
                + '}';
     }
 
@@ -285,59 +283,59 @@ public final class SearchEngineConfig {
         static final int TEN_SECONDS = 10_000;
 
         @NonNull
-        private final Class<? extends SearchEngine> mClass;
+        private final Class<? extends SearchEngine> clazz;
 
         @SearchSites.EngineId
-        private final int mId;
+        private final int id;
 
         @StringRes
-        private final int mLabelId;
+        private final int labelResId;
 
         @NonNull
-        private final String mPrefKey;
+        private final String prefKey;
 
         @NonNull
-        private final String mHostUrl;
+        private final String hostUrl;
 
         @Nullable
-        private String mLang;
+        private String lang;
 
         @Nullable
-        private String mCountry;
+        private String country;
 
         @Nullable
-        private String mDomainKey;
+        private String domainKey;
 
         @IdRes
-        private int mDomainViewId;
+        private int domainViewId;
 
         @IdRes
-        private int mDomainMenuId;
+        private int domainMenuId;
 
-        private int mConnectTimeoutMs = FIVE_SECONDS;
-        private int mReadTimeoutMs = TEN_SECONDS;
+        private int connectTimeoutMs = FIVE_SECONDS;
+        private int readTimeoutMs = TEN_SECONDS;
 
         @Nullable
-        private Throttler mStaticThrottler;
+        private Throttler throttler;
 
         /** {@link SearchEngine.CoverByIsbn} only. */
-        private boolean mSupportsMultipleCoverSizes;
+        private boolean supportsMultipleCoverSizes;
 
         /** file suffix for cover files. */
         @Nullable
-        private String mFilenameSuffix;
+        private String filenameSuffix;
 
 
         public Builder(@NonNull final Class<? extends SearchEngine> clazz,
                        @SearchSites.EngineId final int id,
-                       @StringRes final int labelId,
+                       @StringRes final int labelResId,
                        @NonNull final String prefKey,
                        @NonNull final String hostUrl) {
-            mClass = clazz;
-            mId = id;
-            mLabelId = labelId;
-            mPrefKey = prefKey;
-            mHostUrl = hostUrl;
+            this.clazz = clazz;
+            this.id = id;
+            this.labelResId = labelResId;
+            this.prefKey = prefKey;
+            this.hostUrl = hostUrl;
         }
 
         @NonNull
@@ -348,56 +346,56 @@ public final class SearchEngineConfig {
         @NonNull
         public Builder setCountry(@NonNull final String country,
                                   @NonNull final String lang) {
-            mCountry = country;
-            mLang = lang;
+            this.country = country;
+            this.lang = lang;
             return this;
         }
 
         @NonNull
         public Builder setStaticThrottler(@Nullable final Throttler staticThrottler) {
-            mStaticThrottler = staticThrottler;
+            throttler = staticThrottler;
             return this;
         }
 
         @NonNull
         public Builder setConnectTimeoutMs(final int timeoutInMillis) {
-            mConnectTimeoutMs = timeoutInMillis;
+            connectTimeoutMs = timeoutInMillis;
             return this;
         }
 
         @NonNull
         public Builder setReadTimeoutMs(final int timeoutInMillis) {
-            mReadTimeoutMs = timeoutInMillis;
+            readTimeoutMs = timeoutInMillis;
             return this;
         }
 
         @NonNull
         public Builder setDomainKey(@NonNull final String domainKey) {
-            mDomainKey = domainKey;
+            this.domainKey = domainKey;
             return this;
         }
 
         @NonNull
         public Builder setDomainMenuId(@IdRes final int domainMenuId) {
-            mDomainMenuId = domainMenuId;
+            this.domainMenuId = domainMenuId;
             return this;
         }
 
         @NonNull
         public Builder setDomainViewId(@IdRes final int domainViewId) {
-            mDomainViewId = domainViewId;
+            this.domainViewId = domainViewId;
             return this;
         }
 
         @NonNull
         public Builder setSupportsMultipleCoverSizes(final boolean supportsMultipleCoverSizes) {
-            mSupportsMultipleCoverSizes = supportsMultipleCoverSizes;
+            this.supportsMultipleCoverSizes = supportsMultipleCoverSizes;
             return this;
         }
 
         @NonNull
         public Builder setFilenameSuffix(@NonNull final String filenameSuffix) {
-            mFilenameSuffix = filenameSuffix;
+            this.filenameSuffix = filenameSuffix;
             return this;
         }
     }

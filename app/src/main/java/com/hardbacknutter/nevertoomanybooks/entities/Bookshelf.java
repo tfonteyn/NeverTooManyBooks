@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -43,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -51,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 /**
  * Represents a Bookshelf.
  *
- * <strong>Warning:</strong> the {@link ListStyle} association is LAZY.
+ * <strong>Warning:</strong> the {@link Style} association is LAZY.
  * i.o.w. the stored style UUID will/must always be validated before being used.
  * See {@link #getStyle(Context)}.
  */
@@ -124,7 +123,7 @@ public class Bookshelf
      * @param style the style to apply to this shelf
      */
     public Bookshelf(@NonNull final String name,
-                     @NonNull final ListStyle style) {
+                     @NonNull final Style style) {
         this.name = name.trim();
         styleUuid = style.getUuid();
     }
@@ -227,8 +226,8 @@ public class Bookshelf
             return bookshelf;
 
         } else if (id == PREFERRED) {
-            final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-            final String name = global.getString(PREF_BOOKSHELF_CURRENT, null);
+            final String name = PreferenceManager.getDefaultSharedPreferences(context)
+                                                 .getString(PREF_BOOKSHELF_CURRENT, null);
             if (name != null && !name.isEmpty()) {
                 return ServiceLocator.getInstance().getBookshelfDao().findByName(name);
             }
@@ -241,11 +240,9 @@ public class Bookshelf
 
     /**
      * Set this bookshelf as the current/preferred.
-     *
-     * @param global Global preferences
      */
-    public void setAsPreferred(@NonNull final SharedPreferences global) {
-        global.edit().putString(PREF_BOOKSHELF_CURRENT, name).apply();
+    public void setAsPreferred() {
+        ServiceLocator.getPreferences().edit().putString(PREF_BOOKSHELF_CURRENT, name).apply();
     }
 
     @Override
@@ -281,7 +278,7 @@ public class Bookshelf
      * @throws SanityCheck.MissingValueException if the style is 'new' (id==0)
      */
     public void setStyle(@NonNull final Context context,
-                         @NonNull final ListStyle style) {
+                         @NonNull final Style style) {
         SanityCheck.requireNonZero(style.getId(), "style.getId()");
 
         styleUuid = style.getUuid();
@@ -298,11 +295,11 @@ public class Bookshelf
      * @return the style associated with this bookshelf.
      */
     @NonNull
-    public ListStyle getStyle(@NonNull final Context context) {
+    public Style getStyle(@NonNull final Context context) {
 
         // Always validate first
-        final ListStyle style = ServiceLocator.getInstance().getStyles()
-                                              .getStyleOrDefault(context, styleUuid);
+        final Style style = ServiceLocator.getInstance().getStyles()
+                                          .getStyleOrDefault(context, styleUuid);
         // the previous uuid might have been overruled so we always refresh it
         styleUuid = style.getUuid();
         return style;
@@ -386,7 +383,7 @@ public class Bookshelf
      */
     public void validateStyle(@NonNull final Context context) {
         final String uuid = styleUuid;
-        final ListStyle style = getStyle(context);
+        final Style style = getStyle(context);
         if (!uuid.equals(style.getUuid())) {
             ServiceLocator.getInstance().getBookshelfDao().update(context, this);
         }

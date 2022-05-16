@@ -25,7 +25,6 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.preference.PreferenceManager;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -77,12 +76,12 @@ public class PBitmaskFilter
     private Set<Integer> value;
 
     PBitmaskFilter(@NonNull final String name,
-                   @StringRes final int labelId,
+                   @StringRes final int labelResId,
                    @NonNull final TableDefinition table,
                    @NonNull final Domain domain,
                    @NonNull final Supplier<Map<Integer, Integer>> bitsAndLabelSupplier) {
         this.name = name;
-        labelResId = labelId;
+        this.labelResId = labelResId;
         this.domain = domain;
         this.table = table;
         bitsAndLabels = bitsAndLabelSupplier;
@@ -90,8 +89,7 @@ public class PBitmaskFilter
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        if (!DBKey.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                          domain.getName())) {
+        if (!DBKey.isUsed(domain.getName())) {
             return false;
         }
 

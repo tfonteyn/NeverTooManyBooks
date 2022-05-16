@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,19 +58,18 @@ public class EditBookNotesFragment
         super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
-        mVm.initFields(getContext(), FragmentId.Notes, FieldGroup.Notes);
+        vm.initFields(getContext(), FragmentId.Notes, FieldGroup.Notes);
     }
 
     @Override
-    void onPopulateViews(@NonNull final SharedPreferences global,
-                         @NonNull final List<Field<?, ? extends View>> fields,
+    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
 
-        super.onPopulateViews(global, fields, book);
+        super.onPopulateViews(fields, book);
 
         getFab().setVisibility(View.INVISIBLE);
 
         //noinspection ConstantConditions
-        fields.forEach(field -> field.setVisibility(getView(), global, false, false));
+        fields.forEach(field -> field.setVisibility(getView(), false, false));
     }
 }

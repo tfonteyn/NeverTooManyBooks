@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields;
 
-import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -71,7 +70,7 @@ public abstract class BaseField<T, V extends View>
 
     /**
      * The preference key (field-name) to check if this Field is used or not.
-     * i.e. the key to be used for {@link DBKey#isUsed(SharedPreferences, String)}.
+     * i.e. the key to be used for {@link #isUsed()}.
      */
     @NonNull
     private final String mIsUsedKey;
@@ -256,7 +255,6 @@ public abstract class BaseField<T, V extends View>
 
     @Override
     public void setVisibility(@NonNull final View parent,
-                              @NonNull final SharedPreferences global,
                               final boolean hideEmptyFields,
                               final boolean keepHiddenFieldsHidden) {
         final View view = requireView();
@@ -275,7 +273,7 @@ public abstract class BaseField<T, V extends View>
                 view.setVisibility(View.GONE);
                 setRelatedViewsVisibility(parent, View.GONE);
 
-            } else if (isUsed(global)) {
+            } else if (isUsed()) {
                 // Anything else (in use) should be visible if it's not yet.
                 view.setVisibility(View.VISIBLE);
                 setRelatedViewsVisibility(parent, View.VISIBLE);
@@ -301,12 +299,11 @@ public abstract class BaseField<T, V extends View>
 
     @CallSuper
     @Override
-    public void setParentView(@NonNull final View parent,
-                              @NonNull final SharedPreferences global) {
+    public void setParentView(@NonNull final View parent) {
 
         mViewReference = new WeakReference<>(parent.findViewById(mFieldViewId));
         // Unused fields are hidden here BEFORE they are displayed at all.
-        if (!isUsed(global)) {
+        if (!isUsed()) {
             requireView().setVisibility(View.GONE);
             setRelatedViewsVisibility(parent, View.GONE);
             return;
@@ -392,8 +389,8 @@ public abstract class BaseField<T, V extends View>
     }
 
     @Override
-    public boolean isUsed(@NonNull final SharedPreferences global) {
-        return DBKey.isUsed(global, mIsUsedKey);
+    public boolean isUsed() {
+        return DBKey.isUsed(mIsUsedKey);
     }
 
     @Override

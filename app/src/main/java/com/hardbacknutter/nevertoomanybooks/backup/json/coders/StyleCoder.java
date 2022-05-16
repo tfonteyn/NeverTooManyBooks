@@ -28,12 +28,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BaseStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BookDetailsFieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistBookFieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -41,13 +42,12 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BookshelfBookl
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.PublisherBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.SeriesBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleDataStore;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
-public class ListStyleCoder
-        implements JsonCoder<ListStyle> {
+public class StyleCoder
+        implements JsonCoder<Style> {
 
     /** The sub-tag for the array with the style settings. */
     private static final String STYLE_SETTINGS = "settings";
@@ -60,13 +60,13 @@ public class ListStyleCoder
      *
      * @param context Current context
      */
-    public ListStyleCoder(@NonNull final Context context) {
+    public StyleCoder(@NonNull final Context context) {
         this.context = context;
     }
 
     @NonNull
     @Override
-    public JSONObject encode(@NonNull final ListStyle style)
+    public JSONObject encode(@NonNull final Style style)
             throws JSONException {
         final JSONObject out = new JSONObject();
 
@@ -82,7 +82,7 @@ public class ListStyleCoder
             // The set 'dest' will go under a new JSON object 'STYLE_SETTINGS'
             final JSONObject dest = new JSONObject();
 
-            dest.put(StyleDataStore.PK_STYLE_GROUPS, new JSONArray(
+            dest.put(StyleDataStore.PK_GROUPS, new JSONArray(
                     userStyle.getGroupList()
                              .stream()
                              .map(BooklistGroup::getId)
@@ -110,13 +110,14 @@ public class ListStyleCoder
 
             dest.put(StyleDataStore.PK_TEXT_SCALE, userStyle.getTextScale());
             dest.put(StyleDataStore.PK_COVER_SCALE, userStyle.getCoverScale());
+            dest.put(StyleDataStore.PK_LIST_HEADER, userStyle.getHeaderFieldVisibility());
 
-            dest.put(StyleDataStore.PK_LIST_HEADER,
-                     userStyle.getShowHeaderFields());
+            // since v3 stored as bitmask and no longer as individual flags
             dest.put(BookDetailsFieldVisibility.PK_VISIBILITY,
-                     userStyle.getBookDetailsFieldVisibility().getValue());
-            dest.put(BooklistBookFieldVisibility.PK_VISIBILITY,
-                     userStyle.getBooklistBookFieldVisibility().getValue());
+                     userStyle.getFieldVisibility(Style.Screen.Detail));
+            // since v3 stored as bitmask and no longer as individual flags
+            dest.put(BooklistFieldVisibility.PK_VISIBILITY,
+                     userStyle.getFieldVisibility(Style.Screen.List));
 
             out.put(STYLE_SETTINGS, dest);
         }
@@ -125,16 +126,16 @@ public class ListStyleCoder
 
     @NonNull
     @Override
-    public ListStyle decode(@NonNull final JSONObject data)
+    public Style decode(@NonNull final JSONObject data)
             throws JSONException {
 
         final String uuid = data.getString(DBKey.STYLE_UUID);
 
-        final Styles styles = ServiceLocator.getInstance().getStyles();
+        final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
 
         if (BuiltinStyle.isBuiltin(uuid)) {
             // It's a builtin style
-            final ListStyle style = styles.getStyle(context, uuid);
+            final Style style = stylesHelper.getStyle(context, uuid);
             //noinspection ConstantConditions
             style.setPreferred(data.getBoolean(DBKey.STYLE_IS_PREFERRED));
             style.setMenuPosition(data.getInt(DBKey.STYLE_MENU_POSITION));
@@ -150,7 +151,7 @@ public class ListStyleCoder
                 // any element in the source which we don't know, will simply be ignored.
                 final JSONObject source = data.getJSONObject(STYLE_SETTINGS);
 
-                if (source.has(StyleDataStore.PK_STYLE_GROUPS)) {
+                if (source.has(StyleDataStore.PK_GROUPS)) {
                     decodeGroups(userStyle, source);
                 }
 
@@ -159,7 +160,7 @@ public class ListStyleCoder
                             source.getInt(StyleDataStore.PK_EXPANSION_LEVEL));
                 }
                 if (source.has(StyleDataStore.PK_GROUP_ROW_HEIGHT)) {
-                    userStyle.setUseGroupRowPreferredHeight(
+                    userStyle.setGroupRowUsesPreferredHeight(
                             source.getBoolean(StyleDataStore.PK_GROUP_ROW_HEIGHT));
                 }
                 if (source.has(StyleDataStore.PK_SORT_AUTHOR_NAME_GIVEN_FIRST)) {
@@ -177,19 +178,22 @@ public class ListStyleCoder
                     userStyle.setCoverScale(source.getInt(StyleDataStore.PK_COVER_SCALE));
                 }
                 if (source.has(StyleDataStore.PK_LIST_HEADER)) {
-                    userStyle.setShowHeaderFields(
+                    userStyle.setHeaderFieldVisibility(
                             source.getInt(StyleDataStore.PK_LIST_HEADER));
                 }
 
-                decodeV2ListAndDetailVisibility(userStyle, source);
 
                 if (source.has(BookDetailsFieldVisibility.PK_VISIBILITY)) {
-                    userStyle.getBookDetailsFieldVisibility()
-                             .setValue(source.getInt(BookDetailsFieldVisibility.PK_VISIBILITY));
+                    userStyle.setFieldVisibility(Style.Screen.Detail, source.getInt(
+                            BookDetailsFieldVisibility.PK_VISIBILITY));
+                } else {
+                    decodeV2DetailVisibility(userStyle, source);
                 }
-                if (source.has(BooklistBookFieldVisibility.PK_VISIBILITY)) {
-                    userStyle.getBooklistBookFieldVisibility()
-                             .setValue(source.getInt(BooklistBookFieldVisibility.PK_VISIBILITY));
+                if (source.has(BooklistFieldVisibility.PK_VISIBILITY)) {
+                    userStyle.setFieldVisibility(Style.Screen.List, source.getInt(
+                            BooklistFieldVisibility.PK_VISIBILITY));
+                } else {
+                    decodeV2ListVisibility(userStyle, source);
                 }
             }
 
@@ -200,7 +204,7 @@ public class ListStyleCoder
     private void decodeGroups(final UserStyle userStyle,
                               final JSONObject source)
             throws JSONException {
-        final JSONArray groupArray = source.getJSONArray(StyleDataStore.PK_STYLE_GROUPS);
+        final JSONArray groupArray = source.getJSONArray(StyleDataStore.PK_GROUPS);
         final List<Integer> groupIds = IntStream.range(0, groupArray.length())
                                                 .mapToObj(groupArray::getInt)
                                                 .collect(Collectors.toList());
@@ -228,60 +232,57 @@ public class ListStyleCoder
         }
     }
 
-    private void decodeV2ListAndDetailVisibility(@NonNull final BooklistStyle userStyle,
-                                                 @NonNull final JSONObject source) {
+    private void decodeV2DetailVisibility(@NonNull final BaseStyle style,
+                                          @NonNull final JSONObject source) {
 
-        final BookDetailsFieldVisibility detailScreen =
-                userStyle.getBookDetailsFieldVisibility();
-
-        if (source.has(StyleDataStore.PK_STYLE_BOOK_DETAILS_COVER[0])) {
-            detailScreen.setShowCover(0, source.getBoolean(
-                    StyleDataStore.PK_STYLE_BOOK_DETAILS_COVER[0]));
+        if (source.has(StyleDataStore.PK_DETAILS_SHOW_COVER[0])) {
+            style.setShowField(Style.Screen.Detail, DBKey.COVER_IS_USED[0], source.getBoolean(
+                    StyleDataStore.PK_DETAILS_SHOW_COVER[0]));
         }
-        if (source.has(StyleDataStore.PK_STYLE_BOOK_DETAILS_COVER[1])) {
-            detailScreen.setShowCover(1, source.getBoolean(
-                    StyleDataStore.PK_STYLE_BOOK_DETAILS_COVER[1]));
+        if (source.has(StyleDataStore.PK_DETAILS_SHOW_COVER[1])) {
+            style.setShowField(Style.Screen.Detail, DBKey.COVER_IS_USED[1], source.getBoolean(
+                    StyleDataStore.PK_DETAILS_SHOW_COVER[1]));
         }
+    }
 
-
-        final BooklistBookFieldVisibility listScreen =
-                userStyle.getBooklistBookFieldVisibility();
+    private void decodeV2ListVisibility(@NonNull final BaseStyle style,
+                                        @NonNull final JSONObject source) {
 
         if (source.has(StyleDataStore.PK_LIST_SHOW_COVERS)) {
-            listScreen.setShowField(BooklistBookFieldVisibility.SHOW_COVER_0,
-                                    source.getBoolean(StyleDataStore.PK_LIST_SHOW_COVERS));
+            style.setShowField(Style.Screen.List, DBKey.COVER_IS_USED[0],
+                               source.getBoolean(StyleDataStore.PK_LIST_SHOW_COVERS));
         }
         if (source.has(StyleDataStore.PK_LIST_SHOW_AUTHOR)) {
-            listScreen.setShowField(BooklistBookFieldVisibility.SHOW_AUTHOR,
-                                    source.getBoolean(StyleDataStore.PK_LIST_SHOW_AUTHOR));
+            style.setShowField(Style.Screen.List, DBKey.FK_AUTHOR,
+                               source.getBoolean(StyleDataStore.PK_LIST_SHOW_AUTHOR));
         }
         if (source.has(StyleDataStore.PK_LIST_SHOW_PUBLISHER)) {
-            listScreen.setShowField(BooklistBookFieldVisibility.SHOW_PUBLISHER,
-                                    source.getBoolean(StyleDataStore.PK_LIST_SHOW_PUBLISHER));
+            style.setShowField(Style.Screen.List, DBKey.FK_PUBLISHER,
+                               source.getBoolean(StyleDataStore.PK_LIST_SHOW_PUBLISHER));
         }
         if (source.has(StyleDataStore.PK_LIST_SHOW_PUB_DATE)) {
-            listScreen.setShowField(BooklistBookFieldVisibility.SHOW_PUB_DATE,
-                                    source.getBoolean(StyleDataStore.PK_LIST_SHOW_PUB_DATE));
+            style.setShowField(Style.Screen.List, DBKey.DATE_BOOK_PUBLICATION,
+                               source.getBoolean(StyleDataStore.PK_LIST_SHOW_PUB_DATE));
         }
         if (source.has(StyleDataStore.PK_LIST_SHOW_FORMAT)) {
-            listScreen.setShowField(BooklistBookFieldVisibility.SHOW_FORMAT,
-                                    source.getBoolean(StyleDataStore.PK_LIST_SHOW_FORMAT));
+            style.setShowField(Style.Screen.List, DBKey.BOOK_FORMAT,
+                               source.getBoolean(StyleDataStore.PK_LIST_SHOW_FORMAT));
         }
         if (source.has(StyleDataStore.PK_LIST_SHOW_LOCATION)) {
-            listScreen.setShowField(BooklistBookFieldVisibility.SHOW_LOCATION,
-                                    source.getBoolean(StyleDataStore.PK_LIST_SHOW_LOCATION));
+            style.setShowField(Style.Screen.List, DBKey.LOCATION,
+                               source.getBoolean(StyleDataStore.PK_LIST_SHOW_LOCATION));
         }
         if (source.has(StyleDataStore.PK_LIST_SHOW_RATING)) {
-            listScreen.setShowField(BooklistBookFieldVisibility.SHOW_RATING,
-                                    source.getBoolean(StyleDataStore.PK_LIST_SHOW_RATING));
+            style.setShowField(Style.Screen.List, DBKey.RATING,
+                               source.getBoolean(StyleDataStore.PK_LIST_SHOW_RATING));
         }
         if (source.has(StyleDataStore.PK_LIST_SHOW_BOOKSHELVES)) {
-            listScreen.setShowField(BooklistBookFieldVisibility.SHOW_BOOKSHELVES,
-                                    source.getBoolean(StyleDataStore.PK_LIST_SHOW_BOOKSHELVES));
+            style.setShowField(Style.Screen.List, DBKey.FK_BOOKSHELF,
+                               source.getBoolean(StyleDataStore.PK_LIST_SHOW_BOOKSHELVES));
         }
         if (source.has(StyleDataStore.PK_LIST_SHOW_ISBN)) {
-            listScreen.setShowField(BooklistBookFieldVisibility.SHOW_ISBN,
-                                    source.getBoolean(StyleDataStore.PK_LIST_SHOW_ISBN));
+            style.setShowField(Style.Screen.List, DBKey.KEY_ISBN,
+                               source.getBoolean(StyleDataStore.PK_LIST_SHOW_ISBN));
         }
     }
 

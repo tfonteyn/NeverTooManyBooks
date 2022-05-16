@@ -94,7 +94,7 @@ public class ImportFragment
     private static final String MIME_TYPES = "*/*";
 
     /** Set the hosting Activity result, and close it. */
-    private final OnBackPressedCallback onBackPressedCallback =
+    private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
@@ -153,7 +153,7 @@ public class ImportFragment
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), onBackPressedCallback);
+                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
         vm.onReadMetaDataFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
         vm.onReadMetaDataCancelled().observe(getViewLifecycleOwner(), this::onMetaDataCancelled);

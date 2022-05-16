@@ -25,8 +25,8 @@ import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -37,8 +37,8 @@ public class BooklistGroupTest
     @Test
     public void cc() {
         final Context context = mSl.getLocalizedAppContext();
-        final Styles styles = mSl.getStyles();
-        final ListStyle s1 = styles.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
+        final StylesHelper stylesHelper = mSl.getStyles();
+        final Style s1 = stylesHelper.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
         assertNotNull(s1);
 
         final BooklistGroup g1 = BooklistGroup.newInstance(BooklistGroup.COLOR, s1);

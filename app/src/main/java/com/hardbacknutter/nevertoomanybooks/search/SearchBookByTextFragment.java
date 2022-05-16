@@ -58,29 +58,30 @@ public class SearchBookByTextFragment
     public static final String TAG = "SearchBookByTextFragment";
 
     /** adapter for the AutoCompleteTextView. */
-    private ExtArrayAdapter<String> mAuthorAdapter;
+    private ExtArrayAdapter<String> authorAdapter;
     /** adapter for the AutoCompleteTextView. */
-    private ExtArrayAdapter<String> mPublisherAdapter;
+    private ExtArrayAdapter<String> publisherAdapter;
     /** View Binding. */
-    private FragmentBooksearchByTextBinding mVb;
+    private FragmentBooksearchByTextBinding vb;
 
-    private SearchBookByTextViewModel mVm;
+    private SearchBookByTextViewModel vm;
 
     @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider mSearchSitesToolbarMenuProvider;
+    private MenuProvider searchSitesToolbarMenuProvider;
 
     @Override
     @NonNull
     protected Bundle getResultData() {
-        return mVm.getResultData();
+        return vm.getResultData();
     }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mVm = new ViewModelProvider(this).get(SearchBookByTextViewModel.class);
-        mVm.init();
+        vm = new ViewModelProvider(this).get(SearchBookByTextViewModel.class);
+        //noinspection ConstantConditions
+        vm.init(getContext());
     }
 
     @Override
@@ -88,8 +89,8 @@ public class SearchBookByTextFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentBooksearchByTextBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentBooksearchByTextBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @Override
@@ -99,39 +100,39 @@ public class SearchBookByTextFragment
 
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_search_for_books);
-        mSearchSitesToolbarMenuProvider = new SearchSitesToolbarMenuProvider();
-        toolbar.addMenuProvider(mSearchSitesToolbarMenuProvider, getViewLifecycleOwner());
+        searchSitesToolbarMenuProvider = new SearchSitesToolbarMenuProvider();
+        toolbar.addMenuProvider(searchSitesToolbarMenuProvider, getViewLifecycleOwner());
 
-        if (mVm.usePublisher()) {
-            mVb.lblPublisher.setVisibility(View.VISIBLE);
+        if (vm.usePublisher()) {
+            vb.lblPublisher.setVisibility(View.VISIBLE);
 
-            mVb.title.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-            mVb.title.setOnEditorActionListener(null);
+            vb.title.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+            vb.title.setOnEditorActionListener(null);
 
-            mVb.publisher.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-            mVb.publisher.setOnEditorActionListener(this::onEditorAction);
+            vb.publisher.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+            vb.publisher.setOnEditorActionListener(this::onEditorAction);
 
         } else {
-            mVb.lblPublisher.setVisibility(View.GONE);
+            vb.lblPublisher.setVisibility(View.GONE);
 
-            mVb.title.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-            mVb.title.setOnEditorActionListener(this::onEditorAction);
+            vb.title.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+            vb.title.setOnEditorActionListener(this::onEditorAction);
         }
 
-        mVb.author.setText(mCoordinator.getAuthorSearchText());
-        mVb.title.setText(mCoordinator.getTitleSearchText());
-        mVb.publisher.setText(mCoordinator.getPublisherSearchText());
+        vb.author.setText(coordinator.getAuthorSearchText());
+        vb.title.setText(coordinator.getTitleSearchText());
+        vb.publisher.setText(coordinator.getPublisherSearchText());
 
         populateAuthorList();
         populatePublisherList();
 
-        mVb.btnSearch.setOnClickListener(v -> startSearch());
-        explainSitesSupport(mCoordinator.getSiteList());
+        vb.btnSearch.setOnClickListener(v -> startSearch());
+        explainSitesSupport(coordinator.getSiteList());
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             TipManager.getInstance().display(getContext(), R.string.tip_book_search_by_text, () ->
-                    Site.promptToRegister(getContext(), mCoordinator.getSiteList(),
+                    Site.promptToRegister(getContext(), coordinator.getSiteList(),
                                           "searchByText", null));
         }
     }
@@ -142,14 +143,14 @@ public class SearchBookByTextFragment
                     .filter(Site::isEnabled)
                     .map(Site::getSearchEngine)
                     .anyMatch(se -> se instanceof SearchEngine.ByText)) {
-            mVb.btnSearch.setEnabled(true);
-            mVb.txtCanSearch.setVisibility(View.GONE);
+            vb.btnSearch.setEnabled(true);
+            vb.txtCanSearch.setVisibility(View.GONE);
         } else {
-            mVb.btnSearch.setEnabled(false);
-            mVb.txtCanSearch.setVisibility(View.VISIBLE);
-            mVb.txtCanSearch.setText(getString(R.string.warning_no_site_supports_this_method,
-                                               getString(R.string.lbl_author)
-                                               + " / " + getString(R.string.lbl_title)));
+            vb.btnSearch.setEnabled(false);
+            vb.txtCanSearch.setVisibility(View.VISIBLE);
+            vb.txtCanSearch.setText(getString(R.string.warning_no_site_supports_this_method,
+                                              getString(R.string.lbl_author)
+                                              + " / " + getString(R.string.lbl_title)));
         }
     }
 
@@ -171,10 +172,10 @@ public class SearchBookByTextFragment
     }
 
     private void viewToModel() {
-        mCoordinator.setAuthorSearchText(mVb.author.getText().toString().trim());
+        coordinator.setAuthorSearchText(vb.author.getText().toString().trim());
         //noinspection ConstantConditions
-        mCoordinator.setTitleSearchText(mVb.title.getText().toString().trim());
-        mCoordinator.setPublisherSearchText(mVb.publisher.getText().toString().trim());
+        coordinator.setTitleSearchText(vb.title.getText().toString().trim());
+        coordinator.setPublisherSearchText(vb.publisher.getText().toString().trim());
     }
 
     /**
@@ -182,10 +183,10 @@ public class SearchBookByTextFragment
      */
     private void populateAuthorList() {
         //noinspection ConstantConditions
-        mAuthorAdapter = new ExtArrayAdapter<>(
+        authorAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Diacritic, mVm.getAuthorNames(getContext()));
-        mVb.author.setAdapter(mAuthorAdapter);
+                ExtArrayAdapter.FilterType.Diacritic, vm.getAuthorNames(getContext()));
+        vb.author.setAdapter(authorAdapter);
     }
 
     /**
@@ -193,44 +194,44 @@ public class SearchBookByTextFragment
      */
     private void populatePublisherList() {
         //noinspection ConstantConditions
-        mPublisherAdapter = new ExtArrayAdapter<>(
+        publisherAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Diacritic, mVm.getPublisherNames(getContext()));
-        mVb.publisher.setAdapter(mPublisherAdapter);
+                ExtArrayAdapter.FilterType.Diacritic, vm.getPublisherNames(getContext()));
+        vb.publisher.setAdapter(publisherAdapter);
     }
 
     @Override
     boolean onPreSearch() {
         viewToModel();
 
-        final String authorSearchText = mCoordinator.getAuthorSearchText();
+        final String authorSearchText = coordinator.getAuthorSearchText();
         if (!authorSearchText.isEmpty()) {
             // Always add the current search text (if not already present)
             // to the list of recent searches.
-            if (mAuthorAdapter.getPosition(authorSearchText) < 0) {
-                if (mVm.addAuthorName(authorSearchText)) {
+            if (authorAdapter.getPosition(authorSearchText) < 0) {
+                if (vm.addAuthorName(authorSearchText)) {
                     // Add to adapter, in case search produces no results
-                    mAuthorAdapter.add(authorSearchText);
+                    authorAdapter.add(authorSearchText);
                 }
             }
         }
 
-        final String publisherSearchText = mCoordinator.getPublisherSearchText();
-        if (mVm.usePublisher() && !publisherSearchText.isEmpty()) {
+        final String publisherSearchText = coordinator.getPublisherSearchText();
+        if (vm.usePublisher() && !publisherSearchText.isEmpty()) {
             // Always add the current search text (if not already present)
             // to the list of recent searches.
-            if (mPublisherAdapter.getPosition(publisherSearchText) < 0) {
-                if (mVm.addPublisherName(publisherSearchText)) {
+            if (publisherAdapter.getPosition(publisherSearchText) < 0) {
+                if (vm.addPublisherName(publisherSearchText)) {
                     // Add to adapter, in case search produces no results
-                    mPublisherAdapter.add(publisherSearchText);
+                    publisherAdapter.add(publisherSearchText);
                 }
             }
         }
 
         //sanity check
-        final String titleSearchText = mCoordinator.getTitleSearchText();
+        final String titleSearchText = coordinator.getTitleSearchText();
         if (authorSearchText.isEmpty() && titleSearchText.isEmpty()) {
-            Snackbar.make(mVb.getRoot(), R.string.warning_requires_at_least_1_field,
+            Snackbar.make(vb.getRoot(), R.string.warning_requires_at_least_1_field,
                           Snackbar.LENGTH_LONG).show();
             return false;
         }
@@ -246,7 +247,7 @@ public class SearchBookByTextFragment
         // we add them manually as the template for a new book.
 
         if (!bookData.containsKey(DBKey.TITLE)) {
-            bookData.putString(DBKey.TITLE, mCoordinator.getTitleSearchText());
+            bookData.putString(DBKey.TITLE, coordinator.getTitleSearchText());
         }
 
         final ArrayList<Author> authors =
@@ -254,7 +255,7 @@ public class SearchBookByTextFragment
         if (authors == null || authors.isEmpty()) {
             // do NOT use the array, that's reserved for verified names.
             bookData.putString(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
-                               mCoordinator.getAuthorSearchText());
+                               coordinator.getAuthorSearchText());
         }
 
         final ArrayList<Publisher> publishers =
@@ -262,7 +263,7 @@ public class SearchBookByTextFragment
         if (publishers == null || publishers.isEmpty()) {
             // do NOT use the array, that's reserved for verified names.
             bookData.putString(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER,
-                               mCoordinator.getPublisherSearchText());
+                               coordinator.getPublisherSearchText());
         }
 
         // edit book
@@ -272,9 +273,9 @@ public class SearchBookByTextFragment
     @Override
     void onClearSearchCriteria() {
         super.onClearSearchCriteria();
-        mVb.author.setText("");
-        mVb.title.setText("");
-        mVb.publisher.setText("");
+        vb.author.setText("");
+        vb.title.setText("");
+        vb.publisher.setText("");
     }
 
     @Override

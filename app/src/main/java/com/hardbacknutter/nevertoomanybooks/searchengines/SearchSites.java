@@ -73,8 +73,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.sites.IsfdbPreferencesFragm
  * </ol>
  * <p>
  *
- * <strong>Note:</strong> NEVER change the identifiers (bit flag) of the sites,
- * as they are stored in user preferences.
+ * <strong>Note:</strong>
+ * <strong>Never change the identifier of the sites</strong>, they get stored in the db.
  * Dev note: there is really only one place where the code relies on this being bit numbers...
  * but we might as well keep them as bits.
  */

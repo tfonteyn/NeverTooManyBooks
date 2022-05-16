@@ -32,7 +32,7 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragment;
 
@@ -54,7 +54,7 @@ public class PreferredStylesContract
                                @NonNull final String styleUuid) {
         return FragmentHostActivity
                 .createIntent(context, PreferredStylesFragment.class)
-                .putExtra(ListStyle.BKEY_UUID, styleUuid);
+                .putExtra(Style.BKEY_UUID, styleUuid);
     }
 
     @Override

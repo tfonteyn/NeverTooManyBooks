@@ -20,12 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
@@ -67,8 +65,7 @@ public enum RebuildBooklist
      */
     @NonNull
     public static RebuildBooklist getPreferredMode(@NonNull final Context context) {
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        final int value = Prefs.getIntListPref(global, Prefs.pk_booklist_rebuild_state,
+        final int value = Prefs.getIntListPref(context, Prefs.pk_booklist_rebuild_state,
                                                FromSaved.value);
         switch (value) {
             case 3:

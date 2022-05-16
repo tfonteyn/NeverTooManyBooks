@@ -57,7 +57,7 @@ public class CsvArchiveReader
 
     /** Import configuration. */
     @NonNull
-    private final ImportHelper mHelper;
+    private final ImportHelper importHelper;
 
     /**
      * Constructor.
@@ -65,7 +65,7 @@ public class CsvArchiveReader
      * @param helper import configuration
      */
     public CsvArchiveReader(@NonNull final ImportHelper helper) {
-        mHelper = helper;
+        importHelper = helper;
     }
 
     @NonNull
@@ -83,15 +83,15 @@ public class CsvArchiveReader
                                  new File(ServiceLocator.getUpgradesDir(), DB_BACKUP_NAME),
                                  DB_BACKUP_COPIES);
 
-        try (InputStream is = context.getContentResolver().openInputStream(mHelper.getUri());
+        try (InputStream is = context.getContentResolver().openInputStream(importHelper.getUri());
              RecordReader recordReader = new CsvRecordReader(context)) {
             if (is == null) {
-                throw new FileNotFoundException(mHelper.getUri().toString());
+                throw new FileNotFoundException(importHelper.getUri().toString());
             }
             final ArchiveReaderRecord record = new CsvArchiveRecord(
-                    mHelper.getUriInfo().getDisplayName(context), is);
+                    importHelper.getUriInfo().getDisplayName(context), is);
 
-            return recordReader.read(context, record, mHelper, progressListener);
+            return recordReader.read(context, record, importHelper, progressListener);
         }
     }
 

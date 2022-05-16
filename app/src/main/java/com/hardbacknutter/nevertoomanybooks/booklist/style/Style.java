@@ -36,9 +36,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BookshelfBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.PublisherBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.SeriesBooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
-public interface ListStyle {
+public interface Style {
 
     /**
      * The (arbitrary) position for a style which is not on the user preferred style list.
@@ -47,15 +48,15 @@ public interface ListStyle {
     int MENU_POSITION_NOT_PREFERRED = 1000;
 
     /**
-     * A ListStyle <strong>UUID</strong>.
+     * A Style <strong>UUID</strong>.
      * <p>
      * <br>type: {@code String}
      */
-    String BKEY_UUID = "ListStyle:uuid";
+    String BKEY_UUID = "Style:uuid";
 
     /**
      * Text Scaling.
-     * NEVER change these values, they get stored in preferences.
+     * <strong>Never change these values</strong>, they get stored in the db.
      * The book title in the list is by default 'medium' (see styles.xml)
      * Other elements are always 1 size 'less' than the title.
      */
@@ -67,6 +68,10 @@ public interface ListStyle {
 
     int DEFAULT_TEXT_SCALE = TEXT_SCALE_2_MEDIUM;
 
+    /**
+     * Cover Scaling.
+     * <strong>Never change these values</strong>, they get stored in the db.
+     */
     int COVER_SCALE_HIDDEN = 0;
     int COVER_SCALE_SMALL = 1;
     int COVER_SCALE_MEDIUM = 2;
@@ -118,15 +123,6 @@ public interface ListStyle {
     String getUuid();
 
     /**
-     * Convenience/clarity method: check if this style represents the global settings.
-     *
-     * @return {@code true} if global
-     */
-    default boolean isGlobal() {
-        return getUuid().isEmpty();
-    }
-
-    /**
      * Get the menu position of this style as sorted by the user.
      *
      * @return menuPosition
@@ -172,7 +168,7 @@ public interface ListStyle {
      *
      * @return {@code true} if the header should be shown
      */
-    boolean isShowHeader(@BooklistHeader.Option int bit);
+    boolean isShowHeaderField(@BooklistHeader.Option int bit);
 
     /**
      * Whether the user prefers the Author names displayed by Given names, or by Family name first.
@@ -194,26 +190,38 @@ public interface ListStyle {
      *
      * @return scale
      */
+    @Style.TextScale
     int getTextScale();
 
+    /**
+     * Get the cover scale <strong>identifier</strong> used by the style.
+     *
+     * @return scale
+     */
+    @Style.CoverScale
     int getCoverScale();
 
-    /**
-     * Get the BooklistBookFieldVisibility style object.
-     *
-     * @return the BooklistBookFieldVisibility object
-     */
-    @NonNull
-    BooklistBookFieldVisibility getBooklistBookFieldVisibility();
 
     /**
-     * Get the BookDetailsFieldVisibility style object.
+     * Check if the given field should be displayed.
      *
-     * @return the BookDetailsFieldVisibility object
+     * @param screen to get the setting for
+     * @param dbKey  to check - one of the {@link DBKey} constants.
+     *
+     * @return {@code true} if in use
      */
-    @NonNull
-    BookDetailsFieldVisibility getBookDetailsFieldVisibility();
+    boolean isShowField(@NonNull Screen screen,
+                        @NonNull final String dbKey);
 
+    /**
+     * Get the bitmask value which defines book-field visibility on the
+     * <strong>DETAILS</strong> screens.
+     *
+     * @param screen to get the setting for
+     *
+     * @return bitmask
+     */
+    int getFieldVisibility(@NonNull Screen screen);
 
     /**
      * Get the group row <strong>height</strong> to be applied to
@@ -224,7 +232,6 @@ public interface ListStyle {
      * @return group row height value in pixels
      */
     int getGroupRowHeight(@NonNull Context context);
-
 
     /**
      * Get the number of groups in this style.
@@ -330,6 +337,13 @@ public interface ListStyle {
     @NonNull
     String getGroupsSummaryText(@NonNull final Context context);
 
+    @NonNull
+    String getFieldVisibilitySummaryText(@NonNull final Context context);
+
+    enum Screen {
+        List,
+        Detail
+    }
 
     @IntDef({TEXT_SCALE_0_VERY_SMALL,
              TEXT_SCALE_1_SMALL,

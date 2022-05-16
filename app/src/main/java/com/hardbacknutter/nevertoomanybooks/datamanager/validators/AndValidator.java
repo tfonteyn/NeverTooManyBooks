@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.datamanager.validators;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 public class AndValidator
         implements DataValidator {
 
-    private final Collection<DataValidator> mList = new ArrayList<>();
+    private final Collection<DataValidator> validators = new ArrayList<>();
 
     /**
      * Constructor.
@@ -43,18 +44,18 @@ public class AndValidator
      * @param validators list of validators
      */
     public AndValidator(@NonNull final DataValidator... validators) {
-        mList.addAll(Arrays.asList(validators));
+        this.validators.addAll(Arrays.asList(validators));
     }
 
     @Override
     public void validate(@NonNull final Context context,
                          @NonNull final DataManager dataManager,
                          @NonNull final String key,
-                         final int errorLabelId)
+                         @StringRes final int errorLabelResId)
             throws ValidatorException {
 
-        for (final DataValidator validator : mList) {
-            validator.validate(context, dataManager, key, errorLabelId);
+        for (final DataValidator validator : validators) {
+            validator.validate(context, dataManager, key, errorLabelResId);
         }
     }
 }

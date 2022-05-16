@@ -60,13 +60,13 @@ import java.util.function.Consumer;
 public final class OverlayProviderFactory {
 
     /** Don't show any overlay. */
-    public static final int STYLE_NONE = 0;
+    public static final int TYPE_NONE = 0;
     /** Show a static (non-moving) overlay. Classic BC. */
-    public static final int STYLE_STATIC = 1;
+    public static final int TYPE_STATIC = 1;
     /** Dynamic Material Design. */
-    public static final int STYLE_MD1 = 2;
+    public static final int TYPE_MD1 = 2;
     /** Dynamic Material Design 2. */
-    public static final int STYLE_MD2 = 3;
+    public static final int TYPE_MD2 = 3;
 
     @SuppressLint("UseCompatLoadingForDrawables")
     private static final Consumer<TextView> MD1 = popupView -> {
@@ -144,28 +144,28 @@ public final class OverlayProviderFactory {
     }
 
     @Nullable
-    static FastScroller.OverlayProvider create(final int overlayType,
+    static FastScroller.OverlayProvider create(@OverlayType final int id,
                                                final int thumbWidth,
                                                @NonNull final RecyclerView recyclerView) {
-        switch (overlayType) {
-            case STYLE_MD2:
+        switch (id) {
+            case TYPE_MD2:
                 return new FastScrollerOverlay(recyclerView, null, thumbWidth, MD2);
 
-            case STYLE_MD1:
+            case TYPE_MD1:
                 return new FastScrollerOverlay(recyclerView, null, thumbWidth, MD1);
 
-            case STYLE_STATIC:
+            case TYPE_STATIC:
                 return new ClassicOverlay(recyclerView, null, thumbWidth, STATIC);
 
-            case STYLE_NONE:
+            case TYPE_NONE:
             default:
                 return null;
         }
     }
 
-    @IntDef({STYLE_NONE, STYLE_STATIC, STYLE_MD1, STYLE_MD2})
+    @IntDef({TYPE_NONE, TYPE_STATIC, TYPE_MD1, TYPE_MD2})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface Style {
+    public @interface OverlayType {
 
     }
 }

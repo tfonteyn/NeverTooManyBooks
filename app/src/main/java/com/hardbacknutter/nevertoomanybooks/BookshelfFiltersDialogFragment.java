@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -37,7 +36,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -155,15 +153,11 @@ public class BookshelfFiltersDialogFragment
 
     // We don't set the modified flag on adding a filter - the filter is NOT activated yet here.
     private void onAdd() {
-        //noinspection ConstantConditions
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
-
         final List<String> keyList = new ArrayList<>();
         final List<String> labelList = new ArrayList<>();
 
         FilterFactory.SUPPORTED.forEach((key, value) -> {
-            if (DBKey.isUsed(global, key)) {
+            if (DBKey.isUsed(key)) {
                 keyList.add(key);
                 labelList.add(getString(value));
             }
@@ -172,6 +166,7 @@ public class BookshelfFiltersDialogFragment
         //noinspection ZeroLengthArrayAllocation
         final CharSequence[] items = labelList.toArray(new CharSequence[0]);
 
+        //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.lbl_add_filter)
                 .setSingleChoiceItems(items, -1, (dialog, which) -> {

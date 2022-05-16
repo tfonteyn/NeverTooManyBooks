@@ -81,10 +81,10 @@ public final class SyncReaderProcessor
     private static final String TAG = "SyncProcessor";
 
     @NonNull
-    private final Map<String, SyncField> mFields;
+    private final Map<String, SyncField> fields;
 
     private SyncReaderProcessor(@NonNull final Map<String, SyncField> fields) {
-        mFields = fields;
+        this.fields = fields;
     }
 
     /**
@@ -96,14 +96,14 @@ public final class SyncReaderProcessor
         final List<SyncField> list = new ArrayList<>();
         ParcelUtils.readParcelableList(in, list, SyncField.class.getClassLoader());
 
-        mFields = new LinkedHashMap<>();
-        list.forEach(syncField -> mFields.put(syncField.key, syncField));
+        fields = new LinkedHashMap<>();
+        list.forEach(syncField -> fields.put(syncField.key, syncField));
     }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        ParcelUtils.writeParcelableList(dest, new ArrayList<>(mFields.values()), flags);
+        ParcelUtils.writeParcelableList(dest, new ArrayList<>(fields.values()), flags);
     }
 
     @Override
@@ -127,7 +127,7 @@ public final class SyncReaderProcessor
 
         final Map<String, SyncField> filteredMap = new LinkedHashMap<>();
 
-        for (final SyncField field : mFields.values()) {
+        for (final SyncField field : fields.values()) {
             switch (field.getAction()) {
                 case Skip:
                     // duh...
@@ -410,23 +410,23 @@ public final class SyncReaderProcessor
     @NonNull
     public String toString() {
         return "SyncProcessor{"
-               + "mFields=" + mFields
+               + "fields=" + fields
                + '}';
     }
 
     public static class Builder {
 
         @NonNull
-        private final String mPreferencePrefix;
+        private final String preferencePrefix;
         @NonNull
-        private final SharedPreferences mGlobalPref;
+        private final SharedPreferences prefs;
 
         private final Map<String, SyncField> mFields = new LinkedHashMap<>();
         private final Map<String, String> mRelatedFields = new LinkedHashMap<>();
 
         public Builder(@NonNull final String preferencePrefix) {
-            mPreferencePrefix = preferencePrefix;
-            mGlobalPref = ServiceLocator.getGlobalPreferences();
+            this.preferencePrefix = preferencePrefix;
+            prefs = ServiceLocator.getPreferences();
         }
 
         /**
@@ -434,9 +434,9 @@ public final class SyncReaderProcessor
          */
         public void writePreferences() {
 
-            final SharedPreferences.Editor ed = mGlobalPref.edit();
+            final SharedPreferences.Editor ed = prefs.edit();
             for (final SyncField syncField : mFields.values()) {
-                syncField.getAction().write(ed, mPreferencePrefix + syncField.key);
+                syncField.getAction().write(ed, preferencePrefix + syncField.key);
             }
             ed.apply();
         }
@@ -493,34 +493,34 @@ public final class SyncReaderProcessor
          * Convenience method wrapper for {@link #add(int, String, SyncAction)}.
          * The default SyncAction is always {@link SyncAction#CopyIfBlank}.
          *
-         * @param labelId Field label resource id
-         * @param key     Field key
+         * @param labelResId Field label resource id
+         * @param key        Field key
          *
          * @return {@code this} (for chaining)
          */
-        public Builder add(@StringRes final int labelId,
+        public Builder add(@StringRes final int labelResId,
                            @NonNull final String key) {
-            return add(labelId, key, SyncAction.CopyIfBlank);
+            return add(labelResId, key, SyncAction.CopyIfBlank);
         }
 
         /**
          * Add a {@link SyncField} for a <strong>simple</strong> field
          * if it has not been hidden by the user.
          *
-         * @param labelId       Field label resource id
+         * @param labelResId    Field label resource id
          * @param key           Field key
          * @param defaultAction default Usage for this field
          *
          * @return {@code this} (for chaining)
          */
-        public Builder add(@StringRes final int labelId,
+        public Builder add(@StringRes final int labelResId,
                            @NonNull final String key,
                            @NonNull final SyncAction defaultAction) {
 
-            if (DBKey.isUsed(mGlobalPref, key)) {
+            if (DBKey.isUsed(key)) {
                 final SyncAction action = SyncAction
-                        .read(mGlobalPref, mPreferencePrefix + key, defaultAction);
-                mFields.put(key, new SyncField(key, labelId, false,
+                        .read(prefs, preferencePrefix + key, defaultAction);
+                mFields.put(key, new SyncField(key, labelResId, false,
                                                defaultAction, action));
             }
             return this;
@@ -532,20 +532,20 @@ public final class SyncReaderProcessor
          * <p>
          * The default SyncAction is always {@link SyncAction#Append}.
          *
-         * @param labelId Field label resource id
-         * @param prefKey Field name to use for preferences.
-         * @param key     Field key
+         * @param labelResId Field label resource id
+         * @param prefKey    Field name to use for preferences.
+         * @param key        Field key
          *
          * @return {@code this} (for chaining)
          */
-        public Builder addList(@StringRes final int labelId,
+        public Builder addList(@StringRes final int labelResId,
                                @NonNull final String prefKey,
                                @NonNull final String key) {
 
-            if (DBKey.isUsed(mGlobalPref, prefKey)) {
+            if (DBKey.isUsed(prefKey)) {
                 final SyncAction action = SyncAction
-                        .read(mGlobalPref, mPreferencePrefix + key, SyncAction.Append);
-                mFields.put(key, new SyncField(key, labelId, true,
+                        .read(prefs, preferencePrefix + key, SyncAction.Append);
+                mFields.put(key, new SyncField(key, labelResId, true,
                                                SyncAction.Append, action));
             }
             return this;

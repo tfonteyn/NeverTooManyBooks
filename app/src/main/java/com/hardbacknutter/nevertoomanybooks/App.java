@@ -51,14 +51,14 @@ public class App
             ServiceLocator.DIR_LOG + File.separatorChar + Logger.ERROR_LOG_FILE;
 
     /** Flag to indicate the startup can skip a full init. */
-    private boolean mHotStart;
+    private boolean hotStart;
 
     public boolean isHotStart() {
-        return mHotStart;
+        return hotStart;
     }
 
     public void setHotStart() {
-        mHotStart = true;
+        hotStart = true;
     }
 
     @Override

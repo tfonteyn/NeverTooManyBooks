@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -43,7 +42,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -78,22 +77,16 @@ public class Author
             return new Author[size];
         }
     };
-
-    /** This is the global setting! There is also a specific style-level setting. */
-    private static final String PK_SHOW_AUTHOR_NAME_GIVEN_FIRST = "show.author.name.given_first";
+    /** Generic Author; the default. A single person created the book. */
+    public static final int TYPE_UNKNOWN = 0;
 
     /*
      * {@link DBDefinitions#DOM_BOOK_AUTHOR_TYPE_BITMASK}.
      * NEWTHINGS: author type: add a bit flag
      * Never change the bit value!
      */
-
-    /** Generic Author; the default. A single person created the book. */
-    public static final int TYPE_UNKNOWN = 0;
-
     /** WRITER: primary or only writer. i.e. in contrast to any of the below. */
     public static final int TYPE_WRITER = 1;
-
     /** WRITER: not distinguished for now. If we do, use TYPE_ORIGINAL_SCRIPT_WRITER = 1 << 1; */
     public static final int TYPE_ORIGINAL_SCRIPT_WRITER = TYPE_WRITER;
 
@@ -146,13 +139,15 @@ public class Author
      * All valid bits for the type.
      * NEWTHINGS: author type: add to the mask
      */
-    public static final int TYPE_BITMASK_ALL =
+    private static final int TYPE_BITMASK_ALL =
             TYPE_UNKNOWN
             | TYPE_WRITER | TYPE_ORIGINAL_SCRIPT_WRITER | TYPE_FOREWORD | TYPE_AFTERWORD
             | TYPE_TRANSLATOR | TYPE_INTRODUCTION | TYPE_EDITOR | TYPE_CONTRIBUTOR
             | TYPE_COVER_ARTIST | TYPE_COVER_INKING | TYPE_NARRATOR | TYPE_COVER_COLORIST
             | TYPE_ARTIST | TYPE_INKING | TYPE_COLORIST | TYPE_PSEUDONYM;
 
+    /** This is the global setting! There is also a specific style-level setting. */
+    private static final String PK_SHOW_AUTHOR_NAME_GIVEN_FIRST = "show.author.name.given_first";
     /** Maps the type-bit to a string resource for the type-label. */
     private static final Map<Integer, Integer> TYPES = new LinkedHashMap<>();
 
@@ -489,23 +484,20 @@ public class Author
     @NonNull
     public String getLabel(@NonNull final Context context,
                            @NonNull final Details details,
-                           @Nullable final ListStyle style) {
+                           @Nullable final Style style) {
         final boolean givenFirst;
         if (style != null) {
             givenFirst = style.isShowAuthorByGivenName();
         } else {
-            final SharedPreferences global = PreferenceManager
-                    .getDefaultSharedPreferences(context);
-            givenFirst = global.getBoolean(PK_SHOW_AUTHOR_NAME_GIVEN_FIRST, false);
+            givenFirst = PreferenceManager.getDefaultSharedPreferences(context)
+                                          .getBoolean(PK_SHOW_AUTHOR_NAME_GIVEN_FIRST, false);
         }
 
         switch (details) {
             case Full: {
                 String label = getFormattedName(givenFirst);
 
-                final SharedPreferences global = PreferenceManager
-                        .getDefaultSharedPreferences(context);
-                if (DBKey.isUsed(global, DBKey.BOOK_AUTHOR_TYPE_BITMASK)) {
+                if (DBKey.isUsed(DBKey.BOOK_AUTHOR_TYPE_BITMASK)) {
                     final String typeLabels = getTypeLabels(context);
                     if (!typeLabels.isEmpty()) {
                         label += " <small><i>" + typeLabels + "</i></small>";

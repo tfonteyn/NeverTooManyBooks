@@ -34,13 +34,13 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 
 public class BooklistHeader {
 
     /**
-     * the amount of details to show in the header.
-     * NEVER change these values, they get stored in preferences.
+     * The amount of details to show in the header.
+     * <strong>Never change these values</strong>, they get stored in the db.
      * <p>
      * not in use:
      * 1 << 1
@@ -65,17 +65,17 @@ public class BooklistHeader {
     private String filterText;
 
     public BooklistHeader(@NonNull final Context context,
-                          @NonNull final ListStyle style,
+                          @NonNull final Style style,
                           final int totalBooks,
                           final int distinctBooks,
                           @NonNull final List<PFilter<?>> filters,
                           @Nullable final SearchCriteria searchCriteria) {
 
-        if (style.isShowHeader(SHOW_STYLE_NAME)) {
+        if (style.isShowHeaderField(SHOW_STYLE_NAME)) {
             styleName = style.getLabel(context);
         }
 
-        if (style.isShowHeader(SHOW_BOOK_COUNT)) {
+        if (style.isShowHeaderField(SHOW_BOOK_COUNT)) {
             if (distinctBooks == totalBooks) {
                 // Using a plural, so this covers zero books as well
                 bookCount = context.getResources()
@@ -87,7 +87,7 @@ public class BooklistHeader {
             }
         }
 
-        if (style.isShowHeader(SHOW_FILTERS)) {
+        if (style.isShowHeaderField(SHOW_FILTERS)) {
             final Collection<String> list = filters
                     .stream()
                     .filter(f -> f.isActive(context))

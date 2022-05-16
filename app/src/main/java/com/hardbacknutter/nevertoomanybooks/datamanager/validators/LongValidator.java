@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,6 +23,7 @@ import android.content.Context;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
@@ -34,22 +35,22 @@ public class LongValidator
         implements DataValidator {
 
     /** Default to apply if the field is {@code null} or empty. */
-    private final long mDefaultValue;
+    private final long defaultValue;
 
     /**
      * Constructor; default value is 0.
      */
     public LongValidator() {
-        mDefaultValue = 0;
+        defaultValue = 0;
     }
 
     /**
      * Constructor with default value.
      *
-     * @param defValue Default to apply if the field is empty
+     * @param defaultValue Default to apply if the field is empty
      */
-    public LongValidator(final long defValue) {
-        mDefaultValue = defValue;
+    public LongValidator(final long defaultValue) {
+        this.defaultValue = defaultValue;
     }
 
     @Override
@@ -57,13 +58,13 @@ public class LongValidator
     public void validate(@NonNull final Context context,
                          @NonNull final DataManager dataManager,
                          @NonNull final String key,
-                         final int errorLabelId)
+                         @StringRes final int errorLabelResId)
             throws ValidatorException {
 
         final long value;
         final Object obj = dataManager.get(key);
         if (obj == null) {
-            value = mDefaultValue;
+            value = defaultValue;
         } else if (obj instanceof Long) {
             value = (long) obj;
         } else if (obj instanceof Integer) {
@@ -71,14 +72,14 @@ public class LongValidator
         } else {
             final String stringValue = obj.toString().trim();
             if (stringValue.isEmpty()) {
-                value = mDefaultValue;
+                value = defaultValue;
             } else {
                 try {
                     value = Long.parseLong(stringValue);
                 } catch (@NonNull final NumberFormatException e) {
                     throw new ValidatorException(
                             context.getString(R.string.vldt_integer_expected_for_x,
-                                              context.getString(errorLabelId)));
+                                              context.getString(errorLabelResId)));
                 }
             }
         }

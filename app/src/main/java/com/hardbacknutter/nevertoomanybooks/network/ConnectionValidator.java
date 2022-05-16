@@ -48,8 +48,17 @@ public interface ConnectionValidator {
         }
     }
 
+    /**
+     * Make a short call to test the connection.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if al is well.
+     *
+     * @throws IOException on failure
+     */
     @WorkerThread
-    boolean validateConnection()
+    boolean validateConnection(@NonNull Context context)
             throws CredentialsException,
                    StorageException,
                    IOException;

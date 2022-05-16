@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -52,7 +52,7 @@ public class StyleDaoImpl
 
     private static final String TAG = "StyleDaoImpl";
 
-    /** {@link ListStyle} all columns. */
+    /** {@link Style} all columns. */
     private static final String SELECT_STYLES =
             "SELECT * FROM " + TBL_BOOKLIST_STYLES.getName();
 
@@ -105,11 +105,11 @@ public class StyleDaoImpl
             + ',' + DBKey.STYLE_MENU_POSITION
             + ") VALUES(?,?,?,?,?)";
 
-    /** Delete a {@link ListStyle}. */
+    /** Delete a {@link Style}. */
     private static final String DELETE_STYLE_BY_ID =
             DELETE_FROM_ + TBL_BOOKLIST_STYLES.getName() + _WHERE_ + DBKey.PK_ID + "=?";
 
-    /** Get the id of a {@link ListStyle} by UUID. */
+    /** Get the id of a {@link Style} by UUID. */
     private static final String SELECT_STYLE_ID_BY_UUID =
             SELECT_ + DBKey.PK_ID + _FROM_ + TBL_BOOKLIST_STYLES.getName()
             + _WHERE_ + DBKey.STYLE_UUID + "=?";
@@ -194,7 +194,7 @@ public class StyleDaoImpl
 
 
     @NonNull
-    private String getGroupIdsAsCsv(@NonNull final ListStyle style) {
+    private String getGroupIdsAsCsv(@NonNull final Style style) {
         return style.getGroupList()
                     .stream()
                     .map(group -> String.valueOf(group.getId()))
@@ -225,9 +225,9 @@ public class StyleDaoImpl
 
             stmt.bindLong(16, style.getTextScale());
             stmt.bindLong(17, style.getCoverScale());
-            stmt.bindLong(18, style.getShowHeaderFields());
-            stmt.bindLong(19, style.getBookDetailsFieldVisibility().getValue());
-            stmt.bindLong(20, style.getBooklistBookFieldVisibility().getValue());
+            stmt.bindLong(18, style.getHeaderFieldVisibility());
+            stmt.bindLong(19, style.getFieldVisibility(Style.Screen.Detail));
+            stmt.bindLong(20, style.getFieldVisibility(Style.Screen.List));
 
             final long iId = stmt.executeInsert();
             if (iId > 0) {
@@ -238,7 +238,7 @@ public class StyleDaoImpl
     }
 
     @Override
-    public boolean update(@NonNull final ListStyle style) {
+    public boolean update(@NonNull final Style style) {
         final ContentValues cv = new ContentValues();
         cv.put(DBKey.STYLE_IS_PREFERRED, style.isPreferred());
         cv.put(DBKey.STYLE_MENU_POSITION, style.getMenuPosition());
@@ -270,12 +270,9 @@ public class StyleDaoImpl
 
             cv.put(DBKey.STYLE_TEXT_SCALE, style.getTextScale());
             cv.put(DBKey.STYLE_COVER_SCALE, style.getCoverScale());
-            cv.put(DBKey.STYLE_LIST_HEADER, userStyle.getShowHeaderFields());
-            cv.put(DBKey.STYLE_DETAILS_SHOW_FIELDS,
-                   style.getBookDetailsFieldVisibility().getValue());
-
-            cv.put(DBKey.STYLE_LIST_SHOW_FIELDS,
-                   style.getBooklistBookFieldVisibility().getValue());
+            cv.put(DBKey.STYLE_LIST_HEADER, userStyle.getHeaderFieldVisibility());
+            cv.put(DBKey.STYLE_DETAILS_SHOW_FIELDS, style.getFieldVisibility(Style.Screen.Detail));
+            cv.put(DBKey.STYLE_LIST_SHOW_FIELDS, style.getFieldVisibility(Style.Screen.List));
         }
 
         return 0 < mDb.update(TBL_BOOKLIST_STYLES.getName(), cv, DBKey.PK_ID + "=?",
@@ -285,7 +282,7 @@ public class StyleDaoImpl
 
     @Override
     @SuppressWarnings("UnusedReturnValue")
-    public boolean delete(@NonNull final ListStyle style) {
+    public boolean delete(@NonNull final Style style) {
 
         final int rowsAffected;
 

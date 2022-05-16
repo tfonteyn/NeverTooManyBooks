@@ -28,14 +28,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
 /**
  * Settings editor for a Style.
- * <p>
- * Passing in a style with a valid UUID, settings are read/written to the style specific file.
- * If the uuid is {@code ""}, then we're editing the global defaults.
  */
 public abstract class StyleBaseFragment
         extends BasePreferenceFragment {
@@ -52,12 +49,10 @@ public abstract class StyleBaseFragment
         //noinspection ConstantConditions
         vm.init(getContext(), requireArguments());
 
-        final ListStyle style = vm.getStyle();
-        // If it's not the global style, then redirect storage to the database
-        if (!style.isGlobal()) {
-            // This MUST be done in onCreate/onCreatePreferences
-            getPreferenceManager().setPreferenceDataStore(vm.getStyleDataStore());
-        }
+        // redirect storage to the database
+        // This MUST be done in onCreate/onCreatePreferences
+        // and BEFORE we inflate the xml screen definition
+        getPreferenceManager().setPreferenceDataStore(vm.getStyleDataStore());
     }
 
     @Override
@@ -66,7 +61,7 @@ public abstract class StyleBaseFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        final ListStyle style = vm.getStyle();
+        final Style style = vm.getStyle();
         if (style.getId() == 0) {
             toolbar.setTitle(R.string.lbl_clone_style);
         } else {

@@ -50,14 +50,14 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 public abstract class ConnectionValidationBasePreferenceFragment
         extends BasePreferenceFragment {
 
-    private ConnectionValidatorViewModel mVm;
+    private ConnectionValidatorViewModel vm;
 
-    private CharSequence mPkEnabled;
+    private CharSequence pkEnabled;
 
     @Nullable
-    private ProgressDelegate mProgressDelegate;
+    private ProgressDelegate progressDelegate;
 
-    private final OnBackPressedCallback mOnBackPressedCallback =
+    private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
@@ -69,14 +69,14 @@ public abstract class ConnectionValidationBasePreferenceFragment
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-        mVm = new ViewModelProvider(this).get(ConnectionValidatorViewModel.class);
+        vm = new ViewModelProvider(this).get(ConnectionValidatorViewModel.class);
         // mVm.init is done in child classes
     }
 
     protected void init(@StringRes final int siteResId,
                         @NonNull final CharSequence pkEnabled) {
-        mVm.init(siteResId);
-        mPkEnabled = pkEnabled;
+        vm.init(siteResId);
+        this.pkEnabled = pkEnabled;
     }
 
     @Override
@@ -86,17 +86,17 @@ public abstract class ConnectionValidationBasePreferenceFragment
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
-        mVm.onConnectionSuccessful().observe(getViewLifecycleOwner(), this::onSuccess);
-        mVm.onConnectionCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
-        mVm.onConnectionFailed().observe(getViewLifecycleOwner(), this::onFailure);
-        mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+        vm.onConnectionSuccessful().observe(getViewLifecycleOwner(), this::onSuccess);
+        vm.onConnectionCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
+        vm.onConnectionFailed().observe(getViewLifecycleOwner(), this::onFailure);
+        vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
     }
 
     private void proposeValidation() {
-        Objects.requireNonNull(mPkEnabled, "mPkEnabled");
-        final SwitchPreference sp = findPreference(mPkEnabled);
+        Objects.requireNonNull(pkEnabled, "mPkEnabled");
+        final SwitchPreference sp = findPreference(pkEnabled);
         //noinspection ConstantConditions
         if (sp.isChecked()) {
             //noinspection ConstantConditions
@@ -108,17 +108,17 @@ public abstract class ConnectionValidationBasePreferenceFragment
                             popBackStackOrFinish())
                     .setPositiveButton(android.R.string.ok, (d, w) -> {
                         d.dismiss();
-                        if (mProgressDelegate == null) {
-                            mProgressDelegate = new ProgressDelegate(getProgressFrame())
+                        if (progressDelegate == null) {
+                            progressDelegate = new ProgressDelegate(getProgressFrame())
                                     .setTitle(R.string.progress_msg_connecting)
                                     .setPreventSleep(true)
                                     .setIndeterminate(true)
-                                    .setOnCancelListener(v -> mVm.cancelTask(
+                                    .setOnCancelListener(v -> vm.cancelTask(
                                             R.id.TASK_ID_VALIDATE_CONNECTION));
                         }
                         //noinspection ConstantConditions
-                        mProgressDelegate.show(() -> getActivity().getWindow());
-                        mVm.validateConnection();
+                        progressDelegate.show(() -> getActivity().getWindow());
+                        vm.validateConnection();
                     })
                     .create()
                     .show();
@@ -129,24 +129,24 @@ public abstract class ConnectionValidationBasePreferenceFragment
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.getData().ifPresent(data -> {
-            if (mProgressDelegate == null) {
+            if (progressDelegate == null) {
                 //noinspection ConstantConditions
-                mProgressDelegate = new ProgressDelegate(getProgressFrame())
+                progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.lbl_test_connection)
                         .setPreventSleep(false)
                         .setIndeterminate(true)
-                        .setOnCancelListener(v -> mVm.cancelTask(data.taskId))
+                        .setOnCancelListener(v -> vm.cancelTask(data.taskId))
                         .show(() -> getActivity().getWindow());
             }
-            mProgressDelegate.onProgress(data);
+            progressDelegate.onProgress(data);
         });
     }
 
     private void closeProgressDialog() {
-        if (mProgressDelegate != null) {
+        if (progressDelegate != null) {
             //noinspection ConstantConditions
-            mProgressDelegate.dismiss(getActivity().getWindow());
-            mProgressDelegate = null;
+            progressDelegate.dismiss(getActivity().getWindow());
+            progressDelegate = null;
         }
     }
 

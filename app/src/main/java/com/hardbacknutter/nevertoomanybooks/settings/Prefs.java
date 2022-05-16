@@ -19,12 +19,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
-import android.content.SharedPreferences;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.preference.ListPreference;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.fastscroller.OverlayProviderFactory;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 /**
  * All keys <strong>MUST</strong> be kept in sync with "src/main/res/xml/preferences*.xml"
@@ -73,10 +75,9 @@ public final class Prefs {
     private Prefs() {
     }
 
-    public static int getTimeoutValueInMs(@NonNull final SharedPreferences preferences,
-                                          @NonNull final String key,
+    public static int getTimeoutValueInMs(@NonNull final String key,
                                           final int defValueInMs) {
-        final int seconds = preferences.getInt(key, 0);
+        final int seconds = ServiceLocator.getPreferences().getInt(key, 0);
         // <1000 as sanity check for roque preference file imports
         if (seconds > 0 && seconds < 1000) {
             return seconds * 1000;
@@ -89,17 +90,18 @@ public final class Prefs {
      * {@link ListPreference} stores the selected value as a String.
      * But they are really Integer values. Hence this transmogrification....
      *
-     * @param preferences SharedPreferences to read from
-     * @param key         The name of the preference to retrieve.
-     * @param defValue    Value to return if this preference does not exist,
-     *                    or if the stored value is somehow invalid
+     * @param context  Current context
+     * @param key      The name of the preference to retrieve.
+     * @param defValue Value to return if this preference does not exist,
+     *                 or if the stored value is somehow invalid
      *
      * @return int (stored as String) global preference
      */
-    public static int getIntListPref(@NonNull final SharedPreferences preferences,
+    public static int getIntListPref(@NonNull final Context context,
                                      @NonNull final String key,
                                      final int defValue) {
-        final String value = preferences.getString(key, null);
+        final String value = PreferenceManager.getDefaultSharedPreferences(context)
+                                              .getString(key, null);
         if (value == null || value.isEmpty()) {
             return defValue;
         }
@@ -112,9 +114,10 @@ public final class Prefs {
         }
     }
 
-    public static int getFastScrollerOverlayType(@NonNull final SharedPreferences preferences) {
-        return getIntListPref(preferences,
+    @OverlayProviderFactory.OverlayType
+    public static int getFastScrollerOverlayType(@NonNull final Context context) {
+        return getIntListPref(context,
                               pk_booklist_fastscroller_overlay,
-                              OverlayProviderFactory.STYLE_MD2);
+                              OverlayProviderFactory.TYPE_MD2);
     }
 }

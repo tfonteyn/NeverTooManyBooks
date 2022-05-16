@@ -144,7 +144,7 @@ public class CsvRecordReader
                    StorageException,
                    IOException {
 
-        mResults = new ImportResults();
+        results = new ImportResults();
 
         if (record.getType().isPresent()) {
             if (record.getType().get() == RecordType.Books) {
@@ -171,9 +171,9 @@ public class CsvRecordReader
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-            Log.d(TAG, "read|mResults=" + mResults);
+            Log.d(TAG, "read|mResults=" + results);
         }
-        return mResults;
+        return results;
     }
 
     private void readBooks(@NonNull final Context context,
@@ -267,11 +267,11 @@ public class CsvRecordReader
             final long now = System.currentTimeMillis();
             if ((now - lastUpdateTime) > progressListener.getUpdateIntervalInMs()
                 && !progressListener.isCancelled()) {
-                final String msg = String.format(mProgressMessage,
-                                                 mBooksString,
-                                                 mResults.booksCreated,
-                                                 mResults.booksUpdated,
-                                                 mResults.booksSkipped);
+                final String msg = String.format(progressMessage,
+                                                 booksString,
+                                                 results.booksCreated,
+                                                 results.booksUpdated,
+                                                 results.booksSkipped);
                 progressListener.publishProgress(delta, msg);
                 lastUpdateTime = now;
                 delta = 0;
@@ -279,15 +279,15 @@ public class CsvRecordReader
         }
 
         // minus 1 to compensate for the last increment
-        mResults.booksProcessed = row - 1;
+        results.booksProcessed = row - 1;
     }
 
     private void handleRowException(final int row,
                                     @NonNull final Exception e,
                                     @NonNull final String msg) {
-        mResults.booksFailed++;
-        mResults.failedLinesMessage.add(msg);
-        mResults.failedLinesNr.add(row);
+        results.booksFailed++;
+        results.failedLinesMessage.add(msg);
+        results.failedLinesNr.add(row);
 
         if (BuildConfig.DEBUG /* always */) {
             if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
@@ -317,7 +317,7 @@ public class CsvRecordReader
         book.putLong(DBKey.PK_ID, importNumericId);
 
         // Is that id already in use ?
-        if (mBookDao.bookExistsById(importNumericId)) {
+        if (bookDao.bookExistsById(importNumericId)) {
             // The id is in use, we will be updating an existing book (if allowed).
 
             // This is risky as we might overwrite a different book which happens
@@ -326,9 +326,9 @@ public class CsvRecordReader
             final DataReader.Updates updateOption = helper.getUpdateOption();
             switch (updateOption) {
                 case Overwrite: {
-                    mBookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                                   | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
-                    mResults.booksUpdated++;
+                    bookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                                  | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                    results.booksUpdated++;
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                         Log.d(TAG, "importNumericId=" + importNumericId
                                    + "|Overwrite|" + book.getTitle());
@@ -336,17 +336,17 @@ public class CsvRecordReader
                     break;
                 }
                 case OnlyNewer: {
-                    final LocalDateTime localDate = mBookDao.getLastUpdateDate(importNumericId);
+                    final LocalDateTime localDate = bookDao.getLastUpdateDate(importNumericId);
                     if (localDate != null) {
-                        final LocalDateTime importDate = mDateParser.parse(
+                        final LocalDateTime importDate = dateParser.parse(
                                 book.getString(DBKey.DATE_LAST_UPDATED__UTC));
 
                         if (importDate != null && importDate.isAfter(localDate)) {
 
-                            mBookDao.update(context, book,
-                                            BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                            | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
-                            mResults.booksUpdated++;
+                            bookDao.update(context, book,
+                                           BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                           | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                            results.booksUpdated++;
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                                 Log.d(TAG, "importNumericId=" + importNumericId
                                            + "|update|" + book.getTitle());
@@ -356,7 +356,7 @@ public class CsvRecordReader
                     break;
                 }
                 case Skip: {
-                    mResults.booksSkipped++;
+                    results.booksSkipped++;
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                         Log.d(TAG, "importNumericId=" + importNumericId
                                    + "|Skip|" + book.getTitle());
@@ -368,10 +368,10 @@ public class CsvRecordReader
         } else {
             // The id is not in use, simply insert the book using the given importNumericId,
             // explicitly allowing the id to be reused
-            final long insId = mBookDao.insert(context, book,
-                                               BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                               | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
-            mResults.booksCreated++;
+            final long insId = bookDao.insert(context, book,
+                                              BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                              | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
+            results.booksCreated++;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                 Log.d(TAG, "importNumericId=" + importNumericId
                            + "|insert=" + insId
@@ -387,8 +387,8 @@ public class CsvRecordReader
                    DaoWriteException {
         // Always import books which have no UUID/ID, even if the book is a potential duplicate.
         // We don't try and search/match but leave it to the user.
-        final long insId = mBookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);
-        mResults.booksCreated++;
+        final long insId = bookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);
+        results.booksCreated++;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
             Log.d(TAG, "UUID=''"
                        + "|ID=0"

@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.org.json.JSONException;
@@ -36,7 +36,7 @@ public class BookshelfCoder
         implements JsonCoder<Bookshelf> {
 
     @NonNull
-    private final ListStyle mDefaultStyle;
+    private final Style mDefaultStyle;
     @NonNull
     private final Context mContext;
 

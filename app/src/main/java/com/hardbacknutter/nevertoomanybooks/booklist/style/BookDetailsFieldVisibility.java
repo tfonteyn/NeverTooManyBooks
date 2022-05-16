@@ -19,81 +19,64 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
-import android.content.SharedPreferences;
-
 import androidx.annotation.IntDef;
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 /**
  * Encapsulate the Book fields which can be shown on the Book-details screen.
- *
- * Globally hidden fields stay hidden,
- * but globally visible fields can be hidden on a per-style base.
+ * <p>
+ * The defaults obey the global user preference.
  */
 public class BookDetailsFieldVisibility {
 
     public static final String PK_VISIBILITY = "style.details.show.fields";
 
-    public static final int DETAILS_SHOW_COVER_0 = 1;
-    public static final int DETAILS_SHOW_COVER_1 = 1 << 1;
+    public static final int SHOW_COVER_0 = 1;
+    public static final int SHOW_COVER_1 = 1 << 1;
 
-    public static final int BITMASK_ALL = DETAILS_SHOW_COVER_0
-                                          | DETAILS_SHOW_COVER_1;
-
-    private static final int[] COVER_BITS = {DETAILS_SHOW_COVER_0,
-                                            DETAILS_SHOW_COVER_1};
+    public static final int BITMASK_ALL = SHOW_COVER_0
+                                          | SHOW_COVER_1;
 
     /** by default, show both covers. */
-    public static final int DEFAULT = DETAILS_SHOW_COVER_0
-                                      | DETAILS_SHOW_COVER_1;
+    public static final int DEFAULT = SHOW_COVER_0
+                                      | SHOW_COVER_1;
 
-    private int bits;
+    private int bits = DEFAULT;
 
     /**
      * Constructor.
      */
-    BookDetailsFieldVisibility(@NonNull final SharedPreferences global) {
-        bits = global.getInt(PK_VISIBILITY, DEFAULT);
+    BookDetailsFieldVisibility() {
+        // Load the defaults from the global Visibility preferences
+        setShowField(SHOW_COVER_0, DBKey.isUsed(DBKey.COVER_IS_USED[0]));
+        setShowField(SHOW_COVER_1, DBKey.isUsed(DBKey.COVER_IS_USED[1]));
 
-        for (int cIdx = 0; cIdx < COVER_BITS.length; cIdx++) {
-            setShowCover(cIdx,  DBKey.isUsed(global, DBKey.COVER_IS_USED[cIdx]));
-        }
     }
 
     /**
-     * Convenience method to check if a cover (front/back) should be
-     * show on the <strong>details</strong> screen.
+     * Check if the given field should be displayed.
      *
-     * @param cIdx 0..n image index
+     * @param dbKey to check - one of the {@link DBKey} constants.
      *
      * @return {@code true} if in use
      */
-    public boolean isShowCover(@IntRange(from = 0, to = 1) final int cIdx) {
-        return (bits & COVER_BITS[cIdx]) != 0;
-    }
-
-    /**
-     * Convenience method to set if a cover (front/back) should be
-     * show on the <strong>details</strong> screen.
-     *
-     * @param cIdx 0..n image index
-     * @param show value to set
-     */
-    public void setShowCover(final int cIdx,
-                             final boolean show) {
-        if (show) {
-            bits |= COVER_BITS[cIdx];
-        } else {
-            bits &= ~COVER_BITS[cIdx];
+    @NonNull
+    public Optional<Boolean> isShowField(@NonNull final String dbKey) {
+        if (DBKey.COVER_IS_USED[0].equals(dbKey)) {
+            return Optional.of(isShowField(SHOW_COVER_0));
+        } else if (DBKey.COVER_IS_USED[1].equals(dbKey)) {
+            return Optional.of(isShowField(SHOW_COVER_1));
         }
+
+        return Optional.empty();
     }
 
     /**
@@ -103,11 +86,20 @@ public class BookDetailsFieldVisibility {
      *
      * @return {@code true} if in use
      */
-    public boolean isShowField(@BooklistBookFieldVisibility.Option final int bit) {
+    public boolean isShowField(@Option final int bit) {
         return (bits & bit) != 0;
     }
 
-    public void setShowField(@BooklistBookFieldVisibility.Option final int bit,
+    public void setShowField(@NonNull final String dbKey,
+                             final boolean show) {
+        if (DBKey.COVER_IS_USED[0].equals(dbKey)) {
+            setShowField(SHOW_COVER_0, show);
+        } else if (DBKey.COVER_IS_USED[1].equals(dbKey)) {
+            setShowField(SHOW_COVER_1, show);
+        }
+    }
+
+    public void setShowField(@Option final int bit,
                              final boolean show) {
         if (show) {
             bits |= bit & BITMASK_ALL;
@@ -149,8 +141,8 @@ public class BookDetailsFieldVisibility {
         return Objects.hash(bits);
     }
 
-    @IntDef(flag = true, value = {DETAILS_SHOW_COVER_0,
-                                  DETAILS_SHOW_COVER_1,
+    @IntDef(flag = true, value = {SHOW_COVER_0,
+                                  SHOW_COVER_1,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Option {

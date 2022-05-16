@@ -19,12 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
-import android.content.SharedPreferences;
-
 import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 public class StripInfoHandler {
 
@@ -34,14 +32,12 @@ public class StripInfoHandler {
     /**
      * Check if SYNC menus should be shown at all. This does not affect searching.
      *
-     * @param global Global preferences
-     *
      * @return {@code true} if menus should be shown
      */
     @AnyThread
-    public static boolean isSyncEnabled(@NonNull final SharedPreferences global) {
+    public static boolean isSyncEnabled() {
         if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
-            return global.getBoolean(PK_ENABLED, false);
+            return ServiceLocator.getPreferences().getBoolean(PK_ENABLED, false);
         } else {
             return false;
         }

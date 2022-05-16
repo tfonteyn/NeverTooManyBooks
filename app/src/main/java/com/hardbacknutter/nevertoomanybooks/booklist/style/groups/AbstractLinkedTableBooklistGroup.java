@@ -24,7 +24,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 
 /**
@@ -41,12 +41,12 @@ public abstract class AbstractLinkedTableBooklistGroup
     boolean underEach;
 
     AbstractLinkedTableBooklistGroup(@Id final int id,
-                                     @NonNull final ListStyle style) {
+                                     @NonNull final Style style) {
         super(id);
         displayDomainExpression = createDisplayDomainExpression(style);
     }
 
-    AbstractLinkedTableBooklistGroup(@NonNull final ListStyle style,
+    AbstractLinkedTableBooklistGroup(@NonNull final Style style,
                                      @NonNull final AbstractLinkedTableBooklistGroup group) {
         super(group);
         displayDomainExpression = createDisplayDomainExpression(style);
@@ -56,7 +56,7 @@ public abstract class AbstractLinkedTableBooklistGroup
 
     @NonNull
     protected abstract DomainExpression createDisplayDomainExpression(
-            @NonNull final ListStyle style);
+            @NonNull final Style style);
 
     @Override
     @NonNull

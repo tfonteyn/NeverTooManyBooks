@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.fields;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.method.DigitsKeyListener;
 import android.view.View;
@@ -59,9 +58,8 @@ public class DecimalEditTextField
     }
 
     @Override
-    public void setParentView(@NonNull final View parent,
-                              @NonNull final SharedPreferences global) {
-        super.setParentView(parent, global);
+    public void setParentView(@NonNull final View parent) {
+        super.setParentView(parent);
         // do not keep a strong reference to the watcher
         requireView().addTextChangedListener(new DecimalTextWatcher(requireView()));
     }

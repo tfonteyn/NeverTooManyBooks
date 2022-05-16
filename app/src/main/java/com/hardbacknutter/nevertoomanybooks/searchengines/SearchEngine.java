@@ -269,7 +269,7 @@ public interface SearchEngine
     @NonNull
     default <FRT> FutureHttpGet<FRT> createFutureGetRequest() {
         final SearchEngineConfig config = getConfig();
-        final FutureHttpGet<FRT> httpGet = new FutureHttpGet<>(config.getLabelId());
+        final FutureHttpGet<FRT> httpGet = new FutureHttpGet<>(config.getLabelResId());
         httpGet.setConnectTimeout(config.getConnectTimeoutInMs())
                .setReadTimeout(config.getReadTimeoutInMs())
                .setThrottler(config.getThrottler());
@@ -363,7 +363,7 @@ public interface SearchEngine
          */
         @AnyThread
         default boolean isPreferIsbn10() {
-            return ServiceLocator.getGlobalPreferences()
+            return ServiceLocator.getPreferences()
                                  .getBoolean(Prefs.pk_search_isbn_prefer_10, false);
         }
     }

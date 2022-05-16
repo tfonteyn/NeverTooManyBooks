@@ -24,8 +24,7 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
@@ -52,12 +51,13 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_SERIES_TIT
 public class SeriesBooklistGroup
         extends AbstractLinkedTableBooklistGroup {
 
-    /** See {@link #setPreferencesVisible(PreferenceScreen, boolean)} */
-    private static final String PSK_STYLE_SERIES = "psk_style_series";
-
     public static final String PK_SHOW_BOOKS_UNDER_EACH =
             "style.booklist.group.series.show.all";
 
+    public static final boolean DEFAULT_SHOW_BOOKS_UNDER_EACH = false;
+
+    /** See {@link #setPreferencesVisible(PreferenceScreen, boolean)} */
+    private static final String PSK_STYLE_SERIES = "psk_style_series";
     /** For sorting. */
     private static final Domain DOM_SORTING;
 
@@ -69,32 +69,23 @@ public class SeriesBooklistGroup
     /**
      * Constructor.
      *
-     * @param style        Style reference.
+     * @param style Style reference.
      */
-    SeriesBooklistGroup(@NonNull final ListStyle style) {
+    SeriesBooklistGroup(@NonNull final Style style) {
         super(SERIES, style);
 
-        underEach = getDefaultShowBooksUnderEach();
+        underEach = DEFAULT_SHOW_BOOKS_UNDER_EACH;
     }
 
     /**
      * Copy constructor.
      *
-     * @param style        Style reference.
-     * @param group        to copy from
+     * @param style Style reference.
+     * @param group to copy from
      */
-    SeriesBooklistGroup(@NonNull final ListStyle style,
+    SeriesBooklistGroup(@NonNull final Style style,
                         @NonNull final SeriesBooklistGroup group) {
         super(style, group);
-    }
-
-    /**
-     * Get the global default for this preference.
-     *
-     * @return {@code true} if we want to show a book under each of its Series.
-     */
-    public static boolean getDefaultShowBooksUnderEach() {
-        return ServiceLocator.getGlobalPreferences().getBoolean(PK_SHOW_BOOKS_UNDER_EACH, false);
     }
 
     @Override
@@ -140,7 +131,7 @@ public class SeriesBooklistGroup
 
     @Override
     @NonNull
-    protected DomainExpression createDisplayDomainExpression(@NonNull final ListStyle style) {
+    protected DomainExpression createDisplayDomainExpression(@NonNull final Style style) {
         // Not sorted; we sort on the OB domain as defined in #createGroupKey.
         return new DomainExpression(DBDefinitions.DOM_SERIES_TITLE,
                                     DBDefinitions.TBL_SERIES.dot(DBKey.SERIES_TITLE));

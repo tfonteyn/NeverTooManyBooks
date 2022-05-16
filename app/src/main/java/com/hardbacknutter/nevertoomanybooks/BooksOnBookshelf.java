@@ -24,7 +24,6 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Debug;
@@ -51,7 +50,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -95,7 +93,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.RowChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopLevelItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -439,27 +437,25 @@ public class BooksOnBookshelf
         vb = BooksonbookshelfBinding.inflate(getLayoutInflater());
         setContentView(vb.getRoot());
 
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
-
         createFragmentResultListeners();
         createViewModel();
-        createSyncDelegates(global);
-        createHandlers(global);
+        createSyncDelegates();
+        createHandlers();
 
         initNavDrawer();
         initToolbar();
 
         createBookshelfSpinner();
         // setup the list related stuff; the actual list data is generated in onResume
-        createBooklistView(global);
+        createBooklistView();
 
         // Initialise adapter without a cursor. We'll recreate it with a cursor when
         // we're ready to display the book-list.
         // If we don't create it here then some Android internals cause problems.
         createListAdapter(false);
 
-        createFabMenu(global);
-        updateSyncMenuVisibility(global);
+        createFabMenu();
+        updateSyncMenuVisibility();
 
         // Popup the search widget when the user starts to type.
         setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
@@ -534,15 +530,13 @@ public class BooksOnBookshelf
 
     /**
      * Create the optional launcher and delegates.
-     *
-     * @param global Global preferences
      */
-    private void createSyncDelegates(@NonNull final SharedPreferences global) {
+    private void createSyncDelegates() {
 
         // Reminder: this method cannot be called from onResume... registerForActivityResult
         // can only be called from onCreate
 
-        if (SyncServer.CalibreCS.isEnabled(global)) {
+        if (SyncServer.CalibreCS.isEnabled()) {
             if (calibreSyncLauncher == null) {
                 calibreSyncLauncher = registerForActivityResult(
                         new CalibreSyncContract(), result -> {
@@ -554,7 +548,7 @@ public class BooksOnBookshelf
             }
         }
 
-        if (SyncServer.StripInfo.isEnabled(global)) {
+        if (SyncServer.StripInfo.isEnabled()) {
             if (stripInfoSyncLauncher == null) {
                 stripInfoSyncLauncher = registerForActivityResult(
                         new StripInfoSyncContract(), result -> {
@@ -569,11 +563,9 @@ public class BooksOnBookshelf
 
     /**
      * Create the (optional) handlers.
-     *
-     * @param global Global preferences
      */
-    private void createHandlers(@NonNull final SharedPreferences global) {
-        if (calibreHandler == null && SyncServer.CalibreCS.isEnabled(global)) {
+    private void createHandlers() {
+        if (calibreHandler == null && SyncServer.CalibreCS.isEnabled()) {
             try {
                 calibreHandler = new CalibreHandler(this, this)
                         .setProgressFrame(findViewById(R.id.progress_frame));
@@ -585,13 +577,13 @@ public class BooksOnBookshelf
         }
     }
 
-    private void createBooklistView(@NonNull final SharedPreferences global) {
+    private void createBooklistView() {
         //noinspection ConstantConditions
         layoutManager = (LinearLayoutManager) vb.content.list.getLayoutManager();
         vb.content.list.addItemDecoration(new TopLevelItemDecoration(this));
 
         // Optional overlay
-        final int overlayType = Prefs.getFastScrollerOverlayType(global);
+        final int overlayType = Prefs.getFastScrollerOverlayType(this);
         FastScroller.attach(vb.content.list, overlayType);
 
         // Number of views to cache offscreen arbitrarily set to 20; the default is 2.
@@ -667,7 +659,7 @@ public class BooksOnBookshelf
         bookshelfSelectionChangedListener.attach(vb.bookshelfSpinner);
     }
 
-    private void createFabMenu(@NonNull final SharedPreferences global) {
+    private void createFabMenu() {
         fabMenu = new FabMenu(vb.fab, vb.fabOverlay,
                               vb.fab0ScanBarcode,
                               vb.fab1SearchIsbn,
@@ -678,17 +670,17 @@ public class BooksOnBookshelf
         fabMenu.attach(vb.content.list);
         fabMenu.setOnClickListener(view -> onFabMenuItemSelected(view.getId()));
         fabMenu.getItem(FAB_4_SEARCH_EXTERNAL_ID)
-               .setEnabled(EditBookExternalIdFragment.isShowTab(global));
+               .setEnabled(EditBookExternalIdFragment.isShowTab());
     }
 
     /**
      * Show or hide the synchronization menu.
      */
-    private void updateSyncMenuVisibility(@NonNull final SharedPreferences global) {
+    private void updateSyncMenuVisibility() {
         final boolean enable =
-                (SyncServer.CalibreCS.isEnabled(global) && calibreSyncLauncher != null)
+                (SyncServer.CalibreCS.isEnabled() && calibreSyncLauncher != null)
                 ||
-                (SyncServer.StripInfo.isEnabled(global) && stripInfoSyncLauncher != null);
+                (SyncServer.StripInfo.isEnabled() && stripInfoSyncLauncher != null);
 
         //noinspection ConstantConditions
         getNavigationMenuItem(R.id.SUBMENU_SYNC).setVisible(enable);
@@ -810,11 +802,9 @@ public class BooksOnBookshelf
         // then we should display the 'up' indicator. See #onBackPressed.
         setNavIcon();
 
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
-
-        updateSyncMenuVisibility(global);
+        updateSyncMenuVisibility();
         fabMenu.getItem(FAB_4_SEARCH_EXTERNAL_ID)
-               .setEnabled(EditBookExternalIdFragment.isShowTab(global));
+               .setEnabled(EditBookExternalIdFragment.isShowTab());
 
         // Initialize/Update the list of bookshelves
         vm.reloadBookshelfList(this);
@@ -887,15 +877,12 @@ public class BooksOnBookshelf
                 vm.getViewBookHandler().onCreateMenu(menu, inflater);
                 vm.getAmazonHandler().onCreateMenu(menu, inflater);
 
-                final SharedPreferences global = PreferenceManager
-                        .getDefaultSharedPreferences(this);
-
                 final boolean isRead = rowData.getBoolean(DBKey.READ__BOOL);
                 menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(!isRead);
                 menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isRead);
 
-                // specifically check KEY_LOANEE independent from the style in use.
-                final boolean useLending = DBKey.isUsed(global, DBKey.LOANEE_NAME);
+                // specifically check LOANEE_NAME independent from the style in use.
+                final boolean useLending = DBKey.isUsed(DBKey.LOANEE_NAME);
                 final boolean isAvailable = vm.isAvailable(rowData);
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isAvailable);
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
@@ -1339,14 +1326,11 @@ public class BooksOnBookshelf
                 .inflate(menuRes);
         final Menu menu = popupMenu.getMenu();
         if (menuItem.getItemId() == R.id.SUBMENU_SYNC) {
-            final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
             menu.findItem(R.id.MENU_SYNC_CALIBRE)
-                .setVisible(SyncServer.CalibreCS.isEnabled(global)
-                            && calibreSyncLauncher != null);
+                .setVisible(SyncServer.CalibreCS.isEnabled() && calibreSyncLauncher != null);
 
             menu.findItem(R.id.MENU_SYNC_STRIP_INFO)
-                .setVisible(SyncServer.StripInfo.isEnabled(global)
-                            && stripInfoSyncLauncher != null);
+                .setVisible(SyncServer.StripInfo.isEnabled() && stripInfoSyncLauncher != null);
         }
 
         popupMenu.setTitle(menuItem.getTitle())
@@ -1445,7 +1429,7 @@ public class BooksOnBookshelf
         }
     }
 
-    public void editStyle(@NonNull final ListStyle style,
+    public void editStyle(@NonNull final Style style,
                           final boolean setAsPreferred) {
         editStyleLauncher.launch(EditStyleContract.edit(style, setAsPreferred));
     }
@@ -1670,7 +1654,7 @@ public class BooksOnBookshelf
         // with the Styles. i.e. the style used to build is very likely corrupt.
         // Another reason can be during development when the database structure
         // was changed...
-        final ListStyle style = vm.getStyle(this);
+        final Style style = vm.getStyle(this);
         // so we reset the style to recover.. and restarting the app will work.
         vm.onStyleChanged(this, BuiltinStyle.DEFAULT_UUID);
         // but we STILL FORCE A CRASH, SO WE CAN COLLECT DEBUG INFORMATION!

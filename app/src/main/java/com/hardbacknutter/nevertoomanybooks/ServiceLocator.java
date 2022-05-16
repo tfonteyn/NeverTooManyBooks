@@ -36,7 +36,7 @@ import java.net.CookiePolicy;
 import java.util.Locale;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -106,79 +106,79 @@ public final class ServiceLocator {
 
     /** Either the real Application Context, or the injected context when running in unit tests. */
     @NonNull
-    private final Context mAppContext;
+    private final Context appContext;
 
     /** NOT an interface. Cannot be injected. */
     @Nullable
-    private DBHelper mDBHelper;
+    private DBHelper dbHelper;
 
     /** NOT an interface. Cannot be injected. */
     @Nullable
-    private CoversDbHelper mCoversDbHelper;
+    private CoversDbHelper coversDbHelper;
 
     /** NOT an interface. Cannot be injected. The underlying {@link StyleDao} can be injected. */
     @Nullable
-    private Styles mStyles;
+    private StylesHelper stylesHelper;
 
     /** NOT an interface. Cannot be injected. The underlying {@link LanguageDao} can be injected. */
     @Nullable
-    private Languages mLanguages;
+    private Languages languages;
 
     /** NOT an interface but CAN be injected for testing. */
     @Nullable
-    private CookieManager mCookieManager;
+    private CookieManager cookieManager;
 
     /** Allows injecting a Mock Bundle supplier for JUnit tests. */
     @NonNull
-    private Supplier<Bundle> mBundleSupplier = Bundle::new;
+    private Supplier<Bundle> bundleSupplier = Bundle::new;
 
     /** Interfaces. */
     @Nullable
-    private AppLocale mAppLocale;
+    private AppLocale appLocale;
 
     @Nullable
-    private Notifier mNotifier;
+    private Notifier notifier;
 
     @Nullable
-    private AuthorDao mAuthorDao;
+    private AuthorDao authorDao;
     @Nullable
-    private BookDao mBookDao;
+    private BookDao bookDao;
     @Nullable
-    private BookshelfDao mBookshelfDao;
+    private BookshelfDao bookshelfDao;
     @Nullable
-    private CalibreDao mCalibreDao;
+    private CalibreDao calibreDao;
     @Nullable
-    private CalibreLibraryDao mCalibreLibraryDao;
+    private CalibreLibraryDao calibreLibraryDao;
     @Nullable
-    private CalibreCustomFieldDao mCalibreCustomFieldDao;
+    private CalibreCustomFieldDao calibreCustomFieldDao;
     @Nullable
-    private ColorDao mColorDao;
+    private ColorDao colorDao;
     @Nullable
-    private CoverCacheDao mCoverCacheDao;
+    private CoverCacheDao coverCacheDao;
     @Nullable
-    private FormatDao mFormatDao;
+    private FormatDao formatDao;
     @Nullable
-    private FtsDao mFtsDao;
+    private FtsDao ftsDao;
     @Nullable
-    private GenreDao mGenreDao;
+    private GenreDao genreDao;
     @Nullable
-    private LanguageDao mLanguageDao;
+    private LanguageDao languageDao;
     @Nullable
-    private LoaneeDao mLoaneeDao;
+    private LoaneeDao loaneeDao;
     @Nullable
-    private LocationDao mLocationDao;
+    private LocationDao locationDao;
     @Nullable
-    private MaintenanceDao mMaintenanceDao;
+    private MaintenanceDao maintenanceDao;
     @Nullable
-    private PublisherDao mPublisherDao;
+    private PublisherDao publisherDao;
     @Nullable
-    private SeriesDao mSeriesDao;
+    private SeriesDao seriesDao;
     @Nullable
-    private StripInfoDao mStripInfoDao;
+    private StripInfoDao stripInfoDao;
     @Nullable
-    private StyleDao mStyleDao;
+    private StyleDao styleDao;
     @Nullable
-    private TocEntryDao mTocEntryDao;
+    private TocEntryDao tocEntryDao;
 
 
     /**
@@ -187,7 +187,7 @@ public final class ServiceLocator {
      * @param context Current context
      */
     private ServiceLocator(@NonNull final Context context) {
-        mAppContext = context.getApplicationContext();
+        appContext = context.getApplicationContext();
     }
 
     /**
@@ -223,7 +223,7 @@ public final class ServiceLocator {
     public static void create(@NonNull final Context context,
                               @NonNull final Supplier<Bundle> bundleSupplier) {
         create(context);
-        sInstance.mBundleSupplier = bundleSupplier;
+        sInstance.bundleSupplier = bundleSupplier;
     }
 
     @NonNull
@@ -239,12 +239,12 @@ public final class ServiceLocator {
      */
     @NonNull
     public static Context getAppContext() {
-        return sInstance.mAppContext;
+        return sInstance.appContext;
     }
 
     @NonNull
-    public static SharedPreferences getGlobalPreferences() {
-        return PreferenceManager.getDefaultSharedPreferences(sInstance.mAppContext);
+    public static SharedPreferences getPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(sInstance.appContext);
     }
 
 
@@ -271,12 +271,12 @@ public final class ServiceLocator {
 
     @NonNull
     public static File getLogDir() {
-        return new File(sInstance.mAppContext.getFilesDir(), DIR_LOG);
+        return new File(sInstance.appContext.getFilesDir(), DIR_LOG);
     }
 
     @NonNull
     public static File getUpgradesDir() {
-        return new File(sInstance.mAppContext.getFilesDir(), DIR_UPGRADES);
+        return new File(sInstance.appContext.getFilesDir(), DIR_UPGRADES);
     }
 
     /**
@@ -289,7 +289,7 @@ public final class ServiceLocator {
      */
     @NonNull
     public static Bundle newBundle() {
-        return sInstance.mBundleSupplier.get();
+        return sInstance.bundleSupplier.get();
     }
 
     /**
@@ -299,7 +299,7 @@ public final class ServiceLocator {
      */
     @NonNull
     public Context getLocalizedAppContext() {
-        return getAppLocale().apply(sInstance.mAppContext);
+        return getAppLocale().apply(sInstance.appContext);
     }
 
     /**
@@ -307,15 +307,15 @@ public final class ServiceLocator {
      */
     @VisibleForTesting
     void recreate() {
-        if (mCoversDbHelper != null) {
-            mCoversDbHelper.close();
+        if (coversDbHelper != null) {
+            coversDbHelper.close();
         }
-        if (mDBHelper != null) {
-            mDBHelper.close();
+        if (dbHelper != null) {
+            dbHelper.close();
         }
 
-        final Context appContext = sInstance.mAppContext;
-        final Supplier<Bundle> bundleSupplier = sInstance.mBundleSupplier;
+        final Context appContext = sInstance.appContext;
+        final Supplier<Bundle> bundleSupplier = sInstance.bundleSupplier;
         //noinspection ConstantConditions
         sInstance = null;
         create(appContext, bundleSupplier);
@@ -327,13 +327,13 @@ public final class ServiceLocator {
      * @return singleton
      */
     @NonNull
-    public Styles getStyles() {
+    public StylesHelper getStyles() {
         synchronized (this) {
-            if (mStyles == null) {
-                mStyles = new Styles();
+            if (stylesHelper == null) {
+                stylesHelper = new StylesHelper();
             }
         }
-        return mStyles;
+        return stylesHelper;
     }
 
     /**
@@ -344,11 +344,11 @@ public final class ServiceLocator {
     @NonNull
     public Languages getLanguages() {
         synchronized (this) {
-            if (mLanguages == null) {
-                mLanguages = new Languages();
+            if (languages == null) {
+                languages = new Languages();
             }
         }
-        return mLanguages;
+        return languages;
     }
 
 
@@ -360,56 +360,56 @@ public final class ServiceLocator {
     @NonNull
     public CookieManager getCookieManager() {
         synchronized (this) {
-            if (mCookieManager == null) {
-                mCookieManager = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
-                CookieHandler.setDefault(mCookieManager);
+            if (cookieManager == null) {
+                cookieManager = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
+                CookieHandler.setDefault(cookieManager);
             }
         }
-        return mCookieManager;
+        return cookieManager;
     }
 
     @VisibleForTesting
     public void setCookieManager(@Nullable final CookieManager cookieManager) {
-        mCookieManager = cookieManager;
-        CookieHandler.setDefault(mCookieManager);
+        this.cookieManager = cookieManager;
+        CookieHandler.setDefault(this.cookieManager);
     }
 
 
     @NonNull
     public AppLocale getAppLocale() {
         synchronized (this) {
-            if (mAppLocale == null) {
-                mAppLocale = new AppLocaleImpl();
+            if (appLocale == null) {
+                appLocale = new AppLocaleImpl();
             }
         }
-        return mAppLocale;
+        return appLocale;
     }
 
     @VisibleForTesting
     public void setAppLocale(@Nullable final AppLocale locale) {
-        mAppLocale = locale;
+        appLocale = locale;
     }
 
 
     @NonNull
     public Notifier getNotifier() {
         synchronized (this) {
-            if (mNotifier == null) {
-                mNotifier = new NotifierImpl();
-                getAppLocale().registerOnLocaleChangedListener(mNotifier);
+            if (notifier == null) {
+                notifier = new NotifierImpl();
+                getAppLocale().registerOnLocaleChangedListener(notifier);
             }
         }
-        return mNotifier;
+        return notifier;
     }
 
     @VisibleForTesting
     public void setNotifier(@Nullable final Notifier notifier) {
-        if (mNotifier != null) {
-            getAppLocale().unregisterOnLocaleChangedListener(mNotifier);
+        if (this.notifier != null) {
+            getAppLocale().unregisterOnLocaleChangedListener(this.notifier);
         }
-        mNotifier = notifier;
-        if (mNotifier != null) {
-            getAppLocale().registerOnLocaleChangedListener(mNotifier);
+        this.notifier = notifier;
+        if (this.notifier != null) {
+            getAppLocale().registerOnLocaleChangedListener(this.notifier);
         }
     }
 
@@ -428,11 +428,11 @@ public final class ServiceLocator {
     @NonNull
     public SynchronizedDb getDb() {
         synchronized (this) {
-            if (mDBHelper == null) {
-                mDBHelper = new DBHelper(mAppContext);
+            if (dbHelper == null) {
+                dbHelper = new DBHelper(appContext);
             }
         }
-        return mDBHelper.getDb();
+        return dbHelper.getDb();
     }
 
     /**
@@ -445,273 +445,273 @@ public final class ServiceLocator {
     @NonNull
     public SynchronizedDb getCoversDb() {
         synchronized (this) {
-            if (mCoversDbHelper == null) {
-                mCoversDbHelper = new CoversDbHelper(mAppContext);
+            if (coversDbHelper == null) {
+                coversDbHelper = new CoversDbHelper(appContext);
             }
         }
-        return mCoversDbHelper.getDb();
+        return coversDbHelper.getDb();
     }
 
     public boolean isCollationCaseSensitive() {
         //noinspection ConstantConditions
-        return mDBHelper.isCollationCaseSensitive();
+        return dbHelper.isCollationCaseSensitive();
     }
 
     @NonNull
     public AuthorDao getAuthorDao() {
         synchronized (this) {
-            if (mAuthorDao == null) {
-                mAuthorDao = new AuthorDaoImpl();
+            if (authorDao == null) {
+                authorDao = new AuthorDaoImpl();
             }
         }
-        return mAuthorDao;
+        return authorDao;
     }
 
     @VisibleForTesting
     public void setAuthorDao(@Nullable final AuthorDao dao) {
-        mAuthorDao = dao;
+        authorDao = dao;
     }
 
     @NonNull
     public BookDao getBookDao() {
         synchronized (this) {
-            if (mBookDao == null) {
-                mBookDao = new BookDaoImpl();
+            if (bookDao == null) {
+                bookDao = new BookDaoImpl();
             }
         }
-        return mBookDao;
+        return bookDao;
     }
 
     @VisibleForTesting
     public void setBookDao(@Nullable final BookDao dao) {
-        mBookDao = dao;
+        bookDao = dao;
     }
 
     @NonNull
     public BookshelfDao getBookshelfDao() {
         synchronized (this) {
-            if (mBookshelfDao == null) {
-                mBookshelfDao = new BookshelfDaoImpl();
+            if (bookshelfDao == null) {
+                bookshelfDao = new BookshelfDaoImpl();
             }
         }
-        return mBookshelfDao;
+        return bookshelfDao;
     }
 
     @VisibleForTesting
     public void setBookshelfDao(@Nullable final BookshelfDao dao) {
-        mBookshelfDao = dao;
+        bookshelfDao = dao;
     }
 
     @NonNull
     public CalibreDao getCalibreDao() {
         synchronized (this) {
-            if (mCalibreDao == null) {
-                mCalibreDao = new CalibreDaoImpl();
+            if (calibreDao == null) {
+                calibreDao = new CalibreDaoImpl();
             }
         }
-        return mCalibreDao;
+        return calibreDao;
     }
 
     @VisibleForTesting
     public void setCalibreDao(@Nullable final CalibreDao dao) {
-        mCalibreDao = dao;
+        calibreDao = dao;
     }
 
 
     @NonNull
     public CalibreLibraryDao getCalibreLibraryDao() {
         synchronized (this) {
-            if (mCalibreLibraryDao == null) {
-                mCalibreLibraryDao = new CalibreLibraryDaoImpl();
+            if (calibreLibraryDao == null) {
+                calibreLibraryDao = new CalibreLibraryDaoImpl();
             }
         }
-        return mCalibreLibraryDao;
+        return calibreLibraryDao;
     }
 
     @VisibleForTesting
     public void setCalibreLibraryDao(@Nullable final CalibreLibraryDao dao) {
-        mCalibreLibraryDao = dao;
+        calibreLibraryDao = dao;
     }
 
     @NonNull
     public CalibreCustomFieldDao getCalibreCustomFieldDao() {
         synchronized (this) {
-            if (mCalibreCustomFieldDao == null) {
-                mCalibreCustomFieldDao = new CalibreCustomFieldDaoImpl();
+            if (calibreCustomFieldDao == null) {
+                calibreCustomFieldDao = new CalibreCustomFieldDaoImpl();
             }
         }
-        return mCalibreCustomFieldDao;
+        return calibreCustomFieldDao;
     }
 
     @VisibleForTesting
     public void setCalibreCustomFieldDao(@Nullable final CalibreCustomFieldDao dao) {
-        mCalibreCustomFieldDao = dao;
+        calibreCustomFieldDao = dao;
     }
 
     @NonNull
     public ColorDao getColorDao() {
         synchronized (this) {
-            if (mColorDao == null) {
-                mColorDao = new ColorDaoImpl();
+            if (colorDao == null) {
+                colorDao = new ColorDaoImpl();
             }
         }
-        return mColorDao;
+        return colorDao;
     }
 
     @VisibleForTesting
     public void setColorDao(@Nullable final ColorDao dao) {
-        mColorDao = dao;
+        colorDao = dao;
     }
 
     @NonNull
     public FormatDao getFormatDao() {
         synchronized (this) {
-            if (mFormatDao == null) {
-                mFormatDao = new FormatDaoImpl();
+            if (formatDao == null) {
+                formatDao = new FormatDaoImpl();
             }
         }
-        return mFormatDao;
+        return formatDao;
     }
 
     @VisibleForTesting
     public void setFormatDao(@Nullable final FormatDao dao) {
-        mFormatDao = dao;
+        formatDao = dao;
     }
 
     @NonNull
     public FtsDao getFtsDao() {
         synchronized (this) {
-            if (mFtsDao == null) {
-                mFtsDao = new FtsDaoImpl();
+            if (ftsDao == null) {
+                ftsDao = new FtsDaoImpl();
             }
         }
-        return mFtsDao;
+        return ftsDao;
     }
 
     @VisibleForTesting
     public void setFtsDao(@Nullable final FtsDao dao) {
-        mFtsDao = dao;
+        ftsDao = dao;
     }
 
 
     @NonNull
     public GenreDao getGenreDao() {
         synchronized (this) {
-            if (mGenreDao == null) {
-                mGenreDao = new GenreDaoImpl();
+            if (genreDao == null) {
+                genreDao = new GenreDaoImpl();
             }
         }
-        return mGenreDao;
+        return genreDao;
     }
 
     @VisibleForTesting
     public void setGenreDao(@Nullable final GenreDao dao) {
-        mGenreDao = dao;
+        genreDao = dao;
     }
 
     @NonNull
     public LanguageDao getLanguageDao() {
         synchronized (this) {
-            if (mLanguageDao == null) {
-                mLanguageDao = new LanguageDaoImpl();
+            if (languageDao == null) {
+                languageDao = new LanguageDaoImpl();
             }
         }
-        return mLanguageDao;
+        return languageDao;
     }
 
     @VisibleForTesting
     public void setLanguageDao(@Nullable final LanguageDao dao) {
-        mLanguageDao = dao;
+        languageDao = dao;
     }
 
     @NonNull
     public LoaneeDao getLoaneeDao() {
         synchronized (this) {
-            if (mLoaneeDao == null) {
-                mLoaneeDao = new LoaneeDaoImpl();
+            if (loaneeDao == null) {
+                loaneeDao = new LoaneeDaoImpl();
             }
         }
-        return mLoaneeDao;
+        return loaneeDao;
     }
 
     @VisibleForTesting
     public void setLoaneeDao(@Nullable final LoaneeDao dao) {
-        mLoaneeDao = dao;
+        loaneeDao = dao;
     }
 
     @NonNull
     public LocationDao getLocationDao() {
         synchronized (this) {
-            if (mLocationDao == null) {
-                mLocationDao = new LocationDaoImpl();
+            if (locationDao == null) {
+                locationDao = new LocationDaoImpl();
             }
         }
-        return mLocationDao;
+        return locationDao;
     }
 
     @VisibleForTesting
     public void setLocationDao(@Nullable final LocationDao dao) {
-        mLocationDao = dao;
+        locationDao = dao;
     }
 
     @NonNull
     public MaintenanceDao getMaintenanceDao() {
         synchronized (this) {
-            if (mMaintenanceDao == null) {
-                mMaintenanceDao = new MaintenanceDaoImpl();
+            if (maintenanceDao == null) {
+                maintenanceDao = new MaintenanceDaoImpl();
             }
         }
-        return mMaintenanceDao;
+        return maintenanceDao;
     }
 
     @VisibleForTesting
     public void setMaintenanceDao(@Nullable final MaintenanceDao dao) {
-        mMaintenanceDao = dao;
+        maintenanceDao = dao;
     }
 
     @NonNull
     public PublisherDao getPublisherDao() {
         synchronized (this) {
-            if (mPublisherDao == null) {
-                mPublisherDao = new PublisherDaoImpl();
+            if (publisherDao == null) {
+                publisherDao = new PublisherDaoImpl();
             }
         }
-        return mPublisherDao;
+        return publisherDao;
     }
 
     @VisibleForTesting
     public void setPublisherDao(@Nullable final PublisherDao dao) {
-        mPublisherDao = dao;
+        publisherDao = dao;
     }
 
     @NonNull
     public SeriesDao getSeriesDao() {
         synchronized (this) {
-            if (mSeriesDao == null) {
-                mSeriesDao = new SeriesDaoImpl();
+            if (seriesDao == null) {
+                seriesDao = new SeriesDaoImpl();
             }
         }
-        return mSeriesDao;
+        return seriesDao;
     }
 
     @VisibleForTesting
     public void setSeriesDao(@Nullable final SeriesDao dao) {
-        mSeriesDao = dao;
+        seriesDao = dao;
     }
 
     @NonNull
     public StripInfoDao getStripInfoDao() {
         synchronized (this) {
-            if (mStripInfoDao == null) {
-                mStripInfoDao = new StripInfoDaoImpl();
+            if (stripInfoDao == null) {
+                stripInfoDao = new StripInfoDaoImpl();
             }
         }
-        return mStripInfoDao;
+        return stripInfoDao;
     }
 
     @VisibleForTesting
     public void setStripInfoDao(@Nullable final StripInfoDao dao) {
-        mStripInfoDao = dao;
+        stripInfoDao = dao;
     }
 
     /**
@@ -722,44 +722,44 @@ public final class ServiceLocator {
     @NonNull
     public StyleDao getStyleDao() {
         synchronized (this) {
-            if (mStyleDao == null) {
-                mStyleDao = new StyleDaoImpl();
+            if (styleDao == null) {
+                styleDao = new StyleDaoImpl();
             }
         }
-        return mStyleDao;
+        return styleDao;
     }
 
     @VisibleForTesting
     public void setStyleDao(@Nullable final StyleDao dao) {
-        mStyleDao = dao;
+        styleDao = dao;
     }
 
     @NonNull
     public TocEntryDao getTocEntryDao() {
         synchronized (this) {
-            if (mTocEntryDao == null) {
-                mTocEntryDao = new TocEntryDaoImpl();
+            if (tocEntryDao == null) {
+                tocEntryDao = new TocEntryDaoImpl();
             }
         }
-        return mTocEntryDao;
+        return tocEntryDao;
     }
 
     @VisibleForTesting
     public void setTocEntryDao(@Nullable final TocEntryDao dao) {
-        mTocEntryDao = dao;
+        tocEntryDao = dao;
     }
 
     @NonNull
     public CoverCacheDao getCoverCacheDao() {
         synchronized (this) {
-            if (mCoverCacheDao == null) {
-                mCoverCacheDao = new CoverCacheDaoImpl();
+            if (coverCacheDao == null) {
+                coverCacheDao = new CoverCacheDaoImpl();
             }
         }
-        return mCoverCacheDao;
+        return coverCacheDao;
     }
 
     public void setCoverCacheDao(@Nullable final CoverCacheDao dao) {
-        mCoverCacheDao = dao;
+        coverCacheDao = dao;
     }
 }

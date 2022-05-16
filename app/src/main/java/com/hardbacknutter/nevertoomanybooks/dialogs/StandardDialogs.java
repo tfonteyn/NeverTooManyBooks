@@ -35,7 +35,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -278,11 +278,11 @@ public final class StandardDialogs {
      * Ask the user to confirm a delete.
      *
      * @param context   Current context
-     * @param style     ListStyle we're about to delete
+     * @param style     Style we're about to delete
      * @param onConfirm Runnable to execute if the user clicks the confirm button.
      */
     public static void deleteStyle(@NonNull final Context context,
-                                   @NonNull final ListStyle style,
+                                   @NonNull final Style style,
                                    @NonNull final Runnable onConfirm) {
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_baseline_warning_24)

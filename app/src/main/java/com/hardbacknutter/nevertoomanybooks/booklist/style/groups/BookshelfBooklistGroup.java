@@ -24,8 +24,7 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
@@ -56,6 +55,9 @@ public class BookshelfBooklistGroup
 
     public static final String PK_SHOW_BOOKS_UNDER_EACH =
             "style.booklist.group.bookshelf.show.all";
+
+    public static final boolean DEFAULT_SHOW_BOOKS_UNDER_EACH = false;
+
     /** For sorting. */
     private static final Domain DOM_SORTING;
 
@@ -67,12 +69,12 @@ public class BookshelfBooklistGroup
     /**
      * Constructor.
      *
-     * @param style        Style reference.
+     * @param style Style reference.
      */
-    BookshelfBooklistGroup(@NonNull final ListStyle style) {
+    BookshelfBooklistGroup(@NonNull final Style style) {
         super(BOOKSHELF, style);
 
-        underEach = getDefaultShowBooksUnderEach();
+        underEach = DEFAULT_SHOW_BOOKS_UNDER_EACH;
     }
 
     /**
@@ -81,18 +83,9 @@ public class BookshelfBooklistGroup
      * @param style        Style reference.
      * @param group        to copy from
      */
-    BookshelfBooklistGroup(@NonNull final ListStyle style,
+    BookshelfBooklistGroup(@NonNull final Style style,
                            @NonNull final BookshelfBooklistGroup group) {
         super(style, group);
-    }
-
-    /**
-     * Get the global default for this preference.
-     *
-     * @return {@code true} if we want to show a book under each of its Bookshelves.
-     */
-    public static boolean getDefaultShowBooksUnderEach() {
-        return ServiceLocator.getGlobalPreferences().getBoolean(PK_SHOW_BOOKS_UNDER_EACH, false);
     }
 
     @Override
@@ -116,7 +109,7 @@ public class BookshelfBooklistGroup
 
     @Override
     @NonNull
-    protected DomainExpression createDisplayDomainExpression(@NonNull final ListStyle style) {
+    protected DomainExpression createDisplayDomainExpression(@NonNull final Style style) {
         // Not sorted; we sort on the OB domain as defined in #createGroupKey.
         return new DomainExpression(DOM_BOOKSHELF_NAME,
                                     TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME));

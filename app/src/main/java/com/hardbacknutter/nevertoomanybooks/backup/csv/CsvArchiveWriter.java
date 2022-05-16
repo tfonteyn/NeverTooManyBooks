@@ -54,7 +54,7 @@ public class CsvArchiveWriter
 
     /** Export configuration. */
     @NonNull
-    private final ExportHelper mHelper;
+    private final ExportHelper exportHelper;
 
     /**
      * Constructor.
@@ -62,7 +62,7 @@ public class CsvArchiveWriter
      * @param helper export configuration
      */
     public CsvArchiveWriter(@NonNull final ExportHelper helper) {
-        mHelper = helper;
+        exportHelper = helper;
     }
 
     @NonNull
@@ -71,7 +71,7 @@ public class CsvArchiveWriter
                                @NonNull final ProgressListener progressListener)
             throws DataWriterException, IOException {
 
-        final LocalDateTime dateSince = mHelper.getLastDone();
+        final LocalDateTime dateSince = exportHelper.getLastDone(context);
 
         final int booksToExport = ServiceLocator.getInstance().getBookDao()
                                                 .countBooksForExport(dateSince);
@@ -81,7 +81,7 @@ public class CsvArchiveWriter
 
             final ExportResults results;
 
-            try (OutputStream os = mHelper.createOutputStream(context);
+            try (OutputStream os = exportHelper.createOutputStream(context);
                  Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
                  Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
                  RecordWriter recordWriter = new CsvRecordWriter(dateSince)) {
@@ -91,7 +91,7 @@ public class CsvArchiveWriter
             }
 
             // If the backup was a full backup remember that.
-            mHelper.setLastDone();
+            exportHelper.setLastDone(context);
 
             return results;
         } else {

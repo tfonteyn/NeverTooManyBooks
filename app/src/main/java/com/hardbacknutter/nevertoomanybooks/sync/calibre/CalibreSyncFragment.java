@@ -54,18 +54,18 @@ public class CalibreSyncFragment
         extends BaseFragment {
 
     @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider mToolbarMenuProvider;
+    private MenuProvider toolbarMenuProvider;
 
     /** View Binding. */
-    private FragmentSyncCalibreBinding mVb;
+    private FragmentSyncCalibreBinding vb;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentSyncCalibreBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentSyncCalibreBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @Override
@@ -74,12 +74,12 @@ public class CalibreSyncFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        mToolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
+        toolbarMenuProvider = new ToolbarMenuProvider();
+        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
         toolbar.setTitle(R.string.action_synchronize);
 
-        mVb.btnLibMap.setOnClickListener(v -> {
-            final String url = CalibreContentServer.getHostUrl();
+        vb.btnLibMap.setOnClickListener(v -> {
+            final String url = CalibreContentServer.getHostUrl(v.getContext());
             if (url.isEmpty()) {
                 openSettings();
             } else {
@@ -87,16 +87,16 @@ public class CalibreSyncFragment
                                 CalibreLibraryMappingFragment.TAG);
             }
         });
-        mVb.btnImport.setOnClickListener(v -> {
-            if (CalibreContentServer.getHostUrl().isEmpty()) {
+        vb.btnImport.setOnClickListener(v -> {
+            if (CalibreContentServer.getHostUrl(v.getContext()).isEmpty()) {
                 openSettings();
             } else {
                 replaceFragment(SyncReaderFragment.create(SyncServer.CalibreCS),
                                 SyncReaderFragment.TAG);
             }
         });
-        mVb.btnExport.setOnClickListener(v -> {
-            if (CalibreContentServer.getHostUrl().isEmpty()) {
+        vb.btnExport.setOnClickListener(v -> {
+            if (CalibreContentServer.getHostUrl(v.getContext()).isEmpty()) {
                 openSettings();
             } else {
                 replaceFragment(SyncWriterFragment.create(SyncServer.CalibreCS),

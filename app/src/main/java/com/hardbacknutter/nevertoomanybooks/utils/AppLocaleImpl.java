@@ -20,14 +20,12 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -50,46 +48,43 @@ public final class AppLocaleImpl
 
     @NonNull
     private final Collection<WeakReference<OnLocaleChangedListener>>
-            mOnLocaleChangedListeners = new ArrayList<>();
+            localeChangedListeners = new ArrayList<>();
 
     /** Cache for Locales; key: the BOOK language (ISO3). */
-    private final Map<String, Locale> mLocaleMap = new HashMap<>();
+    private final Map<String, Locale> cache = new HashMap<>();
 
     /**
      * The currently active/preferred user Locale.
      * See {@link #apply} for why we store it.
      */
     @Nullable
-    private Locale sPreferredLocale;
+    private Locale preferredLocale;
 
     /**
      * Remember the current Locale spec to detect when language is switched.
      * See {@link #apply}.
      */
     @NonNull
-    private String sPreferredLocaleSpec = SYSTEM_LANGUAGE;
+    private String preferredLocaleSpec = SYSTEM_LANGUAGE;
 
     @Override
     @NonNull
     public Context apply(@NonNull final Context context) {
-        boolean changed = false;
-
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-
         // Create the Locale at first access, or if the persisted is different from the current.
-        final String localeSpec = getPersistedLocaleSpec(global);
-        if (sPreferredLocale == null || !sPreferredLocaleSpec.equals(localeSpec)) {
-            sPreferredLocaleSpec = localeSpec;
-            sPreferredLocale = create(localeSpec);
-            changed = true;
+        final String localeSpec = getPersistedLocaleSpec();
+
+        final boolean changed = preferredLocale == null || !preferredLocaleSpec.equals(localeSpec);
+        if (changed) {
+            preferredLocaleSpec = localeSpec;
+            preferredLocale = create(localeSpec);
         }
 
         // Update the JDK usage of Locale - this MUST be done each and every time!
-        Locale.setDefault(sPreferredLocale);
+        Locale.setDefault(preferredLocale);
 
         // Update the Android usage of Locale - this MUST be done each and every time!
         final Configuration deltaConfig = new Configuration();
-        deltaConfig.setLocale(sPreferredLocale);
+        deltaConfig.setLocale(preferredLocale);
         final Context localizedContext = context.createConfigurationContext(deltaConfig);
 
         if (changed) {
@@ -146,11 +141,11 @@ public final class AppLocaleImpl
         lang = languages.getLocaleIsoFromISO3(context, lang);
 
         // lang should now be an ISO (2 or 3 characters) code (or an invalid string)
-        Locale locale = mLocaleMap.get(lang);
+        Locale locale = cache.get(lang);
         if (locale == null) {
             locale = create(lang);
             if (isValid(locale)) {
-                mLocaleMap.put(lang, locale);
+                cache.put(lang, locale);
             } else {
                 locale = null;
             }
@@ -229,25 +224,26 @@ public final class AppLocaleImpl
 
     @Override
     @NonNull
-    public String getPersistedLocaleSpec(@NonNull final SharedPreferences global) {
+    public String getPersistedLocaleSpec() {
         //noinspection ConstantConditions
-        return global.getString(Prefs.pk_ui_locale, SYSTEM_LANGUAGE);
+        return ServiceLocator.getPreferences()
+                             .getString(Prefs.pk_ui_locale, SYSTEM_LANGUAGE);
     }
 
     @Override
     public void registerOnLocaleChangedListener(
             @NonNull final OnLocaleChangedListener listener) {
-        synchronized (mOnLocaleChangedListeners) {
-            mOnLocaleChangedListeners.add(new WeakReference<>(listener));
+        synchronized (localeChangedListeners) {
+            localeChangedListeners.add(new WeakReference<>(listener));
         }
     }
 
     @Override
     public void unregisterOnLocaleChangedListener(
             @NonNull final OnLocaleChangedListener listener) {
-        synchronized (mOnLocaleChangedListeners) {
+        synchronized (localeChangedListeners) {
             // remove dead listeners and the specified listener
-            mOnLocaleChangedListeners.removeIf(
+            localeChangedListeners.removeIf(
                     listenerRef -> listenerRef.get() == null || listenerRef.get().equals(listener));
         }
     }
@@ -258,9 +254,9 @@ public final class AppLocaleImpl
      * @param context Current context
      */
     private void onLocaleChanged(@NonNull final Context context) {
-        synchronized (mOnLocaleChangedListeners) {
+        synchronized (localeChangedListeners) {
             final Iterator<WeakReference<OnLocaleChangedListener>> it =
-                    mOnLocaleChangedListeners.iterator();
+                    localeChangedListeners.iterator();
             while (it.hasNext()) {
                 final WeakReference<OnLocaleChangedListener> listenerRef = it.next();
                 if (listenerRef.get() != null) {

@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelfViewModel;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
@@ -91,8 +91,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
 public class BooklistGroup {
 
     /**
-     * The ID's for the groups. <strong>Never change these</strong>,
-     * they get stored in prefs and styles.
+     * The ID's for the groups.
+     * <strong>Never change these</strong>, they get stored in the db.
      * <p>
      * Also: the code relies on BOOK being == 0
      */
@@ -212,7 +212,7 @@ public class BooklistGroup {
     @SuppressLint("SwitchIntDef")
     @NonNull
     public static BooklistGroup newInstance(@Id final int id,
-                                            @NonNull final ListStyle style) {
+                                            @NonNull final Style style) {
         switch (id) {
             case AUTHOR:
                 return new AuthorBooklistGroup(style);
@@ -237,7 +237,7 @@ public class BooklistGroup {
      */
     @SuppressLint("WrongConstant")
     @NonNull
-    public static List<BooklistGroup> getAllGroups(@NonNull final ListStyle style) {
+    public static List<BooklistGroup> getAllGroups(@NonNull final Style style) {
         final List<BooklistGroup> list = new ArrayList<>();
         // Get the set of all valid <strong>Group</strong> values.
         // In other words: all valid groups, <strong>except</strong> the BOOK.
@@ -896,15 +896,15 @@ public class BooklistGroup {
         /**
          * Constructor.
          *
-         * @param labelId             User displayable label resource id
+         * @param labelResId          User displayable label resource id
          * @param keyPrefix           the key prefix (as short as possible)
          *                            to use for the compound key
          * @param keyDomainExpression the domain to get the actual data from the Cursor
          */
-        GroupKey(@StringRes final int labelId,
+        GroupKey(@StringRes final int labelResId,
                  @NonNull final String keyPrefix,
                  @NonNull final DomainExpression keyDomainExpression) {
-            labelResId = labelId;
+            this.labelResId = labelResId;
             this.keyPrefix = keyPrefix;
             keyDomain = keyDomainExpression;
         }

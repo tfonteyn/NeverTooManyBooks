@@ -20,13 +20,11 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.math.MathUtils;
-import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
@@ -55,10 +53,7 @@ public final class NightMode {
      * @param context Current context
      */
     public static void apply(@NonNull final Context context) {
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(context);
-
-        final int mode = Prefs.getIntListPref(global, Prefs.pk_ui_theme, 0);
+        final int mode = Prefs.getIntListPref(context, Prefs.pk_ui_theme, 0);
         AppCompatDelegate.setDefaultNightMode(NIGHT_MODES[MathUtils.clamp(mode, 0, 2)]);
     }
 }

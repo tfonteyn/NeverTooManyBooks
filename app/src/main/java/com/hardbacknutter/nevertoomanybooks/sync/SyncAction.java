@@ -51,16 +51,17 @@ public enum SyncAction
         }
     };
 
-    private final int mLabelId;
+    @StringRes
+    private final int labelResId;
 
-    SyncAction(@StringRes final int labelId) {
-        mLabelId = labelId;
+    SyncAction(@StringRes final int labelResId) {
+        this.labelResId = labelResId;
     }
 
-    public static SyncAction read(@NonNull final SharedPreferences global,
+    public static SyncAction read(@NonNull final SharedPreferences prefs,
                                   @NonNull final String key,
                                   @NonNull final SyncAction defValue) {
-        final int ordinal = global.getInt(key, -1);
+        final int ordinal = prefs.getInt(key, -1);
         if (ordinal == -1) {
             return defValue;
         } else {
@@ -101,8 +102,8 @@ public enum SyncAction
      * @return string id
      */
     @StringRes
-    int getLabelId() {
-        return mLabelId;
+    int getLabelResId() {
+        return labelResId;
     }
 
 

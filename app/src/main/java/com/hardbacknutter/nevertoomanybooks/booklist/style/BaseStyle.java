@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.view.ViewGroup;
 
 import androidx.annotation.IntRange;
@@ -38,69 +37,63 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BookshelfBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.PublisherBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.SeriesBooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleDataStore;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 /**
  * Represents a specific style of booklist (e.g. Authors/Series).<br>
- * Individual {@link BooklistGroup} objects are added to a {@link BooklistStyle} in order
+ * Individual {@link BooklistGroup} objects are added to a {@link BaseStyle} in order
  * to describe the resulting list style.
  */
 @SuppressWarnings({"OverlyStrongTypeCast", "CodeBlock2Expr", "ClassReferencesSubclass"})
-public abstract class BooklistStyle
-        implements ListStyle {
+public abstract class BaseStyle
+        implements Style {
 
     /** Configuration for the fields shown on the Book level in the book list. */
-    final BooklistBookFieldVisibility booklistBookFieldVisibility;
+    final BooklistFieldVisibility listFieldVisibility;
 
     /** Configuration for the fields shown on the Book details screen. */
-    final BookDetailsFieldVisibility bookDetailsFieldVisibility;
+    final BookDetailsFieldVisibility detailsFieldVisibility;
 
     /** All groups; <strong>ordered</strong>. */
     private final Map<Integer, BooklistGroup> groups = new LinkedHashMap<>();
 
-    /**
-     * The uuid based SharedPreference name.
-     * <p>
-     * When set to the empty string, the global preferences will be used.
-     */
     @NonNull
     private final String uuid;
+
     /**
      * Row id of database row from which this object comes.
      * A '0' is for an as yet unsaved user-style.
      * Always NEGATIVE (e.g. <0 ) for a build-in style
      */
     long id;
+
     /**
      * The menu position of this style as sorted by the user.
      * Preferred styles will be at the top.
-     * <p>
-     * Stored in the database; not used by the global style.
      */
     int menuPosition;
+
     /**
      * Is this style preferred by the user; i.e. should it be shown in the preferred-list.
-     * <p>
-     * Stored in the database; not used by the global style.
      */
     boolean preferred;
 
     /** Relative scaling factor for text on the list screen. */
-    @ListStyle.TextScale
-    int textScale;
+    @Style.TextScale
+    int textScale = Style.DEFAULT_TEXT_SCALE;
 
     /** Relative scaling factor for covers on the list screen. */
-    @ListStyle.CoverScale
-    int coverScale;
+    @Style.CoverScale
+    int coverScale = Style.DEFAULT_COVER_SCALE;
 
     /** Local override. */
     boolean sortAuthorByGivenName;
@@ -109,17 +102,19 @@ public abstract class BooklistStyle
     boolean showAuthorByGivenName;
 
     /** The default number of levels to expand the list tree to. */
-    int expansionLevel;
+    int expansionLevel = 1;
+
     /**
      * Show list header info.
      */
-    int showHeaderInfo;
+    int headerFieldVisibility = BooklistHeader.BITMASK_ALL;
+
     /**
      * Should rows be shown using
      * {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT} (false),
      * or as system "?attr/listPreferredItemHeightSmall" (true).
      */
-    boolean useGroupRowPreferredHeight;
+    boolean groupRowUsesPreferredHeight = true;
 
     /** Cached pixel value. */
     private int listPreferredItemHeightSmall;
@@ -127,37 +122,14 @@ public abstract class BooklistStyle
     /**
      * Base constructor.
      *
-     * @param uuid style UUID string, or an empty string to represent the global style.
+     * @param uuid style UUID string
      */
-    BooklistStyle(@NonNull final String uuid) {
+    BaseStyle(@NonNull final String uuid) {
+        SanityCheck.requireValue(uuid, "uuid");
         this.uuid = uuid;
 
-        // read the global style defaults.
-        final SharedPreferences global = ServiceLocator.getGlobalPreferences();
-
-        textScale = global.getInt(StyleDataStore.PK_TEXT_SCALE,
-                                  ListStyle.DEFAULT_TEXT_SCALE);
-
-        coverScale = global.getInt(StyleDataStore.PK_COVER_SCALE,
-                                   ListStyle.DEFAULT_COVER_SCALE);
-
-        sortAuthorByGivenName = global.getBoolean(StyleDataStore.PK_SORT_AUTHOR_NAME_GIVEN_FIRST,
-                                                  false);
-
-        showAuthorByGivenName = global.getBoolean(StyleDataStore.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST,
-                                                  false);
-
-        expansionLevel = global.getInt(StyleDataStore.PK_EXPANSION_LEVEL,
-                                       1);
-
-        showHeaderInfo = global.getInt(StyleDataStore.PK_LIST_HEADER,
-                                       BooklistHeader.BITMASK_ALL);
-
-        useGroupRowPreferredHeight = global.getBoolean(StyleDataStore.PK_GROUP_ROW_HEIGHT,
-                                                       true);
-
-        booklistBookFieldVisibility = new BooklistBookFieldVisibility(global);
-        bookDetailsFieldVisibility = new BookDetailsFieldVisibility(global);
+        listFieldVisibility = new BooklistFieldVisibility();
+        detailsFieldVisibility = new BookDetailsFieldVisibility();
     }
 
     /**
@@ -201,7 +173,6 @@ public abstract class BooklistStyle
         this.id = id;
     }
 
-
     @Override
     public int getMenuPosition() {
         return menuPosition;
@@ -222,7 +193,6 @@ public abstract class BooklistStyle
         this.preferred = preferred;
     }
 
-
     @Override
     @IntRange(from = 1)
     public int getExpansionLevel() {
@@ -232,20 +202,6 @@ public abstract class BooklistStyle
 
     public void setExpansionLevel(@IntRange(from = 1) final int value) {
         expansionLevel = value;
-    }
-
-
-    @Override
-    public boolean isShowHeader(@BooklistHeader.Option final int bit) {
-        return (showHeaderInfo & bit) != 0;
-    }
-
-    public int getShowHeaderFields() {
-        return showHeaderInfo;
-    }
-
-    public void setShowHeaderFields(final int bitmask) {
-        showHeaderInfo = bitmask & BooklistHeader.BITMASK_ALL;
     }
 
 
@@ -268,42 +224,103 @@ public abstract class BooklistStyle
     }
 
 
-    @ListStyle.TextScale
+    @Style.TextScale
     @Override
     public int getTextScale() {
         return textScale;
     }
 
-    public void setTextScale(@ListStyle.TextScale final int scale) {
+    public void setTextScale(@Style.TextScale final int scale) {
         textScale = scale;
     }
 
-    @ListStyle.CoverScale
+    @Style.CoverScale
     @Override
     public int getCoverScale() {
         return coverScale;
     }
 
-    public void setCoverScale(@ListStyle.CoverScale final int coverScale) {
+    public void setCoverScale(@Style.CoverScale final int coverScale) {
         this.coverScale = coverScale;
     }
 
+
     @Override
-    @NonNull
-    public BooklistBookFieldVisibility getBooklistBookFieldVisibility() {
-        return booklistBookFieldVisibility;
+    public boolean isShowHeaderField(@BooklistHeader.Option final int bit) {
+        return (headerFieldVisibility & bit) != 0;
+    }
+
+    @BooklistHeader.Option
+    public int getHeaderFieldVisibility() {
+        return headerFieldVisibility;
+    }
+
+    public void setHeaderFieldVisibility(@BooklistHeader.Option final int bitmask) {
+        headerFieldVisibility = bitmask & BooklistHeader.BITMASK_ALL;
+    }
+
+
+    @Override
+    public boolean isShowField(@NonNull final Screen screen,
+                               @NonNull final String dbKey) {
+        switch (screen) {
+            case List:
+                return listFieldVisibility
+                        .isShowField(dbKey)
+                        .orElseGet(() -> DBKey.isUsed(dbKey));
+            case Detail:
+                return detailsFieldVisibility
+                        .isShowField(dbKey)
+                        .orElseGet(() -> DBKey.isUsed(dbKey));
+        }
+        throw new IllegalArgumentException();
+    }
+
+    public void setShowField(@NonNull final Screen screen,
+                             @NonNull final String dbKey,
+                             final boolean show) {
+        switch (screen) {
+            case List:
+                listFieldVisibility.setShowField(dbKey, show);
+                break;
+            case Detail:
+                detailsFieldVisibility.setShowField(dbKey, show);
+                break;
+        }
+    }
+
+    @Override
+    public int getFieldVisibility(@NonNull final Screen screen) {
+        switch (screen) {
+            case List:
+                return listFieldVisibility.getValue();
+            case Detail:
+                return detailsFieldVisibility.getValue();
+        }
+        throw new IllegalArgumentException();
+    }
+
+    public void setFieldVisibility(@NonNull final Screen screen,
+                                   final int bitmask) {
+        switch (screen) {
+            case List:
+                listFieldVisibility.setValue(bitmask);
+                break;
+            case Detail:
+                detailsFieldVisibility.setValue(bitmask);
+                break;
+        }
     }
 
     @Override
     @NonNull
-    public BookDetailsFieldVisibility getBookDetailsFieldVisibility() {
-        return bookDetailsFieldVisibility;
+    public String getFieldVisibilitySummaryText(@NonNull final Context context) {
+        return listFieldVisibility.getSummaryText(context);
     }
-
 
     @Override
     public int getGroupRowHeight(@NonNull final Context context) {
-        if (useGroupRowPreferredHeight) {
+        if (groupRowUsesPreferredHeight) {
             if (listPreferredItemHeightSmall == 0) {
                 listPreferredItemHeightSmall = AttrUtils
                         .getDimensionPixelSize(context, R.attr.listPreferredItemHeightSmall);
@@ -315,11 +332,11 @@ public abstract class BooklistStyle
     }
 
     public boolean isGroupRowUsesPreferredHeight() {
-        return useGroupRowPreferredHeight;
+        return groupRowUsesPreferredHeight;
     }
 
-    public void setUseGroupRowPreferredHeight(final boolean value) {
-        useGroupRowPreferredHeight = value;
+    public void setGroupRowUsesPreferredHeight(final boolean value) {
+        groupRowUsesPreferredHeight = value;
     }
 
 
@@ -383,16 +400,17 @@ public abstract class BooklistStyle
     }
 
     /**
-     * Wrapper that gets the getPrimaryType flag from the
-     * {@link AuthorBooklistGroup} if we have it, or from the global default.
+     * Wrapper that gets the primary-author-type from the {@link AuthorBooklistGroup},
+     * if we have this group; or the default.
      *
      * @return the type of author we consider the primary author
      */
     @Override
     public int getPrimaryAuthorType() {
+
         return getGroupById(BooklistGroup.AUTHOR)
                 .map(group -> ((AuthorBooklistGroup) group).getPrimaryType())
-                .orElse(AuthorBooklistGroup.getDefaultPrimaryType());
+                .orElse(Author.TYPE_UNKNOWN);
     }
 
     public void setPrimaryAuthorTypes(final int value) {
@@ -402,8 +420,8 @@ public abstract class BooklistStyle
     }
 
     /**
-     * Wrapper that gets the preference from {@link SeriesBooklistGroup}
-     * if we have it this group, or from the global default if not.
+     * Wrapper that gets the show-book-under-each from {@link SeriesBooklistGroup}
+     * if we have this group; or the default.
      *
      * @return {@code true} if we want to show a book under each of its Series.
      */
@@ -411,7 +429,7 @@ public abstract class BooklistStyle
     public boolean isShowBooksUnderEachSeries() {
         return getGroupById(BooklistGroup.SERIES)
                 .map(group -> ((SeriesBooklistGroup) group).showBooksUnderEach())
-                .orElse(SeriesBooklistGroup.getDefaultShowBooksUnderEach());
+                .orElse(SeriesBooklistGroup.DEFAULT_SHOW_BOOKS_UNDER_EACH);
     }
 
     public void setShowBooksUnderEachSeries(final boolean value) {
@@ -421,8 +439,8 @@ public abstract class BooklistStyle
     }
 
     /**
-     * Wrapper that gets the preference from {@link PublisherBooklistGroup}
-     * if we have it this group, or from the global default if not.
+     * Wrapper that gets the show-book-under-each from {@link PublisherBooklistGroup}
+     * if we have this group; or the default.
      *
      * @return {@code true} if we want to show a book under each of its Publishers.
      */
@@ -430,7 +448,7 @@ public abstract class BooklistStyle
     public boolean isShowBooksUnderEachPublisher() {
         return getGroupById(BooklistGroup.PUBLISHER)
                 .map(group -> ((PublisherBooklistGroup) group).showBooksUnderEach())
-                .orElse(PublisherBooklistGroup.getDefaultShowBooksUnderEach());
+                .orElse(PublisherBooklistGroup.DEFAULT_SHOW_BOOKS_UNDER_EACH);
     }
 
     public void setShowBooksUnderEachPublisher(final boolean value) {
@@ -440,8 +458,8 @@ public abstract class BooklistStyle
     }
 
     /**
-     * Wrapper that gets the preference from {@link BookshelfBooklistGroup}
-     * if we have it this group, or from the global default if not.
+     * Wrapper that gets the show-book-under-each from {@link BookshelfBooklistGroup}
+     * if we have this group; or the default.
      *
      * @return {@code true} if we want to show a book under each of its Publishers.
      */
@@ -449,7 +467,7 @@ public abstract class BooklistStyle
     public boolean isShowBooksUnderEachBookshelf() {
         return getGroupById(BooklistGroup.BOOKSHELF)
                 .map(group -> ((BookshelfBooklistGroup) group).showBooksUnderEach())
-                .orElse(BookshelfBooklistGroup.getDefaultShowBooksUnderEach());
+                .orElse(BookshelfBooklistGroup.DEFAULT_SHOW_BOOKS_UNDER_EACH);
     }
 
     public void setShowBooksUnderEachBookshelf(final boolean value) {
@@ -459,8 +477,8 @@ public abstract class BooklistStyle
     }
 
     /**
-     * Wrapper that gets the preference from {@link AuthorBooklistGroup}
-     * if we have it this group, or from the global default if not.
+     * Wrapper that gets the show-book-under-each from {@link AuthorBooklistGroup}
+     * if we have this group; or the default.
      *
      * @return {@code true} if we want to show a book under each of its Authors
      */
@@ -468,7 +486,7 @@ public abstract class BooklistStyle
     public boolean isShowBooksUnderEachAuthor() {
         return getGroupById(BooklistGroup.AUTHOR)
                 .map(group -> ((AuthorBooklistGroup) group).showBooksUnderEach())
-                .orElse(AuthorBooklistGroup.getDefaultShowBooksUnderEach());
+                .orElse(AuthorBooklistGroup.DEFAULT_SHOW_BOOKS_UNDER_EACH);
     }
 
     public void setShowBooksUnderEachAuthor(final boolean value) {
@@ -486,7 +504,7 @@ public abstract class BooklistStyle
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final BooklistStyle style = (BooklistStyle) o;
+        final BaseStyle style = (BaseStyle) o;
         return id == style.id
                && uuid.equals(style.uuid)
                && menuPosition == style.menuPosition
@@ -494,15 +512,15 @@ public abstract class BooklistStyle
                && showAuthorByGivenName == style.showAuthorByGivenName
                && sortAuthorByGivenName == style.sortAuthorByGivenName
                && expansionLevel == style.expansionLevel
-               && showHeaderInfo == style.showHeaderInfo
-               && useGroupRowPreferredHeight == style.useGroupRowPreferredHeight
+               && headerFieldVisibility == style.headerFieldVisibility
+               && groupRowUsesPreferredHeight == style.groupRowUsesPreferredHeight
                && coverScale == style.coverScale
                && textScale == style.textScale
 
-               && Objects.equals(booklistBookFieldVisibility,
-                                 style.booklistBookFieldVisibility)
-               && Objects.equals(bookDetailsFieldVisibility,
-                                 style.bookDetailsFieldVisibility)
+               && Objects.equals(listFieldVisibility,
+                                 style.listFieldVisibility)
+               && Objects.equals(detailsFieldVisibility,
+                                 style.detailsFieldVisibility)
                && Objects.equals(groups, style.groups);
     }
 
@@ -510,16 +528,16 @@ public abstract class BooklistStyle
     public int hashCode() {
         return Objects.hash(id, uuid, menuPosition, preferred,
                             showAuthorByGivenName, sortAuthorByGivenName,
-                            expansionLevel, showHeaderInfo, useGroupRowPreferredHeight,
+                            expansionLevel, headerFieldVisibility, groupRowUsesPreferredHeight,
                             coverScale, textScale,
-                            booklistBookFieldVisibility, bookDetailsFieldVisibility,
+                            listFieldVisibility, detailsFieldVisibility,
                             groups);
     }
 
     @Override
     @NonNull
     public String toString() {
-        return "BooklistStyle{"
+        return "BaseStyle{"
                + "id=" + id
                + ", uuid=`" + uuid + '`'
                + ", preferred=" + preferred
@@ -530,14 +548,14 @@ public abstract class BooklistStyle
                + ", sortAuthorByGivenName=" + sortAuthorByGivenName
 
                + ", expansionLevel=" + expansionLevel
-               + ", groupsUseListPreferredHeight=" + useGroupRowPreferredHeight
+               + ", groupsUseListPreferredHeight=" + groupRowUsesPreferredHeight
                + ", listPreferredItemHeightSmall=" + listPreferredItemHeightSmall
-               + ", showHeaderInfo=" + showHeaderInfo
+               + ", showHeaderInfo=" + headerFieldVisibility
 
                + ", coverScale=" + coverScale
                + ", textScale=" + textScale
-               + ", listScreenBookFields=" + booklistBookFieldVisibility
-               + ", detailScreenBookFields=" + bookDetailsFieldVisibility
+               + ", listScreenBookFields=" + listFieldVisibility
+               + ", detailScreenBookFields=" + detailsFieldVisibility
                + '}';
     }
 

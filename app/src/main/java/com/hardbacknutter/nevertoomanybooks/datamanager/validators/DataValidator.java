@@ -35,16 +35,16 @@ public interface DataValidator {
     /**
      * Validation method. Must throw a ValidatorException if validation fails.
      *
-     * @param context      Current context
-     * @param dataManager  The DataManager object
-     * @param key          key for the data to validate
-     * @param errorLabelId string resource id for a user visible message
+     * @param context         Current context
+     * @param dataManager     The DataManager object
+     * @param key             key for the data to validate
+     * @param errorLabelResId string resource id for a user visible message
      *
      * @throws ValidatorException For any validation failure.
      */
     void validate(@NonNull Context context,
                   @NonNull DataManager dataManager,
                   @NonNull String key,
-                  @StringRes int errorLabelId)
+                  @StringRes int errorLabelResId)
             throws ValidatorException;
 }

@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -109,12 +108,12 @@ public enum SyncServer
         return mLabel;
     }
 
-    public boolean isEnabled(@NonNull final SharedPreferences global) {
+    public boolean isEnabled() {
         switch (this) {
             case CalibreCS:
-                return CalibreHandler.isSyncEnabled(global);
+                return CalibreHandler.isSyncEnabled();
             case StripInfo:
-                return StripInfoHandler.isSyncEnabled(global);
+                return StripInfoHandler.isSyncEnabled();
 
             default:
                 throw new IllegalArgumentException();

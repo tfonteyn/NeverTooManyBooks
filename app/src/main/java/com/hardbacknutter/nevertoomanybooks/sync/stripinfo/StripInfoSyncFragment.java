@@ -52,18 +52,18 @@ public class StripInfoSyncFragment
         extends BaseFragment {
 
     @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider mToolbarMenuProvider;
+    private MenuProvider toolbarMenuProvider;
 
     /** View Binding. */
-    private FragmentSyncStripinfoBinding mVb;
+    private FragmentSyncStripinfoBinding vb;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentSyncStripinfoBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentSyncStripinfoBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @Override
@@ -72,20 +72,20 @@ public class StripInfoSyncFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        mToolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
+        toolbarMenuProvider = new ToolbarMenuProvider();
+        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
         toolbar.setTitle(R.string.action_synchronize);
 
-        mVb.btnImport.setOnClickListener(v -> {
-            if (StripInfoAuth.isUsernameSet()) {
+        vb.btnImport.setOnClickListener(v -> {
+            if (StripInfoAuth.isUsernameSet(v.getContext())) {
                 replaceFragment(SyncReaderFragment.create(SyncServer.StripInfo),
                                 SyncReaderFragment.TAG);
             } else {
                 openSettings();
             }
         });
-        mVb.btnExport.setOnClickListener(v -> {
-            if (StripInfoAuth.isUsernameSet()) {
+        vb.btnExport.setOnClickListener(v -> {
+            if (StripInfoAuth.isUsernameSet(v.getContext())) {
                 replaceFragment(SyncWriterFragment.create(SyncServer.StripInfo),
                                 SyncWriterFragment.TAG);
             } else {

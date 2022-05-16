@@ -36,7 +36,7 @@ import java.lang.annotation.RetentionPolicy;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
 
@@ -52,17 +52,17 @@ public class EditStyleContract
 
 
     @NonNull
-    public static Input duplicate(@NonNull final ListStyle style) {
+    public static Input duplicate(@NonNull final Style style) {
         return new Input(ACTION_CLONE, style, style.isPreferred());
     }
 
     @NonNull
-    public static Input edit(@NonNull final ListStyle style) {
+    public static Input edit(@NonNull final Style style) {
         return new Input(ACTION_EDIT, style, style.isPreferred());
     }
 
     @NonNull
-    public static Input edit(@NonNull final ListStyle style,
+    public static Input edit(@NonNull final Style style,
                              final boolean setAsPreferred) {
         return new Input(ACTION_EDIT, style, setAsPreferred);
     }
@@ -82,7 +82,7 @@ public class EditStyleContract
         return FragmentHostActivity
                 .createIntent(context, StyleFragment.class)
                 .putExtra(BKEY_ACTION, input.action)
-                .putExtra(ListStyle.BKEY_UUID, input.uuid)
+                .putExtra(Style.BKEY_UUID, input.uuid)
                 .putExtra(BKEY_SET_AS_PREFERRED, input.setAsPreferred);
     }
 
@@ -122,7 +122,7 @@ public class EditStyleContract
         final boolean setAsPreferred;
 
         Input(@EditAction final int action,
-              @NonNull final ListStyle style,
+              @NonNull final Style style,
               final boolean setAsPreferred) {
             this.action = action;
             this.uuid = style.getUuid();
@@ -156,7 +156,6 @@ public class EditStyleContract
 
         /**
          * Either a new UUID if we cloned a style, or the UUID of the style we edited.
-         * Will be {@code null} if we edited the global style
          */
         @Nullable
         public final String uuid;

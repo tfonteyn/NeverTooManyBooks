@@ -83,7 +83,7 @@ public class SettingsFragment
     private static final String PSK_SEARCH_SITE_ORDER = "psk_search_site_order";
     private static final String PSK_CALIBRE = "psk_calibre";
 
-    private final ActivityResultLauncher<Void> mEditSitesLauncher =
+    private final ActivityResultLauncher<Void> editSitesLauncher =
             registerForActivityResult(new SearchSitesAllListsContract(),
                                       success -> { /* ignore */ });
 
@@ -91,34 +91,34 @@ public class SettingsFragment
      * Used to be able to reset this pref to what it was when this fragment started.
      * Persisted with savedInstanceState.
      */
-    private boolean mStoredTitleOrderBy;
-    private SwitchPreference mTitleOrderByPref;
+    private boolean storedTitleOrderBy;
+    private SwitchPreference titleOrderByPref;
 
     /**
      * Used to be able to reset this pref to what it was when this fragment started.
      * Persisted with savedInstanceState.
      */
-    private String mStoredVolumeIndex;
-    private ListPreference mStorageVolumePref;
+    private String storedVolumeIndex;
+    private ListPreference storageVolumePref;
 
-    private SettingsViewModel mVm;
+    private SettingsViewModel vm;
 
     /** Set the hosting Activity result, and close it. */
-    private final OnBackPressedCallback mOnBackPressedCallback =
+    private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
                     final Intent resultIntent = SettingsContract.createResultIntent(
-                            mVm.getRequiresActivityRecreation());
+                            vm.getRequiresActivityRecreation());
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
                 }
             };
     @Nullable
-    private ProgressDelegate mProgressDelegate;
-    private boolean mStorageWasMissing;
-    private int mVolumeChangedOptionChosen;
+    private ProgressDelegate progressDelegate;
+    private boolean storageWasMissing;
+    private int volumeChangedOptionChosen;
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -126,7 +126,7 @@ public class SettingsFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
 
         //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
+        vm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
 
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
@@ -139,7 +139,7 @@ public class SettingsFragment
         pUiLocale.setSummaryProvider(listSummaryProvider);
         pUiLocale.setOnPreferenceChangeListener((preference, newValue) -> {
             // Set the activity result so our caller will recreate itself
-            mVm.setOnBackRequiresActivityRecreation();
+            vm.setOnBackRequiresActivityRecreation();
             getActivity().recreate();
             return true;
         });
@@ -159,7 +159,7 @@ public class SettingsFragment
         //noinspection ConstantConditions
         pFastscroller.setSummaryProvider(listSummaryProvider);
         pFastscroller.setOnPreferenceChangeListener((preference, newValue) -> {
-            mVm.setOnBackRequiresActivityRecreation();
+            vm.setOnBackRequiresActivityRecreation();
             return true;
         });
 
@@ -171,19 +171,19 @@ public class SettingsFragment
 
         //noinspection ConstantConditions
         findPreference(PSK_SEARCH_SITE_ORDER).setOnPreferenceClickListener(p -> {
-            mEditSitesLauncher.launch(null);
+            editSitesLauncher.launch(null);
             return true;
         });
 
         //noinspection ConstantConditions
-        mTitleOrderByPref = findPreference(OrderByHelper.PK_SORT_TITLE_REORDERED);
+        titleOrderByPref = findPreference(OrderByHelper.PK_SORT_TITLE_REORDERED);
         //noinspection ConstantConditions
-        setVisualIndicator(mTitleOrderByPref, StartupViewModel.PK_REBUILD_TITLE_OB);
-        mTitleOrderByPref.setOnPreferenceChangeListener(this::onTitleOrderByChange);
+        setVisualIndicator(titleOrderByPref, StartupViewModel.PK_REBUILD_TITLE_OB);
+        titleOrderByPref.setOnPreferenceChangeListener(this::onTitleOrderByChange);
 
         final Bundle args = getArguments();
         if (args != null) {
-            mStorageWasMissing = args.getBoolean(BKEY_STORAGE_WAS_MISSING);
+            storageWasMissing = args.getBoolean(BKEY_STORAGE_WAS_MISSING);
         }
 
         //noinspection ConstantConditions
@@ -207,12 +207,12 @@ public class SettingsFragment
         }
 
         //noinspection ConstantConditions
-        mStorageVolumePref = findPreference(Prefs.pk_storage_volume);
+        storageVolumePref = findPreference(Prefs.pk_storage_volume);
         //noinspection ConstantConditions
-        mStorageVolumePref.setSummaryProvider(listSummaryProvider);
-        mStorageVolumePref.setEntries(entries);
-        mStorageVolumePref.setEntryValues(entryValues);
-        mStorageVolumePref.setOnPreferenceChangeListener(this::onStorageVolumeChange);
+        storageVolumePref.setSummaryProvider(listSummaryProvider);
+        storageVolumePref.setEntries(entries);
+        storageVolumePref.setEntryValues(entryValues);
+        storageVolumePref.setOnPreferenceChangeListener(this::onStorageVolumeChange);
     }
 
     @Override
@@ -222,23 +222,23 @@ public class SettingsFragment
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
-        mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
-        mVm.onMoveCancelled().observe(getViewLifecycleOwner(), this::onMoveCancelled);
-        mVm.onMoveFailure().observe(getViewLifecycleOwner(), this::onMoveFailure);
-        mVm.onMoveFinished().observe(getViewLifecycleOwner(), this::onMoveFinished);
+        vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+        vm.onMoveCancelled().observe(getViewLifecycleOwner(), this::onMoveCancelled);
+        vm.onMoveFailure().observe(getViewLifecycleOwner(), this::onMoveFailure);
+        vm.onMoveFinished().observe(getViewLifecycleOwner(), this::onMoveFinished);
 
-        final boolean currentSortTitleReordered = mTitleOrderByPref.isChecked();
-        final String currentStorageVolume = mStorageVolumePref.getValue();
+        final boolean currentSortTitleReordered = titleOrderByPref.isChecked();
+        final String currentStorageVolume = storageVolumePref.getValue();
 
         if (savedInstanceState == null) {
-            mStoredTitleOrderBy = currentSortTitleReordered;
-            mStoredVolumeIndex = currentStorageVolume;
+            storedTitleOrderBy = currentSortTitleReordered;
+            storedVolumeIndex = currentStorageVolume;
         } else {
-            mStoredTitleOrderBy = savedInstanceState
+            storedTitleOrderBy = savedInstanceState
                     .getBoolean(SIS_TITLE_ORDERBY, currentSortTitleReordered);
-            mStoredVolumeIndex = savedInstanceState
+            storedVolumeIndex = savedInstanceState
                     .getString(SIS_VOLUME_INDEX, currentStorageVolume);
         }
     }
@@ -256,15 +256,17 @@ public class SettingsFragment
                 .setCancelable(false)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> {
                     // revert to the original value.
-                    mTitleOrderByPref.setChecked(mStoredTitleOrderBy);
-                    StartupViewModel.schedule(StartupViewModel.PK_REBUILD_TITLE_OB, false);
-                    setVisualIndicator(mTitleOrderByPref, StartupViewModel.PK_REBUILD_TITLE_OB);
+                    titleOrderByPref.setChecked(storedTitleOrderBy);
+                    StartupViewModel.schedule(getContext(),
+                                              StartupViewModel.PK_REBUILD_TITLE_OB, false);
+                    setVisualIndicator(titleOrderByPref, StartupViewModel.PK_REBUILD_TITLE_OB);
                 })
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
                     // Persist the new value
-                    mTitleOrderByPref.setChecked(isChecked);
-                    StartupViewModel.schedule(StartupViewModel.PK_REBUILD_TITLE_OB, true);
-                    setVisualIndicator(mTitleOrderByPref, StartupViewModel.PK_REBUILD_TITLE_OB);
+                    titleOrderByPref.setChecked(isChecked);
+                    StartupViewModel.schedule(getContext(),
+                                              StartupViewModel.PK_REBUILD_TITLE_OB, true);
+                    setVisualIndicator(titleOrderByPref, StartupViewModel.PK_REBUILD_TITLE_OB);
                 })
                 .create()
                 .show();
@@ -275,10 +277,10 @@ public class SettingsFragment
     private boolean onStorageVolumeChange(@NonNull final Preference pref,
                                           @NonNull final Object newValue) {
         // pref == mStorageVolumePref
-        final int newVolumeIndex = mStorageVolumePref.findIndexOfValue((String) newValue);
-        final CharSequence newVolumeDesc = mStorageVolumePref.getEntries()[newVolumeIndex];
+        final int newVolumeIndex = storageVolumePref.findIndexOfValue((String) newValue);
+        final CharSequence newVolumeDesc = storageVolumePref.getEntries()[newVolumeIndex];
 
-        if (mStorageWasMissing) {
+        if (storageWasMissing) {
             // The originally used volume is not available; there is nothing to move.
             // Handle this as a simple 'select'
             //noinspection ConstantConditions
@@ -294,8 +296,8 @@ public class SettingsFragment
                     .create()
                     .show();
         } else {
-            final int oldVolumeIndex = mStorageVolumePref.findIndexOfValue(mStoredVolumeIndex);
-            final CharSequence oldVolumeDesc = mStorageVolumePref.getEntries()[oldVolumeIndex];
+            final int oldVolumeIndex = storageVolumePref.findIndexOfValue(storedVolumeIndex);
+            final CharSequence oldVolumeDesc = storageVolumePref.getEntries()[oldVolumeIndex];
 
             final CharSequence[] items = {
                     getString(R.string.lbl_storage_select, newVolumeDesc),
@@ -308,7 +310,7 @@ public class SettingsFragment
                     .setTitle(R.string.lbl_storage_volume)
                     // this dialog is important. Make sure the user pays some attention
                     .setCancelable(false)
-                    .setSingleChoiceItems(items, 1, (d, w) -> mVolumeChangedOptionChosen = w)
+                    .setSingleChoiceItems(items, 1, (d, w) -> volumeChangedOptionChosen = w)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(android.R.string.ok, (d, w) ->
                             onVolumeChangedOptionChosen(oldVolumeIndex, newVolumeIndex))
@@ -322,7 +324,7 @@ public class SettingsFragment
 
     private void onVolumeChangedOptionChosen(final int oldVolumeIndex,
                                              final int newVolumeIndex) {
-        switch (mVolumeChangedOptionChosen) {
+        switch (volumeChangedOptionChosen) {
             case 0: {
                 setStorageVolume(newVolumeIndex);
                 break;
@@ -330,7 +332,7 @@ public class SettingsFragment
             case 1: {
                 // check space and start the task
                 //noinspection ConstantConditions
-                if (!mVm.moveData(getContext(), oldVolumeIndex, newVolumeIndex)) {
+                if (!vm.moveData(getContext(), oldVolumeIndex, newVolumeIndex)) {
                     //noinspection ConstantConditions
                     Snackbar.make(getView(), R.string.error_storage_not_writable,
                                   Snackbar.LENGTH_LONG).show();
@@ -357,8 +359,8 @@ public class SettingsFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(SIS_TITLE_ORDERBY, mStoredTitleOrderBy);
-        outState.putString(SIS_VOLUME_INDEX, mStoredVolumeIndex);
+        outState.putBoolean(SIS_TITLE_ORDERBY, storedTitleOrderBy);
+        outState.putString(SIS_VOLUME_INDEX, storedVolumeIndex);
     }
 
     @Override
@@ -372,14 +374,14 @@ public class SettingsFragment
 
     @Override
     @CallSuper
-    public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
+    public void onSharedPreferenceChanged(@NonNull final SharedPreferences prefs,
                                           @NonNull final String key) {
         //TODO: once these are on the style level, the below can be removed as well.
         switch (key) {
             case OrderByHelper.PK_SORT_TITLE_REORDERED:
             case ReorderHelper.PK_SHOW_TITLE_REORDERED: {
                 // Set the activity result so our caller will recreate itself
-                mVm.setOnBackRequiresActivityRecreation();
+                vm.setOnBackRequiresActivityRecreation();
                 break;
             }
             default:
@@ -418,24 +420,24 @@ public class SettingsFragment
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.getData().ifPresent(data -> {
-            if (mProgressDelegate == null) {
+            if (progressDelegate == null) {
                 //noinspection ConstantConditions
-                mProgressDelegate = new ProgressDelegate(getProgressFrame())
+                progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.lbl_moving_data)
                         .setPreventSleep(true)
                         .setIndeterminate(true)
-                        .setOnCancelListener(v -> mVm.cancelTask(data.taskId))
+                        .setOnCancelListener(v -> vm.cancelTask(data.taskId))
                         .show(() -> getActivity().getWindow());
             }
-            mProgressDelegate.onProgress(data);
+            progressDelegate.onProgress(data);
         });
     }
 
     private void closeProgressDialog() {
-        if (mProgressDelegate != null) {
+        if (progressDelegate != null) {
             //noinspection ConstantConditions
-            mProgressDelegate.dismiss(getActivity().getWindow());
-            mProgressDelegate = null;
+            progressDelegate.dismiss(getActivity().getWindow());
+            progressDelegate = null;
         }
     }
 
@@ -451,7 +453,7 @@ public class SettingsFragment
     }
 
     private boolean setStorageVolume(final int volume) {
-        mStorageVolumePref.setValue(String.valueOf(volume));
+        storageVolumePref.setValue(String.valueOf(volume));
         try {
             //noinspection ConstantConditions
             CoverDir.initVolume(getContext(), volume);

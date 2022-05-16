@@ -19,12 +19,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -80,13 +82,13 @@ public class StripInfoAuth
     private static final String UTF_8 = "UTF-8";
 
     @NonNull
-    private final FutureHttpPost<Void> mFutureHttpPost;
+    private final FutureHttpPost<Void> futureHttpPost;
 
     @NonNull
-    private final String mSiteUrl;
+    private final String siteUrl;
 
     @NonNull
-    private final CookieManager mCookieManager;
+    private final CookieManager cookieManager;
 
     public StripInfoAuth() {
         this(SearchEngineRegistry
@@ -97,30 +99,33 @@ public class StripInfoAuth
     }
 
     public StripInfoAuth(@NonNull final String siteUrl) {
-        mSiteUrl = siteUrl;
+        this.siteUrl = siteUrl;
 
         // Setup BEFORE doing first request!
-        mCookieManager = ServiceLocator.getInstance().getCookieManager();
+        cookieManager = ServiceLocator.getInstance().getCookieManager();
 
         final SearchEngineConfig config = SearchEngineRegistry
                 .getInstance().getByEngineId(SearchSites.STRIP_INFO_BE);
 
-        mFutureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
-        mFutureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())
-                       .setReadTimeout(config.getReadTimeoutInMs())
-                       .setThrottler(StripInfoSearchEngine.THROTTLER);
+        futureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
+        futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())
+                      .setReadTimeout(config.getReadTimeoutInMs())
+                      .setThrottler(StripInfoSearchEngine.THROTTLER);
     }
 
     /**
      * Check whether the user should be logged in to the website during a <strong>search</strong>.
      * This is independent from synchronization actions (where obviously login is always required).
      *
+     * @param context Current context
+     *
      * @return {@code true} if we should perform a login
      */
     @AnyThread
-    public static boolean isLoginToSearch() {
+    public static boolean isLoginToSearch(@NonNull final Context context) {
         if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
-            return ServiceLocator.getGlobalPreferences().getBoolean(PK_LOGIN_TO_SEARCH, false);
+            return PreferenceManager.getDefaultSharedPreferences(context)
+                                    .getBoolean(PK_LOGIN_TO_SEARCH, false);
         } else {
             return false;
         }
@@ -129,14 +134,16 @@ public class StripInfoAuth
     /**
      * Check if the username is configured. We take this as the configuration being valid.
      *
+     * @param context Current context
+     *
      * @return {@code true} if at least the username has been setup in preferences
      */
     @AnyThread
-    public static boolean isUsernameSet() {
+    public static boolean isUsernameSet(@NonNull final Context context) {
         //noinspection ConstantConditions
-        return !ServiceLocator.getGlobalPreferences()
-                              .getString(PK_HOST_USER, "")
-                              .isEmpty();
+        return !PreferenceManager.getDefaultSharedPreferences(context)
+                                 .getString(PK_HOST_USER, "")
+                                 .isEmpty();
     }
 
     /**
@@ -148,7 +155,7 @@ public class StripInfoAuth
      */
     @Nullable
     public String getUserId() {
-        return getUserId(mCookieManager).orElse(null);
+        return getUserId(cookieManager).orElse(null);
     }
 
     @NonNull
@@ -184,9 +191,9 @@ public class StripInfoAuth
 
     @WorkerThread
     @Override
-    public boolean validateConnection()
+    public boolean validateConnection(@NonNull final Context context)
             throws IOException, CredentialsException, StorageException {
-        login();
+        login(context);
         return true;
     }
 
@@ -196,6 +203,8 @@ public class StripInfoAuth
      * Will check the cookie to see if we're already logged in,
      * and return with success immediately.
      *
+     * @param context Current context
+     *
      * @return the valid user id
      *
      * @throws CredentialsException on login failure
@@ -203,26 +212,26 @@ public class StripInfoAuth
      */
     @WorkerThread
     @NonNull
-    public String login()
+    public String login(@NonNull final Context context)
             throws IOException, CredentialsException, StorageException {
 
         // Always FIRST check the configuration for having a username/password.
-        final SharedPreferences global = ServiceLocator.getGlobalPreferences();
-        final String username = global.getString(PK_HOST_USER, "");
-        final String password = global.getString(PK_HOST_PASS, "");
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final String username = prefs.getString(PK_HOST_USER, "");
+        final String password = prefs.getString(PK_HOST_PASS, "");
         //noinspection ConstantConditions
         if (username.isEmpty() || password.isEmpty()) {
             throw new CredentialsException(R.string.site_stripinfo_be, "missing password");
         }
 
         // Secondly check if we're already logged in ?
-        String userId = getUserId(mCookieManager).orElse(null);
+        String userId = getUserId(cookieManager).orElse(null);
         if (userId != null) {
-            global.edit().putString(PK_HOST_USER_ID, userId).apply();
+            prefs.edit().putString(PK_HOST_USER_ID, userId).apply();
             return userId;
         }
 
-        final String url = mSiteUrl + USER_LOGIN_URL;
+        final String url = siteUrl + USER_LOGIN_URL;
         final String postBody = new StringJoiner("&")
                 .add("userName=" + URLEncoder.encode(username, UTF_8))
                 .add("passw=" + URLEncoder.encode(password, UTF_8))
@@ -230,11 +239,11 @@ public class StripInfoAuth
                 .add("frmName=login")
                 .toString();
 
-        mFutureHttpPost.post(url, postBody, null);
+        futureHttpPost.post(url, postBody, null);
 
-        userId = getUserId(mCookieManager).orElse(null);
+        userId = getUserId(cookieManager).orElse(null);
         if (userId != null) {
-            global.edit().putString(PK_HOST_USER_ID, userId).apply();
+            prefs.edit().putString(PK_HOST_USER_ID, userId).apply();
             return userId;
         }
 
@@ -243,6 +252,6 @@ public class StripInfoAuth
 
 
     public void cancel() {
-        mFutureHttpPost.cancel();
+        futureHttpPost.cancel();
     }
 }

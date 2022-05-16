@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -42,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -132,7 +131,7 @@ class BooklistBuilder {
 
     /** Style to use while building the list. */
     @NonNull
-    private final ListStyle style;
+    private final Style style;
 
     /** Show only books on this bookshelf. */
     @NonNull
@@ -159,7 +158,7 @@ class BooklistBuilder {
      * @param bookshelf   the current bookshelf
      * @param rebuildMode booklist mode to use in next rebuild.
      */
-    BooklistBuilder(@NonNull final ListStyle style,
+    BooklistBuilder(@NonNull final Style style,
                     @NonNull final Bookshelf bookshelf,
                     @NonNull final RebuildBooklist rebuildMode) {
 
@@ -312,7 +311,7 @@ class BooklistBuilder {
         private final boolean collationIsCaseSensitive;
 
         @NonNull
-        private final ListStyle style;
+        private final Style style;
 
         /** Set to {@code true} if we're filtering on a specific {@link Bookshelf}. */
         private final boolean filteredOnBookshelf;
@@ -378,7 +377,7 @@ class BooklistBuilder {
          * @param rebuildMode           the mode to use for restoring the saved state.
          */
         TableBuilder(final int instanceId,
-                     @NonNull final ListStyle style,
+                     @NonNull final Style style,
                      final boolean isFilteredOnBookshelf,
                      @NonNull final RebuildBooklist rebuildMode) {
 
@@ -619,14 +618,14 @@ class BooklistBuilder {
                           // don't add duplicate domains
                           .filter(domain -> !sortedDomainNames.contains(domain.getName()))
                           .forEachOrdered(domain -> {
-                               sortedDomainNames.add(domain.getName());
-                               if (valuesColumns.length() > 0) {
-                                   valuesColumns.append(",");
-                               }
-                               valuesColumns.append("NEW.").append(domain.getName());
+                              sortedDomainNames.add(domain.getName());
+                              if (valuesColumns.length() > 0) {
+                                  valuesColumns.append(",");
+                              }
+                              valuesColumns.append("NEW.").append(domain.getName());
 
-                               triggerHelperTable.addDomain(domain);
-                           });
+                              triggerHelperTable.addDomain(domain);
+                          });
 
             /*
              * Create a temp table to store the most recent header details from the last row.
@@ -924,7 +923,6 @@ class BooklistBuilder {
          */
         @NonNull
         private String buildFrom() {
-            final SharedPreferences global = ServiceLocator.getGlobalPreferences();
             // Text of join statement
             final StringBuilder sql = new StringBuilder();
 
@@ -940,12 +938,12 @@ class BooklistBuilder {
             joinWithAuthors(sql);
 
             if (style.hasGroup(BooklistGroup.SERIES)
-                || DBKey.isUsed(global, DBKey.SERIES_TITLE)) {
+                || style.isShowField(Style.Screen.List, DBKey.SERIES_TITLE)) {
                 joinWithSeries(sql);
             }
 
             if (style.hasGroup(BooklistGroup.PUBLISHER)
-                || DBKey.isUsed(global, DBKey.PUBLISHER_NAME)) {
+                || style.isShowField(Style.Screen.List, DBKey.PUBLISHER_NAME)) {
                 joinWithPublishers(sql);
             }
 

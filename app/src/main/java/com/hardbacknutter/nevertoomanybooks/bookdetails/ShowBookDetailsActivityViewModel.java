@@ -20,15 +20,12 @@
 package com.hardbacknutter.nevertoomanybooks.bookdetails;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +34,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
@@ -74,7 +71,7 @@ public class ShowBookDetailsActivityViewModel
     /** the list with all fields. */
     private final List<Field<?, ? extends View>> fields = new ArrayList<>();
 
-    private ListStyle style;
+    private Style style;
 
     private boolean modified;
 
@@ -102,7 +99,7 @@ public class ShowBookDetailsActivityViewModel
                      @NonNull final Bundle args) {
         if (style == null) {
             // the style can be 'null' here. If so, the default one will be used.
-            final String styleUuid = args.getString(ListStyle.BKEY_UUID);
+            final String styleUuid = args.getString(Style.BKEY_UUID);
             style = ServiceLocator.getInstance().getStyles().getStyleOrDefault(context, styleUuid);
 
             initFields(context);
@@ -113,49 +110,13 @@ public class ShowBookDetailsActivityViewModel
     }
 
     @NonNull
-    public ListStyle getStyle() {
+    public Style getStyle() {
         return style;
     }
 
     @NonNull
     List<MenuHandler> getMenuHandlers() {
         return menuHandlers;
-    }
-
-    boolean useLoanee(@NonNull final Context context) {
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        return DBKey.isUsed(global, DBKey.LOANEE_NAME);
-    }
-
-    boolean useToc(@NonNull final Context context) {
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        return DBKey.isUsed(global, DBKey.BITMASK_TOC);
-    }
-
-    /**
-     * Check if this cover should should be shown / is used.
-     * <p>
-     * The order we use to decide:
-     * <ol>
-     *     <li>Global visibility is set to HIDE -> return {@code false}</li>
-     *     <li>return the visibility as set in the style.</li>
-     * </ol>
-     *
-     * @param global Global preferences
-     * @param cIdx   0..n image index
-     *
-     * @return {@code true} if in use
-     */
-    boolean isCoverUsed(@NonNull final SharedPreferences global,
-                        @IntRange(from = 0, to = 1) final int cIdx) {
-
-        // Globally disabled overrules style setting
-        if (!DBKey.isUsed(global, DBKey.COVER_IS_USED[cIdx])) {
-            return false;
-        }
-
-        // let the style decide
-        return style.getBookDetailsFieldVisibility().isShowCover(cIdx);
     }
 
     @NonNull

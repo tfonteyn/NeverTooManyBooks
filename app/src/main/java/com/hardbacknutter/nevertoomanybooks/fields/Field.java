@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.fields;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.TextView;
 
@@ -112,10 +111,8 @@ public interface Field<T, V extends View> {
      * Using that would need to deal with {@code null} values.
      *
      * @param parent to use
-     * @param global Global preferences
      */
-    void setParentView(@NonNull final View parent,
-                       @NonNull final SharedPreferences global);
+    void setParentView(@NonNull final View parent);
 
     /**
      * <strong>Conditionally</strong> set the visibility for the field and its related fields.
@@ -127,7 +124,6 @@ public interface Field<T, V extends View> {
      * @param keepHiddenFieldsHidden keep a field hidden if it's already hidden
      */
     void setVisibility(@NonNull View parent,
-                       @NonNull SharedPreferences global,
                        boolean hideEmptyFields,
                        boolean keepHiddenFieldsHidden);
 
@@ -144,11 +140,9 @@ public interface Field<T, V extends View> {
     /**
      * Is the field in use; i.e. is it enabled in the user-preferences.
      *
-     * @param global Global preferences
-     *
      * @return {@code true} if the field *can* be visible
      */
-    boolean isUsed(@NonNull final SharedPreferences global);
+    boolean isUsed();
 
     /**
      * Check if this field can be automatically populated.

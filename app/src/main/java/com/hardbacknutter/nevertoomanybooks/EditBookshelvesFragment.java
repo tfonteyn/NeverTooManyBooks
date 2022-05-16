@@ -43,7 +43,7 @@ import com.google.android.material.divider.MaterialDividerItemDecoration;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -76,7 +76,7 @@ public class EditBookshelvesFragment
             };
 
     /** Set the hosting Activity result, and close it. */
-    private final OnBackPressedCallback onBackPressedCallback =
+    private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
@@ -142,7 +142,7 @@ public class EditBookshelvesFragment
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), onBackPressedCallback);
+                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
         // FAB button to add a new Bookshelf
         final FloatingActionButton fab = getFab();
@@ -161,7 +161,7 @@ public class EditBookshelvesFragment
 
     private void editNewBookshelf() {
         //noinspection ConstantConditions
-        final ListStyle style = ServiceLocator.getInstance().getStyles().getDefault(getContext());
+        final Style style = ServiceLocator.getInstance().getStyles().getDefault(getContext());
         editBookshelfLauncher.launch(new Bookshelf("", style));
     }
 

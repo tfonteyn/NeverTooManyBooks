@@ -27,9 +27,9 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BookDetailsFieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistBookFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
@@ -1065,7 +1065,7 @@ public final class DBDefinitions {
         DOM_STYLE_MENU_POSITION =
                 new Domain.Builder(DBKey.STYLE_MENU_POSITION, ColumnInfo.TYPE_INTEGER)
                         .notNull()
-                        .withDefault(ListStyle.MENU_POSITION_NOT_PREFERRED)
+                        .withDefault(Style.MENU_POSITION_NOT_PREFERRED)
                         .build();
 
 
@@ -1139,12 +1139,12 @@ public final class DBDefinitions {
         DOM_STYLE_TEXT_SCALE =
                 new Domain.Builder(DBKey.STYLE_TEXT_SCALE, ColumnInfo.TYPE_INTEGER)
                         .notNull()
-                        .withDefault(ListStyle.DEFAULT_TEXT_SCALE)
+                        .withDefault(Style.DEFAULT_TEXT_SCALE)
                         .build();
         DOM_STYLE_COVER_SCALE =
                 new Domain.Builder(DBKey.STYLE_COVER_SCALE, ColumnInfo.TYPE_INTEGER)
                         .notNull()
-                        .withDefault(ListStyle.DEFAULT_COVER_SCALE)
+                        .withDefault(Style.DEFAULT_COVER_SCALE)
                         .build();
 
         DOM_STYLE_LIST_HEADER =
@@ -1162,7 +1162,7 @@ public final class DBDefinitions {
         DOM_STYLE_LIST_SHOW_FIELDS =
                 new Domain.Builder(DBKey.STYLE_LIST_SHOW_FIELDS, ColumnInfo.TYPE_INTEGER)
                         .notNull()
-                        .withDefault(BooklistBookFieldVisibility.DEFAULT)
+                        .withDefault(BooklistFieldVisibility.DEFAULT)
                         .build();
 
         /* ======================================================================================

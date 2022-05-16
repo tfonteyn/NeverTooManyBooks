@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.database.Cursor;
@@ -62,8 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistBookFieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
@@ -125,7 +123,7 @@ public class BooklistAdapter
     /** A collection of 'in-use' flags for the fields we might display. */
     private FieldsInUse fieldsInUse;
     /** List style to apply. */
-    private ListStyle style;
+    private Style style;
     private int groupRowHeight;
     /** Top margin to use for Level 1 <strong>if</strong> the {@link #groupRowHeight} is wrap. */
     private int groupLevel1topMargin;
@@ -165,7 +163,7 @@ public class BooklistAdapter
     }
 
     /**
-     * Set the Cursor and related BooklistStyle.
+     * Set the Cursor and related {@link Style}.
      *
      * @param context Current context
      * @param cursor  cursor with the 'list of items'
@@ -173,7 +171,7 @@ public class BooklistAdapter
      */
     public void setCursor(@NonNull final Context context,
                           @NonNull final Cursor cursor,
-                          @NonNull final ListStyle style) {
+                          @NonNull final Style style) {
         // First set the style and prepare the related data
         this.style = style;
         fieldsInUse = new FieldsInUse(this.style);
@@ -184,10 +182,8 @@ public class BooklistAdapter
                     .getResources().getDimensionPixelSize(R.dimen.bob_group_level_1_margin_top);
         }
 
-        if (this.style.getBooklistBookFieldVisibility().isShowField(
-                BooklistBookFieldVisibility.SHOW_COVER_0)) {
-
-            @ListStyle.CoverScale
+        if (this.style.isShowField(Style.Screen.List, DBKey.COVER_IS_USED[0])) {
+            @Style.CoverScale
             final int frontCoverScale = this.style.getCoverScale();
 
             // The thumbnail scale is used to retrieve the cover dimensions
@@ -200,7 +196,7 @@ public class BooklistAdapter
             // The thumbnail scale defines the Book layout file to use.
             // The layout names ending in 2/3 are ONLY as reference,
             // with the hardcoded values in them always replaced at runtime.
-            if (frontCoverScale > ListStyle.COVER_SCALE_MEDIUM) {
+            if (frontCoverScale > Style.COVER_SCALE_MEDIUM) {
                 // Large
                 bookLayoutId = R.layout.booksonbookshelf_row_book_scale_3;
             } else {
@@ -393,7 +389,7 @@ public class BooklistAdapter
 
         // Scale text/padding (recursively) if required
         final int textScale = style.getTextScale();
-        if (textScale != ListStyle.DEFAULT_TEXT_SCALE) {
+        if (textScale != Style.DEFAULT_TEXT_SCALE) {
             scaleTextViews(view, textScale);
         }
         return view;
@@ -608,7 +604,7 @@ public class BooklistAdapter
     }
 
     private void scaleTextViews(@NonNull final View view,
-                                @ListStyle.TextScale final int textScale) {
+                                @Style.TextScale final int textScale) {
         final Resources res = view.getContext().getResources();
         TypedArray ta;
         final float fontSizeInSpUnits;
@@ -803,28 +799,22 @@ public class BooklistAdapter
          *
          * @param style Style reference.
          */
-        FieldsInUse(@NonNull final ListStyle style) {
-            final SharedPreferences global = ServiceLocator.getGlobalPreferences();
+        FieldsInUse(@NonNull final Style style) {
 
-            // Based on global visibility user preference.
-            edition = DBKey.isUsed(global, DBKey.BITMASK_EDITION);
-            lending = DBKey.isUsed(global, DBKey.LOANEE_NAME);
-            series = DBKey.isUsed(global, DBKey.SERIES_TITLE);
-            signed = DBKey.isUsed(global, DBKey.SIGNED__BOOL);
+            edition = style.isShowField(Style.Screen.List, DBKey.BITMASK_EDITION);
+            lending = style.isShowField(Style.Screen.List, DBKey.LOANEE_NAME);
+            series = style.isShowField(Style.Screen.List, DBKey.SERIES_TITLE);
+            signed = style.isShowField(Style.Screen.List, DBKey.SIGNED__BOOL);
 
-            final BooklistBookFieldVisibility bookFields =
-                    style.getBooklistBookFieldVisibility();
-
-            // Based on style
-            author = bookFields.isShowField(BooklistBookFieldVisibility.SHOW_AUTHOR);
-            bookshelf = bookFields.isShowField(BooklistBookFieldVisibility.SHOW_BOOKSHELVES);
-            cover = bookFields.isShowField(BooklistBookFieldVisibility.SHOW_COVER_0);
-            format = bookFields.isShowField(BooklistBookFieldVisibility.SHOW_FORMAT);
-            isbn = bookFields.isShowField(BooklistBookFieldVisibility.SHOW_ISBN);
-            location = bookFields.isShowField(BooklistBookFieldVisibility.SHOW_LOCATION);
-            pubDate = bookFields.isShowField(BooklistBookFieldVisibility.SHOW_PUB_DATE);
-            publisher = bookFields.isShowField(BooklistBookFieldVisibility.SHOW_PUBLISHER);
-            rating = bookFields.isShowField(BooklistBookFieldVisibility.SHOW_RATING);
+            author = style.isShowField(Style.Screen.List, DBKey.FK_AUTHOR);
+            bookshelf = style.isShowField(Style.Screen.List, DBKey.FK_BOOKSHELF);
+            cover = style.isShowField(Style.Screen.List, DBKey.COVER_IS_USED[0]);
+            format = style.isShowField(Style.Screen.List, DBKey.BOOK_FORMAT);
+            isbn = style.isShowField(Style.Screen.List, DBKey.KEY_ISBN);
+            location = style.isShowField(Style.Screen.List, DBKey.LOCATION);
+            pubDate = style.isShowField(Style.Screen.List, DBKey.DATE_BOOK_PUBLICATION);
+            publisher = style.isShowField(Style.Screen.List, DBKey.FK_PUBLISHER);
+            rating = style.isShowField(Style.Screen.List, DBKey.RATING);
         }
 
         /**
@@ -894,7 +884,7 @@ public class BooklistAdapter
          */
         abstract void onBindViewHolder(int position,
                                        @NonNull DataHolder rowData,
-                                       @NonNull ListStyle style);
+                                       @NonNull Style style);
     }
 
     /**
@@ -914,7 +904,7 @@ public class BooklistAdapter
         @IntRange(from = 0)
         private final int coverLongestSide;
 
-        /** Whether to re-order the title as per global preference. */
+        /** Whether to re-order the title. */
         private final boolean reorderTitle;
         /** A collection of 'in-use' flags for the fields we might display. */
         private final FieldsInUse inUse;
@@ -1053,7 +1043,7 @@ public class BooklistAdapter
         @Override
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
-                              @NonNull final ListStyle style) {
+                              @NonNull final Style style) {
             // update the in-use flags with row-data available fields. Do this once only.
             if (!inUse.isSet) {
                 inUse.set(rowData);
@@ -1290,7 +1280,7 @@ public class BooklistAdapter
         @Override
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
-                              @NonNull final ListStyle style) {
+                              @NonNull final Style style) {
             ratingBar.setRating(rowData.getInt(key));
         }
     }
@@ -1346,7 +1336,7 @@ public class BooklistAdapter
         @Override
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
-                              @NonNull final ListStyle style) {
+                              @NonNull final Style style) {
             textView.setText(format(rowData.getString(key)));
 
             // Debugger help: color the row according to state
@@ -1419,7 +1409,7 @@ public class BooklistAdapter
         @Override
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
-                              @NonNull final ListStyle style) {
+                              @NonNull final Style style) {
             super.onBindViewHolder(position, rowData, style);
             completeView.setVisibility(rowData.getBoolean(
                     completeKey) ? View.VISIBLE : View.GONE);
@@ -1473,7 +1463,7 @@ public class BooklistAdapter
         @Override
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
-                              @NonNull final ListStyle style) {
+                              @NonNull final Style style) {
             // grab the book language first for use in #format
             bookLanguage = rowData.getString(DBKey.LANGUAGE);
 

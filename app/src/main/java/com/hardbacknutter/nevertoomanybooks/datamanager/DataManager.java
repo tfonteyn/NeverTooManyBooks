@@ -79,24 +79,24 @@ public class DataManager
     /** Log tag. */
     private static final String TAG = "DataManager";
     /** DataValidators. */
-    private final Map<String, DataValidator> mValidatorsMap = new HashMap<>();
+    private final Map<String, DataValidator> validatorsMap = new HashMap<>();
     /** DataValidators. Same key as mValidatorsMap; value: @StringRes. */
     @SuppressWarnings("FieldNotUsedInToString")
-    private final Map<String, Integer> mValidatorErrorIdMap = new HashMap<>();
+    private final Map<String, Integer> validatorErrorIdMap = new HashMap<>();
 
     /** A list of cross-validators to apply if all fields pass simple validation. */
-    private final Collection<DataCrossValidator> mCrossValidators = new ArrayList<>();
+    private final Collection<DataCrossValidator> crossValidators = new ArrayList<>();
     /** The validator exceptions caught by this object. */
-    private final Collection<ValidatorException> mValidationExceptions = new ArrayList<>();
+    private final Collection<ValidatorException> validationExceptions = new ArrayList<>();
 
     /** Raw data storage. */
-    private final Bundle mRawData;
+    private final Bundle rawData;
 
     /**
      * Constructor.
      */
     protected DataManager() {
-        mRawData = ServiceLocator.newBundle();
+        rawData = ServiceLocator.newBundle();
     }
 
     /**
@@ -104,20 +104,20 @@ public class DataManager
      */
     @VisibleForTesting
     protected DataManager(@NonNull final Bundle rawData) {
-        mRawData = rawData;
+        this.rawData = rawData;
     }
 
     /**
      * Clear all data in this instance.
      */
     protected void clearData() {
-        mRawData.clear();
+        rawData.clear();
     }
 
     @NonNull
     @Override
     public Set<String> keySet() {
-        return Set.copyOf(mRawData.keySet());
+        return Set.copyOf(rawData.keySet());
     }
 
     /**
@@ -126,7 +126,7 @@ public class DataManager
      * @param key Key of data object to remove.
      */
     public void remove(@NonNull final String key) {
-        mRawData.remove(key);
+        rawData.remove(key);
     }
 
     /**
@@ -137,7 +137,7 @@ public class DataManager
      * @return {@code true} if the underlying data contains the specified key.
      */
     public boolean contains(@NonNull final String key) {
-        return mRawData.containsKey(key);
+        return rawData.containsKey(key);
     }
 
 
@@ -171,17 +171,17 @@ public class DataManager
             final String name = cursor.getColumnName(i);
             switch (cursor.getType(i)) {
                 case Cursor.FIELD_TYPE_STRING:
-                    mRawData.putString(name, cursor.getString(i));
+                    rawData.putString(name, cursor.getString(i));
                     break;
 
                 case Cursor.FIELD_TYPE_INTEGER:
                     // a null becomes 0
-                    mRawData.putLong(name, cursor.getLong(i));
+                    rawData.putLong(name, cursor.getLong(i));
                     break;
 
                 case Cursor.FIELD_TYPE_FLOAT:
                     // a null becomes 0.0
-                    mRawData.putDouble(name, cursor.getDouble(i));
+                    rawData.putDouble(name, cursor.getDouble(i));
                     break;
 
                 case Cursor.FIELD_TYPE_BLOB:
@@ -212,17 +212,17 @@ public class DataManager
                     @Nullable final Object value) {
 
         if (value instanceof String) {
-            mRawData.putString(key, (String) value);
+            rawData.putString(key, (String) value);
         } else if (value instanceof Integer) {
-            mRawData.putInt(key, (int) value);
+            rawData.putInt(key, (int) value);
         } else if (value instanceof Long) {
-            mRawData.putLong(key, (long) value);
+            rawData.putLong(key, (long) value);
         } else if (value instanceof Double) {
-            mRawData.putDouble(key, (double) value);
+            rawData.putDouble(key, (double) value);
         } else if (value instanceof Float) {
-            mRawData.putFloat(key, (float) value);
+            rawData.putFloat(key, (float) value);
         } else if (value instanceof Boolean) {
-            mRawData.putBoolean(key, (boolean) value);
+            rawData.putBoolean(key, (boolean) value);
 
         } else if (value instanceof ArrayList) {
             //noinspection unchecked
@@ -263,11 +263,11 @@ public class DataManager
                     Logger.d(TAG, "get",
                              "NumberFormatException"
                              + "|name=" + key
-                             + "|value=`" + mRawData.get(key) + '`');
+                             + "|value=`" + rawData.get(key) + '`');
                 }
             }
         }
-        return mRawData.get(key);
+        return rawData.get(key);
     }
 
 
@@ -282,7 +282,7 @@ public class DataManager
      */
     public boolean getBoolean(@NonNull final String key)
             throws NumberFormatException {
-        return ParseUtils.toBoolean(mRawData.get(key));
+        return ParseUtils.toBoolean(rawData.get(key));
     }
 
     /**
@@ -293,7 +293,7 @@ public class DataManager
      */
     public void putBoolean(@NonNull final String key,
                            final boolean value) {
-        mRawData.putBoolean(key, value);
+        rawData.putBoolean(key, value);
     }
 
     /**
@@ -308,7 +308,7 @@ public class DataManager
     @Override
     public int getInt(@NonNull final String key)
             throws NumberFormatException {
-        return (int) ParseUtils.toLong(mRawData.get(key));
+        return (int) ParseUtils.toLong(rawData.get(key));
     }
 
     /**
@@ -319,7 +319,7 @@ public class DataManager
      */
     public void putInt(@NonNull final String key,
                        final int value) {
-        mRawData.putInt(key, value);
+        rawData.putInt(key, value);
     }
 
     /**
@@ -334,7 +334,7 @@ public class DataManager
     @Override
     public long getLong(@NonNull final String key)
             throws NumberFormatException {
-        return ParseUtils.toLong(mRawData.get(key));
+        return ParseUtils.toLong(rawData.get(key));
     }
 
     /**
@@ -345,7 +345,7 @@ public class DataManager
      */
     public void putLong(@NonNull final String key,
                         final long value) {
-        mRawData.putLong(key, value);
+        rawData.putLong(key, value);
     }
 
     /**
@@ -359,7 +359,7 @@ public class DataManager
      */
     public double getDouble(@NonNull final String key)
             throws NumberFormatException {
-        return ParseUtils.toDouble(mRawData.get(key), null);
+        return ParseUtils.toDouble(rawData.get(key), null);
     }
 
     /**
@@ -370,7 +370,7 @@ public class DataManager
      */
     public void putDouble(@NonNull final String key,
                           final double value) {
-        mRawData.putDouble(key, value);
+        rawData.putDouble(key, value);
     }
 
     /**
@@ -384,7 +384,7 @@ public class DataManager
      */
     public float getFloat(@NonNull final String key)
             throws NumberFormatException {
-        return ParseUtils.toFloat(mRawData.get(key), null);
+        return ParseUtils.toFloat(rawData.get(key), null);
     }
 
     /**
@@ -395,16 +395,16 @@ public class DataManager
      */
     public void putFloat(@NonNull final String key,
                          final float value) {
-        mRawData.putFloat(key, value);
+        rawData.putFloat(key, value);
     }
 
     @Nullable
     @Override
     public String getString(@NonNull final String key,
-                            @Nullable final String defValue) {
-        final Object o = mRawData.get(key);
+                            @Nullable final String defaultValue) {
+        final Object o = rawData.get(key);
         if (o == null) {
-            return defValue;
+            return defaultValue;
         } else {
             return o.toString().trim();
         }
@@ -418,7 +418,7 @@ public class DataManager
      */
     public void putString(@NonNull final String key,
                           @NonNull final String value) {
-        mRawData.putString(key, value);
+        rawData.putString(key, value);
     }
 
     /**
@@ -433,7 +433,7 @@ public class DataManager
     @Nullable
     public Money getMoney(@NonNull final String key)
             throws NumberFormatException {
-        if (mRawData.containsKey(key)) {
+        if (rawData.containsKey(key)) {
             return new Money(getDouble(key), getString(key + DBKey.SUFFIX_KEY_CURRENCY));
         } else {
             return null;
@@ -448,9 +448,9 @@ public class DataManager
      */
     public void putMoney(@NonNull final String key,
                          @NonNull final Money money) {
-        mRawData.putDouble(key, money.doubleValue());
+        rawData.putDouble(key, money.doubleValue());
         if (money.getCurrency() != null) {
-            mRawData.putString(key + DBKey.SUFFIX_KEY_CURRENCY, money.getCurrencyCode());
+            rawData.putString(key + DBKey.SUFFIX_KEY_CURRENCY, money.getCurrencyCode());
         }
     }
 
@@ -464,11 +464,11 @@ public class DataManager
      */
     @NonNull
     public <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final String key) {
-        Object o = mRawData.get(key);
+        Object o = rawData.get(key);
         if (o == null) {
             o = new ArrayList<>();
             //noinspection unchecked
-            mRawData.putParcelableArrayList(key, (ArrayList<T>) o);
+            rawData.putParcelableArrayList(key, (ArrayList<T>) o);
         }
         //noinspection unchecked
         return (ArrayList<T>) o;
@@ -485,12 +485,12 @@ public class DataManager
      */
     public <T extends Parcelable> void putParcelableArrayList(@NonNull final String key,
                                                               @NonNull final ArrayList<T> value) {
-        mRawData.putParcelableArrayList(key, value);
+        rawData.putParcelableArrayList(key, value);
     }
 
     @Nullable
     public <T extends Parcelable> T getParcelable(@NonNull final String key) {
-        return mRawData.getParcelable(key);
+        return rawData.getParcelable(key);
     }
 
     /**
@@ -504,7 +504,7 @@ public class DataManager
      */
     public <T extends Parcelable> void putParcelable(@NonNull final String key,
                                                      @NonNull final T value) {
-        mRawData.putParcelable(key, value);
+        rawData.putParcelable(key, value);
     }
 
     /**
@@ -519,7 +519,7 @@ public class DataManager
     @Nullable
     protected <T extends Serializable> T getSerializable(@NonNull final String key) {
         //noinspection unchecked
-        return (T) mRawData.getSerializable(key);
+        return (T) rawData.getSerializable(key);
     }
 
     /**
@@ -534,7 +534,7 @@ public class DataManager
             Log.d(TAG, "putSerializable|key=" + key
                        + "|type=" + value.getClass().getCanonicalName(), new Throwable());
         }
-        mRawData.putSerializable(key, value);
+        rawData.putSerializable(key, value);
     }
 
     /**
@@ -543,7 +543,7 @@ public class DataManager
      * @param key Key of data object
      */
     public void putNull(@NonNull final String key) {
-        mRawData.putString(key, null);
+        rawData.putString(key, null);
     }
 
 
@@ -552,15 +552,15 @@ public class DataManager
      * <p>
      * Accepts only one validator for a key. Setting a second one will override the first.
      *
-     * @param key          Key for the data
-     * @param validator    Validator
-     * @param errorLabelId string resource id for a user visible message
+     * @param key             Key for the data
+     * @param validator       Validator
+     * @param errorLabelResId string resource id for a user visible message
      */
     protected void addValidator(@NonNull final String key,
                                 @NonNull final DataValidator validator,
-                                @StringRes final int errorLabelId) {
-        mValidatorsMap.put(key, validator);
-        mValidatorErrorIdMap.put(key, errorLabelId);
+                                @StringRes final int errorLabelResId) {
+        validatorsMap.put(key, validator);
+        validatorErrorIdMap.put(key, errorLabelResId);
     }
 
     /**
@@ -569,13 +569,13 @@ public class DataManager
      * @param validator Validator
      */
     protected void addCrossValidator(@NonNull final DataCrossValidator validator) {
-        mCrossValidators.add(validator);
+        crossValidators.add(validator);
     }
 
     /**
      * Loop through and apply validators.
      * <p>
-     * {@link ValidatorException} are added to {@link #mValidationExceptions}
+     * {@link ValidatorException} are added to {@link #validationExceptions}
      * Use {@link #getValidationExceptionMessage} for the results.
      *
      * @param context Current context
@@ -585,25 +585,25 @@ public class DataManager
     public boolean validate(@NonNull final Context context) {
 
         boolean isOk = true;
-        mValidationExceptions.clear();
+        validationExceptions.clear();
 
-        for (final Map.Entry<String, DataValidator> entry : mValidatorsMap.entrySet()) {
+        for (final Map.Entry<String, DataValidator> entry : validatorsMap.entrySet()) {
             final String key = entry.getKey();
             try {
                 entry.getValue()
                      .validate(context, this, key,
-                               Objects.requireNonNull(mValidatorErrorIdMap.get(key), key));
+                               Objects.requireNonNull(validatorErrorIdMap.get(key), key));
             } catch (@NonNull final ValidatorException e) {
-                mValidationExceptions.add(e);
+                validationExceptions.add(e);
                 isOk = false;
             }
         }
 
-        for (final DataCrossValidator crossValidator : mCrossValidators) {
+        for (final DataCrossValidator crossValidator : crossValidators) {
             try {
                 crossValidator.validate(context, this);
             } catch (@NonNull final ValidatorException e) {
-                mValidationExceptions.add(e);
+                validationExceptions.add(e);
                 isOk = false;
             }
         }
@@ -617,13 +617,13 @@ public class DataManager
      */
     @Nullable
     public String getValidationExceptionMessage(@NonNull final Context context) {
-        if (mValidationExceptions.isEmpty()) {
+        if (validationExceptions.isEmpty()) {
             return null;
 
         } else {
             final StringBuilder msg = new StringBuilder();
             int i = 0;
-            for (final ValidatorException e : mValidationExceptions) {
+            for (final ValidatorException e : validationExceptions) {
                 msg.append(" (").append(++i).append(") ")
                    .append(e.getUserMessage(context))
                    .append('\n');
@@ -636,10 +636,10 @@ public class DataManager
     @NonNull
     public String toString() {
         return "DataManager{"
-               + "mRawData=" + mRawData
-               + ", mValidationExceptions=" + mValidationExceptions
-               + ", mValidatorsMap=" + mValidatorsMap
-               + ", mCrossValidators=" + mCrossValidators
+               + "rawData=" + rawData
+               + ", validationExceptions=" + validationExceptions
+               + ", validatorsMap=" + validatorsMap
+               + ", crossValidators=" + crossValidators
                + '}';
     }
 }

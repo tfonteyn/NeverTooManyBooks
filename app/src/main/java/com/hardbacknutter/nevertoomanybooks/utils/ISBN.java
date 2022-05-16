@@ -20,7 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.annotation.SuppressLint;
-import android.content.SharedPreferences;
+import android.content.Context;
 import android.text.Editable;
 
 import androidx.annotation.NonNull;
@@ -74,7 +74,6 @@ public class ISBN {
 
     private static final String ERROR_INVALID_ISBN = "isbn must be valid";
     private static final String ERROR_WRONG_SIZE = "Wrong size: ";
-    private static final String ERROR_INVALID_CHARACTER = "Invalid character: ";
     private static final String ERROR_UNABLE_TO_CONVERT =
             "Unable to convert type: %1$s to %2$s";
     private static final String ERROR_X_CAN_ONLY_BE_AT_THE_END_OF_AN_ISBN_10 =
@@ -146,23 +145,23 @@ public class ISBN {
 
     /** The type of code, determined at creation time. */
     @NonNull
-    private final Type mType;
+    private final Type codeType;
     /** The code as a pure text string. The raw input string for invalid codes. */
     @NonNull
-    private final String mAsText;
+    private final String codeText;
     /** Kept for faster conversion between formats. {@code null} for invalid codes. */
     @Nullable
-    private final List<Integer> mDigits;
+    private final List<Integer> codeDigits;
 
     /**
      * Constructor for a strict ISBN.
      * Accepts {@code null}.
      * Accepts (and removes) ' ' and '-' characters.
      *
-     * @param str string to digest
+     * @param text string to digest
      */
-    public ISBN(@Nullable final String str) {
-        this(str, true);
+    public ISBN(@Nullable final String text) {
+        this(text, true);
     }
 
     /**
@@ -170,18 +169,17 @@ public class ISBN {
      * Accepts {@code null}.
      * Accepts (and removes) ' ' and '-' characters.
      *
-     * @param str        string to digest
+     * @param text       string to digest
      * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
      */
-    public ISBN(@Nullable final String str,
+    public ISBN(@Nullable final String text,
                 final boolean strictIsbn) {
 
         List<Integer> digits = null;
-
         Type type = Type.Invalid;
 
-        if (str != null && !str.isEmpty()) {
-            final String cleanStr = WHITESPACE_PATTERN.matcher(str).replaceAll("");
+        if (text != null && !text.isEmpty()) {
+            final String cleanStr = WHITESPACE_PATTERN.matcher(text).replaceAll("");
             if (!cleanStr.isEmpty()) {
                 // Determine the digits and the type.
                 try {
@@ -200,7 +198,7 @@ public class ISBN {
                     }
                 } catch (@NonNull final NumberFormatException e) {
                     if (BuildConfig.DEBUG /* always */) {
-                        Logger.d(TAG, "str=`" + str + '`', e);
+                        Logger.d(TAG, "text=`" + text + '`', e);
                     }
                 }
 
@@ -213,14 +211,14 @@ public class ISBN {
 
         // Make sure the internal status is uniform.
         if (type == Type.Invalid) {
-            mDigits = null;
-            mAsText = str != null ? str : "";
-            mType = Type.Invalid;
+            codeDigits = null;
+            codeText = text != null ? text : "";
+            codeType = Type.Invalid;
 
         } else {
-            mDigits = digits;
-            mAsText = concat(mDigits);
-            mType = type;
+            codeDigits = digits;
+            codeText = concat(codeDigits);
+            codeType = type;
         }
     }
 
@@ -237,13 +235,13 @@ public class ISBN {
      * <p>
      * Accepts (and removes) ' ' and '-' characters.
      *
-     * @param str the string to digest
+     * @param text the string to digest
      *
      * @return instance
      */
     @NonNull
-    public static ISBN create(@NonNull final String str) {
-        return new ISBN(str, false);
+    public static ISBN create(@NonNull final String text) {
+        return new ISBN(text, false);
     }
 
     /**
@@ -263,13 +261,13 @@ public class ISBN {
      * <p>
      * Accepts (and removes) ' ' and '-' characters.
      *
-     * @param isbnStr the string to digest
+     * @param text the string to digest
      *
      * @return instance
      */
     @NonNull
-    public static ISBN createISBN(@NonNull final String isbnStr) {
-        return new ISBN(isbnStr, true);
+    public static ISBN createISBN(@NonNull final String text) {
+        return new ISBN(text, true);
     }
 
     /**
@@ -329,42 +327,28 @@ public class ISBN {
     /**
      * Convenience method to check validity when there is no need to keep the object.
      *
-     * @param isbnStr to check
+     * @param text to check
      *
      * @return validity
      */
-    public static boolean isValidIsbn(@Nullable final String isbnStr) {
-        if (isbnStr == null || isbnStr.isEmpty()) {
+    public static boolean isValidIsbn(@Nullable final String text) {
+        if (text == null || text.isEmpty()) {
             return false;
         }
-        return new ISBN(isbnStr, true).isValid(true);
+        return new ISBN(text, true).isValid(true);
     }
 
     /**
      * Check the validity of an ISBN string.
      *
-     * @param isbnStr to check
+     * @param text to check
      *
      * @throws IllegalStateException if invalid
      */
-    public static void requireValidIsbn(@Nullable final String isbnStr) {
-        if (!isValidIsbn(isbnStr)) {
+    public static void requireValidIsbn(@Nullable final String text) {
+        if (!isValidIsbn(text)) {
             throw new IllegalStateException(ERROR_INVALID_ISBN);
         }
-    }
-
-    /**
-     * Convenience method to check validity when there is no need to keep the object.
-     *
-     * @param code to check
-     *
-     * @return validity
-     */
-    public static boolean isValid(@Nullable final String code) {
-        if (code == null || code.isEmpty()) {
-            return false;
-        }
-        return new ISBN(code, false).isValid(false);
     }
 
     /**
@@ -376,9 +360,9 @@ public class ISBN {
      */
     public boolean isValid(final boolean strictIsbn) {
         if (strictIsbn) {
-            return mType == Type.Isbn13 || mType == Type.Isbn10;
+            return codeType == Type.Isbn13 || codeType == Type.Isbn10;
         } else {
-            return mType != Type.Invalid;
+            return codeType != Type.Invalid;
         }
     }
 
@@ -386,9 +370,9 @@ public class ISBN {
     boolean isType(@NonNull final Type type) {
         if (type == Type.Ean13) {
             // ISBN 13 is a sub-type of EAN13
-            return mType == Type.Ean13 || mType == Type.Isbn13;
+            return codeType == Type.Ean13 || codeType == Type.Isbn13;
         }
-        return mType == type;
+        return codeType == type;
     }
 
     /**
@@ -398,7 +382,7 @@ public class ISBN {
      * @return {@code true} if compatible; {@code false} if not compatible or not a valid ISBN
      */
     public boolean isIsbn10Compat() {
-        return mType == Type.Isbn10 || (mType == Type.Isbn13 && mAsText.startsWith("978"));
+        return codeType == Type.Isbn10 || (codeType == Type.Isbn13 && codeText.startsWith("978"));
     }
 
     /**
@@ -408,7 +392,7 @@ public class ISBN {
      */
     @NonNull
     public String asText() {
-        return mAsText;
+        return codeText;
     }
 
     /**
@@ -429,19 +413,19 @@ public class ISBN {
             throws NumberFormatException {
 
         if (type == Type.Invalid) {
-            return mAsText;
+            return codeText;
         }
-        Objects.requireNonNull(mDigits, "mDigits");
+        Objects.requireNonNull(codeDigits, "mDigits");
 
         switch (type) {
             case Isbn13: {
                 // already in ISBN-13 format?
-                if (mType == Type.Isbn13) {
-                    return mAsText;
+                if (codeType == Type.Isbn13) {
+                    return codeText;
                 }
 
                 // Must be ISBN10 or we cannot convert
-                if (mType == Type.Isbn10) {
+                if (codeType == Type.Isbn10) {
                     final List<Integer> digits = new ArrayList<>();
                     // standard prefix 978
                     digits.add(9);
@@ -450,7 +434,7 @@ public class ISBN {
 
                     // copy the first 9 digits
                     for (int i = 0; i < 9; i++) {
-                        digits.add(mDigits.get(i));
+                        digits.add(codeDigits.get(i));
                     }
                     // and add the new checksum
                     digits.add(calculateEan13Checksum(digits));
@@ -461,16 +445,16 @@ public class ISBN {
             }
             case Isbn10: {
                 // already in ISBN-10 format?
-                if (mType == Type.Isbn10) {
-                    return mAsText;
+                if (codeType == Type.Isbn10) {
+                    return codeText;
                 }
 
                 // must be ISBN13 *AND* compatible with converting to ISBN10
-                if (mType == Type.Isbn13 || !mAsText.startsWith("978")) {
+                if (codeType == Type.Isbn13 || !codeText.startsWith("978")) {
                     // drop the first 3 digits, and copy the next 9.
                     final List<Integer> digits = new ArrayList<>();
                     for (int i = 3; i < 12; i++) {
-                        digits.add(mDigits.get(i));
+                        digits.add(codeDigits.get(i));
                     }
                     // and add the new checksum
                     digits.add(calculateIsbn10Checksum(digits));
@@ -481,15 +465,15 @@ public class ISBN {
 
             case Ean13:
                 // No conversion
-                if (mType == Type.Ean13) {
-                    return mAsText;
+                if (codeType == Type.Ean13) {
+                    return codeText;
                 }
                 break;
 
             case UpcA:
                 // No conversion
-                if (mType == Type.UpcA) {
-                    return mAsText;
+                if (codeType == Type.UpcA) {
+                    return codeText;
                 }
                 break;
 
@@ -498,7 +482,7 @@ public class ISBN {
         }
 
         throw new NumberFormatException(
-                String.format(ERROR_UNABLE_TO_CONVERT, mType, type));
+                String.format(ERROR_UNABLE_TO_CONVERT, codeType, type));
     }
 
     /**
@@ -509,22 +493,22 @@ public class ISBN {
      * the actual digits form a valid code.
      * If an illegal character is found, we return the digits found up to then.
      *
-     * @param str to convert
+     * @param text to convert
      *
      * @return list of digits
      *
      * @throws NumberFormatException on failure
      */
     @NonNull
-    private List<Integer> toDigits(@NonNull final CharSequence str)
+    private List<Integer> toDigits(@NonNull final CharSequence text)
             throws NumberFormatException {
         // the digit '10' is represented as 'X'
         boolean foundX = false;
 
         final List<Integer> digits = new ArrayList<>();
 
-        for (int i = 0; i < str.length(); i++) {
-            final char c = str.charAt(i);
+        for (int i = 0; i < text.length(); i++) {
+            final char c = text.charAt(i);
             final int digit;
             if (Character.isDigit(c)) {
                 if (foundX) {
@@ -745,15 +729,16 @@ public class ISBN {
     @NonNull
     public String toString() {
         return "ISBN{"
-               + "mType=" + mType
-               + ", mAsText=" + mAsText
-               + ", mDigits=" + mDigits
+               + "codeType=" + codeType
+               + ", codeText=" + codeText
+               + ", codeDigits=" + codeDigits
                + '}';
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mDigits);
+        // only use the 'asText' if we have no digits!
+        return Objects.hash(codeType, Objects.requireNonNullElse(codeDigits, codeText));
     }
 
     /**
@@ -766,8 +751,6 @@ public class ISBN {
      *      <li>Same length, compare their digits for exact match</li>
      *      <li>compare the 9 significant isbn digits for equality.</li>
      * </ol>
-     *
-     * <strong>Note:</strong> hash codes are done over the {@link #mDigits} objects.
      */
     @Override
     public boolean equals(@Nullable final Object obj) {
@@ -780,26 +763,26 @@ public class ISBN {
         final ISBN cmp = (ISBN) obj;
 
         // If either is invalid, no match
-        if (mType == Type.Invalid || cmp.isType(Type.Invalid)) {
+        if (codeType == Type.Invalid || cmp.isType(Type.Invalid)) {
             return false;
         }
-        if (mDigits == null || cmp.mDigits == null) {
+        if (codeDigits == null || cmp.codeDigits == null) {
             return false;
         }
 
         // same length ? they should match exactly
-        if (mDigits.size() == cmp.mDigits.size()) {
-            return Objects.equals(mDigits, cmp.mDigits);
+        if (codeDigits.size() == cmp.codeDigits.size()) {
+            return Objects.equals(codeDigits, cmp.codeDigits);
         }
 
         // Both are valid ISBN codes and we know the lengths are either 10 or 13
         // when we get here. So ... compare the significant digits:
         // ISBN13: skip the first 3 character, and don't include the checksum.
         // ISBN10: don't include the checksum.
-        if (mDigits.size() == 10) {
-            return digitsMatch(9, mDigits, 0, cmp.mDigits, 3);
+        if (codeDigits.size() == 10) {
+            return digitsMatch(9, codeDigits, 0, cmp.codeDigits, 3);
         } else {
-            return digitsMatch(9, mDigits, 3, cmp.mDigits, 0);
+            return digitsMatch(9, codeDigits, 3, cmp.codeDigits, 0);
         }
     }
 
@@ -843,14 +826,14 @@ public class ISBN {
         /**
          * Get the user preferred ISBN validity level check for (by the user) editing ISBN codes.
          *
-         * @param global Global preferences
+         * @param context Current context
          *
          * @return Validity level
          */
         @NonNull
-        public static Validity getLevel(@NonNull final SharedPreferences global) {
+        public static Validity getLevel(@NonNull final Context context) {
 
-            final int value = Prefs.getIntListPref(global, Prefs.pk_edit_book_isbn_checks,
+            final int value = Prefs.getIntListPref(context, Prefs.pk_edit_book_isbn_checks,
                                                    Loose.value);
             switch (value) {
                 case 2:
@@ -957,14 +940,14 @@ public class ISBN {
             implements ExtTextWatcher {
 
         @NonNull
-        private final TextInputLayout mLayout;
+        private final TextInputLayout layout;
         @NonNull
-        private final TextInputEditText mEditText;
+        private final TextInputEditText editText;
 
         @Nullable
-        private String mAltIsbn;
+        private String altIsbn;
         @NonNull
-        private Validity mIsbnValidityCheck;
+        private Validity isbnValidityCheck;
 
         /**
          * Constructor.
@@ -976,16 +959,16 @@ public class ISBN {
         public ValidationTextWatcher(@NonNull final TextInputLayout layoutView,
                                      @NonNull final TextInputEditText editText,
                                      @NonNull final Validity isbnValidityCheck) {
-            mLayout = layoutView;
-            mLayout.setStartIconVisible(false);
+            layout = layoutView;
+            layout.setStartIconVisible(false);
 
-            mEditText = editText;
-            mIsbnValidityCheck = isbnValidityCheck;
+            this.editText = editText;
+            this.isbnValidityCheck = isbnValidityCheck;
         }
 
         public void setValidityLevel(@NonNull final Validity isbnValidityCheck) {
-            mIsbnValidityCheck = isbnValidityCheck;
-            validate(mEditText.getEditableText());
+            this.isbnValidityCheck = isbnValidityCheck;
+            validate(editText.getEditableText());
         }
 
         @Override
@@ -1004,24 +987,24 @@ public class ISBN {
                 final String str = editable.toString().trim();
                 switch (str.length()) {
                     case 13: {
-                        final ISBN isbn = new ISBN(str, mIsbnValidityCheck == Validity.Strict);
+                        final ISBN isbn = new ISBN(str, isbnValidityCheck == Validity.Strict);
                         if (isbn.isIsbn10Compat()) {
-                            mAltIsbn = isbn.asText(Type.Isbn10);
-                            mLayout.setStartIconVisible(true);
-                            mLayout.setStartIconOnClickListener(
-                                    view -> mEditText.setText(mAltIsbn));
+                            altIsbn = isbn.asText(Type.Isbn10);
+                            layout.setStartIconVisible(true);
+                            layout.setStartIconOnClickListener(
+                                    view -> editText.setText(altIsbn));
                             return;
                         }
                         break;
                     }
 
                     case 10: {
-                        final ISBN isbn = new ISBN(str, mIsbnValidityCheck == Validity.Strict);
-                        if (isbn.isValid(mIsbnValidityCheck == Validity.Strict)) {
-                            mAltIsbn = isbn.asText(Type.Isbn13);
-                            mLayout.setStartIconVisible(true);
-                            mLayout.setStartIconOnClickListener(
-                                    view -> mEditText.setText(mAltIsbn));
+                        final ISBN isbn = new ISBN(str, isbnValidityCheck == Validity.Strict);
+                        if (isbn.isValid(isbnValidityCheck == Validity.Strict)) {
+                            altIsbn = isbn.asText(Type.Isbn13);
+                            layout.setStartIconVisible(true);
+                            layout.setStartIconOnClickListener(
+                                    view -> editText.setText(altIsbn));
                             return;
                         }
                         break;
@@ -1029,11 +1012,11 @@ public class ISBN {
 
                     case 12: {
                         // UPC: indicate the code is valid, but disable the swap functionality
-                        if (mIsbnValidityCheck != Validity.Strict) {
+                        if (isbnValidityCheck != Validity.Strict) {
                             final ISBN isbn = new ISBN(str, false);
                             if (isbn.isValid(false)) {
-                                mLayout.setStartIconVisible(true);
-                                mLayout.setStartIconOnClickListener(null);
+                                layout.setStartIconVisible(true);
+                                layout.setStartIconOnClickListener(null);
                                 return;
                             }
                         }
@@ -1046,8 +1029,8 @@ public class ISBN {
                 }
             }
 
-            mLayout.setStartIconVisible(false);
-            mLayout.setStartIconOnClickListener(null);
+            layout.setStartIconVisible(false);
+            layout.setStartIconOnClickListener(null);
         }
     }
 }

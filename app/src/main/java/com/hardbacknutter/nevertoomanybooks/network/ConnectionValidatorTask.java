@@ -39,15 +39,16 @@ public class ConnectionValidatorTask
     /** Log tag. */
     private static final String TAG = "ConnectionValidatorTask";
 
-    private final int mSiteResId;
+    @StringRes
+    private final int siteResId;
 
     @Nullable
-    private ConnectionValidator mServer;
+    private ConnectionValidator server;
 
     public ConnectionValidatorTask(@StringRes final int siteResId) {
         super(R.id.TASK_ID_VALIDATE_CONNECTION, TAG + ":" + siteResId);
 
-        mSiteResId = siteResId;
+        this.siteResId = siteResId;
     }
 
     public void connect() {
@@ -58,8 +59,8 @@ public class ConnectionValidatorTask
     public void cancel() {
         synchronized (this) {
             super.cancel();
-            if (mServer != null) {
-                mServer.cancel();
+            if (server != null) {
+                server.cancel();
             }
         }
     }
@@ -82,7 +83,7 @@ public class ConnectionValidatorTask
                    CertificateException,
                    CredentialsException {
 
-        mServer = ConnectionValidator.create(context, mSiteResId);
-        return mServer.validateConnection();
+        server = ConnectionValidator.create(context, siteResId);
+        return server.validateConnection(context);
     }
 }

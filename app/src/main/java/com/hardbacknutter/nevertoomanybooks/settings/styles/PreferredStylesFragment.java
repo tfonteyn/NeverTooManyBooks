@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditPreferredStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -63,7 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHel
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
 /**
- * {@link ListStyle} maintenance.
+ * {@link Style} maintenance.
  */
 @SuppressWarnings("MethodOnlyUsedFromInnerClass")
 public class PreferredStylesFragment
@@ -73,8 +73,21 @@ public class PreferredStylesFragment
     public static final String TAG = "PreferredStylesFragment";
     @SuppressWarnings("FieldCanBeLocal")
     private MenuProvider toolbarMenuProvider;
-    /** The adapter for the list. */
-    private ListStylesAdapter listAdapter;
+    /** Set the hosting Activity result, and close it. */
+    private final OnBackPressedCallback backPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    final Style selectedStyle = vm.getSelectedStyle();
+                    final String uuid = selectedStyle != null ? selectedStyle.getUuid() : null;
+                    final Intent resultIntent = PreferredStylesContract
+                            .createResultIntent(uuid, vm.isDirty());
+
+                    //noinspection ConstantConditions
+                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                    getActivity().finish();
+                }
+            };
     private PreferredStylesViewModel vm;
 
     /** React to changes in the adapter. */
@@ -98,14 +111,15 @@ public class PreferredStylesFragment
                     vm.setDirty(true);
                 }
             };
-
+    /** The adapter for the list. */
+    private StylesAdapter listAdapter;
     @SuppressLint("NotifyDataSetChanged")
     private final ActivityResultLauncher<EditStyleContract.Input> editStyleContract =
             registerForActivityResult(new EditStyleContract(), data -> {
                 if (data != null) {
                     //noinspection ConstantConditions
                     @Nullable
-                    final ListStyle style = vm.getStyle(getContext(), data.uuid);
+                    final Style style = vm.getStyle(getContext(), data.uuid);
 
                     if (data.modified) {
                         if (style != null) {
@@ -117,21 +131,6 @@ public class PreferredStylesFragment
                     }
                 }
             });
-    /** Set the hosting Activity result, and close it. */
-    private final OnBackPressedCallback onBackPressedCallback =
-            new OnBackPressedCallback(true) {
-                @Override
-                public void handleOnBackPressed() {
-                    final ListStyle selectedStyle = vm.getSelectedStyle();
-                    final String uuid = selectedStyle != null ? selectedStyle.getUuid() : null;
-                    final Intent resultIntent = PreferredStylesContract
-                            .createResultIntent(uuid, vm.isDirty());
-
-                    //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
-                    getActivity().finish();
-                }
-            };
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
 
@@ -168,11 +167,11 @@ public class PreferredStylesFragment
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), onBackPressedCallback);
+                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
         //noinspection ConstantConditions
-        listAdapter = new ListStylesAdapter(getContext(), vm.getList(),
-                                             vh -> itemTouchHelper.startDrag(vh));
+        listAdapter = new StylesAdapter(getContext(), vm.getStyleList(),
+                                        vh -> itemTouchHelper.startDrag(vh));
         listAdapter.registerAdapterDataObserver(adapterDataObserver);
         vb.list.addItemDecoration(
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
@@ -203,8 +202,8 @@ public class PreferredStylesFragment
      */
     private void prepareMenu(@NonNull final Menu menu,
                              final int position) {
-        final ListStyle style = position == RecyclerView.NO_POSITION
-                                ? null : vm.getStyle(position);
+        final Style style = position == RecyclerView.NO_POSITION
+                            ? null : vm.getStyle(position);
 
         // only user styles can be edited/deleted
         final boolean isUserStyle = style != null && style.isUserDefined();
@@ -228,7 +227,7 @@ public class PreferredStylesFragment
                                        final int position) {
         final int itemId = menuItem.getItemId();
 
-        final ListStyle style = vm.getStyle(position);
+        final Style style = vm.getStyle(position);
 
         if (itemId == R.id.MENU_EDIT) {
             editStyleContract.launch(EditStyleContract.edit(style));
@@ -288,8 +287,8 @@ public class PreferredStylesFragment
         }
     }
 
-    private class ListStylesAdapter
-            extends RecyclerViewAdapterBase<ListStyle, Holder> {
+    private class StylesAdapter
+            extends RecyclerViewAdapterBase<Style, Holder> {
 
         /**
          * Constructor.
@@ -298,9 +297,9 @@ public class PreferredStylesFragment
          * @param items             List of styles
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
-        ListStylesAdapter(@NonNull final Context context,
-                          @NonNull final List<ListStyle> items,
-                          @NonNull final StartDragListener dragStartListener) {
+        StylesAdapter(@NonNull final Context context,
+                      @NonNull final List<Style> items,
+                      @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
         }
 
@@ -348,7 +347,7 @@ public class PreferredStylesFragment
                                      @SuppressLint("RecyclerView") final int position) {
             super.onBindViewHolder(holder, position);
 
-            final ListStyle style = getItem(position);
+            final Style style = getItem(position);
 
             final Context context = getContext();
 
@@ -382,7 +381,7 @@ public class PreferredStylesFragment
             int position = holder.getBindingAdapterPosition();
 
             // toggle the 'preferred' state of the current position/style
-            final ListStyle style = getItem(position);
+            final Style style = getItem(position);
             final boolean checked = !style.isPreferred();
             style.setPreferred(checked);
             //noinspection ConstantConditions

@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields;
 
-import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.Checkable;
 import android.widget.TextView;
@@ -86,9 +85,8 @@ public abstract class BaseTextField<T, V extends TextView>
     }
 
     @Override
-    public void setParentView(@NonNull final View parent,
-                              @NonNull final SharedPreferences global) {
-        super.setParentView(parent, global);
+    public void setParentView(@NonNull final View parent) {
+        super.setParentView(parent);
 
         if (textInputLayoutId != 0) {
             final TextInputLayout til = parent.findViewById(textInputLayoutId);

@@ -27,14 +27,14 @@ import androidx.annotation.NonNull;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 
 public interface StyleDao {
 
     /**
-     * Get the id of a {@link ListStyle} with matching UUID.
+     * Get the id of a {@link Style} with matching UUID.
      *
      * @param uuid UUID of the style to find
      *
@@ -73,16 +73,16 @@ public interface StyleDao {
     long insert(@NonNull UserStyle style);
 
     /**
-     * Update a {@link ListStyle} - both {@link UserStyle} and {@link BuiltinStyle} can be updated.
+     * Update a {@link Style} - both {@link UserStyle} and {@link BuiltinStyle} can be updated.
      *
      * @param style to update
      *
      * @return {@code true} for success.
      */
-    boolean update(@NonNull ListStyle style);
+    boolean update(@NonNull Style style);
 
     /**
-     * Delete a {@link ListStyle}.
+     * Delete a {@link Style}.
      * Cleans up {@link DBDefinitions#TBL_BOOK_LIST_NODE_STATE} as well.
      *
      * @param style to delete
@@ -90,7 +90,7 @@ public interface StyleDao {
      * @return {@code true} if a row was deleted
      */
     @SuppressWarnings("UnusedReturnValue")
-    boolean delete(@NonNull ListStyle style);
+    boolean delete(@NonNull Style style);
 
     /**
      * Purge Booklist node state data for the given Style.<br>

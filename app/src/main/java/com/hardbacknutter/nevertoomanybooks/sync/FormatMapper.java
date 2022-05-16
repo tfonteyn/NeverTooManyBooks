@@ -19,11 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync;
 
-import android.content.SharedPreferences;
-
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
@@ -68,8 +67,9 @@ public final class FormatMapper
         MAPPER.put("hardback", R.string.book_format_hardcover);
     }
 
-    public static boolean isMappingAllowed(@NonNull final SharedPreferences global) {
-        return global.getBoolean(Prefs.pk_search_reformat_format, true);
+    public static boolean isMappingAllowed() {
+        return ServiceLocator.getPreferences()
+                             .getBoolean(Prefs.pk_search_reformat_format, true);
     }
 
     @NonNull

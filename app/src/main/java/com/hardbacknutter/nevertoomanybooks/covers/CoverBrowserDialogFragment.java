@@ -480,7 +480,7 @@ public class CoverBrowserDialogFragment
                     holder.vb.lblSite.setText(SearchEngineRegistry
                                                       .getInstance()
                                                       .getByEngineId(imageFileInfo.getEngineId())
-                                                      .getLabelId());
+                                                      .getLabelResId());
 
                 } else {
                     // no file. Theoretically we should not get here,

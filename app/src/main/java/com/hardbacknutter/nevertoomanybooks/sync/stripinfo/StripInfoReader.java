@@ -88,41 +88,41 @@ public class StripInfoReader
     public static final String SYNC_PROCESSOR_PREFIX = StripInfoAuth.PREF_KEY + ".fields.update.";
     private static final String TAG = "StripInfoReader";
     @NonNull
-    private final Updates mUpdateOption;
+    private final Updates updateOption;
 
-    private final boolean[] mCoversForNewBooks;
+    private final boolean[] coversForNewBooks;
     @NonNull
-    private final StripInfoSearchEngine mSearchEngine;
+    private final StripInfoSearchEngine searchEngine;
     /** Which fields and how to process them for existing books. */
     @NonNull
-    private final SyncReaderProcessor mSyncProcessor;
+    private final SyncReaderProcessor syncProcessor;
     /** cached localized progress string. */
     @NonNull
-    private final String mBooksString;
+    private final String booksString;
     @NonNull
-    private final BookDao mBookDao;
+    private final BookDao bookDao;
 
-    private ReaderResults mResults;
+    private ReaderResults results;
 
     public StripInfoReader(@NonNull final Context context,
                            @NonNull final SyncReaderHelper helper) {
 
-        mUpdateOption = helper.getUpdateOption();
+        updateOption = helper.getUpdateOption();
 
         final boolean doCovers = helper.getRecordTypes().contains(RecordType.Cover);
-        mCoversForNewBooks = new boolean[]{doCovers, doCovers};
+        coversForNewBooks = new boolean[]{doCovers, doCovers};
 
         // Get either the custom passed-in, or the builtin default.
         final SyncReaderProcessor sp = helper.getSyncProcessor();
-        mSyncProcessor = sp != null ? sp : getDefaultSyncProcessor();
+        syncProcessor = sp != null ? sp : getDefaultSyncProcessor();
 
-        mBookDao = ServiceLocator.getInstance().getBookDao();
+        bookDao = ServiceLocator.getInstance().getBookDao();
 
         // create a new instance just for our own use
-        mSearchEngine = (StripInfoSearchEngine) SearchEngineRegistry
+        searchEngine = (StripInfoSearchEngine) SearchEngineRegistry
                 .getInstance().createSearchEngine(SearchSites.STRIP_INFO_BE);
 
-        mBooksString = context.getString(R.string.lbl_books);
+        booksString = context.getString(R.string.lbl_books);
     }
 
     /**
@@ -177,31 +177,31 @@ public class StripInfoReader
         }
 
         // can we reach the site ?
-        NetworkUtils.ping(mSearchEngine.getSiteUrl());
+        NetworkUtils.ping(searchEngine.getSiteUrl());
 
         progressListener.setIndeterminate(true);
         progressListener.publishProgress(0, context.getString(R.string.progress_msg_connecting));
 
-        mSearchEngine.setCaller(progressListener);
+        searchEngine.setCaller(progressListener);
 
-        final StripInfoAuth loginHelper = new StripInfoAuth(mSearchEngine.getSiteUrl());
-        final String userId = loginHelper.login();
+        final StripInfoAuth loginHelper = new StripInfoAuth(searchEngine.getSiteUrl());
+        final String userId = loginHelper.login(context);
 
-        mSearchEngine.setLoginHelper(loginHelper);
+        searchEngine.setLoginHelper(loginHelper);
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         final SynchronizedDb db = serviceLocator.getDb();
 
-        final UserCollection uc = new UserCollection(context, mSearchEngine, userId,
+        final UserCollection uc = new UserCollection(context, searchEngine, userId,
                                                      new BookshelfMapper());
 
-        mResults = new ReaderResults();
+        results = new ReaderResults();
 
         int pageNr = 0;
         try {
             // haven't started yet, or there are more pages.
             while ((pageNr == 0 || uc.getMaxPages() > pageNr)
-                   && !mSearchEngine.isCancelled()) {
+                   && !searchEngine.isCancelled()) {
 
                 pageNr++;
                 final Optional<List<Bundle>> page = uc.fetchPage(context, pageNr, progressListener);
@@ -233,13 +233,13 @@ public class StripInfoReader
                         DateTimeFormatter.ISO_LOCAL_DATE_TIME))
                 .apply();
 
-        return mResults;
+        return results;
     }
 
     @Override
     public void cancel() {
-        synchronized (mSearchEngine) {
-            mSearchEngine.cancel();
+        synchronized (searchEngine) {
+            searchEngine.cancel();
         }
     }
 
@@ -254,15 +254,15 @@ public class StripInfoReader
                 context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
 
         for (final Bundle colBook : page) {
-            if (!mSearchEngine.isCancelled()) {
+            if (!searchEngine.isCancelled()) {
                 final long externalId = colBook.getLong(DBKey.SID_STRIP_INFO);
                 // lookup locally using the externalId column.
-                try (Cursor cursor = mBookDao.fetchByKey(DBKey.SID_STRIP_INFO,
-                                                         String.valueOf(externalId))) {
+                try (Cursor cursor = bookDao.fetchByKey(DBKey.SID_STRIP_INFO,
+                                                        String.valueOf(externalId))) {
                     // check if we already have the StripInfo book in the local database
                     if (cursor.moveToFirst()) {
                         // yes, we do - handle the update according to the users choice
-                        switch (mUpdateOption) {
+                        switch (updateOption) {
                             case Overwrite: {
                                 final Book book = Book.from(cursor);
                                 updateBook(context, externalId, colBook, book);
@@ -274,10 +274,10 @@ public class StripInfoReader
                                 break;
                             }
                             case Skip: {
-                                mResults.booksSkipped++;
+                                results.booksSkipped++;
                                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
                                     Log.d(TAG, "externalId=" + externalId
-                                               + "|" + mUpdateOption);
+                                               + "|" + updateOption);
                                 }
                                 break;
                             }
@@ -286,19 +286,19 @@ public class StripInfoReader
                         insertBook(context, externalId);
                     }
 
-                    mResults.booksProcessed++;
+                    results.booksProcessed++;
 
                 } catch (@NonNull final DaoWriteException | SQLiteDoneException | JSONException e) {
                     // log, but don't fail
                     Logger.error(TAG, e);
-                    mResults.booksFailed++;
+                    results.booksFailed++;
                 }
 
                 final String msg = String.format(progressMessage,
-                                                 mBooksString,
-                                                 mResults.booksCreated,
-                                                 mResults.booksUpdated,
-                                                 mResults.booksSkipped);
+                                                 booksString,
+                                                 results.booksCreated,
+                                                 results.booksUpdated,
+                                                 results.booksSkipped);
                 progressListener.publishProgress(1, msg);
             }
         }
@@ -316,7 +316,7 @@ public class StripInfoReader
         // The delta values we'll be updating
         final Book delta;
 
-        final Map<String, SyncField> fieldsWanted = mSyncProcessor.filter(book);
+        final Map<String, SyncField> fieldsWanted = syncProcessor.filter(book);
         final boolean[] coversWanted = {
                 fieldsWanted.containsKey(Book.BKEY_TMP_FILE_SPEC[0]),
                 fieldsWanted.containsKey(Book.BKEY_TMP_FILE_SPEC[1])};
@@ -324,11 +324,11 @@ public class StripInfoReader
         if (coversWanted[1]) {
             // The back cover is not available on the collection page
             // Do a full download.
-            final Bundle bookData = mSearchEngine
+            final Bundle bookData = searchEngine
                     .searchByExternalId(context, String.valueOf(externalId), coversWanted);
 
             // Extract the delta from the *bookData*
-            delta = mSyncProcessor.process(context, book.getId(), book, fieldsWanted, bookData);
+            delta = syncProcessor.process(context, book.getId(), book, fieldsWanted, bookData);
         } else {
             // we don't need the back cover, but maybe the front cover
             if (coversWanted[0]) {
@@ -336,17 +336,17 @@ public class StripInfoReader
             }
 
             // Extract the delta from the *collection* data
-            delta = mSyncProcessor.process(context, book.getId(), book, fieldsWanted, colBook);
+            delta = syncProcessor.process(context, book.getId(), book, fieldsWanted, colBook);
         }
 
         if (delta != null) {
-            mBookDao.update(context, delta, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                            | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
-            mResults.booksUpdated++;
+            bookDao.update(context, delta, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                           | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+            results.booksUpdated++;
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
                 Log.d(TAG, "externalId=" + externalId
-                           + "|" + mUpdateOption
+                           + "|" + updateOption
                            + "|UPDATE|book=" + book.getId() + "|" + book.getTitle());
             }
         }
@@ -359,19 +359,19 @@ public class StripInfoReader
                    CredentialsException,
                    DaoWriteException {
         // It's a new book; download it from the server and insert it into the db
-        final Bundle bookData = mSearchEngine
-                .searchByExternalId(context, String.valueOf(externalId), mCoversForNewBooks);
+        final Bundle bookData = searchEngine
+                .searchByExternalId(context, String.valueOf(externalId), coversForNewBooks);
 
         final Book book = Book.from(bookData);
         // sanity check, the book should always/already be on the mapped shelf.
         book.ensureBookshelf(context);
 
-        mBookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);
-        mResults.booksCreated++;
+        bookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);
+        results.booksCreated++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
             Log.d(TAG, "externalId=" + externalId
-                       + "|" + mUpdateOption
+                       + "|" + updateOption
                        + "|INSERT|book=" + book.getId() + "|" + book.getTitle());
         }
     }
@@ -382,7 +382,7 @@ public class StripInfoReader
             throws StorageException {
         final String url = cData.getString(UserCollection.BKEY_FRONT_COVER_URL);
         if (url != null) {
-            final String fileSpec = mSearchEngine
+            final String fileSpec = searchEngine
                     .saveImage(url, String.valueOf(externalId), 0, null);
             if (fileSpec != null) {
                 cData.putString(Book.BKEY_TMP_FILE_SPEC[0], fileSpec);

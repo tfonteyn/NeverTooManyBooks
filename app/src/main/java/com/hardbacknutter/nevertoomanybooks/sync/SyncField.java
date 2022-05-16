@@ -51,35 +51,35 @@ public final class SyncField
     public final String key;
     /** label to show to the user. */
     @StringRes
-    private final int mLabelId;
+    private final int labelResId;
     /** Default usage at creation time. */
     @NonNull
-    private final SyncAction mDefaultAction;
+    private final SyncAction defaultAction;
     /** Is the field capable of appending extra data. It can be a true List, or i.e a String. */
-    private final boolean mCanAppend;
+    private final boolean canAppend;
     /** how to use this field. */
     @NonNull
-    private SyncAction mSyncAction;
+    private SyncAction syncAction;
 
     /**
      * Constructor.
      *
      * @param key           Field key
-     * @param labelId       Field label resource id
+     * @param labelResId    Field label resource id
      * @param canAppend     {@code true} if this field is capable of appending extra data.
      * @param defaultAction default action
-     * @param action        initial action
+     * @param syncAction    initial action
      */
     SyncField(@NonNull final String key,
-              @StringRes final int labelId,
+              @StringRes final int labelResId,
               final boolean canAppend,
               @NonNull final SyncAction defaultAction,
-              @NonNull final SyncAction action) {
+              @NonNull final SyncAction syncAction) {
         this.key = key;
-        mLabelId = labelId;
-        mCanAppend = canAppend;
-        mDefaultAction = defaultAction;
-        mSyncAction = action;
+        this.labelResId = labelResId;
+        this.canAppend = canAppend;
+        this.defaultAction = defaultAction;
+        this.syncAction = syncAction;
     }
 
     /**
@@ -90,22 +90,22 @@ public final class SyncField
     private SyncField(@NonNull final Parcel in) {
         //noinspection ConstantConditions
         key = in.readString();
-        mLabelId = in.readInt();
-        mCanAppend = in.readByte() != 0;
+        labelResId = in.readInt();
+        canAppend = in.readByte() != 0;
         //noinspection ConstantConditions
-        mDefaultAction = in.readParcelable(SyncAction.class.getClassLoader());
+        defaultAction = in.readParcelable(SyncAction.class.getClassLoader());
         //noinspection ConstantConditions
-        mSyncAction = in.readParcelable(SyncAction.class.getClassLoader());
+        syncAction = in.readParcelable(SyncAction.class.getClassLoader());
     }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         dest.writeString(key);
-        dest.writeInt(mLabelId);
-        dest.writeByte((byte) (mCanAppend ? 1 : 0));
-        dest.writeParcelable(mDefaultAction, flags);
-        dest.writeParcelable(mSyncAction, flags);
+        dest.writeInt(labelResId);
+        dest.writeByte((byte) (canAppend ? 1 : 0));
+        dest.writeParcelable(defaultAction, flags);
+        dest.writeParcelable(syncAction, flags);
     }
 
     @Override
@@ -121,20 +121,20 @@ public final class SyncField
      * @return a SyncField record for the given field.
      */
     SyncField createRelatedField(@NonNull final String key) {
-        return new SyncField(key, mLabelId, mCanAppend, mDefaultAction, mSyncAction);
+        return new SyncField(key, labelResId, canAppend, defaultAction, syncAction);
     }
 
     @NonNull
     public SyncAction getAction() {
-        return mSyncAction;
+        return syncAction;
     }
 
     public void setAction(@NonNull final SyncAction syncAction) {
-        mSyncAction = syncAction;
+        this.syncAction = syncAction;
     }
 
     void setDefaultAction() {
-        mSyncAction = mDefaultAction;
+        syncAction = defaultAction;
     }
 
     /**
@@ -143,8 +143,8 @@ public final class SyncField
      * @return label resource id
      */
     @StringRes
-    public int getFieldLabelId() {
-        return mLabelId;
+    public int getFieldLabelResId() {
+        return labelResId;
     }
 
     /**
@@ -153,8 +153,8 @@ public final class SyncField
      * @return label resource id
      */
     @StringRes
-    public int getActionLabelId() {
-        return mSyncAction.getLabelId();
+    public int getActionLabelResId() {
+        return syncAction.getLabelResId();
     }
 
     /**
@@ -164,18 +164,18 @@ public final class SyncField
      * else          : Skip -> CopyIfBlank -> Overwrite -> Skip
      */
     public void nextState() {
-        mSyncAction = mSyncAction.nextState(mCanAppend);
+        syncAction = syncAction.nextState(canAppend);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "SyncField{"
-               + "fieldId=`" + key + '`'
-               + ", mCanAppend=" + mCanAppend
-               + ", mNameStringId=" + mLabelId
-               + ", mDefValue=" + mDefaultAction
-               + ", mUsage=" + mSyncAction
+               + "key=`" + key + '`'
+               + ", canAppend=" + canAppend
+               + ", labelResId=" + labelResId
+               + ", defaultAction=" + defaultAction
+               + ", syncAction=" + syncAction
                + '}';
     }
 

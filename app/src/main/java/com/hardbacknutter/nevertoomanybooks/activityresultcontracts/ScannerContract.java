@@ -80,13 +80,13 @@ public class ScannerContract
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Fragment fragment) {
 
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         // Beep when a barcode was recognised
-        final boolean beep = global.getBoolean(Prefs.pk_sounds_scan_found_barcode, true);
+        final boolean beep = prefs.getBoolean(Prefs.pk_sounds_scan_found_barcode, true);
 
         return new ScanOptions()
-                .setCameraId(CameraDetection.getPreferredCameraId(context, global))
+                .setCameraId(CameraDetection.getPreferredCameraId(context))
                 .setOrientationLocked(false)
                 .setPrompt(context.getString(R.string.zxing_msg_default_status))
                 .setBeepEnabled(beep)

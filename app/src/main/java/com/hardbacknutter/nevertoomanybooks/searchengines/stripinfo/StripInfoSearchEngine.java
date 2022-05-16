@@ -131,11 +131,11 @@ public class StripInfoSearchEngine
     public static final String COLLECTION_FORM_URL = WWW_STRIPINFO_BE + "/ajax_collectie.php";
 
     /** Delegate common Element handling. */
-    private final JSoupHelper mJSoupHelper = new JSoupHelper();
+    private final JSoupHelper jSoupHelper = new JSoupHelper();
     @Nullable
-    private StripInfoAuth mLoginHelper;
+    private StripInfoAuth loginHelper;
     @Nullable
-    private CollectionFormParser mCollectionFormParser;
+    private CollectionFormParser collectionFormParser;
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -176,18 +176,18 @@ public class StripInfoSearchEngine
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requireValue(loginHelper.getUserId(), "not logged in?");
         }
-        mLoginHelper = loginHelper;
+        this.loginHelper = loginHelper;
     }
 
     @Override
     public void cancel() {
         synchronized (this) {
             super.cancel();
-            if (mCollectionFormParser != null) {
-                mCollectionFormParser.cancel();
+            if (collectionFormParser != null) {
+                collectionFormParser.cancel();
             }
-            if (mLoginHelper != null) {
-                mLoginHelper.cancel();
+            if (loginHelper != null) {
+                loginHelper.cancel();
             }
         }
     }
@@ -198,19 +198,19 @@ public class StripInfoSearchEngine
                                  @NonNull final String url)
             throws SearchException, CredentialsException {
 
-        if (StripInfoAuth.isLoginToSearch()) {
-            if (mLoginHelper == null) {
-                mLoginHelper = new StripInfoAuth(getSiteUrl());
+        if (StripInfoAuth.isLoginToSearch(context)) {
+            if (loginHelper == null) {
+                loginHelper = new StripInfoAuth(getSiteUrl());
                 try {
-                    mLoginHelper.login();
+                    loginHelper.login(context);
                 } catch (@NonNull final IOException | StorageException e) {
-                    mLoginHelper = null;
+                    loginHelper = null;
                     throw new SearchException(getName(context), e);
                 }
             }
 
             // Recreate every time we load a doc; the user could have changed the preferences.
-            mCollectionFormParser = new CollectionFormParser(context, new BookshelfMapper());
+            collectionFormParser = new CollectionFormParser(context, new BookshelfMapper());
         }
 
         return super.loadDocument(context, url);
@@ -472,7 +472,7 @@ public class StripInfoSearchEngine
         }
 
         // are we logged in ? Then look for any user data.
-        if (mLoginHelper != null) {
+        if (loginHelper != null) {
             processUserdata(document, bookData, externalId);
         }
 
@@ -985,11 +985,11 @@ public class StripInfoSearchEngine
                                  @NonNull final Bundle bookData,
                                  final long externalId) {
 
-        final long collectionId = mJSoupHelper.getInt(document, "stripCollectie-" + externalId);
+        final long collectionId = jSoupHelper.getInt(document, "stripCollectie-" + externalId);
         if (collectionId > 0) {
             try {
                 //noinspection ConstantConditions
-                mCollectionFormParser.parse(document, externalId, collectionId, bookData);
+                collectionFormParser.parse(document, externalId, collectionId, bookData);
 
             } catch (@NonNull final IOException | StorageException e) {
                 if (BuildConfig.DEBUG  /* always */) {

@@ -26,18 +26,15 @@ import androidx.preference.PreferenceScreen;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleDataStore;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
@@ -57,6 +54,8 @@ public class AuthorBooklistGroup
     public static final String PK_PRIMARY_TYPE =
             "style.booklist.group.authors.primary.type";
 
+    public static final boolean DEFAULT_SHOW_BOOKS_UNDER_EACH = false;
+
     /** See {@link #setPreferencesVisible(PreferenceScreen, boolean)} */
     private static final String PSK_STYLE_AUTHOR = "psk_style_author";
 
@@ -74,19 +73,18 @@ public class AuthorBooklistGroup
     @NonNull
     private final DomainExpression sortingDomainExpression;
     /** The primary author type the user prefers. */
-    private int primaryAuthorType;
+    private int primaryAuthorType = Author.TYPE_UNKNOWN;
 
     /**
      * Constructor.
      *
-     * @param style        Style reference.
+     * @param style Style reference.
      */
-    AuthorBooklistGroup(@NonNull final ListStyle style) {
+    AuthorBooklistGroup(@NonNull final Style style) {
         super(AUTHOR, style);
         sortingDomainExpression = createSortingDomainExpression(style);
 
-        underEach = getDefaultShowBooksUnderEach();
-        primaryAuthorType = getDefaultPrimaryType();
+        underEach = DEFAULT_SHOW_BOOKS_UNDER_EACH;
     }
 
     /**
@@ -95,7 +93,7 @@ public class AuthorBooklistGroup
      * @param style        Style reference.
      * @param group        to copy from
      */
-    AuthorBooklistGroup(@NonNull final ListStyle style,
+    AuthorBooklistGroup(@NonNull final Style style,
                         @NonNull final AuthorBooklistGroup group) {
         super(style, group);
         sortingDomainExpression = createSortingDomainExpression(style);
@@ -103,27 +101,6 @@ public class AuthorBooklistGroup
         primaryAuthorType = group.primaryAuthorType;
     }
 
-
-    /**
-     * Get the global default for this preference.
-     *
-     * @return {@code true} if we want to show a book under each of its Authors.
-     */
-    public static boolean getDefaultShowBooksUnderEach() {
-        return ServiceLocator.getGlobalPreferences().getBoolean(PK_SHOW_BOOKS_UNDER_EACH, false);
-    }
-
-    /**
-     * Get the global default for this preference.
-     *
-     * @return the type of author we consider the primary author
-     */
-    public static int getDefaultPrimaryType() {
-        final Set<String> stringSet = ServiceLocator.getGlobalPreferences()
-                                                    .getStringSet(PK_PRIMARY_TYPE, null);
-        return StyleDataStore.convert(stringSet, Author.TYPE_UNKNOWN);
-
-    }
 
     @Override
     @NonNull
@@ -148,13 +125,13 @@ public class AuthorBooklistGroup
 
     @Override
     @NonNull
-    protected DomainExpression createDisplayDomainExpression(@NonNull final ListStyle style) {
+    protected DomainExpression createDisplayDomainExpression(@NonNull final Style style) {
         // Not sorted; sort as defined in #createSortingDomainExpression
         return AuthorDaoImpl.createDisplayDomainExpression(style.isShowAuthorByGivenName());
     }
 
     @NonNull
-    private DomainExpression createSortingDomainExpression(@NonNull final ListStyle style) {
+    private DomainExpression createSortingDomainExpression(@NonNull final Style style) {
         // Sorting depends on user preference
         return new DomainExpression(DOM_SORTING,
                                     AuthorDaoImpl.getSortAuthor(style.isSortAuthorByGivenName()),

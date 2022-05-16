@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.fields;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.text.Editable;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
@@ -101,9 +100,8 @@ public class EditTextField<T, V extends EditText>
     }
 
     @Override
-    public void setParentView(@NonNull final View parent,
-                              @NonNull final SharedPreferences global) {
-        super.setParentView(parent, global);
+    public void setParentView(@NonNull final View parent) {
+        super.setParentView(parent);
         requireView().addTextChangedListener(this);
     }
 

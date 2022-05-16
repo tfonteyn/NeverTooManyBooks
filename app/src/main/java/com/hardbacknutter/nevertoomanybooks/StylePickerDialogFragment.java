@@ -37,9 +37,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.widgets.RadioGroupRecyclerAdapter;
 
@@ -48,23 +49,25 @@ public class StylePickerDialogFragment
 
     /** Log tag. */
     public static final String TAG = "StylePickerDialogFrag";
+
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
     private static final String BKEY_SHOW_ALL_STYLES = TAG + ":showAllStyles";
+
     /** The list of styles to display. */
-    private final List<String> mStyleUuids = new ArrayList<>();
-    private final List<String> mStyleLabels = new ArrayList<>();
+    private final List<String> styleUuids = new ArrayList<>();
+    private final List<String> styleLabels = new ArrayList<>();
 
     /** FragmentResultListener request key to use for our response. */
-    private String mRequestKey;
+    private String requestKey;
     /** Show all styles, or only the preferred styles. */
-    private boolean mShowAllStyles;
+    private boolean showAllStyles;
     /** Currently selected style. */
     @Nullable
-    private String mCurrentStyleUuid;
+    private String currentStyleUuid;
     /** All styles as loaded from the database. */
-    private List<ListStyle> mStyleList;
+    private List<Style> styleList;
     /** Adapter for the selection. */
-    private RadioGroupRecyclerAdapter<String, String> mAdapter;
+    private RadioGroupRecyclerAdapter<String, String> adapter;
 
     /**
      * No-arg constructor for OS use.
@@ -81,11 +84,11 @@ public class StylePickerDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                             BKEY_REQUEST_KEY);
-        mCurrentStyleUuid = Objects.requireNonNull(args.getString(ListStyle.BKEY_UUID),
-                                                   ListStyle.BKEY_UUID);
-        mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
+        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
+                                            BKEY_REQUEST_KEY);
+        currentStyleUuid = SanityCheck.requireValue(args.getString(Style.BKEY_UUID),
+                                                    Style.BKEY_UUID);
+        showAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
     }
 
     @Override
@@ -98,10 +101,10 @@ public class StylePickerDialogFragment
         loadStyles();
 
         //noinspection ConstantConditions
-        mAdapter = new RadioGroupRecyclerAdapter<>(getContext(), mStyleUuids, mStyleLabels,
-                                                   mCurrentStyleUuid,
-                                                   uuid -> mCurrentStyleUuid = uuid);
-        stylesListView.setAdapter(mAdapter);
+        adapter = new RadioGroupRecyclerAdapter<>(getContext(), styleUuids, styleLabels,
+                                                  currentStyleUuid,
+                                                  uuid -> currentStyleUuid = uuid);
+        stylesListView.setAdapter(adapter);
     }
 
     @Override
@@ -117,8 +120,8 @@ public class StylePickerDialogFragment
             return true;
 
         } else if (itemId == R.id.MENU_STYLE_LIST_TOGGLE) {
-            mShowAllStyles = !mShowAllStyles;
-            if (mShowAllStyles) {
+            showAllStyles = !showAllStyles;
+            if (showAllStyles) {
                 item.setTitle(R.string.btn_less_ellipsis);
                 item.setIcon(R.drawable.ic_baseline_unfold_less_24);
             } else {
@@ -126,7 +129,7 @@ public class StylePickerDialogFragment
                 item.setIcon(R.drawable.ic_baseline_unfold_more_24);
             }
             loadStyles();
-            mAdapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged();
             return true;
         }
 
@@ -137,12 +140,12 @@ public class StylePickerDialogFragment
      * Send the selected style id back. Silently returns if there was nothing selected.
      */
     private void onStyleSelected() {
-        mCurrentStyleUuid = mAdapter.getSelection();
-        if (mCurrentStyleUuid == null) {
+        currentStyleUuid = adapter.getSelection();
+        if (currentStyleUuid == null) {
             return;
         }
 
-        Launcher.setResult(this, mRequestKey, mCurrentStyleUuid);
+        Launcher.setResult(this, requestKey, currentStyleUuid);
 
         dismiss();
     }
@@ -151,18 +154,17 @@ public class StylePickerDialogFragment
      * Edit the selected style. Silently returns if there was nothing selected.
      */
     private void onEditStyle() {
-        mCurrentStyleUuid = mAdapter.getSelection();
-        if (mCurrentStyleUuid == null) {
+        currentStyleUuid = adapter.getSelection();
+        if (currentStyleUuid == null) {
             return;
         }
         dismiss();
 
-        //noinspection OptionalGetWithoutIsPresent
-        final ListStyle selectedStyle =
-                mStyleList.stream()
-                          .filter(style -> mCurrentStyleUuid.equalsIgnoreCase(style.getUuid()))
-                          .findFirst()
-                          .get();
+        final Style selectedStyle =
+                styleList.stream()
+                         .filter(style -> currentStyleUuid.equalsIgnoreCase(style.getUuid()))
+                         .findFirst()
+                         .orElseThrow(IllegalStateException::new);
 
         // use the activity so we get the results there.
         //noinspection ConstantConditions
@@ -175,36 +177,36 @@ public class StylePickerDialogFragment
     private void loadStyles() {
         final Context context = getContext();
 
-        final Styles styles = ServiceLocator.getInstance().getStyles();
+        final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
 
         //noinspection ConstantConditions
-        mStyleList = styles.getStyles(context, mShowAllStyles);
-        if (!mShowAllStyles && mCurrentStyleUuid != null) {
+        styleList = stylesHelper.getStyles(context, showAllStyles);
+        if (!showAllStyles && currentStyleUuid != null) {
             // make sure the currently selected style is in the list
-            if (mStyleList
+            if (styleList
                     .stream()
-                    .noneMatch(style -> mCurrentStyleUuid.equalsIgnoreCase(style.getUuid()))) {
+                    .noneMatch(style -> currentStyleUuid.equalsIgnoreCase(style.getUuid()))) {
 
-                final ListStyle style = styles.getStyle(context, mCurrentStyleUuid);
+                final Style style = stylesHelper.getStyle(context, currentStyleUuid);
                 if (style != null) {
-                    mStyleList.add(style);
+                    styleList.add(style);
                 }
             }
         }
 
-        mStyleUuids.clear();
-        mStyleLabels.clear();
-        mStyleList.forEach(style -> {
-            mStyleUuids.add(style.getUuid());
-            mStyleLabels.add(style.getLabel(context));
+        styleUuids.clear();
+        styleLabels.clear();
+        styleList.forEach(style -> {
+            styleUuids.add(style.getUuid());
+            styleLabels.add(style.getLabel(context));
         });
     }
 
     public abstract static class Launcher
             implements FragmentResultListener {
 
-        private String mRequestKey;
-        private FragmentManager mFragmentManager;
+        private String requestKey;
+        private FragmentManager fragmentManager;
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
@@ -217,9 +219,9 @@ public class StylePickerDialogFragment
         public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
                                               @NonNull final String requestKey,
                                               @NonNull final LifecycleOwner lifecycleOwner) {
-            mFragmentManager = fragmentManager;
-            mRequestKey = requestKey;
-            mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
+            this.fragmentManager = fragmentManager;
+            this.requestKey = requestKey;
+            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
         }
 
         /**
@@ -228,17 +230,17 @@ public class StylePickerDialogFragment
          * @param currentStyle the currently active style
          * @param all          if {@code true} show all styles, otherwise only the preferred ones.
          */
-        public void launch(@NonNull final ListStyle currentStyle,
+        public void launch(@NonNull final Style currentStyle,
                            final boolean all) {
 
             final Bundle args = new Bundle(3);
-            args.putString(BKEY_REQUEST_KEY, mRequestKey);
-            args.putString(ListStyle.BKEY_UUID, currentStyle.getUuid());
+            args.putString(BKEY_REQUEST_KEY, requestKey);
+            args.putString(Style.BKEY_UUID, currentStyle.getUuid());
             args.putBoolean(BKEY_SHOW_ALL_STYLES, all);
 
             final DialogFragment frag = new StylePickerDialogFragment();
             frag.setArguments(args);
-            frag.show(mFragmentManager, TAG);
+            frag.show(fragmentManager, TAG);
         }
 
         @Override

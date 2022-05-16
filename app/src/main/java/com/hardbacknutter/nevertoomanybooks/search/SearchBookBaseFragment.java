@@ -60,10 +60,10 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 public abstract class SearchBookBaseFragment
         extends BaseFragment {
 
-    private final ActivityResultLauncher<Bundle> mEditBookFoundLauncher = registerForActivityResult(
+    private final ActivityResultLauncher<Bundle> editBookFoundLauncher = registerForActivityResult(
             new EditBookFromBundleContract(), this::onBookEditingDone);
     /** Set the hosting Activity result, and close it. */
-    private final OnBackPressedCallback mOnBackPressedCallback =
+    private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
@@ -75,19 +75,19 @@ public abstract class SearchBookBaseFragment
                 }
             };
 
-    SearchCoordinator mCoordinator;
+    SearchCoordinator coordinator;
 
-    private final ActivityResultLauncher<ArrayList<Site>> mEditSitesLauncher =
+    private final ActivityResultLauncher<ArrayList<Site>> editSitesLauncher =
             registerForActivityResult(new SearchSitesSingleListContract(),
                                       sites -> {
                                           if (sites != null) {
                                               // no changes committed, temporary usage only
-                                              mCoordinator.setSiteList(sites);
+                                              coordinator.setSiteList(sites);
                                           }
                                           explainSitesSupport(sites);
                                       });
     @Nullable
-    private ProgressDelegate mProgressDelegate;
+    private ProgressDelegate progressDelegate;
 
     protected void explainSitesSupport(@Nullable final ArrayList<Site> sites) {
         // override as needed, e.g. SearchBookByTextFragment
@@ -108,9 +108,9 @@ public abstract class SearchBookBaseFragment
         super.onCreate(savedInstanceState);
 
         //noinspection ConstantConditions
-        mCoordinator = new ViewModelProvider(getActivity()).get(SearchCoordinator.class);
+        coordinator = new ViewModelProvider(getActivity()).get(SearchCoordinator.class);
         //noinspection ConstantConditions
-        mCoordinator.init(getContext(), requireArguments());
+        coordinator.init(getContext(), requireArguments());
     }
 
     @Override
@@ -120,12 +120,12 @@ public abstract class SearchBookBaseFragment
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
-        mCoordinator.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+        coordinator.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         // Handle both Success and Failed searches
-        mCoordinator.onSearchFinished().observe(getViewLifecycleOwner(), this::onSearchFinished);
-        mCoordinator.onSearchCancelled().observe(getViewLifecycleOwner(), message -> {
+        coordinator.onSearchFinished().observe(getViewLifecycleOwner(), this::onSearchFinished);
+        coordinator.onSearchCancelled().observe(getViewLifecycleOwner(), message -> {
             closeProgressDialog();
             onSearchCancelled();
         });
@@ -180,23 +180,23 @@ public abstract class SearchBookBaseFragment
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.getData().ifPresent(data -> {
-            if (mProgressDelegate == null) {
+            if (progressDelegate == null) {
                 //noinspection ConstantConditions
-                mProgressDelegate = new ProgressDelegate(getProgressFrame())
+                progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.progress_msg_searching)
                         .setIndeterminate(true)
-                        .setOnCancelListener(v -> mCoordinator.cancelTask(data.taskId))
+                        .setOnCancelListener(v -> coordinator.cancelTask(data.taskId))
                         .show(() -> getActivity().getWindow());
             }
-            mProgressDelegate.onProgress(data);
+            progressDelegate.onProgress(data);
         });
     }
 
     private void closeProgressDialog() {
-        if (mProgressDelegate != null) {
+        if (progressDelegate != null) {
             //noinspection ConstantConditions
-            mProgressDelegate.dismiss(getActivity().getWindow());
-            mProgressDelegate = null;
+            progressDelegate.dismiss(getActivity().getWindow());
+            progressDelegate = null;
         }
     }
 
@@ -209,7 +209,7 @@ public abstract class SearchBookBaseFragment
      */
     @CallSuper
     void onClearSearchCriteria() {
-        mCoordinator.clearSearchCriteria();
+        coordinator.clearSearchCriteria();
     }
 
     /**
@@ -220,7 +220,7 @@ public abstract class SearchBookBaseFragment
      */
     final void startSearch() {
         // check if we have an active search, if so, quit silently.
-        if (mCoordinator.isSearchActive()) {
+        if (coordinator.isSearchActive()) {
             return;
         }
 
@@ -263,7 +263,7 @@ public abstract class SearchBookBaseFragment
      * @return {@code true} if a search was started
      */
     boolean onSearch() {
-        return mCoordinator.search();
+        return coordinator.search();
     }
 
     /**
@@ -273,7 +273,7 @@ public abstract class SearchBookBaseFragment
      * @param bookData Bundle with the results
      */
     void onSearchResults(@NonNull final Bundle bookData) {
-        mEditBookFoundLauncher.launch(bookData);
+        editBookFoundLauncher.launch(bookData);
         onClearSearchCriteria();
     }
 
@@ -306,7 +306,7 @@ public abstract class SearchBookBaseFragment
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             if (menuItem.getItemId() == R.id.MENU_PREFS_SEARCH_SITES) {
-                mEditSitesLauncher.launch(mCoordinator.getSiteList());
+                editSitesLauncher.launch(coordinator.getSiteList());
                 return true;
             }
             return false;

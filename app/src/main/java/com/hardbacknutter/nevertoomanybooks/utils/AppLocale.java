@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
@@ -104,26 +103,22 @@ public interface AppLocale {
     /**
      * Check if the passed localeSpec is different from the user preferred Locale.
      *
-     * @param global     Global preferences
      * @param localeSpec to test
      *
      * @return {@code true} if different
      */
-    default boolean isChanged(@NonNull final SharedPreferences global,
-                              @Nullable final String localeSpec) {
-        return localeSpec == null || !localeSpec.equals(getPersistedLocaleSpec(global));
+    default boolean isChanged(@Nullable final String localeSpec) {
+        return localeSpec == null || !localeSpec.equals(getPersistedLocaleSpec());
     }
 
     /**
      * Get the user-preferred Locale as stored in the preferences.
      *
-     * @param global Global preferences
-     *
      * @return a Locale specification as used for Android resources;
-     * or {@link #SYSTEM_LANGUAGE} to use the system settings
+     *         or {@link #SYSTEM_LANGUAGE} to use the system settings
      */
     @NonNull
-    String getPersistedLocaleSpec(@NonNull SharedPreferences global);
+    String getPersistedLocaleSpec();
 
     /**
      * Add the specified listener. There is no protection against adding twice.

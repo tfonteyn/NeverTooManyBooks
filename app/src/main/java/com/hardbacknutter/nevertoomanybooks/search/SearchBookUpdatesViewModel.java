@@ -194,7 +194,7 @@ public class SearchBookUpdatesViewModel
         for (final SearchEngineConfig seConfig : SearchEngineRegistry.getInstance().getAll()) {
             final Domain domain = seConfig.getExternalIdDomain();
             if (domain != null) {
-                builder.add(seConfig.getLabelId(), domain.getName(), SyncAction.Overwrite);
+                builder.add(seConfig.getLabelResId(), domain.getName(), SyncAction.Overwrite);
             }
         }
 

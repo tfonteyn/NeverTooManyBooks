@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -103,11 +102,11 @@ public class EditBookTocFragment
     private static final int POS_NEW_ENTRY = -1;
 
     /** If the list changes, the book is dirty. */
-    private final SimpleAdapterDataObserver mAdapterDataObserver =
+    private final SimpleAdapterDataObserver adapterDataObserver =
             new SimpleAdapterDataObserver() {
                 @Override
                 public void onChanged() {
-                    mVm.getBook().setStage(EntityStage.Stage.Dirty);
+                    vm.getBook().setStage(EntityStage.Stage.Dirty);
                 }
             };
     /**
@@ -115,18 +114,18 @@ public class EditBookTocFragment
      * We'll try them one by one if the user asks for a re-try.
      */
     @NonNull
-    private final List<Edition> mIsfdbEditions = new ArrayList<>();
+    private final List<Edition> isfdbEditions = new ArrayList<>();
     @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider mToolbarMenuProvider;
+    private MenuProvider toolbarMenuProvider;
     /** the rows. A reference to the parcelled list in the Book. */
-    private List<TocEntry> mList;
+    private List<TocEntry> tocEntryList;
     /** View Binding. */
-    private FragmentEditBookTocBinding mVb;
+    private FragmentEditBookTocBinding vb;
     /** The adapter for the list. */
-    private TocListEditAdapter mListAdapter;
+    private TocListEditAdapter adapter;
 
     /** Listen for the results of the entry edit-dialog. */
-    private final EditTocEntryDialogFragment.Launcher mEditTocEntryLauncher =
+    private final EditTocEntryDialogFragment.Launcher editTocEntryLauncher =
             new EditTocEntryDialogFragment.Launcher() {
                 @Override
                 public void onResult(@NonNull final TocEntry tocEntry,
@@ -136,11 +135,11 @@ public class EditBookTocFragment
             };
 
     /** Drag and drop support for the list view. */
-    private ItemTouchHelper mItemTouchHelper;
+    private ItemTouchHelper itemTouchHelper;
 
     /** Handles the ISFDB lookup tasks. */
-    private EditBookTocViewModel mEditTocVm;
-    private final ConfirmTocDialogFragment.Launcher mConfirmTocResultsLauncher =
+    private EditBookTocViewModel editTocVm;
+    private final ConfirmTocDialogFragment.Launcher confirmTocResultsLauncher =
             new ConfirmTocDialogFragment.Launcher() {
                 @Override
                 public void onResult(@NonNull final Book.ContentType contentType,
@@ -154,7 +153,7 @@ public class EditBookTocFragment
                 }
             };
 
-    private ExtPopupMenu mContextMenu;
+    private ExtPopupMenu contextMenu;
 
     @NonNull
     @Override
@@ -166,12 +165,12 @@ public class EditBookTocFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mEditTocVm = new ViewModelProvider(this).get(EditBookTocViewModel.class);
+        editTocVm = new ViewModelProvider(this).get(EditBookTocViewModel.class);
 
         final FragmentManager fm = getChildFragmentManager();
 
-        mEditTocEntryLauncher.registerForFragmentResult(fm, RK_EDIT_TOC, this);
-        mConfirmTocResultsLauncher.registerForFragmentResult(fm, RK_CONFIRM_TOC, this);
+        editTocEntryLauncher.registerForFragmentResult(fm, RK_EDIT_TOC, this);
+        confirmTocResultsLauncher.registerForFragmentResult(fm, RK_CONFIRM_TOC, this);
     }
 
     @Override
@@ -179,8 +178,8 @@ public class EditBookTocFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentEditBookTocBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentEditBookTocBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @Override
@@ -193,56 +192,56 @@ public class EditBookTocFragment
 
         //noinspection ConstantConditions
         fab.setOnClickListener(v -> editEntry(
-                new TocEntry(mVm.getPrimaryAuthor(getContext()), ""), POS_NEW_ENTRY));
+                new TocEntry(vm.getPrimaryAuthor(getContext()), ""), POS_NEW_ENTRY));
 
         final Toolbar toolbar = getToolbar();
-        mToolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner(),
+        toolbarMenuProvider = new ToolbarMenuProvider();
+        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner(),
                                 Lifecycle.State.RESUMED);
 
         final Context context = getContext();
         //noinspection ConstantConditions
-        mVm.initFields(context, FragmentId.Toc, FieldGroup.Toc);
+        vm.initFields(context, FragmentId.Toc, FieldGroup.Toc);
 
-        mEditTocVm.onIsfdbEditions().observe(getViewLifecycleOwner(), this::onIsfdbEditions);
-        mEditTocVm.onIsfdbBook().observe(getViewLifecycleOwner(), this::onIsfdbBook);
+        editTocVm.onIsfdbEditions().observe(getViewLifecycleOwner(), this::onIsfdbEditions);
+        editTocVm.onIsfdbBook().observe(getViewLifecycleOwner(), this::onIsfdbBook);
 
-        mEditTocVm.onIsfdbEditionsCancelled().observe(getViewLifecycleOwner(), message ->
+        editTocVm.onIsfdbEditionsCancelled().observe(getViewLifecycleOwner(), message ->
                 message.getData().ifPresent(data -> Snackbar
-                        .make(mVb.getRoot(), R.string.cancelled,
+                        .make(vb.getRoot(), R.string.cancelled,
                               Snackbar.LENGTH_LONG).show()));
-        mEditTocVm.onIsfdbEditionsFailure().observe(getViewLifecycleOwner(), message ->
+        editTocVm.onIsfdbEditionsFailure().observe(getViewLifecycleOwner(), message ->
                 message.getData().ifPresent(data -> Snackbar
-                        .make(mVb.getRoot(), R.string.warning_no_editions,
-                              Snackbar.LENGTH_LONG).show()));
-
-        mEditTocVm.onIsfdbBookCancelled().observe(getViewLifecycleOwner(), message ->
-                message.getData().ifPresent(data -> Snackbar
-                        .make(mVb.getRoot(), R.string.cancelled,
-                              Snackbar.LENGTH_LONG).show()));
-        mEditTocVm.onIsfdbBookFailure().observe(getViewLifecycleOwner(), message ->
-                message.getData().ifPresent(data -> Snackbar
-                        .make(mVb.getRoot(), R.string.warning_book_not_found,
+                        .make(vb.getRoot(), R.string.warning_no_editions,
                               Snackbar.LENGTH_LONG).show()));
 
-        mVb.tocList.addItemDecoration(
+        editTocVm.onIsfdbBookCancelled().observe(getViewLifecycleOwner(), message ->
+                message.getData().ifPresent(data -> Snackbar
+                        .make(vb.getRoot(), R.string.cancelled,
+                              Snackbar.LENGTH_LONG).show()));
+        editTocVm.onIsfdbBookFailure().observe(getViewLifecycleOwner(), message ->
+                message.getData().ifPresent(data -> Snackbar
+                        .make(vb.getRoot(), R.string.warning_book_not_found,
+                              Snackbar.LENGTH_LONG).show()));
+
+        vb.tocList.addItemDecoration(
                 new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
-        mVb.tocList.setHasFixedSize(true);
+        vb.tocList.setHasFixedSize(true);
 
-        mList = mVm.getBook().getToc();
-        mListAdapter = new TocListEditAdapter(context, mList,
-                                              vh -> mItemTouchHelper.startDrag(vh));
-        mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
-        mVb.tocList.setAdapter(mListAdapter);
+        tocEntryList = vm.getBook().getToc();
+        adapter = new TocListEditAdapter(context, tocEntryList,
+                                         vh -> itemTouchHelper.startDrag(vh));
+        adapter.registerAdapterDataObserver(adapterDataObserver);
+        vb.tocList.setAdapter(adapter);
 
         final SimpleItemTouchHelperCallback sitHelperCallback =
-                new SimpleItemTouchHelperCallback(mListAdapter);
-        mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
-        mItemTouchHelper.attachToRecyclerView(mVb.tocList);
+                new SimpleItemTouchHelperCallback(adapter);
+        itemTouchHelper = new ItemTouchHelper(sitHelperCallback);
+        itemTouchHelper.attachToRecyclerView(vb.tocList);
 
-        mContextMenu = new ExtPopupMenu(context);
+        contextMenu = new ExtPopupMenu(context);
         final Resources res = getResources();
-        final Menu menu = mContextMenu.getMenu();
+        final Menu menu = contextMenu.getMenu();
         menu.add(Menu.NONE, R.id.MENU_EDIT, res.getInteger(R.integer.MENU_ORDER_EDIT),
                  R.string.action_edit_ellipsis)
             .setIcon(R.drawable.ic_baseline_edit_24);
@@ -256,43 +255,42 @@ public class EditBookTocFragment
         if (position == POS_NEW_ENTRY) {
             // see if it already exists
             //noinspection ConstantConditions
-            mVm.fixId(getContext(), tocEntry);
+            vm.fixId(getContext(), tocEntry);
             // and check it's not already in the list.
-            if (mList.contains(tocEntry)) {
-                Snackbar.make(mVb.getRoot(), R.string.warning_already_in_list,
+            if (tocEntryList.contains(tocEntry)) {
+                Snackbar.make(vb.getRoot(), R.string.warning_already_in_list,
                               Snackbar.LENGTH_LONG).show();
             } else {
                 // It's a new entry, add it to the end and scroll it into view
-                mList.add(tocEntry);
-                mListAdapter.notifyItemInserted(mList.size() - 1);
-                mVb.tocList.scrollToPosition(mListAdapter.getItemCount() - 1);
+                tocEntryList.add(tocEntry);
+                adapter.notifyItemInserted(tocEntryList.size() - 1);
+                vb.tocList.scrollToPosition(adapter.getItemCount() - 1);
             }
 
         } else {
             // It's an existing entry in the list, find it and update with the new data
-            final TocEntry original = mList.get(position);
+            final TocEntry original = tocEntryList.get(position);
             original.copyFrom(tocEntry);
-            mListAdapter.notifyItemChanged(position);
-            mVb.tocList.scrollToPosition(position);
+            adapter.notifyItemChanged(position);
+            vb.tocList.scrollToPosition(position);
         }
     }
 
     @Override
-    void onPopulateViews(@NonNull final SharedPreferences global,
-                         @NonNull final List<Field<?, ? extends View>> fields,
+    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
-        super.onPopulateViews(global, fields, book);
+        super.onPopulateViews(fields, book);
 
         getFab().setVisibility(View.VISIBLE);
 
         //noinspection ConstantConditions
-        fields.forEach(field -> field.setVisibility(getView(), global, false, false));
+        fields.forEach(field -> field.setVisibility(getView(), false, false));
     }
 
     @Override
     public void onSaveFields(@NonNull final Book book) {
         super.onSaveFields(book);
-        book.setToc(mList);
+        book.setToc(tocEntryList);
     }
 
     /**
@@ -308,7 +306,7 @@ public class EditBookTocFragment
         final int itemId = menuItem.getItemId();
 
         if (itemId == R.id.MENU_EDIT) {
-            editEntry(mList.get(position), position);
+            editEntry(tocEntryList.get(position), position);
             return true;
 
         } else if (itemId == R.id.MENU_DELETE) {
@@ -324,11 +322,11 @@ public class EditBookTocFragment
      * @param position the position of the item
      */
     private void deleteEntry(final int position) {
-        final TocEntry tocEntry = mList.get(position);
+        final TocEntry tocEntry = tocEntryList.get(position);
         if (tocEntry.getId() == 0) {
             // It's a newly added entry, not saved; just remove it from the list.
-            mList.remove(tocEntry);
-            mListAdapter.notifyItemRemoved(position);
+            tocEntryList.remove(tocEntry);
+            adapter.notifyItemRemoved(position);
 
         } else {
             final Context context = getContext();
@@ -346,8 +344,8 @@ public class EditBookTocFragment
                         .setPositiveButton(R.string.action_delete, (d, w) -> {
                             // We don't actually delete anything here as the user must be
                             // able to cancel the edit. So just remove it from the list.
-                            mList.remove(tocEntry);
-                            mListAdapter.notifyItemRemoved(position);
+                            tocEntryList.remove(tocEntry);
+                            adapter.notifyItemRemoved(position);
                         })
                         .create()
                         .show();
@@ -369,14 +367,14 @@ public class EditBookTocFragment
                         .setNeutralButton(R.string.btn_this_book, (d, w) -> {
                             // We don't actually delete anything here as the user must be
                             // able to cancel the edit. So just remove it from the list.
-                            mList.remove(tocEntry);
-                            mListAdapter.notifyItemRemoved(position);
+                            tocEntryList.remove(tocEntry);
+                            adapter.notifyItemRemoved(position);
                         })
                         .setPositiveButton(R.string.btn_all_books, (d, w) -> {
                             // This is a hard delete and done immediately.
-                            if (mVm.deleteTocEntry(context, tocEntry)) {
-                                mList.remove(tocEntry);
-                                mListAdapter.notifyItemRemoved(position);
+                            if (vm.deleteTocEntry(context, tocEntry)) {
+                                tocEntryList.remove(tocEntry);
+                                adapter.notifyItemRemoved(position);
                             }
                         })
                         .create()
@@ -393,10 +391,10 @@ public class EditBookTocFragment
      */
     private void editEntry(@NonNull final TocEntry tocEntry,
                            final int position) {
-        final Field<Long, View> typeField = mVm.requireField(R.id.book_type);
+        final Field<Long, View> typeField = vm.requireField(R.id.book_type);
         //noinspection ConstantConditions
         final boolean multipleAuthors = typeField.getValue() == Book.ContentType.Anthology.value;
-        mEditTocEntryLauncher.launch(mVm.getBook(), position, tocEntry, multipleAuthors);
+        editTocEntryLauncher.launch(vm.getBook(), position, tocEntry, multipleAuthors);
     }
 
     /**
@@ -408,9 +406,9 @@ public class EditBookTocFragment
         message.getData().ifPresent(data -> {
             final List<Edition> result = data.getResult();
 
-            mIsfdbEditions.clear();
+            isfdbEditions.clear();
             if (result != null) {
-                mIsfdbEditions.addAll(result);
+                isfdbEditions.addAll(result);
             }
             searchIsfdb();
         });
@@ -421,12 +419,12 @@ public class EditBookTocFragment
             final Bundle result = data.getResult();
 
             if (result == null) {
-                Snackbar.make(mVb.getRoot(), R.string.warning_book_not_found,
+                Snackbar.make(vb.getRoot(), R.string.warning_book_not_found,
                               Snackbar.LENGTH_LONG).show();
                 return;
             }
 
-            final Book book = mVm.getBook();
+            final Book book = vm.getBook();
 
             // update the book with Series information that was gathered from the TOC
             final List<Series> series = result.getParcelableArrayList(Book.BKEY_SERIES_LIST);
@@ -451,7 +449,7 @@ public class EditBookTocFragment
 
             // finally the TOC itself:  display it for the user to approve
             // If there are more editions, the neutral button will allow to fetch the next one.
-            mConfirmTocResultsLauncher.launch(result, !mIsfdbEditions.isEmpty());
+            confirmTocResultsLauncher.launch(result, !isfdbEditions.isEmpty());
         });
     }
 
@@ -459,25 +457,25 @@ public class EditBookTocFragment
     private void onIsfdbDataConfirmed(@NonNull final Book.ContentType contentType,
                                       @NonNull final Collection<TocEntry> tocEntries) {
         if (contentType != Book.ContentType.Book) {
-            mVm.requireField(R.id.book_type).setValue(contentType);
+            vm.requireField(R.id.book_type).setValue(contentType);
         }
 
         // append the new data
         // can create duplicates if the user mixes manual input with automatic (or 2 x automatic...)
         // They will get weeded out when saved to the DAO
-        mList.addAll(tocEntries);
-        mListAdapter.notifyDataSetChanged();
+        tocEntryList.addAll(tocEntries);
+        adapter.notifyDataSetChanged();
     }
 
     private void searchIsfdb() {
-        if (mIsfdbEditions.isEmpty()) {
-            Snackbar.make(mVb.getRoot(), R.string.warning_no_editions,
+        if (isfdbEditions.isEmpty()) {
+            Snackbar.make(vb.getRoot(), R.string.warning_no_editions,
                           Snackbar.LENGTH_LONG).show();
         } else {
-            Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
+            Snackbar.make(vb.getRoot(), R.string.progress_msg_connecting,
                           Snackbar.LENGTH_LONG).show();
-            mEditTocVm.searchEdition(mIsfdbEditions.get(0));
-            mIsfdbEditions.remove(0);
+            editTocVm.searchEdition(isfdbEditions.get(0));
+            isfdbEditions.remove(0);
         }
     }
 
@@ -565,8 +563,8 @@ public class EditBookTocFragment
             private static final String SEARCH_NEXT_EDITION = "searchNextEdition";
             private static final String TOC_BIT_MASK = "tocBitMask";
             private static final String TOC_LIST = "tocEntries";
-            private String mRequestKey;
-            private FragmentManager mFragmentManager;
+            private String requestKey;
+            private FragmentManager fragmentManager;
 
             @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
             static void setResult(@NonNull final Fragment fragment,
@@ -596,20 +594,21 @@ public class EditBookTocFragment
             public void launch(@NonNull final Bundle bookData,
                                final boolean hasOtherEditions) {
 
-                bookData.putString(BKEY_REQUEST_KEY, mRequestKey);
+                bookData.putString(BKEY_REQUEST_KEY, requestKey);
                 bookData.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
 
                 final DialogFragment fragment = new ConfirmTocDialogFragment();
                 fragment.setArguments(bookData);
-                fragment.show(mFragmentManager, TAG);
+                fragment.show(fragmentManager, TAG);
             }
 
             public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
                                                   @NonNull final String requestKey,
                                                   @NonNull final LifecycleOwner lifecycleOwner) {
-                mFragmentManager = fragmentManager;
-                mRequestKey = requestKey;
-                mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
+                this.fragmentManager = fragmentManager;
+                this.requestKey = requestKey;
+                this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner,
+                                                               this);
             }
 
             @Override
@@ -691,11 +690,11 @@ public class EditBookTocFragment
             holder.rowDetailsView.setOnClickListener(
                     v -> {
                         final int position = holder.getBindingAdapterPosition();
-                        editEntry(mList.get(position), position);
+                        editEntry(tocEntryList.get(position), position);
                     });
 
             holder.rowDetailsView.setOnLongClickListener(v -> {
-                mContextMenu.showAsDropDown(v, menuItem ->
+                contextMenu.showAsDropDown(v, menuItem ->
                         onMenuItemSelected(menuItem, holder.getBindingAdapterPosition()));
                 return true;
             });
@@ -745,12 +744,12 @@ public class EditBookTocFragment
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
 
             if (menuItem.getItemId() == R.id.MENU_POPULATE_TOC_FROM_ISFDB) {
-                final Book book = mVm.getBook();
+                final Book book = vm.getBook();
                 final long isfdbId = book.getLong(DBKey.SID_ISFDB);
                 if (isfdbId != 0) {
-                    Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
+                    Snackbar.make(vb.getRoot(), R.string.progress_msg_connecting,
                                   Snackbar.LENGTH_LONG).show();
-                    mEditTocVm.searchBook(isfdbId);
+                    editTocVm.searchBook(isfdbId);
                     return true;
                 }
 
@@ -758,13 +757,13 @@ public class EditBookTocFragment
                 if (!isbnStr.isEmpty()) {
                     final ISBN isbn = ISBN.createISBN(isbnStr);
                     if (isbn.isValid(true)) {
-                        Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
+                        Snackbar.make(vb.getRoot(), R.string.progress_msg_connecting,
                                       Snackbar.LENGTH_LONG).show();
-                        mEditTocVm.searchByIsbn(isbn);
+                        editTocVm.searchByIsbn(isbn);
                         return true;
                     }
                 }
-                Snackbar.make(mVb.getRoot(), R.string.warning_requires_isbn,
+                Snackbar.make(vb.getRoot(), R.string.warning_requires_isbn,
                               Snackbar.LENGTH_LONG).show();
                 return true;
             }

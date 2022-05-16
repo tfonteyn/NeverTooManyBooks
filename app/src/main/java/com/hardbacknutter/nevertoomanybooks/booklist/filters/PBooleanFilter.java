@@ -27,7 +27,6 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -60,21 +59,20 @@ public class PBooleanFilter
     private Boolean value;
 
     PBooleanFilter(@NonNull final String name,
-                   @StringRes final int labelId,
+                   @StringRes final int labelResId,
                    @ArrayRes final int acEntries,
                    @NonNull final TableDefinition table,
                    @NonNull final Domain domain) {
-        labelResId = labelId;
-        this.acEntries = acEntries;
-        this.domain = domain;
-        this.table = table;
         this.name = name;
+        this.labelResId = labelResId;
+        this.acEntries = acEntries;
+        this.table = table;
+        this.domain = domain;
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        if (!DBKey.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                          domain.getName())) {
+        if (!DBKey.isUsed(domain.getName())) {
             return false;
         }
 

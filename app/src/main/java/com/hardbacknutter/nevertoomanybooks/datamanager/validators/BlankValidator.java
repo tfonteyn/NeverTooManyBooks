@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.datamanager.validators;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
@@ -36,7 +37,7 @@ public class BlankValidator
     public void validate(@NonNull final Context context,
                          @NonNull final DataManager dataManager,
                          @NonNull final String key,
-                         final int errorLabelId)
+                         @StringRes final int errorLabelResId)
             throws ValidatorException {
 
         final String s = dataManager.getString(key).trim();
@@ -46,6 +47,6 @@ public class BlankValidator
             return;
         }
         throw new ValidatorException(context.getString(R.string.vldt_blank_required_for_x,
-                                                       context.getString(errorLabelId)));
+                                                       context.getString(errorLabelResId)));
     }
 }

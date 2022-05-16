@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerFragment;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerViewModel;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
@@ -60,7 +60,7 @@ public class ShowBookPagerContract
                 .putExtra(ShowBookPagerViewModel.BKEY_LIST_TABLE_ROW_ID,
                           input.listTableRowId)
                 // some style elements are applicable for the details screen
-                .putExtra(ListStyle.BKEY_UUID, input.styleUuid);
+                .putExtra(Style.BKEY_UUID, input.styleUuid);
     }
 
     @Override

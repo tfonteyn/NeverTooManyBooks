@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields;
 
-import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 
@@ -76,9 +75,8 @@ public class AutoCompleteTextField
     }
 
     @Override
-    public void setParentView(@NonNull final View parent,
-                              @NonNull final SharedPreferences global) {
-        super.setParentView(parent, global);
+    public void setParentView(@NonNull final View parent) {
+        super.setParentView(parent);
         requireView().setAdapter(new FieldArrayAdapter(parent.getContext(),
                                                        mListSupplier.get(), formatter));
     }

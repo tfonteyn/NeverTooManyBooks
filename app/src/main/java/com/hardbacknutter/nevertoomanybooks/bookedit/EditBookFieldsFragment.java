@@ -77,49 +77,49 @@ public class EditBookFieldsFragment
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_BOOKSHELVES = TAG + ":rk:" + MultiChoiceDialogFragment.TAG;
 
-    private final MultiChoiceDialogFragment.Launcher<Bookshelf> mEditBookshelvesLauncher =
+    private final MultiChoiceDialogFragment.Launcher<Bookshelf> editBookshelvesLauncher =
             new MultiChoiceDialogFragment.Launcher<>() {
                 @Override
                 public void onResult(@NonNull final Set<Long> selectedIds) {
                     final Field<List<Bookshelf>, TextView> field =
-                            mVm.requireField(R.id.bookshelves);
+                            vm.requireField(R.id.bookshelves);
                     final List<Bookshelf> previous = field.getValue();
 
                     final ArrayList<Bookshelf> selected =
-                            mVm.getAllBookshelves()
-                               .stream()
-                               .filter(bookshelf -> selectedIds.contains(bookshelf.getId()))
-                               .collect(Collectors.toCollection(ArrayList::new));
+                            vm.getAllBookshelves()
+                              .stream()
+                              .filter(bookshelf -> selectedIds.contains(bookshelf.getId()))
+                              .collect(Collectors.toCollection(ArrayList::new));
 
-                    mVm.getBook().setBookshelves(selected);
+                    vm.getBook().setBookshelves(selected);
                     field.setValue(selected);
                     field.notifyIfChanged(previous);
                 }
             };
 
     /** The scanner. */
-    private final ActivityResultLauncher<Fragment> mScannerLauncher = registerForActivityResult(
+    private final ActivityResultLauncher<Fragment> scanLauncher = registerForActivityResult(
             new ScannerContract(), barCode -> {
                 if (barCode != null) {
-                    mVm.getBook().putString(DBKey.KEY_ISBN, barCode);
+                    vm.getBook().putString(DBKey.KEY_ISBN, barCode);
                 }
             });
 
     /** Delegate to handle cover replacement, rotation, etc. */
-    private final CoverHandler[] mCoverHandler = new CoverHandler[2];
+    private final CoverHandler[] coverHandler = new CoverHandler[2];
 
     /** manage the validation check next to the ISBN field. */
-    private ISBN.ValidationTextWatcher mIsbnValidationTextWatcher;
+    private ISBN.ValidationTextWatcher isbnValidationTextWatcher;
     /** Watch and clean the text entered in the ISBN field. */
-    private ISBN.CleanupTextWatcher mIsbnCleanupTextWatcher;
+    private ISBN.CleanupTextWatcher isbnCleanupTextWatcher;
 
     /** The level of checking the ISBN code. */
-    private ISBN.Validity mIsbnValidityCheck;
+    private ISBN.Validity isbnValidityCheck;
     /** View Binding. */
-    private FragmentEditBookFieldsBinding mVb;
+    private FragmentEditBookFieldsBinding vb;
 
     @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider mToolbarMenuProvider;
+    private MenuProvider toolbarMenuProvider;
 
     @NonNull
     @Override
@@ -131,8 +131,8 @@ public class EditBookFieldsFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mEditBookshelvesLauncher.registerForFragmentResult(getChildFragmentManager(),
-                                                           RK_EDIT_BOOKSHELVES, this);
+        editBookshelvesLauncher.registerForFragmentResult(getChildFragmentManager(),
+                                                          RK_EDIT_BOOKSHELVES, this);
     }
 
     @Override
@@ -140,8 +140,8 @@ public class EditBookFieldsFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentEditBookFieldsBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentEditBookFieldsBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @Override
@@ -150,72 +150,72 @@ public class EditBookFieldsFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        mToolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner(),
+        toolbarMenuProvider = new ToolbarMenuProvider();
+        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner(),
                                 Lifecycle.State.RESUMED);
 
         final Context context = getContext();
         //noinspection ConstantConditions
-        mVm.initFields(context, FragmentId.Main, FieldGroup.Main);
+        vm.initFields(context, FragmentId.Main, FieldGroup.Main);
 
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        createCoverDelegates(global);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        createCoverDelegates();
 
-        mVm.onAuthorList().observe(getViewLifecycleOwner(), authors ->
-                mVm.requireField(R.id.author).setValue(authors));
+        vm.onAuthorList().observe(getViewLifecycleOwner(), authors ->
+                vm.requireField(R.id.author).setValue(authors));
 
         // Author editor (screen)
         // no listener/callback. We share the book view model in the Activity scope
-        mVb.lblAuthor.setEndIconOnClickListener(v -> editAuthor());
-        mVb.author.setOnClickListener(v -> editAuthor());
+        vb.lblAuthor.setEndIconOnClickListener(v -> editAuthor());
+        vb.author.setOnClickListener(v -> editAuthor());
 
-        if (DBKey.isUsed(global, DBKey.SERIES_TITLE)) {
-            mVm.onSeriesList().observe(getViewLifecycleOwner(), series ->
-                    mVm.requireField(R.id.series_title).setValue(series));
+        if (DBKey.isUsed(DBKey.SERIES_TITLE)) {
+            vm.onSeriesList().observe(getViewLifecycleOwner(), series ->
+                    vm.requireField(R.id.series_title).setValue(series));
             // Series editor (screen)
             // no listener/callback. We share the book view model in the Activity scope
-            mVb.lblSeries.setEndIconOnClickListener(v -> editSeries());
-            mVb.seriesTitle.setOnClickListener(v -> editSeries());
+            vb.lblSeries.setEndIconOnClickListener(v -> editSeries());
+            vb.seriesTitle.setOnClickListener(v -> editSeries());
         }
 
         // Bookshelves editor (dialog)
-        mVb.lblBookshelves.setEndIconOnClickListener(v -> editBookshelves());
-        mVb.bookshelves.setOnClickListener(v -> editBookshelves());
+        vb.lblBookshelves.setEndIconOnClickListener(v -> editBookshelves());
+        vb.bookshelves.setOnClickListener(v -> editBookshelves());
 
         // ISBN: manual edit of the field, or click the end-icon to scan a barcode
-        mIsbnValidityCheck = ISBN.Validity.getLevel(global);
-        mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(mVb.isbn, mIsbnValidityCheck);
-        mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
-        mIsbnValidationTextWatcher = new ISBN.ValidationTextWatcher(
-                mVb.lblIsbn, mVb.isbn, mIsbnValidityCheck);
-        mVb.isbn.addTextChangedListener(mIsbnValidationTextWatcher);
-        mVb.lblIsbn.setEndIconOnClickListener(v -> mScannerLauncher.launch(this));
+        isbnValidityCheck = ISBN.Validity.getLevel(context);
+        isbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(vb.isbn, isbnValidityCheck);
+        vb.isbn.addTextChangedListener(isbnCleanupTextWatcher);
+        isbnValidationTextWatcher = new ISBN.ValidationTextWatcher(
+                vb.lblIsbn, vb.isbn, isbnValidityCheck);
+        vb.isbn.addTextChangedListener(isbnValidationTextWatcher);
+        vb.lblIsbn.setEndIconOnClickListener(v -> scanLauncher.launch(this));
     }
 
-    private void createCoverDelegates(@NonNull final SharedPreferences global) {
+    private void createCoverDelegates() {
         final Resources res = getResources();
         final TypedArray width = res.obtainTypedArray(R.array.cover_edit_width);
         final TypedArray height = res.obtainTypedArray(R.array.cover_edit_height);
         try {
             for (int cIdx = 0; cIdx < width.length(); cIdx++) {
                 // in edit mode, always show both covers unless globally disabled
-                if (DBKey.isUsed(global, DBKey.COVER_IS_USED[cIdx])) {
+                if (DBKey.isUsed(DBKey.COVER_IS_USED[cIdx])) {
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
                     final int maxHeight = height.getDimensionPixelSize(cIdx, 0);
 
                     //noinspection ConstantConditions
-                    mCoverHandler[cIdx] = new CoverHandler(this, cIdx, maxWidth, maxHeight)
-                            .setBookSupplier(() -> mVm.getBook())
-                            .setProgressView(mVb.coverOperationProgressBar)
+                    coverHandler[cIdx] = new CoverHandler(this, cIdx, maxWidth, maxHeight)
+                            .setBookSupplier(() -> vm.getBook())
+                            .setProgressView(vb.coverOperationProgressBar)
                             .onFragmentViewCreated(this)
-                            .setCoverBrowserTitleSupplier(() -> mVb.title.getText().toString())
-                            .setCoverBrowserIsbnSupplier(() -> mVb.isbn.getText().toString());
+                            .setCoverBrowserTitleSupplier(() -> vb.title.getText().toString())
+                            .setCoverBrowserIsbnSupplier(() -> vb.isbn.getText().toString());
                 } else {
                     // This is silly... ViewBinding has no arrays.
                     if (cIdx == 0) {
-                        mVb.coverImage0.setVisibility(View.GONE);
+                        vb.coverImage0.setVisibility(View.GONE);
                     } else {
-                        mVb.coverImage1.setVisibility(View.GONE);
+                        vb.coverImage1.setVisibility(View.GONE);
                     }
                 }
             }
@@ -226,36 +226,35 @@ public class EditBookFieldsFragment
     }
 
     @Override
-    void onPopulateViews(@NonNull final SharedPreferences global,
-                         @NonNull final List<Field<?, ? extends View>> fields,
+    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
         //noinspection ConstantConditions
-        mVm.getBook().pruneAuthors(getContext(), true);
-        mVm.getBook().pruneSeries(getContext(), true);
+        vm.getBook().pruneAuthors(getContext(), true);
+        vm.getBook().pruneSeries(getContext(), true);
 
-        super.onPopulateViews(global, fields, book);
+        super.onPopulateViews(fields, book);
 
-        if (mCoverHandler[0] != null) {
-            mCoverHandler[0].onBindView(mVb.coverImage0);
-            mCoverHandler[0].attachOnClickListeners(getChildFragmentManager(), mVb.coverImage0);
+        if (coverHandler[0] != null) {
+            coverHandler[0].onBindView(vb.coverImage0);
+            coverHandler[0].attachOnClickListeners(getChildFragmentManager(), vb.coverImage0);
         }
 
-        if (mCoverHandler[1] != null) {
-            mCoverHandler[1].onBindView(mVb.coverImage1);
-            mCoverHandler[1].attachOnClickListeners(getChildFragmentManager(), mVb.coverImage1);
+        if (coverHandler[1] != null) {
+            coverHandler[1].onBindView(vb.coverImage1);
+            coverHandler[1].attachOnClickListeners(getChildFragmentManager(), vb.coverImage1);
         }
 
         getFab().setVisibility(View.INVISIBLE);
 
         //noinspection ConstantConditions
-        fields.forEach(field -> field.setVisibility(getView(), global, false, false));
+        fields.forEach(field -> field.setVisibility(getView(), false, false));
     }
 
     @Override
     public void reloadImage(@IntRange(from = 0, to = 1) final int cIdx) {
-        if (mCoverHandler[cIdx] != null) {
-            final ImageView view = cIdx == 0 ? mVb.coverImage0 : mVb.coverImage1;
-            mCoverHandler[cIdx].onBindView(view);
+        if (coverHandler[cIdx] != null) {
+            final ImageView view = cIdx == 0 ? vb.coverImage0 : vb.coverImage1;
+            coverHandler[cIdx].onBindView(view);
         }
     }
 
@@ -269,9 +268,9 @@ public class EditBookFieldsFragment
 
     private void editBookshelves() {
         //noinspection ConstantConditions
-        mEditBookshelvesLauncher.launch(getContext(), getString(R.string.lbl_bookshelves),
-                                        mVm.getAllBookshelves(),
-                                        mVm.getBook().getBookshelves());
+        editBookshelvesLauncher.launch(getContext(), getString(R.string.lbl_bookshelves),
+                                       vm.getAllBookshelves(),
+                                       vm.getBook().getBookshelves());
     }
 
     private class ToolbarMenuProvider
@@ -291,7 +290,7 @@ public class EditBookFieldsFragment
 
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
-            switch (mIsbnValidityCheck) {
+            switch (isbnValidityCheck) {
                 case Strict:
                     menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT).setChecked(true);
                     break;
@@ -312,24 +311,24 @@ public class EditBookFieldsFragment
             final int itemId = menuItem.getItemId();
 
             if (itemId == R.id.MENU_ISBN_VALIDITY_NONE) {
-                mIsbnValidityCheck = ISBN.Validity.None;
+                isbnValidityCheck = ISBN.Validity.None;
                 onPrepareMenu(getToolbar().getMenu());
-                mIsbnCleanupTextWatcher.setValidityLevel(ISBN.Validity.None);
-                mIsbnValidationTextWatcher.setValidityLevel(ISBN.Validity.None);
+                isbnCleanupTextWatcher.setValidityLevel(ISBN.Validity.None);
+                isbnValidationTextWatcher.setValidityLevel(ISBN.Validity.None);
                 return true;
 
             } else if (itemId == R.id.MENU_ISBN_VALIDITY_LOOSE) {
-                mIsbnValidityCheck = ISBN.Validity.Loose;
+                isbnValidityCheck = ISBN.Validity.Loose;
                 onPrepareMenu(getToolbar().getMenu());
-                mIsbnCleanupTextWatcher.setValidityLevel(ISBN.Validity.Loose);
-                mIsbnValidationTextWatcher.setValidityLevel(ISBN.Validity.Loose);
+                isbnCleanupTextWatcher.setValidityLevel(ISBN.Validity.Loose);
+                isbnValidationTextWatcher.setValidityLevel(ISBN.Validity.Loose);
                 return true;
 
             } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
-                mIsbnValidityCheck = ISBN.Validity.Strict;
+                isbnValidityCheck = ISBN.Validity.Strict;
                 onPrepareMenu(getToolbar().getMenu());
-                mIsbnCleanupTextWatcher.setValidityLevel(ISBN.Validity.Strict);
-                mIsbnValidationTextWatcher.setValidityLevel(ISBN.Validity.Strict);
+                isbnCleanupTextWatcher.setValidityLevel(ISBN.Validity.Strict);
+                isbnValidationTextWatcher.setValidityLevel(ISBN.Validity.Strict);
                 return true;
             }
 

@@ -66,11 +66,11 @@ public class MaintenanceFragment
     /** After clicking the header 3 more times, the SQLite shell will allow updates. */
     private static final int DEBUG_CLICKS_ALLOW_SQL_UPDATES = 6;
 
-    private int mDebugClicks;
-    private boolean mDebugSqLiteAllowsUpdates;
+    private int debugClicks;
+    private boolean debugSqLiteAllowsUpdates;
 
     /** View Binding. */
-    private FragmentMaintenanceBinding mVb;
+    private FragmentMaintenanceBinding vb;
 
     @Nullable
     @Override
@@ -78,8 +78,8 @@ public class MaintenanceFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
 
-        mVb = FragmentMaintenanceBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentMaintenanceBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @Override
@@ -91,27 +91,27 @@ public class MaintenanceFragment
         toolbar.setTitle(R.string.lbl_settings);
         toolbar.setSubtitle(R.string.pt_maintenance);
 
-        mVb.btnDebug.setOnClickListener(v -> {
-            mDebugClicks++;
-            if (mDebugClicks >= DEBUG_CLICKS) {
-                mVb.btnDebugDumpPrefs.setVisibility(View.VISIBLE);
-                mVb.btnDebugSqShell.setVisibility(View.VISIBLE);
+        vb.btnDebug.setOnClickListener(v -> {
+            debugClicks++;
+            if (debugClicks >= DEBUG_CLICKS) {
+                vb.btnDebugDumpPrefs.setVisibility(View.VISIBLE);
+                vb.btnDebugSqShell.setVisibility(View.VISIBLE);
             }
 
-            if (mDebugClicks >= DEBUG_CLICKS_ALLOW_SQL_UPDATES) {
-                mVb.btnDebugSqShell.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            if (debugClicks >= DEBUG_CLICKS_ALLOW_SQL_UPDATES) {
+                vb.btnDebugSqShell.setCompoundDrawablesRelativeWithIntrinsicBounds(
                         R.drawable.ic_baseline_warning_24, 0, 0, 0);
-                mDebugSqLiteAllowsUpdates = true;
+                debugSqLiteAllowsUpdates = true;
             }
         });
 
-        mVb.btnResetTips.setOnClickListener(v -> {
-            TipManager.getInstance().reset();
+        vb.btnResetTips.setOnClickListener(v -> {
+            TipManager.getInstance().reset(v.getContext());
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.tip_reset_done, Snackbar.LENGTH_LONG).show();
         });
 
-        mVb.btnPurgeFiles.setOnClickListener(v -> {
+        vb.btnPurgeFiles.setOnClickListener(v -> {
             final Context context = v.getContext();
             final ArrayList<String> bookUuidList =
                     ServiceLocator.getInstance().getBookDao().getBookUuidList();
@@ -157,7 +157,7 @@ public class MaintenanceFragment
                     .show();
         });
 
-        mVb.btnPurgeBlns.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
+        vb.btnPurgeBlns.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
                 .setIcon(R.drawable.ic_baseline_warning_24)
                 .setTitle(R.string.lbl_purge_blns)
                 .setMessage(R.string.info_purge_blns_all)
@@ -166,37 +166,41 @@ public class MaintenanceFragment
                 .create()
                 .show());
 
-        mVb.btnRebuildFts.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
+        vb.btnRebuildFts.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
                 .setIcon(R.drawable.ic_baseline_warning_24)
                 .setTitle(R.string.menu_rebuild_fts)
                 .setMessage(R.string.confirm_rebuild_fts)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> {
-                    StartupViewModel.schedule(StartupViewModel.PK_REBUILD_FTS, false);
-                    mVb.btnRebuildFts.setError(null);
+                    StartupViewModel.schedule(v.getContext(),
+                                              StartupViewModel.PK_REBUILD_FTS, false);
+                    vb.btnRebuildFts.setError(null);
                 })
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
-                    StartupViewModel.schedule(StartupViewModel.PK_REBUILD_FTS, true);
-                    mVb.btnRebuildFts.setError(getString(R.string.txt_rebuild_scheduled));
+                    StartupViewModel.schedule(v.getContext(),
+                                              StartupViewModel.PK_REBUILD_FTS, true);
+                    vb.btnRebuildFts.setError(getString(R.string.txt_rebuild_scheduled));
                 })
                 .create()
                 .show());
 
-        mVb.btnRebuildIndex.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
+        vb.btnRebuildIndex.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
                 .setIcon(R.drawable.ic_baseline_warning_24)
                 .setTitle(R.string.menu_rebuild_index)
                 .setMessage(R.string.confirm_rebuild_index)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> {
-                    StartupViewModel.schedule(StartupViewModel.PK_REBUILD_INDEXES, false);
-                    mVb.btnRebuildIndex.setError(null);
+                    StartupViewModel.schedule(v.getContext(),
+                                              StartupViewModel.PK_REBUILD_INDEXES, false);
+                    vb.btnRebuildIndex.setError(null);
                 })
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
-                    StartupViewModel.schedule(StartupViewModel.PK_REBUILD_INDEXES, true);
-                    mVb.btnRebuildIndex.setError(getString(R.string.txt_rebuild_scheduled));
+                    StartupViewModel.schedule(v.getContext(),
+                                              StartupViewModel.PK_REBUILD_INDEXES, true);
+                    vb.btnRebuildIndex.setError(getString(R.string.txt_rebuild_scheduled));
                 })
                 .create()
                 .show());
 
-        mVb.btnDebugSendMail.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
+        vb.btnDebugSendMail.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
                 .setIcon(R.drawable.ic_baseline_warning_24)
                 .setTitle(R.string.debug)
                 .setMessage(R.string.debug_send_info_text)
@@ -212,10 +216,10 @@ public class MaintenanceFragment
                 .show());
 
         //noinspection ConstantConditions
-        mVb.btnDebugDumpPrefs.setOnClickListener(v -> DebugReport.logPreferences(getContext()));
+        vb.btnDebugDumpPrefs.setOnClickListener(v -> DebugReport.logPreferences(getContext()));
 
-        mVb.btnDebugSqShell.setOnClickListener(v -> replaceFragment(
-                SqliteShellFragment.create(mDebugSqLiteAllowsUpdates),
+        vb.btnDebugSqShell.setOnClickListener(v -> replaceFragment(
+                SqliteShellFragment.create(debugSqLiteAllowsUpdates),
                 SqliteShellFragment.TAG));
     }
 

@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
  * in preferences and serialized. Take care not to add duplicates.
  */
 public final class BuiltinStyle
-        extends BooklistStyle {
+        extends BaseStyle {
 
     private static final int ID_AUTHOR_THEN_SERIES = -1;
     /**
@@ -272,9 +272,9 @@ public final class BuiltinStyle
         // NEWTHINGS: BuiltinStyle: add a new builtin style if needed
         if (id == ID_COMPACT) {
             // The predefined "Compact" style: smaller text, no images.
-            style.setTextScale(ListStyle.TEXT_SCALE_1_SMALL);
-            style.getBooklistBookFieldVisibility()
-                 .setShowField(BooklistBookFieldVisibility.SHOW_COVER_0, false);
+            style.setTextScale(Style.TEXT_SCALE_1_SMALL);
+            style.setShowField(Screen.List, DBKey.COVER_IS_USED[0], false);
+            style.setShowField(Screen.List, DBKey.COVER_IS_USED[1], false);
         }
         return style;
     }
@@ -328,7 +328,7 @@ public final class BuiltinStyle
 
         Definition(final int id,
                    @NonNull final String uuid,
-                   final int labelResId,
+                   @StringRes final int labelResId,
                    @NonNull final int[] groupIds) {
             this.id = id;
             this.uuid = uuid;

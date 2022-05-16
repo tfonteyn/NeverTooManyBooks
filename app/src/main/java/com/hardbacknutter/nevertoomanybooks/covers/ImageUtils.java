@@ -177,12 +177,12 @@ public final class ImageUtils {
      */
     @AnyThread
     public static boolean isImageCachingEnabled() {
-        return ServiceLocator.getGlobalPreferences()
+        return ServiceLocator.getPreferences()
                              .getBoolean(Prefs.pk_image_cache_resized, false);
     }
 
     public static void setImageCachingEnabled(final boolean enable) {
-        ServiceLocator.getGlobalPreferences()
+        ServiceLocator.getPreferences()
                       .edit()
                       .putBoolean(Prefs.pk_image_cache_resized, enable)
                       .apply();

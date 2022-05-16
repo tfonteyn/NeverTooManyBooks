@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.bookdetails;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -49,7 +48,6 @@ import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
@@ -67,7 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookById
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -152,7 +150,7 @@ public class ShowBookDetailsFragment
         final Fragment fragment = new ShowBookDetailsFragment();
         final Bundle args = new Bundle(3);
         args.putLong(DBKey.FK_BOOK, bookId);
-        args.putString(ListStyle.BKEY_UUID, styleUuid);
+        args.putString(Style.BKEY_UUID, styleUuid);
         args.putBoolean(BKEY_EMBEDDED, embedded);
         fragment.setArguments(args);
         return fragment;
@@ -201,22 +199,18 @@ public class ShowBookDetailsFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Context context = getContext();
-        //noinspection ConstantConditions
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-
         // update all Fields with their current View instances
-        aVm.getFields().forEach(field -> field.setParentView(view, global));
+        aVm.getFields().forEach(field -> field.setParentView(view));
 
         // Popup the search widget when the user starts to type.
         //noinspection ConstantConditions
         getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
 
-        createCoverDelegates(global);
+        createCoverDelegates();
 
         // We must create them here, even if the Book has no matching sync id,
         // because the menu setup uses them before the Book is loaded.
-        createSyncDelegates(global);
+        createSyncDelegates();
 
         vm.onBookLoaded().observe(getViewLifecycleOwner(), this::onBindBook);
 
@@ -226,12 +220,10 @@ public class ShowBookDetailsFragment
 
     /**
      * Create the optional sync delegates.
-     *
-     * @param global Global preferences
      */
-    private void createSyncDelegates(@NonNull final SharedPreferences global) {
+    private void createSyncDelegates() {
 
-        if (SyncServer.CalibreCS.isEnabled(global)) {
+        if (SyncServer.CalibreCS.isEnabled()) {
             try {
                 //noinspection ConstantConditions
                 calibreHandler = new CalibreHandler(getContext(), this)
@@ -242,12 +234,12 @@ public class ShowBookDetailsFragment
             }
         }
 
-//        if (SyncServer.StripInfo.isEnabled(global)) {
+//        if (SyncServer.StripInfo.isEnabled()) {
 //
 //        }
     }
 
-    private void createCoverDelegates(@NonNull final SharedPreferences global) {
+    private void createCoverDelegates() {
         //noinspection ConstantConditions
         final CircularProgressIndicator progressView =
                 getView().findViewById(R.id.cover_operation_progress_bar);
@@ -257,7 +249,7 @@ public class ShowBookDetailsFragment
         final TypedArray height = res.obtainTypedArray(R.array.cover_details_height);
         try {
             for (int cIdx = 0; cIdx < width.length(); cIdx++) {
-                if (aVm.isCoverUsed(global, cIdx)) {
+                if (aVm.getStyle().isShowField(Style.Screen.Detail, DBKey.COVER_IS_USED[cIdx])) {
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
                     final int maxHeight = height.getDimensionPixelSize(cIdx, 0);
 
@@ -317,14 +309,9 @@ public class ShowBookDetailsFragment
             //noinspection unchecked
             final Field<String, TextView> field = (Field<String, TextView>) f;
 
-            final String date = book.getString(DBKey.READ_END__DATE);
+            field.setValue(book.getString(DBKey.READ_END__DATE));
             //noinspection ConstantConditions
-            final SharedPreferences global = PreferenceManager
-                    .getDefaultSharedPreferences(getContext());
-
-            field.setValue(date);
-            //noinspection ConstantConditions
-            field.setVisibility(getView(), global, true, false);
+            field.setVisibility(getView(), true, false);
         });
 
         toolbarMenuProvider.updateMenuReadOptions(getToolbar().getMenu());
@@ -368,10 +355,7 @@ public class ShowBookDetailsFragment
             bindToc(book);
 
             //noinspection ConstantConditions
-            final SharedPreferences global = PreferenceManager
-                    .getDefaultSharedPreferences(getContext());
-            //noinspection ConstantConditions
-            fields.forEach(field -> field.setVisibility(getView(), global, true, false));
+            fields.forEach(field -> field.setVisibility(getView(), true, false));
 
             // Hide the 'Edition' label if neither edition chips or print-run fields are shown
             setSectionVisibility(R.id.lbl_edition,
@@ -420,8 +404,7 @@ public class ShowBookDetailsFragment
     private void bindLoanee(@NonNull final Book book) {
         //noinspection ConstantConditions
         final TextView lendTo = getView().findViewById(R.id.lend_to);
-        //noinspection ConstantConditions
-        if (aVm.useLoanee(getContext())) {
+        if (aVm.getStyle().isShowField(Style.Screen.List, DBKey.LOANEE_NAME)) {
             final Optional<String> loanee =
                     book.getLoanee().map(s -> getString(R.string.lbl_lend_out_to_name, s));
 
@@ -456,8 +439,7 @@ public class ShowBookDetailsFragment
 
         final Button btnShowToc = getView().findViewById(R.id.btn_show_toc);
         final FragmentContainerView tocFrame = getView().findViewById(R.id.toc_frame);
-        //noinspection ConstantConditions
-        if (aVm.useToc(getContext())) {
+        if (aVm.getStyle().isShowField(Style.Screen.List, DBKey.BITMASK_TOC)) {
             if (btnShowToc != null) {
                 bindTocButton(btnShowToc, book);
             } else if (tocFrame != null) {
@@ -693,8 +675,7 @@ public class ShowBookDetailsFragment
 
         private void updateMenuLendingOptions(@NonNull final Menu menu) {
             // Always check KEY_LOANEE usage independent from the style in use.
-            //noinspection ConstantConditions
-            if (aVm.useLoanee(getContext())) {
+            if (aVm.getStyle().isShowField(Style.Screen.List, DBKey.LOANEE_NAME)) {
                 final boolean isLendOut = vm.getBook().getLoanee().isPresent();
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(!isLendOut);
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(isLendOut);
