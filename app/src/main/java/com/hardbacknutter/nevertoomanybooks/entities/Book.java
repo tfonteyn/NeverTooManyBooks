@@ -350,7 +350,7 @@ public class Book
         // KEY_DATE_LAST_UPDATED
 
         bookData.putString(DBKey.TITLE, getString(DBKey.TITLE));
-        bookData.putString(DBKey.KEY_ISBN, getString(DBKey.KEY_ISBN));
+        bookData.putString(DBKey.BOOK_ISBN, getString(DBKey.BOOK_ISBN));
 
         bookData.putParcelableArrayList(BKEY_AUTHOR_LIST,
                                         getParcelableArrayList(BKEY_AUTHOR_LIST));
@@ -363,22 +363,22 @@ public class Book
 
         // publication data
         bookData.putString(DBKey.PRINT_RUN, getString(DBKey.PRINT_RUN));
-        bookData.putLong(DBKey.BITMASK_TOC, getLong(DBKey.BITMASK_TOC));
-        bookData.putString(DBKey.DATE_BOOK_PUBLICATION, getString(DBKey.DATE_BOOK_PUBLICATION));
+        bookData.putLong(DBKey.TOC_TYPE__BITMASK, getLong(DBKey.TOC_TYPE__BITMASK));
+        bookData.putString(DBKey.BOOK_PUBLICATION__DATE, getString(DBKey.BOOK_PUBLICATION__DATE));
         bookData.putDouble(DBKey.PRICE_LISTED, getDouble(DBKey.PRICE_LISTED));
         bookData.putString(DBKey.PRICE_LISTED_CURRENCY, getString(DBKey.PRICE_LISTED_CURRENCY));
-        bookData.putString(DBKey.DATE_FIRST_PUBLICATION, getString(DBKey.DATE_FIRST_PUBLICATION));
+        bookData.putString(DBKey.FIRST_PUBLICATION__DATE, getString(DBKey.FIRST_PUBLICATION__DATE));
 
-        bookData.putString(DBKey.BOOK_FORMAT, getString(DBKey.BOOK_FORMAT));
+        bookData.putString(DBKey.FORMAT, getString(DBKey.FORMAT));
         bookData.putString(DBKey.COLOR, getString(DBKey.COLOR));
         bookData.putString(DBKey.GENRE, getString(DBKey.GENRE));
         bookData.putString(DBKey.LANGUAGE, getString(DBKey.LANGUAGE));
-        bookData.putString(DBKey.PAGES, getString(DBKey.PAGES));
+        bookData.putString(DBKey.PAGE_COUNT, getString(DBKey.PAGE_COUNT));
         // common blurb
         bookData.putString(DBKey.DESCRIPTION, getString(DBKey.DESCRIPTION));
 
         // partially edition info, partially use-owned info.
-        bookData.putLong(DBKey.BITMASK_EDITION, getLong(DBKey.BITMASK_EDITION));
+        bookData.putLong(DBKey.EDITION__BITMASK, getLong(DBKey.EDITION__BITMASK));
 
         // user data
 
@@ -439,7 +439,7 @@ public class Book
                 new BookLight(getId(), getTitle(),
                               getString(DBKey.LANGUAGE),
                               getPrimaryAuthor(),
-                              getString(DBKey.DATE_FIRST_PUBLICATION)));
+                              getString(DBKey.FIRST_PUBLICATION__DATE)));
     }
 
     /**
@@ -620,7 +620,7 @@ public class Book
     @Override
     @NonNull
     public PartialDate getFirstPublicationDate() {
-        return new PartialDate(getString(DBKey.DATE_FIRST_PUBLICATION));
+        return new PartialDate(getString(DBKey.FIRST_PUBLICATION__DATE));
     }
 
 
@@ -660,11 +660,11 @@ public class Book
 
     @NonNull
     public ContentType getContentType() {
-        return ContentType.getType(getLong(DBKey.BITMASK_TOC));
+        return ContentType.getType(getLong(DBKey.TOC_TYPE__BITMASK));
     }
 
     public void setContentType(@NonNull final ContentType type) {
-        putLong(DBKey.BITMASK_TOC, type.value);
+        putLong(DBKey.TOC_TYPE__BITMASK, type.value);
     }
 
     /**
@@ -1009,9 +1009,9 @@ public class Book
         addValidator(DBKey.LANGUAGE,
                      NON_BLANK_VALIDATOR, R.string.lbl_language);
 
-        addValidator(DBKey.BITMASK_EDITION,
+        addValidator(DBKey.EDITION__BITMASK,
                      LONG_VALIDATOR, R.string.lbl_edition);
-        addValidator(DBKey.BITMASK_TOC,
+        addValidator(DBKey.TOC_TYPE__BITMASK,
                      LONG_VALIDATOR, R.string.lbl_table_of_content);
 
         addValidator(DBKey.PRICE_LISTED,
@@ -1230,7 +1230,7 @@ public class Book
     }
 
     /**
-     * Database representation of column {@link DBKey#BITMASK_TOC}
+     * Database representation of column {@link DBKey#TOC_TYPE__BITMASK}
      */
     public enum ContentType
             implements Entity {
@@ -1278,7 +1278,7 @@ public class Book
     }
 
     /**
-     * Database representation of column {@link DBKey#BITMASK_EDITION}.
+     * Database representation of column {@link DBKey#EDITION__BITMASK}.
      * <p>
      * 0b00000000 = a generic edition, or we simply don't know what edition it is.
      * 0b00000001 = first edition

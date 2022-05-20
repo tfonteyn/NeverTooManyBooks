@@ -395,7 +395,7 @@ public class BooklistGroup {
             case FORMAT: {
                 return new GroupKey(R.string.lbl_format, "fmt",
                                     new DomainExpression(DOM_BOOK_FORMAT,
-                                                         TBL_BOOKS.dot(DBKey.BOOK_FORMAT),
+                                                         TBL_BOOKS.dot(DBKey.FORMAT),
                                                          DomainExpression.SORT_ASC));
             }
             case GENRE: {
@@ -481,7 +481,7 @@ public class BooklistGroup {
                 // UTC. Formatting is done after fetching.
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_pub_y", ColumnInfo.TYPE_INTEGER).build(),
-                        year(TBL_BOOKS.dot(DBKey.DATE_BOOK_PUBLICATION), false),
+                        year(TBL_BOOKS.dot(DBKey.BOOK_PUBLICATION__DATE), false),
                         DomainExpression.SORT_DESC);
                 return new GroupKey(R.string.lbl_publication_year, "yrp", keyDomain)
                         .addBaseDomain(DATE_PUBLISHED);
@@ -490,7 +490,7 @@ public class BooklistGroup {
                 // UTC. Formatting is done after fetching.
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_pub_m", ColumnInfo.TYPE_INTEGER).build(),
-                        month(TBL_BOOKS.dot(DBKey.DATE_BOOK_PUBLICATION), false),
+                        month(TBL_BOOKS.dot(DBKey.BOOK_PUBLICATION__DATE), false),
                         DomainExpression.SORT_DESC);
                 return new GroupKey(R.string.lbl_publication_month, "mp", keyDomain)
                         .addBaseDomain(DATE_PUBLISHED);
@@ -501,7 +501,7 @@ public class BooklistGroup {
                 // UTC. Formatting is done in the sql expression.
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_1pub_y", ColumnInfo.TYPE_INTEGER).build(),
-                        year(TBL_BOOKS.dot(DBKey.DATE_FIRST_PUBLICATION), false),
+                        year(TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION__DATE), false),
                         DomainExpression.SORT_DESC);
                 return new GroupKey(R.string.lbl_first_pub_year, "yfp", keyDomain)
                         .addBaseDomain(DATE_FIRST_PUBLICATION);
@@ -510,7 +510,7 @@ public class BooklistGroup {
                 // Local for the user. Formatting is done after fetching.
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_1pub_m", ColumnInfo.TYPE_INTEGER).build(),
-                        month(TBL_BOOKS.dot(DBKey.DATE_FIRST_PUBLICATION), false),
+                        month(TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION__DATE), false),
                         DomainExpression.SORT_DESC);
                 return new GroupKey(R.string.lbl_first_pub_month, "mfp", keyDomain)
                         .addBaseDomain(DATE_FIRST_PUBLICATION);

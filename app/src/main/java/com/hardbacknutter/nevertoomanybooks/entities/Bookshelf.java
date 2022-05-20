@@ -88,7 +88,7 @@ public class Bookshelf
      * Preference name - the bookshelf to load next time we startup.
      * Storing the name and not the id. If you export/import... the id will be different.
      */
-    private static final String PREF_BOOKSHELF_CURRENT = "Bookshelf.CurrentBookshelf";
+    private static final String PK_BOOKSHELF_CURRENT = "Bookshelf.CurrentBookshelf";
     @SuppressWarnings("FieldNotUsedInToString")
     private final List<PFilter<?>> filters = new ArrayList<>();
 
@@ -227,7 +227,7 @@ public class Bookshelf
 
         } else if (id == PREFERRED) {
             final String name = PreferenceManager.getDefaultSharedPreferences(context)
-                                                 .getString(PREF_BOOKSHELF_CURRENT, null);
+                                                 .getString(PK_BOOKSHELF_CURRENT, null);
             if (name != null && !name.isEmpty()) {
                 return ServiceLocator.getInstance().getBookshelfDao().findByName(name);
             }
@@ -242,7 +242,7 @@ public class Bookshelf
      * Set this bookshelf as the current/preferred.
      */
     public void setAsPreferred() {
-        ServiceLocator.getPreferences().edit().putString(PREF_BOOKSHELF_CURRENT, name).apply();
+        ServiceLocator.getPreferences().edit().putString(PK_BOOKSHELF_CURRENT, name).apply();
     }
 
     @Override

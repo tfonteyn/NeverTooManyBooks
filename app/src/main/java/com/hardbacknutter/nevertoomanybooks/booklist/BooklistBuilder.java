@@ -938,12 +938,12 @@ class BooklistBuilder {
             joinWithAuthors(sql);
 
             if (style.hasGroup(BooklistGroup.SERIES)
-                || style.isShowField(Style.Screen.List, DBKey.SERIES_TITLE)) {
+                || style.isShowField(Style.Screen.List, DBKey.FK_SERIES)) {
                 joinWithSeries(sql);
             }
 
             if (style.hasGroup(BooklistGroup.PUBLISHER)
-                || style.isShowField(Style.Screen.List, DBKey.PUBLISHER_NAME)) {
+                || style.isShowField(Style.Screen.List, DBKey.FK_PUBLISHER)) {
                 joinWithPublishers(sql);
             }
 
@@ -970,10 +970,10 @@ class BooklistBuilder {
                     // grab the desired type, or if no such type, grab the first one
                     //   AND (((type & TYPE)<>0) OR (((type &~ TYPE)=0) AND pos=1))
                     sql.append(" AND (((")
-                       .append(TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_TYPE_BITMASK))
+                       .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR_TYPE__BITMASK))
                        .append(" & ").append(primaryAuthorType).append(")<>0)")
                        .append(" OR (((")
-                       .append(TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_TYPE_BITMASK))
+                       .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR_TYPE__BITMASK))
                        .append(" &~ ").append(primaryAuthorType).append(")=0)")
                        .append(_AND_)
                        .append(TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_POSITION))

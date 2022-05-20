@@ -39,13 +39,13 @@ class KbNlBookHandler
     private final Bundle mBookData;
     /** accumulate all authors for this book. */
     @NonNull
-    private final ArrayList<Author> mAuthors = new ArrayList<>();
+    private final ArrayList<Author> authorList = new ArrayList<>();
     /** accumulate all authors for this book. */
     @NonNull
-    private final ArrayList<Series> mSeries = new ArrayList<>();
+    private final ArrayList<Series> seriesList = new ArrayList<>();
     /** accumulate all Publishers for this book. */
     @NonNull
-    private final ArrayList<Publisher> mPublishers = new ArrayList<>();
+    private final ArrayList<Publisher> publisherList = new ArrayList<>();
 
     /**
      * Constructor.
@@ -70,14 +70,14 @@ class KbNlBookHandler
     public void endDocument() {
         super.endDocument();
 
-        if (!mAuthors.isEmpty()) {
-            mBookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
+        if (!authorList.isEmpty()) {
+            mBookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
         }
-        if (!mSeries.isEmpty()) {
-            mBookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, mSeries);
+        if (!seriesList.isEmpty()) {
+            mBookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
         }
-        if (!mPublishers.isEmpty()) {
-            mBookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
+        if (!publisherList.isEmpty()) {
+            mBookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
         }
         // As kb.nl is dutch, and there is no 'language' field,
         // we're going to assume that all books are in Dutch.
@@ -284,7 +284,7 @@ class KbNlBookHandler
 
             final Author author = Author.from(cleanedString);
             author.setType(type);
-            mAuthors.add(author);
+            authorList.add(author);
         }
     }
 
@@ -301,9 +301,9 @@ class KbNlBookHandler
      */
     private void processSeries(@NonNull final List<String> currentData) {
         if (currentData.size() > 2) {
-            mSeries.add(Series.from(currentData.get(0), currentData.get(2)));
+            seriesList.add(Series.from(currentData.get(0), currentData.get(2)));
         } else {
-            mSeries.add(Series.from(currentData.get(0)));
+            seriesList.add(Series.from(currentData.get(0)));
         }
     }
 
@@ -321,7 +321,7 @@ class KbNlBookHandler
         // should never happen, but paranoia...
         if (title != null) {
             final Series series = Series.from(title, currentData.get(0));
-            mSeries.add(series);
+            seriesList.add(series);
         }
     }
 
@@ -346,16 +346,16 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processIsbn(@NonNull final List<String> currentData) {
-        if (!mBookData.containsKey(DBKey.KEY_ISBN)) {
-            mBookData.putString(DBKey.KEY_ISBN, digits(currentData.get(0), true));
+        if (!mBookData.containsKey(DBKey.BOOK_ISBN)) {
+            mBookData.putString(DBKey.BOOK_ISBN, digits(currentData.get(0), true));
             if (currentData.size() > 1) {
-                if (!mBookData.containsKey(DBKey.BOOK_FORMAT)) {
+                if (!mBookData.containsKey(DBKey.FORMAT)) {
                     String format = currentData.get(1).trim();
                     if (format.startsWith("(")) {
                         format = format.substring(1, format.length() - 1);
                     }
                     if (!format.isEmpty()) {
-                        mBookData.putString(DBKey.BOOK_FORMAT, format);
+                        mBookData.putString(DBKey.FORMAT, format);
                     }
                 }
             }
@@ -398,7 +398,7 @@ class KbNlBookHandler
         if (publisherName.contains(":")) {
             publisherName = publisherName.split(":")[1].trim();
         }
-        mPublishers.add(Publisher.from(publisherName));
+        publisherList.add(Publisher.from(publisherName));
     }
 
     /**
@@ -424,10 +424,10 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processDatePublished(@NonNull final List<String> currentData) {
-        if (!mBookData.containsKey(DBKey.DATE_BOOK_PUBLICATION)) {
+        if (!mBookData.containsKey(DBKey.BOOK_PUBLICATION__DATE)) {
             final String year = digits(currentData.get(0), false);
             if (year != null && !year.isEmpty()) {
-                mBookData.putString(DBKey.DATE_BOOK_PUBLICATION, year);
+                mBookData.putString(DBKey.BOOK_PUBLICATION__DATE, year);
             }
         }
     }
@@ -448,14 +448,14 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processPages(@NonNull final List<String> currentData) {
-        if (!mBookData.containsKey(DBKey.PAGES)) {
+        if (!mBookData.containsKey(DBKey.PAGE_COUNT)) {
             try {
                 final String cleanedString = currentData.get(0).split(" ")[0];
                 final int pages = Integer.parseInt(cleanedString);
-                mBookData.putString(DBKey.PAGES, String.valueOf(pages));
+                mBookData.putString(DBKey.PAGE_COUNT, String.valueOf(pages));
             } catch (@NonNull final NumberFormatException e) {
                 // use source
-                mBookData.putString(DBKey.PAGES, currentData.get(0));
+                mBookData.putString(DBKey.PAGE_COUNT, currentData.get(0));
             }
         }
     }

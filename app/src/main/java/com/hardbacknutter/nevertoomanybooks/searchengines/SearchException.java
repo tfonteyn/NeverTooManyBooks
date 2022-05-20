@@ -35,24 +35,24 @@ public class SearchException
 
     /** The site that caused the issue. */
     @NonNull
-    private final String mSiteName;
+    private final String siteName;
 
     public SearchException(@NonNull final String siteName,
                            @NonNull final Throwable cause) {
         super(cause);
-        mSiteName = siteName;
+        this.siteName = siteName;
     }
 
     public SearchException(@NonNull final String siteName,
                            @NonNull final String message) {
         super(message);
-        mSiteName = siteName;
+        this.siteName = siteName;
     }
 
     @NonNull
     @Override
     public String getUserMessage(@NonNull final Context context) {
-        return context.getString(R.string.error_search_x_failed_y, mSiteName,
+        return context.getString(R.string.error_search_x_failed_y, siteName,
                                  ExMsg.map(context, getCause())
                                       .orElse(context.getString(R.string.error_unknown)));
     }
@@ -61,7 +61,7 @@ public class SearchException
     @NonNull
     public String toString() {
         return "SearchException{"
-               + "mSiteName='" + mSiteName + '\''
+               + "mSiteName='" + siteName + '\''
                + ", " + super.toString()
                + '}';
     }

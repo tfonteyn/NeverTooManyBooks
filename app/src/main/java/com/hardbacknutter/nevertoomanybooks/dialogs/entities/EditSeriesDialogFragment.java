@@ -58,16 +58,16 @@ public class EditSeriesDialogFragment
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /** FragmentResultListener request key to use for our response. */
-    private String mRequestKey;
+    private String requestKey;
 
     /** View Binding. */
-    private DialogEditSeriesBinding mVb;
+    private DialogEditSeriesBinding vb;
 
     /** The Series we're editing. */
-    private Series mSeries;
+    private Series series;
 
     /** Current edit. */
-    private Series mCurrentEdit;
+    private Series currentEdit;
 
     /**
      * No-arg constructor for OS use.
@@ -98,14 +98,14 @@ public class EditSeriesDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
-        mSeries = Objects.requireNonNull(args.getParcelable(DBKey.FK_SERIES), DBKey.FK_SERIES);
+        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        series = Objects.requireNonNull(args.getParcelable(DBKey.FK_SERIES), DBKey.FK_SERIES);
 
         if (savedInstanceState == null) {
-            mCurrentEdit = new Series(mSeries.getTitle(), mSeries.isComplete());
+            currentEdit = new Series(series.getTitle(), series.isComplete());
         } else {
             //noinspection ConstantConditions
-            mCurrentEdit = savedInstanceState.getParcelable(DBKey.FK_SERIES);
+            currentEdit = savedInstanceState.getParcelable(DBKey.FK_SERIES);
         }
     }
 
@@ -113,7 +113,7 @@ public class EditSeriesDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mVb = DialogEditSeriesBinding.bind(view);
+        vb = DialogEditSeriesBinding.bind(view);
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
@@ -121,9 +121,9 @@ public class EditSeriesDialogFragment
                 ExtArrayAdapter.FilterType.Diacritic,
                 ServiceLocator.getInstance().getSeriesDao().getNames());
 
-        mVb.seriesTitle.setText(mCurrentEdit.getTitle());
-        mVb.seriesTitle.setAdapter(titleAdapter);
-        mVb.cbxIsComplete.setChecked(mCurrentEdit.isComplete());
+        vb.seriesTitle.setText(currentEdit.getTitle());
+        vb.seriesTitle.setAdapter(titleAdapter);
+        vb.cbxIsComplete.setChecked(currentEdit.isComplete());
 
         // don't requestFocus() as we have multiple fields.
     }
@@ -141,19 +141,19 @@ public class EditSeriesDialogFragment
 
     private boolean saveChanges() {
         viewToModel();
-        if (mCurrentEdit.getTitle().isEmpty()) {
-            showError(mVb.lblSeriesTitle, R.string.vldt_non_blank_required);
+        if (currentEdit.getTitle().isEmpty()) {
+            showError(vb.lblSeriesTitle, R.string.vldt_non_blank_required);
             return false;
         }
 
         // anything actually changed ?
-        if (mSeries.getTitle().equals(mCurrentEdit.getTitle())
-            && mSeries.isComplete() == mCurrentEdit.isComplete()) {
+        if (series.getTitle().equals(currentEdit.getTitle())
+            && series.isComplete() == currentEdit.isComplete()) {
             return true;
         }
 
         // store changes
-        mSeries.copyFrom(mCurrentEdit, false);
+        series.copyFrom(currentEdit, false);
 
         final Context context = getContext();
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
@@ -164,36 +164,36 @@ public class EditSeriesDialogFragment
 
         // check if it already exists (will be 0 if not)
         //noinspection ConstantConditions
-        final long existingId = seriesDao.find(context, mSeries, true, bookLocale);
+        final long existingId = seriesDao.find(context, series, true, bookLocale);
 
         if (existingId == 0) {
             final boolean success;
-            if (mSeries.getId() == 0) {
-                success = seriesDao.insert(context, mSeries, bookLocale) > 0;
+            if (series.getId() == 0) {
+                success = seriesDao.insert(context, series, bookLocale) > 0;
             } else {
-                success = seriesDao.update(context, mSeries, bookLocale);
+                success = seriesDao.update(context, series, bookLocale);
             }
             if (success) {
-                RowChangedListener.setResult(this, mRequestKey,
-                                             DBKey.FK_SERIES, mSeries.getId());
+                RowChangedListener.setResult(this, requestKey,
+                                             DBKey.FK_SERIES, series.getId());
                 return true;
             }
         } else {
             // Merge the 2
             new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(mSeries.getLabel(context))
+                    .setTitle(series.getLabel(context))
                     .setMessage(R.string.confirm_merge_series)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(R.string.action_merge, (d, w) -> {
                         dismiss();
                         // move all books from the one being edited to the existing one
                         try {
-                            seriesDao.merge(context, mSeries, existingId);
+                            seriesDao.merge(context, series, existingId);
                             RowChangedListener.setResult(
-                                    this, mRequestKey,
-                                    // return the series who 'lost' it's books
-                                    DBKey.FK_SERIES, mSeries.getId());
+                                    this, requestKey,
+                                    // return the series which 'lost' it's books
+                                    DBKey.FK_SERIES, series.getId());
                         } catch (@NonNull final DaoWriteException e) {
                             Logger.error(TAG, e);
                             StandardDialogs.showError(context, R.string.error_storage_not_writable);
@@ -206,14 +206,14 @@ public class EditSeriesDialogFragment
     }
 
     private void viewToModel() {
-        mCurrentEdit.setTitle(mVb.seriesTitle.getText().toString().trim());
-        mCurrentEdit.setComplete(mVb.cbxIsComplete.isChecked());
+        currentEdit.setTitle(vb.seriesTitle.getText().toString().trim());
+        currentEdit.setComplete(vb.cbxIsComplete.isChecked());
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(DBKey.FK_SERIES, mCurrentEdit);
+        outState.putParcelable(DBKey.FK_SERIES, currentEdit);
     }
 
     @Override

@@ -79,33 +79,33 @@ public enum SyncServer
     /** The (optional) preset encoding to pass to export/import. */
     public static final String BKEY_SITE = TAG + ":encoding";
     @StringRes
-    private final int mLabel;
+    private final int labelResId;
 
 
-    private final boolean mHasLastUpdateDateField;
-    private final boolean mSyncDateIsUserEditable;
+    private final boolean hasLastUpdateDateField;
+    private final boolean syncDateIsUserEditable;
 
 
     /**
      * Constructor.
      *
-     * @param label                  will be displayed to the user
+     * @param labelResId             will be displayed to the user
      * @param hasLastUpdateDateField whether the server provides a 'last update' field we can use
      * @param syncDateUserEditable   whether the user can manually influence the sync date
      */
-    SyncServer(@StringRes final int label,
+    SyncServer(@StringRes final int labelResId,
                final boolean hasLastUpdateDateField,
                final boolean syncDateUserEditable) {
-        mLabel = label;
-        mHasLastUpdateDateField = hasLastUpdateDateField;
-        mSyncDateIsUserEditable = syncDateUserEditable;
+        this.labelResId = labelResId;
+        this.hasLastUpdateDateField = hasLastUpdateDateField;
+        syncDateIsUserEditable = syncDateUserEditable;
     }
 
 
     /** A short label. Used in drop down menus and similar. */
     @StringRes
-    public int getLabel() {
-        return mLabel;
+    public int getLabelResId() {
+        return labelResId;
     }
 
     public boolean isEnabled() {
@@ -121,7 +121,7 @@ public enum SyncServer
     }
 
     public boolean isSyncDateUserEditable() {
-        return mSyncDateIsUserEditable;
+        return syncDateIsUserEditable;
     }
 
     /**
@@ -129,7 +129,7 @@ public enum SyncServer
      * (help) sync it with the server/web site
      */
     public boolean hasLastUpdateDateField() {
-        return mHasLastUpdateDateField;
+        return hasLastUpdateDateField;
     }
 
     /**
@@ -221,9 +221,9 @@ public enum SyncServer
     @NonNull
     public String toString() {
         return "SyncServer{"
-               + "mLabel=" + mLabel
-               + ", mHasLastUpdateDateField=" + mHasLastUpdateDateField
-               + ", mSyncDateIsUserEditable=" + mSyncDateIsUserEditable
+               + "mLabel=" + labelResId
+               + ", mHasLastUpdateDateField=" + hasLastUpdateDateField
+               + ", mSyncDateIsUserEditable=" + syncDateIsUserEditable
                + '}';
     }
 }

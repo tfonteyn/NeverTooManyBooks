@@ -49,10 +49,10 @@ public class IsfdbGetEditionsTask
     private static final String TAG = "IsfdbGetEditionsTask";
 
     /** The isbn we're looking up. */
-    private String mIsbn;
+    private String isbn;
 
     @Nullable
-    private IsfdbSearchEngine mSearchEngine;
+    private IsfdbSearchEngine searchEngine;
 
     public IsfdbGetEditionsTask() {
         super(R.id.TASK_ID_SEARCH_EDITIONS, TAG);
@@ -60,7 +60,7 @@ public class IsfdbGetEditionsTask
 
     @UiThread
     public void search(@NonNull final ISBN isbn) {
-        mIsbn = isbn.asText();
+        this.isbn = isbn.asText();
         execute();
     }
 
@@ -68,8 +68,8 @@ public class IsfdbGetEditionsTask
     public void cancel() {
         synchronized (this) {
             super.cancel();
-            if (mSearchEngine != null) {
-                mSearchEngine.cancel();
+            if (searchEngine != null) {
+                searchEngine.cancel();
             }
         }
     }
@@ -81,10 +81,10 @@ public class IsfdbGetEditionsTask
             throws StorageException, SearchException, CredentialsException {
 
         // create a new instance just for our own use
-        mSearchEngine = (IsfdbSearchEngine)
+        searchEngine = (IsfdbSearchEngine)
                 SearchEngineRegistry.getInstance().createSearchEngine(SearchSites.ISFDB);
-        mSearchEngine.setCaller(this);
+        searchEngine.setCaller(this);
 
-        return mSearchEngine.fetchEditionsByIsbn(context, mIsbn);
+        return searchEngine.fetchEditionsByIsbn(context, isbn);
     }
 }

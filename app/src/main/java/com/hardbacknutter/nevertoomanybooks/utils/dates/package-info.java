@@ -56,7 +56,7 @@
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#READ_START__DATE}
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#READ_END__DATE}
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#DATE_ACQUIRED}
- * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#DATE_BOOK_PUBLICATION}
- * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#DATE_FIRST_PUBLICATION}
+ * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#BOOK_PUBLICATION__DATE}
+ * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#FIRST_PUBLICATION__DATE}
  */
 package com.hardbacknutter.nevertoomanybooks.utils.dates;

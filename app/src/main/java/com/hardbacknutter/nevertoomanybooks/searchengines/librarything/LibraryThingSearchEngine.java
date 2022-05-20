@@ -75,7 +75,7 @@ public class LibraryThingSearchEngine
     /** Type: {@code String}. */
     public static final String PK_HOST_URL = PREF_KEY + Prefs.pk_suffix_host_url;
     @Nullable
-    private FutureHttpGet<Boolean> mFutureHttpGet;
+    private FutureHttpGet<Boolean> futureHttpGet;
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -120,8 +120,8 @@ public class LibraryThingSearchEngine
     public void cancel() {
         synchronized (this) {
             super.cancel();
-            if (mFutureHttpGet != null) {
-                mFutureHttpGet.cancel();
+            if (futureHttpGet != null) {
+                futureHttpGet.cancel();
             }
         }
     }
@@ -143,7 +143,7 @@ public class LibraryThingSearchEngine
                                                   @NonNull final String validIsbn)
             throws SearchException {
 
-        mFutureHttpGet = createFutureGetRequest();
+        futureHttpGet = createFutureGetRequest();
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();
@@ -152,7 +152,7 @@ public class LibraryThingSearchEngine
 
         try {
             final SAXParser parser = factory.newSAXParser();
-            mFutureHttpGet.get(url, request -> {
+            futureHttpGet.get(url, request -> {
                 try (BufferedInputStream bis = new BufferedInputStream(
                         request.getInputStream())) {
                     parser.parse(bis, handler);

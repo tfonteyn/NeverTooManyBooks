@@ -35,33 +35,33 @@ public class SyncReaderViewModel
         extends DataReaderViewModel<SyncReaderMetaData, ReaderResults> {
 
     @Nullable
-    private SyncReaderHelper mSyncReaderHelper;
+    private SyncReaderHelper syncReaderHelper;
 
     /**
      * Pseudo constructor.
      */
     public void init(@NonNull final Bundle args) {
-        if (mSyncReaderHelper == null) {
+        if (syncReaderHelper == null) {
             final SyncServer syncServer = Objects.requireNonNull(
                     args.getParcelable(SyncServer.BKEY_SITE), SyncServer.BKEY_SITE);
-            mSyncReaderHelper = new SyncReaderHelper(syncServer);
+            syncReaderHelper = new SyncReaderHelper(syncServer);
         }
     }
 
     @Override
     @NonNull
     public SyncReaderHelper getDataReaderHelper() {
-        return Objects.requireNonNull(mSyncReaderHelper, "mHelper");
+        return Objects.requireNonNull(syncReaderHelper, "mHelper");
     }
 
     @Override
     public boolean isReadyToGo() {
-        Objects.requireNonNull(mSyncReaderHelper, "mSyncReaderHelper");
+        Objects.requireNonNull(syncReaderHelper, "mSyncReaderHelper");
 
-        switch (mSyncReaderHelper.getSyncServer()) {
+        switch (syncReaderHelper.getSyncServer()) {
             case CalibreCS: {
                 @Nullable
-                final CalibreLibrary selected = mSyncReaderHelper
+                final CalibreLibrary selected = syncReaderHelper
                         .getExtraArgs().getParcelable(CalibreContentServer.BKEY_LIBRARY);
                 return selected != null && selected.getTotalBooks() > 0;
             }

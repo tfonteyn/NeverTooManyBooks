@@ -130,9 +130,9 @@ public class AmazonSearchEngine
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /** Parse the "x pages" string. */
-    private final Pattern mPagesPattern;
+    private final Pattern pagesPattern;
 
-    private final AuthorTypeMapper mAuthorTypeMapper = new AuthorTypeMapper();
+    private final AuthorTypeMapper authorTypeMapper = new AuthorTypeMapper();
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -161,7 +161,7 @@ public class AmazonSearchEngine
                 pagesStr = "pages";
                 break;
         }
-        mPagesPattern = Pattern.compile(pagesStr, Pattern.LITERAL);
+        pagesPattern = Pattern.compile(pagesStr, Pattern.LITERAL);
     }
 
     public static SearchEngineConfig createConfig() {
@@ -296,14 +296,14 @@ public class AmazonSearchEngine
 
         parseASIN(document, bookData);
 
-        if (!mAuthors.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
+        if (!authorList.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
         }
-        if (!mPublishers.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
+        if (!publisherList.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
         }
-        if (!mSeries.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, mSeries);
+        if (!seriesList.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
         }
 
         checkForSeriesNameInTitle(bookData);
@@ -313,7 +313,7 @@ public class AmazonSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final String isbn = bookData.getString(DBKey.KEY_ISBN);
+            final String isbn = bookData.getString(DBKey.BOOK_ISBN);
             final ArrayList<String> list = parseCovers(document, isbn, 0);
             if (!list.isEmpty()) {
                 bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
@@ -370,12 +370,12 @@ public class AmazonSearchEngine
             String data = li.text().trim();
             switch (label.toLowerCase(siteLocale)) {
                 case "isbn-13":
-                    bookData.putString(DBKey.KEY_ISBN, data);
+                    bookData.putString(DBKey.BOOK_ISBN, data);
                     break;
 
                 case "isbn-10":
-                    if (!bookData.containsKey(DBKey.KEY_ISBN)) {
-                        bookData.putString(DBKey.KEY_ISBN, data);
+                    if (!bookData.containsKey(DBKey.BOOK_ISBN)) {
+                        bookData.putString(DBKey.BOOK_ISBN, data);
                     }
                     break;
 
@@ -385,9 +385,9 @@ public class AmazonSearchEngine
                 case "broché":
                 case "taschenbuch":
                 case "gebundene ausgabe":
-                    bookData.putString(DBKey.BOOK_FORMAT, label);
-                    bookData.putString(DBKey.PAGES,
-                                       mPagesPattern.matcher(data).replaceAll("").trim());
+                    bookData.putString(DBKey.FORMAT, label);
+                    bookData.putString(DBKey.PAGE_COUNT,
+                                       pagesPattern.matcher(data).replaceAll("").trim());
                     break;
 
                 case "language":
@@ -409,27 +409,27 @@ public class AmazonSearchEngine
                         final String pubName = matcher.group(1);
                         if (pubName != null) {
                             final Publisher publisher = Publisher.from(pubName.trim());
-                            mPublishers.add(publisher);
+                            publisherList.add(publisher);
                             publisherWasAdded = true;
                         }
 
                         final String pubDate = matcher.group(2);
                         if (pubDate != null) {
-                            bookData.putString(DBKey.DATE_BOOK_PUBLICATION,
+                            bookData.putString(DBKey.BOOK_PUBLICATION__DATE,
                                                pubDate.trim());
                         }
                     }
 
                     if (!publisherWasAdded) {
                         final Publisher publisher = Publisher.from(data);
-                        mPublishers.add(publisher);
+                        publisherList.add(publisher);
                     }
                     break;
                 }
 
                 case "series":
                 case "collection":
-                    mSeries.add(Series.from(data));
+                    seriesList.add(Series.from(data));
                     break;
 
                 case "product dimensions":
@@ -495,10 +495,10 @@ public class AmazonSearchEngine
                         }
 
                         if (data != null) {
-                            author.addType(mAuthorTypeMapper.map(siteLocale, data));
+                            author.addType(authorTypeMapper.map(siteLocale, data));
                         }
                     }
-                    mAuthors.add(author);
+                    authorList.add(author);
                 }
             }
         }

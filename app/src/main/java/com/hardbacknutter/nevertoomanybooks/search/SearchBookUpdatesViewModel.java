@@ -34,9 +34,12 @@ import androidx.lifecycle.MutableLiveData;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -67,63 +70,63 @@ public class SearchBookUpdatesViewModel
     /** Prefix to store the settings. */
     private static final String SYNC_PROCESSOR_PREFIX = "fields.update.usage.";
 
-    private final MutableLiveData<LiveDataEvent<TaskResult<Bundle>>> mListFinished =
+    private final MutableLiveData<LiveDataEvent<TaskResult<Bundle>>> listFinished =
             new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> mListFailed =
+    private final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> listFailed =
             new MutableLiveData<>();
 
     /**
      * Current and original book data.
      * The object gets cleared and reused for each iteration of the loop.
      */
-    private final Book mCurrentBook = new Book();
+    private final Book currentBook = new Book();
 
     /** The configuration on which fields to update and how. */
-    private SyncReaderProcessor.Builder mSyncProcessorBuilder;
+    private SyncReaderProcessor.Builder syncProcessorBuilder;
 
     /**
-     * The final configuration build from {@link #mSyncProcessorBuilder},
+     * The final configuration build from {@link #syncProcessorBuilder},
      * ready to start processing.
      */
     @Nullable
-    private SyncReaderProcessor mSyncProcessor;
+    private SyncReaderProcessor syncProcessor;
 
     /** Database Access. */
-    private BookDao mBookDao;
+    private BookDao bookDao;
 
     /** Book ID's to fetch. {@code null} for all books. */
     @Nullable
-    private List<Long> mBookIdList;
+    private List<Long> bookIdList;
 
     /** Allows restarting an update task from the given book id onwards. 0 for all. */
-    private long mFromBookIdOnwards;
+    private long fromBookIdOnwards;
 
     /** The (subset) of fields relevant to the current book. */
-    private Map<String, SyncField> mCurrentFieldsWanted;
+    private Map<String, SyncField> currentFieldsWanted;
     /** Tracks the current book ID. */
-    private long mCurrentBookId;
-    private Cursor mCurrentCursor;
+    private long currentBookId;
+    private Cursor currentCursor;
 
-    private int mCurrentProgressCounter;
-    private int mCurrentCursorCount;
+    private int currentProgressCounter;
+    private int currentCursorCount;
 
     /** Observable. */
     @NonNull
     LiveData<LiveDataEvent<TaskResult<Bundle>>> onAllDone() {
-        return mListFinished;
+        return listFinished;
     }
 
     /** Observable. */
     @NonNull
     LiveData<LiveDataEvent<TaskResult<Exception>>> onAbort() {
-        return mListFailed;
+        return listFailed;
     }
 
     @Override
     protected void onCleared() {
         // sanity check, should already have been closed.
-        if (mCurrentCursor != null) {
-            mCurrentCursor.close();
+        if (currentCursor != null) {
+            currentCursor.close();
         }
     }
 
@@ -138,63 +141,75 @@ public class SearchBookUpdatesViewModel
         // init the SearchCoordinator.
         super.init(context, args);
 
-        if (mBookDao == null) {
-            mBookDao = ServiceLocator.getInstance().getBookDao();
+        if (bookDao == null) {
+            bookDao = ServiceLocator.getInstance().getBookDao();
 
             if (args != null) {
-                mBookIdList = ParcelUtils.unwrap(args, Book.BKEY_BOOK_ID_LIST);
+                bookIdList = ParcelUtils.unwrap(args, Book.BKEY_BOOK_ID_LIST);
             }
 
-            mSyncProcessorBuilder = createSyncProcessorBuilder();
+            syncProcessorBuilder = createSyncProcessorBuilder(context);
         }
     }
 
-    /**
-     * Entries are displayed in the order they are added here.
-     */
-    private SyncReaderProcessor.Builder createSyncProcessorBuilder() {
+    @NonNull
+    private SyncReaderProcessor.Builder createSyncProcessorBuilder(@NonNull final Context context) {
+        final SortedMap<String, String[]> map = new TreeMap<>();
+        map.put(context.getString(R.string.lbl_cover_front),
+                new String[]{FieldVisibility.COVER[0]});
+        map.put(context.getString(R.string.lbl_cover_back),
+                new String[]{FieldVisibility.COVER[1]});
+        map.put(context.getString(R.string.lbl_title),
+                new String[]{DBKey.TITLE});
+        map.put(context.getString(R.string.lbl_isbn),
+                new String[]{DBKey.BOOK_ISBN});
+        map.put(context.getString(R.string.lbl_description),
+                new String[]{DBKey.DESCRIPTION});
+        map.put(context.getString(R.string.lbl_print_run),
+                new String[]{DBKey.PRINT_RUN});
+        map.put(context.getString(R.string.lbl_date_published),
+                new String[]{DBKey.BOOK_PUBLICATION__DATE});
+        map.put(context.getString(R.string.lbl_first_publication),
+                new String[]{DBKey.FIRST_PUBLICATION__DATE});
+        map.put(context.getString(R.string.lbl_price_listed),
+                new String[]{DBKey.PRICE_LISTED});
+        map.put(context.getString(R.string.lbl_pages),
+                new String[]{DBKey.PAGE_COUNT});
+        map.put(context.getString(R.string.lbl_format),
+                new String[]{DBKey.FORMAT});
+        map.put(context.getString(R.string.lbl_color),
+                new String[]{DBKey.COLOR});
+        map.put(context.getString(R.string.lbl_language),
+                new String[]{DBKey.LANGUAGE});
+        map.put(context.getString(R.string.lbl_genre),
+                new String[]{DBKey.GENRE});
+        map.put(context.getString(R.string.lbl_authors),
+                new String[]{DBKey.FK_AUTHOR, Book.BKEY_AUTHOR_LIST});
+        map.put(context.getString(R.string.lbl_series_multiple),
+                new String[]{DBKey.FK_SERIES, Book.BKEY_SERIES_LIST});
+        map.put(context.getString(R.string.lbl_table_of_content),
+                new String[]{DBKey.TOC_TYPE__BITMASK, Book.BKEY_TOC_LIST});
+        map.put(context.getString(R.string.lbl_publishers),
+                new String[]{DBKey.FK_PUBLISHER, Book.BKEY_PUBLISHER_LIST});
+
+
         final SyncReaderProcessor.Builder builder =
-                new SyncReaderProcessor.Builder(SYNC_PROCESSOR_PREFIX)
-                        // DBKey.PREFS_IS_USED_COVER is the SharedPreference key indicating
-                        // the Action needed for this field.
-                        // The actual file names are in the Book.BKEY_TMP_FILE_SPEC array.
-                        .add(R.string.lbl_cover_front, DBKey.COVER_IS_USED[0])
-                        .addRelatedField(DBKey.COVER_IS_USED[0], Book.BKEY_TMP_FILE_SPEC[0])
+                new SyncReaderProcessor.Builder(SYNC_PROCESSOR_PREFIX);
 
-                        .add(R.string.lbl_cover_back, DBKey.COVER_IS_USED[1])
-                        .addRelatedField(DBKey.COVER_IS_USED[1], Book.BKEY_TMP_FILE_SPEC[1])
+        // add the sorted fields
+        map.forEach(builder::add);
 
-                        .add(R.string.lbl_title, DBKey.TITLE)
-                        .add(R.string.lbl_isbn, DBKey.KEY_ISBN)
+        builder.addRelatedField(FieldVisibility.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
+               .addRelatedField(FieldVisibility.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
+               .addRelatedField(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY);
 
-                        .addList(R.string.lbl_authors, DBKey.FK_AUTHOR, Book.BKEY_AUTHOR_LIST)
-                        .addList(R.string.lbl_series_multiple, DBKey.SERIES_TITLE,
-                                 Book.BKEY_SERIES_LIST)
 
-                        .add(R.string.lbl_description, DBKey.DESCRIPTION)
-
-                        .addList(R.string.lbl_table_of_content, DBKey.BITMASK_TOC,
-                                 Book.BKEY_TOC_LIST)
-
-                        .addList(R.string.lbl_publishers, DBKey.PUBLISHER_NAME,
-                                 Book.BKEY_PUBLISHER_LIST)
-                        .add(R.string.lbl_print_run, DBKey.PRINT_RUN)
-                        .add(R.string.lbl_date_published, DBKey.DATE_BOOK_PUBLICATION)
-                        .add(R.string.lbl_first_publication, DBKey.DATE_FIRST_PUBLICATION)
-
-                        .add(R.string.lbl_price_listed, DBKey.PRICE_LISTED)
-                        .addRelatedField(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY)
-
-                        .add(R.string.lbl_pages, DBKey.PAGES)
-                        .add(R.string.lbl_format, DBKey.BOOK_FORMAT)
-                        .add(R.string.lbl_color, DBKey.COLOR)
-                        .add(R.string.lbl_language, DBKey.LANGUAGE)
-                        .add(R.string.lbl_genre, DBKey.GENRE);
-
+        // always added at the end, not sorted.
         for (final SearchEngineConfig seConfig : SearchEngineRegistry.getInstance().getAll()) {
             final Domain domain = seConfig.getExternalIdDomain();
             if (domain != null) {
-                builder.add(seConfig.getLabelResId(), domain.getName(), SyncAction.Overwrite);
+                builder.add(context.getString(seConfig.getLabelResId()),
+                            domain.getName(), SyncAction.Overwrite);
             }
         }
 
@@ -203,7 +218,7 @@ public class SearchBookUpdatesViewModel
 
     @NonNull
     Collection<SyncField> getSyncFields() {
-        return mSyncProcessorBuilder.getSyncFields();
+        return syncProcessorBuilder.getSyncFields();
     }
 
     /**
@@ -214,12 +229,13 @@ public class SearchBookUpdatesViewModel
     boolean isShowWarningAboutCovers() {
 
         // Less than (arbitrary) 10 books, don't check/warn needed.
-        if (mBookIdList != null && mBookIdList.size() < 10) {
+        if (bookIdList != null && bookIdList.size() < 10) {
             return false;
         }
 
         // More than 10 books, check if the user wants ALL covers
-        return mSyncProcessorBuilder.getSyncAction(DBKey.COVER_IS_USED[0]) == SyncAction.Overwrite;
+        return syncProcessorBuilder.getSyncAction(FieldVisibility.COVER[0])
+               == SyncAction.Overwrite;
     }
 
     /**
@@ -229,8 +245,8 @@ public class SearchBookUpdatesViewModel
      * @param action to set
      */
     void setCoverSyncAction(@NonNull final SyncAction action) {
-        mSyncProcessorBuilder.setSyncAction(DBKey.COVER_IS_USED[0], action);
-        mSyncProcessorBuilder.setSyncAction(DBKey.COVER_IS_USED[1], action);
+        syncProcessorBuilder.setSyncAction(FieldVisibility.COVER[0], action);
+        syncProcessorBuilder.setSyncAction(FieldVisibility.COVER[1], action);
     }
 
     /**
@@ -242,21 +258,21 @@ public class SearchBookUpdatesViewModel
      *                          Defaults to 0, i.e. the full set.
      */
     void setFromBookIdOnwards(final long fromBookIdOnwards) {
-        mFromBookIdOnwards = fromBookIdOnwards;
+        this.fromBookIdOnwards = fromBookIdOnwards;
     }
 
     /**
      * Write current settings to the user preferences.
      */
     void writePreferences() {
-        mSyncProcessorBuilder.writePreferences();
+        syncProcessorBuilder.writePreferences();
     }
 
     /**
      * Reset current usage back to defaults, and write to preferences.
      */
     void resetPreferences() {
-        mSyncProcessorBuilder.resetPreferences();
+        syncProcessorBuilder.resetPreferences();
     }
 
     /**
@@ -268,17 +284,17 @@ public class SearchBookUpdatesViewModel
      */
     boolean startSearch(@NonNull final Context context) {
 
-        mSyncProcessor = mSyncProcessorBuilder.build();
+        syncProcessor = syncProcessorBuilder.build();
 
-        mCurrentProgressCounter = 0;
+        currentProgressCounter = 0;
 
         try {
-            if (mBookIdList == null || mBookIdList.isEmpty()) {
-                mCurrentCursor = mBookDao.fetchFromIdOnwards(mFromBookIdOnwards);
+            if (bookIdList == null || bookIdList.isEmpty()) {
+                currentCursor = bookDao.fetchFromIdOnwards(fromBookIdOnwards);
             } else {
-                mCurrentCursor = mBookDao.fetchById(mBookIdList);
+                currentCursor = bookDao.fetchById(bookIdList);
             }
-            mCurrentCursorCount = mCurrentCursor.getCount();
+            currentCursorCount = currentCursor.getCount();
 
         } catch (@NonNull final Exception e) {
             postSearch(e);
@@ -298,37 +314,37 @@ public class SearchBookUpdatesViewModel
      */
     private boolean nextBook(@NonNull final Context context) {
         try {
-            final int idCol = mCurrentCursor.getColumnIndex(DBKey.PK_ID);
+            final int idCol = currentCursor.getColumnIndex(DBKey.PK_ID);
 
             // loop/skip until we start a search for a book.
-            while (mCurrentCursor.moveToNext() && !isCancelled()) {
+            while (currentCursor.moveToNext() && !isCancelled()) {
 
-                mCurrentProgressCounter++;
+                currentProgressCounter++;
 
                 //read the book ID
-                mCurrentBookId = mCurrentCursor.getLong(idCol);
+                currentBookId = currentCursor.getLong(idCol);
 
                 // and populate the actual book based on the cursor data
-                mCurrentBook.load(mCurrentBookId, mCurrentCursor);
+                currentBook.load(currentBookId, currentCursor);
 
                 // Check which fields this book needs.
                 //noinspection ConstantConditions
-                mCurrentFieldsWanted = mSyncProcessor.filter(mCurrentBook);
+                currentFieldsWanted = syncProcessor.filter(currentBook);
 
-                final String title = mCurrentBook.getTitle();
+                final String title = currentBook.getTitle();
 
-                if (!mCurrentFieldsWanted.isEmpty()) {
+                if (!currentFieldsWanted.isEmpty()) {
                     // remove all other criteria (this is CRUCIAL)
                     clearSearchCriteria();
                     boolean canSearch = false;
 
-                    final String isbnStr = mCurrentBook.getString(DBKey.KEY_ISBN);
+                    final String isbnStr = currentBook.getString(DBKey.BOOK_ISBN);
                     if (!isbnStr.isEmpty()) {
                         setIsbnSearchText(isbnStr, true);
                         canSearch = true;
                     }
 
-                    final Author author = mCurrentBook.getPrimaryAuthor();
+                    final Author author = currentBook.getPrimaryAuthor();
                     if (author != null) {
                         final String authorName = author.getFormattedName(true);
                         if (!authorName.isEmpty() && !title.isEmpty()) {
@@ -344,7 +360,7 @@ public class SearchBookUpdatesViewModel
                             .getInstance().getAll()) {
                         final Domain domain = config.getExternalIdDomain();
                         if (domain != null) {
-                            final String value = mCurrentBook.getString(domain.getName());
+                            final String value = currentBook.getString(domain.getName());
                             if (!value.isEmpty() && !"0".equals(value)) {
                                 externalIds.put(config.getEngineId(), value);
                             }
@@ -358,7 +374,7 @@ public class SearchBookUpdatesViewModel
 
                     if (canSearch) {
                         // optional: whether this is used will depend on SearchEngine/Preferences
-                        mCurrentBook.getPrimaryPublisher().ifPresent(publisher -> {
+                        currentBook.getPrimaryPublisher().ifPresent(publisher -> {
                             final String publisherName = publisher.getName();
                             if (!publisherName.isEmpty()) {
                                 setPublisherSearchText(publisherName);
@@ -368,7 +384,7 @@ public class SearchBookUpdatesViewModel
                         // optional: whether this is used will depend on SearchEngine/Preferences
                         final boolean[] fetchCovers = new boolean[2];
                         for (int cIdx = 0; cIdx < 2; cIdx++) {
-                            fetchCovers[cIdx] = mCurrentFieldsWanted
+                            fetchCovers[cIdx] = currentFieldsWanted
                                     .containsKey(Book.BKEY_TMP_FILE_SPEC[cIdx]);
                         }
                         setFetchCover(fetchCovers);
@@ -413,11 +429,11 @@ public class SearchBookUpdatesViewModel
 
         if (!isCancelled() && bookData != null && !bookData.isEmpty()) {
             //noinspection ConstantConditions
-            final Book delta = mSyncProcessor.process(context, mCurrentBookId, mCurrentBook,
-                                                      mCurrentFieldsWanted, bookData);
+            final Book delta = syncProcessor.process(context, currentBookId, currentBook,
+                                                     currentFieldsWanted, bookData);
             if (delta != null) {
                 try {
-                    mBookDao.update(context, delta, 0);
+                    bookDao.update(context, delta, 0);
                 } catch (@NonNull final StorageException | DaoWriteException e) {
                     // ignore, but log it.
                     Logger.error(TAG, e);
@@ -428,8 +444,8 @@ public class SearchBookUpdatesViewModel
         //update the counter, another one done.
         final TaskProgress taskProgress = new TaskProgress(
                 R.id.TASK_ID_UPDATE_FIELDS, null,
-                mCurrentProgressCounter, mCurrentCursorCount, null);
-        mSearchCoordinatorProgress.setValue(new LiveDataEvent<>(taskProgress));
+                currentProgressCounter, currentCursorCount, null);
+        searchCoordinatorProgress.setValue(new LiveDataEvent<>(taskProgress));
 
         // On to the next book in the list.
         return nextBook(context);
@@ -448,8 +464,8 @@ public class SearchBookUpdatesViewModel
      * @param e (optional) exception
      */
     private void postSearch(@Nullable final Exception e) {
-        if (mCurrentCursor != null) {
-            mCurrentCursor.close();
+        if (currentCursor != null) {
+            currentCursor.close();
         }
 
         // Tell the SearchCoordinator we're done and it should clean up.
@@ -457,21 +473,21 @@ public class SearchBookUpdatesViewModel
         super.cancel();
 
         // the last book id which was handled; can be used to restart the update.
-        mFromBookIdOnwards = mCurrentBookId;
+        fromBookIdOnwards = currentBookId;
 
         final Bundle results = ServiceLocator.newBundle();
-        results.putLong(BKEY_LAST_BOOK_ID, mFromBookIdOnwards);
+        results.putLong(BKEY_LAST_BOOK_ID, fromBookIdOnwards);
 
         // all books || a list of books || (single book && ) not cancelled
-        if (mBookIdList == null || mBookIdList.size() > 1 || !isCancelled()) {
+        if (bookIdList == null || bookIdList.size() > 1 || !isCancelled()) {
             // One or more books were changed.
             // Technically speaking when doing a list of books, the task might have been
             // cancelled before the first book was done. We disregard this fringe case.
             results.putBoolean(BKEY_MODIFIED, true);
 
             // if applicable, pass the first book for repositioning the list on screen
-            if (mBookIdList != null && !mBookIdList.isEmpty()) {
-                results.putLong(DBKey.FK_BOOK, mBookIdList.get(0));
+            if (bookIdList != null && !bookIdList.isEmpty()) {
+                results.putLong(DBKey.FK_BOOK, bookIdList.get(0));
             }
         }
 
@@ -479,15 +495,15 @@ public class SearchBookUpdatesViewModel
             Logger.error(TAG, e);
             final LiveDataEvent<TaskResult<Exception>> message =
                     new LiveDataEvent<>(new TaskResult<>(R.id.TASK_ID_UPDATE_FIELDS, e));
-            mListFailed.setValue(message);
+            listFailed.setValue(message);
 
         } else {
             final LiveDataEvent<TaskResult<Bundle>> message =
                     new LiveDataEvent<>(new TaskResult<>(R.id.TASK_ID_UPDATE_FIELDS, results));
             if (isCancelled()) {
-                mSearchCoordinatorCancelled.setValue(message);
+                searchCoordinatorCancelled.setValue(message);
             } else {
-                mListFinished.setValue(message);
+                listFinished.setValue(message);
             }
         }
     }

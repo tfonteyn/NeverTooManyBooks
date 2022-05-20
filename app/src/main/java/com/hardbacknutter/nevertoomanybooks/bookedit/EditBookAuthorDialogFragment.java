@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.MenuItem;
@@ -34,11 +33,11 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
@@ -137,9 +136,7 @@ public class EditBookAuthorDialogFragment
         vb.givenNames.setAdapter(givenNameAdapter);
         vb.cbxIsComplete.setChecked(currentEdit.isComplete());
 
-        final SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
-        final boolean useAuthorType = DBKey.isUsed(DBKey.BOOK_AUTHOR_TYPE_BITMASK);
+        final boolean useAuthorType = GlobalFieldVisibility.isUsed(DBKey.AUTHOR_TYPE__BITMASK);
         vb.authorTypeGroup.setVisibility(useAuthorType ? View.VISIBLE : View.GONE);
         if (useAuthorType) {
             vb.btnUseAuthorType.setOnCheckedChangeListener(

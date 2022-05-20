@@ -42,7 +42,7 @@ public class AutoCompleteTextField
 
     /** The list for the adapter. */
     @NonNull
-    private final Supplier<List<String>> mListSupplier;
+    private final Supplier<List<String>> listSupplier;
 
     /**
      * Constructor.
@@ -54,7 +54,7 @@ public class AutoCompleteTextField
                                  @NonNull final String fieldKey,
                                  @NonNull final Supplier<List<String>> listSupplier) {
         super(fragmentId, fieldViewId, fieldKey);
-        mListSupplier = listSupplier;
+        this.listSupplier = listSupplier;
     }
 
     /**
@@ -71,14 +71,14 @@ public class AutoCompleteTextField
                                  final boolean enableReformat,
                                  @NonNull final Supplier<List<String>> listSupplier) {
         super(fragmentId, fieldViewId, fieldKey, formatter, enableReformat);
-        mListSupplier = listSupplier;
+        this.listSupplier = listSupplier;
     }
 
     @Override
     public void setParentView(@NonNull final View parent) {
         super.setParentView(parent);
         requireView().setAdapter(new FieldArrayAdapter(parent.getContext(),
-                                                       mListSupplier.get(), formatter));
+                                                       listSupplier.get(), formatter));
     }
 
     @Override

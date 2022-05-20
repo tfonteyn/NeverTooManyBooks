@@ -118,38 +118,38 @@ public class CalibreContentServerReader
     private static final String VALUE_IS_NULL = "null";
 
     @NonNull
-    private final Updates mUpdateOption;
+    private final Updates updateOption;
     /**
      * If we want new-books-only {@link Updates#Skip)
      * or new-books-and-updates {@link Updates#OnlyNewer},
      * we limit the fetch to the sync-date.
      */
     @Nullable
-    private final LocalDateTime mSyncDate;
+    private final LocalDateTime syncDate;
 
-    private final boolean mDoCovers;
+    private final boolean doCovers;
 
     /** cached localized "eBooks" string. */
     @NonNull
-    private final String mEBookString;
+    private final String eBookString;
     /** cached localized progress string. */
     @NonNull
-    private final String mBooksString;
+    private final String booksString;
 
     @NonNull
-    private final BookDao mBookDao;
+    private final BookDao bookDao;
     @NonNull
-    private final CalibreLibraryDao mCalibreLibraryDao;
+    private final CalibreLibraryDao calibreLibraryDao;
 
     @NonNull
-    private final CalibreContentServer mServer;
+    private final CalibreContentServer server;
     @NonNull
-    private final DateParser mDateParser = new ISODateParser();
+    private final DateParser dateParser = new ISODateParser();
 
     /** The physical library from which we'll be importing. */
     @Nullable
-    private CalibreLibrary mLibrary;
-    private ReaderResults mResults;
+    private CalibreLibrary library;
+    private ReaderResults results;
 
     /**
      * Constructor.
@@ -163,20 +163,20 @@ public class CalibreContentServerReader
                                       @NonNull final SyncReaderHelper helper)
             throws CertificateException {
 
-        mUpdateOption = helper.getUpdateOption();
-        mSyncDate = helper.getSyncDate();
+        updateOption = helper.getUpdateOption();
+        syncDate = helper.getSyncDate();
 
         //ENHANCE: add support for SyncProcessor
 
-        mDoCovers = helper.getRecordTypes().contains(RecordType.Cover);
-        mLibrary = helper.getExtraArgs().getParcelable(CalibreContentServer.BKEY_LIBRARY);
+        doCovers = helper.getRecordTypes().contains(RecordType.Cover);
+        library = helper.getExtraArgs().getParcelable(CalibreContentServer.BKEY_LIBRARY);
 
-        mServer = new CalibreContentServer(context);
-        mBookDao = ServiceLocator.getInstance().getBookDao();
-        mCalibreLibraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
+        server = new CalibreContentServer(context);
+        bookDao = ServiceLocator.getInstance().getBookDao();
+        calibreLibraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
 
-        mEBookString = context.getString(R.string.book_format_ebook);
-        mBooksString = context.getString(R.string.lbl_books);
+        eBookString = context.getString(R.string.book_format_ebook);
+        booksString = context.getString(R.string.lbl_books);
     }
 
     // This needs thought/work....
@@ -230,7 +230,7 @@ public class CalibreContentServerReader
 
     @Override
     public void cancel() {
-        mServer.cancel();
+        server.cancel();
     }
 
     private void readLibraryMetaData(@NonNull final Context context)
@@ -238,9 +238,9 @@ public class CalibreContentServerReader
                    IOException,
                    JSONException {
 
-        mServer.readMetaData(context);
-        if (mLibrary == null) {
-            mLibrary = mServer.getDefaultLibrary();
+        server.readMetaData(context);
+        if (library == null) {
+            library = server.getDefaultLibrary();
         }
     }
 
@@ -260,11 +260,11 @@ public class CalibreContentServerReader
 
         final Bundle args = ServiceLocator.newBundle();
         // the requested (or default) library
-        args.putParcelable(CalibreContentServer.BKEY_LIBRARY, mLibrary);
+        args.putParcelable(CalibreContentServer.BKEY_LIBRARY, library);
         // and the full list
-        args.putParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST, mServer.getLibraries());
+        args.putParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST, server.getLibraries());
 
-        args.putBoolean(CalibreContentServer.BKEY_EXT_INSTALLED, mServer.isExtensionInstalled());
+        args.putBoolean(CalibreContentServer.BKEY_EXT_INSTALLED, server.isExtensionInstalled());
 
         return Optional.of(new SyncReaderMetaData(args));
     }
@@ -281,7 +281,7 @@ public class CalibreContentServerReader
         final String progressMessage =
                 context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
 
-        mResults = new ReaderResults();
+        results = new ReaderResults();
 
         progressListener.setIndeterminate(true);
         progressListener.publishProgress(0, context.getString(R.string.progress_msg_connecting));
@@ -294,7 +294,7 @@ public class CalibreContentServerReader
             readLibraryMetaData(context);
 
             //noinspection ConstantConditions
-            final int totalNum = mLibrary.getTotalBooks();
+            final int totalNum = library.getTotalBooks();
 
             int num = 0;
             int offset = 0;
@@ -304,14 +304,14 @@ public class CalibreContentServerReader
             // If we want new-books-only (Updates.Skip)
             // or new-books-and-updates (Updates.OnlyNewer),
             // we limit the fetch to the sync-date. This speeds up the process.
-            if (mUpdateOption == DataReader.Updates.Skip
-                || mUpdateOption == DataReader.Updates.OnlyNewer) {
+            if (updateOption == DataReader.Updates.Skip
+                || updateOption == DataReader.Updates.OnlyNewer) {
 
                 // last_modified:">2021-01-15", so we do a "minusDays(1)" first
                 // Due to rounding, we might get some books we don't need, but that's ok.
-                if (mSyncDate != null) {
+                if (syncDate != null) {
                     query = CalibreBook.LAST_MODIFIED + ":%22%3E"
-                            + mSyncDate.minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)
+                            + syncDate.minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)
                             + "%22";
                 }
             }
@@ -323,10 +323,10 @@ public class CalibreContentServerReader
                 final JSONObject root;
                 if (query == null) {
                     // all-books
-                    root = mServer.getBookIds(mLibrary.getLibraryStringId(), NUM, offset);
+                    root = server.getBookIds(library.getLibraryStringId(), NUM, offset);
                 } else {
                     // search based on the last-sync-date
-                    root = mServer.search(mLibrary.getLibraryStringId(), NUM, offset, query);
+                    root = server.search(library.getLibraryStringId(), NUM, offset, query);
                 }
 
                 // assume valid result if at least the "total_num" param is there.
@@ -344,11 +344,11 @@ public class CalibreContentServerReader
                     valid = bookIds != null && !bookIds.isEmpty();
                     if (valid) {
                         // with the above book-ids, get the full book objects
-                        final JSONObject bookList = mServer.getBooks(mLibrary.getLibraryStringId(),
-                                                                     bookIds);
-                        final JSONObject bookListVirtualLibs =
-                                mServer.getVirtualLibrariesForBooks(mLibrary.getLibraryStringId(),
+                        final JSONObject bookList = server.getBooks(library.getLibraryStringId(),
                                                                     bookIds);
+                        final JSONObject bookListVirtualLibs =
+                                server.getVirtualLibrariesForBooks(library.getLibraryStringId(),
+                                                                   bookIds);
 
                         final Iterator<String> it = bookList.keys();
                         while (it.hasNext() && !progressListener.isCancelled()) {
@@ -363,12 +363,12 @@ public class CalibreContentServerReader
 
                             handleBook(context, calibreBook);
 
-                            mResults.booksProcessed++;
+                            results.booksProcessed++;
                             final String msg = String.format(progressMessage,
-                                                             mBooksString,
-                                                             mResults.booksCreated,
-                                                             mResults.booksUpdated,
-                                                             mResults.booksSkipped);
+                                                             booksString,
+                                                             results.booksCreated,
+                                                             results.booksUpdated,
+                                                             results.booksSkipped);
                             progressListener.publishProgress(1, msg);
                         }
                     }
@@ -382,11 +382,11 @@ public class CalibreContentServerReader
         }
 
         // always set the sync date!
-        mLibrary.setLastSyncDate(LocalDateTime.now(ZoneOffset.UTC));
+        library.setLastSyncDate(LocalDateTime.now(ZoneOffset.UTC));
 
-        mCalibreLibraryDao.update(mLibrary);
+        calibreLibraryDao.update(library);
 
-        return mResults;
+        return results;
     }
 
     /**
@@ -403,10 +403,10 @@ public class CalibreContentServerReader
         try {
             final String calibreUuid = calibreBook.getString(CalibreBook.UUID);
             // check if we already have the calibre book in the local database
-            final long databaseBookId = mCalibreLibraryDao.getBookIdFromCalibreUuid(calibreUuid);
+            final long databaseBookId = calibreLibraryDao.getBookIdFromCalibreUuid(calibreUuid);
             if (databaseBookId > 0) {
                 // yes, we do - handle the update according to the users choice
-                switch (mUpdateOption) {
+                switch (updateOption) {
                     case Overwrite: {
                         // Get the full local book data; overwrite it with remote data
                         // as needed, and update. We don't use a delta.
@@ -419,10 +419,10 @@ public class CalibreContentServerReader
                         // as needed, and update. We don't use a delta.
                         final Book book = Book.from(databaseBookId);
                         // Should always be Non Null
-                        final LocalDateTime localDate = mDateParser.parse(
+                        final LocalDateTime localDate = dateParser.parse(
                                 book.getString(DBKey.DATE_LAST_UPDATED__UTC));
                         // Should not be null, but paranoia
-                        final LocalDateTime remoteDate = mDateParser.parse(
+                        final LocalDateTime remoteDate = dateParser.parse(
                                 calibreBook.getString(CalibreBook.LAST_MODIFIED));
 
                         if (localDate != null && remoteDate != null
@@ -431,20 +431,20 @@ public class CalibreContentServerReader
                             updateBook(context, calibreBook, book);
 
                         } else {
-                            mResults.booksFailed++;
+                            results.booksFailed++;
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                                 Log.d(TAG, "calibreUuid=" + calibreBook.getString(CalibreBook.UUID)
-                                           + "|" + mUpdateOption
+                                           + "|" + updateOption
                                            + "|FAIL|book=" + book.getId() + "|" + book.getTitle());
                             }
                         }
                         break;
                     }
                     case Skip: {
-                        mResults.booksSkipped++;
+                        results.booksSkipped++;
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                             Log.d(TAG, "calibreUuid=" + calibreBook.getString(CalibreBook.UUID)
-                                       + "|" + mUpdateOption);
+                                       + "|" + updateOption);
                         }
                         break;
                     }
@@ -455,7 +455,7 @@ public class CalibreContentServerReader
         } catch (@NonNull final DaoWriteException | SQLiteDoneException | JSONException e) {
             // log, but don't fail
             Logger.error(TAG, e);
-            mResults.booksFailed++;
+            results.booksFailed++;
         }
     }
 
@@ -467,13 +467,13 @@ public class CalibreContentServerReader
         book.setStage(EntityStage.Stage.Dirty);
         copyCalibreData(context, calibreBook, book);
 
-        mBookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                       | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
-        mResults.booksUpdated++;
+        bookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                      | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+        results.booksUpdated++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
             Log.d(TAG, "calibreUuid=" + calibreBook.getString(CalibreBook.UUID)
-                       + "|" + mUpdateOption
+                       + "|" + updateOption
                        + "|UPDATE|book=" + book.getId() + "|" + book.getTitle());
         }
     }
@@ -486,17 +486,17 @@ public class CalibreContentServerReader
         final Book book = new Book();
         book.setStage(EntityStage.Stage.Dirty);
         // it's an eBook - duh!
-        book.putString(DBKey.BOOK_FORMAT, mEBookString);
+        book.putString(DBKey.FORMAT, eBookString);
         copyCalibreData(context, calibreBook, book);
         // sanity check, the book should always/already be on the mapped shelf.
         book.ensureBookshelf(context);
 
-        mBookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);
-        mResults.booksCreated++;
+        bookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);
+        results.booksCreated++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
             Log.d(TAG, "calibreUuid=" + calibreBook.getString(CalibreBook.UUID)
-                       + "|" + mUpdateOption
+                       + "|" + updateOption
                        + "|INSERT|book=" + book.getId() + "|" + book.getTitle());
         }
     }
@@ -653,11 +653,11 @@ public class CalibreContentServerReader
             }
         }
 
-        if (mDoCovers) {
+        if (doCovers) {
             if (!calibreBook.isNull(CalibreBook.COVER)) {
                 final String coverUrl = calibreBook.optString(CalibreBook.COVER);
                 if (!coverUrl.isEmpty()) {
-                    final File file = mServer.getCover(calibreBookId, coverUrl).orElse(null);
+                    final File file = server.getCover(calibreBookId, coverUrl).orElse(null);
                     try {
                         localBook.setCover(0, file);
                     } catch (@NonNull final IOException ignore) {
@@ -671,7 +671,7 @@ public class CalibreContentServerReader
             final JSONObject userMetaData = calibreBook.optJSONObject(CalibreBook.USER_METADATA);
             if (userMetaData != null) {
                 //noinspection ConstantConditions
-                for (final CalibreCustomField cf : mLibrary.getCustomFields()) {
+                for (final CalibreCustomField cf : library.getCustomFields()) {
                     final JSONObject data = userMetaData.optJSONObject(cf.calibreKey);
 
                     // Sanity check, at this point it should always be true
@@ -722,7 +722,7 @@ public class CalibreContentServerReader
         // Bookshelves / Calibre Library & Virtual libraries.
 
         // Always add the current library; i.e. the library the book came from.
-        localBook.setCalibreLibrary(mLibrary);
+        localBook.setCalibreLibrary(library);
 
         // Current list, will be empty for new books
         final List<Bookshelf> bookShelves = localBook.getBookshelves();
@@ -730,7 +730,7 @@ public class CalibreContentServerReader
         // Add the physical library mapped Bookshelf
         //noinspection ConstantConditions
         final Bookshelf mappedBookshelf = Bookshelf
-                .getBookshelf(context, mLibrary.getMappedBookshelfId(), Bookshelf.PREFERRED);
+                .getBookshelf(context, library.getMappedBookshelfId(), Bookshelf.PREFERRED);
         if (bookShelves.isEmpty()) {
             // new book
             bookShelves.add(mappedBookshelf);
@@ -749,22 +749,22 @@ public class CalibreContentServerReader
                 final String name = virtualLibs.getString(i);
 
                 // lookup the matching virtual library.
-                mLibrary.getVirtualLibraries()
-                        .stream()
-                        .filter(vlib -> vlib.getName().equals(name))
-                        .findFirst()
-                        // it will always be present of course.
-                        .ifPresent(vlib -> {
-                            final Bookshelf vlibMappedBookshelf =
-                                    Bookshelf.getBookshelf(context,
-                                                           vlib.getMappedBookshelfId(),
-                                                           mLibrary.getMappedBookshelfId());
+                library.getVirtualLibraries()
+                       .stream()
+                       .filter(vlib -> vlib.getName().equals(name))
+                       .findFirst()
+                       // it will always be present of course.
+                       .ifPresent(vlib -> {
+                           final Bookshelf vlibMappedBookshelf =
+                                   Bookshelf.getBookshelf(context,
+                                                          vlib.getMappedBookshelfId(),
+                                                          library.getMappedBookshelfId());
 
-                            // add the vlib mapped bookshelf if not already present.
-                            if (bookShelves.stream()
-                                           .map(Bookshelf::getId)
-                                           .noneMatch(id -> id == vlibMappedBookshelf.getId())) {
-                                bookShelves.add(vlibMappedBookshelf);
+                           // add the vlib mapped bookshelf if not already present.
+                           if (bookShelves.stream()
+                                          .map(Bookshelf::getId)
+                                          .noneMatch(id -> id == vlibMappedBookshelf.getId())) {
+                               bookShelves.add(vlibMappedBookshelf);
                             }
                         });
             }

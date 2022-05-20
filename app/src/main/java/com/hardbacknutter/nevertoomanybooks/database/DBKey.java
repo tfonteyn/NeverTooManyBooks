@@ -20,12 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.database;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringDef;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 
 /**
@@ -131,7 +126,7 @@ public final class DBKey {
     public static final String KEY_BOOKSHELF_NAME_CSV = "bs_name_csv";
 
     /** {@link DBDefinitions#TBL_BOOKSHELF_FILTERS}. */
-    public static final String FILTER_NAME = "filter_name";
+    public static final String FILTER_DBKEY = "filter_name";
     public static final String FILTER_VALUE = "filter_value";
 
 
@@ -144,7 +139,7 @@ public final class DBKey {
     public static final String KEY_AUTHOR_FORMATTED_GIVEN_FIRST = "author_formatted_given_first";
 
     /** {@link DBDefinitions#TBL_BOOK_AUTHOR} */
-    public static final String BOOK_AUTHOR_TYPE_BITMASK = "author_type";
+    public static final String AUTHOR_TYPE__BITMASK = "author_type";
     public static final String BOOK_AUTHOR_POSITION = "author_position";
 
 
@@ -176,21 +171,21 @@ public final class DBKey {
 
     public static final String BOOK_UUID = "book_uuid";
     public static final String TITLE = "title";
-    public static final String KEY_ISBN = "isbn";
-    public static final String DATE_FIRST_PUBLICATION = "first_publication";
-    public static final String DATE_BOOK_PUBLICATION = "date_published";
+    public static final String BOOK_ISBN = "isbn";
+    public static final String FIRST_PUBLICATION__DATE = "first_publication";
+    public static final String BOOK_PUBLICATION__DATE = "date_published";
     public static final String PRINT_RUN = "print_run";
     public static final String PRICE_LISTED = "list_price";
     public static final String PRICE_LISTED_CURRENCY = PRICE_LISTED + SUFFIX_KEY_CURRENCY;
-    public static final String PAGES = "pages";
-    public static final String BOOK_FORMAT = "format";
+    public static final String PAGE_COUNT = "pages";
+    public static final String FORMAT = "format";
     public static final String COLOR = "color";
     public static final String LANGUAGE = "language";
     public static final String GENRE = "genre";
     public static final String DESCRIPTION = "description";
 
-    public static final String BITMASK_EDITION = "edition_bm";
-    public static final String BITMASK_TOC = "anthology";
+    public static final String EDITION__BITMASK = "edition_bm";
+    public static final String TOC_TYPE__BITMASK = "anthology";
 
 
     /** {@link DBDefinitions#TBL_BOOKS} Personal data. */
@@ -285,26 +280,6 @@ public final class DBKey {
     public static final String FTS_TOC_ENTRY_TITLE = "toc_title";
 
 
-    /** The "field is used" key for thumbnails. */
-    private static final String PREFIX_COVER_IS_USED = "thumbnail";
-    public static final String[] COVER_IS_USED = {
-            PREFIX_COVER_IS_USED + ".0",
-            PREFIX_COVER_IS_USED + ".1"
-    };
-
-    /**
-     * Users can select which fields they use / don't want to use.
-     * Each field has an entry in the Preferences.
-     * The key is suffixed with the name of the field.
-     */
-    private static final String PREFS_PREFIX_FIELD_VISIBILITY = "fields.visibility.";
-    public static final String[] PREFS_COVER_VISIBILITY_KEY = {
-            // fields.visibility.thumbnail.0
-            PREFS_PREFIX_FIELD_VISIBILITY + COVER_IS_USED[0],
-            // fields.visibility.thumbnail.1
-            PREFS_PREFIX_FIELD_VISIBILITY + COVER_IS_USED[1]
-    };
-
     /**
      * All money keys.
      * Used with {@code MONEY_KEYS.contains(key)} to check if a key is about money.
@@ -325,56 +300,7 @@ public final class DBKey {
     private DBKey() {
     }
 
-    /**
-     * Is the field in use; i.e. is it enabled in the user-preferences.
-     *
-     * @param dbdKey DBKey.KEY_x to lookup
-     *
-     * @return {@code true} if the user wants to use this field.
-     */
-    public static boolean isUsed(@NonNull final String dbdKey) {
-        return ServiceLocator.getPreferences()
-                             .getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + dbdKey, true);
-    }
-
     public static boolean isMoneyKey(@NonNull final CharSequence key) {
         return MONEY_KEYS.contains(key);
-    }
-
-    /**
-     * NEWTHINGS: new fields visibility.
-     * Same set as on xml/preferences_field_visibility.xml
-     */
-    @StringDef({
-
-            BOOK_AUTHOR_TYPE_BITMASK,
-            BOOK_CONDITION,
-            BOOK_CONDITION_COVER,
-            DATE_BOOK_PUBLICATION,
-            COLOR,
-            DESCRIPTION,
-            BITMASK_EDITION,
-            DATE_FIRST_PUBLICATION,
-            BOOK_FORMAT,
-            GENRE,
-            KEY_ISBN,
-            LANGUAGE,
-            LOANEE_NAME,
-            LOCATION,
-            PAGES,
-            PRICE_LISTED,
-            PRICE_PAID,
-            PERSONAL_NOTES,
-            PUBLISHER_NAME,
-            RATING,
-            READ_START__DATE,
-            READ_END__DATE,
-            SERIES_TITLE,
-            SIGNED__BOOL,
-            BITMASK_TOC
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface UserSelectedDomain {
-
     }
 }

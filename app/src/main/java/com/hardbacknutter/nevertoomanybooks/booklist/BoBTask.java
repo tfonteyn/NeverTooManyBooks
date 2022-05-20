@@ -145,7 +145,7 @@ public class BoBTask
                 // Always get the ISBN
                 new DomainExpression(
                         DBDefinitions.DOM_BOOK_ISBN,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_ISBN)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.BOOK_ISBN)));
 
         // external site ID's
         for (final Domain domain : SearchEngineRegistry.getInstance().getExternalIdDomains()) {
@@ -280,11 +280,11 @@ public class BoBTask
 
     private void addConditionalDomains(@NonNull final BooklistBuilder builder,
                                        @NonNull final Style style) {
-        if (style.isShowField(Style.Screen.List, DBKey.BITMASK_EDITION)) {
+        if (style.isShowField(Style.Screen.List, DBKey.EDITION__BITMASK)) {
             // The edition bitmask
             builder.addDomain(new DomainExpression(
-                    DBDefinitions.DOM_BOOK_EDITION_BITMASK,
-                    DBDefinitions.TBL_BOOKS.dot(DBKey.BITMASK_EDITION)));
+                    DBDefinitions.DOM_BOOK_EDITION,
+                    DBDefinitions.TBL_BOOKS.dot(DBKey.EDITION__BITMASK)));
         }
 
         if (style.isShowField(Style.Screen.List, DBKey.SIGNED__BOOL)) {
@@ -335,16 +335,16 @@ public class BoBTask
                     BooklistBuilder.EXP_PUBLISHER_NAME_CSV));
         }
 
-        if (style.isShowField(Style.Screen.List, DBKey.DATE_BOOK_PUBLICATION)) {
+        if (style.isShowField(Style.Screen.List, DBKey.BOOK_PUBLICATION__DATE)) {
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
-                    DBDefinitions.TBL_BOOKS.dot(DBKey.DATE_BOOK_PUBLICATION)));
+                    DBDefinitions.TBL_BOOKS.dot(DBKey.BOOK_PUBLICATION__DATE)));
         }
 
-        if (style.isShowField(Style.Screen.List, DBKey.BOOK_FORMAT)) {
+        if (style.isShowField(Style.Screen.List, DBKey.FORMAT)) {
             builder.addDomain(new DomainExpression(
                     DBDefinitions.DOM_BOOK_FORMAT,
-                    DBDefinitions.TBL_BOOKS.dot(DBKey.BOOK_FORMAT)));
+                    DBDefinitions.TBL_BOOKS.dot(DBKey.FORMAT)));
         }
 
         if (style.isShowField(Style.Screen.List, DBKey.LOCATION)) {

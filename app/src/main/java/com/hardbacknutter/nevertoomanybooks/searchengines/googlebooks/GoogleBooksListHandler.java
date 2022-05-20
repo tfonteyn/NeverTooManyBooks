@@ -679,12 +679,12 @@ class GoogleBooksListHandler
 
     /** XML content. */
     @SuppressWarnings("StringBufferField")
-    private final StringBuilder mBuilder = new StringBuilder();
+    private final StringBuilder builder = new StringBuilder();
     @NonNull
     private final List<String> url = new ArrayList<>();
 
-    private boolean mInEntry;
-    private boolean mEntryDone;
+    private boolean inEntry;
+    private boolean entryDone;
 
     /**
      * Get the results.
@@ -706,8 +706,8 @@ class GoogleBooksListHandler
                              @NonNull final String localName,
                              @NonNull final String qName,
                              @NonNull final Attributes attributes) {
-        if (!mEntryDone && localName.equalsIgnoreCase(XML_ENTRY)) {
-            mInEntry = true;
+        if (!entryDone && localName.equalsIgnoreCase(XML_ENTRY)) {
+            inEntry = true;
         }
     }
 
@@ -724,12 +724,12 @@ class GoogleBooksListHandler
          *       <id>http://www.google.com/books/feeds/volumes/lf2EMetoLugC</id>
          */
         if (localName.equalsIgnoreCase(XML_ENTRY)) {
-            mInEntry = false;
-            mEntryDone = true;
-        } else if (mInEntry) {
+            inEntry = false;
+            entryDone = true;
+        } else if (inEntry) {
             if (localName.equalsIgnoreCase(XML_ID)) {
                 // This url comes back as http, and we must use https... so replace it.
-                url.add(HTTP_LITERAL.matcher(mBuilder.toString())
+                url.add(HTTP_LITERAL.matcher(builder.toString())
                                     .replaceAll(Matcher.quoteReplacement("https:")));
             }
         }
@@ -738,7 +738,7 @@ class GoogleBooksListHandler
         // because we always want strings from the lowest level (leaf) XML elements.
         // To be completely correct, we should maintain a stack of builders that are pushed and
         // popped as each startElement/endElement is called. But lets not be pedantic for now.
-        mBuilder.setLength(0);
+        builder.setLength(0);
     }
 
     @Override
@@ -746,6 +746,6 @@ class GoogleBooksListHandler
     public void characters(@NonNull final char[] ch,
                            final int start,
                            final int length) {
-        mBuilder.append(ch, start, length);
+        builder.append(ch, start, length);
     }
 }

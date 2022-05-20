@@ -114,7 +114,7 @@ public class EditTextField<T, V extends EditText>
             // We need to do this in two steps. First format the value as normal.
             String text;
             try {
-                text = formatter.format(view.getContext(), mRawValue);
+                text = formatter.format(view.getContext(), rawValue);
 
             } catch (@NonNull final ClassCastException e) {
                 // Due to the way a Book loads data from the database,
@@ -122,7 +122,7 @@ public class EditTextField<T, V extends EditText>
                 // See {@link TypedCursor} class docs.
                 // Also see {@link SearchCoordinator#accumulateStringData}
                 Logger.error(TAG, e, value);
-                text = mRawValue != null ? String.valueOf(mRawValue) : "";
+                text = rawValue != null ? String.valueOf(rawValue) : "";
             }
 
             // Second step set the view but ...
@@ -154,7 +154,7 @@ public class EditTextField<T, V extends EditText>
      */
     @Override
     public void afterTextChanged(@NonNull final Editable editable) {
-        final T previous = mRawValue;
+        final T previous = rawValue;
 
         final V view = getView();
 
@@ -164,14 +164,14 @@ public class EditTextField<T, V extends EditText>
         final String text = editable.toString().trim();
         // Update the actual value
         if (formatter instanceof EditFieldFormatter) {
-            mRawValue = ((EditFieldFormatter<T>) formatter).extract(context, text);
+            rawValue = ((EditFieldFormatter<T>) formatter).extract(context, text);
         } else {
             // Without a formatter, we MUST assume <T> to be a String.
             // Make sure NOT to replace a 'null' value with an empty string
-            if (mRawValue != null || !text.isEmpty()) {
+            if (rawValue != null || !text.isEmpty()) {
                 // If we get an Exception here then the developer made a boo-boo.
                 //noinspection unchecked
-                mRawValue = (T) text;
+                rawValue = (T) text;
             }
         }
         // Clear any previous error. The new content will be re-checked at validation time.
@@ -179,7 +179,7 @@ public class EditTextField<T, V extends EditText>
 
         if (enableReformat) {
             if (System.currentTimeMillis() - lastChange > REFORMAT_DELAY_MS) {
-                final String formatted = formatter.format(context, mRawValue);
+                final String formatted = formatter.format(context, rawValue);
                 // If different, replace the encoded value with the formatted value.
                 if (!text.equalsIgnoreCase(formatted)) {
                     view.removeTextChangedListener(this);

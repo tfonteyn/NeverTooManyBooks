@@ -69,7 +69,7 @@ public class CollectionFormParser
     private static final String FF_STRIP_COLLECTIE_ID = "stripCollectieId";
 
     @NonNull
-    private final FutureHttpPost<Document> mFutureHttpPost;
+    private final FutureHttpPost<Document> futureHttpPost;
 
     /**
      * Constructor.
@@ -81,23 +81,23 @@ public class CollectionFormParser
                                 @NonNull final BookshelfMapper bookshelfmapper) {
         super(context, bookshelfmapper);
 
-        mIdLocation = FF_LOCATIE;
-        mIdNotes = FF_OPMERKING;
-        mIdDateAcquired = FF_AANKOOP_DATUM;
-        mIdRating = FF_SCORE;
-        mIdEdition = FF_DRUK;
-        mIdPricePaid = FF_AANKOOP_PRIJS;
-        mIdAmount = FF_AANTAL;
+        idLocation = FF_LOCATIE;
+        idNotes = FF_OPMERKING;
+        idDateAcquired = FF_AANKOOP_DATUM;
+        idRating = FF_SCORE;
+        idEdition = FF_DRUK;
+        idPricePaid = FF_AANKOOP_PRIJS;
+        idAmount = FF_AANTAL;
 
         final SearchEngineConfig config = SearchEngineRegistry
                 .getInstance().getByEngineId(SearchSites.STRIP_INFO_BE);
 
-        mFutureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
-        mFutureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())
-                       .setReadTimeout(config.getReadTimeoutInMs())
-                       .setThrottler(StripInfoSearchEngine.THROTTLER)
-                       .setRequestProperty(HttpUtils.CONTENT_TYPE,
-                                           HttpUtils.CONTENT_TYPE_FORM_URL_ENCODED);
+        futureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
+        futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())
+                      .setReadTimeout(config.getReadTimeoutInMs())
+                      .setThrottler(StripInfoSearchEngine.THROTTLER)
+                      .setRequestProperty(HttpUtils.CONTENT_TYPE,
+                                          HttpUtils.CONTENT_TYPE_FORM_URL_ENCODED);
     }
 
     /**
@@ -117,9 +117,9 @@ public class CollectionFormParser
                       @NonNull final Bundle destBundle)
             throws IOException, StorageException {
 
-        mIdOwned = "stripCollectieInBezit-" + externalId;
-        mIdRead = "stripCollectieGelezen-" + externalId;
-        mIdWanted = "stripCollectieInWishlist-" + externalId;
+        idOwned = "stripCollectieInBezit-" + externalId;
+        idRead = "stripCollectieGelezen-" + externalId;
+        idWanted = "stripCollectieInWishlist-" + externalId;
 
         parseFlags(root, destBundle);
 
@@ -133,7 +133,7 @@ public class CollectionFormParser
 
         //noinspection ConstantConditions
         final Document response = Objects.requireNonNull(
-                mFutureHttpPost.post(FORM_URL, postBody, (bis) -> {
+                futureHttpPost.post(FORM_URL, postBody, (bis) -> {
                     try {
                         return Jsoup.parse(bis, null, FORM_URL);
                     } catch (@NonNull final IOException e) {
@@ -148,6 +148,6 @@ public class CollectionFormParser
     }
 
     public void cancel() {
-        mFutureHttpPost.cancel();
+        futureHttpPost.cancel();
     }
 }

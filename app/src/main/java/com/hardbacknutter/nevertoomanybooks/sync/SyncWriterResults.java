@@ -45,8 +45,8 @@ public class SyncWriterResults
         }
     };
 
-    private int mBookCount;
-    private int mCoverCount;
+    private int bookCount;
+    private int coverCount;
 
     public SyncWriterResults() {
     }
@@ -57,35 +57,35 @@ public class SyncWriterResults
      * @param in Parcel to construct the object from
      */
     private SyncWriterResults(@NonNull final Parcel in) {
-        mBookCount = in.readInt();
-        mCoverCount = in.readInt();
+        bookCount = in.readInt();
+        coverCount = in.readInt();
     }
 
     @Override
     public void addBook(final long bookId) {
-        mBookCount++;
+        bookCount++;
     }
 
     @Override
     public int getBookCount() {
-        return mBookCount;
+        return bookCount;
     }
 
     @Override
     public void addCover(@NonNull final String path) {
-        mCoverCount++;
+        coverCount++;
     }
 
     @Override
     public int getCoverCount() {
-        return mCoverCount;
+        return coverCount;
     }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeInt(mBookCount);
-        dest.writeInt(mCoverCount);
+        dest.writeInt(bookCount);
+        dest.writeInt(coverCount);
     }
 
     @Override
@@ -97,8 +97,8 @@ public class SyncWriterResults
     @NonNull
     public String toString() {
         return "SyncWriterResults{"
-               + "mBookCount=" + mBookCount
-               + ", mCoverCount=" + mCoverCount
+               + "mBookCount=" + bookCount
+               + ", mCoverCount=" + coverCount
                + '}';
     }
 }

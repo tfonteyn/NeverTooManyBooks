@@ -81,31 +81,31 @@ public class SearchBookUpdatesFragment
     public static final String BKEY_SCREEN_SUBTITLE = TAG + ":subtitle";
 
     @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider mToolbarMenuProvider;
+    private MenuProvider toolbarMenuProvider;
 
     /** The extended SearchCoordinator. */
-    private SearchBookUpdatesViewModel mVm;
-    private final ActivityResultLauncher<ArrayList<Site>> mEditSitesLauncher =
+    private SearchBookUpdatesViewModel vm;
+    private final ActivityResultLauncher<ArrayList<Site>> editSitesLauncher =
             registerForActivityResult(new SearchSitesSingleListContract(),
                                       sites -> {
                                           if (sites != null) {
                                               // no changes committed, temporary usage only
-                                              mVm.setSiteList(sites);
+                                              vm.setSiteList(sites);
                                           }
                                       });
     @Nullable
-    private ProgressDelegate mProgressDelegate;
+    private ProgressDelegate progressDelegate;
     /** View Binding. */
-    private FragmentUpdateFromInternetBinding mVb;
+    private FragmentUpdateFromInternetBinding vb;
 
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mVm = new ViewModelProvider(this).get(SearchBookUpdatesViewModel.class);
+        vm = new ViewModelProvider(this).get(SearchBookUpdatesViewModel.class);
         //noinspection ConstantConditions
-        mVm.init(getContext(), getArguments());
+        vm.init(getContext(), getArguments());
     }
 
     @Nullable
@@ -113,8 +113,8 @@ public class SearchBookUpdatesFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentUpdateFromInternetBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentUpdateFromInternetBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @Override
@@ -125,8 +125,8 @@ public class SearchBookUpdatesFragment
         final Bundle args = getArguments();
 
         final Toolbar toolbar = getToolbar();
-        mToolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
+        toolbarMenuProvider = new ToolbarMenuProvider();
+        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
 
         // optional activity title
         if (args != null && args.containsKey(BKEY_SCREEN_TITLE)) {
@@ -140,37 +140,37 @@ public class SearchBookUpdatesFragment
         }
 
         // Progress from individual searches AND overall progress
-        mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+        vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
 
         // An individual book search finished.
-        mVm.onSearchFinished().observe(getViewLifecycleOwner(), this::onOneDone);
+        vm.onSearchFinished().observe(getViewLifecycleOwner(), this::onOneDone);
 
         // User cancelled the update
-        mVm.onSearchCancelled().observe(getViewLifecycleOwner(), message -> {
+        vm.onSearchCancelled().observe(getViewLifecycleOwner(), message -> {
             // Unlikely to be seen...
-            Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG)
+            Snackbar.make(vb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG)
                     .show();
             // report up what work did get done + the last book we did.
             onAllDone(message);
         });
         // The full list was processed
-        mVm.onAllDone().observe(getViewLifecycleOwner(), this::onAllDone);
+        vm.onAllDone().observe(getViewLifecycleOwner(), this::onAllDone);
         // Something really bad happened and we're aborting
-        mVm.onAbort().observe(getViewLifecycleOwner(), this::onAbort);
+        vm.onAbort().observe(getViewLifecycleOwner(), this::onAbort);
 
         final FloatingActionButton fab = getFab();
         fab.setImageResource(R.drawable.ic_baseline_cloud_download_24);
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> prepareUpdate());
 
-        mVb.fieldList.setHasFixedSize(true);
+        vb.fieldList.setHasFixedSize(true);
         initAdapter();
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             TipManager.getInstance()
                       .display(getContext(), R.string.tip_update_fields_from_internet, () ->
-                              Site.promptToRegister(getContext(), mVm.getSiteList(),
+                              Site.promptToRegister(getContext(), vm.getSiteList(),
                                                     "update_from_internet",
                                                     this::afterOnViewCreated));
         } else {
@@ -180,14 +180,14 @@ public class SearchBookUpdatesFragment
 
     private void initAdapter() {
         //noinspection ConstantConditions
-        mVb.fieldList.setAdapter(new SyncFieldAdapter(getContext(), mVm.getSyncFields()));
+        vb.fieldList.setAdapter(new SyncFieldAdapter(getContext(), vm.getSyncFields()));
     }
 
     private void afterOnViewCreated() {
         // Warn the user, but don't abort.
         //noinspection ConstantConditions
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
-            Snackbar.make(mVb.getRoot(), R.string.error_network_please_connect,
+            Snackbar.make(vb.getRoot(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
         }
     }
@@ -198,25 +198,25 @@ public class SearchBookUpdatesFragment
      */
     private void prepareUpdate() {
         // sanity check
-        if (mVm.getSyncFields()
-               .stream()
-               .map(SyncField::getAction)
-               .noneMatch(action -> action != SyncAction.Skip)) {
+        if (vm.getSyncFields()
+              .stream()
+              .map(SyncField::getAction)
+              .noneMatch(action -> action != SyncAction.Skip)) {
 
-            Snackbar.make(mVb.fieldList, R.string.warning_select_at_least_1_field,
+            Snackbar.make(vb.fieldList, R.string.warning_select_at_least_1_field,
                           Snackbar.LENGTH_LONG).show();
             return;
         }
 
         //noinspection ConstantConditions
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
-            Snackbar.make(mVb.getRoot(), R.string.error_network_please_connect,
+            Snackbar.make(vb.getRoot(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
             return;
         }
 
         // If the user has selected to overwrite thumbnails...
-        if (mVm.isShowWarningAboutCovers()) {
+        if (vm.isShowWarningAboutCovers()) {
             // check if the user really wants to overwrite all covers
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_warning_24)
@@ -224,11 +224,11 @@ public class SearchBookUpdatesFragment
                     .setMessage(R.string.confirm_overwrite_cover)
                     .setNeutralButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setNegativeButton(R.string.lbl_field_usage_copy_if_blank, (d, w) -> {
-                        mVm.setCoverSyncAction(SyncAction.CopyIfBlank);
+                        vm.setCoverSyncAction(SyncAction.CopyIfBlank);
                         startUpdate();
                     })
                     .setPositiveButton(R.string.lbl_field_usage_overwrite, (d, w) -> {
-                        mVm.setCoverSyncAction(SyncAction.Overwrite);
+                        vm.setCoverSyncAction(SyncAction.Overwrite);
                         startUpdate();
                     })
                     .create()
@@ -239,18 +239,18 @@ public class SearchBookUpdatesFragment
     }
 
     private void startUpdate() {
-        mVm.writePreferences();
+        vm.writePreferences();
 
         //noinspection ConstantConditions
-        if (!mVm.startSearch(getContext())) {
-            Snackbar.make(mVb.getRoot(), R.string.warning_no_search_data_for_active_sites,
+        if (!vm.startSearch(getContext())) {
+            Snackbar.make(vb.getRoot(), R.string.warning_no_search_data_for_active_sites,
                           Snackbar.LENGTH_LONG).show();
         }
     }
 
     private void onOneDone(final LiveDataEvent<TaskResult<Bundle>> message) {
         //noinspection ConstantConditions
-        message.getData().ifPresent(data -> mVm.processOne(getContext(), data.getResult()));
+        message.getData().ifPresent(data -> vm.processOne(getContext(), data.getResult()));
     }
 
     private void onAllDone(@NonNull final LiveDataEvent<TaskResult<Bundle>> message) {
@@ -302,24 +302,24 @@ public class SearchBookUpdatesFragment
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.getData().ifPresent(data -> {
-            if (mProgressDelegate == null) {
+            if (progressDelegate == null) {
                 //noinspection ConstantConditions
-                mProgressDelegate = new ProgressDelegate(getProgressFrame())
+                progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.progress_msg_searching)
                         .setIndeterminate(true)
                         .setPreventSleep(true)
-                        .setOnCancelListener(v -> mVm.cancelTask(data.taskId))
+                        .setOnCancelListener(v -> vm.cancelTask(data.taskId))
                         .show(() -> getActivity().getWindow());
             }
-            mProgressDelegate.onProgress(data);
+            progressDelegate.onProgress(data);
         });
     }
 
     private void closeProgressDialog() {
-        if (mProgressDelegate != null) {
+        if (progressDelegate != null) {
             //noinspection ConstantConditions
-            mProgressDelegate.dismiss(getActivity().getWindow());
-            mProgressDelegate = null;
+            progressDelegate.dismiss(getActivity().getWindow());
+            progressDelegate = null;
         }
     }
 
@@ -380,7 +380,7 @@ public class SearchBookUpdatesFragment
 
             final SyncField syncField = mSyncFields[position];
 
-            holder.vb.field.setText(syncField.getFieldLabelResId());
+            holder.vb.field.setText(syncField.getFieldLabel());
             holder.vb.cbxUsage.setChecked(syncField.getAction() != SyncAction.Skip);
             holder.vb.cbxUsage.setText(syncField.getActionLabelResId());
         }
@@ -413,11 +413,11 @@ public class SearchBookUpdatesFragment
             final int itemId = menuItem.getItemId();
 
             if (itemId == R.id.MENU_PREFS_SEARCH_SITES) {
-                mEditSitesLauncher.launch(mVm.getSiteList());
+                editSitesLauncher.launch(vm.getSiteList());
                 return true;
 
             } else if (itemId == R.id.MENU_RESET) {
-                mVm.resetPreferences();
+                vm.resetPreferences();
                 initAdapter();
                 return true;
             }

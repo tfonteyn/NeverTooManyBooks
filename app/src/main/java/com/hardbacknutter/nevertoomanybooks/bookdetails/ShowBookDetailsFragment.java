@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookById
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -249,7 +250,7 @@ public class ShowBookDetailsFragment
         final TypedArray height = res.obtainTypedArray(R.array.cover_details_height);
         try {
             for (int cIdx = 0; cIdx < width.length(); cIdx++) {
-                if (aVm.getStyle().isShowField(Style.Screen.Detail, DBKey.COVER_IS_USED[cIdx])) {
+                if (aVm.getStyle().isShowField(Style.Screen.Detail, FieldVisibility.COVER[cIdx])) {
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
                     final int maxHeight = height.getDimensionPixelSize(cIdx, 0);
 
@@ -439,7 +440,7 @@ public class ShowBookDetailsFragment
 
         final Button btnShowToc = getView().findViewById(R.id.btn_show_toc);
         final FragmentContainerView tocFrame = getView().findViewById(R.id.toc_frame);
-        if (aVm.getStyle().isShowField(Style.Screen.List, DBKey.BITMASK_TOC)) {
+        if (aVm.getStyle().isShowField(Style.Screen.List, DBKey.FK_TOC_ENTRY)) {
             if (btnShowToc != null) {
                 bindTocButton(btnShowToc, book);
             } else if (tocFrame != null) {

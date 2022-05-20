@@ -17,29 +17,33 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.style;
+package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
 
-import java.util.Set;
+import android.content.Context;
 
-/**
- * Encapsulate the Book fields which can be shown on the Book-details screen
- * as defined by the current style.
- */
-public class BookDetailsFieldVisibility
-        extends FieldVisibility {
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-    public static final long DEFAULT = getBitValue(Set.of(
-            FieldVisibility.COVER[0],
-            FieldVisibility.COVER[1]));
+public class UpgradeFailedException
+        extends RuntimeException
+        implements LocalizedException {
 
-    private static final Set<String> KEYS = Set.of(
-            FieldVisibility.COVER[0],
-            FieldVisibility.COVER[1]);
 
-    /**
-     * Constructor.
-     */
-    BookDetailsFieldVisibility() {
-        super(KEYS, DEFAULT);
+    private static final long serialVersionUID = 5456126186772151019L;
+
+    public UpgradeFailedException(@NonNull final String message) {
+        super(message);
+    }
+
+    protected UpgradeFailedException(@NonNull final String message,
+                                     @Nullable final Throwable cause) {
+        super(message, cause);
+    }
+
+    @NonNull
+    @Override
+    public String getUserMessage(@NonNull final Context context) {
+        //noinspection ConstantConditions
+        return getMessage();
     }
 }

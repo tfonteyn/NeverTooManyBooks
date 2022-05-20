@@ -44,26 +44,26 @@ public final class SyncReaderHelper
 
     /** <strong>Where</strong> we read from. */
     @NonNull
-    private final SyncServer mSyncServer;
+    private final SyncServer syncServer;
     /** Extra arguments for specific readers. The reader must define them. */
-    private final Bundle mExtraArgs = ServiceLocator.newBundle();
+    private final Bundle extraArgs = ServiceLocator.newBundle();
     /** <strong>How</strong> to handle individual fields. Can be {@code null}. aka unused. */
     @Nullable
-    private SyncReaderProcessor mSyncProcessor;
+    private SyncReaderProcessor syncProcessor;
     @Nullable
-    private LocalDateTime mSyncDate;
+    private LocalDateTime syncDate;
 
     /**
      * Constructor.
      */
     SyncReaderHelper(@NonNull final SyncServer syncServer) {
-        mSyncServer = syncServer;
+        this.syncServer = syncServer;
 
         // set the defaults
         addRecordType(EnumSet.of(RecordType.Books,
                                  RecordType.Cover));
 
-        setUpdateOption(mSyncServer.hasLastUpdateDateField()
+        setUpdateOption(this.syncServer.hasLastUpdateDateField()
                         ? DataReader.Updates.OnlyNewer
                         : DataReader.Updates.Skip);
     }
@@ -73,21 +73,21 @@ public final class SyncReaderHelper
      */
     @NonNull
     public SyncServer getSyncServer() {
-        return mSyncServer;
+        return syncServer;
     }
 
     @Nullable
     public SyncReaderProcessor getSyncProcessor() {
-        return mSyncProcessor;
+        return syncProcessor;
     }
 
     public void setSyncProcessor(@Nullable final SyncReaderProcessor syncProcessor) {
-        mSyncProcessor = syncProcessor;
+        this.syncProcessor = syncProcessor;
     }
 
     @NonNull
     public Bundle getExtraArgs() {
-        return mExtraArgs;
+        return extraArgs;
     }
 
     /**
@@ -97,7 +97,7 @@ public final class SyncReaderHelper
      */
     @Nullable
     public LocalDateTime getSyncDate() {
-        return mSyncDate;
+        return syncDate;
     }
 
     /**
@@ -106,7 +106,7 @@ public final class SyncReaderHelper
      * we limit the fetch to the sync-date.
      */
     public void setSyncDate(@Nullable final LocalDateTime syncDate) {
-        mSyncDate = syncDate;
+        this.syncDate = syncDate;
     }
 
     @NonNull
@@ -117,7 +117,7 @@ public final class SyncReaderHelper
                    CertificateException,
                    StorageException,
                    IOException {
-        return mSyncServer.createReader(context, this);
+        return syncServer.createReader(context, this);
     }
 
     @Override
@@ -125,10 +125,10 @@ public final class SyncReaderHelper
     public String toString() {
         return "SyncReaderHelper{"
                + super.toString()
-               + ", mSyncDate=" + mSyncDate
-               + ", mExtraArgs=" + mExtraArgs
-               + ", mSyncProcessor=" + mSyncProcessor
-               + ", mSyncServer=" + mSyncServer
+               + ", mSyncDate=" + syncDate
+               + ", mExtraArgs=" + extraArgs
+               + ", mSyncProcessor=" + syncProcessor
+               + ", mSyncServer=" + syncServer
                + '}';
     }
 }

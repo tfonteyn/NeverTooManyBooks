@@ -40,14 +40,14 @@ abstract class KbNlHandlerBase
 
     /** XML content. */
     @SuppressWarnings("StringBufferField")
-    private final StringBuilder mBuilder = new StringBuilder();
-    private final List<String> mCurrentData = new ArrayList<>();
+    private final StringBuilder builder = new StringBuilder();
+    private final List<String> currentData = new ArrayList<>();
     private boolean inLabel;
     private boolean inData;
     private boolean inLine;
     private boolean inText;
     @Nullable
-    private String mCurrentLabel;
+    private String currentLabel;
 
     protected abstract void processEntry(@NonNull String currentLabel,
                                          @NonNull List<String> currentData);
@@ -87,12 +87,12 @@ abstract class KbNlHandlerBase
 
         switch (qName) {
             case XML_LABEL:
-                mCurrentLabel = null;
+                currentLabel = null;
                 inLabel = true;
                 break;
 
             case XML_DATA:
-                mCurrentData.clear();
+                currentData.clear();
                 inData = true;
                 break;
 
@@ -101,7 +101,7 @@ abstract class KbNlHandlerBase
                 break;
 
             case XML_TEXT:
-                mBuilder.setLength(0);
+                builder.setLength(0);
                 inText = true;
                 break;
 
@@ -122,8 +122,8 @@ abstract class KbNlHandlerBase
                 break;
 
             case XML_DATA:
-                if (mCurrentLabel != null && !mCurrentLabel.isEmpty()) {
-                    processEntry(mCurrentLabel, mCurrentData);
+                if (currentLabel != null && !currentLabel.isEmpty()) {
+                    processEntry(currentLabel, currentData);
                 }
                 inData = false;
                 break;
@@ -134,10 +134,10 @@ abstract class KbNlHandlerBase
 
             case XML_TEXT:
                 if (inLabel) {
-                    mCurrentLabel = mBuilder.toString().split(":")[0].trim();
+                    currentLabel = builder.toString().split(":")[0].trim();
 
                 } else if (inLine) {
-                    mCurrentData.add(mBuilder.toString().trim());
+                    currentData.add(builder.toString().trim());
                 }
                 inText = false;
                 break;
@@ -153,6 +153,6 @@ abstract class KbNlHandlerBase
                            final int length) {
         super.characters(ch, start, length);
 
-        mBuilder.append(ch, start, length);
+        builder.append(ch, start, length);
     }
 }

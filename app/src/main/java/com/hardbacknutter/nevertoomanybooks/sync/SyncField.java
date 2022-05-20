@@ -50,8 +50,8 @@ public final class SyncField
     @NonNull
     public final String key;
     /** label to show to the user. */
-    @StringRes
-    private final int labelResId;
+    @NonNull
+    private final String label;
     /** Default usage at creation time. */
     @NonNull
     private final SyncAction defaultAction;
@@ -65,18 +65,18 @@ public final class SyncField
      * Constructor.
      *
      * @param key           Field key
-     * @param labelResId    Field label resource id
+     * @param label         Field label resource id
      * @param canAppend     {@code true} if this field is capable of appending extra data.
      * @param defaultAction default action
      * @param syncAction    initial action
      */
     SyncField(@NonNull final String key,
-              @StringRes final int labelResId,
+              @NonNull final String label,
               final boolean canAppend,
               @NonNull final SyncAction defaultAction,
               @NonNull final SyncAction syncAction) {
         this.key = key;
-        this.labelResId = labelResId;
+        this.label = label;
         this.canAppend = canAppend;
         this.defaultAction = defaultAction;
         this.syncAction = syncAction;
@@ -90,7 +90,8 @@ public final class SyncField
     private SyncField(@NonNull final Parcel in) {
         //noinspection ConstantConditions
         key = in.readString();
-        labelResId = in.readInt();
+        //noinspection ConstantConditions
+        label = in.readString();
         canAppend = in.readByte() != 0;
         //noinspection ConstantConditions
         defaultAction = in.readParcelable(SyncAction.class.getClassLoader());
@@ -102,7 +103,7 @@ public final class SyncField
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         dest.writeString(key);
-        dest.writeInt(labelResId);
+        dest.writeString(label);
         dest.writeByte((byte) (canAppend ? 1 : 0));
         dest.writeParcelable(defaultAction, flags);
         dest.writeParcelable(syncAction, flags);
@@ -121,7 +122,7 @@ public final class SyncField
      * @return a SyncField record for the given field.
      */
     SyncField createRelatedField(@NonNull final String key) {
-        return new SyncField(key, labelResId, canAppend, defaultAction, syncAction);
+        return new SyncField(key, label, canAppend, defaultAction, syncAction);
     }
 
     @NonNull
@@ -140,11 +141,10 @@ public final class SyncField
     /**
      * Get the label for the field.
      *
-     * @return label resource id
+     * @return label
      */
-    @StringRes
-    public int getFieldLabelResId() {
-        return labelResId;
+    public String getFieldLabel() {
+        return label;
     }
 
     /**
@@ -173,7 +173,7 @@ public final class SyncField
         return "SyncField{"
                + "key=`" + key + '`'
                + ", canAppend=" + canAppend
-               + ", labelResId=" + labelResId
+               + ", labelResId=" + label
                + ", defaultAction=" + defaultAction
                + ", syncAction=" + syncAction
                + '}';

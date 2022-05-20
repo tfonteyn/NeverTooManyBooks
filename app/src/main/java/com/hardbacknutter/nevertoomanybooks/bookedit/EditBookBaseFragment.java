@@ -48,6 +48,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
@@ -196,7 +197,7 @@ public abstract class EditBookBaseFragment
             }
 
             if (vm.handlesField(getFragmentId(), R.id.condition)) {
-                if (DBKey.isUsed(DBKey.BOOK_CONDITION)) {
+                if (GlobalFieldVisibility.isUsed(DBKey.BOOK_CONDITION)) {
                     book.putInt(DBKey.BOOK_CONDITION, Book.CONDITION_AS_NEW);
                 }
             }

@@ -42,30 +42,30 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 public class CalibreHandlerViewModel
         extends ViewModel {
 
-    private SingleFileDownloadTask mSingleFileDownloadTask;
+    private SingleFileDownloadTask singleFileDownloadTask;
 
-    private CalibreContentServer mServer;
+    private CalibreContentServer server;
 
     @Nullable
-    private Book mTempBook;
+    private Book tmpBook;
 
     public void init(@NonNull final Context context)
             throws CertificateException {
-        if (mServer == null) {
-            mServer = new CalibreContentServer(context);
-            mSingleFileDownloadTask = new SingleFileDownloadTask(mServer);
+        if (server == null) {
+            server = new CalibreContentServer(context);
+            singleFileDownloadTask = new SingleFileDownloadTask(server);
         }
     }
 
     @NonNull
     Book getAndResetTempBook() {
-        final Book book = Objects.requireNonNull(mTempBook, "mTempBook");
-        mTempBook = null;
+        final Book book = Objects.requireNonNull(tmpBook, "tmpBook");
+        tmpBook = null;
         return book;
     }
 
     void setTempBook(@NonNull final Book book) {
-        mTempBook = book;
+        tmpBook = book;
     }
 
     /**
@@ -107,8 +107,8 @@ public class CalibreHandlerViewModel
         final Optional<Uri> optFolderUri = CalibreContentServer.getFolderUri(context);
         if (optFolderUri.isPresent()) {
             try {
-                return mServer.getDocumentFile(context, book, optFolderUri.get(), false)
-                              .getUri();
+                return server.getDocumentFile(context, book, optFolderUri.get(), false)
+                             .getUri();
             } catch (@NonNull final IOException e) {
                 // Keep it simple.
                 throw new FileNotFoundException(optFolderUri.get().toString());
@@ -125,12 +125,12 @@ public class CalibreHandlerViewModel
      */
     public void startDownload(@NonNull final Book book,
                               @NonNull final Uri folder) {
-        mSingleFileDownloadTask.download(book, folder);
+        singleFileDownloadTask.download(book, folder);
     }
 
     public void cancelTask(@IdRes final int taskId) {
-        if (taskId == mSingleFileDownloadTask.getTaskId()) {
-            mSingleFileDownloadTask.cancel();
+        if (taskId == singleFileDownloadTask.getTaskId()) {
+            singleFileDownloadTask.cancel();
         } else {
             throw new IllegalArgumentException("taskId=" + taskId);
         }
@@ -138,21 +138,21 @@ public class CalibreHandlerViewModel
 
     @NonNull
     public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
-        return mSingleFileDownloadTask.onProgress();
+        return singleFileDownloadTask.onProgress();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Uri>>> onCancelled() {
-        return mSingleFileDownloadTask.onCancelled();
+        return singleFileDownloadTask.onCancelled();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Exception>>> onFailure() {
-        return mSingleFileDownloadTask.onFailure();
+        return singleFileDownloadTask.onFailure();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Uri>>> onFinished() {
-        return mSingleFileDownloadTask.onFinished();
+        return singleFileDownloadTask.onFinished();
     }
 }

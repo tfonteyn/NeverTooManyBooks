@@ -101,7 +101,7 @@ public class AuthorDaoImpl
             + ',' + TBL_BOOKS.dotAs(DBKey.PK_ID,
                                     DBKey.TITLE,
                                     DBKey.KEY_TITLE_OB,
-                                    DBKey.DATE_FIRST_PUBLICATION,
+                                    DBKey.FIRST_PUBLICATION__DATE,
                                     DBKey.LANGUAGE)
             + ",1 AS " + DBKey.KEY_BOOK_COUNT
             + _FROM_ + TBL_BOOKS.startJoin(TBL_BOOK_AUTHOR);
@@ -122,7 +122,7 @@ public class AuthorDaoImpl
             + ',' + TBL_TOC_ENTRIES.dotAs(DBKey.PK_ID,
                                           DBKey.TITLE,
                                           DBKey.KEY_TITLE_OB,
-                                          DBKey.DATE_FIRST_PUBLICATION)
+                                          DBKey.FIRST_PUBLICATION__DATE)
             // The Toc table does not have a language field, just return an empty string
             + ",'' AS " + DBKey.LANGUAGE
             // count the number of books this TOC entry is present in.
@@ -242,7 +242,7 @@ public class AuthorDaoImpl
                                                  DBKey.AUTHOR_IS_COMPLETE)
 
             + ',' + TBL_BOOK_AUTHOR.dotAs(DBKey.BOOK_AUTHOR_POSITION,
-                                          DBKey.BOOK_AUTHOR_TYPE_BITMASK)
+                                          DBKey.AUTHOR_TYPE__BITMASK)
 
             + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_AUTHORS)
             + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_BOOK) + "=?"
@@ -284,7 +284,7 @@ public class AuthorDaoImpl
      * @return column expression
      */
     @NonNull
-    public static String getSortAuthor(final boolean givenNameFirst) {
+    public static String getSortingDomainExpression(final boolean givenNameFirst) {
         if (givenNameFirst) {
             return SORT_AUTHOR_GIVEN_FIRST;
         } else {
@@ -502,7 +502,7 @@ public class AuthorDaoImpl
                     case TocEntry:
                         list.add(new TocEntry(rowData.getLong(DBKey.PK_ID),
                                               author, rowData.getString(DBKey.TITLE),
-                                              rowData.getString(DBKey.DATE_FIRST_PUBLICATION),
+                                              rowData.getString(DBKey.FIRST_PUBLICATION__DATE),
                                               rowData.getInt(DBKey.KEY_BOOK_COUNT)));
                         break;
 
@@ -511,7 +511,7 @@ public class AuthorDaoImpl
                                                rowData.getString(DBKey.TITLE),
                                                rowData.getString(DBKey.LANGUAGE),
                                                author,
-                                               rowData.getString(DBKey.DATE_FIRST_PUBLICATION)
+                                               rowData.getString(DBKey.FIRST_PUBLICATION__DATE)
                         ));
                         break;
 

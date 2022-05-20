@@ -69,10 +69,10 @@ class LastDodoTest
                  new boolean[]{false, false});
 
         assertEquals("De 37ste parallel", mRawData.getString(DBKey.TITLE));
-        assertEquals("9789463064385", mRawData.getString(DBKey.KEY_ISBN));
-        assertEquals("2018", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("48", mRawData.getString(DBKey.PAGES));
-        assertEquals("Hardcover", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("9789463064385", mRawData.getString(DBKey.BOOK_ISBN));
+        assertEquals("2018", mRawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("48", mRawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("Hardcover", mRawData.getString(DBKey.FORMAT));
         assertEquals("nld", mRawData.getString(DBKey.LANGUAGE));
         assertEquals("Gekleurd", mRawData.getString(DBKey.COLOR));
 

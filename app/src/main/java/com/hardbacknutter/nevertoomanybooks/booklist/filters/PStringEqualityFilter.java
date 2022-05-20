@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
@@ -74,7 +74,7 @@ public class PStringEqualityFilter
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        if (!DBKey.isUsed(domain.getName())) {
+        if (!GlobalFieldVisibility.isUsed(domain.getName())) {
             return false;
         }
         return value != null;

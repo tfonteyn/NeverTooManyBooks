@@ -44,11 +44,11 @@ public class CalibreVirtualLibrary
     };
 
     /** The physical Calibre library row id. */
-    private long mLibraryId;
+    private long libraryId;
 
     /** The Calibre search expression. */
     @NonNull
-    private String mExpr;
+    private String searchExpression;
 
 
     /**
@@ -60,8 +60,8 @@ public class CalibreVirtualLibrary
                                  final long mappedBookshelfId) {
         super(name, mappedBookshelfId);
 
-        mLibraryId = libraryId;
-        mExpr = expr;
+        this.libraryId = libraryId;
+        searchExpression = expr;
     }
 
     /**
@@ -73,8 +73,8 @@ public class CalibreVirtualLibrary
                                  @NonNull final Bookshelf mappedBookshelf) {
         super(name, mappedBookshelf);
 
-        mLibraryId = libraryId;
-        mExpr = expr;
+        this.libraryId = libraryId;
+        searchExpression = expr;
     }
 
     /**
@@ -87,8 +87,8 @@ public class CalibreVirtualLibrary
                                  @NonNull final DataHolder rowData) {
         super(id, rowData);
 
-        mLibraryId = rowData.getLong(DBKey.FK_CALIBRE_LIBRARY);
-        mExpr = rowData.getString(DBKey.CALIBRE_VIRT_LIB_EXPR);
+        libraryId = rowData.getLong(DBKey.FK_CALIBRE_LIBRARY);
+        searchExpression = rowData.getString(DBKey.CALIBRE_VIRT_LIB_EXPR);
     }
 
     /**
@@ -99,26 +99,26 @@ public class CalibreVirtualLibrary
     private CalibreVirtualLibrary(@NonNull final Parcel in) {
         super(in);
 
-        mLibraryId = in.readInt();
+        libraryId = in.readInt();
         //noinspection ConstantConditions
-        mExpr = in.readString();
+        searchExpression = in.readString();
     }
 
     public long getLibraryId() {
-        return mLibraryId;
+        return libraryId;
     }
 
     public void setLibraryId(final long libraryId) {
-        mLibraryId = libraryId;
+        this.libraryId = libraryId;
     }
 
     @NonNull
     public String getExpr() {
-        return mExpr;
+        return searchExpression;
     }
 
     void setExpr(@NonNull final String expr) {
-        mExpr = expr;
+        searchExpression = expr;
     }
 
     @Override
@@ -126,8 +126,8 @@ public class CalibreVirtualLibrary
                               final int flags) {
         super.writeToParcel(dest, flags);
 
-        dest.writeLong(mLibraryId);
-        dest.writeString(mExpr);
+        dest.writeLong(libraryId);
+        dest.writeString(searchExpression);
     }
 
     @Override
@@ -135,8 +135,8 @@ public class CalibreVirtualLibrary
     public String toString() {
         return "CalibreVirtualLibrary{"
                + super.toString()
-               + ", mLibraryId=" + mLibraryId
-               + ", mExpr=" + mExpr
+               + ", mLibraryId=" + libraryId
+               + ", mExpr=" + searchExpression
                + '}';
     }
 }

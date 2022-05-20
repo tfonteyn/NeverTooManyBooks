@@ -48,27 +48,27 @@ public class SearchTask
     private static final String TAG = "SearchTask";
 
     @NonNull
-    private final SearchEngine mSearchEngine;
+    private final SearchEngine searchEngine;
     /** Whether to fetch covers. */
     @Nullable
-    private boolean[] mFetchCovers;
+    private boolean[] fetchCovers;
     /** What criteria to search by. */
-    private By mBy;
-    /** Search criteria. Usage depends on {@link #mBy}. */
+    private By by;
+    /** Search criteria. Usage depends on {@link #by}. */
     @Nullable
-    private String mExternalId;
-    /** Search criteria. Usage depends on {@link #mBy}. */
+    private String externalId;
+    /** Search criteria. Usage depends on {@link #by}. */
     @Nullable
-    private String mIsbnStr;
-    /** Search criteria. Usage depends on {@link #mBy}. */
+    private String isbnStr;
+    /** Search criteria. Usage depends on {@link #by}. */
     @Nullable
-    private String mAuthor;
-    /** Search criteria. Usage depends on {@link #mBy}. */
+    private String author;
+    /** Search criteria. Usage depends on {@link #by}. */
     @Nullable
-    private String mTitle;
-    /** Search criteria. Usage depends on {@link #mBy}. */
+    private String title;
+    /** Search criteria. Usage depends on {@link #by}. */
     @Nullable
-    private String mPublisher;
+    private String publisher;
 
     /**
      * Constructor. Will search according to passed parameters.
@@ -88,12 +88,12 @@ public class SearchTask
               TAG + ' ' + searchEngine.getName(ServiceLocator.getAppContext()),
               taskListener);
 
-        mSearchEngine = searchEngine;
-        mSearchEngine.setCaller(this);
+        this.searchEngine = searchEngine;
+        this.searchEngine.setCaller(this);
     }
 
     void setSearchBy(@NonNull final By by) {
-        mBy = by;
+        this.by = by;
     }
 
     /**
@@ -102,7 +102,7 @@ public class SearchTask
      * @param externalId to search for
      */
     void setExternalId(@Nullable final String externalId) {
-        mExternalId = externalId;
+        this.externalId = externalId;
     }
 
     /**
@@ -111,7 +111,7 @@ public class SearchTask
      * @param isbnStr to search for
      */
     void setIsbn(@Nullable final String isbnStr) {
-        mIsbnStr = isbnStr;
+        this.isbnStr = isbnStr;
     }
 
     /**
@@ -120,7 +120,7 @@ public class SearchTask
      * @param author to search for
      */
     void setAuthor(@Nullable final String author) {
-        mAuthor = author;
+        this.author = author;
     }
 
     /**
@@ -129,7 +129,7 @@ public class SearchTask
      * @param title to search for
      */
     void setTitle(@Nullable final String title) {
-        mTitle = title;
+        this.title = title;
     }
 
     /**
@@ -138,7 +138,7 @@ public class SearchTask
      * @param publisher to search for
      */
     void setPublisher(@Nullable final String publisher) {
-        mPublisher = publisher;
+        this.publisher = publisher;
     }
 
     /**
@@ -148,9 +148,9 @@ public class SearchTask
      */
     void setFetchCovers(@Nullable final boolean[] fetchCovers) {
         if (fetchCovers == null || fetchCovers.length == 0) {
-            mFetchCovers = new boolean[2];
+            this.fetchCovers = new boolean[2];
         } else {
-            mFetchCovers = fetchCovers;
+            this.fetchCovers = fetchCovers;
         }
     }
 
@@ -161,8 +161,8 @@ public class SearchTask
     @Override
     public void cancel() {
         super.cancel();
-        synchronized (mSearchEngine) {
-            mSearchEngine.cancel();
+        synchronized (searchEngine) {
+            searchEngine.cancel();
         }
     }
 
@@ -173,7 +173,7 @@ public class SearchTask
             throws StorageException, SearchException, CredentialsException, IOException {
 
         publishProgress(1, context.getString(R.string.progress_msg_searching_site,
-                                             mSearchEngine.getName(context)));
+                                             searchEngine.getName(context)));
 
         // Checking this each time a search starts is not needed...
         // But it makes error handling slightly easier and doing
@@ -183,43 +183,43 @@ public class SearchTask
         }
 
         // can we reach the site ?
-        NetworkUtils.ping(mSearchEngine.getSiteUrl());
+        NetworkUtils.ping(searchEngine.getSiteUrl());
 
         // sanity check, see #setFetchCovers
-        if (mFetchCovers == null) {
-            mFetchCovers = new boolean[2];
+        if (fetchCovers == null) {
+            fetchCovers = new boolean[2];
         }
 
         final Bundle bookData;
-        switch (mBy) {
+        switch (by) {
             case ExternalId:
-                SanityCheck.requireValue(mExternalId, "mExternalId");
-                bookData = ((SearchEngine.ByExternalId) mSearchEngine)
-                        .searchByExternalId(context, mExternalId, mFetchCovers);
+                SanityCheck.requireValue(externalId, "mExternalId");
+                bookData = ((SearchEngine.ByExternalId) searchEngine)
+                        .searchByExternalId(context, externalId, fetchCovers);
                 break;
 
             case Isbn:
-                SanityCheck.requireValue(mIsbnStr, "mIsbnStr");
-                bookData = ((SearchEngine.ByIsbn) mSearchEngine)
-                        .searchByIsbn(context, mIsbnStr, mFetchCovers);
+                SanityCheck.requireValue(isbnStr, "mIsbnStr");
+                bookData = ((SearchEngine.ByIsbn) searchEngine)
+                        .searchByIsbn(context, isbnStr, fetchCovers);
                 break;
 
             case Barcode:
-                SanityCheck.requireValue(mIsbnStr, "mIsbnStr");
-                bookData = ((SearchEngine.ByBarcode) mSearchEngine)
-                        .searchByBarcode(context, mIsbnStr, mFetchCovers);
+                SanityCheck.requireValue(isbnStr, "mIsbnStr");
+                bookData = ((SearchEngine.ByBarcode) searchEngine)
+                        .searchByBarcode(context, isbnStr, fetchCovers);
                 break;
 
             case Text:
-                bookData = ((SearchEngine.ByText) mSearchEngine)
-                        .search(context, mIsbnStr, mAuthor, mTitle, mPublisher, mFetchCovers);
+                bookData = ((SearchEngine.ByText) searchEngine)
+                        .search(context, isbnStr, author, title, publisher, fetchCovers);
                 break;
 
             default:
                 // we should never get here...
                 throw new IllegalArgumentException("SearchEngine "
-                                                   + mSearchEngine.getName(context)
-                                                   + " does not implement By=" + mBy);
+                                                   + searchEngine.getName(context)
+                                                   + " does not implement By=" + by);
         }
 
         return bookData;

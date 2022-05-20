@@ -79,7 +79,7 @@ class OpenLibrarySearchEngineTest
         assertFalse(mRawData.isEmpty());
 
         assertEquals("Slow reading", mRawData.getString(DBKey.TITLE));
-        assertEquals("9780980200447", mRawData.getString(DBKey.KEY_ISBN));
+        assertEquals("9780980200447", mRawData.getString(DBKey.BOOK_ISBN));
         assertEquals("OL22853304M", mRawData.getString(DBKey.SID_OPEN_LIBRARY));
         assertEquals("2008054742", mRawData.getString(DBKey.SID_LCCN));
         assertEquals(8071257L, mRawData.getLong(DBKey.SID_LIBRARY_THING));
@@ -89,8 +89,8 @@ class OpenLibrarySearchEngineTest
 
         assertEquals("Includes bibliographical references and index.",
                      mRawData.getString(DBKey.DESCRIPTION));
-        assertEquals("92", mRawData.getString(DBKey.PAGES));
-        assertEquals("2009-03-01", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
+        assertEquals("92", mRawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("2009-03-01", mRawData.getString(DBKey.BOOK_PUBLICATION__DATE));
 
 
         final ArrayList<Publisher> allPublishers = mRawData

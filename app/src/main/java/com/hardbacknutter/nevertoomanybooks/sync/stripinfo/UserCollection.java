@@ -86,7 +86,7 @@ public class UserCollection {
     /**
      * param 1: userId
      * param 2: page number
-     * param 3: binary flags; see {@link #mFlags}.
+     * param 3: binary flags; see {@link #FLAGS}.
      * <p>
      * suffix: "_search_%4s" : with a search-filter... not fully sure what fields are searched.
      * => not supported for now.
@@ -114,23 +114,23 @@ public class UserCollection {
      * For now hardcoded to getting all books in the collection.
      * So we get the "owned" books; but we also get the "wanted" books.
      */
-    private static final String mFlags = "0000";
+    private static final String FLAGS = "0000";
 
     /** A "collectionContent" section consists of up to 25 book rows. */
     private static final int COLLECTION_CONTENT_ROWS = 25;
 
     /** Responsible for loading and parsing the web page. */
     @NonNull
-    private final JsoupLoader mJsoupLoader;
+    private final JsoupLoader jsoupLoader;
 
     /** Internal id from the website; used in the auth Cookie and links. */
     @NonNull
-    private final String mUserId;
+    private final String userId;
     @NonNull
-    private final StripInfoSearchEngine mSearchEngine;
+    private final StripInfoSearchEngine searchEngine;
     @NonNull
-    private final RowParser mRowParser;
-    private int mMaxPages = -1;
+    private final RowParser rowParser;
+    private int maxPages = -1;
 
     /**
      * Constructor.
@@ -143,14 +143,14 @@ public class UserCollection {
                    @NonNull final StripInfoSearchEngine searchEngine,
                    @NonNull final String userId,
                    @NonNull final BookshelfMapper config) {
-        mUserId = userId;
-        mSearchEngine = searchEngine;
-        mJsoupLoader = new JsoupLoader(mSearchEngine.createFutureGetRequest());
-        mRowParser = new RowParser(context, config);
+        this.userId = userId;
+        this.searchEngine = searchEngine;
+        jsoupLoader = new JsoupLoader(this.searchEngine.createFutureGetRequest());
+        rowParser = new RowParser(context, config);
     }
 
     public int getMaxPages() {
-        return mMaxPages;
+        return maxPages;
     }
 
     /**
@@ -172,17 +172,17 @@ public class UserCollection {
                                             @NonNull final ProgressListener progressListener)
             throws SearchException, StorageException, IOException {
 
-        if (!(pageNr == 0 || mMaxPages > pageNr)) {
-            throw new SearchException(mSearchEngine.getName(context), "Can't fetch more pages");
+        if (!(pageNr == 0 || maxPages > pageNr)) {
+            throw new SearchException(searchEngine.getName(context), "Can't fetch more pages");
         }
 
         progressListener.publishProgress(1, context.getString(
                 R.string.progress_msg_loading_page, pageNr));
 
-        final String url = mSearchEngine.getConfig().getHostUrl()
-                           + String.format(URL_MY_BOOKS, mUserId, pageNr, mFlags);
+        final String url = searchEngine.getConfig().getHostUrl()
+                           + String.format(URL_MY_BOOKS, userId, pageNr, FLAGS);
 
-        final Document document = mJsoupLoader.loadDocument(context, url);
+        final Document document = jsoupLoader.loadDocument(context, url);
         return parseDocument(context, document, pageNr, progressListener);
     }
 
@@ -193,20 +193,20 @@ public class UserCollection {
         final Element last = root.select("div.pagination > a").last();
         if (last != null) {
             try {
-                final int maxPages = Integer.parseInt(last.text());
+                final int count = Integer.parseInt(last.text());
                 // If the last page has less books, this is to high... oh well...
-                progressListener.setMaxPos(maxPages * COLLECTION_CONTENT_ROWS);
+                progressListener.setMaxPos(count * COLLECTION_CONTENT_ROWS);
                 progressListener.setIndeterminate(false);
                 progressListener.publishProgress(0, null);
-                return maxPages;
+                return count;
 
             } catch (@NonNull final NumberFormatException e) {
-                throw new SearchException(mSearchEngine.getName(context),
+                throw new SearchException(searchEngine.getName(context),
                                           "Unable to read page number");
             }
         }
 
-        throw new SearchException(mSearchEngine.getName(context), "No page numbers");
+        throw new SearchException(searchEngine.getName(context), "No page numbers");
     }
 
     @VisibleForTesting
@@ -219,13 +219,13 @@ public class UserCollection {
         final Element root = document.getElementById("collectionContent");
         if (root != null) {
             if (pageNr == 1) {
-                mMaxPages = parseMaxPages(context, root, progressListener);
+                maxPages = parseMaxPages(context, root, progressListener);
             }
             return Optional.of(parsePage(root));
         }
 
         if (BuildConfig.DEBUG /* always */) {
-            if (pageNr != mMaxPages) {
+            if (pageNr != maxPages) {
                 Log.d(TAG, "No 'collectionContent' found for url=" + document.location());
             }
         }
@@ -282,7 +282,7 @@ public class UserCollection {
                         }
                     }
 
-                    mRowParser.parse(row, cData, collectionId);
+                    rowParser.parse(row, cData, collectionId);
                 }
             } catch (@NonNull final NumberFormatException ignore) {
                 // Make sure we don't return partial data
@@ -317,17 +317,17 @@ public class UserCollection {
                           @NonNull final Bundle destBundle,
                           @IntRange(from = 1) final long collectionId) {
 
-            mIdOwned = "bezit-" + collectionId;
-            mIdRead = "gelezen-" + collectionId;
-            mIdWanted = "wishlist-" + collectionId;
+            idOwned = "bezit-" + collectionId;
+            idRead = "gelezen-" + collectionId;
+            idWanted = "wishlist-" + collectionId;
 
-            mIdLocation = "locatie-" + collectionId;
-            mIdNotes = "opmerking-" + collectionId;
-            mIdDateAcquired = "aankoopdatum-" + collectionId;
-            mIdRating = "score-" + collectionId;
-            mIdEdition = "druk-" + collectionId;
-            mIdPricePaid = "prijs-" + collectionId;
-            mIdAmount = "aantal-" + collectionId;
+            idLocation = "locatie-" + collectionId;
+            idNotes = "opmerking-" + collectionId;
+            idDateAcquired = "aankoopdatum-" + collectionId;
+            idRating = "score-" + collectionId;
+            idEdition = "druk-" + collectionId;
+            idPricePaid = "prijs-" + collectionId;
+            idAmount = "aantal-" + collectionId;
 
             parseFlags(root, destBundle);
             parseDetails(root, destBundle);

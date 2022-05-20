@@ -64,7 +64,7 @@ public class ExportHelper
     /** Triggers prompting for a backup when the countdown reaches 0; then gets reset. */
     public static final String PK_BACKUP_COUNTDOWN = "startup.backupCountdown";
     /** Last full backup/export date. */
-    private static final String PREF_LAST_FULL_BACKUP_DATE = "backup.last.date";
+    private static final String PK_LAST_FULL_BACKUP_DATE = "backup.last.date";
     /** Log tag. */
     private static final String TAG = "ExportHelper";
 
@@ -142,9 +142,9 @@ public class ExportHelper
             final String key;
             if (encoding == ArchiveEncoding.Zip) {
                 // backwards compatibility
-                key = PREF_LAST_FULL_BACKUP_DATE;
+                key = PK_LAST_FULL_BACKUP_DATE;
             } else {
-                key = PREF_LAST_FULL_BACKUP_DATE + "." + encoding.getFileExt();
+                key = PK_LAST_FULL_BACKUP_DATE + "." + encoding.getFileExt();
             }
 
             final String lastDone = PreferenceManager.getDefaultSharedPreferences(context)
@@ -172,11 +172,11 @@ public class ExportHelper
                     .edit();
             if (encoding == ArchiveEncoding.Zip) {
                 // backwards compatibility
-                editor.putString(PREF_LAST_FULL_BACKUP_DATE, date)
+                editor.putString(PK_LAST_FULL_BACKUP_DATE, date)
                       // reset the startup prompt-counter.
                       .putInt(PK_BACKUP_COUNTDOWN, BACKUP_COUNTDOWN_DEFAULT);
             } else {
-                editor.putString(PREF_LAST_FULL_BACKUP_DATE + "." + encoding.getFileExt(), date);
+                editor.putString(PK_LAST_FULL_BACKUP_DATE + "." + encoding.getFileExt(), date);
             }
             editor.apply();
         }

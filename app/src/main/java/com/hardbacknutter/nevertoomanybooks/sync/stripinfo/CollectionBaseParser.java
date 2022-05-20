@@ -51,52 +51,52 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
 abstract class CollectionBaseParser {
 
     /** Delegate common Element handling. */
-    private final JSoupHelper mJSoupHelper = new JSoupHelper();
+    private final JSoupHelper jSoupHelper = new JSoupHelper();
     @Nullable
-    private final Bookshelf mWishListBookshelf;
+    private final Bookshelf wishListBookshelf;
     @Nullable
-    private final Bookshelf mOwnedBooksBookshelf;
+    private final Bookshelf ownedBooksBookshelf;
 
-    String mIdOwned;
-    String mIdRead;
-    String mIdWanted;
-    String mIdLocation;
-    String mIdNotes;
-    String mIdDateAcquired;
-    String mIdRating;
-    String mIdEdition;
-    String mIdPricePaid;
-    String mIdAmount;
+    String idOwned;
+    String idRead;
+    String idWanted;
+    String idLocation;
+    String idNotes;
+    String idDateAcquired;
+    String idRating;
+    String idEdition;
+    String idPricePaid;
+    String idAmount;
 
     @AnyThread
     CollectionBaseParser(@NonNull final Context context,
                          @NonNull final BookshelfMapper bookshelfmapper) {
 
-        mOwnedBooksBookshelf = bookshelfmapper.getOwnedBooksBookshelf(context);
-        mWishListBookshelf = bookshelfmapper.getWishListBookshelf(context);
+        ownedBooksBookshelf = bookshelfmapper.getOwnedBooksBookshelf(context);
+        wishListBookshelf = bookshelfmapper.getWishListBookshelf(context);
     }
 
     @AnyThread
     void parseFlags(@NonNull final Element root,
                     @NonNull final Bundle destBundle) {
 
-        if (mJSoupHelper.getBoolean(root, mIdRead)) {
+        if (jSoupHelper.getBoolean(root, idRead)) {
             destBundle.putBoolean(DBKey.READ__BOOL, true);
         }
 
         final ArrayList<Bookshelf> bookshelves = new ArrayList<>();
 
-        if (mJSoupHelper.getBoolean(root, mIdOwned)) {
+        if (jSoupHelper.getBoolean(root, idOwned)) {
             destBundle.putBoolean(DBKey.STRIP_INFO_OWNED, true);
-            if (mOwnedBooksBookshelf != null) {
-                bookshelves.add(mOwnedBooksBookshelf);
+            if (ownedBooksBookshelf != null) {
+                bookshelves.add(ownedBooksBookshelf);
             }
         }
 
-        if (mJSoupHelper.getBoolean(root, mIdWanted)) {
+        if (jSoupHelper.getBoolean(root, idWanted)) {
             destBundle.putBoolean(DBKey.STRIP_INFO_WANTED, true);
-            if (mWishListBookshelf != null) {
-                bookshelves.add(mWishListBookshelf);
+            if (wishListBookshelf != null) {
+                bookshelves.add(wishListBookshelf);
             }
         }
 
@@ -111,18 +111,18 @@ abstract class CollectionBaseParser {
         String tmpStr;
         int tmpInt;
 
-        tmpStr = mJSoupHelper.getString(root, mIdLocation);
+        tmpStr = jSoupHelper.getString(root, idLocation);
         if (!tmpStr.isEmpty()) {
             destBundle.putString(DBKey.LOCATION, tmpStr);
         }
 
-        tmpStr = mJSoupHelper.getString(root, mIdNotes);
+        tmpStr = jSoupHelper.getString(root, idNotes);
         if (!tmpStr.isEmpty()) {
             destBundle.putString(DBKey.PERSONAL_NOTES, tmpStr);
         }
 
         // Incoming value attribute is in the format "DD/MM/YYYY".
-        tmpStr = mJSoupHelper.getString(root, mIdDateAcquired);
+        tmpStr = jSoupHelper.getString(root, idDateAcquired);
         if (tmpStr.length() == 10) {
             // we could use the date parser...
             // but that would be overkill for this website
@@ -134,25 +134,25 @@ abstract class CollectionBaseParser {
         }
 
         // '0' is an acceptable value that should be stored.
-        final Double tmpDbl = mJSoupHelper.getDoubleOrNull(root, mIdPricePaid);
+        final Double tmpDbl = jSoupHelper.getDoubleOrNull(root, idPricePaid);
         if (tmpDbl != null) {
             destBundle.putDouble(DBKey.PRICE_PAID, tmpDbl);
             destBundle.putString(DBKey.PRICE_PAID_CURRENCY, Money.EUR);
         }
 
-        tmpInt = mJSoupHelper.getInt(root, mIdRating);
+        tmpInt = jSoupHelper.getInt(root, idRating);
         if (tmpInt > 0) {
             // site is int 1..10; convert to float 0.5 .. 5 (and clamp because paranoia)
             destBundle.putFloat(DBKey.RATING,
                                 MathUtils.clamp(((float) tmpInt) / 2, 0.5f, 5f));
         }
 
-        tmpInt = mJSoupHelper.getInt(root, mIdEdition);
+        tmpInt = jSoupHelper.getInt(root, idEdition);
         if (tmpInt == 1) {
-            destBundle.putLong(DBKey.BITMASK_EDITION, Book.Edition.FIRST);
+            destBundle.putLong(DBKey.EDITION__BITMASK, Book.Edition.FIRST);
         }
 
-        tmpInt = mJSoupHelper.getInt(root, mIdAmount);
+        tmpInt = jSoupHelper.getInt(root, idAmount);
         if (tmpInt > 0) {
             destBundle.putInt(DBKey.STRIP_INFO_AMOUNT, tmpInt);
         }

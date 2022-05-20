@@ -567,7 +567,7 @@ public class IsfdbSearchEngine
                                 }
                             }
                         }
-                        mSeries.add(series);
+                        seriesList.add(series);
                     }
                 }
 
@@ -832,7 +832,7 @@ public class IsfdbSearchEngine
                             for (final Element a : li.select("a")) {
                                 final Author author = Author.from(a.text());
                                 // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
-                                mAuthors.add(author);
+                                authorList.add(author);
                             }
                             break;
                         }
@@ -851,7 +851,7 @@ public class IsfdbSearchEngine
                                     // Note that partial dates, e.g. "1987", "1978-03"
                                     // will get 'completed' to "1987-01-01", "1978-03-01"
                                     // This should be acceptable IMHO.
-                                    bookData.putString(DBKey.DATE_BOOK_PUBLICATION,
+                                    bookData.putString(DBKey.BOOK_PUBLICATION__DATE,
                                                        date.format(
                                                                DateTimeFormatter.ISO_LOCAL_DATE));
                                 }
@@ -866,7 +866,7 @@ public class IsfdbSearchEngine
                                 tmpString = nextSibling.toString().trim();
                                 tmpString = ISBN.cleanText(tmpString);
                                 if (!tmpString.isEmpty()) {
-                                    bookData.putString(DBKey.KEY_ISBN, tmpString);
+                                    bookData.putString(DBKey.BOOK_ISBN, tmpString);
                                 }
 
                                 final Element nextElementSibling =
@@ -885,7 +885,7 @@ public class IsfdbSearchEngine
                             for (final Element a : li.select("a")) {
                                 final Publisher publisher = Publisher.from(a.text());
                                 // publisher.setIsfDbId(stripNumber(a.attr("href"), '?'));
-                                mPublishers.add(publisher);
+                                publisherList.add(publisher);
                             }
                             break;
                         }
@@ -893,7 +893,7 @@ public class IsfdbSearchEngine
                             for (final Element a : li.select("a")) {
                                 final Series series = Series.from(a.text());
                                 // series.setIsfDbId(stripNumber(a.attr("href"), '?'));
-                                mSeries.add(series);
+                                seriesList.add(series);
                             }
                             break;
                         }
@@ -903,7 +903,7 @@ public class IsfdbSearchEngine
                                 tmpString = nextSibling.toString().trim();
                                 // assume that if we get here,
                                 // then we added a "Pub. Series:" as last one.
-                                mSeries.get(mSeries.size() - 1).setNumber(tmpString);
+                                seriesList.get(seriesList.size() - 1).setNumber(tmpString);
                             }
                             break;
                         }
@@ -926,7 +926,7 @@ public class IsfdbSearchEngine
                             nextSibling = labelElement.nextSibling();
                             if (nextSibling != null) {
                                 tmpString = nextSibling.toString().trim();
-                                bookData.putString(DBKey.PAGES, tmpString);
+                                bookData.putString(DBKey.PAGE_COUNT, tmpString);
                             }
                             break;
                         }
@@ -937,7 +937,7 @@ public class IsfdbSearchEngine
                             final Element nextElementSibling = labelElement.nextElementSibling();
                             if (nextElementSibling != null) {
                                 tmpString = nextElementSibling.ownText();
-                                bookData.putString(DBKey.BOOK_FORMAT, tmpString);
+                                bookData.putString(DBKey.FORMAT, tmpString);
                             }
 
                             break;
@@ -950,7 +950,7 @@ public class IsfdbSearchEngine
                                 bookData.putString(SiteField.BOOK_TYPE, tmpString);
                                 final Book.ContentType type = TYPE_MAP.get(tmpString);
                                 if (type != null) {
-                                    bookData.putLong(DBKey.BITMASK_TOC, type.value);
+                                    bookData.putLong(DBKey.TOC_TYPE__BITMASK, type.value);
                                 }
                             }
                             break;
@@ -965,7 +965,7 @@ public class IsfdbSearchEngine
                                 final Author author = Author.from(a.text());
                                 author.setType(Author.TYPE_COVER_ARTIST);
                                 // author.setIsfDbId(stripNumber(a.attr("href"),'?'));
-                                mAuthors.add(author);
+                                authorList.add(author);
                             }
                             break;
                         }
@@ -979,7 +979,7 @@ public class IsfdbSearchEngine
                                 final Author author = Author.from(a.text());
                                 author.setType(Author.TYPE_EDITOR);
                                 // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
-                                mAuthors.add(author);
+                                authorList.add(author);
                             }
                             break;
                         }
@@ -1031,22 +1031,22 @@ public class IsfdbSearchEngine
             bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
             if (toc.size() > 1) {
                 if (TocEntry.hasMultipleAuthors(toc)) {
-                    bookData.putLong(DBKey.BITMASK_TOC, Book.ContentType.Anthology.value);
+                    bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Anthology.value);
                 } else {
-                    bookData.putLong(DBKey.BITMASK_TOC, Book.ContentType.Collection.value);
+                    bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Collection.value);
                 }
             }
         }
 
         // store accumulated ArrayList's *after* we parsed the TOC
-        if (!mAuthors.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
+        if (!authorList.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
         }
-        if (!mSeries.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, mSeries);
+        if (!seriesList.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
         }
-        if (!mPublishers.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
+        if (!publisherList.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
         }
 
         checkForSeriesNameInTitle(bookData);
@@ -1057,12 +1057,12 @@ public class IsfdbSearchEngine
             // then this will have the first publication year for sure
             tmpString = ParseUtils.digits(toc.get(0).getFirstPublicationDate().getIsoString());
             if (!tmpString.isEmpty()) {
-                bookData.putString(DBKey.DATE_FIRST_PUBLICATION, tmpString);
+                bookData.putString(DBKey.FIRST_PUBLICATION__DATE, tmpString);
             }
         } else if (toc.size() > 1) {
             // we gamble and take what we found while parsing the TOC (first entry with a year)
             if (firstPublicationYear != null) {
-                bookData.putString(DBKey.DATE_FIRST_PUBLICATION, firstPublicationYear);
+                bookData.putString(DBKey.FIRST_PUBLICATION__DATE, firstPublicationYear);
             }
         }
 
@@ -1071,7 +1071,7 @@ public class IsfdbSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final String isbn = bookData.getString(DBKey.KEY_ISBN);
+            final String isbn = bookData.getString(DBKey.BOOK_ISBN);
             final ArrayList<String> list = parseCovers(document, isbn, 0);
             if (!list.isEmpty()) {
                 bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);

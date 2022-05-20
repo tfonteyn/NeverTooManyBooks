@@ -47,10 +47,10 @@ public class BitmaskChipGroupField
         extends BaseField<Integer, ChipGroup> {
 
     @NonNull
-    private final Function<Context, Map<Integer, String>> mValuesSupplier;
+    private final Function<Context, Map<Integer, String>> valuesSupplier;
 
     @Nullable
-    private final View.OnClickListener mEditChipListener;
+    private final View.OnClickListener editChipListener;
 
     /**
      * Constructor.
@@ -62,17 +62,17 @@ public class BitmaskChipGroupField
                                  @NonNull final String fieldKey,
                                  @NonNull final Function<Context, Map<Integer, String>> supplier) {
         super(fragmentId, fieldViewId, fieldKey, fieldKey);
-        mValuesSupplier = supplier;
+        valuesSupplier = supplier;
 
-        mEditChipListener = view -> {
-            final Integer previous = mRawValue;
+        editChipListener = view -> {
+            final Integer previous = rawValue;
             final Integer bit = (Integer) view.getTag();
             if (((Checkable) view).isChecked()) {
                 // add
-                mRawValue |= bit;
+                rawValue |= bit;
             } else {
                 // remove
-                mRawValue &= ~bit;
+                rawValue &= ~bit;
             }
             notifyIfChanged(previous);
         };
@@ -81,7 +81,7 @@ public class BitmaskChipGroupField
     @Override
     @NonNull
     public Integer getValue() {
-        return mRawValue != null ? mRawValue : 0;
+        return rawValue != null ? rawValue : 0;
     }
 
     @Override
@@ -95,11 +95,11 @@ public class BitmaskChipGroupField
             final Context context = chipGroup.getContext();
 
             for (final Map.Entry<Integer, String> entry :
-                    mValuesSupplier.apply(context).entrySet()) {
+                    valuesSupplier.apply(context).entrySet()) {
 
                 final Chip chip = new Chip(context, null, R.attr.appChipFilterStyle);
-                chip.setChecked((entry.getKey() & mRawValue) != 0);
-                chip.setOnClickListener(mEditChipListener);
+                chip.setChecked((entry.getKey() & rawValue) != 0);
+                chip.setOnClickListener(editChipListener);
 
                 // RTL-friendly Chip Layout
                 chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
@@ -114,13 +114,13 @@ public class BitmaskChipGroupField
 
     @Override
     public void setInitialValue(@NonNull final DataManager source) {
-        mInitialValue = source.getInt(mFieldKey);
-        setValue(mInitialValue);
+        initialValue = source.getInt(fieldKey);
+        setValue(initialValue);
     }
 
     @Override
     void internalPutValue(@NonNull final DataManager target) {
-        target.putLong(mFieldKey, getValue());
+        target.putLong(fieldKey, getValue());
     }
 
     @Override

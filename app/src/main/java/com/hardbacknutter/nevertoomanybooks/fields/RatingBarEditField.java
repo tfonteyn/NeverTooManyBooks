@@ -43,8 +43,8 @@ public class RatingBarEditField
         super.setParentView(parent);
         requireView().setOnRatingBarChangeListener((ratingBar, rating, fromUser) -> {
             if (fromUser) {
-                final Float previous = mRawValue;
-                mRawValue = rating;
+                final Float previous = rawValue;
+                rawValue = rating;
                 notifyIfChanged(previous);
             }
         });

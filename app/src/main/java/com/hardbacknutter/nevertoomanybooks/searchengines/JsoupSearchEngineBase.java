@@ -43,15 +43,15 @@ public abstract class JsoupSearchEngineBase
         extends SearchEngineBase {
 
     /** accumulate all Authors for this book. */
-    protected final ArrayList<Author> mAuthors = new ArrayList<>();
+    protected final ArrayList<Author> authorList = new ArrayList<>();
     /** accumulate all Series for this book. */
-    protected final ArrayList<Series> mSeries = new ArrayList<>();
+    protected final ArrayList<Series> seriesList = new ArrayList<>();
     /** accumulate all Publishers for this book. */
-    protected final ArrayList<Publisher> mPublishers = new ArrayList<>();
+    protected final ArrayList<Publisher> publisherList = new ArrayList<>();
 
     /** Responsible for loading and parsing the web page. */
     @NonNull
-    private final JsoupLoader mJsoupLoader;
+    private final JsoupLoader jsoupLoader;
 
     /**
      * Constructor.
@@ -60,7 +60,7 @@ public abstract class JsoupSearchEngineBase
      */
     protected JsoupSearchEngineBase(@NonNull final SearchEngineConfig config) {
         super(config);
-        mJsoupLoader = new JsoupLoader(createFutureGetRequest());
+        jsoupLoader = new JsoupLoader(createFutureGetRequest());
     }
 
     /**
@@ -72,7 +72,7 @@ public abstract class JsoupSearchEngineBase
     protected JsoupSearchEngineBase(@NonNull final SearchEngineConfig config,
                                     @NonNull final String charSetName) {
         this(config);
-        mJsoupLoader.setCharSetName(charSetName);
+        jsoupLoader.setCharSetName(charSetName);
     }
 
     /**
@@ -89,7 +89,7 @@ public abstract class JsoupSearchEngineBase
                                  @NonNull final String url)
             throws SearchException, CredentialsException {
         try {
-            return mJsoupLoader.loadDocument(context, url);
+            return jsoupLoader.loadDocument(context, url);
 
         } catch (@NonNull final IOException e) {
             throw new SearchException(getName(context), e);
@@ -121,16 +121,16 @@ public abstract class JsoupSearchEngineBase
         // But this way is more future oriented... maybe we'll need/can share more logic/data
         // between children... or change our mind later on.
 
-        mAuthors.clear();
-        mSeries.clear();
-        mPublishers.clear();
+        authorList.clear();
+        seriesList.clear();
+        publisherList.clear();
     }
 
     @Override
     public void cancel() {
         super.cancel();
-        synchronized (mJsoupLoader) {
-            mJsoupLoader.cancel();
+        synchronized (jsoupLoader) {
+            jsoupLoader.cancel();
         }
     }
 }

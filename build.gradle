@@ -65,11 +65,11 @@ buildscript {
 
         androidx_exifinterface_version = '1.3.3'
 
-        androidx_fragment_version = '1.5.0-beta01'
+        androidx_fragment_version = '1.5.0-rc01'
 
         androidx_interpolator_version = '1.0.0'
 
-        androidx_lifecycle_version = '2.5.0-beta01'
+        androidx_lifecycle_version = '2.5.0-rc01'
 
         androidx_preference_version = '1.2.0'
 
@@ -81,7 +81,7 @@ buildscript {
         google_material_version = '1.7.0-alpha01'
 
         // https://jsoup.org/
-        jsoup_version = '1.14.3'
+        jsoup_version = '1.15.1'
 
         // https://github.com/journeyapps/zxing-android-embedded
         zxing_android_embedded_version = '4.3.0'

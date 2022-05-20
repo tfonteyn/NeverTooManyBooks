@@ -42,7 +42,6 @@ public abstract class RowChangedListener
     public static final String REQUEST_KEY = TAG + ":rk";
     private static final String KEY = "key";
     private static final String ITEM_ID = "item";
-    private FragmentManager mFragmentManager;
 
     /**
      * Notify changes where made.
@@ -64,8 +63,7 @@ public abstract class RowChangedListener
 
     public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
                                           @NonNull final LifecycleOwner lifecycleOwner) {
-        mFragmentManager = fragmentManager;
-        mFragmentManager.setFragmentResultListener(REQUEST_KEY, lifecycleOwner, this);
+        fragmentManager.setFragmentResultListener(REQUEST_KEY, lifecycleOwner, this);
     }
 
     @Override

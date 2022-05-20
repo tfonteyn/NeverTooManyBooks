@@ -21,11 +21,8 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.database.sqlite.SQLiteDoneException;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-
-import java.io.Closeable;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -44,12 +41,10 @@ public final class BooklistNavigatorDao {
     private static final String _WHERE_ = " WHERE ";
 
     @NonNull
-    private final SynchronizedStatement mGetBookStmt;
-    private final int mRowCount;
+    private final SynchronizedStatement bookStmt;
+    private final int rowCount;
     @NonNull
-    private final String mListTableName;
-    /** DEBUG: Indicates close() has been called. Also see {@link Closeable#close()}. */
-    private boolean mCloseWasCalled;
+    private final String listTableName;
 
     /**
      * Constructor.
@@ -58,18 +53,18 @@ public final class BooklistNavigatorDao {
      */
     public BooklistNavigatorDao(@NonNull final String listTableName) {
 
-        mListTableName = listTableName;
+        this.listTableName = listTableName;
 
         final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
         try (SynchronizedStatement stmt = db.compileStatement(
-                "SELECT COUNT(*) FROM " + mListTableName)) {
-            mRowCount = (int) stmt.simpleQueryForLongOrZero();
+                "SELECT COUNT(*) FROM " + this.listTableName)) {
+            rowCount = (int) stmt.simpleQueryForLongOrZero();
         }
 
-        mGetBookStmt = db.compileStatement(
+        bookStmt = db.compileStatement(
                 SELECT_ + DBKey.FK_BOOK
-                + _FROM_ + mListTableName + _WHERE_ + DBKey.PK_ID + "=?");
+                + _FROM_ + this.listTableName + _WHERE_ + DBKey.PK_ID + "=?");
     }
 
     /**
@@ -79,7 +74,7 @@ public final class BooklistNavigatorDao {
      */
     @IntRange(from = 1)
     public int getRowCount() {
-        return mRowCount;
+        return rowCount;
     }
 
     /**
@@ -94,7 +89,7 @@ public final class BooklistNavigatorDao {
     public int getRowNumber(final long listTableRowId) {
         // This method is only called once to get the initial row number
         try (SynchronizedStatement stmt = ServiceLocator.getInstance().getDb().compileStatement(
-                SELECT_ + DBKey.PK_ID + _FROM_ + mListTableName
+                SELECT_ + DBKey.PK_ID + _FROM_ + listTableName
                 + _WHERE_ + DBKey.FK_BL_ROW_ID + "=?")) {
             stmt.bindLong(1, listTableRowId);
             return (int) stmt.simpleQueryForLongOrZero();
@@ -112,26 +107,11 @@ public final class BooklistNavigatorDao {
      */
     public long getBookIdAtRow(@IntRange(from = 1) final int rowNumber)
             throws SQLiteDoneException {
-        mGetBookStmt.bindLong(1, rowNumber);
-        return mGetBookStmt.simpleQueryForLong();
+        bookStmt.bindLong(1, rowNumber);
+        return bookStmt.simpleQueryForLong();
     }
 
     public void close() {
-        mCloseWasCalled = true;
-        mGetBookStmt.close();
-    }
-
-    /**
-     * DEBUG: if we see the warn in the logs, we know we have an issue to fix.
-     */
-    @SuppressWarnings("FinalizeDeclaration")
-    @Override
-    @CallSuper
-    protected void finalize()
-            throws Throwable {
-        if (!mCloseWasCalled) {
-            close();
-        }
-        super.finalize();
+        bookStmt.close();
     }
 }

@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.settings.widgets.MultiSelectListPreferenceSummaryProvider;
@@ -108,7 +107,7 @@ public class StyleFragment
         pCoverScale = findPreference(StyleDataStore.PK_COVER_SCALE);
         pTextScale = findPreference(StyleDataStore.PK_TEXT_SCALE);
         pListHeader = findPreference(StyleDataStore.PK_LIST_HEADER);
-        pPrimaryAuthorType = findPreference(AuthorBooklistGroup.PK_PRIMARY_TYPE);
+        pPrimaryAuthorType = findPreference(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE);
         pListFieldVisibility = findPreference(PSK_LIST_SHOWS_BOOK_DETAILS);
         pGroups = findPreference(StyleDataStore.PK_GROUPS);
 

@@ -19,7 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
-import android.content.ContentValues;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -39,23 +39,16 @@ import androidx.preference.PreferenceManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BookDetailsFieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BookshelfBooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.PublisherBooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.SeriesBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookshelfDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreCustomFieldDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
@@ -67,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UpgradeFailedException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
@@ -77,30 +71,17 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_CUSTOM_FIELDS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_LIBRARIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_VIRTUAL_LIBRARIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_BOOK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_BOOK_MAIN_FORMAT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_BOOK_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_LIBRARY_LAST_SYNC_DATE__UTC;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_LIBRARY_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_LIBRARY_STRING_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_LIBRARY_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_VIRT_LIB_EXPR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DATE_LAST_UPDATED__UTC;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_CALIBRE_LIBRARY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FTS_BOOK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PK_ID;
 
 /**
@@ -204,7 +185,6 @@ public class DBHelper
                 try {
                     db.execSQL("DROP INDEX " + indexName);
                 } catch (@NonNull final SQLException e) {
-                    // bad sql is a developer issue... die!
                     Logger.error(TAG, e);
                     throw e;
                 } catch (@NonNull final RuntimeException e) {
@@ -297,7 +277,6 @@ public class DBHelper
             return cs;
 
         } catch (@NonNull final SQLException e) {
-            // bad sql is a developer issue... die!
             Logger.error(TAG, e);
             throw e;
         } finally {
@@ -506,9 +485,9 @@ public class DBHelper
         /*
          * If the ISBN of a {@link Book) is changed, reset external ID's and sync dates.
          */
-        name = "after_update_of_" + KEY_ISBN + "_on_" + TBL_BOOKS.getName();
-        body = " AFTER UPDATE OF " + KEY_ISBN + " ON " + TBL_BOOKS.getName() + " FOR EACH ROW\n"
-               + " WHEN NEW." + KEY_ISBN + " <> OLD." + KEY_ISBN + '\n'
+        name = "after_update_of_" + BOOK_ISBN + "_on_" + TBL_BOOKS.getName();
+        body = " AFTER UPDATE OF " + BOOK_ISBN + " ON " + TBL_BOOKS.getName() + " FOR EACH ROW\n"
+               + " WHEN NEW." + BOOK_ISBN + " <> OLD." + BOOK_ISBN + '\n'
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName() + " SET ";
 
@@ -569,6 +548,7 @@ public class DBHelper
      * <p>
      * {@inheritDoc}
      */
+    @SuppressLint("ApplySharedPref")
     @Override
     public void onUpgrade(@NonNull final SQLiteDatabase db,
                           final int oldVersion,
@@ -603,138 +583,9 @@ public class DBHelper
             }
         }
 
-        if (oldVersion < 12) {
-            // This version should be the current public available APK on github.
-            // i.e. 1.2.1 is available which can upgrade older versions.
-            throw new UnsupportedOperationException(
-                    context.getString(R.string.error_upgrade_not_supported, "1.2.1"));
-        }
-        if (oldVersion < 13) {
-            //
-            // This is the v1.2.0 / 1.2.1 / 1.3.0 release.
-            //
-            TBL_BOOKLIST_STYLES.alterTableAddColumns(db,
-                                                     DBDefinitions.DOM_STYLE_MENU_POSITION,
-                                                     DBDefinitions.DOM_STYLE_IS_PREFERRED);
-
-            final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-            final String itemsStr = global.getString("bookList.style.preferred.order", null);
-            if (itemsStr != null && !itemsStr.isEmpty()) {
-                final String[] entries = itemsStr.split(",");
-                if (entries.length > 0) {
-                    final ContentValues cv = new ContentValues();
-                    for (int i = 0; i < entries.length; i++) {
-                        final String uuid = entries[i];
-                        if (uuid != null && !uuid.isEmpty()) {
-                            cv.clear();
-                            cv.put("menu_order", i);
-                            cv.put("preferred", 1);
-                            db.update("book_list_styles", cv,
-                                      "uuid=?", new String[]{uuid});
-                        }
-                    }
-                }
-            }
-        }
-        if (oldVersion < 14) {
-            TBL_CALIBRE_BOOKS.create(db, true);
-            TBL_CALIBRE_LIBRARIES.create(db, true);
-
-            db.execSQL("INSERT INTO calibre_books (book,clb_book_uuid)"
-                       + " SELECT _id, clb_book_uuid FROM books"
-                       + " WHERE clb_book_uuid IS NOT NULL");
-            db.execSQL("UPDATE books SET clb_book_uuid=NULL");
-        }
         if (oldVersion < 15) {
-
-            db.execSQL("ALTER TABLE calibre_books RENAME TO tmp_cb");
-            db.execSQL("ALTER TABLE calibre_vlib RENAME TO tmp_vl");
-
-            TBL_CALIBRE_BOOKS.create(db, true);
-            TBL_CALIBRE_LIBRARIES.create(db, true);
-            TBL_CALIBRE_VIRTUAL_LIBRARIES.create(db, true);
-
-            final Map<String, Long> libString2Id = new HashMap<>();
-            try (Cursor cursor = db.rawQuery(
-                    "SELECT library, vlib_name, bookshelf_id FROM tmp_vl"
-                    + " WHERE expression = ''", null)) {
-                while (cursor.moveToNext()) {
-                    final String libraryId = cursor.getString(0);
-                    final String name = cursor.getString(1);
-                    final long bookshelfId = cursor.getLong(2);
-
-                    try (SQLiteStatement stmt = db.compileStatement(
-                            "INSERT INTO " + TBL_CALIBRE_LIBRARIES.getName()
-                            + '(' + CALIBRE_LIBRARY_UUID
-                            + ',' + CALIBRE_LIBRARY_STRING_ID
-                            + ',' + CALIBRE_LIBRARY_NAME
-                            + ',' + CALIBRE_LIBRARY_LAST_SYNC_DATE__UTC
-                            + ',' + FK_BOOKSHELF
-                            + ") VALUES (?,?,?,?,?)")) {
-                        stmt.bindString(1, "");
-                        stmt.bindString(2, libraryId);
-                        stmt.bindString(3, name);
-                        stmt.bindString(4, "");
-                        stmt.bindLong(5, bookshelfId);
-                        final long iId = stmt.executeInsert();
-                        libString2Id.put(libraryId, iId);
-                    }
-                }
-            }
-            try (Cursor cursor = db.rawQuery(
-                    "SELECT library, vlib_name, bookshelf_id, expression FROM tmp_vl"
-                    + " WHERE expression <> ''", null)) {
-                while (cursor.moveToNext()) {
-                    final String libraryId = cursor.getString(0);
-                    final String name = cursor.getString(1);
-                    final long bookshelfId = cursor.getLong(2);
-                    final String expression = cursor.getString(3);
-
-                    final Long libId = libString2Id.get(libraryId);
-                    // db14 dev had a cleanup-bug, skip if not there.
-                    if (libId != null) {
-                        try (SQLiteStatement stmt = db.compileStatement(
-                                "INSERT INTO " + TBL_CALIBRE_VIRTUAL_LIBRARIES.getName()
-                                + '(' + FK_CALIBRE_LIBRARY
-                                + ',' + CALIBRE_LIBRARY_NAME
-                                + ',' + CALIBRE_VIRT_LIB_EXPR
-                                + ',' + FK_BOOKSHELF
-                                + ") VALUES (?,?,?,?)")) {
-                            stmt.bindLong(1, libId);
-                            stmt.bindString(2, name);
-                            stmt.bindString(3, expression);
-                            stmt.bindLong(4, bookshelfId);
-                            stmt.executeInsert();
-                        }
-                    }
-                }
-            }
-
-            try (Cursor cursor = db.rawQuery(
-                    "SELECT book, clb_id, clb_uuid, main_format, library FROM tmp_cb", null)) {
-                while (cursor.moveToNext()) {
-                    final long bookId = cursor.getLong(0);
-                    final long clbBookId = cursor.getLong(1);
-                    final String clbUuid = cursor.getString(2);
-                    final String format = cursor.getString(3);
-                    final String libraryId = cursor.getString(4);
-
-                    final Long libId = libString2Id.get(libraryId);
-                    if (libId != null) {
-                        final ContentValues cv = new ContentValues();
-                        cv.put(FK_BOOK, bookId);
-                        cv.put(CALIBRE_BOOK_ID, clbBookId);
-                        cv.put(CALIBRE_BOOK_UUID, clbUuid);
-                        cv.put(CALIBRE_BOOK_MAIN_FORMAT, format);
-                        cv.put(FK_CALIBRE_LIBRARY, libId);
-
-                        db.insert(TBL_CALIBRE_BOOKS.getName(), null, cv);
-                    }
-                }
-            }
-
-            db.execSQL("DROP TABLE tmp_vl");
-            db.execSQL("DROP TABLE tmp_cb");
+            throw new UpgradeFailedException(
+                    context.getString(R.string.error_upgrade_not_supported, "2.0.0"));
         }
         if (oldVersion < 16) {
             TBL_STRIPINFO_COLLECTION.create(db, true);
@@ -749,6 +600,19 @@ public class DBHelper
             TBL_BOOKSHELF_FILTERS.create(db, true);
         }
         if (oldVersion < 19) {
+            final SharedPreferences global = PreferenceManager
+                    .getDefaultSharedPreferences(context);
+            // change the name of these for easier migration
+            final boolean visSeries = global.getBoolean("fields.visibility."
+                                                        + DBKey.SERIES_TITLE, true);
+            final boolean visPublisher = global.getBoolean("fields.visibility."
+                                                           + DBKey.PUBLISHER_NAME, true);
+            global.edit()
+                  .putBoolean("fields.visibility." + DBKey.FK_SERIES, visSeries)
+                  .putBoolean("fields.visibility." + DBKey.FK_PUBLISHER, visPublisher)
+                  .commit();
+
+
             TBL_BOOKLIST_STYLES.alterTableAddColumns(
                     db,
                     DBDefinitions.DOM_STYLE_NAME,
@@ -806,112 +670,94 @@ public class DBHelper
                     final SharedPreferences stylePrefs = context
                             .getSharedPreferences(uuid, Context.MODE_PRIVATE);
 
-                    stmt.bindString(1, stylePrefs.getString(
+                    int c = 0;
+
+                    stmt.bindString(++c, stylePrefs.getString(
                             StyleDataStore.PK_NAME, null));
 
-                    stmt.bindString(2, stylePrefs.getString(
+                    stmt.bindString(++c, stylePrefs.getString(
                             StyleDataStore.PK_GROUPS, null));
 
-                    stmt.bindLong(3, stylePrefs.getBoolean(
-                            AuthorBooklistGroup.PK_SHOW_BOOKS_UNDER_EACH, false) ? 1 : 0);
+                    stmt.bindLong(++c, stylePrefs.getBoolean(
+                            StyleDataStore.PK_GROUPS_AUTHOR_SHOW_BOOKS_UNDER_EACH, false) ? 1 : 0);
 
-                    stmt.bindLong(4, StyleDataStore.convert(
-                            stylePrefs.getStringSet(AuthorBooklistGroup.PK_PRIMARY_TYPE, null),
+                    stmt.bindLong(++c, StyleDataStore.convert(
+                            stylePrefs.getStringSet(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE,
+                                                    null),
                             Author.TYPE_UNKNOWN));
 
-                    stmt.bindLong(5, stylePrefs.getBoolean(
-                            SeriesBooklistGroup.PK_SHOW_BOOKS_UNDER_EACH, false) ? 1 : 0);
-                    stmt.bindLong(6, stylePrefs.getBoolean(
-                            PublisherBooklistGroup.PK_SHOW_BOOKS_UNDER_EACH, false) ? 1 : 0);
-                    stmt.bindLong(7, stylePrefs.getBoolean(
-                            BookshelfBooklistGroup.PK_SHOW_BOOKS_UNDER_EACH, false) ? 1 : 0);
+                    stmt.bindLong(++c, stylePrefs.getBoolean(
+                            StyleDataStore.PK_GROUPS_SERIES_SHOW_BOOKS_UNDER_EACH, false) ? 1 : 0);
+                    stmt.bindLong(++c, stylePrefs.getBoolean(
+                            StyleDataStore.PK_GROUPS_PUBLISHER_SHOW_BOOKS_UNDER_EACH,
+                            false) ? 1 : 0);
+                    stmt.bindLong(++c, stylePrefs.getBoolean(
+                            StyleDataStore.PK_GROUPS_BOOKSHELF_SHOW_BOOKS_UNDER_EACH,
+                            false) ? 1 : 0);
 
-                    stmt.bindLong(8, stylePrefs.getInt(
+                    stmt.bindLong(++c, stylePrefs.getInt(
                             StyleDataStore.PK_EXPANSION_LEVEL, 1));
-                    stmt.bindLong(9, stylePrefs.getBoolean(
+                    stmt.bindLong(++c, stylePrefs.getBoolean(
                             StyleDataStore.PK_GROUP_ROW_HEIGHT, true) ? 1 : 0);
-                    stmt.bindLong(10, stylePrefs.getBoolean(
+
+                    stmt.bindLong(++c, stylePrefs.getBoolean(
                             StyleDataStore.PK_SORT_AUTHOR_NAME_GIVEN_FIRST, false) ? 1 : 0);
-                    stmt.bindLong(11, stylePrefs.getBoolean(
+
+                    stmt.bindLong(++c, stylePrefs.getBoolean(
                             StyleDataStore.PK_SHOW_AUTHOR_NAME_GIVEN_FIRST, false) ? 1 : 0);
 
-                    stmt.bindLong(12, stylePrefs.getInt(
+
+                    stmt.bindLong(++c, stylePrefs.getInt(
                             StyleDataStore.PK_TEXT_SCALE, Style.DEFAULT_TEXT_SCALE));
-                    stmt.bindLong(13, stylePrefs.getInt(
+                    stmt.bindLong(++c, stylePrefs.getInt(
                             StyleDataStore.PK_COVER_SCALE, Style.DEFAULT_COVER_SCALE));
 
-                    stmt.bindLong(14, StyleDataStore.convert(
+                    stmt.bindLong(++c, StyleDataStore.convert(
                             stylePrefs.getStringSet(StyleDataStore.PK_LIST_HEADER, null),
                             BooklistHeader.BITMASK_ALL));
 
-                    final int detailFields =
-                            (stylePrefs.getBoolean(
-                                    StyleDataStore.PK_DETAILS_SHOW_COVER[0], true)
-                             ? BookDetailsFieldVisibility.SHOW_COVER_0 : 0)
-                            |
-                            (stylePrefs.getBoolean(
-                                    StyleDataStore.PK_DETAILS_SHOW_COVER[1], true)
-                             ? BookDetailsFieldVisibility.SHOW_COVER_1 : 0);
+                    final long detailFields =
+                            (stylePrefs.getBoolean(StyleDataStore.PK_DETAILS_SHOW_COVER[0], true)
+                             ? FieldVisibility.getBitValue(
+                                    FieldVisibility.COVER[0]) : 0)
+                            | (stylePrefs.getBoolean(StyleDataStore.PK_DETAILS_SHOW_COVER[1], true)
+                               ? FieldVisibility.getBitValue(
+                                    FieldVisibility.COVER[1]) : 0);
 
-                    stmt.bindLong(15, detailFields);
+                    stmt.bindLong(++c, detailFields);
 
-                    final int listFields =
-                            (stylePrefs.getBoolean(
-                                    StyleDataStore.PK_LIST_SHOW_COVERS, true)
-                             ? BooklistFieldVisibility.SHOW_COVER_0 : 0)
-                            |
-                            (stylePrefs.getBoolean(
-                                    StyleDataStore.PK_LIST_SHOW_AUTHOR, true)
-                             ? BooklistFieldVisibility.SHOW_AUTHOR : 0)
-                            |
-                            (stylePrefs.getBoolean(
-                                    StyleDataStore.PK_LIST_SHOW_PUBLISHER, true)
-                             ? BooklistFieldVisibility.SHOW_PUBLISHER : 0)
-                            |
-                            (stylePrefs.getBoolean(
-                                    StyleDataStore.PK_LIST_SHOW_PUB_DATE, true)
-                             ? BooklistFieldVisibility.SHOW_PUB_DATE : 0)
-                            |
-                            (stylePrefs.getBoolean(
-                                    StyleDataStore.PK_LIST_SHOW_FORMAT, true)
-                             ? BooklistFieldVisibility.SHOW_FORMAT : 0)
-                            |
-                            (stylePrefs.getBoolean(
-                                    StyleDataStore.PK_LIST_SHOW_LOCATION, true)
-                             ? BooklistFieldVisibility.SHOW_LOCATION : 0)
-                            |
-                            (stylePrefs.getBoolean(
-                                    StyleDataStore.PK_LIST_SHOW_RATING, true)
-                             ? BooklistFieldVisibility.SHOW_RATING : 0)
-                            |
-                            (stylePrefs.getBoolean(
-                                    StyleDataStore.PK_LIST_SHOW_BOOKSHELVES, true)
-                             ? BooklistFieldVisibility.SHOW_BOOKSHELVES : 0)
-                            |
-                            (stylePrefs.getBoolean(
-                                    StyleDataStore.PK_LIST_SHOW_ISBN, true)
-                             ? BooklistFieldVisibility.SHOW_ISBN : 0);
+                    final long listFields =
+                            FieldVisibility.getBitValue(DBKey.FK_SERIES)
 
-                    stmt.bindLong(16, listFields);
+                            | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_COVERS, true)
+                               ? FieldVisibility.getBitValue(
+                                    FieldVisibility.COVER[0]) : 0)
+                            | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_AUTHOR, true)
+                               ? FieldVisibility.getBitValue(DBKey.FK_AUTHOR) : 0)
+                            | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_PUBLISHER, true)
+                               ? FieldVisibility.getBitValue(DBKey.FK_PUBLISHER) : 0)
+                            | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_PUB_DATE, true)
+                               ? FieldVisibility.getBitValue(DBKey.BOOK_PUBLICATION__DATE) : 0)
+                            | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_FORMAT, true)
+                               ? FieldVisibility.getBitValue(DBKey.FORMAT) : 0)
+                            | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_LOCATION, true)
+                               ? FieldVisibility.getBitValue(DBKey.LOCATION) : 0)
+                            | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_RATING, true)
+                               ? FieldVisibility.getBitValue(DBKey.RATING) : 0)
+                            | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_BOOKSHELVES, true)
+                               ? FieldVisibility.getBitValue(DBKey.FK_BOOKSHELF) : 0)
+                            | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_ISBN, true)
+                               ? FieldVisibility.getBitValue(BOOK_ISBN) : 0);
 
-                    stmt.bindString(17, uuid);
+                    stmt.bindLong(++c, listFields);
+
+                    stmt.bindString(++c, uuid);
                     stmt.executeUpdateDelete();
 
                     context.deleteSharedPreferences(uuid);
                 });
             }
 
-            // one last time, remove any global style prefs as we no longer use them.
-            final SharedPreferences prefs = PreferenceManager
-                    .getDefaultSharedPreferences(context);
-            final SharedPreferences.Editor editor = prefs.edit();
-            prefs.getAll()
-                 .keySet()
-                 .stream()
-                 .filter(key -> key.startsWith("style."))
-                 .forEach(editor::remove);
-
-            editor.apply();
         }
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table:
@@ -949,42 +795,53 @@ public class DBHelper
      */
     private void removeObsoleteKeys(@NonNull final Context context) {
 
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit()
-                         .remove("tips.tip.BOOKLIST_STYLES_EDITOR")
-                         .remove("tips.tip.BOOKLIST_STYLE_GROUPS")
-                         .remove("tips.tip.BOOKLIST_STYLE_PROPERTIES")
-                         .remove("tips.tip.booklist_style_menu")
+        final SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(context);
 
-                         .remove("bookList.style.preferred.order")
+        final SharedPreferences.Editor editor = prefs.edit();
 
-                         .remove("booklist.top.rowId")
-                         .remove("booklist.top.row")
-                         .remove("booklist..top.row")
-                         .remove("booklist.top.offset")
-                         .remove("booklist..top.offset")
+        prefs.getAll()
+             .keySet()
+             .stream()
+             .filter(key -> key.startsWith("style.booklist."))
+             .forEach(editor::remove);
 
-                         .remove("calibre.last.sync.date")
-                         .remove("compat.booklist.mode")
-                         .remove("compat.image.cropper.viewlayertype")
-                         .remove("edit.book.tab.authSer")
-                         .remove("edit.book.tab.nativeId")
-                         .remove("goodreads.enabled")
-                         .remove("goodreads.showMenu")
-                         .remove("goodreads.search.collect.genre")
-                         .remove("goodreads.AccessToken.Token")
-                         .remove("goodreads.AccessToken.Secret")
-                         .remove("librarything.dev_key")
-                         .remove("scanner.preferred")
-                         .remove("search.form.advanced")
-                         .remove("search.site.goodreads.data.enabled")
-                         .remove("search.site.goodreads.covers.enabled")
-                         .remove("startup.lastVersion")
-                         .remove("tmp.edit.book.tab.authSer")
-                         .remove("ui.messages.use")
+        editor.remove("tips.tip.BOOKLIST_STYLES_EDITOR")
+              .remove("tips.tip.BOOKLIST_STYLE_GROUPS")
+              .remove("tips.tip.BOOKLIST_STYLE_PROPERTIES")
+              .remove("tips.tip.booklist_style_menu")
 
-                         .remove("fields.visibility.bookshelf")
-                         .remove("fields.visibility.read")
-                         .apply();
+              .remove("BookList.Style.Preferred.Order")
+              .remove("bookList.style.preferred.order")
+              .remove("BookList.Style.Current")
+
+              .remove("booklist.top.rowId")
+              .remove("booklist.top.row")
+              .remove("booklist..top.row")
+              .remove("booklist.top.offset")
+              .remove("booklist..top.offset")
+
+              .remove("calibre.last.sync.date")
+              .remove("compat.booklist.mode")
+              .remove("compat.image.cropper.viewlayertype")
+              .remove("edit.book.tab.authSer")
+              .remove("edit.book.tab.nativeId")
+              .remove("goodreads.enabled")
+              .remove("goodreads.showMenu")
+              .remove("goodreads.search.collect.genre")
+              .remove("goodreads.AccessToken.Token")
+              .remove("goodreads.AccessToken.Secret")
+              .remove("librarything.dev_key")
+              .remove("scanner.preferred")
+              .remove("search.form.advanced")
+              .remove("search.site.goodreads.data.enabled")
+              .remove("search.site.goodreads.covers.enabled")
+              .remove("startup.lastVersion")
+              .remove("tmp.edit.book.tab.authSer")
+              .remove("ui.messages.use")
+
+              .remove("fields.visibility.bookshelf")
+              .remove("fields.visibility.read")
+              .commit();
     }
 }

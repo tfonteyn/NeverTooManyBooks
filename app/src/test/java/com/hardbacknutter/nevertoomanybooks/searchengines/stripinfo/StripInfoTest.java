@@ -87,10 +87,10 @@ class StripInfoTest
                  new boolean[]{true, true});
 
         assertEquals("De 37ste parallel", mRawData.getString(DBKey.TITLE));
-        assertEquals("9789463064385", mRawData.getString(DBKey.KEY_ISBN));
-        assertEquals("2018", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("48", mRawData.getString(DBKey.PAGES));
-        assertEquals("Hardcover", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("9789463064385", mRawData.getString(DBKey.BOOK_ISBN));
+        assertEquals("2018", mRawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("48", mRawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("Hardcover", mRawData.getString(DBKey.FORMAT));
         assertEquals("nld", mRawData.getString(DBKey.LANGUAGE));
         assertEquals("Kleur", mRawData.getString(DBKey.COLOR));
 
@@ -154,10 +154,10 @@ class StripInfoTest
                  new boolean[]{true, true});
 
         assertEquals("De boom van de twee lentes", mRawData.getString(DBKey.TITLE));
-        assertEquals("905581315X", mRawData.getString(DBKey.KEY_ISBN));
-        assertEquals("2000", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("64", mRawData.getString(DBKey.PAGES));
-        assertEquals("Softcover", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("905581315X", mRawData.getString(DBKey.BOOK_ISBN));
+        assertEquals("2000", mRawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("64", mRawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("Softcover", mRawData.getString(DBKey.FORMAT));
         assertEquals("nld", mRawData.getString(DBKey.LANGUAGE));
         assertEquals("Kleur", mRawData.getString(DBKey.COLOR));
 
@@ -220,10 +220,10 @@ class StripInfoTest
 
         assertEquals("Het huis van verboden geneugten",
                      mRawData.getString(DBKey.TITLE));
-        assertEquals("9789085522072", mRawData.getString(DBKey.KEY_ISBN));
-        assertEquals("2012", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("64", mRawData.getString(DBKey.PAGES));
-        assertEquals("Hardcover", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("9789085522072", mRawData.getString(DBKey.BOOK_ISBN));
+        assertEquals("2012", mRawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("64", mRawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("Hardcover", mRawData.getString(DBKey.FORMAT));
         assertEquals("nld", mRawData.getString(DBKey.LANGUAGE));
         assertEquals("Kleur", mRawData.getString(DBKey.COLOR));
 
@@ -279,10 +279,10 @@ class StripInfoTest
                  new boolean[]{false, false});
 
         assertEquals("De integrale 5", mRawData.getString(DBKey.TITLE));
-        assertEquals("9789055819485", mRawData.getString(DBKey.KEY_ISBN));
-        assertEquals("2017", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("224", mRawData.getString(DBKey.PAGES));
-        assertEquals("Hardcover", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("9789055819485", mRawData.getString(DBKey.BOOK_ISBN));
+        assertEquals("2017", mRawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("224", mRawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("Hardcover", mRawData.getString(DBKey.FORMAT));
         assertEquals("nld", mRawData.getString(DBKey.LANGUAGE));
         assertEquals("Kleur", mRawData.getString(DBKey.COLOR));
 
@@ -338,9 +338,9 @@ class StripInfoTest
                  new boolean[]{false, false});
 
         assertEquals("Red Dust", mRawData.getString(DBKey.TITLE));
-        assertEquals("1972", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("48", mRawData.getString(DBKey.PAGES));
-        assertEquals("Softcover", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("1972", mRawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("48", mRawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("Softcover", mRawData.getString(DBKey.FORMAT));
         assertEquals("nld", mRawData.getString(DBKey.LANGUAGE));
         assertEquals("Kleur", mRawData.getString(DBKey.COLOR));
 
@@ -394,8 +394,8 @@ class StripInfoTest
                  new boolean[]{false, false});
 
         assertEquals("Spoken in de grot", mRawData.getString(DBKey.TITLE));
-        assertEquals("1977", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("Softcover", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("1977", mRawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("Softcover", mRawData.getString(DBKey.FORMAT));
         assertEquals("nld", mRawData.getString(DBKey.LANGUAGE));
         assertEquals("Kleur", mRawData.getString(DBKey.COLOR));
 
@@ -462,11 +462,11 @@ class StripInfoTest
         assertFalse(mRawData.isEmpty());
         System.out.println(mRawData);
 
-        assertEquals("9782756010830", mRawData.getString(DBKey.KEY_ISBN));
+        assertEquals("9782756010830", mRawData.getString(DBKey.BOOK_ISBN));
         assertEquals("Le chant du pluvier", mRawData.getString(DBKey.TITLE));
-        assertEquals("2009", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("172", mRawData.getString(DBKey.PAGES));
-        assertEquals("Hardcover", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("2009", mRawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("172", mRawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("Hardcover", mRawData.getString(DBKey.FORMAT));
         assertEquals("fra", mRawData.getString(DBKey.LANGUAGE));
         assertEquals("Kleur", mRawData.getString(DBKey.COLOR));
 

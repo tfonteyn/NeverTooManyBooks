@@ -48,7 +48,7 @@ public class AuthorCoder
             out.put(DBKey.AUTHOR_IS_COMPLETE, true);
         }
         if (author.getType() != Author.TYPE_UNKNOWN) {
-            out.put(DBKey.BOOK_AUTHOR_TYPE_BITMASK, author.getType());
+            out.put(DBKey.AUTHOR_TYPE__BITMASK, author.getType());
         }
 
         return out;
@@ -71,8 +71,8 @@ public class AuthorCoder
             author.setComplete(data.getBoolean("complete"));
         }
 
-        if (data.has(DBKey.BOOK_AUTHOR_TYPE_BITMASK)) {
-            author.setType(data.getInt(DBKey.BOOK_AUTHOR_TYPE_BITMASK));
+        if (data.has(DBKey.AUTHOR_TYPE__BITMASK)) {
+            author.setType(data.getInt(DBKey.AUTHOR_TYPE__BITMASK));
         } else if (data.has("type")) {
             author.setType(data.getInt("type"));
         }

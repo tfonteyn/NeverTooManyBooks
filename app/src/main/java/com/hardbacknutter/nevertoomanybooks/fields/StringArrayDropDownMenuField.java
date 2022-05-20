@@ -42,7 +42,7 @@ public class StringArrayDropDownMenuField
         extends BaseField<Integer, AutoCompleteTextView> {
 
     @NonNull
-    private final ExtArrayAdapter<CharSequence> mAdapter;
+    private final ExtArrayAdapter<CharSequence> adapter;
 
     /**
      * Constructor.
@@ -56,11 +56,11 @@ public class StringArrayDropDownMenuField
                                         @NonNull final Context context,
                                         @ArrayRes final int arrayResId) {
         super(fragmentId, fieldViewId, fieldKey, fieldKey);
-        mAdapter = ExtArrayAdapter.createFromResource(
+        adapter = ExtArrayAdapter.createFromResource(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Passthrough, arrayResId);
 
-        SanityCheck.requirePositiveValue(mAdapter.getCount(), "mAdapter.getCount()");
+        SanityCheck.requirePositiveValue(adapter.getCount(), "mAdapter.getCount()");
     }
 
     @NonNull
@@ -74,10 +74,10 @@ public class StringArrayDropDownMenuField
         super.setParentView(parent);
 
         final AutoCompleteTextView view = requireView();
-        view.setAdapter(mAdapter);
+        view.setAdapter(adapter);
         view.setOnItemClickListener((p, v, position, id) -> {
-            final Integer previous = mRawValue;
-            mRawValue = position;
+            final Integer previous = rawValue;
+            rawValue = position;
             notifyIfChanged(previous);
         });
     }
@@ -85,7 +85,7 @@ public class StringArrayDropDownMenuField
     @Override
     @NonNull
     public Integer getValue() {
-        return mRawValue != null ? mRawValue : 0;
+        return rawValue != null ? rawValue : 0;
     }
 
     @Override
@@ -94,23 +94,23 @@ public class StringArrayDropDownMenuField
 
         final AutoCompleteTextView view = getView();
         if (view != null) {
-            if (mRawValue >= 0 && mRawValue < mAdapter.getCount()) {
-                view.setText(mAdapter.getItem(mRawValue), false);
+            if (rawValue >= 0 && rawValue < adapter.getCount()) {
+                view.setText(adapter.getItem(rawValue), false);
             } else {
-                view.setText(mAdapter.getItem(0), false);
+                view.setText(adapter.getItem(0), false);
             }
         }
     }
 
     @Override
     public void setInitialValue(@NonNull final DataManager source) {
-        mInitialValue = source.getInt(mFieldKey);
-        setValue(mInitialValue);
+        initialValue = source.getInt(fieldKey);
+        setValue(initialValue);
     }
 
     @Override
     void internalPutValue(@NonNull final DataManager target) {
-        target.putInt(mFieldKey, getValue());
+        target.putInt(fieldKey, getValue());
     }
 
     @Override

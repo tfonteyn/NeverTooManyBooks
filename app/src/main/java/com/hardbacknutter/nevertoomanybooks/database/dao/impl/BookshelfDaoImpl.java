@@ -125,7 +125,7 @@ public class BookshelfDaoImpl
 
 
     private static final String SELECT_FILTERS =
-            SELECT_ + DBKey.FILTER_NAME + ',' + DBKey.FILTER_VALUE
+            SELECT_ + DBKey.FILTER_DBKEY + ',' + DBKey.FILTER_VALUE
             + _FROM_ + TBL_BOOKSHELF_FILTERS.getName()
             + _WHERE_ + DBKey.FK_BOOKSHELF + "=?";
 
@@ -136,7 +136,7 @@ public class BookshelfDaoImpl
     private static final String INSERT_FILTER =
             INSERT_INTO_ + TBL_BOOKSHELF_FILTERS.getName()
             + '(' + DBKey.FK_BOOKSHELF
-            + ',' + DBKey.FILTER_NAME
+            + ',' + DBKey.FILTER_DBKEY
             + ',' + DBKey.FILTER_VALUE
             + ") VALUES (?,?,?)";
 
@@ -240,10 +240,10 @@ public class BookshelfDaoImpl
                                           new String[]{String.valueOf(bookshelfId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                final String name = rowData.getString(DBKey.FILTER_NAME);
+                final String dbKey = rowData.getString(DBKey.FILTER_DBKEY);
                 final String value = rowData.getString(DBKey.FILTER_VALUE, null);
                 if (value != null) {
-                    FilterFactory.create(name).ifPresent(filter -> {
+                    FilterFactory.create(dbKey).ifPresent(filter -> {
                         filter.setValueAsString(value);
                         list.add(filter);
                     });

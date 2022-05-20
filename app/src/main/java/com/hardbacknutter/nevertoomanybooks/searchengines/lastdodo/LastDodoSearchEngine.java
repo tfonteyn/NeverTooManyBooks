@@ -233,11 +233,11 @@ public class LastDodoSearchEngine
                     break;
 
                 case "Jaar:":
-                    processText(td, DBKey.DATE_BOOK_PUBLICATION, bookData);
+                    processText(td, DBKey.BOOK_PUBLICATION__DATE, bookData);
                     break;
 
                 case "Cover:":
-                    processText(td, DBKey.BOOK_FORMAT, bookData);
+                    processText(td, DBKey.FORMAT, bookData);
                     break;
 
                 case "Druk:":
@@ -253,7 +253,7 @@ public class LastDodoSearchEngine
                     if (!"Geen".equals(tmpString)) {
                         tmpString = ISBN.cleanText(tmpString);
                         if (!tmpString.isEmpty()) {
-                            bookData.putString(DBKey.KEY_ISBN, tmpString);
+                            bookData.putString(DBKey.BOOK_ISBN, tmpString);
                         }
                     }
                     break;
@@ -263,7 +263,7 @@ public class LastDodoSearchEngine
                     break;
 
                 case "Aantal bladzijden:":
-                    processText(td, DBKey.PAGES, bookData);
+                    processText(td, DBKey.PAGE_COUNT, bookData);
                     break;
 
                 case "Afmetingen:":
@@ -294,14 +294,14 @@ public class LastDodoSearchEngine
         // It seems the site only lists a single number, although a book can be in several
         // Series.
         if (tmpSeriesNr != null && !tmpSeriesNr.isEmpty()) {
-            if (mSeries.size() == 1) {
-                final Series series = mSeries.get(0);
+            if (seriesList.size() == 1) {
+                final Series series = seriesList.get(0);
                 series.setNumber(tmpSeriesNr);
-            } else if (mSeries.size() > 1) {
+            } else if (seriesList.size() > 1) {
                 // tricky.... add it to a single series ? which one ? or to all ? or none ?
                 // Whatever we choose, it's probably wrong.
                 // We'll arbitrarily go with a single one, the last one.
-                final Series series = mSeries.get(mSeries.size() - 1);
+                final Series series = seriesList.get(seriesList.size() - 1);
                 series.setNumber(tmpSeriesNr);
             }
         }
@@ -310,21 +310,21 @@ public class LastDodoSearchEngine
         parseToc(document).ifPresent(toc -> {
             bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
             if (TocEntry.hasMultipleAuthors(toc)) {
-                bookData.putLong(DBKey.BITMASK_TOC, Book.ContentType.Anthology.value);
+                bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Anthology.value);
             } else {
-                bookData.putLong(DBKey.BITMASK_TOC, Book.ContentType.Collection.value);
+                bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Collection.value);
             }
         });
 
         // store accumulated ArrayList's *after* we parsed the TOC
-        if (!mAuthors.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
+        if (!authorList.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
         }
-        if (!mSeries.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, mSeries);
+        if (!seriesList.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
         }
-        if (!mPublishers.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
+        if (!publisherList.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
         }
 
         // It's extremely unlikely, but should the language be missing, add dutch.
@@ -339,7 +339,7 @@ public class LastDodoSearchEngine
         }
 
         if (fetchCovers[0] || fetchCovers[1]) {
-            final String isbn = bookData.getString(DBKey.KEY_ISBN);
+            final String isbn = bookData.getString(DBKey.BOOK_ISBN);
             parseCovers(document, isbn, fetchCovers, bookData);
         }
     }
@@ -397,7 +397,7 @@ public class LastDodoSearchEngine
             section = section.nextElementSibling();
             if (section != null) {
                 for (final Element tr : section.select("tr:contains(Verhaaltitel)")) {
-                    toc.add(new TocEntry(mAuthors.get(0), tr.child(1).text()));
+                    toc.add(new TocEntry(authorList.get(0), tr.child(1).text()));
                 }
             }
             if (toc.size() > 1) {
@@ -422,7 +422,7 @@ public class LastDodoSearchEngine
             final Author currentAuthor = Author.from(name);
             boolean add = true;
             // check if already present
-            for (final Author author : mAuthors) {
+            for (final Author author : authorList) {
                 if (author.equals(currentAuthor)) {
                     // merge types.
                     author.addType(currentAuthorType);
@@ -433,7 +433,7 @@ public class LastDodoSearchEngine
 
             if (add) {
                 currentAuthor.setType(currentAuthorType);
-                mAuthors.add(currentAuthor);
+                authorList.add(currentAuthor);
             }
         }
     }
@@ -448,11 +448,11 @@ public class LastDodoSearchEngine
             final String name = a.text();
             final Series currentSeries = Series.from(name);
             // check if already present
-            if (mSeries.stream().anyMatch(series -> series.equals(currentSeries))) {
+            if (seriesList.stream().anyMatch(series -> series.equals(currentSeries))) {
                 return;
             }
             // just add
-            mSeries.add(currentSeries);
+            seriesList.add(currentSeries);
         }
     }
 
@@ -466,11 +466,11 @@ public class LastDodoSearchEngine
             final String name = ParseUtils.cleanText(a.text());
             final Publisher currentPublisher = Publisher.from(name);
             // check if already present
-            if (mPublishers.stream().anyMatch(pub -> pub.equals(currentPublisher))) {
+            if (publisherList.stream().anyMatch(pub -> pub.equals(currentPublisher))) {
                 return;
             }
             // just add
-            mPublishers.add(currentPublisher);
+            publisherList.add(currentPublisher);
         }
 
     }

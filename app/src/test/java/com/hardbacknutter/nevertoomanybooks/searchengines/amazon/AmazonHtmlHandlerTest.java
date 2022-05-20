@@ -68,10 +68,10 @@ class AmazonHtmlHandlerTest
                  new boolean[]{false, false});
 
         assertEquals("Bone Silence", mRawData.getString(DBKey.TITLE));
-        assertEquals("978-0575090675", mRawData.getString(DBKey.KEY_ISBN));
-        assertEquals("30 Jan. 2020", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("608", mRawData.getString(DBKey.PAGES));
-        assertEquals("Hardcover", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("978-0575090675", mRawData.getString(DBKey.BOOK_ISBN));
+        assertEquals("30 Jan. 2020", mRawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("608", mRawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("Hardcover", mRawData.getString(DBKey.FORMAT));
         assertEquals("eng", mRawData.getString(DBKey.LANGUAGE));
         assertEquals(14.49d, mRawData.getDouble(DBKey.PRICE_LISTED));
         assertEquals(Money.GBP, mRawData.getString(DBKey.PRICE_LISTED_CURRENCY));
@@ -101,10 +101,10 @@ class AmazonHtmlHandlerTest
                  new boolean[]{false, false});
 
         assertEquals("The Medusa Chronicles", mRawData.getString(DBKey.TITLE));
-        assertEquals("978-1473210202", mRawData.getString(DBKey.KEY_ISBN));
-        assertEquals("12 Jan. 2017", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("336", mRawData.getString(DBKey.PAGES));
-        assertEquals("Paperback", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("978-1473210202", mRawData.getString(DBKey.BOOK_ISBN));
+        assertEquals("12 Jan. 2017", mRawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("336", mRawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("Paperback", mRawData.getString(DBKey.FORMAT));
         assertEquals("eng", mRawData.getString(DBKey.LANGUAGE));
         assertEquals(5.84d, mRawData.getDouble(DBKey.PRICE_LISTED));
         assertEquals(Money.GBP, mRawData.getString(DBKey.PRICE_LISTED_CURRENCY));
@@ -137,7 +137,7 @@ class AmazonHtmlHandlerTest
 
         assertEquals("Le retour à la terre, 1 : La vraie vie",
                      mRawData.getString(DBKey.TITLE));
-        assertEquals("978-2205057331", mRawData.getString(DBKey.KEY_ISBN));
+        assertEquals("978-2205057331", mRawData.getString(DBKey.BOOK_ISBN));
         assertEquals(12d, mRawData.getDouble(DBKey.PRICE_LISTED));
         assertEquals(Money.EUR, mRawData.getString(DBKey.PRICE_LISTED_CURRENCY));
 

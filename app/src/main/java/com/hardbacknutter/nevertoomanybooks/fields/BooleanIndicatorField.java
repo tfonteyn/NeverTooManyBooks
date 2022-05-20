@@ -54,7 +54,7 @@ public class BooleanIndicatorField
     @Override
     @NonNull
     public Boolean getValue() {
-        return mRawValue != null ? mRawValue : false;
+        return rawValue != null ? rawValue : false;
     }
 
     @Override
@@ -65,22 +65,22 @@ public class BooleanIndicatorField
         if (view != null) {
             if (view instanceof Checkable) {
                 view.setVisibility(View.VISIBLE);
-                ((Checkable) view).setChecked(mRawValue);
+                ((Checkable) view).setChecked(rawValue);
             } else {
-                view.setVisibility(mRawValue ? View.VISIBLE : View.GONE);
+                view.setVisibility(rawValue ? View.VISIBLE : View.GONE);
             }
         }
     }
 
     @Override
     public void setInitialValue(@NonNull final DataManager source) {
-        mInitialValue = source.getBoolean(mFieldKey);
-        setValue(mInitialValue);
+        initialValue = source.getBoolean(fieldKey);
+        setValue(initialValue);
     }
 
     @Override
     void internalPutValue(@NonNull final DataManager target) {
-        target.putBoolean(mFieldKey, getValue());
+        target.putBoolean(fieldKey, getValue());
     }
 
     @Override

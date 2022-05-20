@@ -57,6 +57,11 @@
     {"name": "First"},
     {"name": "Bookclub"}
   ],
+  "condition": [
+    {"name": "Mint"},
+    {"name": "Good"},
+    {"name": "Poor"}
+  ],
   "format": [
     {"name": "Hardcover"},
     {"name": "Paperback"},

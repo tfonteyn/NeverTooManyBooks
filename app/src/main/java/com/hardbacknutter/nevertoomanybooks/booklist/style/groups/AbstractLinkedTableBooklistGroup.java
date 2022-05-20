@@ -40,9 +40,9 @@ public abstract class AbstractLinkedTableBooklistGroup
     /** Show a book under each item it is linked to. */
     boolean underEach;
 
-    AbstractLinkedTableBooklistGroup(@Id final int id,
-                                     @NonNull final Style style) {
-        super(id);
+    AbstractLinkedTableBooklistGroup(@NonNull final Style style,
+                                     @Id final int groupId) {
+        super(groupId);
         displayDomainExpression = createDisplayDomainExpression(style);
     }
 

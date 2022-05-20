@@ -169,7 +169,7 @@ public class OpenLibrarySearchEngine
     /** The search keys in the json object we support: ISBN, external id. */
     private static final String SUPPORTED_KEYS = "ISBN,OLID";
     @Nullable
-    private FutureHttpGet<String> mFutureHttpGet;
+    private FutureHttpGet<String> futureHttpGet;
 
     /**
      * Constructor. Called using reflection, so <strong>MUST</strong> be <em>public</em>.
@@ -283,8 +283,8 @@ public class OpenLibrarySearchEngine
     public void cancel() {
         synchronized (this) {
             super.cancel();
-            if (mFutureHttpGet != null) {
-                mFutureHttpGet.cancel();
+            if (futureHttpGet != null) {
+                futureHttpGet.cancel();
             }
         }
     }
@@ -299,11 +299,11 @@ public class OpenLibrarySearchEngine
             throws StorageException,
                    SearchException {
 
-        mFutureHttpGet = createFutureGetRequest();
+        futureHttpGet = createFutureGetRequest();
 
         try {
             // get and store the result into a string.
-            final String response = mFutureHttpGet.get(url, request -> {
+            final String response = futureHttpGet.get(url, request -> {
                 try (BufferedInputStream bis = new BufferedInputStream(
                         request.getInputStream())) {
                     return readResponseStream(bis);
@@ -320,7 +320,7 @@ public class OpenLibrarySearchEngine
         } catch (@NonNull final IOException e) {
             throw new SearchException(getName(context), e);
         } finally {
-            mFutureHttpGet = null;
+            futureHttpGet = null;
         }
     }
 
@@ -526,7 +526,7 @@ public class OpenLibrarySearchEngine
 
         // store the isbn; we might override it later on though (e.g. isbn 13v10)
         // not sure if this is needed though. Need more data.
-        bookData.putString(DBKey.KEY_ISBN, validIsbn);
+        bookData.putString(DBKey.BOOK_ISBN, validIsbn);
 
         JSONObject element;
         JSONArray a;
@@ -563,7 +563,7 @@ public class OpenLibrarySearchEngine
         // } else {
         i = document.optInt("number_of_pages");
         if (i > 0) {
-            bookData.putString(DBKey.PAGES, String.valueOf(i));
+            bookData.putString(DBKey.PAGE_COUNT, String.valueOf(i));
         }
         // }
 
@@ -581,7 +581,7 @@ public class OpenLibrarySearchEngine
         if (!s.isEmpty()) {
             final LocalDateTime date = dateParser.parse(s, getLocale(context));
             if (date != null) {
-                bookData.putString(DBKey.DATE_BOOK_PUBLICATION,
+                bookData.putString(DBKey.BOOK_PUBLICATION__DATE,
                                    date.format(DateTimeFormatter.ISO_LOCAL_DATE));
             }
         }
@@ -618,7 +618,7 @@ public class OpenLibrarySearchEngine
             if (!toc.isEmpty()) {
                 bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
                 if (toc.size() > 1) {
-                    bookData.putLong(DBKey.BITMASK_TOC, Book.ContentType.Collection.value);
+                    bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Collection.value);
                 }
             }
         }
@@ -661,11 +661,11 @@ public class OpenLibrarySearchEngine
         // see if we have a better isbn.
         a = element.optJSONArray("isbn_13");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBKey.KEY_ISBN, a.getString(0));
+            bookData.putString(DBKey.BOOK_ISBN, a.getString(0));
         } else {
             a = element.optJSONArray("isbn_10");
             if (a != null && !a.isEmpty()) {
-                bookData.putString(DBKey.KEY_ISBN, a.getString(0));
+                bookData.putString(DBKey.BOOK_ISBN, a.getString(0));
             }
         }
         a = element.optJSONArray("amazon");

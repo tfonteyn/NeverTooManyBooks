@@ -80,17 +80,17 @@ public class CalibreContentServerWriter
     private static final String TAG = "CalibreServerWriter";
 
     @NonNull
-    private final CalibreContentServer mServer;
+    private final CalibreContentServer server;
     /** Export configuration. */
     @NonNull
-    private final SyncWriterHelper mHelper;
-    private final boolean mDoCovers;
-    private final boolean mDeleteLocalBook;
+    private final SyncWriterHelper helper;
+    private final boolean doCovers;
+    private final boolean deleteLocalBook;
 
     @NonNull
-    private final DateParser mDateParser;
+    private final DateParser dateParser;
 
-    private SyncWriterResults mResults;
+    private SyncWriterResults results;
 
     /**
      * Constructor.
@@ -104,17 +104,17 @@ public class CalibreContentServerWriter
                                       @NonNull final SyncWriterHelper helper)
             throws CertificateException {
 
-        mHelper = helper;
-        mServer = new CalibreContentServer(context);
-        mDoCovers = mHelper.getRecordTypes().contains(RecordType.Cover);
-        mDeleteLocalBook = mHelper.isDeleteLocalBooks();
+        this.helper = helper;
+        server = new CalibreContentServer(context);
+        doCovers = this.helper.getRecordTypes().contains(RecordType.Cover);
+        deleteLocalBook = this.helper.isDeleteLocalBooks();
 
-        mDateParser = new ISODateParser();
+        dateParser = new ISODateParser();
     }
 
     @Override
     public void cancel() {
-        mServer.cancel();
+        server.cancel();
     }
 
     @NonNull
@@ -125,7 +125,7 @@ public class CalibreContentServerWriter
                    StorageException,
                    IOException {
 
-        mResults = new SyncWriterResults();
+        results = new SyncWriterResults();
 
         progressListener.setIndeterminate(true);
         progressListener.publishProgress(
@@ -134,13 +134,13 @@ public class CalibreContentServerWriter
         progressListener.setIndeterminate(null);
 
         try {
-            mServer.readMetaData(context);
+            server.readMetaData(context);
             final CalibreLibraryDao libraryDao = ServiceLocator.getInstance()
                                                                .getCalibreLibraryDao();
-            for (final CalibreLibrary library : mServer.getLibraries()) {
+            for (final CalibreLibrary library : server.getLibraries()) {
 
                 final LocalDateTime dateSince;
-                if (mHelper.isIncremental()) {
+                if (helper.isIncremental()) {
                     dateSince = library.getLastSyncDate();
                 } else {
                     dateSince = null;
@@ -157,7 +157,7 @@ public class CalibreContentServerWriter
         } catch (@NonNull final JSONException e) {
             throw new DataWriterException(e);
         }
-        return mResults;
+        return results;
     }
 
     private void syncLibrary(@NonNull final CalibreLibrary library,
@@ -180,7 +180,7 @@ public class CalibreContentServerWriter
 
                 } catch (@NonNull final HttpNotFoundException e404) {
                     // The book no longer exists on the server.
-                    if (mDeleteLocalBook) {
+                    if (deleteLocalBook) {
                         bookDao.delete(book);
                     } else {
                         // keep the book but remove the calibre data for it
@@ -212,7 +212,7 @@ public class CalibreContentServerWriter
 
         // ENHANCE: full sync in one go.
         //  The logic below is TO SLOW as we fetch each book individually
-        final JSONObject calibreBook = mServer.getBook(library.getLibraryStringId(), calibreUuid);
+        final JSONObject calibreBook = server.getBook(library.getLibraryStringId(), calibreUuid);
 
         String dateStr = null;
         if (!calibreBook.isNull(CalibreBook.LAST_MODIFIED)) {
@@ -222,17 +222,17 @@ public class CalibreContentServerWriter
             }
         }
 
-        final LocalDateTime remoteTime = mDateParser.parse(dateStr);
+        final LocalDateTime remoteTime = dateParser.parse(dateStr);
         // sanity check, the remote should always have this date field.
         if (remoteTime != null) {
             // is our data newer then the server data ?
             final LocalDateTime localTime =
-                    mDateParser.parse(book.getString(DBKey.DATE_LAST_UPDATED__UTC));
+                    dateParser.parse(book.getString(DBKey.DATE_LAST_UPDATED__UTC));
             if (localTime != null && localTime.isAfter(remoteTime)) {
                 final JSONObject identifiers = calibreBook.optJSONObject(CalibreBook.IDENTIFIERS);
                 final JSONObject changes = collectChanges(library, identifiers, book);
-                mServer.pushChanges(library.getLibraryStringId(), calibreId, changes);
-                mResults.addBook(book.getId());
+                server.pushChanges(library.getLibraryStringId(), calibreId, changes);
+                results.addBook(book.getId());
             }
         }
     }
@@ -261,7 +261,7 @@ public class CalibreContentServerWriter
         changes.put(CalibreBook.DESCRIPTION, localBook.getString(DBKey.DESCRIPTION));
         // we don't read this field, but we DO write it.
         changes.put(CalibreBook.DATE_PUBLISHED,
-                    localBook.getString(DBKey.DATE_BOOK_PUBLICATION));
+                    localBook.getString(DBKey.BOOK_PUBLICATION__DATE));
         changes.put(CalibreBook.LAST_MODIFIED,
                     localBook.getString(DBKey.DATE_LAST_UPDATED__UTC));
 
@@ -337,7 +337,7 @@ public class CalibreContentServerWriter
             }
         }
 
-        if (mDoCovers) {
+        if (doCovers) {
             final Optional<File> coverFile = localBook.getCoverFile(0);
             if (coverFile.isPresent()) {
                 final File file = coverFile.get();
@@ -347,7 +347,7 @@ public class CalibreContentServerWriter
                     is.read(bFile);
                 }
                 changes.put(CalibreBook.COVER, Base64.encodeToString(bFile, 0));
-                mResults.addCover(file);
+                results.addCover(file);
 
             } else {
                 changes.put(CalibreBook.COVER, "");

@@ -53,6 +53,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookBinding;
@@ -312,7 +313,7 @@ public class EditBookFragment
                                         R.string.lbl_personal_notes));
             }
 
-            if (DBKey.isUsed(DBKey.BITMASK_TOC)) {
+            if (GlobalFieldVisibility.isUsed(DBKey.FK_TOC_ENTRY)) {
                 tabList.add(new TabInfo(EditBookTocFragment.class,
                                         R.string.lbl_tab_table_of_content,
                                         R.string.lbl_table_of_content));

@@ -165,6 +165,20 @@ public class Domain
     }
 
     /**
+     * Get the name of this domain with " COLLATE LOCALIZED" appended if required.
+     *
+     * @return name
+     */
+    @NonNull
+    public String getNameWithCollation() {
+        if (collationLocalized) {
+            return name + " COLLATE LOCALIZED";
+        } else {
+            return name;
+        }
+    }
+
+    /**
      * Get the type of this domain.
      *
      * @return one of ColumnInfo#TYPE*
@@ -252,7 +266,7 @@ public class Domain
     }
 
     /**
-     * toString() <strong>NOT DEBUG, must only ever return the table name</strong>
+     * toString() <strong>NOT DEBUG, must only ever return the column name</strong>
      *
      * @return the name of the domain.
      */

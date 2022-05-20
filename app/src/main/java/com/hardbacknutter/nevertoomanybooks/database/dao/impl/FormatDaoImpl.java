@@ -33,6 +33,6 @@ public class FormatDaoImpl
      * Constructor.
      */
     public FormatDaoImpl() {
-        super(TAG, DBKey.BOOK_FORMAT);
+        super(TAG, DBKey.FORMAT);
     }
 }

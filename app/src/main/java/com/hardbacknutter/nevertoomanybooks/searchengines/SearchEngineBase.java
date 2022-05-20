@@ -49,17 +49,17 @@ public abstract class SearchEngineBase
         implements SearchEngine {
 
     @NonNull
-    private final SearchEngineConfig mConfig;
+    private final SearchEngineConfig config;
 
     /**
      * Set by a client or from within the task.
      * It's a <strong>request</strong> to cancel while running.
      */
-    private final AtomicBoolean mCancelled = new AtomicBoolean();
+    private final AtomicBoolean cancelled = new AtomicBoolean();
     @NonNull
-    private final ImageDownloader mImageDownloader;
+    private final ImageDownloader imageDownloader;
     @Nullable
-    private Cancellable mCaller;
+    private Cancellable caller;
 
     /**
      * Constructor.
@@ -67,8 +67,8 @@ public abstract class SearchEngineBase
      * @param config the search engine configuration
      */
     public SearchEngineBase(@NonNull final SearchEngineConfig config) {
-        mConfig = config;
-        mImageDownloader = new ImageDownloader(createFutureGetRequest());
+        this.config = config;
+        imageDownloader = new ImageDownloader(createFutureGetRequest());
     }
 
     /**
@@ -114,7 +114,7 @@ public abstract class SearchEngineBase
     @NonNull
     @Override
     public SearchEngineConfig getConfig() {
-        return mConfig;
+        return config;
     }
 
     /**
@@ -157,23 +157,23 @@ public abstract class SearchEngineBase
     @AnyThread
     @Override
     public void cancel() {
-        mCancelled.set(true);
-        synchronized (mImageDownloader) {
-            mImageDownloader.cancel();
+        cancelled.set(true);
+        synchronized (imageDownloader) {
+            imageDownloader.cancel();
         }
     }
 
     @Override
     public void setCaller(@Nullable final Cancellable caller) {
-        mCaller = caller;
-        mCancelled.set(false);
+        this.caller = caller;
+        cancelled.set(false);
     }
 
     @Override
     public boolean isCancelled() {
         // mCaller being null should only happen when we check if we're cancelled
         // before a search was started.
-        return mCancelled.get() || mCaller == null || mCaller.isCancelled();
+        return cancelled.get() || caller == null || caller.isCancelled();
     }
 
     /**
@@ -196,10 +196,10 @@ public abstract class SearchEngineBase
                             @Nullable final ImageFileInfo.Size size)
             throws StorageException {
 
-        final File tmpFile = mImageDownloader.getTempFile(getConfig().getFilenameSuffix(),
-                                                          bookId, cIdx, size);
-        return mImageDownloader.fetch(url, tmpFile)
-                               .map(File::getAbsolutePath)
-                               .orElse(null);
+        final File tmpFile = imageDownloader.getTempFile(getConfig().getFilenameSuffix(),
+                                                         bookId, cIdx, size);
+        return imageDownloader.fetch(url, tmpFile)
+                              .map(File::getAbsolutePath)
+                              .orElse(null);
     }
 }

@@ -29,7 +29,7 @@ import com.hardbacknutter.org.json.JSONObject;
 public class TocEntryCoder
         implements JsonCoder<TocEntry> {
 
-    private final AuthorCoder mAuthorCoder = new AuthorCoder();
+    private final AuthorCoder authorCoder = new AuthorCoder();
 
     TocEntryCoder() {
     }
@@ -42,10 +42,10 @@ public class TocEntryCoder
 
         data.put(DBKey.PK_ID, tocEntry.getId());
         data.put(DBKey.TITLE, tocEntry.getTitle());
-        data.put(DBKey.FK_AUTHOR, mAuthorCoder.encode(tocEntry.getPrimaryAuthor()));
+        data.put(DBKey.FK_AUTHOR, authorCoder.encode(tocEntry.getPrimaryAuthor()));
 
         tocEntry.getFirstPublicationDate().ifPresent(
-                date -> data.put(DBKey.DATE_FIRST_PUBLICATION, date.getIsoString()));
+                date -> data.put(DBKey.FIRST_PUBLICATION__DATE, date.getIsoString()));
 
         return data;
     }
@@ -56,9 +56,9 @@ public class TocEntryCoder
             throws JSONException {
 
         final TocEntry tocEntry = new TocEntry(
-                mAuthorCoder.decode(data.getJSONObject(DBKey.FK_AUTHOR)),
+                authorCoder.decode(data.getJSONObject(DBKey.FK_AUTHOR)),
                 data.getString(DBKey.TITLE),
-                data.optString(DBKey.DATE_FIRST_PUBLICATION));
+                data.optString(DBKey.FIRST_PUBLICATION__DATE));
 
         tocEntry.setId(data.getLong(DBKey.PK_ID));
 

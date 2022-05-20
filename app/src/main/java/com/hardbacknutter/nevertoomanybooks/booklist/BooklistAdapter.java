@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
@@ -182,7 +183,7 @@ public class BooklistAdapter
                     .getResources().getDimensionPixelSize(R.dimen.bob_group_level_1_margin_top);
         }
 
-        if (this.style.isShowField(Style.Screen.List, DBKey.COVER_IS_USED[0])) {
+        if (this.style.isShowField(Style.Screen.List, FieldVisibility.COVER[0])) {
             @Style.CoverScale
             final int frontCoverScale = this.style.getCoverScale();
 
@@ -763,17 +764,17 @@ public class BooklistAdapter
      */
     private static class FieldsInUse {
 
-        /** Book row details. Based on global visibility user preference. */
+        /** Book row details. Shown in icon-bar. Based on global visibility user preference. */
         boolean edition;
-        /** Book row details. Based on global visibility user preference. */
+        /** Book row details. Shown in icon-bar. Based on global visibility user preference. */
         boolean lending;
-        /** Book row details. Based on global visibility user preference. */
-        boolean series;
-        /** Book row details. Based on global visibility user preference. */
+        /** Book row details. Shown in icon-bar. Based on global visibility user preference. */
         boolean signed;
 
         /** Book row details - Based on style. */
         boolean author;
+        /** Book row details - Based on style. */
+        boolean series;
         /** Book row details - Based on style. */
         boolean bookshelf;
         /** Book row details - Based on style. */
@@ -781,10 +782,12 @@ public class BooklistAdapter
         /** Book row details - Based on style. */
         boolean format;
         /** Book row details - Based on style. */
+        boolean condition;
+        /** Book row details - Based on style. */
         boolean isbn;
         /** Book row details - Based on style. */
         boolean location;
-        /** Book row details - Based on style. */
+        /** Book row details - Based on style; combined with publisher as one view. */
         boolean pubDate;
         /** Book row details - Based on style. */
         boolean publisher;
@@ -801,18 +804,19 @@ public class BooklistAdapter
          */
         FieldsInUse(@NonNull final Style style) {
 
-            edition = style.isShowField(Style.Screen.List, DBKey.BITMASK_EDITION);
+            edition = style.isShowField(Style.Screen.List, DBKey.EDITION__BITMASK);
             lending = style.isShowField(Style.Screen.List, DBKey.LOANEE_NAME);
-            series = style.isShowField(Style.Screen.List, DBKey.SERIES_TITLE);
+            series = style.isShowField(Style.Screen.List, DBKey.FK_SERIES);
             signed = style.isShowField(Style.Screen.List, DBKey.SIGNED__BOOL);
 
             author = style.isShowField(Style.Screen.List, DBKey.FK_AUTHOR);
             bookshelf = style.isShowField(Style.Screen.List, DBKey.FK_BOOKSHELF);
-            cover = style.isShowField(Style.Screen.List, DBKey.COVER_IS_USED[0]);
-            format = style.isShowField(Style.Screen.List, DBKey.BOOK_FORMAT);
-            isbn = style.isShowField(Style.Screen.List, DBKey.KEY_ISBN);
+            cover = style.isShowField(Style.Screen.List, FieldVisibility.COVER[0]);
+            format = style.isShowField(Style.Screen.List, DBKey.FORMAT);
+            condition = style.isShowField(Style.Screen.List, DBKey.BOOK_CONDITION);
+            isbn = style.isShowField(Style.Screen.List, DBKey.BOOK_ISBN);
             location = style.isShowField(Style.Screen.List, DBKey.LOCATION);
-            pubDate = style.isShowField(Style.Screen.List, DBKey.DATE_BOOK_PUBLICATION);
+            pubDate = style.isShowField(Style.Screen.List, DBKey.BOOK_PUBLICATION__DATE);
             publisher = style.isShowField(Style.Screen.List, DBKey.FK_PUBLISHER);
             rating = style.isShowField(Style.Screen.List, DBKey.RATING);
         }
@@ -829,7 +833,7 @@ public class BooklistAdapter
             }
             isSet = true;
 
-            edition = edition && rowData.contains(DBKey.BITMASK_EDITION);
+            edition = edition && rowData.contains(DBKey.EDITION__BITMASK);
             lending = lending && rowData.contains(DBKey.LOANEE_NAME);
             series = series && rowData.contains(DBKey.SERIES_BOOK_NUMBER);
             signed = signed && rowData.contains(DBKey.SIGNED__BOOL);
@@ -837,10 +841,11 @@ public class BooklistAdapter
             author = author && rowData.contains(DBKey.KEY_AUTHOR_FORMATTED);
             bookshelf = bookshelf && rowData.contains(DBKey.KEY_BOOKSHELF_NAME_CSV);
             cover = cover && rowData.contains(DBKey.BOOK_UUID);
-            format = format && rowData.contains(DBKey.BOOK_FORMAT);
-            isbn = isbn && rowData.contains(DBKey.KEY_ISBN);
+            format = format && rowData.contains(DBKey.FORMAT);
+            condition = condition && rowData.contains(DBKey.BOOK_CONDITION);
+            isbn = isbn && rowData.contains(DBKey.BOOK_ISBN);
             location = location && rowData.contains(DBKey.LOCATION);
-            pubDate = pubDate && rowData.contains(DBKey.DATE_BOOK_PUBLICATION);
+            pubDate = pubDate && rowData.contains(DBKey.BOOK_PUBLICATION__DATE);
             publisher = publisher && rowData.contains(DBKey.PUBLISHER_NAME);
             rating = rating && rowData.contains(DBKey.RATING);
         }
@@ -937,6 +942,8 @@ public class BooklistAdapter
         /** View that stores the related book field. */
         private final TextView formatView;
         /** View that stores the related book field. */
+        private final TextView conditionView;
+        /** View that stores the related book field. */
         private final TextView locationView;
         /** View that stores the related book field. */
         private final TextView bookshelvesView;
@@ -995,6 +1002,7 @@ public class BooklistAdapter
             publisherView = itemView.findViewById(R.id.publisher);
             isbnView = itemView.findViewById(R.id.isbn);
             formatView = itemView.findViewById(R.id.format);
+            conditionView = itemView.findViewById(R.id.condition);
             locationView = itemView.findViewById(R.id.location);
             bookshelvesView = itemView.findViewById(R.id.shelves);
 
@@ -1070,7 +1078,7 @@ public class BooklistAdapter
             }
 
             if (inUse.edition) {
-                final boolean isSet = (rowData.getLong(DBKey.BITMASK_EDITION)
+                final boolean isSet = (rowData.getLong(DBKey.EDITION__BITMASK)
                                        & Book.Edition.FIRST) != 0;
                 editionIconView.setVisibility(isSet ? View.VISIBLE : View.GONE);
             }
@@ -1121,10 +1129,13 @@ public class BooklistAdapter
                 showOrHide(publisherView, getPublisherAndPubDateText(rowData));
             }
             if (inUse.isbn) {
-                showOrHide(isbnView, rowData.getString(DBKey.KEY_ISBN));
+                showOrHide(isbnView, rowData.getString(DBKey.BOOK_ISBN));
             }
             if (inUse.format) {
-                showOrHide(formatView, rowData.getString(DBKey.BOOK_FORMAT));
+                showOrHide(formatView, rowData.getString(DBKey.FORMAT));
+            }
+            if (inUse.condition) {
+                showOrHide(conditionView, rowData.getString(DBKey.BOOK_CONDITION));
             }
             if (inUse.location) {
                 showOrHide(locationView, rowData.getString(DBKey.LOCATION));
@@ -1153,7 +1164,7 @@ public class BooklistAdapter
 
             final String date;
             if (inUse.pubDate) {
-                final String dateStr = rowData.getString(DBKey.DATE_BOOK_PUBLICATION);
+                final String dateStr = rowData.getString(DBKey.BOOK_PUBLICATION__DATE);
                 date = new PartialDate(dateStr).toDisplay(adapter.getUserLocale(), dateStr);
             } else {
                 date = null;

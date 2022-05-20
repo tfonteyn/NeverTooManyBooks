@@ -49,7 +49,7 @@ public class SearchEditionsTask
     /** Log tag. */
     private static final String TAG = "SearchEditionsTask";
     /** the book to look up. */
-    private String mIsbn;
+    private String isbn;
 
     public SearchEditionsTask() {
         super(R.id.TASK_ID_SEARCH_EDITIONS, TAG);
@@ -67,7 +67,7 @@ public class SearchEditionsTask
             ISBN.requireValidIsbn(validIsbn);
         }
 
-        mIsbn = validIsbn;
+        isbn = validIsbn;
 
         execute();
     }
@@ -81,7 +81,7 @@ public class SearchEditionsTask
         // keep the order, but eliminate duplicates.
         final Collection<String> isbnList = new LinkedHashSet<>();
         // Always add the original isbn!
-        isbnList.add(mIsbn);
+        isbnList.add(isbn);
 
         if (!NetworkUtils.isNetworkAvailable(context)) {
             throw new NetworkUnavailableException(this.getClass().getName());
@@ -95,7 +95,7 @@ public class SearchEditionsTask
                 NetworkUtils.ping(searchEngine.getSiteUrl());
 
                 isbnList.addAll(((SearchEngine.AlternativeEditions) searchEngine)
-                                        .searchAlternativeEditions(context, mIsbn));
+                                        .searchAlternativeEditions(context, isbn));
 
             } catch (@NonNull final IOException | CredentialsException | SearchException
                     | RuntimeException e) {

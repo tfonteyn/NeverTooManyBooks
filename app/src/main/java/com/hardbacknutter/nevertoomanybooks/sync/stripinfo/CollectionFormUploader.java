@@ -78,10 +78,10 @@ public class CollectionFormUploader {
     private static final String FF_STRIP_COLLECTIE_ID = "stripCollectieId";
 
     /** Delegate common Element handling. */
-    private final JSoupHelper mJSoupHelper = new JSoupHelper();
+    private final JSoupHelper jSoupHelper = new JSoupHelper();
 
     @NonNull
-    private final FutureHttpPost<Document> mFutureHttpPost;
+    private final FutureHttpPost<Document> futureHttpPost;
 
     /**
      * Constructor.
@@ -91,12 +91,12 @@ public class CollectionFormUploader {
         final SearchEngineConfig config = SearchEngineRegistry
                 .getInstance().getByEngineId(SearchSites.STRIP_INFO_BE);
 
-        mFutureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
-        mFutureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())
-                       .setReadTimeout(config.getReadTimeoutInMs())
-                       .setThrottler(StripInfoSearchEngine.THROTTLER)
-                       .setRequestProperty(HttpUtils.CONTENT_TYPE,
-                                           HttpUtils.CONTENT_TYPE_FORM_URL_ENCODED);
+        futureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
+        futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())
+                      .setReadTimeout(config.getReadTimeoutInMs())
+                      .setThrottler(StripInfoSearchEngine.THROTTLER)
+                      .setRequestProperty(HttpUtils.CONTENT_TYPE,
+                                          HttpUtils.CONTENT_TYPE_FORM_URL_ENCODED);
     }
 
     /**
@@ -241,7 +241,7 @@ public class CollectionFormUploader {
 
         // The site only supports numbers 1..x (and changes an empty string into a "1")
         // so we either put "1" for first-edition, or "2" for a reprint.
-        final boolean isFirst = (book.getLong(DBKey.BITMASK_EDITION) & Book.Edition.FIRST) != 0;
+        final boolean isFirst = (book.getLong(DBKey.EDITION__BITMASK) & Book.Edition.FIRST) != 0;
         builder.appendQueryParameter(FF_DRUK, isFirst ? "1" : "2");
 
         // we're only supporting 1 copy and the site does not allow 0 or an empty string.
@@ -288,8 +288,8 @@ public class CollectionFormUploader {
         //noinspection ConstantConditions
         final Document form = doPost(postBody);
 
-        if (externalId == mJSoupHelper.getInt(form, FF_STRIP_ID)
-            && collectionId == mJSoupHelper.getInt(form, FF_STRIP_COLLECTIE_ID)) {
+        if (externalId == jSoupHelper.getInt(form, FF_STRIP_ID)
+            && collectionId == jSoupHelper.getInt(form, FF_STRIP_COLLECTIE_ID)) {
 
             postBody = new Uri.Builder()
                     .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
@@ -349,7 +349,7 @@ public class CollectionFormUploader {
             //noinspection ConstantConditions
             final Document responseForm = doPost(postBody);
 
-            collectionId = mJSoupHelper.getInt(responseForm, FF_STRIP_COLLECTIE_ID);
+            collectionId = jSoupHelper.getInt(responseForm, FF_STRIP_COLLECTIE_ID);
             book.putLong(DBKey.STRIP_INFO_COLL_ID, collectionId);
 
             book.setStage(EntityStage.Stage.Dirty);
@@ -380,7 +380,7 @@ public class CollectionFormUploader {
     private Document doPost(@NonNull final String postBody)
             throws IOException, StorageException {
 
-        return Objects.requireNonNull(mFutureHttpPost.post(FORM_URL, postBody, (bis) -> {
+        return Objects.requireNonNull(futureHttpPost.post(FORM_URL, postBody, (bis) -> {
             try {
                 return Jsoup.parse(bis, null, FORM_URL);
             } catch (@NonNull final IOException e) {
@@ -390,6 +390,6 @@ public class CollectionFormUploader {
     }
 
     public void cancel() {
-        mFutureHttpPost.cancel();
+        futureHttpPost.cancel();
     }
 }

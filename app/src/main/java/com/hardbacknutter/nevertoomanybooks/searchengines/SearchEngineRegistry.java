@@ -49,7 +49,7 @@ public final class SearchEngineRegistry {
     private static SearchEngineRegistry sInstance;
 
     /** All site configurations. */
-    private final Map<Integer, SearchEngineConfig> mSiteConfigs = new HashMap<>();
+    private final Map<Integer, SearchEngineConfig> siteConfigs = new HashMap<>();
 
     /**
      * Constructor. Use {@link #getInstance()}.
@@ -85,7 +85,7 @@ public final class SearchEngineRegistry {
      */
     @NonNull
     SearchEngineRegistry add(@NonNull final SearchEngineConfig config) {
-        mSiteConfigs.put(config.getEngineId(), config);
+        siteConfigs.put(config.getEngineId(), config);
         return this;
     }
 
@@ -97,9 +97,9 @@ public final class SearchEngineRegistry {
     @NonNull
     public Collection<SearchEngineConfig> getAll() {
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requirePositiveValue(mSiteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
+            SanityCheck.requirePositiveValue(siteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
         }
-        return mSiteConfigs.values();
+        return siteConfigs.values();
     }
 
     /**
@@ -111,7 +111,7 @@ public final class SearchEngineRegistry {
      */
     @NonNull
     public SearchEngineConfig getByEngineId(@SearchSites.EngineId final int engineId) {
-        return Objects.requireNonNull(mSiteConfigs.get(engineId), "engine not found");
+        return Objects.requireNonNull(siteConfigs.get(engineId), "engine not found");
     }
 
     /**
@@ -124,11 +124,11 @@ public final class SearchEngineRegistry {
     @NonNull
     public Optional<SearchEngineConfig> getByViewId(@IdRes final int viewId) {
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requirePositiveValue(mSiteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
+            SanityCheck.requirePositiveValue(siteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
         }
-        return mSiteConfigs.values().stream()
-                           .filter(config -> config.getDomainViewId() == viewId)
-                           .findFirst();
+        return siteConfigs.values().stream()
+                          .filter(config -> config.getDomainViewId() == viewId)
+                          .findFirst();
     }
 
     /**
@@ -141,11 +141,11 @@ public final class SearchEngineRegistry {
     @NonNull
     public Optional<SearchEngineConfig> getByMenuId(@IdRes final int menuId) {
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requirePositiveValue(mSiteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
+            SanityCheck.requirePositiveValue(siteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
         }
-        return mSiteConfigs.values().stream()
-                           .filter(config -> config.getDomainMenuId() == menuId)
-                           .findFirst();
+        return siteConfigs.values().stream()
+                          .filter(config -> config.getDomainMenuId() == menuId)
+                          .findFirst();
     }
 
     /**
@@ -158,10 +158,10 @@ public final class SearchEngineRegistry {
     @NonNull
     public SearchEngine createSearchEngine(@SearchSites.EngineId final int engineId) {
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requirePositiveValue(mSiteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
+            SanityCheck.requirePositiveValue(siteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
         }
         //noinspection ConstantConditions
-        return mSiteConfigs.get(engineId).createSearchEngine();
+        return siteConfigs.get(engineId).createSearchEngine();
     }
 
     /**
@@ -172,13 +172,13 @@ public final class SearchEngineRegistry {
     @NonNull
     public List<Domain> getExternalIdDomains() {
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requirePositiveValue(mSiteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
+            SanityCheck.requirePositiveValue(siteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
         }
-        return mSiteConfigs.values()
-                           .stream()
-                           .map(SearchEngineConfig::getExternalIdDomain)
-                           .filter(Objects::nonNull)
-                           .collect(Collectors.toList());
+        return siteConfigs.values()
+                          .stream()
+                          .map(SearchEngineConfig::getExternalIdDomain)
+                          .filter(Objects::nonNull)
+                          .collect(Collectors.toList());
     }
 
 }

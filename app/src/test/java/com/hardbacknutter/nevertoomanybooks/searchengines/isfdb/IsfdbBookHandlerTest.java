@@ -83,15 +83,15 @@ class IsfdbBookHandlerTest
         assertEquals("Like Nothing on Earth", mRawData.getString(DBKey.TITLE));
         assertEquals(112781L, mRawData.getLong(DBKey.SID_ISFDB));
         // On the site: "Date: 1986-10-00". Our code substitutes "00" with "01"
-        assertEquals("1986-10-01", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("0413600106", mRawData.getString(DBKey.KEY_ISBN));
+        assertEquals("1986-10-01", mRawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("0413600106", mRawData.getString(DBKey.BOOK_ISBN));
         assertEquals("9780413600103", mRawData.getString(IsfdbSearchEngine.SiteField.ISBN_2));
         assertEquals(1.95d, mRawData.getDouble(DBKey.PRICE_LISTED));
         assertEquals(Money.GBP, mRawData.getString(DBKey.PRICE_LISTED_CURRENCY));
-        assertEquals("159", mRawData.getString(DBKey.PAGES));
-        assertEquals("pb", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("159", mRawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("pb", mRawData.getString(DBKey.FORMAT));
         assertEquals("COLLECTION", mRawData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE));
-        assertEquals(Book.ContentType.Anthology.value, mRawData.getLong(DBKey.BITMASK_TOC));
+        assertEquals(Book.ContentType.Anthology.value, mRawData.getLong(DBKey.TOC_TYPE__BITMASK));
 
         assertEquals("13665857", mRawData.getString(DBKey.SID_OCLC));
 
@@ -150,13 +150,13 @@ class IsfdbBookHandlerTest
 
         assertEquals("Mort", mRawData.getString(DBKey.TITLE));
         assertEquals(431964L, mRawData.getLong(DBKey.SID_ISFDB));
-        assertEquals("2013-11-07", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("9781473200104", mRawData.getString(DBKey.KEY_ISBN));
+        assertEquals("2013-11-07", mRawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("9781473200104", mRawData.getString(DBKey.BOOK_ISBN));
         assertEquals("1473200105", mRawData.getString(IsfdbSearchEngine.SiteField.ISBN_2));
         assertEquals(9.99d, mRawData.getDouble(DBKey.PRICE_LISTED));
         assertEquals(Money.GBP, mRawData.getString(DBKey.PRICE_LISTED_CURRENCY));
-        assertEquals("257", mRawData.getString(DBKey.PAGES));
-        assertEquals("hc", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("257", mRawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("hc", mRawData.getString(DBKey.FORMAT));
         assertEquals("NOVEL", mRawData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE));
 
         final ArrayList<Publisher> allPublishers = mRawData
@@ -207,12 +207,12 @@ class IsfdbBookHandlerTest
 
         assertEquals("The Shepherd's Crown", mRawData.getString(DBKey.TITLE));
         assertEquals(542125L, mRawData.getLong(DBKey.SID_ISFDB));
-        assertEquals("2015-09-01", mRawData.getString(DBKey.DATE_BOOK_PUBLICATION));
-        assertEquals("9780062429995", mRawData.getString(DBKey.KEY_ISBN));
+        assertEquals("2015-09-01", mRawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("9780062429995", mRawData.getString(DBKey.BOOK_ISBN));
         assertEquals("006242999X", mRawData.getString(IsfdbSearchEngine.SiteField.ISBN_2));
         assertEquals(11.99d, mRawData.getDouble(DBKey.PRICE_LISTED));
         assertEquals(Money.USD, mRawData.getString(DBKey.PRICE_LISTED_CURRENCY));
-        assertEquals("ebook", mRawData.getString(DBKey.BOOK_FORMAT));
+        assertEquals("ebook", mRawData.getString(DBKey.FORMAT));
         assertEquals("NOVEL", mRawData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE));
 
         assertEquals("2015943558", mRawData.getString(DBKey.SID_LCCN));

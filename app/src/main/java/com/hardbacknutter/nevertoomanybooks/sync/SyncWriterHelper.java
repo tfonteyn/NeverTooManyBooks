@@ -43,20 +43,20 @@ public class SyncWriterHelper
         extends DataWriterHelperBase<SyncWriterResults> {
 
     /** Extra arguments for specific writers. The writer must define them. */
-    private final Bundle mExtraArgs = ServiceLocator.newBundle();
+    private final Bundle extraArgs = ServiceLocator.newBundle();
 
     /** <strong>Where</strong> we write to. */
     @Nullable
-    private SyncServer mSyncServer;
+    private SyncServer syncServer;
 
     /** If a book no longer exists on the server, should we delete the local book. */
-    private boolean mDeleteLocalBooks;
+    private boolean deleteLocalBooks;
 
     /**
      * Constructor.
      */
     SyncWriterHelper(@NonNull final SyncServer syncServer) {
-        mSyncServer = syncServer;
+        this.syncServer = syncServer;
 
         // set the default
         addRecordType(EnumSet.of(RecordType.Books,
@@ -65,24 +65,24 @@ public class SyncWriterHelper
 
     @NonNull
     public SyncServer getSyncServer() {
-        return Objects.requireNonNull(mSyncServer, "mSyncServer");
+        return Objects.requireNonNull(syncServer, "mSyncServer");
     }
 
     public void setSyncServer(@NonNull final SyncServer syncServer) {
-        mSyncServer = syncServer;
+        this.syncServer = syncServer;
     }
 
     @NonNull
     public Bundle getExtraArgs() {
-        return mExtraArgs;
+        return extraArgs;
     }
 
     public boolean isDeleteLocalBooks() {
-        return mDeleteLocalBooks;
+        return deleteLocalBooks;
     }
 
     public void setDeleteLocalBooks(final boolean deleteLocalBooks) {
-        mDeleteLocalBooks = deleteLocalBooks;
+        this.deleteLocalBooks = deleteLocalBooks;
     }
 
     @NonNull
@@ -95,10 +95,10 @@ public class SyncWriterHelper
                    StorageException,
                    IOException {
 
-        Objects.requireNonNull(mSyncServer, "mSyncServer");
+        Objects.requireNonNull(syncServer, "mSyncServer");
 
         try {
-            mDataWriter = mSyncServer.createWriter(context, this);
+            mDataWriter = syncServer.createWriter(context, this);
             return mDataWriter.write(context, progressListener);
         } finally {
             synchronized (this) {
@@ -115,9 +115,9 @@ public class SyncWriterHelper
     public String toString() {
         return "SyncWriterHelper{"
                + super.toString()
-               + ", mSyncServer=" + mSyncServer
-               + ", mDeleteLocalBooks=" + mDeleteLocalBooks
-               + ", mExtraArgs=" + mExtraArgs
+               + ", mSyncServer=" + syncServer
+               + ", mDeleteLocalBooks=" + deleteLocalBooks
+               + ", mExtraArgs=" + extraArgs
                + '}';
     }
 }

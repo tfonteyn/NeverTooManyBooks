@@ -32,17 +32,17 @@ import com.hardbacknutter.nevertoomanybooks.io.DataWriterViewModel;
 public class SyncWriterViewModel
         extends DataWriterViewModel<SyncWriterResults> {
 
-    private SyncWriterHelper mHelper;
+    private SyncWriterHelper helper;
 
     /** UI helper. */
-    private boolean mQuickOptionsAlreadyShown;
+    private boolean quickOptionsAlreadyShown;
 
     boolean isQuickOptionsAlreadyShown() {
-        return mQuickOptionsAlreadyShown;
+        return quickOptionsAlreadyShown;
     }
 
     void setQuickOptionsAlreadyShown() {
-        mQuickOptionsAlreadyShown = true;
+        quickOptionsAlreadyShown = true;
     }
 
     /**
@@ -51,28 +51,28 @@ public class SyncWriterViewModel
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Bundle args) {
-        if (mHelper == null) {
+        if (helper == null) {
             final SyncServer syncServer = Objects.requireNonNull(
                     args.getParcelable(SyncServer.BKEY_SITE), SyncServer.BKEY_SITE);
 
-            mHelper = new SyncWriterHelper(syncServer);
+            helper = new SyncWriterHelper(syncServer);
         }
     }
 
     @NonNull
     SyncWriterHelper getSyncWriterHelper() {
-        return mHelper;
+        return helper;
     }
 
     @Override
     public boolean isReadyToGo() {
         // slightly bogus test... right now Prefs/Styles are always included,
         // but we're keeping all variations of DataReader/DataWriter classes the same
-        return mHelper.getRecordTypes().size() > 1;
+        return helper.getRecordTypes().size() > 1;
     }
 
     void startExport() {
-        Objects.requireNonNull(mHelper, "mHelper");
-        startWritingData(mHelper);
+        Objects.requireNonNull(helper, "mHelper");
+        startWritingData(helper);
     }
 }

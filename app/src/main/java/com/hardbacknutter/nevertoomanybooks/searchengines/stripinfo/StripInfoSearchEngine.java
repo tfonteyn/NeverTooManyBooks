@@ -397,19 +397,19 @@ public class StripInfoSearchEngine
                                     break;
 
                                 case "Jaar":
-                                    i += processText(td, DBKey.DATE_BOOK_PUBLICATION, bookData);
+                                    i += processText(td, DBKey.BOOK_PUBLICATION__DATE, bookData);
                                     break;
 
                                 case "Pagina's":
-                                    i += processText(td, DBKey.PAGES, bookData);
+                                    i += processText(td, DBKey.PAGE_COUNT, bookData);
                                     break;
 
                                 case "ISBN":
-                                    i += processText(td, DBKey.KEY_ISBN, bookData);
+                                    i += processText(td, DBKey.BOOK_ISBN, bookData);
                                     break;
 
                                 case "Kaft":
-                                    i += processText(td, DBKey.BOOK_FORMAT, bookData);
+                                    i += processText(td, DBKey.FORMAT, bookData);
                                     break;
 
                                 case "Taal":
@@ -482,28 +482,28 @@ public class StripInfoSearchEngine
             final Series series = Series.from3(primarySeriesTitle);
             series.setNumber(primarySeriesBookNr);
             // add to the top as this is the primary series.
-            mSeries.add(0, series);
+            seriesList.add(0, series);
         }
 
         // We DON'T store a toc with a single entry (i.e. the book title itself).
         parseToc(context, document).ifPresent(toc -> {
             bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
             if (TocEntry.hasMultipleAuthors(toc)) {
-                bookData.putLong(DBKey.BITMASK_TOC, Book.ContentType.Anthology.value);
+                bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Anthology.value);
             } else {
-                bookData.putLong(DBKey.BITMASK_TOC, Book.ContentType.Collection.value);
+                bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Collection.value);
             }
         });
 
         // store accumulated ArrayList's *after* we parsed the TOC
-        if (!mAuthors.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
+        if (!authorList.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
         }
-        if (!mSeries.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, mSeries);
+        if (!seriesList.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
         }
-        if (!mPublishers.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
+        if (!publisherList.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
         }
 
         // It's extremely unlikely, but should the language be missing, add dutch.
@@ -544,7 +544,7 @@ public class StripInfoSearchEngine
                               @NonNull final Bundle bookData)
             throws StorageException {
 
-        final String isbn = bookData.getString(DBKey.KEY_ISBN);
+        final String isbn = bookData.getString(DBKey.BOOK_ISBN);
         final String url = parseCover(document, cIdx);
         if (url != null) {
             final String fileSpec = saveCover(isbn, cIdx, url);
@@ -697,10 +697,10 @@ public class StripInfoSearchEngine
 
                             if (title != null && !title.isEmpty()) {
                                 final Author author;
-                                if (mAuthors.isEmpty()) {
+                                if (authorList.isEmpty()) {
                                     author = Author.createUnknownAuthor(context);
                                 } else {
-                                    author = mAuthors.get(0);
+                                    author = authorList.get(0);
                                 }
                                 final TocEntry tocEntry = new TocEntry(author, title);
                                 toc.add(tocEntry);
@@ -810,7 +810,7 @@ public class StripInfoSearchEngine
                 final Author currentAuthor = Author.from(name);
                 boolean add = true;
                 // check if already present
-                for (final Author author : mAuthors) {
+                for (final Author author : authorList) {
                     if (author.equals(currentAuthor)) {
                         // merge types.
                         author.addType(currentAuthorType);
@@ -821,7 +821,7 @@ public class StripInfoSearchEngine
 
                 if (add) {
                     currentAuthor.setType(currentAuthorType);
-                    mAuthors.add(currentAuthor);
+                    authorList.add(currentAuthor);
                 }
             }
             return 1;
@@ -882,11 +882,11 @@ public class StripInfoSearchEngine
                 final String text = ParseUtils.cleanText(as.get(i).text());
                 final Series currentSeries = Series.from3(text);
                 // check if already present
-                if (mSeries.stream().anyMatch(series -> series.equals(currentSeries))) {
+                if (seriesList.stream().anyMatch(series -> series.equals(currentSeries))) {
                     return 1;
                 }
                 // just add
-                mSeries.add(currentSeries);
+                seriesList.add(currentSeries);
             }
             return 1;
         }
@@ -908,11 +908,11 @@ public class StripInfoSearchEngine
                 final String name = ParseUtils.cleanText(aas.get(i).text());
                 final Publisher currentPublisher = Publisher.from(name);
                 // check if already present
-                if (mPublishers.stream().anyMatch(pub -> pub.equals(currentPublisher))) {
+                if (publisherList.stream().anyMatch(pub -> pub.equals(currentPublisher))) {
                     return 1;
                 }
                 // just add
-                mPublishers.add(currentPublisher);
+                publisherList.add(currentPublisher);
             }
             return 1;
         }

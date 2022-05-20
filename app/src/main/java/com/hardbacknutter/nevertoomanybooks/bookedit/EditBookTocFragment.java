@@ -440,10 +440,10 @@ public class EditBookTocFragment
             }
 
             // update the book with the first publication date that was gathered from the TOC
-            final String bookFirstPublication = result.getString(DBKey.DATE_FIRST_PUBLICATION);
+            final String bookFirstPublication = result.getString(DBKey.FIRST_PUBLICATION__DATE);
             if (bookFirstPublication != null) {
-                if (book.getString(DBKey.DATE_FIRST_PUBLICATION).isEmpty()) {
-                    book.putString(DBKey.DATE_FIRST_PUBLICATION, bookFirstPublication);
+                if (book.getString(DBKey.FIRST_PUBLICATION__DATE).isEmpty()) {
+                    book.putString(DBKey.FIRST_PUBLICATION__DATE, bookFirstPublication);
                 }
             }
 
@@ -508,7 +508,7 @@ public class EditBookTocFragment
             mTocEntries = Objects.requireNonNull(args.getParcelableArrayList(Book.BKEY_TOC_LIST),
                                                  Book.BKEY_TOC_LIST);
 
-            mBookTocType = Book.ContentType.getType(args.getLong(DBKey.BITMASK_TOC));
+            mBookTocType = Book.ContentType.getType(args.getLong(DBKey.TOC_TYPE__BITMASK));
             mHasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS, false);
         }
 
@@ -753,7 +753,7 @@ public class EditBookTocFragment
                     return true;
                 }
 
-                final String isbnStr = book.getString(DBKey.KEY_ISBN);
+                final String isbnStr = book.getString(DBKey.BOOK_ISBN);
                 if (!isbnStr.isEmpty()) {
                     final ISBN isbn = ISBN.createISBN(isbnStr);
                     if (isbn.isValid(true)) {

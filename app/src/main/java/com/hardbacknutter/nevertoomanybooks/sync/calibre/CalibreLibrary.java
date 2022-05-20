@@ -57,7 +57,7 @@ public class CalibreLibrary
 
     /** The physical Calibre library STRING id. */
     @NonNull
-    private final String mLibraryStringId;
+    private final String libraryStringId;
 
     /**
      * The custom fields <strong>present</strong> on the server.
@@ -66,18 +66,18 @@ public class CalibreLibrary
      * Not stored locally. Only valid while importing/exporting.
      */
     @SuppressWarnings("FieldNotUsedInToString")
-    private final Set<CalibreCustomField> mCalibreCustomFields = new HashSet<>();
+    private final Set<CalibreCustomField> calibreCustomFields = new HashSet<>();
 
     /** The list of virtual libs in this library. */
-    private final ArrayList<CalibreVirtualLibrary> mVirtualLibraries = new ArrayList<>();
+    private final ArrayList<CalibreVirtualLibrary> virtualLibraries = new ArrayList<>();
 
     /** The physical Calibre library uuid. */
     @NonNull
-    private String mUuid;
+    private String uuid;
     @NonNull
-    private String mLastSyncDate;
+    private String lastSyncDate;
     /** Not stored locally. Only valid while importing/exporting. */
-    private int mTotalBooks;
+    private int totalBooks;
 
     /**
      * Constructor without ID.
@@ -88,9 +88,9 @@ public class CalibreLibrary
                           final long mappedBookshelfId) {
         super(name, mappedBookshelfId);
 
-        mLibraryStringId = libraryId;
-        mUuid = uuid;
-        mLastSyncDate = "";
+        libraryStringId = libraryId;
+        this.uuid = uuid;
+        lastSyncDate = "";
     }
 
     /**
@@ -102,9 +102,9 @@ public class CalibreLibrary
                           @NonNull final Bookshelf mappedBookshelf) {
         super(name, mappedBookshelf);
 
-        mLibraryStringId = libraryId;
-        mUuid = uuid;
-        mLastSyncDate = "";
+        libraryStringId = libraryId;
+        this.uuid = uuid;
+        lastSyncDate = "";
     }
 
     /**
@@ -117,9 +117,9 @@ public class CalibreLibrary
                           @NonNull final DataHolder rowData) {
         super(id, rowData);
 
-        mLibraryStringId = rowData.getString(DBKey.CALIBRE_LIBRARY_STRING_ID);
-        mUuid = rowData.getString(DBKey.CALIBRE_LIBRARY_UUID);
-        mLastSyncDate = rowData.getString(DBKey.CALIBRE_LIBRARY_LAST_SYNC_DATE__UTC);
+        libraryStringId = rowData.getString(DBKey.CALIBRE_LIBRARY_STRING_ID);
+        uuid = rowData.getString(DBKey.CALIBRE_LIBRARY_UUID);
+        lastSyncDate = rowData.getString(DBKey.CALIBRE_LIBRARY_LAST_SYNC_DATE__UTC);
     }
 
     /**
@@ -131,24 +131,24 @@ public class CalibreLibrary
         super(in);
 
         //noinspection ConstantConditions
-        mLibraryStringId = in.readString();
+        libraryStringId = in.readString();
         //noinspection ConstantConditions
-        mUuid = in.readString();
+        uuid = in.readString();
         //noinspection ConstantConditions
-        mLastSyncDate = in.readString();
+        lastSyncDate = in.readString();
 
-        ParcelUtils.readParcelableList(in, mVirtualLibraries,
+        ParcelUtils.readParcelableList(in, virtualLibraries,
                                        CalibreVirtualLibrary.class.getClassLoader());
 
-        mTotalBooks = in.readInt();
+        totalBooks = in.readInt();
         //noinspection ConstantConditions
         Arrays.stream(in.readParcelableArray(CalibreCustomField.class.getClassLoader()))
-              .forEach(field -> mCalibreCustomFields.add((CalibreCustomField) field));
+              .forEach(field -> calibreCustomFields.add((CalibreCustomField) field));
     }
 
     @NonNull
     public String getLibraryStringId() {
-        return mLibraryStringId;
+        return libraryStringId;
     }
 
     /**
@@ -160,45 +160,45 @@ public class CalibreLibrary
      */
     @NonNull
     public String getUuid() {
-        return mUuid;
+        return uuid;
     }
 
     public void setUuid(@NonNull final String uuid) {
-        mUuid = uuid;
+        this.uuid = uuid;
     }
 
     @NonNull
     public String getLastSyncDateAsString() {
-        return mLastSyncDate;
+        return lastSyncDate;
     }
 
     @Nullable
     public LocalDateTime getLastSyncDate() {
-        if (!mLastSyncDate.isEmpty()) {
-            return new ISODateParser().parse(mLastSyncDate);
+        if (!lastSyncDate.isEmpty()) {
+            return new ISODateParser().parse(lastSyncDate);
         }
 
         return null;
     }
 
     public void setLastSyncDate(@NonNull final String lastSyncDate) {
-        mLastSyncDate = lastSyncDate;
+        this.lastSyncDate = lastSyncDate;
     }
 
     public void setLastSyncDate(@Nullable final LocalDateTime lastSyncDate) {
         if (lastSyncDate != null) {
-            mLastSyncDate = lastSyncDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            this.lastSyncDate = lastSyncDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         } else {
-            mLastSyncDate = "";
+            this.lastSyncDate = "";
         }
     }
 
     public int getTotalBooks() {
-        return mTotalBooks;
+        return totalBooks;
     }
 
     void setTotalBooks(final int totalBooks) {
-        mTotalBooks = totalBooks;
+        this.totalBooks = totalBooks;
     }
 
     /**
@@ -208,22 +208,22 @@ public class CalibreLibrary
      */
     @NonNull
     public Set<CalibreCustomField> getCustomFields() {
-        return Set.copyOf(mCalibreCustomFields);
+        return Set.copyOf(calibreCustomFields);
     }
 
     void setCustomFields(@NonNull final Set<CalibreCustomField> calibreCustomFields) {
-        mCalibreCustomFields.clear();
-        mCalibreCustomFields.addAll(calibreCustomFields);
+        this.calibreCustomFields.clear();
+        this.calibreCustomFields.addAll(calibreCustomFields);
     }
 
     @NonNull
     public ArrayList<CalibreVirtualLibrary> getVirtualLibraries() {
-        return mVirtualLibraries;
+        return virtualLibraries;
     }
 
     public void setVirtualLibraries(@NonNull final List<CalibreVirtualLibrary> virtualLibraries) {
-        mVirtualLibraries.clear();
-        mVirtualLibraries.addAll(virtualLibraries);
+        this.virtualLibraries.clear();
+        this.virtualLibraries.addAll(virtualLibraries);
     }
 
     @Override
@@ -231,16 +231,16 @@ public class CalibreLibrary
                               final int flags) {
         super.writeToParcel(dest, flags);
 
-        dest.writeString(mLibraryStringId);
-        dest.writeString(mUuid);
-        dest.writeString(mLastSyncDate);
+        dest.writeString(libraryStringId);
+        dest.writeString(uuid);
+        dest.writeString(lastSyncDate);
 
-        ParcelUtils.writeParcelableList(dest, mVirtualLibraries, flags);
+        ParcelUtils.writeParcelableList(dest, virtualLibraries, flags);
 
 
-        dest.writeInt(mTotalBooks);
+        dest.writeInt(totalBooks);
         //noinspection ZeroLengthArrayAllocation
-        dest.writeParcelableArray(mCalibreCustomFields.toArray(new CalibreCustomField[0]), flags);
+        dest.writeParcelableArray(calibreCustomFields.toArray(new CalibreCustomField[0]), flags);
     }
 
     @Override
@@ -248,11 +248,11 @@ public class CalibreLibrary
     public String toString() {
         return "CalibreLibrary{"
                + super.toString()
-               + ", mUuid=`" + mUuid + '`'
-               + ", mLibraryId=`" + mLibraryStringId + '`'
-               + ", mLastSyncDate=`" + mLastSyncDate + '`'
-               + ", mTotalBooks=" + mTotalBooks
-               + ", mVirtualLibraries=" + mVirtualLibraries
+               + ", mUuid=`" + uuid + '`'
+               + ", mLibraryId=`" + libraryStringId + '`'
+               + ", mLastSyncDate=`" + lastSyncDate + '`'
+               + ", mTotalBooks=" + totalBooks
+               + ", mVirtualLibraries=" + virtualLibraries
                + '}';
     }
 

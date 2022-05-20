@@ -205,29 +205,30 @@ public class StyleDaoImpl
     public long insert(@NonNull final UserStyle style) {
 
         try (SynchronizedStatement stmt = mDb.compileStatement(INSERT_STYLE)) {
-            stmt.bindString(1, style.getUuid());
-            stmt.bindBoolean(2, !style.isUserDefined());
-            stmt.bindBoolean(3, style.isPreferred());
-            stmt.bindLong(4, style.getMenuPosition());
-            stmt.bindString(5, style.getName());
+            int c = 0;
+            stmt.bindString(++c, style.getUuid());
+            stmt.bindBoolean(++c, !style.isUserDefined());
+            stmt.bindBoolean(++c, style.isPreferred());
+            stmt.bindLong(++c, style.getMenuPosition());
+            stmt.bindString(++c, style.getName());
 
-            stmt.bindString(6, getGroupIdsAsCsv(style));
-            stmt.bindBoolean(7, style.isShowBooksUnderEachAuthor());
-            stmt.bindLong(8, style.getPrimaryAuthorType());
-            stmt.bindBoolean(9, style.isShowBooksUnderEachSeries());
-            stmt.bindBoolean(10, style.isShowBooksUnderEachPublisher());
-            stmt.bindBoolean(11, style.isShowBooksUnderEachBookshelf());
+            stmt.bindString(++c, getGroupIdsAsCsv(style));
+            stmt.bindBoolean(++c, style.isShowBooksUnderEachAuthor());
+            stmt.bindLong(++c, style.getPrimaryAuthorType());
+            stmt.bindBoolean(++c, style.isShowBooksUnderEachSeries());
+            stmt.bindBoolean(++c, style.isShowBooksUnderEachPublisher());
+            stmt.bindBoolean(++c, style.isShowBooksUnderEachBookshelf());
 
-            stmt.bindLong(12, style.getExpansionLevel());
-            stmt.bindBoolean(13, style.isGroupRowUsesPreferredHeight());
-            stmt.bindBoolean(14, style.isSortAuthorByGivenName());
-            stmt.bindBoolean(15, style.isShowAuthorByGivenName());
+            stmt.bindLong(++c, style.getExpansionLevel());
+            stmt.bindBoolean(++c, style.isGroupRowUsesPreferredHeight());
+            stmt.bindBoolean(++c, style.isSortAuthorByGivenName());
+            stmt.bindBoolean(++c, style.isShowAuthorByGivenName());
 
-            stmt.bindLong(16, style.getTextScale());
-            stmt.bindLong(17, style.getCoverScale());
-            stmt.bindLong(18, style.getHeaderFieldVisibility());
-            stmt.bindLong(19, style.getFieldVisibility(Style.Screen.Detail));
-            stmt.bindLong(20, style.getFieldVisibility(Style.Screen.List));
+            stmt.bindLong(++c, style.getTextScale());
+            stmt.bindLong(++c, style.getCoverScale());
+            stmt.bindLong(++c, style.getHeaderFieldVisibility());
+            stmt.bindLong(++c, style.getFieldVisibility(Style.Screen.Detail));
+            stmt.bindLong(++c, style.getFieldVisibility(Style.Screen.List));
 
             final long iId = stmt.executeInsert();
             if (iId > 0) {

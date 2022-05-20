@@ -39,9 +39,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 public class TopLevelItemDecoration
         extends RecyclerView.ItemDecoration {
 
-    private final Rect mBounds = new Rect();
+    private final Rect bounds = new Rect();
     @NonNull
-    private final Drawable mDivider;
+    private final Drawable divider;
 
     /**
      * Creates a divider {@link RecyclerView.ItemDecoration} that can be used with a
@@ -50,7 +50,7 @@ public class TopLevelItemDecoration
      * @param context Current context
      */
     public TopLevelItemDecoration(@NonNull final Context context) {
-        mDivider = AttrUtils.getDrawable(context, android.R.attr.listDivider);
+        divider = AttrUtils.getDrawable(context, android.R.attr.listDivider);
     }
 
     @Override
@@ -89,11 +89,11 @@ public class TopLevelItemDecoration
             final View child = parent.getChildAt(i);
             // level 1 only
             if (booklistAdapter.getLevel(parent.getChildAdapterPosition(child)) == 1) {
-                parent.getDecoratedBoundsWithMargins(child, mBounds);
-                final int bottom = mBounds.bottom + Math.round(child.getTranslationY());
-                final int top = bottom - mDivider.getIntrinsicHeight();
-                mDivider.setBounds(left, top, right, bottom);
-                mDivider.draw(canvas);
+                parent.getDecoratedBoundsWithMargins(child, bounds);
+                final int bottom = bounds.bottom + Math.round(child.getTranslationY());
+                final int top = bottom - divider.getIntrinsicHeight();
+                divider.setBounds(left, top, right, bottom);
+                divider.draw(canvas);
             }
         }
         canvas.restore();
@@ -104,6 +104,6 @@ public class TopLevelItemDecoration
                                @NonNull final View view,
                                @NonNull final RecyclerView parent,
                                @NonNull final RecyclerView.State state) {
-        outRect.set(0, 0, 0, mDivider.getIntrinsicHeight());
+        outRect.set(0, 0, 0, divider.getIntrinsicHeight());
     }
 }

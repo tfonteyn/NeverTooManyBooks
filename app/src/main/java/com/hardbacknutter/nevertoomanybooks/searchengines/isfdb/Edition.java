@@ -30,10 +30,10 @@ import org.jsoup.nodes.Document;
 public class Edition {
 
     @Nullable
-    private final String mIsbn;
+    private final String isbn;
 
     /** The ISFDB book ID. */
-    private final long mIsfdbId;
+    private final long isfdbId;
 
     /**
      * If a fetch of editions resulted in a single book returned (via redirects),
@@ -41,9 +41,9 @@ public class Edition {
      * If we get (at least) 2 editions, then this will always be {@code null}.
      */
     @Nullable
-    private final Document mDocument;
+    private final Document document;
     @Nullable
-    private final String mLangIso3;
+    private final String langIso3;
 
     /**
      * Constructor: we found a link to a book.
@@ -55,10 +55,10 @@ public class Edition {
     Edition(final long isfdbId,
             @Nullable final String isbn,
             @Nullable final String langIso3) {
-        mIsfdbId = isfdbId;
-        mIsbn = isbn;
-        mLangIso3 = langIso3;
-        mDocument = null;
+        this.isfdbId = isfdbId;
+        this.isbn = isbn;
+        this.langIso3 = langIso3;
+        document = null;
     }
 
     /**
@@ -72,39 +72,39 @@ public class Edition {
             @Nullable final String isbn,
             @Nullable final String langIso3,
             @Nullable final Document document) {
-        mIsfdbId = isfdbId;
-        mIsbn = isbn;
-        mDocument = document;
-        mLangIso3 = langIso3;
+        this.isfdbId = isfdbId;
+        this.isbn = isbn;
+        this.document = document;
+        this.langIso3 = langIso3;
     }
 
     @Nullable
     public Document getDocument() {
-        return mDocument;
+        return document;
     }
 
     @Nullable
     public String getIsbn() {
-        return mIsbn;
+        return isbn;
     }
 
     long getIsfdbId() {
-        return mIsfdbId;
+        return isfdbId;
     }
 
     @Nullable
     public String getLangIso3() {
-        return mLangIso3;
+        return langIso3;
     }
 
     @Override
     @NonNull
     public String toString() {
         return "Edition{"
-               + "mIsfdbId=" + mIsfdbId
-               + ", mIsbn=`" + mIsbn + '`'
-               + ", mLangIso3=`" + mLangIso3 + '`'
-               + ", mDoc?=" + (mDocument != null)
+               + "mIsfdbId=" + isfdbId
+               + ", mIsbn=`" + isbn + '`'
+               + ", mLangIso3=`" + langIso3 + '`'
+               + ", mDoc?=" + (document != null)
                + '}';
     }
 }

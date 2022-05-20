@@ -36,28 +36,28 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
 public class BooklistNode {
 
     /** The row "_id" in the list-table. */
-    private long mRowId;
+    private long rowId;
 
     /**
      * The String based node key;
      * e.g. "/a=2453/s=1749" which stands for author=2453/series=1749
      * <p>
-     * Completed by {@link #mBookId} for actual Book nodes.
+     * Completed by {@link #bookId} for actual Book nodes.
      */
-    private String mKey;
+    private String key;
 
     @IntRange(from = 1)
-    private int mLevel;
+    private int level;
 
     @IntRange(from = 0)
-    private long mBookId;
+    private long bookId;
 
-    private boolean mIsExpanded;
+    private boolean expanded;
 
-    private boolean mIsVisible;
+    private boolean visible;
 
     /** The position in the {@link BooklistAdapter}. Will be calculated/set if the list changed. */
-    private int mAdapterPosition = -1;
+    private int adapterPosition = -1;
 
     /**
      * Constructor.
@@ -92,27 +92,27 @@ public class BooklistNode {
      * @return the number of columns read; i.e. what is the next column in an extended query.
      */
     int from(@NonNull final Cursor cursor) {
-        mRowId = cursor.getInt(0);
-        mLevel = cursor.getInt(1);
-        mKey = cursor.getString(2);
-        mBookId = cursor.isNull(3) ? 0 : cursor.getInt(3);
+        rowId = cursor.getInt(0);
+        level = cursor.getInt(1);
+        key = cursor.getString(2);
+        bookId = cursor.isNull(3) ? 0 : cursor.getInt(3);
 
-        mIsExpanded = cursor.getInt(4) != 0;
-        mIsVisible = cursor.getInt(5) != 0;
+        expanded = cursor.getInt(4) != 0;
+        visible = cursor.getInt(5) != 0;
         return 6;
     }
 
     public boolean isExpanded() {
-        return mIsExpanded;
+        return expanded;
     }
 
     public boolean isVisible() {
-        return mIsVisible;
+        return visible;
     }
 
     void setFullyVisible() {
-        mIsExpanded = true;
-        mIsVisible = true;
+        expanded = true;
+        visible = true;
     }
 
     /**
@@ -121,12 +121,12 @@ public class BooklistNode {
      * @return "_id" of the row
      */
     public long getRowId() {
-        return mRowId;
+        return rowId;
     }
 
     @NonNull
     public String getKey() {
-        return mKey;
+        return key;
     }
 
     /**
@@ -136,12 +136,12 @@ public class BooklistNode {
      */
     @IntRange(from = 0)
     public long getBookId() {
-        return mBookId;
+        return bookId;
     }
 
     @IntRange(from = 1)
     public int getLevel() {
-        return mLevel;
+        return level;
     }
 
     /**
@@ -152,16 +152,16 @@ public class BooklistNode {
     void setNextState(@NonNull final NextState nextState) {
         switch (nextState) {
             case Collapse:
-                mIsExpanded = false;
+                expanded = false;
                 break;
 
             case Expand:
-                mIsExpanded = true;
+                expanded = true;
                 break;
 
             case Toggle:
             default:
-                mIsExpanded = !mIsExpanded;
+                expanded = !expanded;
                 break;
         }
     }
@@ -172,10 +172,10 @@ public class BooklistNode {
      * @return 0..x
      */
     public int getAdapterPosition() {
-        if (mAdapterPosition < 0) {
+        if (adapterPosition < 0) {
             throw new IllegalStateException("position not set");
         }
-        return mAdapterPosition;
+        return adapterPosition;
     }
 
     /**
@@ -206,20 +206,20 @@ public class BooklistNode {
             position = count > 0 ? count - 1 : 0;
         }
 
-        mAdapterPosition = position;
+        adapterPosition = position;
     }
 
     @Override
     @NonNull
     public String toString() {
         return "BooklistNode{"
-               + "mRowId=" + mRowId
-               + ", mKey=" + mKey
-               + ", mBookId=" + mBookId
-               + ", mLevel=" + mLevel
-               + ", mIsExpanded=" + mIsExpanded
-               + ", mIsVisible=" + mIsVisible
-               + ", mAdapterPosition=" + mAdapterPosition
+               + "rowId=" + rowId
+               + ", key=" + key
+               + ", bookId=" + bookId
+               + ", level=" + level
+               + ", expanded=" + expanded
+               + ", visible=" + visible
+               + ", adapterPosition=" + adapterPosition
                + '}';
     }
 

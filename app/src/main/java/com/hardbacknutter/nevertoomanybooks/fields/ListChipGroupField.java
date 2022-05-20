@@ -49,10 +49,10 @@ public class ListChipGroupField<T extends ParcelableEntity>
         extends BaseField<ArrayList<T>, ChipGroup> {
 
     @NonNull
-    private final Supplier<List<T>> mListSupplier;
+    private final Supplier<List<T>> listSupplier;
 
     @Nullable
-    private final View.OnClickListener mEditChipListener;
+    private final View.OnClickListener editChipListener;
 
     /**
      * Constructor.
@@ -64,17 +64,17 @@ public class ListChipGroupField<T extends ParcelableEntity>
                               @NonNull final String fieldKey,
                               @NonNull final Supplier<List<T>> listSupplier) {
         super(fragmentId, fieldViewId, fieldKey, fieldKey);
-        mListSupplier = listSupplier;
+        this.listSupplier = listSupplier;
 
-        mEditChipListener = view -> {
+        editChipListener = view -> {
             //noinspection ConstantConditions
-            final ArrayList<T> previous = new ArrayList<>(mRawValue);
+            final ArrayList<T> previous = new ArrayList<>(rawValue);
             //noinspection unchecked
             final T current = (T) view.getTag();
             if (((Checkable) view).isChecked()) {
-                mRawValue.add(current);
+                rawValue.add(current);
             } else {
-                mRawValue.remove(current);
+                rawValue.remove(current);
             }
             notifyIfChanged(previous);
         };
@@ -83,7 +83,7 @@ public class ListChipGroupField<T extends ParcelableEntity>
     @Override
     @NonNull
     public ArrayList<T> getValue() {
-        return mRawValue != null ? mRawValue : new ArrayList<>();
+        return rawValue != null ? rawValue : new ArrayList<>();
     }
 
     @Override
@@ -96,11 +96,11 @@ public class ListChipGroupField<T extends ParcelableEntity>
 
             final Context context = chipGroup.getContext();
 
-            for (final T entity : mListSupplier.get()) {
+            for (final T entity : listSupplier.get()) {
 
                 final Chip chip = new Chip(context, null, R.attr.appChipFilterStyle);
-                chip.setChecked(mRawValue.contains(entity));
-                chip.setOnClickListener(mEditChipListener);
+                chip.setChecked(rawValue.contains(entity));
+                chip.setOnClickListener(editChipListener);
 
                 // RTL-friendly Chip Layout
                 chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
@@ -115,13 +115,13 @@ public class ListChipGroupField<T extends ParcelableEntity>
 
     @Override
     public void setInitialValue(@NonNull final DataManager source) {
-        mInitialValue = new ArrayList<>(source.getParcelableArrayList(mFieldKey));
-        setValue(mInitialValue);
+        initialValue = new ArrayList<>(source.getParcelableArrayList(fieldKey));
+        setValue(initialValue);
     }
 
     @Override
     void internalPutValue(@NonNull final DataManager target) {
-        target.putParcelableArrayList(mFieldKey, getValue());
+        target.putParcelableArrayList(fieldKey, getValue());
     }
 
     @Override

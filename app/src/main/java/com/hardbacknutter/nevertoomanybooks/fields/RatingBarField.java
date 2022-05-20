@@ -44,7 +44,7 @@ public class RatingBarField
     @Override
     @NonNull
     public Float getValue() {
-        return mRawValue != null ? mRawValue : 0f;
+        return rawValue != null ? rawValue : 0f;
     }
 
     @Override
@@ -53,19 +53,19 @@ public class RatingBarField
 
         final RatingBar view = getView();
         if (view != null) {
-            view.setRating(mRawValue);
+            view.setRating(rawValue);
         }
     }
 
     @Override
     public void setInitialValue(@NonNull final DataManager source) {
-        mInitialValue = source.getFloat(mFieldKey);
-        setValue(mInitialValue);
+        initialValue = source.getFloat(fieldKey);
+        setValue(initialValue);
     }
 
     @Override
     void internalPutValue(@NonNull final DataManager target) {
-        target.putFloat(mFieldKey, getValue());
+        target.putFloat(fieldKey, getValue());
     }
 
     @Override

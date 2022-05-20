@@ -94,17 +94,17 @@ public class BookCoder {
             + COMMA + '"' + DBKey.DATE_LAST_UPDATED__UTC + '"'
             + COMMA + '"' + CSV_COLUMN_AUTHORS + '"'
             + COMMA + '"' + DBKey.TITLE + '"'
-            + COMMA + '"' + DBKey.KEY_ISBN + '"'
+            + COMMA + '"' + DBKey.BOOK_ISBN + '"'
             + COMMA + '"' + CSV_COLUMN_PUBLISHERS + '"'
             + COMMA + '"' + DBKey.PRINT_RUN + '"'
-            + COMMA + '"' + DBKey.DATE_BOOK_PUBLICATION + '"'
-            + COMMA + '"' + DBKey.DATE_FIRST_PUBLICATION + '"'
-            + COMMA + '"' + DBKey.BITMASK_EDITION + '"'
+            + COMMA + '"' + DBKey.BOOK_PUBLICATION__DATE + '"'
+            + COMMA + '"' + DBKey.FIRST_PUBLICATION__DATE + '"'
+            + COMMA + '"' + DBKey.EDITION__BITMASK + '"'
             + COMMA + '"' + DBKey.RATING + '"'
             + COMMA + '"' + DBKey.BOOKSHELF_NAME + '"'
             + COMMA + '"' + DBKey.READ__BOOL + '"'
             + COMMA + '"' + CSV_COLUMN_SERIES + '"'
-            + COMMA + '"' + DBKey.PAGES + '"'
+            + COMMA + '"' + DBKey.PAGE_COUNT + '"'
             + COMMA + '"' + DBKey.PERSONAL_NOTES + '"'
             + COMMA + '"' + DBKey.BOOK_CONDITION + '"'
             + COMMA + '"' + DBKey.BOOK_CONDITION_COVER + '"'
@@ -115,11 +115,11 @@ public class BookCoder {
             + COMMA + '"' + DBKey.PRICE_PAID_CURRENCY + '"'
             + COMMA + '"' + DBKey.DATE_ACQUIRED + '"'
 
-            + COMMA + '"' + DBKey.BITMASK_TOC + '"'
+            + COMMA + '"' + DBKey.TOC_TYPE__BITMASK + '"'
             + COMMA + '"' + DBKey.LOCATION + '"'
             + COMMA + '"' + DBKey.READ_START__DATE + '"'
             + COMMA + '"' + DBKey.READ_END__DATE + '"'
-            + COMMA + '"' + DBKey.BOOK_FORMAT + '"'
+            + COMMA + '"' + DBKey.FORMAT + '"'
             + COMMA + '"' + DBKey.COLOR + '"'
             + COMMA + '"' + DBKey.SIGNED__BOOL + '"'
             + COMMA + '"' + DBKey.LOANEE_NAME + '"'
@@ -136,38 +136,38 @@ public class BookCoder {
             // we write the String ID! not the internal row id
             + COMMA + '"' + DBKey.CALIBRE_LIBRARY_STRING_ID + '"';
 
-    private final StringList<Author> mAuthorCoder = new StringList<>(new AuthorCoder());
-    private final StringList<Series> mSeriesCoder = new StringList<>(new SeriesCoder());
-    private final StringList<Publisher> mPublisherCoder = new StringList<>(new PublisherCoder());
-    private final StringList<TocEntry> mTocCoder = new StringList<>(new TocEntryCoder());
-    private final StringList<Bookshelf> mBookshelfCoder;
+    private final StringList<Author> authorCoder = new StringList<>(new AuthorCoder());
+    private final StringList<Series> seriesCoder = new StringList<>(new SeriesCoder());
+    private final StringList<Publisher> publisherCoder = new StringList<>(new PublisherCoder());
+    private final StringList<TocEntry> tocCoder = new StringList<>(new TocEntryCoder());
+    private final StringList<Bookshelf> bookshelfCoder;
 
     @NonNull
-    private final List<Domain> mExternalIdDomains;
+    private final List<Domain> externalIdDomains;
 
-    private final ServiceLocator mSl;
+    private final ServiceLocator serviceLocator;
     @Nullable
-    private Map<Long, String> mCalibreLibraryId2StrMap;
+    private Map<Long, String> calibreLibraryId2StrMap;
     @Nullable
-    private Map<String, Long> mCalibreLibraryStr2IdMap;
+    private Map<String, Long> calibreLibraryStr2IdMap;
 
     public BookCoder(@NonNull final Context context) {
-        mSl = ServiceLocator.getInstance();
+        serviceLocator = ServiceLocator.getInstance();
 
-        mBookshelfCoder = new StringList<>(new BookshelfCoder(context));
-        mExternalIdDomains = SearchEngineRegistry.getInstance().getExternalIdDomains();
+        bookshelfCoder = new StringList<>(new BookshelfCoder(context));
+        externalIdDomains = SearchEngineRegistry.getInstance().getExternalIdDomains();
     }
 
     private void buildCalibreMappings() {
-        mCalibreLibraryId2StrMap = new HashMap<>();
-        mCalibreLibraryStr2IdMap = new HashMap<>();
+        calibreLibraryId2StrMap = new HashMap<>();
+        calibreLibraryStr2IdMap = new HashMap<>();
 
         ServiceLocator.getInstance().getCalibreLibraryDao().getAllLibraries()
                       .forEach(library -> {
-                          mCalibreLibraryId2StrMap.put(library.getId(),
-                                                       library.getLibraryStringId());
-                          mCalibreLibraryStr2IdMap.put(library.getLibraryStringId(),
-                                                       library.getId());
+                          calibreLibraryId2StrMap.put(library.getId(),
+                                                      library.getLibraryStringId());
+                          calibreLibraryStr2IdMap.put(library.getLibraryStringId(),
+                                                      library.getId());
                       });
 
     }
@@ -176,7 +176,7 @@ public class BookCoder {
     public String createHeader() {
         // row 0 with the column labels
         final StringBuilder columnLabels = new StringBuilder(EXPORT_FIELD_HEADERS_BASE);
-        for (final Domain domain : mExternalIdDomains) {
+        for (final Domain domain : externalIdDomains) {
             columnLabels.append(COMMA).append('"').append(domain.getName()).append('"');
         }
         //NEWTHINGS: adding a new search engine: optional: add engine specific keys
@@ -192,19 +192,19 @@ public class BookCoder {
         line.add(escapeLong(book.getLong(DBKey.PK_ID)));
         line.add(escape(book.getString(DBKey.BOOK_UUID)));
         line.add(escape(book.getString(DBKey.DATE_LAST_UPDATED__UTC)));
-        line.add(escape(mAuthorCoder.encodeList(book.getAuthors())));
+        line.add(escape(authorCoder.encodeList(book.getAuthors())));
         line.add(escape(book.getString(DBKey.TITLE)));
-        line.add(escape(book.getString(DBKey.KEY_ISBN)));
-        line.add(escape(mPublisherCoder.encodeList(book.getPublishers())));
+        line.add(escape(book.getString(DBKey.BOOK_ISBN)));
+        line.add(escape(publisherCoder.encodeList(book.getPublishers())));
         line.add(escape(book.getString(DBKey.PRINT_RUN)));
-        line.add(escape(book.getString(DBKey.DATE_BOOK_PUBLICATION)));
-        line.add(escape(book.getString(DBKey.DATE_FIRST_PUBLICATION)));
-        line.add(escapeLong(book.getLong(DBKey.BITMASK_EDITION)));
+        line.add(escape(book.getString(DBKey.BOOK_PUBLICATION__DATE)));
+        line.add(escape(book.getString(DBKey.FIRST_PUBLICATION__DATE)));
+        line.add(escapeLong(book.getLong(DBKey.EDITION__BITMASK)));
         line.add(escapeDouble(book.getFloat(DBKey.RATING)));
-        line.add(escape(mBookshelfCoder.encodeList(book.getBookshelves())));
+        line.add(escape(bookshelfCoder.encodeList(book.getBookshelves())));
         line.add(escapeLong(book.getInt(DBKey.READ__BOOL)));
-        line.add(escape(mSeriesCoder.encodeList(book.getSeries())));
-        line.add(escape(book.getString(DBKey.PAGES)));
+        line.add(escape(seriesCoder.encodeList(book.getSeries())));
+        line.add(escape(book.getString(DBKey.PAGE_COUNT)));
         line.add(escape(book.getString(DBKey.PERSONAL_NOTES)));
         line.add(escapeLong(book.getInt(DBKey.BOOK_CONDITION)));
         line.add(escapeLong(book.getInt(DBKey.BOOK_CONDITION_COVER)));
@@ -213,15 +213,15 @@ public class BookCoder {
         line.add(escapeDouble(book.getDouble(DBKey.PRICE_PAID)));
         line.add(escape(book.getString(DBKey.PRICE_PAID_CURRENCY)));
         line.add(escape(book.getString(DBKey.DATE_ACQUIRED)));
-        line.add(escapeLong(book.getLong(DBKey.BITMASK_TOC)));
+        line.add(escapeLong(book.getLong(DBKey.TOC_TYPE__BITMASK)));
         line.add(escape(book.getString(DBKey.LOCATION)));
         line.add(escape(book.getString(DBKey.READ_START__DATE)));
         line.add(escape(book.getString(DBKey.READ_END__DATE)));
-        line.add(escape(book.getString(DBKey.BOOK_FORMAT)));
+        line.add(escape(book.getString(DBKey.FORMAT)));
         line.add(escape(book.getString(DBKey.COLOR)));
         line.add(escapeLong(book.getInt(DBKey.SIGNED__BOOL)));
         line.add(escape(book.getString(DBKey.LOANEE_NAME)));
-        line.add(escape(mTocCoder.encodeList(book.getToc())));
+        line.add(escape(tocCoder.encodeList(book.getToc())));
         line.add(escape(book.getString(DBKey.DESCRIPTION)));
         line.add(escape(book.getString(DBKey.GENRE)));
         line.add(escape(book.getString(DBKey.LANGUAGE)));
@@ -234,10 +234,10 @@ public class BookCoder {
         // we write the Calibre String ID! not the internal row id
         final long clbRowId = book.getLong(DBKey.FK_CALIBRE_LIBRARY);
         if (clbRowId != 0) {
-            if (mCalibreLibraryId2StrMap == null) {
+            if (calibreLibraryId2StrMap == null) {
                 buildCalibreMappings();
             }
-            final String clbStrId = mCalibreLibraryId2StrMap.get(clbRowId);
+            final String clbStrId = calibreLibraryId2StrMap.get(clbRowId);
             // Guard against obsolete libraries (not actually sure this is needed... paranoia)
             if (clbStrId != null && !clbStrId.isEmpty()) {
                 line.add(escape(clbStrId));
@@ -249,7 +249,7 @@ public class BookCoder {
         }
 
         // external ID's
-        for (final Domain domain : mExternalIdDomains) {
+        for (final Domain domain : externalIdDomains) {
             line.add(escape(book.getString(domain.getName())));
         }
         //NEWTHINGS: adding a new search engine: optional: add engine specific keys
@@ -366,10 +366,10 @@ public class BookCoder {
         book.remove(DBKey.CALIBRE_LIBRARY_STRING_ID);
 
         if (!stringId.isEmpty()) {
-            if (mCalibreLibraryStr2IdMap == null) {
+            if (calibreLibraryStr2IdMap == null) {
                 buildCalibreMappings();
             }
-            final Long id = mCalibreLibraryStr2IdMap.get(stringId);
+            final Long id = calibreLibraryStr2IdMap.get(stringId);
             if (id != null) {
                 book.putLong(DBKey.FK_CALIBRE_LIBRARY, id);
             } else {
@@ -403,9 +403,9 @@ public class BookCoder {
         }
 
         if (encodedList != null && !encodedList.isEmpty()) {
-            final ArrayList<Bookshelf> bookshelves = mBookshelfCoder.decodeList(encodedList);
+            final ArrayList<Bookshelf> bookshelves = bookshelfCoder.decodeList(encodedList);
             if (!bookshelves.isEmpty()) {
-                mSl.getBookshelfDao().pruneList(bookshelves);
+                serviceLocator.getBookshelfDao().pruneList(bookshelves);
                 book.setBookshelves(bookshelves);
             }
         }
@@ -462,10 +462,10 @@ public class BookCoder {
                 book.remove(LEGACY_AUTHOR_NAME);
             }
         } else {
-            list = mAuthorCoder.decodeList(encodedList);
+            list = authorCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
                 // Force using the Book Locale, otherwise the import is far to slow.
-                mSl.getAuthorDao().pruneList(context, list, false, bookLocale);
+                serviceLocator.getAuthorDao().pruneList(context, list, false, bookLocale);
             }
         }
 
@@ -508,10 +508,10 @@ public class BookCoder {
                 book.remove(DBKey.SERIES_BOOK_NUMBER);
             }
         } else {
-            final ArrayList<Series> list = mSeriesCoder.decodeList(encodedList);
+            final ArrayList<Series> list = seriesCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
                 // Force using the Book Locale, otherwise the import is far to slow.
-                mSl.getSeriesDao().pruneList(context, list, false, bookLocale);
+                serviceLocator.getSeriesDao().pruneList(context, list, false, bookLocale);
                 book.setSeries(list);
             }
         }
@@ -534,10 +534,10 @@ public class BookCoder {
         book.remove(CSV_COLUMN_PUBLISHERS);
 
         if (!encodedList.isEmpty()) {
-            final ArrayList<Publisher> list = mPublisherCoder.decodeList(encodedList);
+            final ArrayList<Publisher> list = publisherCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
                 // Force using the Book Locale, otherwise the import is far to slow.
-                mSl.getPublisherDao().pruneList(context, list, false, bookLocale);
+                serviceLocator.getPublisherDao().pruneList(context, list, false, bookLocale);
                 book.setPublishers(list);
             }
         }
@@ -563,10 +563,10 @@ public class BookCoder {
         book.remove(CSV_COLUMN_TOC);
 
         if (!encodedList.isEmpty()) {
-            final ArrayList<TocEntry> list = mTocCoder.decodeList(encodedList);
+            final ArrayList<TocEntry> list = tocCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
                 // Force using the Book Locale, otherwise the import is far to slow.
-                mSl.getTocEntryDao().pruneList(context, list, false, bookLocale);
+                serviceLocator.getTocEntryDao().pruneList(context, list, false, bookLocale);
                 book.setToc(list);
             }
         }

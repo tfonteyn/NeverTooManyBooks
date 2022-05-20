@@ -70,21 +70,21 @@ public class BookDaoHelper {
     private static final Pattern T = Pattern.compile("T");
 
     @NonNull
-    private final Book mBook;
-    private final boolean mIsNew;
+    private final Book book;
+    private final boolean isNew;
 
     @NonNull
-    private final Locale mBookLocale;
+    private final Locale bookLocale;
 
     public BookDaoHelper(@NonNull final Context context,
                          @NonNull final Book book,
                          final boolean isNew) {
-        mBook = book;
-        mIsNew = isNew;
+        this.book = book;
+        this.isNew = isNew;
 
         // Handle Language field FIRST, we need it for _OB fields.
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        mBookLocale = mBook.getAndUpdateLocale(context, userLocale, true);
+        bookLocale = this.book.getAndUpdateLocale(context, userLocale, true);
     }
 
     /**
@@ -96,20 +96,20 @@ public class BookDaoHelper {
      */
     BookDaoHelper process(@NonNull final Context context) {
         // Handle TITLE
-        if (mBook.contains(DBKey.TITLE)) {
+        if (book.contains(DBKey.TITLE)) {
             final OrderByHelper.OrderByData obd = OrderByHelper
-                    .createOrderByData(context, mBook.getTitle(), mBookLocale, null);
-            mBook.putString(DBKey.KEY_TITLE_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
+                    .createOrderByData(context, book.getTitle(), bookLocale, null);
+            book.putString(DBKey.KEY_TITLE_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
         }
 
         // store only valid bits. The 'get' will normalise any incorrect 'long' value
-        if (mBook.contains(DBKey.BITMASK_TOC)) {
-            mBook.setContentType(mBook.getContentType());
+        if (book.contains(DBKey.TOC_TYPE__BITMASK)) {
+            book.setContentType(book.getContentType());
         }
 
-        if (mBook.contains(DBKey.BITMASK_EDITION)) {
-            mBook.putLong(DBKey.BITMASK_EDITION,
-                          mBook.getLong(DBKey.BITMASK_EDITION) & Book.Edition.BITMASK_ALL_BITS);
+        if (book.contains(DBKey.EDITION__BITMASK)) {
+            book.putLong(DBKey.EDITION__BITMASK,
+                         book.getLong(DBKey.EDITION__BITMASK) & Book.Edition.BITMASK_ALL_BITS);
         }
 
         // cleanup/build all price related fields
@@ -138,19 +138,19 @@ public class BookDaoHelper {
 
         final String currencyKey = key + DBKey.SUFFIX_KEY_CURRENCY;
         // handle a price without a currency.
-        if (mBook.contains(key) && !mBook.contains(currencyKey)) {
+        if (book.contains(key) && !book.contains(currencyKey)) {
             // we presume the user bought the book in their own currency.
-            final Money money = new Money(mBookLocale, mBook.getString(key));
+            final Money money = new Money(bookLocale, book.getString(key));
             if (money.getCurrency() != null) {
-                mBook.putMoney(key, money);
+                book.putMoney(key, money);
                 return;
             }
             // else just leave the original in the data
         }
 
         // Make sure currencies are uppercase
-        if (mBook.contains(currencyKey)) {
-            mBook.putString(currencyKey, mBook.getString(currencyKey).toUpperCase(Locale.ENGLISH));
+        if (book.contains(currencyKey)) {
+            book.putString(currencyKey, book.getString(currencyKey).toUpperCase(Locale.ENGLISH));
         }
     }
 
@@ -175,13 +175,13 @@ public class BookDaoHelper {
         domains.stream()
                .filter(domain -> domain.getType().equals(ColumnInfo.TYPE_DATE))
                .map(Domain::getName)
-               .filter(mBook::contains)
+               .filter(book::contains)
                .forEach(key -> {
-                   final String date = mBook.getString(key);
+                   final String date = book.getString(key);
                    // This is very crude... we simply truncate to 10 characters maximum
                    // i.e. 'YYYY-MM-DD', but do not verify if it's a valid date.
                    if (date.length() > 10) {
-                       mBook.putString(key, date.substring(0, 10));
+                       book.putString(key, date.substring(0, 10));
                    }
                });
 
@@ -189,13 +189,13 @@ public class BookDaoHelper {
         domains.stream()
                .filter(domain -> domain.getType().equals(ColumnInfo.TYPE_DATETIME))
                .map(Domain::getName)
-               .filter(mBook::contains)
+               .filter(book::contains)
                .forEach(key -> {
-                   final String date = mBook.getString(key);
+                   final String date = book.getString(key);
                    // Again, very crude logic... we simply check for the 11th char being a 'T'
                    // and if so, replace it with a space
                    if (date.length() > 10 && date.charAt(10) == 'T') {
-                       mBook.putString(key, T.matcher(date).replaceFirst(" "));
+                       book.putString(key, T.matcher(date).replaceFirst(" "));
                    }
                });
     }
@@ -219,35 +219,35 @@ public class BookDaoHelper {
         domains.stream()
                .filter(domain -> domain.getType().equals(ColumnInfo.TYPE_INTEGER))
                .map(Domain::getName)
-               .filter(mBook::contains)
+               .filter(book::contains)
                .forEach(key -> {
-                   final Object o = mBook.get(key);
+                   final Object o = book.get(key);
                    try {
-                       if (mIsNew) {
+                       if (isNew) {
                            // For new books:
                            if (o == null) {
                                // remove null values
-                               mBook.remove(key);
+                               book.remove(key);
                            } else {
-                               final long v = mBook.getLong(key);
+                               final long v = book.getLong(key);
                                if (v < 1) {
                                    // remove zero values
-                                   mBook.remove(key);
+                                   book.remove(key);
                                }
                            }
                        } else {
                            // for existing books, leave null values as-is
                            if (o != null) {
-                               final long v = mBook.getLong(key);
+                               final long v = book.getLong(key);
                                if (v < 1) {
                                    // replace zero values with a null
-                                   mBook.putNull(key);
+                                   book.putNull(key);
                                }
                            }
                        }
                    } catch (@NonNull final NumberFormatException e) {
                        // always remove illegal input
-                       mBook.remove(key);
+                       book.remove(key);
 
                        if (BuildConfig.DEBUG /* always */) {
                            Logger.d(TAG, "preprocessExternalIds", "NumberFormatException"
@@ -260,19 +260,19 @@ public class BookDaoHelper {
         domains.stream()
                .filter(domain -> domain.getType().equals(ColumnInfo.TYPE_TEXT))
                .map(Domain::getName)
-               .filter(mBook::contains)
+               .filter(book::contains)
                .forEach(key -> {
-                   final Object o = mBook.get(key);
-                   if (mIsNew) {
+                   final Object o = book.get(key);
+                   if (isNew) {
                        // for new books,
                        if (o == null) {
                            // remove null values
-                           mBook.remove(key);
+                           book.remove(key);
                        } else {
                            final String v = o.toString();
                            if (v.isEmpty() || "0".equals(v)) {
                                // remove empty/zero values
-                               mBook.remove(key);
+                               book.remove(key);
                            }
                        }
                    } else {
@@ -281,7 +281,7 @@ public class BookDaoHelper {
                            final String v = o.toString();
                            if (v.isEmpty() || "0".equals(v)) {
                                // replace "0" and empty strings with a null
-                               mBook.putNull(key);
+                               book.putNull(key);
                            }
                        }
                    }
@@ -304,9 +304,9 @@ public class BookDaoHelper {
         DBDefinitions.TBL_BOOKS
                 .getDomains()
                 .stream()
-                .filter(domain -> mBook.contains(domain.getName()) && domain.hasDefault())
+                .filter(domain -> book.contains(domain.getName()) && domain.hasDefault())
                 .forEach(domain -> {
-                    final Object o = mBook.get(domain.getName());
+                    final Object o = book.get(domain.getName());
                     if (
                         // Fields which are null but not allowed to be null
                             (o == null && domain.isNotNull())
@@ -314,12 +314,12 @@ public class BookDaoHelper {
                             // Fields which are null/empty (i.e. blank) but not allowed to be blank
                             ((o == null || o.toString().isEmpty()) && domain.isNotBlank())
                     ) {
-                        if (mIsNew) {
-                            mBook.remove(domain.getName());
+                        if (isNew) {
+                            book.remove(domain.getName());
                         } else {
                             // restore the column to its default value.
                             //noinspection ConstantConditions
-                            mBook.putString(domain.getName(), domain.getDefault());
+                            book.putString(domain.getName(), domain.getDefault());
                         }
                     }
                 });
@@ -327,7 +327,7 @@ public class BookDaoHelper {
 
     @NonNull
     ContentValues filterValues(@NonNull final TableInfo tableInfo) {
-        return filterValues(tableInfo, mBook, mBookLocale);
+        return filterValues(tableInfo, book, bookLocale);
     }
 
     /**
@@ -470,7 +470,7 @@ public class BookDaoHelper {
     void persistCovers()
             throws StorageException, IOException {
 
-        final String uuid = mBook.getString(DBKey.BOOK_UUID);
+        final String uuid = book.getString(DBKey.BOOK_UUID);
 
         if (BuildConfig.DEBUG /* always */) {
             // the UUID should always be valid here
@@ -478,8 +478,8 @@ public class BookDaoHelper {
         }
 
         for (int cIdx = 0; cIdx < Book.BKEY_TMP_FILE_SPEC.length; cIdx++) {
-            if (mBook.contains(Book.BKEY_TMP_FILE_SPEC[cIdx])) {
-                final String fileSpec = mBook.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
+            if (book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx])) {
+                final String fileSpec = book.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                     Logger.d(TAG, "storeCovers",
@@ -488,7 +488,7 @@ public class BookDaoHelper {
 
                 if (fileSpec.isEmpty()) {
                     // An empty fileSpec indicates we need to delete the cover
-                    mBook.getPersistedCoverFile(cIdx).ifPresent(FileUtils::delete);
+                    book.getPersistedCoverFile(cIdx).ifPresent(FileUtils::delete);
                     // Delete from the cache. And yes, we also delete the ones
                     // where != index, but we don't care; it's a cache.
                     if (ImageUtils.isImageCachingEnabled()) {
@@ -496,10 +496,10 @@ public class BookDaoHelper {
                     }
                 } else {
                     // Rename the temp file to the uuid permanent file name
-                    mBook.persistCover(new File(fileSpec), cIdx);
+                    book.persistCover(new File(fileSpec), cIdx);
                 }
 
-                mBook.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
+                book.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
             } else {
                 // If the key is NOT present, we don't need to do anything!
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {

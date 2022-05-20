@@ -136,7 +136,7 @@ public class SyncReaderFragment
         final Toolbar toolbar = getToolbar();
         toolbarMenuProvider = new ToolbarMenuProvider();
         toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
-        toolbar.setTitle(vm.getDataReaderHelper().getSyncServer().getLabel());
+        toolbar.setTitle(vm.getDataReaderHelper().getSyncServer().getLabelResId());
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()

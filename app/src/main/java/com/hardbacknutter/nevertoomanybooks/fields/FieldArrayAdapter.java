@@ -35,7 +35,7 @@ public class FieldArrayAdapter
 
     /** The formatter to apply on each line item. */
     @NonNull
-    private final FieldFormatter<String> mFormatter;
+    private final FieldFormatter<String> formatter;
 
     /**
      * Constructor.
@@ -48,12 +48,12 @@ public class FieldArrayAdapter
                       @NonNull final List<String> objects,
                       @NonNull final FieldFormatter<String> formatter) {
         super(context, R.layout.popup_dropdown_menu_item, FilterType.Diacritic, objects);
-        mFormatter = formatter;
+        this.formatter = formatter;
     }
 
     @NonNull
     @Override
     protected CharSequence getItemText(@Nullable final String item) {
-        return mFormatter.format(getContext(), item);
+        return formatter.format(getContext(), item);
     }
 }

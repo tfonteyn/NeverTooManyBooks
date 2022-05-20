@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 public class StylesHelper {
 
     /** Preference for the current default style UUID to use. */
-    private static final String PREF_BL_STYLE_CURRENT_DEFAULT = "bookList.style.current";
+    private static final String PK_DEFAULT_STYLE = "bookList.style.current";
 
     private static final String ERROR_MISSING_UUID = "style.getUuid()";
 
@@ -101,7 +101,7 @@ public class StylesHelper {
      */
     public void setDefault(@NonNull final String uuid) {
         ServiceLocator.getPreferences()
-                      .edit().putString(PREF_BL_STYLE_CURRENT_DEFAULT, uuid).apply();
+                      .edit().putString(PK_DEFAULT_STYLE, uuid).apply();
     }
 
     /**
@@ -118,7 +118,7 @@ public class StylesHelper {
         // read the global user default, or if not present the hardcoded default.
         final String uuid = PreferenceManager
                 .getDefaultSharedPreferences(context)
-                .getString(PREF_BL_STYLE_CURRENT_DEFAULT, BuiltinStyle.DEFAULT_UUID);
+                .getString(PK_DEFAULT_STYLE, BuiltinStyle.DEFAULT_UUID);
 
         // Get the user or builtin or worst case the builtin default.
         final Style style = allStyles.get(uuid);

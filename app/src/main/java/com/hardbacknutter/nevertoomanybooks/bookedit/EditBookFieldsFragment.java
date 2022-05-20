@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -42,7 +41,6 @@ import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +49,8 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookFieldsBinding;
@@ -101,7 +101,7 @@ public class EditBookFieldsFragment
     private final ActivityResultLauncher<Fragment> scanLauncher = registerForActivityResult(
             new ScannerContract(), barCode -> {
                 if (barCode != null) {
-                    vm.getBook().putString(DBKey.KEY_ISBN, barCode);
+                    vm.getBook().putString(DBKey.BOOK_ISBN, barCode);
                 }
             });
 
@@ -158,7 +158,6 @@ public class EditBookFieldsFragment
         //noinspection ConstantConditions
         vm.initFields(context, FragmentId.Main, FieldGroup.Main);
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         createCoverDelegates();
 
         vm.onAuthorList().observe(getViewLifecycleOwner(), authors ->
@@ -169,7 +168,7 @@ public class EditBookFieldsFragment
         vb.lblAuthor.setEndIconOnClickListener(v -> editAuthor());
         vb.author.setOnClickListener(v -> editAuthor());
 
-        if (DBKey.isUsed(DBKey.SERIES_TITLE)) {
+        if (GlobalFieldVisibility.isUsed(DBKey.FK_SERIES)) {
             vm.onSeriesList().observe(getViewLifecycleOwner(), series ->
                     vm.requireField(R.id.series_title).setValue(series));
             // Series editor (screen)
@@ -199,7 +198,7 @@ public class EditBookFieldsFragment
         try {
             for (int cIdx = 0; cIdx < width.length(); cIdx++) {
                 // in edit mode, always show both covers unless globally disabled
-                if (DBKey.isUsed(DBKey.COVER_IS_USED[cIdx])) {
+                if (GlobalFieldVisibility.isUsed(FieldVisibility.COVER[cIdx])) {
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
                     final int maxHeight = height.getDimensionPixelSize(cIdx, 0);
 

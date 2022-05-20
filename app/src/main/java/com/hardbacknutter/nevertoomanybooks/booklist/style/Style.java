@@ -161,14 +161,6 @@ public interface Style {
     @IntRange(from = 1)
     int getExpansionLevel();
 
-    /**
-     * Check if the style wants the specified header to be displayed.
-     *
-     * @param bit to check
-     *
-     * @return {@code true} if the header should be shown
-     */
-    boolean isShowHeaderField(@BooklistHeader.Option int bit);
 
     /**
      * Whether the user prefers the Author names displayed by Given names, or by Family name first.
@@ -203,6 +195,15 @@ public interface Style {
 
 
     /**
+     * Check if the style wants the specified header to be displayed.
+     *
+     * @param bit to check
+     *
+     * @return {@code true} if the header should be shown
+     */
+    boolean isShowHeaderField(@BooklistHeader.Option int bit);
+
+    /**
      * Check if the given field should be displayed.
      *
      * @param screen to get the setting for
@@ -214,14 +215,13 @@ public interface Style {
                         @NonNull final String dbKey);
 
     /**
-     * Get the bitmask value which defines book-field visibility on the
-     * <strong>DETAILS</strong> screens.
+     * Get the bitmask value which defines book-field visibility.
      *
      * @param screen to get the setting for
      *
      * @return bitmask
      */
-    int getFieldVisibility(@NonNull Screen screen);
+    long getFieldVisibility(@NonNull Screen screen);
 
     /**
      * Get the group row <strong>height</strong> to be applied to
@@ -300,7 +300,7 @@ public interface Style {
     /**
      * {@link AuthorBooklistGroup} property
      *
-     * @return bit mask
+     * @return bitmask
      */
     @Author.Type
     int getPrimaryAuthorType();
@@ -339,6 +339,7 @@ public interface Style {
 
     @NonNull
     String getFieldVisibilitySummaryText(@NonNull final Context context);
+
 
     enum Screen {
         List,

@@ -258,9 +258,9 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_UUID;
     /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_BOOK_EDITION_BITMASK;
+    public static final Domain DOM_BOOK_EDITION;
     /** {@link #TBL_BOOKS}. See {@link Book.ContentType}. */
-    public static final Domain DOM_BOOK_TOC_BITMASK;
+    public static final Domain DOM_BOOK_TOC_TYPE;
     /**
      * {@link #TBL_BOOKS}.
      * String typed. We cannot rely on prices fetched from the internet to be 100% parsable.
@@ -570,7 +570,7 @@ public final class DBDefinitions {
                         .build();
 
         DOM_DATE_FIRST_PUBLICATION =
-                new Domain.Builder(DBKey.DATE_FIRST_PUBLICATION, ColumnInfo.TYPE_DATE)
+                new Domain.Builder(DBKey.FIRST_PUBLICATION__DATE, ColumnInfo.TYPE_DATE)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
@@ -609,7 +609,7 @@ public final class DBDefinitions {
                         .build();
 
         DOM_BOOKSHELF_FILTER_NAME =
-                new Domain.Builder(DBKey.FILTER_NAME, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.FILTER_DBKEY, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .build();
         DOM_BOOKSHELF_FILTER_VALUE =
@@ -701,13 +701,13 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_BOOK_ISBN =
-                new Domain.Builder(DBKey.KEY_ISBN, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.BOOK_ISBN, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_BOOK_DATE_PUBLISHED =
-                new Domain.Builder(DBKey.DATE_BOOK_PUBLICATION, ColumnInfo.TYPE_DATE)
+                new Domain.Builder(DBKey.BOOK_PUBLICATION__DATE, ColumnInfo.TYPE_DATE)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
@@ -731,13 +731,13 @@ public final class DBDefinitions {
                         .build();
 
         DOM_BOOK_PAGES =
-                new Domain.Builder(DBKey.PAGES, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.PAGE_COUNT, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_BOOK_FORMAT =
-                new Domain.Builder(DBKey.BOOK_FORMAT, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.FORMAT, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
@@ -770,8 +770,8 @@ public final class DBDefinitions {
                         .withDefaultEmptyString()
                         .build();
 
-        DOM_BOOK_TOC_BITMASK =
-                new Domain.Builder(DBKey.BITMASK_TOC, ColumnInfo.TYPE_INTEGER)
+        DOM_BOOK_TOC_TYPE =
+                new Domain.Builder(DBKey.TOC_TYPE__BITMASK, ColumnInfo.TYPE_INTEGER)
                         .notNull()
                         .withDefault(Book.ContentType.Book.value)
                         .build();
@@ -786,8 +786,8 @@ public final class DBDefinitions {
                         .withDefault("(lower(hex(randomblob(16))))")
                         .build();
 
-        DOM_BOOK_EDITION_BITMASK =
-                new Domain.Builder(DBKey.BITMASK_EDITION, ColumnInfo.TYPE_INTEGER)
+        DOM_BOOK_EDITION =
+                new Domain.Builder(DBKey.EDITION__BITMASK, ColumnInfo.TYPE_INTEGER)
                         .notNull()
                         .withDefault(0)
                         .build();
@@ -1010,7 +1010,7 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_BOOK_AUTHOR_TYPE_BITMASK =
-                new Domain.Builder(DBKey.BOOK_AUTHOR_TYPE_BITMASK, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.AUTHOR_TYPE__BITMASK, ColumnInfo.TYPE_INTEGER)
                         .notNull()
                         .withDefault(0)
                         .build();
@@ -1312,7 +1312,7 @@ public final class DBDefinitions {
                             DOM_BOOK_PRICE_LISTED,
                             DOM_BOOK_PRICE_LISTED_CURRENCY,
 
-                            DOM_BOOK_TOC_BITMASK,
+                            DOM_BOOK_TOC_TYPE,
                             DOM_BOOK_FORMAT,
                             DOM_BOOK_COLOR,
                             DOM_BOOK_GENRE,
@@ -1322,7 +1322,6 @@ public final class DBDefinitions {
                             DOM_BOOK_DESCRIPTION,
 
                             // personal data
-                            //DOM_BOOK_IS_OWNED,
                             DOM_BOOK_PRICE_PAID,
                             DOM_BOOK_PRICE_PAID_CURRENCY,
                             DOM_BOOK_DATE_ACQUIRED,
@@ -1331,7 +1330,7 @@ public final class DBDefinitions {
                             DOM_BOOK_DATE_READ_START,
                             DOM_BOOK_DATE_READ_END,
 
-                            DOM_BOOK_EDITION_BITMASK,
+                            DOM_BOOK_EDITION,
                             DOM_BOOK_SIGNED,
                             DOM_BOOK_RATING,
                             DOM_BOOK_LOCATION,
@@ -1358,7 +1357,7 @@ public final class DBDefinitions {
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex(DBKey.KEY_TITLE_OB, false, DOM_TITLE_OB)
                 .addIndex(DBKey.TITLE, false, DOM_TITLE)
-                .addIndex(DBKey.KEY_ISBN, false, DOM_BOOK_ISBN)
+                .addIndex(DBKey.BOOK_ISBN, false, DOM_BOOK_ISBN)
                 .addIndex(DBKey.BOOK_UUID, true, DOM_BOOK_UUID)
                 //NEWTHINGS: adding a new search engine: optional: add indexes as needed.
 

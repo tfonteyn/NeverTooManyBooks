@@ -56,6 +56,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TO
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.AUTHOR_FAMILY_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.AUTHOR_GIVEN_NAMES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_AUTHOR_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_PUBLISHER_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_SERIES_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DESCRIPTION;
@@ -65,7 +66,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FTS_BOOK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FTS_TOC_ENTRY_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.GENRE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_TOC_ENTRY_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.LOCATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PERSONAL_NOTES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PK_ID;
@@ -91,7 +91,7 @@ public class FtsDaoImpl
             + ',' + PUBLISHER_NAME
             + ',' + GENRE
             + ',' + LOCATION
-            + ',' + KEY_ISBN
+            + ',' + BOOK_ISBN
             + ',' + FTS_TOC_ENTRY_TITLE
 
             + ',' + FTS_BOOK_ID
@@ -111,7 +111,7 @@ public class FtsDaoImpl
             + ',' + PUBLISHER_NAME + "=?"
             + ',' + GENRE + "=?"
             + ',' + LOCATION + "=?"
-            + ',' + KEY_ISBN + "=?"
+            + ',' + BOOK_ISBN + "=?"
             + ',' + FTS_TOC_ENTRY_TITLE + "=?"
 
             + _WHERE_ + FTS_BOOK_ID + "=?";
@@ -132,7 +132,7 @@ public class FtsDaoImpl
             + ',' + PERSONAL_NOTES
             + ',' + GENRE
             + ',' + LOCATION
-            + ',' + KEY_ISBN
+            + ',' + BOOK_ISBN
             + _FROM_ + TBL_BOOKS.getName();
 
     /** Used during insert of a book. Minimal column list. */
@@ -441,7 +441,7 @@ public class FtsDaoImpl
                 bindStringOrNull(stmt, 6, publisherText.toString());
                 bindStringOrNull(stmt, 7, rowData.getString(GENRE));
                 bindStringOrNull(stmt, 8, rowData.getString(LOCATION));
-                bindStringOrNull(stmt, 9, rowData.getString(KEY_ISBN));
+                bindStringOrNull(stmt, 9, rowData.getString(BOOK_ISBN));
                 // KEY_FTS_TOC_ENTRY_TITLE
                 bindStringOrNull(stmt, 10, tocTitles.toString());
 

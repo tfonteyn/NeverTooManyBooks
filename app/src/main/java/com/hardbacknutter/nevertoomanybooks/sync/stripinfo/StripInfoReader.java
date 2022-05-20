@@ -37,11 +37,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -114,7 +117,7 @@ public class StripInfoReader
 
         // Get either the custom passed-in, or the builtin default.
         final SyncReaderProcessor sp = helper.getSyncProcessor();
-        syncProcessor = sp != null ? sp : getDefaultSyncProcessor();
+        syncProcessor = sp != null ? sp : getDefaultSyncProcessor(context);
 
         bookDao = ServiceLocator.getInstance().getBookDao();
 
@@ -130,37 +133,58 @@ public class StripInfoReader
      * <p>
      * //ENHANCE: pass an optional user configurable copy into the {@link SyncReaderHelper}
      *
+     * @param context Current context
+     *
      * @return a CopyIfBlank SyncProcessor
      */
     @NonNull
-    private static SyncReaderProcessor getDefaultSyncProcessor() {
-        return new SyncReaderProcessor.Builder(SYNC_PROCESSOR_PREFIX)
-                .add(R.string.site_stripinfo_be, DBKey.SID_STRIP_INFO)
+    private static SyncReaderProcessor getDefaultSyncProcessor(@NonNull final Context context) {
+        final SortedMap<String, String[]> map = new TreeMap<>();
+        map.put(context.getString(R.string.site_stripinfo_be), new String[]{DBKey.SID_STRIP_INFO});
 
-                .add(R.string.lbl_cover_front, DBKey.COVER_IS_USED[0])
-                .addRelatedField(DBKey.COVER_IS_USED[0], Book.BKEY_TMP_FILE_SPEC[0])
-                .add(R.string.lbl_cover_back, DBKey.COVER_IS_USED[1])
-                .addRelatedField(DBKey.COVER_IS_USED[1], Book.BKEY_TMP_FILE_SPEC[1])
+        map.put(context.getString(R.string.lbl_cover_front),
+                new String[]{FieldVisibility.COVER[0]});
+        map.put(context.getString(R.string.lbl_cover_back),
+                new String[]{FieldVisibility.COVER[1]});
 
-                // the wishlist
-                .addList(R.string.lbl_bookshelves, DBKey.FK_BOOKSHELF, Book.BKEY_BOOKSHELF_LIST)
+        // the wishlist
+        map.put(context.getString(R.string.lbl_bookshelves),
+                new String[]{DBKey.FK_BOOKSHELF, Book.BKEY_BOOKSHELF_LIST});
+        map.put(context.getString(R.string.lbl_date_acquired),
+                new String[]{DBKey.DATE_ACQUIRED});
+        map.put(context.getString(R.string.lbl_location),
+                new String[]{DBKey.LOCATION});
+        map.put(context.getString(R.string.lbl_personal_notes),
+                new String[]{DBKey.PERSONAL_NOTES});
+        map.put(context.getString(R.string.lbl_rating),
+                new String[]{DBKey.RATING});
+        map.put(context.getString(R.string.lbl_read),
+                new String[]{DBKey.READ__BOOL});
+        map.put(context.getString(R.string.lbl_price_paid),
+                new String[]{DBKey.PRICE_PAID});
 
-                .add(R.string.lbl_date_acquired, DBKey.DATE_ACQUIRED)
-                .add(R.string.lbl_location, DBKey.LOCATION)
-                .add(R.string.lbl_personal_notes, DBKey.PERSONAL_NOTES)
-                .add(R.string.lbl_rating, DBKey.RATING)
-                .add(R.string.lbl_read, DBKey.READ__BOOL)
+        // The site specific keys
+        map.put(context.getString(R.string.lbl_owned),
+                new String[]{DBKey.STRIP_INFO_OWNED});
+        map.put(context.getString(R.string.lbl_wishlist),
+                new String[]{DBKey.STRIP_INFO_WANTED});
+        map.put(context.getString(R.string.lbl_number),
+                new String[]{DBKey.STRIP_INFO_AMOUNT});
+        map.put(context.getString(R.string.site_stripinfo_be),
+                new String[]{DBKey.STRIP_INFO_COLL_ID});
 
-                .add(R.string.lbl_price_paid, DBKey.PRICE_PAID)
-                .addRelatedField(DBKey.PRICE_PAID_CURRENCY, DBKey.PRICE_PAID)
 
-                // The site specific keys
-                .add(R.string.lbl_owned, DBKey.STRIP_INFO_OWNED)
-                .add(R.string.lbl_wishlist, DBKey.STRIP_INFO_WANTED)
-                .add(R.string.lbl_number, DBKey.STRIP_INFO_AMOUNT)
-                .add(R.string.site_stripinfo_be, DBKey.STRIP_INFO_COLL_ID)
+        final SyncReaderProcessor.Builder builder =
+                new SyncReaderProcessor.Builder(SYNC_PROCESSOR_PREFIX);
 
-                .build();
+        // add the sorted fields
+        map.forEach(builder::add);
+
+        builder.addRelatedField(FieldVisibility.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
+               .addRelatedField(FieldVisibility.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
+               .addRelatedField(DBKey.PRICE_PAID_CURRENCY, DBKey.PRICE_PAID);
+
+        return builder.build();
     }
 
     @NonNull

@@ -19,7 +19,14 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<!--
+      Preferences are shown in locale-alphabetical order.
+      "app:orderingFromXml" do NOT use "android:orderingFromXml" ... will not work!
+      https://issuetracker.google.com/issues/232805589
+ -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:app="http://schemas.android.com/apk/res-auto"
+                  app:orderingFromXml="false">
     <PreferenceCategory
         android:title="@string/pg_bob_show_details">
 
@@ -37,6 +44,14 @@
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_author"
+            />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="style.booklist.show.series"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_series"
             />
 
         <SwitchPreference
@@ -69,6 +84,14 @@
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_format"
+            />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="style.booklist.show.condition"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_condition"
             />
 
         <SwitchPreference

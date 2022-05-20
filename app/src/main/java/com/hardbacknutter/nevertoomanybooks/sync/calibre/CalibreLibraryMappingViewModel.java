@@ -39,17 +39,17 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderViewModel;
 public class CalibreLibraryMappingViewModel
         extends SyncReaderViewModel {
 
-    private final ArrayList<CalibreLibrary> mLibraries = new ArrayList<>();
-    private CalibreLibraryDao mCalibreLibraryDao;
+    private final ArrayList<CalibreLibrary> libraries = new ArrayList<>();
+    private CalibreLibraryDao calibreLibraryDao;
 
-    private CalibreLibrary mCurrentLibrary;
-    private boolean mExtInstalled;
+    private CalibreLibrary currentLibrary;
+    private boolean extInstalled;
 
     @Override
     public void init(@NonNull final Bundle args) {
         super.init(args);
-        if (mCalibreLibraryDao == null) {
-            mCalibreLibraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
+        if (calibreLibraryDao == null) {
+            calibreLibraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
         }
     }
 
@@ -60,7 +60,7 @@ public class CalibreLibraryMappingViewModel
 
     @NonNull
     ArrayList<CalibreLibrary> getLibraries() {
-        return mLibraries;
+        return libraries;
     }
 
     public void extractLibraryData(@Nullable final SyncReaderMetaData metaData) {
@@ -69,47 +69,47 @@ public class CalibreLibraryMappingViewModel
         // at this moment, all server libs have been synced with our database
         // and are mapped to a valid bookshelf
 
-        mLibraries.clear();
+        libraries.clear();
         final Bundle data = metaData.getData();
-        mLibraries.addAll(Objects.requireNonNull(
+        libraries.addAll(Objects.requireNonNull(
                 data.getParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST),
                 CalibreContentServer.BKEY_LIBRARY_LIST));
 
-        mExtInstalled = data.getBoolean(CalibreContentServer.BKEY_EXT_INSTALLED);
+        extInstalled = data.getBoolean(CalibreContentServer.BKEY_EXT_INSTALLED);
     }
 
     boolean isExtInstalled() {
-        return mExtInstalled;
+        return extInstalled;
     }
 
     @NonNull
     CalibreLibrary getCurrentLibrary() {
-        return mCurrentLibrary;
+        return currentLibrary;
     }
 
     void setCurrentLibrary(final int position) {
-        mCurrentLibrary = mLibraries.get(position);
+        currentLibrary = libraries.get(position);
     }
 
     CalibreVirtualLibrary getVirtualLibrary(final int position) {
-        return mCurrentLibrary.getVirtualLibraries().get(position);
+        return currentLibrary.getVirtualLibraries().get(position);
     }
 
 
     void mapBookshelfToLibrary(@NonNull final Bookshelf bookshelf) {
-        if (bookshelf.getId() != mCurrentLibrary.getMappedBookshelfId()) {
-            mCurrentLibrary.setMappedBookshelf(bookshelf.getId());
-            mCalibreLibraryDao.update(mCurrentLibrary);
+        if (bookshelf.getId() != currentLibrary.getMappedBookshelfId()) {
+            currentLibrary.setMappedBookshelf(bookshelf.getId());
+            calibreLibraryDao.update(currentLibrary);
         }
     }
 
     void mapBookshelfToVirtualLibrary(@NonNull final Bookshelf bookshelf,
                                       final int position) {
 
-        final CalibreVirtualLibrary vlib = mCurrentLibrary.getVirtualLibraries().get(position);
+        final CalibreVirtualLibrary vlib = currentLibrary.getVirtualLibraries().get(position);
         if (bookshelf.getId() != vlib.getMappedBookshelfId()) {
             vlib.setMappedBookshelf(bookshelf.getId());
-            mCalibreLibraryDao.update(vlib);
+            calibreLibraryDao.update(vlib);
         }
     }
 
@@ -117,8 +117,8 @@ public class CalibreLibraryMappingViewModel
     Bookshelf createLibraryAsBookshelf(@NonNull final Context context)
             throws DaoWriteException {
 
-        final Bookshelf mappedBookshelf = mCurrentLibrary.createAsBookshelf(context);
-        mCalibreLibraryDao.update(mCurrentLibrary);
+        final Bookshelf mappedBookshelf = currentLibrary.createAsBookshelf(context);
+        calibreLibraryDao.update(currentLibrary);
         return mappedBookshelf;
     }
 
@@ -127,9 +127,9 @@ public class CalibreLibraryMappingViewModel
                                               final int position)
             throws DaoWriteException {
 
-        final CalibreVirtualLibrary vlib = mCurrentLibrary.getVirtualLibraries().get(position);
+        final CalibreVirtualLibrary vlib = currentLibrary.getVirtualLibraries().get(position);
         final Bookshelf mappedBookshelf = vlib.createAsBookshelf(context);
-        mCalibreLibraryDao.update(vlib);
+        calibreLibraryDao.update(vlib);
         return mappedBookshelf;
     }
 }

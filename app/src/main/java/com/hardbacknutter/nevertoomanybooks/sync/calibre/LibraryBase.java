@@ -36,26 +36,26 @@ abstract class LibraryBase
         implements ParcelableEntity {
 
     /** Row ID. */
-    private long mId;
+    private long id;
     /** Name of the library; displayed to the user. */
     @NonNull
-    private String mName;
+    private String name;
 
-    private long mMappedBookshelfId;
+    private long mappedBookshelfId;
 
     /**
      * Constructor without ID.
      */
     LibraryBase(@NonNull final String name,
                 final long mappedBookshelfId) {
-        mName = name;
-        mMappedBookshelfId = mappedBookshelfId;
+        this.name = name;
+        this.mappedBookshelfId = mappedBookshelfId;
     }
 
     LibraryBase(@NonNull final String name,
                 @NonNull final Bookshelf mappedBookshelf) {
-        mName = name;
-        mMappedBookshelfId = mappedBookshelf.getId();
+        this.name = name;
+        mappedBookshelfId = mappedBookshelf.getId();
     }
 
     /**
@@ -66,9 +66,9 @@ abstract class LibraryBase
      */
     LibraryBase(final long id,
                 @NonNull final DataHolder rowData) {
-        mId = id;
-        mName = rowData.getString(DBKey.CALIBRE_LIBRARY_NAME);
-        mMappedBookshelfId = rowData.getLong(DBKey.FK_BOOKSHELF);
+        this.id = id;
+        name = rowData.getString(DBKey.CALIBRE_LIBRARY_NAME);
+        mappedBookshelfId = rowData.getLong(DBKey.FK_BOOKSHELF);
     }
 
     /**
@@ -77,42 +77,42 @@ abstract class LibraryBase
      * @param in Parcel to construct the object from
      */
     LibraryBase(@NonNull final Parcel in) {
-        mId = in.readLong();
+        id = in.readLong();
         //noinspection ConstantConditions
-        mName = in.readString();
-        mMappedBookshelfId = in.readLong();
+        name = in.readString();
+        mappedBookshelfId = in.readLong();
     }
 
     @Override
     public long getId() {
-        return mId;
+        return id;
     }
 
     public void setId(final long id) {
-        mId = id;
+        this.id = id;
     }
 
     @NonNull
     @Override
     public String getLabel(@NonNull final Context context) {
-        return mName;
+        return name;
     }
 
     @NonNull
     public String getName() {
-        return mName;
+        return name;
     }
 
     public void setName(@NonNull final String name) {
-        mName = name;
+        this.name = name;
     }
 
     void setMappedBookshelf(final long id) {
-        mMappedBookshelfId = id;
+        mappedBookshelfId = id;
     }
 
     public long getMappedBookshelfId() {
-        return mMappedBookshelfId;
+        return mappedBookshelfId;
     }
 
     /**
@@ -132,12 +132,12 @@ abstract class LibraryBase
         final Bookshelf current = Bookshelf
                 .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
 
-        final Bookshelf bookshelf = new Bookshelf(mName, current.getStyle(context));
+        final Bookshelf bookshelf = new Bookshelf(name, current.getStyle(context));
         if (ServiceLocator.getInstance().getBookshelfDao().insert(context, bookshelf) == -1) {
             throw new DaoWriteException("insert Bookshelf");
         }
 
-        mMappedBookshelfId = bookshelf.getId();
+        mappedBookshelfId = bookshelf.getId();
         return bookshelf;
     }
 
@@ -149,16 +149,16 @@ abstract class LibraryBase
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeLong(mId);
-        dest.writeString(mName);
-        dest.writeLong(mMappedBookshelfId);
+        dest.writeLong(id);
+        dest.writeString(name);
+        dest.writeLong(mappedBookshelfId);
     }
 
     @Override
     @NonNull
     public String toString() {
-        return "mId=" + mId
-               + ", mName='" + mName + '\''
-               + ", mMappedBookshelfId=" + mMappedBookshelfId;
+        return "mId=" + id
+               + ", mName='" + name + '\''
+               + ", mMappedBookshelfId=" + mappedBookshelfId;
     }
 }

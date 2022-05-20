@@ -85,13 +85,12 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BITMASK_EDITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BITMASK_TOC;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.AUTHOR_TYPE__BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_AUTHOR_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_AUTHOR_TYPE_BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_CONDITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_CONDITION_COVER;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_FORMAT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_ISBN;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_PUBLICATION__DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_PUBLISHER_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_SERIES_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_UUID;
@@ -101,10 +100,10 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_BOOK_U
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DATE_ACQUIRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DATE_ADDED__UTC;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DATE_BOOK_PUBLICATION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DATE_FIRST_PUBLICATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DATE_LAST_UPDATED__UTC;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DESCRIPTION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.EDITION__BITMASK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FIRST_PUBLICATION__DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_BOOKSHELF;
@@ -112,14 +111,14 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_CALIBRE_LIB
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_TOC_ENTRY;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.GENRE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_TOC_ENTRY_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_TITLE_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.LANGUAGE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.LOANEE_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.LOCATION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PAGES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PAGE_COUNT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PERSONAL_NOTES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PRICE_LISTED;
@@ -140,6 +139,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.STRIP_INFO_LAS
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.STRIP_INFO_OWNED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.STRIP_INFO_WANTED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.TITLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.TOC_TYPE__BITMASK;
 
 /**
  * Database access helper class.
@@ -1078,11 +1078,11 @@ public class BookDaoImpl
 
         if (isbnList.size() == 1) {
             // optimize for single book
-            return getBookCursor(TBL_BOOKS.dot(KEY_ISBN) + "=?",
+            return getBookCursor(TBL_BOOKS.dot(BOOK_ISBN) + "=?",
                                  new String[]{SqlEncode.string(isbnList.get(0))},
                                  null);
         } else {
-            return getBookCursor(TBL_BOOKS.dot(KEY_ISBN)
+            return getBookCursor(TBL_BOOKS.dot(BOOK_ISBN)
                                  + " IN ("
                                  + isbnList.stream()
                                            .map(s -> '\'' + SqlEncode.string(s) + '\'')
@@ -1245,7 +1245,7 @@ public class BookDaoImpl
 
             /** Get the title and ISBN of a {@link Book} by the Book id. */
             static final String BOOK_TITLE_AND_ISBN_BY_BOOK_ID =
-                    SELECT_ + TITLE + ',' + KEY_ISBN
+                    SELECT_ + TITLE + ',' + BOOK_ISBN
                     + _FROM_ + TBL_BOOKS.getName()
                     + _WHERE_ + PK_ID + "=?";
 
@@ -1268,7 +1268,7 @@ public class BookDaoImpl
             /** Find the {@link Book} id+title based on a search for the ISBN (both 10 & 13). */
             static final String BY_VALID_ISBN =
                     SELECT_ + PK_ID + ',' + TITLE + _FROM_ + TBL_BOOKS.getName()
-                    + _WHERE_ + KEY_ISBN + " LIKE ? OR " + KEY_ISBN + " LIKE ?";
+                    + _WHERE_ + BOOK_ISBN + " LIKE ? OR " + BOOK_ISBN + " LIKE ?";
 
             /**
              * Find the {@link Book} id+title based on a search for the ISBN.
@@ -1276,7 +1276,7 @@ public class BookDaoImpl
              */
             static final String BY_ISBN =
                     SELECT_ + PK_ID + ',' + TITLE + _FROM_ + TBL_BOOKS.getName()
-                    + _WHERE_ + KEY_ISBN + " LIKE ?";
+                    + _WHERE_ + BOOK_ISBN + " LIKE ?";
 
             /** Book UUID only, for accessing all cover image files. */
             static final String ALL_BOOK_UUID =
@@ -1292,15 +1292,15 @@ public class BookDaoImpl
                 // Nevertheless, listing the fields here gives a better understanding
 
                 SQL_BOOK = SELECT_ + TBL_BOOKS.dotAs(
-                        PK_ID, BOOK_UUID, TITLE, KEY_ISBN, BITMASK_TOC,
-                        DATE_BOOK_PUBLICATION, PRINT_RUN,
+                        PK_ID, BOOK_UUID, TITLE, BOOK_ISBN, TOC_TYPE__BITMASK,
+                        BOOK_PUBLICATION__DATE, PRINT_RUN,
                         PRICE_LISTED, PRICE_LISTED_CURRENCY,
-                        DATE_FIRST_PUBLICATION,
-                        BOOK_FORMAT, COLOR, GENRE, LANGUAGE, PAGES,
+                        FIRST_PUBLICATION__DATE,
+                        FORMAT, COLOR, GENRE, LANGUAGE, PAGE_COUNT,
                         // Main/public description about the content/publication
                         DESCRIPTION,
                         // partially edition info, partially user-owned info.
-                        BITMASK_EDITION,
+                        EDITION__BITMASK,
                         // user notes
                         PERSONAL_NOTES, BOOK_CONDITION, BOOK_CONDITION_COVER,
                         LOCATION, SIGNED__BOOL, RATING,
@@ -1354,7 +1354,7 @@ public class BookDaoImpl
                     + '(' + FK_AUTHOR
                     + ',' + TITLE
                     + ',' + KEY_TITLE_OB
-                    + ',' + DATE_FIRST_PUBLICATION
+                    + ',' + FIRST_PUBLICATION__DATE
                     + ") VALUES (?,?,?,?)";
             static final String BOOK_TOC_ENTRY =
                     INSERT_INTO_ + TBL_BOOK_TOC_ENTRIES.getName()
@@ -1372,7 +1372,7 @@ public class BookDaoImpl
                     + '(' + FK_BOOK
                     + ',' + FK_AUTHOR
                     + ',' + BOOK_AUTHOR_POSITION
-                    + ',' + BOOK_AUTHOR_TYPE_BITMASK
+                    + ',' + AUTHOR_TYPE__BITMASK
                     + ") VALUES(?,?,?,?)";
             static final String BOOK_SERIES =
                     INSERT_INTO_ + TBL_BOOK_SERIES.getName()
@@ -1399,7 +1399,7 @@ public class BookDaoImpl
                     UPDATE_ + TBL_TOC_ENTRIES.getName()
                     + _SET_ + TITLE + "=?"
                     + ',' + KEY_TITLE_OB + "=?"
-                    + ',' + DATE_FIRST_PUBLICATION + "=?"
+                    + ',' + FIRST_PUBLICATION__DATE + "=?"
                     + _WHERE_ + PK_ID + "=?";
 
             /** Update a single Book's read status and read_end date. */

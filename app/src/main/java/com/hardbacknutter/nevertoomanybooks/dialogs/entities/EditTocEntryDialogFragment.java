@@ -57,28 +57,28 @@ public class EditTocEntryDialogFragment
     private static final String BKEY_POSITION = TAG + ":pos";
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
-    private String mRequestKey;
+    private String requestKey;
 
     /** View Binding. */
-    private DialogEditBookTocBinding mVb;
+    private DialogEditBookTocBinding vb;
 
     @Nullable
-    private String mBookTitle;
+    private String bookTitle;
 
     /** The one we're editing. */
-    private TocEntry mTocEntry;
+    private TocEntry tocEntry;
     /** the position of the tocEntry in the TOC list. */
-    private int mEditPosition;
+    private int editPosition;
 
     /** Current edit. */
-    private String mTitle;
+    private String title;
     /** Current edit. */
-    private PartialDate mFirstPublicationDate;
+    private PartialDate firstPublicationDate;
     /** Current edit. */
-    private String mAuthorName;
+    private String authorName;
 
     /** Helper to show/hide the author edit field. */
-    private boolean mHasMultipleAuthors;
+    private boolean hasMultipleAuthors;
 
     /**
      * No-arg constructor for OS use.
@@ -92,24 +92,24 @@ public class EditTocEntryDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
-        mBookTitle = args.getString(DBKey.TITLE);
-        mHasMultipleAuthors = args.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
-        mTocEntry = Objects.requireNonNull(args.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY);
-        mEditPosition = args.getInt(BKEY_POSITION, 0);
+        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        bookTitle = args.getString(DBKey.TITLE);
+        hasMultipleAuthors = args.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
+        tocEntry = Objects.requireNonNull(args.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY);
+        editPosition = args.getInt(BKEY_POSITION, 0);
 
         if (savedInstanceState == null) {
-            mTitle = mTocEntry.getTitle();
-            mFirstPublicationDate = mTocEntry.getFirstPublicationDate();
+            title = tocEntry.getTitle();
+            firstPublicationDate = tocEntry.getFirstPublicationDate();
             //noinspection ConstantConditions
-            mAuthorName = mTocEntry.getPrimaryAuthor().getLabel(getContext());
+            authorName = tocEntry.getPrimaryAuthor().getLabel(getContext());
         } else {
             //noinspection ConstantConditions
-            mTitle = savedInstanceState.getString(DBKey.TITLE);
+            title = savedInstanceState.getString(DBKey.TITLE);
             //noinspection ConstantConditions
-            mFirstPublicationDate = savedInstanceState.getParcelable(DBKey.DATE_FIRST_PUBLICATION);
+            firstPublicationDate = savedInstanceState.getParcelable(DBKey.FIRST_PUBLICATION__DATE);
             //noinspection ConstantConditions
-            mAuthorName = savedInstanceState.getString(DBKey.KEY_AUTHOR_FORMATTED);
+            authorName = savedInstanceState.getString(DBKey.KEY_AUTHOR_FORMATTED);
         }
     }
 
@@ -118,35 +118,35 @@ public class EditTocEntryDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mVb = DialogEditBookTocBinding.bind(view);
+        vb = DialogEditBookTocBinding.bind(view);
 
-        mVb.toolbar.setSubtitle(mBookTitle);
+        vb.toolbar.setSubtitle(bookTitle);
 
-        mVb.title.setText(mTitle);
+        vb.title.setText(title);
 
-        mFirstPublicationDate.ifPresent(date -> mVb.firstPublication.setText(
+        firstPublicationDate.ifPresent(date -> vb.firstPublication.setText(
                 String.valueOf(date.getYearValue())));
 
-        if (mHasMultipleAuthors) {
+        if (hasMultipleAuthors) {
             //noinspection ConstantConditions
             final ExtArrayAdapter<String> authorAdapter = new ExtArrayAdapter<>(
                     getContext(), R.layout.popup_dropdown_menu_item,
                     ExtArrayAdapter.FilterType.Diacritic,
                     ServiceLocator.getInstance().getAuthorDao()
                                   .getNames(DBKey.KEY_AUTHOR_FORMATTED));
-            mVb.author.setAdapter(authorAdapter);
-            mVb.author.setText(mAuthorName);
-            mVb.author.selectAll();
-            mVb.author.requestFocus();
+            vb.author.setAdapter(authorAdapter);
+            vb.author.setText(authorName);
+            vb.author.selectAll();
+            vb.author.requestFocus();
 
-            mVb.lblAuthor.setVisibility(View.VISIBLE);
-            mVb.author.setVisibility(View.VISIBLE);
+            vb.lblAuthor.setVisibility(View.VISIBLE);
+            vb.author.setVisibility(View.VISIBLE);
 
         } else {
-            mVb.title.requestFocus();
+            vb.title.requestFocus();
 
-            mVb.lblAuthor.setVisibility(View.GONE);
-            mVb.author.setVisibility(View.GONE);
+            vb.lblAuthor.setVisibility(View.GONE);
+            vb.author.setVisibility(View.GONE);
         }
     }
 
@@ -163,48 +163,48 @@ public class EditTocEntryDialogFragment
 
     private boolean saveChanges() {
         viewToModel();
-        if (mTitle.isEmpty()) {
-            showError(mVb.lblTitle, R.string.vldt_non_blank_required);
+        if (title.isEmpty()) {
+            showError(vb.lblTitle, R.string.vldt_non_blank_required);
             return false;
         }
 
         // anything actually changed ?
         //noinspection ConstantConditions
-        if (mTocEntry.getTitle().equals(mTitle)
-            && mTocEntry.getFirstPublicationDate().equals(mFirstPublicationDate)
-            && mTocEntry.getPrimaryAuthor().getLabel(getContext()).equals(mAuthorName)) {
+        if (tocEntry.getTitle().equals(title)
+            && tocEntry.getFirstPublicationDate().equals(firstPublicationDate)
+            && tocEntry.getPrimaryAuthor().getLabel(getContext()).equals(authorName)) {
             return true;
         }
 
         // store changes
-        mTocEntry.setTitle(mTitle);
-        mTocEntry.setFirstPublicationDate(mFirstPublicationDate);
-        if (mHasMultipleAuthors) {
-            mTocEntry.setPrimaryAuthor(Author.from(mAuthorName));
+        tocEntry.setTitle(title);
+        tocEntry.setFirstPublicationDate(firstPublicationDate);
+        if (hasMultipleAuthors) {
+            tocEntry.setPrimaryAuthor(Author.from(authorName));
         }
 
         // We don't update/insert to the database here, but just send the data back.
         // TOCs are updated in bulk/list per Book
-        Launcher.setResult(this, mRequestKey, mTocEntry, mEditPosition);
+        Launcher.setResult(this, requestKey, tocEntry, editPosition);
         return true;
     }
 
     private void viewToModel() {
         //noinspection ConstantConditions
-        mTitle = mVb.title.getText().toString().trim();
+        title = vb.title.getText().toString().trim();
         //noinspection ConstantConditions
-        mFirstPublicationDate = new PartialDate(mVb.firstPublication.getText().toString().trim());
-        if (mHasMultipleAuthors) {
-            mAuthorName = mVb.author.getText().toString().trim();
+        firstPublicationDate = new PartialDate(vb.firstPublication.getText().toString().trim());
+        if (hasMultipleAuthors) {
+            authorName = vb.author.getText().toString().trim();
         }
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBKey.TITLE, mTitle);
-        outState.putParcelable(DBKey.DATE_FIRST_PUBLICATION, mFirstPublicationDate);
-        outState.putString(DBKey.KEY_AUTHOR_FORMATTED, mAuthorName);
+        outState.putString(DBKey.TITLE, title);
+        outState.putParcelable(DBKey.FIRST_PUBLICATION__DATE, firstPublicationDate);
+        outState.putString(DBKey.KEY_AUTHOR_FORMATTED, authorName);
     }
 
     @Override

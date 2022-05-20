@@ -90,7 +90,7 @@ public class TextViewField<T>
         final TextView view = getView();
         if (view != null) {
             try {
-                formatter.apply(mRawValue, view);
+                formatter.apply(rawValue, view);
 
             } catch (@NonNull final ClassCastException e) {
                 // Due to the way a Book loads data from the database,
@@ -99,7 +99,7 @@ public class TextViewField<T>
                 // Also see {@link SearchCoordinator#accumulateStringData}
                 Logger.error(TAG, e, value);
 
-                view.setText(mRawValue != null ? String.valueOf(mRawValue) : "");
+                view.setText(rawValue != null ? String.valueOf(rawValue) : "");
             }
         }
     }

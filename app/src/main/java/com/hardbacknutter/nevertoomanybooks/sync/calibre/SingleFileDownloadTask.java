@@ -40,9 +40,9 @@ class SingleFileDownloadTask
     /** Log tag. */
     private static final String TAG = "SingleFileDownloadTask";
 
-    private final CalibreContentServer mServer;
-    private Book mBook;
-    private Uri mFolder;
+    private final CalibreContentServer server;
+    private Book book;
+    private Uri folder;
 
     /**
      * Constructor.
@@ -51,16 +51,16 @@ class SingleFileDownloadTask
      */
     SingleFileDownloadTask(@NonNull final CalibreContentServer server) {
         super(R.id.TASK_ID_DOWNLOAD_SINGLE_FILE, TAG);
-        mServer = server;
+        this.server = server;
     }
 
     public void download(@NonNull final Book book,
                          @NonNull final Uri folder) {
-        mBook = book;
-        mFolder = folder;
+        this.book = book;
+        this.folder = folder;
 
         // sanity check
-        if (mBook.getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT).isEmpty()) {
+        if (this.book.getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT).isEmpty()) {
             //TODO: use a better message
             setTaskFailure(new TaskStartException(R.string.error_download_failed));
             return;
@@ -71,8 +71,8 @@ class SingleFileDownloadTask
     @Override
     public void cancel() {
         super.cancel();
-        synchronized (mServer) {
-            mServer.cancel();
+        synchronized (server) {
+            server.cancel();
         }
     }
 
@@ -86,9 +86,9 @@ class SingleFileDownloadTask
         setIndeterminate(true);
         publishProgress(0, context.getString(R.string.progress_msg_please_wait));
 
-        if (!mServer.isMetaDataRead()) {
-            mServer.readMetaData(context);
+        if (!server.isMetaDataRead()) {
+            server.readMetaData(context);
         }
-        return mServer.fetchFile(context, mBook, mFolder, this);
+        return server.fetchFile(context, book, folder, this);
     }
 }

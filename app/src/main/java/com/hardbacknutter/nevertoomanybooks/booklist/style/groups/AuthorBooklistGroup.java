@@ -29,6 +29,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
@@ -51,16 +52,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 public class AuthorBooklistGroup
         extends AbstractLinkedTableBooklistGroup {
 
-    public static final String PK_PRIMARY_TYPE =
-            "style.booklist.group.authors.primary.type";
-
     public static final boolean DEFAULT_SHOW_BOOKS_UNDER_EACH = false;
 
-    /** See {@link #setPreferencesVisible(PreferenceScreen, boolean)} */
-    private static final String PSK_STYLE_AUTHOR = "psk_style_author";
-
-    public static final String PK_SHOW_BOOKS_UNDER_EACH =
-            "style.booklist.group.authors.show.all";
     /** For sorting. */
     private static final Domain DOM_SORTING;
 
@@ -81,7 +74,7 @@ public class AuthorBooklistGroup
      * @param style Style reference.
      */
     AuthorBooklistGroup(@NonNull final Style style) {
-        super(AUTHOR, style);
+        super(style, AUTHOR);
         sortingDomainExpression = createSortingDomainExpression(style);
 
         underEach = DEFAULT_SHOW_BOOKS_UNDER_EACH;
@@ -107,7 +100,7 @@ public class AuthorBooklistGroup
     public GroupKey createGroupKey() {
         // We use the foreign ID to create the key domain.
         // We override the display domain in #createDisplayDomainExpression.
-        // We do not sort on the key domain but add the OB column in #createSortingDomainExpression
+        // Sorting is defined in #createSortingDomainExpression
         return new GroupKey(R.string.lbl_author, "a",
                             new DomainExpression(DOM_FK_AUTHOR,
                                                  TBL_AUTHORS.dot(DBKey.PK_ID)))
@@ -134,14 +127,15 @@ public class AuthorBooklistGroup
     private DomainExpression createSortingDomainExpression(@NonNull final Style style) {
         // Sorting depends on user preference
         return new DomainExpression(DOM_SORTING,
-                                    AuthorDaoImpl.getSortAuthor(style.isSortAuthorByGivenName()),
+                                    AuthorDaoImpl.getSortingDomainExpression(
+                                            style.isSortAuthorByGivenName()),
                                     DomainExpression.SORT_ASC);
     }
 
     @Override
     @NonNull
     public ArrayList<DomainExpression> getGroupDomainExpressions() {
-        // We inject the mSortedDomain as first in the list.
+        // We inject the sortingDomainExpression as first in the list.
         final ArrayList<DomainExpression> list = new ArrayList<>();
         list.add(0, sortingDomainExpression);
         list.addAll(super.getGroupDomainExpressions());
@@ -152,9 +146,10 @@ public class AuthorBooklistGroup
     public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
                                       final boolean visible) {
 
-        final PreferenceCategory category = screen.findPreference(PSK_STYLE_AUTHOR);
+        final PreferenceCategory category = screen.findPreference(StyleDataStore.PSK_STYLE_AUTHOR);
         if (category != null) {
-            final String[] keys = {PK_SHOW_BOOKS_UNDER_EACH, PK_PRIMARY_TYPE};
+            final String[] keys = {StyleDataStore.PK_GROUPS_AUTHOR_SHOW_BOOKS_UNDER_EACH,
+                                   StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE};
             setPreferenceVisibility(category, keys, visible);
         }
     }
@@ -179,8 +174,8 @@ public class AuthorBooklistGroup
             return false;
         }
         final AuthorBooklistGroup that = (AuthorBooklistGroup) o;
-        return primaryAuthorType == that.primaryAuthorType
-                && Objects.equals(sortingDomainExpression, that.sortingDomainExpression);
+        return Objects.equals(sortingDomainExpression, that.sortingDomainExpression)
+               && primaryAuthorType == that.primaryAuthorType;
     }
 
     @Override

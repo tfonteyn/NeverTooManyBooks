@@ -217,29 +217,29 @@ class GoogleBooksEntryHandler
 
     /** Whether to fetch covers. */
     @NonNull
-    private final boolean[] mFetchCovers;
+    private final boolean[] fetchCovers;
     /** Bundle to save results in. */
     @NonNull
-    private final Bundle mBookData;
+    private final Bundle bookData;
 
     /** accumulate all authors for this book. */
     @NonNull
-    private final ArrayList<Author> mAuthors = new ArrayList<>();
+    private final ArrayList<Author> authorList = new ArrayList<>();
     /** accumulate all Publishers for this book. */
     @NonNull
-    private final ArrayList<Publisher> mPublishers = new ArrayList<>();
+    private final ArrayList<Publisher> publisherList = new ArrayList<>();
 
     /** XML content. */
     @SuppressWarnings("StringBufferField")
     @NonNull
-    private final StringBuilder mBuilder = new StringBuilder();
+    private final StringBuilder builder = new StringBuilder();
 
     @NonNull
-    private final Locale mLocale;
+    private final Locale locale;
     @NonNull
-    private final GoogleBooksSearchEngine mSearchEngine;
-    private boolean mInSuggestedRetailPriceTag;
-    private boolean mInRetailPriceTag;
+    private final GoogleBooksSearchEngine searchEngine;
+    private boolean inSuggestedRetailPriceTag;
+    private boolean inRetailPriceTag;
 
     /**
      * Constructor.
@@ -252,10 +252,10 @@ class GoogleBooksEntryHandler
                             @NonNull final boolean[] fetchCovers,
                             @NonNull final Bundle bookData,
                             @NonNull final Locale locale) {
-        mSearchEngine = searchEngine;
-        mFetchCovers = fetchCovers;
-        mBookData = bookData;
-        mLocale = locale;
+        this.searchEngine = searchEngine;
+        this.fetchCovers = fetchCovers;
+        this.bookData = bookData;
+        this.locale = locale;
     }
 
     /**
@@ -263,11 +263,11 @@ class GoogleBooksEntryHandler
      */
     @Override
     public void endDocument() {
-        if (!mAuthors.isEmpty()) {
-            mBookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
+        if (!authorList.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
         }
-        if (!mPublishers.isEmpty()) {
-            mBookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
+        if (!publisherList.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
         }
     }
 
@@ -286,7 +286,7 @@ class GoogleBooksEntryHandler
             throws SAXException {
 
         // the url is an attribute of the xml element; not the content
-        if (mFetchCovers[0] && XML_LINK.equalsIgnoreCase(localName)) {
+        if (fetchCovers[0] && XML_LINK.equalsIgnoreCase(localName)) {
 
             if (SCHEMAS_GOOGLE_COM_BOOKS_2008_THUMBNAIL.equals(attributes.getValue("", "rel"))) {
                 // This url comes back as http, and we must use https... so replace it.
@@ -295,30 +295,30 @@ class GoogleBooksEntryHandler
 
                 final String fileSpec;
                 try {
-                    fileSpec = mSearchEngine.saveImage(url, mBookData.getString(DBKey.KEY_ISBN),
-                                                       0, null);
+                    fileSpec = searchEngine.saveImage(url, bookData.getString(DBKey.BOOK_ISBN),
+                                                      0, null);
                 } catch (@NonNull final StorageException e) {
                     throw new SAXException(e);
                 }
 
                 if (fileSpec != null) {
-                    ArrayList<String> list = mBookData.getStringArrayList(
+                    ArrayList<String> list = bookData.getStringArrayList(
                             SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
                     if (list == null) {
                         list = new ArrayList<>();
                     }
                     list.add(fileSpec);
-                    mBookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
+                    bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
                 }
             }
         } else if (XML_PRICE.equalsIgnoreCase(localName)) {
             switch (attributes.getValue("", "type")) {
                 case XML_PRICE_SUGGESTED_RETAIL_PRICE:
-                    mInSuggestedRetailPriceTag = true;
+                    inSuggestedRetailPriceTag = true;
                     break;
 
                 case XML_PRICE_RETAIL_PRICE:
-                    mInRetailPriceTag = true;
+                    inRetailPriceTag = true;
                     break;
 
                 default:
@@ -326,22 +326,22 @@ class GoogleBooksEntryHandler
             }
         } else if (XML_MONEY.equalsIgnoreCase(localName)) {
 
-            if (mInSuggestedRetailPriceTag) {
+            if (inSuggestedRetailPriceTag) {
                 try {
                     final double amount = Double.parseDouble(attributes.getValue("", "amount"));
-                    mBookData.putDouble(DBKey.PRICE_LISTED, amount);
+                    bookData.putDouble(DBKey.PRICE_LISTED, amount);
 
                     final String currencyCode = attributes.getValue("", "currencyCode");
-                    mBookData.putString(DBKey.PRICE_LISTED_CURRENCY, currencyCode);
+                    bookData.putString(DBKey.PRICE_LISTED_CURRENCY, currencyCode);
 
                 } catch (@NonNull final NumberFormatException ignore) {
                     // ignore
                 }
-                mInSuggestedRetailPriceTag = false;
+                inSuggestedRetailPriceTag = false;
 
-            } else if (mInRetailPriceTag) {
+            } else if (inRetailPriceTag) {
                 // future use ?
-                mInRetailPriceTag = false;
+                inRetailPriceTag = false;
             }
         }
     }
@@ -355,28 +355,28 @@ class GoogleBooksEntryHandler
                            @NonNull final String localName,
                            @NonNull final String qName) {
 
-        switch (localName.toLowerCase(mLocale)) {
+        switch (localName.toLowerCase(locale)) {
             case XML_TITLE:
                 // there can be multiple listed, we only take the first one found
-                addIfNotPresent(DBKey.TITLE, mBuilder.toString());
+                addIfNotPresent(DBKey.TITLE, builder.toString());
                 break;
 
             case XML_ISBN:
                 // there can be multiple listed, we take the 'longest'
-                String tmpIsbn = mBuilder.toString();
+                String tmpIsbn = builder.toString();
                 if (tmpIsbn.indexOf("ISBN:") == 0) {
                     tmpIsbn = tmpIsbn.substring(5);
-                    final String isbnStr = mBookData.getString(DBKey.KEY_ISBN);
+                    final String isbnStr = bookData.getString(DBKey.BOOK_ISBN);
                     // store the 'longest' isbn
                     if (isbnStr == null || tmpIsbn.length() > isbnStr.length()) {
-                        mBookData.putString(DBKey.KEY_ISBN, tmpIsbn);
+                        bookData.putString(DBKey.BOOK_ISBN, tmpIsbn);
                     }
                 }
                 break;
 
             case XML_LANGUAGE:
                 // the language field can be empty, check before storing it
-                final String iso = mBuilder.toString();
+                final String iso = builder.toString();
                 if (!iso.isEmpty()) {
                     // the language is a proper iso code, just store.
                     addIfNotPresent(DBKey.LANGUAGE, iso);
@@ -384,15 +384,15 @@ class GoogleBooksEntryHandler
                 break;
 
             case XML_AUTHOR:
-                mAuthors.add(Author.from(mBuilder.toString()));
+                authorList.add(Author.from(builder.toString()));
                 break;
 
             case XML_PUBLISHER:
-                mPublishers.add(Publisher.from(mBuilder.toString()));
+                publisherList.add(Publisher.from(builder.toString()));
                 break;
 
             case XML_DATE_PUBLISHED:
-                addIfNotPresent(DBKey.DATE_BOOK_PUBLICATION, mBuilder.toString());
+                addIfNotPresent(DBKey.BOOK_PUBLICATION__DATE, builder.toString());
                 break;
 
             case XML_FORMAT:
@@ -403,32 +403,32 @@ class GoogleBooksEntryHandler
                  *
                  * crude check for 'pages' and 'Dimensions'
                  */
-                final String tmpFormat = mBuilder.toString();
+                final String tmpFormat = builder.toString();
                 int index = tmpFormat.indexOf(" pages");
                 if (index > -1) {
-                    mBookData.putString(DBKey.PAGES,
-                                        tmpFormat.substring(0, index).trim());
+                    bookData.putString(DBKey.PAGE_COUNT,
+                                       tmpFormat.substring(0, index).trim());
                 } else {
                     index = tmpFormat.indexOf("Dimensions");
                     if (index > -1) {
-                        mBookData.putString(DBKey.BOOK_FORMAT, tmpFormat.trim());
+                        bookData.putString(DBKey.FORMAT, tmpFormat.trim());
                     }
                 }
                 break;
 
             case XML_GENRE:
                 // there can be multiple listed, we only take the first one found
-                addIfNotPresent(DBKey.GENRE, mBuilder.toString());
+                addIfNotPresent(DBKey.GENRE, builder.toString());
                 break;
 
             case XML_DESCRIPTION:
-                addIfNotPresent(DBKey.DESCRIPTION, mBuilder.toString());
+                addIfNotPresent(DBKey.DESCRIPTION, builder.toString());
                 break;
 
             default:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                     // see what we are missing.
-                    Log.d(TAG, "endElement|Skipping|" + localName + "->`" + mBuilder + '`');
+                    Log.d(TAG, "endElement|Skipping|" + localName + "->`" + builder + '`');
                 }
                 break;
 
@@ -438,7 +438,7 @@ class GoogleBooksEntryHandler
         // because we always want strings from the lowest level (leaf) XML elements.
         // To be completely correct, we should maintain a stack of builders that are pushed and
         // popped as each startElement/endElement is called. But lets not be pedantic for now.
-        mBuilder.setLength(0);
+        builder.setLength(0);
     }
 
     @Override
@@ -446,7 +446,7 @@ class GoogleBooksEntryHandler
     public void characters(@NonNull final char[] ch,
                            final int start,
                            final int length) {
-        mBuilder.append(ch, start, length);
+        builder.append(ch, start, length);
     }
 
     /**
@@ -457,9 +457,9 @@ class GoogleBooksEntryHandler
      */
     private void addIfNotPresent(@NonNull final String key,
                                  @NonNull final String value) {
-        final String test = mBookData.getString(key);
+        final String test = bookData.getString(key);
         if (test == null || test.isEmpty()) {
-            mBookData.putString(key, value);
+            bookData.putString(key, value);
         }
     }
 }

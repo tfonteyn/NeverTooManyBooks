@@ -114,11 +114,11 @@ public abstract class BaseTextField<T, V extends TextView>
 
     @Override
     public void setInitialValue(@NonNull final DataManager source) {
-        final Object obj = source.get(mFieldKey);
+        final Object obj = source.get(fieldKey);
         if (obj != null) {
             //noinspection unchecked
-            mInitialValue = (T) obj;
-            setValue(mInitialValue);
+            initialValue = (T) obj;
+            setValue(initialValue);
         }
     }
 
@@ -134,14 +134,14 @@ public abstract class BaseTextField<T, V extends TextView>
     @Override
     @Nullable
     public T getValue() {
-        return mRawValue;
+        return rawValue;
     }
 
     @Override
     void internalPutValue(@NonNull final DataManager target) {
         // We don't know the type <T> so put as Object (DataManager will auto-detect).
         // It will be the original rawValue.
-        target.put(mFieldKey, getValue());
+        target.put(fieldKey, getValue());
     }
 
     /**

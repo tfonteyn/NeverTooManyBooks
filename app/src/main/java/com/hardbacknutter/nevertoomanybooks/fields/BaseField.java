@@ -38,7 +38,7 @@ import java.util.HashSet;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
@@ -66,28 +66,28 @@ public abstract class BaseField<T, V extends View>
      * See {@link #isAutoPopulated()}.
      */
     @NonNull
-    final String mFieldKey;
+    final String fieldKey;
 
     /**
      * The preference key (field-name) to check if this Field is used or not.
      * i.e. the key to be used for {@link #isUsed()}.
      */
     @NonNull
-    private final String mIsUsedKey;
+    private final String usedKey;
 
     @NonNull
-    private final FragmentId mFragmentId;
+    private final FragmentId fragmentId;
 
     /** Fields that need to follow visibility. */
-    private final Collection<Integer> mRelatedViews = new HashSet<>();
+    private final Collection<Integer> relatedViews = new HashSet<>();
 
     @SuppressWarnings("FieldNotUsedInToString")
     @IdRes
-    private final int mFieldViewId;
+    private final int fieldViewId;
 
     /** The value as originally loaded from the database. */
     @Nullable
-    T mInitialValue;
+    T initialValue;
 
     /**
      * The value which is currently held in memory.
@@ -98,29 +98,29 @@ public abstract class BaseField<T, V extends View>
      * Updated by the user and/or {@link #setValue(Object)}.
      */
     @Nullable
-    T mRawValue;
+    T rawValue;
 
     @SuppressWarnings("FieldNotUsedInToString")
     @IdRes
-    private int mErrorViewId;
+    private int errorViewId;
 
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
-    private WeakReference<V> mViewReference;
+    private WeakReference<V> viewReference;
 
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
-    private WeakReference<View> mErrorViewReference;
+    private WeakReference<View> errorViewReference;
 
     @Nullable
-    private String mErrorText;
+    private String errorText;
 
     @Nullable
-    private Validator<T, V> mValidator;
+    private Validator<T, V> validator;
 
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
-    private WeakReference<AfterChangedListener> mAfterFieldChangeListener;
+    private WeakReference<AfterChangedListener> afterFieldChangeListener;
 
     /**
      * Constructor.
@@ -135,10 +135,10 @@ public abstract class BaseField<T, V extends View>
               @IdRes final int fieldViewId,
               @NonNull final String fieldKey,
               @NonNull final String prefKey) {
-        mFragmentId = fragmentId;
-        mFieldViewId = fieldViewId;
-        mFieldKey = fieldKey;
-        mIsUsedKey = prefKey;
+        this.fragmentId = fragmentId;
+        this.fieldViewId = fieldViewId;
+        this.fieldKey = fieldKey;
+        usedKey = prefKey;
     }
 
     /**
@@ -152,7 +152,7 @@ public abstract class BaseField<T, V extends View>
      */
     @NonNull
     public Field<T, V> addRelatedViews(@NonNull @IdRes final Integer... viewIds) {
-        mRelatedViews.addAll(Arrays.asList(viewIds));
+        relatedViews.addAll(Arrays.asList(viewIds));
         return this;
     }
 
@@ -163,30 +163,30 @@ public abstract class BaseField<T, V extends View>
      */
     @NonNull
     public Field<T, V> setValidator(@NonNull final Validator<T, V> validator) {
-        mValidator = validator;
+        this.validator = validator;
         return this;
     }
 
     @Override
     public void setAfterFieldChangeListener(@Nullable final AfterChangedListener listener) {
-        mAfterFieldChangeListener = listener != null ? new WeakReference<>(listener) : null;
+        afterFieldChangeListener = listener != null ? new WeakReference<>(listener) : null;
     }
 
     @Override
     @NonNull
     public FragmentId getFragmentId() {
-        return mFragmentId;
+        return fragmentId;
     }
 
     @Override
     @IdRes
     public int getFieldViewId() {
-        return mFieldViewId;
+        return fieldViewId;
     }
 
     @Override
     public boolean isAutoPopulated() {
-        return !mFieldKey.isEmpty();
+        return !fieldKey.isEmpty();
     }
 
     /**
@@ -195,8 +195,8 @@ public abstract class BaseField<T, V extends View>
      * @param id view id
      */
     void setErrorViewId(@IdRes final int id) {
-        mErrorViewId = id;
-        mRelatedViews.add(id);
+        errorViewId = id;
+        relatedViews.add(id);
     }
 
     @NonNull
@@ -214,17 +214,17 @@ public abstract class BaseField<T, V extends View>
     @Override
     public void putValue(@NonNull final DataManager target) {
         internalPutValue(target);
-        if (mValidator != null) {
-            mValidator.validate(this);
+        if (validator != null) {
+            validator.validate(this);
         }
     }
 
     @CallSuper
     @Override
     public void setValue(@Nullable final T value) {
-        mRawValue = value;
-        if (mValidator != null) {
-            mValidator.validate(this);
+        rawValue = value;
+        if (validator != null) {
+            validator.validate(this);
         }
     }
 
@@ -245,7 +245,7 @@ public abstract class BaseField<T, V extends View>
      */
     private void setRelatedViewsVisibility(@NonNull final View parent,
                                            final int visibility) {
-        for (final int viewId : mRelatedViews) {
+        for (final int viewId : relatedViews) {
             final View view = parent.findViewById(viewId);
             if (view != null) {
                 view.setVisibility(visibility);
@@ -291,8 +291,8 @@ public abstract class BaseField<T, V extends View>
     @Nullable
     V getView()
             throws NoViewException {
-        if (mViewReference != null) {
-            return mViewReference.get();
+        if (viewReference != null) {
+            return viewReference.get();
         }
         return null;
     }
@@ -301,7 +301,7 @@ public abstract class BaseField<T, V extends View>
     @Override
     public void setParentView(@NonNull final View parent) {
 
-        mViewReference = new WeakReference<>(parent.findViewById(mFieldViewId));
+        viewReference = new WeakReference<>(parent.findViewById(fieldViewId));
         // Unused fields are hidden here BEFORE they are displayed at all.
         if (!isUsed()) {
             requireView().setVisibility(View.GONE);
@@ -309,27 +309,27 @@ public abstract class BaseField<T, V extends View>
             return;
         }
 
-        if (mErrorViewId != 0) {
-            final View errorView = parent.findViewById(mErrorViewId);
+        if (errorViewId != 0) {
+            final View errorView = parent.findViewById(errorViewId);
             if (errorView != null) {
-                mErrorViewReference = new WeakReference<>(errorView);
+                errorViewReference = new WeakReference<>(errorView);
                 // Restore any previous error text
-                if (mErrorText != null) {
-                    setError(mErrorText);
+                if (errorText != null) {
+                    setError(errorText);
                 }
             } else {
-                mErrorViewReference = null;
+                errorViewReference = null;
             }
         }
     }
 
     @Override
     public void setError(@Nullable final String errorText) {
-        mErrorText = errorText;
+        this.errorText = errorText;
         // Don't complain if the view is not there. We can get called when
         // the field is not on display.
-        if (mErrorViewReference != null) {
-            final View errorView = mErrorViewReference.get();
+        if (errorViewReference != null) {
+            final View errorView = errorViewReference.get();
             if (errorView != null) {
                 if (errorView instanceof TextInputLayout) {
                     final TextInputLayout til = (TextInputLayout) errorView;
@@ -365,20 +365,20 @@ public abstract class BaseField<T, V extends View>
         final T currentValue = getValue();
         final boolean allEqual =
                 // all empty
-                (isEmpty(mInitialValue) && isEmpty(previous) && isEmpty(currentValue))
+                (isEmpty(initialValue) && isEmpty(previous) && isEmpty(currentValue))
                 // or all equal?
-                || (Objects.equals(mInitialValue, previous)
+                || (Objects.equals(initialValue, previous)
                     && Objects.equals(previous, currentValue));
 
         if (!allEqual) {
-            if (mAfterFieldChangeListener != null && mAfterFieldChangeListener.get() != null) {
-                mAfterFieldChangeListener.get().onAfterChanged(this);
+            if (afterFieldChangeListener != null && afterFieldChangeListener.get() != null) {
+                afterFieldChangeListener.get().onAfterChanged(this);
 
             } else {
                 if (BuildConfig.DEBUG /* always */) {
                     // mAfterFieldChangeListener == null is perfectly fine.
                     // i.e. it will be null during population of fields.
-                    if (mAfterFieldChangeListener != null) {
+                    if (afterFieldChangeListener != null) {
                         // The REFERENT being dead is however not fine, so log this in debug.
                         // flw: this message should never be seen!
                         Log.w(TAG, "onChanged|mAfterFieldChangeListener was dead");
@@ -390,22 +390,22 @@ public abstract class BaseField<T, V extends View>
 
     @Override
     public boolean isUsed() {
-        return DBKey.isUsed(mIsUsedKey);
+        return GlobalFieldVisibility.isUsed(usedKey);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "BaseField{"
-               + "mFieldKey=" + mFieldKey
-               + ", mIsUsedKey=" + mIsUsedKey
-               + ": mFragmentId=" + mFragmentId
-               + ", mRelatedFields=" + mRelatedViews
-               + ", mInitialValue=`" + mInitialValue + "`"
-               + ", mRawValue=`" + mRawValue + "`"
+               + "mFieldKey=" + fieldKey
+               + ", mIsUsedKey=" + usedKey
+               + ": mFragmentId=" + fragmentId
+               + ", mRelatedFields=" + relatedViews
+               + ", mInitialValue=`" + initialValue + "`"
+               + ", mRawValue=`" + rawValue + "`"
                + ", mCurrentValue=`" + getValue() + "`"
-               + ", mErrorText=`" + mErrorText + "`"
-               + ", mValidator=" + mValidator
+               + ", mErrorText=`" + errorText + "`"
+               + ", mValidator=" + validator
                + '}';
     }
 }

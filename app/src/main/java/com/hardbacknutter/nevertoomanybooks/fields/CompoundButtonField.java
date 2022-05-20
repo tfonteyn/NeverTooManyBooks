@@ -55,8 +55,8 @@ public class CompoundButtonField
     public void setParentView(@NonNull final View parent) {
         super.setParentView(parent);
         requireView().setOnCheckedChangeListener((buttonView, isChecked) -> {
-            final Boolean previous = mRawValue;
-            mRawValue = isChecked;
+            final Boolean previous = rawValue;
+            rawValue = isChecked;
             notifyIfChanged(previous);
         });
     }
@@ -64,7 +64,7 @@ public class CompoundButtonField
     @Override
     @NonNull
     public Boolean getValue() {
-        return mRawValue != null ? mRawValue : false;
+        return rawValue != null ? rawValue : false;
     }
 
     @Override
@@ -73,19 +73,19 @@ public class CompoundButtonField
 
         final CompoundButton view = getView();
         if (view != null) {
-            view.setChecked(mRawValue);
+            view.setChecked(rawValue);
         }
     }
 
     @Override
     public void setInitialValue(@NonNull final DataManager source) {
-        mInitialValue = source.getBoolean(mFieldKey);
-        setValue(mInitialValue);
+        initialValue = source.getBoolean(fieldKey);
+        setValue(initialValue);
     }
 
     @Override
     void internalPutValue(@NonNull final DataManager target) {
-        target.putBoolean(mFieldKey, getValue());
+        target.putBoolean(fieldKey, getValue());
     }
 
     @Override

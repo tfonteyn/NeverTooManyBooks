@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BookshelfBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.PublisherBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.SeriesBooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
@@ -267,11 +266,11 @@ public abstract class BaseStyle
             case List:
                 return listFieldVisibility
                         .isShowField(dbKey)
-                        .orElseGet(() -> DBKey.isUsed(dbKey));
+                        .orElseGet(() -> GlobalFieldVisibility.isUsed(dbKey));
             case Detail:
                 return detailsFieldVisibility
                         .isShowField(dbKey)
-                        .orElseGet(() -> DBKey.isUsed(dbKey));
+                        .orElseGet(() -> GlobalFieldVisibility.isUsed(dbKey));
         }
         throw new IllegalArgumentException();
     }
@@ -290,7 +289,7 @@ public abstract class BaseStyle
     }
 
     @Override
-    public int getFieldVisibility(@NonNull final Screen screen) {
+    public long getFieldVisibility(@NonNull final Screen screen) {
         switch (screen) {
             case List:
                 return listFieldVisibility.getValue();
@@ -301,7 +300,7 @@ public abstract class BaseStyle
     }
 
     public void setFieldVisibility(@NonNull final Screen screen,
-                                   final int bitmask) {
+                                   final long bitmask) {
         switch (screen) {
             case List:
                 listFieldVisibility.setValue(bitmask);

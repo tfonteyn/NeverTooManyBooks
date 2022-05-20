@@ -120,47 +120,47 @@ class IsfdbPublicationListHandler
     private static final String XML_ID_VALUE = "IDvalue";
 
     /** accumulate all Authors for this book. */
-    private final ArrayList<Author> mAuthors = new ArrayList<>();
+    private final ArrayList<Author> authorList = new ArrayList<>();
     /** accumulate all Series for this book. */
-    private final ArrayList<Series> mSeries = new ArrayList<>();
+    private final ArrayList<Series> seriesList = new ArrayList<>();
     /** accumulate all Publishers for this book. */
-    private final ArrayList<Publisher> mPublishers = new ArrayList<>();
-    private final IsfdbSearchEngine mSearchEngine;
-    private final boolean[] mFetchCovers;
+    private final ArrayList<Publisher> publisherList = new ArrayList<>();
+    private final IsfdbSearchEngine searchEngine;
+    private final boolean[] fetchCovers;
     @NonNull
-    private final Locale mLocale;
+    private final Locale locale;
     /** XML content. */
     @SuppressWarnings("StringBufferField")
-    private final StringBuilder mBuilder = new StringBuilder();
+    private final StringBuilder builder = new StringBuilder();
     @NonNull
-    private final List<Bundle> mBookDataList = new ArrayList<>();
-    private int mMaxBooks;
-    private boolean mInPublication;
-    private Bundle mPublicationData;
-    private boolean mInAuthors;
-    private boolean mInCoverArtists;
-    private boolean mInExternalIds;
-    private boolean mInExternalId;
+    private final List<Bundle> bookDataList = new ArrayList<>();
+    private int maxBooks;
+    private boolean inPublication;
+    private Bundle publicationData;
+    private boolean inAuthors;
+    private boolean inCoverArtists;
+    private boolean inExternalIds;
+    private boolean inExternalId;
 
     @Nullable
-    private String mExternalIdType;
+    private String externalIdType;
     @Nullable
-    private String mExternalId;
+    private String externalId;
 
     IsfdbPublicationListHandler(@NonNull final IsfdbSearchEngine isfdbApiSearchEngine,
                                 @NonNull final boolean[] fetchCovers,
                                 final int maxBooks,
                                 @NonNull final Locale locale) {
-        mSearchEngine = isfdbApiSearchEngine;
+        searchEngine = isfdbApiSearchEngine;
 
-        mFetchCovers = fetchCovers;
-        mMaxBooks = maxBooks;
-        mLocale = locale;
+        this.fetchCovers = fetchCovers;
+        this.maxBooks = maxBooks;
+        this.locale = locale;
     }
 
     @NonNull
     public List<Bundle> getResult() {
-        return mBookDataList;
+        return bookDataList;
     }
 
     @Override
@@ -168,7 +168,7 @@ class IsfdbPublicationListHandler
     public void characters(@NonNull final char[] ch,
                            final int start,
                            final int length) {
-        mBuilder.append(ch, start, length);
+        builder.append(ch, start, length);
     }
 
     /**
@@ -183,24 +183,24 @@ class IsfdbPublicationListHandler
                              @NonNull final Attributes attributes) {
         switch (qName) {
             case XML_PUBLICATION:
-                mInPublication = true;
-                mPublicationData = ServiceLocator.newBundle();
-                mAuthors.clear();
-                mSeries.clear();
-                mPublishers.clear();
+                inPublication = true;
+                publicationData = ServiceLocator.newBundle();
+                authorList.clear();
+                seriesList.clear();
+                publisherList.clear();
                 break;
 
             case XML_AUTHORS:
-                mInAuthors = true;
+                inAuthors = true;
                 break;
             case XML_COVER_ARTISTS:
-                mInCoverArtists = true;
+                inCoverArtists = true;
                 break;
             case XML_EXTERNAL_IDS:
-                mInExternalIds = true;
+                inExternalIds = true;
                 break;
             case XML_EXTERNAL_ID:
-                mInExternalId = true;
+                inExternalId = true;
                 break;
 
             default:
@@ -223,11 +223,11 @@ class IsfdbPublicationListHandler
             throws SAXException {
         if (XML_RECORDS.equals(qName)) {
             // Top level number of Publication records
-            final String tmpString = mBuilder.toString().trim();
+            final String tmpString = builder.toString().trim();
             try {
                 final int n = Integer.parseInt(tmpString);
-                if (n < mMaxBooks) {
-                    mMaxBooks = n;
+                if (n < maxBooks) {
+                    maxBooks = n;
                 }
             } catch (@NonNull final NumberFormatException e) {
                 throw new SAXException(new EOFException());
@@ -235,92 +235,92 @@ class IsfdbPublicationListHandler
 
         } else if (XML_PUBLICATION.equals(qName)) {
             // store accumulated ArrayList's
-            if (!mAuthors.isEmpty()) {
-                mPublicationData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
+            if (!authorList.isEmpty()) {
+                publicationData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
             }
-            if (!mSeries.isEmpty()) {
-                mPublicationData.putParcelableArrayList(Book.BKEY_SERIES_LIST, mSeries);
+            if (!seriesList.isEmpty()) {
+                publicationData.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
             }
-            if (!mPublishers.isEmpty()) {
-                mPublicationData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
+            if (!publisherList.isEmpty()) {
+                publicationData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
             }
 
             // ISFDB does not provide the books language in xml
             //ENHANCE: the site is adding language to the data. For now, default to English
-            mPublicationData.putString(DBKey.LANGUAGE, "eng");
+            publicationData.putString(DBKey.LANGUAGE, "eng");
 
-            mInPublication = false;
-            mBookDataList.add(mPublicationData);
-            if (mBookDataList.size() == mMaxBooks) {
+            inPublication = false;
+            bookDataList.add(publicationData);
+            if (bookDataList.size() == maxBooks) {
                 // we're done
                 throw new SAXException(new EOFException());
             }
 
-        } else if (mInPublication) {
+        } else if (inPublication) {
             switch (qName) {
                 case XML_AUTHORS: {
-                    mInAuthors = false;
+                    inAuthors = false;
                     break;
                 }
                 case XML_COVER_ARTISTS: {
-                    mInCoverArtists = false;
+                    inCoverArtists = false;
                     break;
                 }
                 case XML_EXTERNAL_IDS: {
-                    mInExternalIds = false;
+                    inExternalIds = false;
                     break;
                 }
 
                 case XML_RECORD: {
-                    addIfNotPresent(DBKey.SID_ISFDB, mBuilder.toString());
+                    addIfNotPresent(DBKey.SID_ISFDB, builder.toString());
                     break;
                 }
                 case XML_TITLE: {
-                    addIfNotPresent(DBKey.TITLE, mBuilder.toString());
+                    addIfNotPresent(DBKey.TITLE, builder.toString());
                     break;
                 }
                 case XML_AUTHOR: {
-                    if (mInAuthors) {
-                        final Author author = Author.from(mBuilder.toString());
-                        mAuthors.add(author);
+                    if (inAuthors) {
+                        final Author author = Author.from(builder.toString());
+                        authorList.add(author);
                     }
                     break;
                 }
 
                 case XML_YEAR: {
-                    addIfNotPresent(DBKey.DATE_BOOK_PUBLICATION, mBuilder.toString());
+                    addIfNotPresent(DBKey.BOOK_PUBLICATION__DATE, builder.toString());
                     break;
                 }
                 case XML_ISBN: {
-                    addIfNotPresent(DBKey.KEY_ISBN, ISBN.cleanText(mBuilder.toString()));
+                    addIfNotPresent(DBKey.BOOK_ISBN, ISBN.cleanText(builder.toString()));
                     break;
                 }
                 case XML_CATALOG: {
                     // use the ISBN if we have one, otherwise the catalog id
-                    addIfNotPresent(DBKey.KEY_ISBN, mBuilder.toString());
+                    addIfNotPresent(DBKey.BOOK_ISBN, builder.toString());
                     break;
                 }
                 case XML_PUBLISHER: {
-                    final Publisher publisher = Publisher.from(mBuilder.toString());
-                    mPublishers.add(publisher);
+                    final Publisher publisher = Publisher.from(builder.toString());
+                    publisherList.add(publisher);
                     break;
                 }
                 case XML_PUB_SERIES: {
-                    final Series series = Series.from(mBuilder.toString());
-                    mSeries.add(series);
+                    final Series series = Series.from(builder.toString());
+                    this.seriesList.add(series);
                     break;
                 }
                 case XML_PUB_SERIES_NUM: {
-                    final String tmpString = mBuilder.toString().trim();
+                    final String tmpString = builder.toString().trim();
                     // assume that if we get here, then we added a "PubSeries" as last one.
-                    mSeries.get(mSeries.size() - 1).setNumber(tmpString);
+                    seriesList.get(seriesList.size() - 1).setNumber(tmpString);
                     break;
                 }
                 case XML_PRICE: {
-                    final String tmpString = mBuilder.toString().trim();
-                    final Money money = new Money(mLocale, tmpString);
+                    final String tmpString = builder.toString().trim();
+                    final Money money = new Money(locale, tmpString);
                     if (money.getCurrencyCode() != null) {
-                        mPublicationData.putDouble(DBKey.PRICE_LISTED, money.doubleValue());
+                        publicationData.putDouble(DBKey.PRICE_LISTED, money.doubleValue());
                         addIfNotPresent(DBKey.PRICE_LISTED_CURRENCY, money.getCurrencyCode());
                     } else {
                         addIfNotPresent(DBKey.PRICE_LISTED, tmpString);
@@ -328,37 +328,37 @@ class IsfdbPublicationListHandler
                     break;
                 }
                 case XML_PAGES: {
-                    addIfNotPresent(DBKey.PAGES, mBuilder.toString());
+                    addIfNotPresent(DBKey.PAGE_COUNT, builder.toString());
                     break;
                 }
                 case XML_BINDING: {
-                    addIfNotPresent(DBKey.BOOK_FORMAT, mBuilder.toString());
+                    addIfNotPresent(DBKey.FORMAT, builder.toString());
                     break;
                 }
                 case XML_TYPE: {
-                    final String tmpString = mBuilder.toString().trim();
+                    final String tmpString = builder.toString().trim();
                     addIfNotPresent(IsfdbSearchEngine.SiteField.BOOK_TYPE, tmpString);
                     final Book.ContentType type = IsfdbSearchEngine.TYPE_MAP.get(tmpString);
                     if (type != null) {
-                        mPublicationData.putLong(DBKey.BITMASK_TOC, type.value);
+                        publicationData.putLong(DBKey.TOC_TYPE__BITMASK, type.value);
                     }
                     break;
                 }
                 case XML_TAG: {
-                    addIfNotPresent(IsfdbSearchEngine.SiteField.BOOK_TAG, mBuilder.toString());
+                    addIfNotPresent(IsfdbSearchEngine.SiteField.BOOK_TAG, builder.toString());
                     break;
                 }
                 case XML_IMAGE: {
-                    if (mFetchCovers[0]) {
-                        final String tmpString = mBuilder.toString().trim();
+                    if (fetchCovers[0]) {
+                        final String tmpString = builder.toString().trim();
                         try {
-                            final String isbn = mPublicationData.getString(DBKey.KEY_ISBN);
+                            final String isbn = publicationData.getString(DBKey.BOOK_ISBN);
                             final String fileSpec =
-                                    mSearchEngine.saveImage(tmpString, isbn, 0, null);
+                                    searchEngine.saveImage(tmpString, isbn, 0, null);
                             if (fileSpec != null) {
                                 final ArrayList<String> list = new ArrayList<>();
                                 list.add(fileSpec);
-                                mPublicationData.putStringArrayList(
+                                publicationData.putStringArrayList(
                                         SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
 
                             }
@@ -369,58 +369,58 @@ class IsfdbPublicationListHandler
                     break;
                 }
                 case XML_ARTIST: {
-                    if (mInCoverArtists) {
-                        final Author author = Author.from(mBuilder.toString());
+                    if (inCoverArtists) {
+                        final Author author = Author.from(builder.toString());
                         author.setType(Author.TYPE_COVER_ARTIST);
-                        mAuthors.add(author);
+                        authorList.add(author);
                     }
                     break;
                 }
                 case XML_NOTE: {
                     // can contain html tags!
                     addIfNotPresent(DBKey.DESCRIPTION,
-                                    ParseUtils.cleanText(mBuilder.toString()));
+                                    ParseUtils.cleanText(builder.toString()));
                     break;
                 }
                 case XML_ID_TYPE: {
-                    if (mInExternalId) {
-                        mExternalIdType = mBuilder.toString();
+                    if (inExternalId) {
+                        externalIdType = builder.toString();
                     }
                     break;
                 }
                 case XML_ID_VALUE: {
-                    if (mInExternalId) {
-                        mExternalId = mBuilder.toString();
+                    if (inExternalId) {
+                        externalId = builder.toString();
                     }
                     break;
                 }
                 case XML_EXTERNAL_ID: {
-                    if (mInExternalIds) {
-                        if (mExternalIdType != null && mExternalId != null) {
+                    if (inExternalIds) {
+                        if (externalIdType != null && externalId != null) {
                             //NEWTHINGS: adding a new search engine: optional: add external id DOM
-                            switch (mExternalIdType) {
+                            switch (externalIdType) {
                                 case "1":
-                                    addIfNotPresent(DBKey.SID_ASIN, mExternalId);
+                                    addIfNotPresent(DBKey.SID_ASIN, externalId);
                                     break;
                                 case "8":
-                                    addIfNotPresent(DBKey.SID_GOODREADS_BOOK, mExternalId);
+                                    addIfNotPresent(DBKey.SID_GOODREADS_BOOK, externalId);
                                     break;
                                 case "10":
-                                    addIfNotPresent(DBKey.SID_LCCN, mExternalId);
+                                    addIfNotPresent(DBKey.SID_LCCN, externalId);
                                     break;
                                 case "12":
-                                    addIfNotPresent(DBKey.SID_OCLC, mExternalId);
+                                    addIfNotPresent(DBKey.SID_OCLC, externalId);
                                     break;
                                 case "13":
-                                    addIfNotPresent(DBKey.SID_OPEN_LIBRARY, mExternalId);
+                                    addIfNotPresent(DBKey.SID_OPEN_LIBRARY, externalId);
                                     break;
                                 default:
                                     break;
                             }
                         }
-                        mInExternalId = false;
-                        mExternalIdType = null;
-                        mExternalId = null;
+                        inExternalId = false;
+                        externalIdType = null;
+                        externalId = null;
                     }
                     break;
                 }
@@ -433,7 +433,7 @@ class IsfdbPublicationListHandler
         // because we always want strings from the lowest level (leaf) XML elements.
         // To be completely correct, we should maintain a stack of builders that are pushed and
         // popped as each startElement/endElement is called. But lets not be pedantic for now.
-        mBuilder.setLength(0);
+        builder.setLength(0);
     }
 
     /**
@@ -444,9 +444,9 @@ class IsfdbPublicationListHandler
      */
     private void addIfNotPresent(@NonNull final String key,
                                  @NonNull final String value) {
-        final String test = mPublicationData.getString(key);
+        final String test = publicationData.getString(key);
         if (test == null || test.isEmpty()) {
-            mPublicationData.putString(key, value.trim());
+            publicationData.putString(key, value.trim());
         }
     }
 }

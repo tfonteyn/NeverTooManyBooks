@@ -64,13 +64,13 @@ public class SyncWriterFragment
 
     /** Log tag. */
     public static final String TAG = "SyncWriterFragment";
-    private ToolbarMenuProvider mToolbarMenuProvider;
+    private ToolbarMenuProvider toolbarMenuProvider;
     /** The ViewModel. */
-    private SyncWriterViewModel mVm;
+    private SyncWriterViewModel vm;
     /** View Binding. */
-    private FragmentSyncExportBinding mVb;
+    private FragmentSyncExportBinding vb;
     @Nullable
-    private ProgressDelegate mProgressDelegate;
+    private ProgressDelegate progressDelegate;
 
     @SuppressWarnings("TypeMayBeWeakened")
     @NonNull
@@ -87,8 +87,8 @@ public class SyncWriterFragment
         super.onCreate(savedInstanceState);
 
         //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(SyncWriterViewModel.class);
-        mVm.init(requireArguments());
+        vm = new ViewModelProvider(getActivity()).get(SyncWriterViewModel.class);
+        vm.init(requireArguments());
     }
 
     @Nullable
@@ -96,8 +96,8 @@ public class SyncWriterFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentSyncExportBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentSyncExportBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @Override
@@ -106,36 +106,36 @@ public class SyncWriterFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        mToolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
-        toolbar.setTitle(mVm.getSyncWriterHelper().getSyncServer().getLabel());
+        toolbarMenuProvider = new ToolbarMenuProvider();
+        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
+        toolbar.setTitle(vm.getSyncWriterHelper().getSyncServer().getLabelResId());
 
-        mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
-        mVm.onWriteDataCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
-        mVm.onWriteDataFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
-        mVm.onWriteDataFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
+        vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+        vm.onWriteDataCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
+        vm.onWriteDataFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
+        vm.onWriteDataFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
 
-        mVb.cbxBooks.setChecked(true);
-        mVb.cbxBooks.setEnabled(true);
+        vb.cbxBooks.setChecked(true);
+        vb.cbxBooks.setEnabled(true);
 
-        mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            mVm.getSyncWriterHelper().setRecordType(isChecked, RecordType.Cover);
-            mToolbarMenuProvider.onPrepareMenu(getToolbar().getMenu());
+        vb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            vm.getSyncWriterHelper().setRecordType(isChecked, RecordType.Cover);
+            toolbarMenuProvider.onPrepareMenu(getToolbar().getMenu());
         });
 
-        mVb.infExportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
+        vb.infExportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
 
-        mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> mVm
+        vb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> vm
                 .getSyncWriterHelper()
-                .setIncremental(checkedId == mVb.rbExportNewAndUpdated.getId()));
+                .setIncremental(checkedId == vb.rbExportNewAndUpdated.getId()));
 
-        mVb.cbxDeleteRemovedBooks.setOnCheckedChangeListener((v, isChecked) -> mVm
+        vb.cbxDeleteRemovedBooks.setOnCheckedChangeListener((v, isChecked) -> vm
                 .getSyncWriterHelper().setDeleteLocalBooks(isChecked));
 
-        if (!mVm.isRunning()) {
+        if (!vm.isRunning()) {
             // The task is NOT yet running.
             // Show either the full-options screen or the quick-options dialog
-            if (mVm.isQuickOptionsAlreadyShown()) {
+            if (vm.isQuickOptionsAlreadyShown()) {
                 showOptions();
             } else {
                 showQuickOptions();
@@ -144,11 +144,11 @@ public class SyncWriterFragment
     }
 
     private void showQuickOptions() {
-        mVm.setQuickOptionsAlreadyShown();
+        vm.setQuickOptionsAlreadyShown();
 
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
-                .setTitle(mVm.getSyncWriterHelper().getSyncServer().getLabel())
+                .setTitle(vm.getSyncWriterHelper().getSyncServer().getLabelResId())
                 .setMessage(R.string.action_synchronize)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
                 .setNeutralButton(R.string.btn_options, (d, w) -> {
@@ -157,7 +157,7 @@ public class SyncWriterFragment
                 })
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
                     d.dismiss();
-                    mVm.startExport();
+                    vm.startExport();
                 })
                 .create()
                 .show();
@@ -167,16 +167,16 @@ public class SyncWriterFragment
      * Export Step 1b: Show the full options screen to the user.
      */
     private void showOptions() {
-        final SyncWriterHelper helper = mVm.getSyncWriterHelper();
+        final SyncWriterHelper helper = vm.getSyncWriterHelper();
 
         final Set<RecordType> recordTypes = helper.getRecordTypes();
-        mVb.cbxCovers.setChecked(recordTypes.contains(RecordType.Cover));
+        vb.cbxCovers.setChecked(recordTypes.contains(RecordType.Cover));
 
         final boolean incremental = helper.isIncremental();
-        mVb.rbExportAll.setChecked(!incremental);
-        mVb.rbExportNewAndUpdated.setChecked(incremental);
+        vb.rbExportAll.setChecked(!incremental);
+        vb.rbExportNewAndUpdated.setChecked(incremental);
 
-        mVb.getRoot().setVisibility(View.VISIBLE);
+        vb.getRoot().setVisibility(View.VISIBLE);
     }
 
     private void onExportCancelled(
@@ -279,23 +279,23 @@ public class SyncWriterFragment
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.getData().ifPresent(data -> {
-            if (mProgressDelegate == null) {
+            if (progressDelegate == null) {
                 //noinspection ConstantConditions
-                mProgressDelegate = new ProgressDelegate(getProgressFrame())
+                progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.menu_backup_and_export)
                         .setPreventSleep(true)
-                        .setOnCancelListener(v -> mVm.cancelTask(data.taskId))
+                        .setOnCancelListener(v -> vm.cancelTask(data.taskId))
                         .show(() -> getActivity().getWindow());
             }
-            mProgressDelegate.onProgress(data);
+            progressDelegate.onProgress(data);
         });
     }
 
     private void closeProgressDialog() {
-        if (mProgressDelegate != null) {
+        if (progressDelegate != null) {
             //noinspection ConstantConditions
-            mProgressDelegate.dismiss(getActivity().getWindow());
-            mProgressDelegate = null;
+            progressDelegate.dismiss(getActivity().getWindow());
+            progressDelegate = null;
         }
     }
 
@@ -318,13 +318,13 @@ public class SyncWriterFragment
         @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
             menu.findItem(R.id.MENU_ACTION_CONFIRM)
-                .setEnabled(mVm.isReadyToGo());
+                .setEnabled(vm.isReadyToGo());
         }
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-                mVm.startExport();
+                vm.startExport();
                 return true;
             }
             return false;

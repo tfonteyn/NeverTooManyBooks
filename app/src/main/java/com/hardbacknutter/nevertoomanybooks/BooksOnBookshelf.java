@@ -93,6 +93,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.RowChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopLevelItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
@@ -882,7 +883,7 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isRead);
 
                 // specifically check LOANEE_NAME independent from the style in use.
-                final boolean useLending = DBKey.isUsed(DBKey.LOANEE_NAME);
+                final boolean useLending = GlobalFieldVisibility.isUsed(DBKey.LOANEE_NAME);
                 final boolean isAvailable = vm.isAvailable(rowData);
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isAvailable);
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
@@ -973,7 +974,7 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.FORMAT: {
-                if (!rowData.getString(DBKey.BOOK_FORMAT).isEmpty()) {
+                if (!rowData.getString(DBKey.FORMAT).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_FORMAT_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.action_edit_ellipsis)
@@ -1264,7 +1265,7 @@ public class BooksOnBookshelf
             case BooklistGroup.FORMAT: {
                 if (itemId == R.id.MENU_FORMAT_EDIT) {
                     EditFormatDialogFragment.launch(getSupportFragmentManager(),
-                                                    rowData.getString(DBKey.BOOK_FORMAT));
+                                                    rowData.getString(DBKey.FORMAT));
                     return true;
                 }
                 break;

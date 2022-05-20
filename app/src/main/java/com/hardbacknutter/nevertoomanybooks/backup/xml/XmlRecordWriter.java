@@ -96,17 +96,17 @@ public class XmlRecordWriter
 
     /** Database Access. */
     @Nullable
-    private final LocalDateTime mUtcSinceDateTime;
+    private final LocalDateTime sinceDateTime;
 
     /**
      * Constructor.
      *
-     * @param utcSinceDateTime (optional) UTC based date to select only items
-     *                         modified or added since.
+     * @param sinceDateTime (optional) UTC based date to select only items
+     *                      modified or added since.
      */
     @AnyThread
-    public XmlRecordWriter(@Nullable final LocalDateTime utcSinceDateTime) {
-        mUtcSinceDateTime = utcSinceDateTime;
+    public XmlRecordWriter(@Nullable final LocalDateTime sinceDateTime) {
+        this.sinceDateTime = sinceDateTime;
     }
 
     @Override
@@ -163,7 +163,7 @@ public class XmlRecordWriter
             writeToc(writer, progressListener);
 
             progressListener.publishProgress(1, context.getString(R.string.lbl_books));
-            results.add(writeBooks(context, writer, mUtcSinceDateTime,
+            results.add(writeBooks(context, writer, sinceDateTime,
                                    recordTypes.contains(RecordType.Cover),
                                    progressListener));
         }
@@ -371,8 +371,8 @@ public class XmlRecordWriter
                 writer.write(XmlUtils.idAttr(rowData.getLong(DBKey.PK_ID)));
                 writer.write(XmlUtils.attr(DBKey.TITLE,
                                            rowData.getString(DBKey.TITLE)));
-                writer.write(XmlUtils.attr(DBKey.DATE_FIRST_PUBLICATION,
-                                           rowData.getString(DBKey.DATE_FIRST_PUBLICATION)));
+                writer.write(XmlUtils.attr(DBKey.FIRST_PUBLICATION__DATE,
+                                           rowData.getString(DBKey.FIRST_PUBLICATION__DATE)));
                 writer.write(">");
 
                 // Write Authors as a list, allowing for future expansion to multiple authors/toc
@@ -438,8 +438,8 @@ public class XmlRecordWriter
                 writer.write('<' + TAG_BOOK);
                 writer.write(XmlUtils.idAttr(book.getLong(DBKey.PK_ID)));
                 writer.write(XmlUtils.attr(DBKey.TITLE, title));
-                writer.write(XmlUtils.attr(DBKey.KEY_ISBN,
-                                           book.getString(DBKey.KEY_ISBN)));
+                writer.write(XmlUtils.attr(DBKey.BOOK_ISBN,
+                                           book.getString(DBKey.BOOK_ISBN)));
                 writer.write(XmlUtils.attr(DBKey.BOOK_UUID, uuid));
                 writer.write(XmlUtils.attr(DBKey.DATE_ADDED__UTC,
                                            book.getString(DBKey.DATE_ADDED__UTC)));
@@ -454,26 +454,26 @@ public class XmlRecordWriter
 
                 writer.write(XmlUtils.attr(DBKey.PRINT_RUN,
                                            book.getString(DBKey.PRINT_RUN)));
-                writer.write(XmlUtils.attr(DBKey.DATE_BOOK_PUBLICATION,
-                                           book.getString(DBKey.DATE_BOOK_PUBLICATION)));
+                writer.write(XmlUtils.attr(DBKey.BOOK_PUBLICATION__DATE,
+                                           book.getString(DBKey.BOOK_PUBLICATION__DATE)));
                 writer.write(XmlUtils.attr(DBKey.PRICE_LISTED,
                                            book.getDouble(DBKey.PRICE_LISTED)));
                 writer.write(XmlUtils.attr(DBKey.PRICE_LISTED_CURRENCY,
                                            book.getString(DBKey.PRICE_LISTED_CURRENCY)));
-                writer.write(XmlUtils.attr(DBKey.DATE_FIRST_PUBLICATION,
-                                           book.getString(DBKey.DATE_FIRST_PUBLICATION)));
-                writer.write(XmlUtils.attr(DBKey.BOOK_FORMAT,
-                                           book.getString(DBKey.BOOK_FORMAT)));
+                writer.write(XmlUtils.attr(DBKey.FIRST_PUBLICATION__DATE,
+                                           book.getString(DBKey.FIRST_PUBLICATION__DATE)));
+                writer.write(XmlUtils.attr(DBKey.FORMAT,
+                                           book.getString(DBKey.FORMAT)));
                 writer.write(XmlUtils.attr(DBKey.COLOR,
                                            book.getString(DBKey.COLOR)));
-                writer.write(XmlUtils.attr(DBKey.PAGES,
-                                           book.getString(DBKey.PAGES)));
+                writer.write(XmlUtils.attr(DBKey.PAGE_COUNT,
+                                           book.getString(DBKey.PAGE_COUNT)));
                 writer.write(XmlUtils.attr(DBKey.GENRE,
                                            book.getString(DBKey.GENRE)));
                 writer.write(XmlUtils.attr(DBKey.LANGUAGE,
                                            book.getString(DBKey.LANGUAGE)));
-                writer.write(XmlUtils.attr(DBKey.BITMASK_TOC,
-                                           book.getLong(DBKey.BITMASK_TOC)));
+                writer.write(XmlUtils.attr(DBKey.TOC_TYPE__BITMASK,
+                                           book.getLong(DBKey.TOC_TYPE__BITMASK)));
 
                 writer.write(XmlUtils.attr(DBKey.BOOK_CONDITION,
                                            book.getInt(DBKey.BOOK_CONDITION)));
@@ -492,8 +492,8 @@ public class XmlRecordWriter
                                            book.getFloat(DBKey.RATING)));
                 writer.write(XmlUtils.attr(DBKey.SIGNED__BOOL,
                                            book.getBoolean(DBKey.SIGNED__BOOL)));
-                writer.write(XmlUtils.attr(DBKey.BITMASK_EDITION,
-                                           book.getLong(DBKey.BITMASK_EDITION)));
+                writer.write(XmlUtils.attr(DBKey.EDITION__BITMASK,
+                                           book.getLong(DBKey.EDITION__BITMASK)));
 
                 writer.write(XmlUtils.attr(DBKey.CALIBRE_BOOK_ID,
                                            book.getInt(DBKey.CALIBRE_BOOK_ID)));

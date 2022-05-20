@@ -25,6 +25,7 @@ import androidx.preference.PreferenceScreen;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
@@ -51,13 +52,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_SERIES_TIT
 public class SeriesBooklistGroup
         extends AbstractLinkedTableBooklistGroup {
 
-    public static final String PK_SHOW_BOOKS_UNDER_EACH =
-            "style.booklist.group.series.show.all";
-
     public static final boolean DEFAULT_SHOW_BOOKS_UNDER_EACH = false;
 
-    /** See {@link #setPreferencesVisible(PreferenceScreen, boolean)} */
-    private static final String PSK_STYLE_SERIES = "psk_style_series";
     /** For sorting. */
     private static final Domain DOM_SORTING;
 
@@ -72,7 +68,7 @@ public class SeriesBooklistGroup
      * @param style Style reference.
      */
     SeriesBooklistGroup(@NonNull final Style style) {
-        super(SERIES, style);
+        super(style, SERIES);
 
         underEach = DEFAULT_SHOW_BOOKS_UNDER_EACH;
     }
@@ -141,9 +137,10 @@ public class SeriesBooklistGroup
     public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
                                       final boolean visible) {
 
-        final PreferenceCategory category = screen.findPreference(PSK_STYLE_SERIES);
+        final PreferenceCategory category = screen.findPreference(StyleDataStore.PSK_STYLE_SERIES);
         if (category != null) {
-            setPreferenceVisibility(category, new String[]{PK_SHOW_BOOKS_UNDER_EACH}, visible);
+            final String[] keys = {StyleDataStore.PK_GROUPS_SERIES_SHOW_BOOKS_UNDER_EACH};
+            setPreferenceVisibility(category, keys, visible);
         }
     }
 

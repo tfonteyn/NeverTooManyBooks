@@ -86,7 +86,7 @@ public class TocEntryDaoImpl
             SELECT_ + TBL_TOC_ENTRIES.dotAs(DBKey.PK_ID,
                                             DBKey.FK_AUTHOR,
                                             DBKey.TITLE,
-                                            DBKey.DATE_FIRST_PUBLICATION)
+                                            DBKey.FIRST_PUBLICATION__DATE)
             // for convenience, we fetch the Author here
             + ',' + TBL_AUTHORS.dotAs(DBKey.AUTHOR_FAMILY_NAME,
                                       DBKey.AUTHOR_GIVEN_NAMES,
@@ -227,7 +227,7 @@ public class TocEntryDaoImpl
                 list.add(new TocEntry(rowData.getLong(DBKey.PK_ID),
                                       new Author(rowData.getLong(DBKey.FK_AUTHOR), rowData),
                                       rowData.getString(DBKey.TITLE),
-                                      rowData.getString(DBKey.DATE_FIRST_PUBLICATION),
+                                      rowData.getString(DBKey.FIRST_PUBLICATION__DATE),
                                       rowData.getInt(DBKey.KEY_BOOK_COUNT)));
             }
         }

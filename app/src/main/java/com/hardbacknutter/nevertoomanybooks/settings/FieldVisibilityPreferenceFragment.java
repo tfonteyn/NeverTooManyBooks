@@ -30,7 +30,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.SwitchPreference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 
 /**
  * Used/defined in xml/preferences.xml
@@ -54,8 +54,8 @@ public class FieldVisibilityPreferenceFragment
 
         setPreferencesFromResource(R.xml.preferences_field_visibility, rootKey);
 
-        pCovers[0] = findPreference(DBKey.PREFS_COVER_VISIBILITY_KEY[0]);
-        pCovers[1] = findPreference(DBKey.PREFS_COVER_VISIBILITY_KEY[1]);
+        pCovers[0] = findPreference(GlobalFieldVisibility.PREFS_COVER_VISIBILITY_KEY[0]);
+        pCovers[1] = findPreference(GlobalFieldVisibility.PREFS_COVER_VISIBILITY_KEY[1]);
 
         pCovers[0].setOnPreferenceChangeListener((preference, newValue) -> {
             if (newValue instanceof Boolean && !(Boolean) newValue) {

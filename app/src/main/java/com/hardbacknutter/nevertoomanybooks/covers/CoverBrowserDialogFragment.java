@@ -78,24 +78,24 @@ public class CoverBrowserDialogFragment
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /** FragmentResultListener request key to use for our response. */
-    private String mRequestKey;
+    private String requestKey;
 
     /** The adapter for the horizontal scrolling covers list. */
     @Nullable
-    private GalleryAdapter mGalleryAdapter;
+    private GalleryAdapter galleryAdapter;
 
     /** The max width to be used for the preview image. */
-    private int mPreviewMaxWidth;
+    private int previewMaxWidth;
     /** The max height to be used for the preview image. */
-    private int mPreviewMaxHeight;
+    private int previewMaxHeight;
 
     /** The ViewModel. */
-    private CoverBrowserViewModel mVm;
+    private CoverBrowserViewModel vm;
 
     /** View Binding. */
-    private DialogCoverBrowserBinding mVb;
+    private DialogCoverBrowserBinding vb;
 
-    private ImageViewLoader mPreviewLoader;
+    private ImageViewLoader previewLoader;
 
     /**
      * No-arg constructor for OS use.
@@ -113,14 +113,14 @@ public class CoverBrowserDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
 
-        mVm = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
-        mVm.init(args);
+        vm = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
+        vm.init(args);
 
         final Resources res = getResources();
-        mPreviewMaxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_preview_width);
-        mPreviewMaxHeight = res.getDimensionPixelSize(R.dimen.cover_browser_preview_height);
+        previewMaxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_preview_width);
+        previewMaxHeight = res.getDimensionPixelSize(R.dimen.cover_browser_preview_height);
     }
 
     @Override
@@ -128,50 +128,50 @@ public class CoverBrowserDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mVb = DialogCoverBrowserBinding.bind(view);
+        vb = DialogCoverBrowserBinding.bind(view);
 
         final String bookTitle = Objects.requireNonNull(
                 requireArguments().getString(DBKey.TITLE), DBKey.TITLE);
-        mVb.toolbar.setSubtitle(bookTitle);
+        vb.toolbar.setSubtitle(bookTitle);
 
         // LayoutManager is set in the layout xml
         final LinearLayoutManager galleryLM = Objects.requireNonNull(
-                (LinearLayoutManager) mVb.gallery.getLayoutManager(),
+                (LinearLayoutManager) vb.gallery.getLayoutManager(),
                 "Missing LinearLayoutManager");
         //noinspection ConstantConditions
-        mVb.gallery.addItemDecoration(
+        vb.gallery.addItemDecoration(
                 new MaterialDividerItemDecoration(getContext(), galleryLM.getOrientation()));
-        mGalleryAdapter = new GalleryAdapter(mVm.getGalleryDisplayExecutor());
-        mVb.gallery.setAdapter(mGalleryAdapter);
+        galleryAdapter = new GalleryAdapter(vm.getGalleryDisplayExecutor());
+        vb.gallery.setAdapter(galleryAdapter);
 
-        mVm.onGalleryImage().observe(getViewLifecycleOwner(), this::setGalleryImage);
-        mVm.onShowGalleryProgress().observe(getViewLifecycleOwner(), show -> {
+        vm.onGalleryImage().observe(getViewLifecycleOwner(), this::setGalleryImage);
+        vm.onShowGalleryProgress().observe(getViewLifecycleOwner(), show -> {
             if (show) {
-                mVb.progressBar.show();
+                vb.progressBar.show();
             } else {
-                mVb.progressBar.hide();
+                vb.progressBar.hide();
             }
         });
 
         // dismiss silently
-        mVm.onSearchEditionsTaskCancelled().observe(getViewLifecycleOwner(), message -> dismiss());
+        vm.onSearchEditionsTaskCancelled().observe(getViewLifecycleOwner(), message -> dismiss());
         // the task throws no exceptions; but paranoia... dismiss silently is fine
-        mVm.onSearchEditionsTaskFailure().observe(getViewLifecycleOwner(), message -> dismiss());
-        mVm.onSearchEditionsTaskFinished().observe(getViewLifecycleOwner(), message
+        vm.onSearchEditionsTaskFailure().observe(getViewLifecycleOwner(), message -> dismiss());
+        vm.onSearchEditionsTaskFinished().observe(getViewLifecycleOwner(), message
                 -> message.getData().ifPresent(data -> showGallery(data.getResult())));
 
-        mVm.onSelectedImage().observe(getViewLifecycleOwner(), this::setSelectedImage);
-        mPreviewLoader = new ImageViewLoader(mVm.getPreviewDisplayExecutor(),
-                                             mPreviewMaxWidth, mPreviewMaxHeight);
+        vm.onSelectedImage().observe(getViewLifecycleOwner(), this::setSelectedImage);
+        previewLoader = new ImageViewLoader(vm.getPreviewDisplayExecutor(),
+                                            previewMaxWidth, previewMaxHeight);
 
         // When the preview image is clicked, send the fileSpec back to the caller and terminate.
-        mVb.preview.setOnClickListener(v -> {
+        vb.preview.setOnClickListener(v -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                Log.d(TAG, "preview.onClick|filePath=" + mVm.getSelectedFileAbsPath());
+                Log.d(TAG, "preview.onClick|filePath=" + vm.getSelectedFileAbsPath());
             }
 
-            if (mVm.getSelectedFileAbsPath() != null) {
-                Launcher.setResult(this, mRequestKey, mVm.getSelectedFileAbsPath());
+            if (vm.getSelectedFileAbsPath() != null) {
+                Launcher.setResult(this, requestKey, vm.getSelectedFileAbsPath());
             }
             // close the CoverBrowserDialogFragment
             dismiss();
@@ -180,7 +180,7 @@ public class CoverBrowserDialogFragment
 
     @Override
     public void onCancel(@NonNull final DialogInterface dialog) {
-        mVm.cancelAllTasks();
+        vm.cancelAllTasks();
         super.onCancel(dialog);
     }
 
@@ -188,22 +188,22 @@ public class CoverBrowserDialogFragment
     public void onResume() {
         super.onResume();
         // if the task is NOT already running and we have no editions loaded before
-        if (!mVm.isSearchEditionsTaskRunning()) {
-            if (mVm.getEditions().isEmpty()) {
+        if (!vm.isSearchEditionsTaskRunning()) {
+            if (vm.getEditions().isEmpty()) {
                 // start the task
-                mVb.statusMessage.setText(R.string.progress_msg_searching_editions);
-                mVb.progressBar.show();
-                mVm.searchEditions();
+                vb.statusMessage.setText(R.string.progress_msg_searching_editions);
+                vb.progressBar.show();
+                vm.searchEditions();
             }
         }
 
         // If currently not shown, set a reasonable size for the preview image
         // so the progress overlay will be shown in the correct position
-        if (mVb.preview.getVisibility() != View.VISIBLE) {
-            final ViewGroup.LayoutParams previewLp = mVb.preview.getLayoutParams();
-            previewLp.width = mPreviewMaxWidth;
-            previewLp.height = mPreviewMaxHeight;
-            mVb.preview.setLayoutParams(previewLp);
+        if (vb.preview.getVisibility() != View.VISIBLE) {
+            final ViewGroup.LayoutParams previewLp = vb.preview.getLayoutParams();
+            previewLp.width = previewMaxWidth;
+            previewLp.height = previewMaxHeight;
+            vb.preview.setLayoutParams(previewLp);
         }
     }
 
@@ -211,18 +211,18 @@ public class CoverBrowserDialogFragment
      * Show the user a selection of other covers and allow selection of a replacement.
      */
     private void showGallery(@Nullable final Collection<String> result) {
-        Objects.requireNonNull(mGalleryAdapter, "mGalleryAdapter");
+        Objects.requireNonNull(galleryAdapter, "mGalleryAdapter");
 
         if (result == null || result.isEmpty()) {
-            mVb.progressBar.hide();
-            mVb.statusMessage.setText(R.string.warning_no_editions);
-            mVb.statusMessage.postDelayed(this::dismiss, BaseActivity.ERROR_DELAY_MS);
+            vb.progressBar.hide();
+            vb.statusMessage.setText(R.string.warning_no_editions);
+            vb.statusMessage.postDelayed(this::dismiss, BaseActivity.ERROR_DELAY_MS);
         } else {
             // set the list and trigger the adapter
-            mVm.setEditions(result);
-            mGalleryAdapter.notifyDataSetChanged();
+            vm.setEditions(result);
+            galleryAdapter.notifyDataSetChanged();
             // Show help message
-            mVb.statusMessage.setText(R.string.txt_tap_on_thumbnail_to_zoom);
+            vb.statusMessage.setText(R.string.txt_tap_on_thumbnail_to_zoom);
         }
     }
 
@@ -236,11 +236,11 @@ public class CoverBrowserDialogFragment
      * @param imageFileInfo to display
      */
     private void setGalleryImage(@Nullable final ImageFileInfo imageFileInfo) {
-        Objects.requireNonNull(mGalleryAdapter, "mGalleryAdapter");
+        Objects.requireNonNull(galleryAdapter, "mGalleryAdapter");
 
         final int editionIndex;
         if (imageFileInfo != null) {
-            editionIndex = mVm.getEditions().indexOf(imageFileInfo.getIsbn());
+            editionIndex = vm.getEditions().indexOf(imageFileInfo.getIsbn());
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                 Log.d(TAG, "setGalleryImage"
@@ -257,20 +257,20 @@ public class CoverBrowserDialogFragment
                 tmpFile.get().deleteOnExit();
                 // Tell the adapter to refresh the entry.
                 // It will get the image from the file-manager.
-                mGalleryAdapter.notifyItemChanged(editionIndex);
+                galleryAdapter.notifyItemChanged(editionIndex);
                 return;
             }
 
             // No file. Remove the defunct view from the gallery
-            mVm.getEditions().remove(editionIndex);
-            mGalleryAdapter.notifyItemRemoved(editionIndex);
+            vm.getEditions().remove(editionIndex);
+            galleryAdapter.notifyItemRemoved(editionIndex);
         }
 
         // if none left, dismiss.
-        if (mGalleryAdapter.getItemCount() == 0) {
-            mVb.progressBar.hide();
-            mVb.statusMessage.setText(R.string.warning_image_not_found);
-            mVb.statusMessage.postDelayed(this::dismiss, BaseActivity.ERROR_DELAY_MS);
+        if (galleryAdapter.getItemCount() == 0) {
+            vb.progressBar.hide();
+            vb.statusMessage.setText(R.string.warning_image_not_found);
+            vb.statusMessage.postDelayed(this::dismiss, BaseActivity.ERROR_DELAY_MS);
         }
     }
 
@@ -287,11 +287,11 @@ public class CoverBrowserDialogFragment
                 // the gallery image IS a valid large image, so just display it
                 setSelectedImage(imageFileInfo);
             } else {
-                mVb.preview.setVisibility(View.INVISIBLE);
-                mVb.previewProgressBar.show();
+                vb.preview.setVisibility(View.INVISIBLE);
+                vb.previewProgressBar.show();
 
                 // start a task to fetch a larger image
-                mVm.fetchSelectedImage(imageFileInfo);
+                vm.fetchSelectedImage(imageFileInfo);
             }
         });
     }
@@ -303,26 +303,26 @@ public class CoverBrowserDialogFragment
      */
     private void setSelectedImage(@Nullable final ImageFileInfo imageFileInfo) {
         // Always reset the preview and hide the progress bar
-        mVm.setSelectedFile(null);
-        mVb.preview.setVisibility(View.INVISIBLE);
-        mVb.previewProgressBar.hide();
+        vm.setSelectedFile(null);
+        vb.preview.setVisibility(View.INVISIBLE);
+        vb.previewProgressBar.hide();
 
         if (imageFileInfo != null) {
             final Optional<File> file = imageFileInfo.getFile();
             if (file.isPresent()) {
-                mPreviewLoader.fromFile(mVb.preview, file.get(), (bitmap) -> {
+                previewLoader.fromFile(vb.preview, file.get(), (bitmap) -> {
                     // Set AFTER it was successfully loaded and displayed for maximum reliability
-                    mVm.setSelectedFile(file.get());
-                    mVb.preview.setVisibility(View.VISIBLE);
-                    mVb.statusMessage.setText(R.string.txt_tap_on_image_to_select);
+                    vm.setSelectedFile(file.get());
+                    vb.preview.setVisibility(View.VISIBLE);
+                    vb.statusMessage.setText(R.string.txt_tap_on_image_to_select);
                 });
                 return;
             }
         }
 
-        Snackbar.make(mVb.preview, R.string.warning_image_not_found,
+        Snackbar.make(vb.preview, R.string.warning_image_not_found,
                       Snackbar.LENGTH_LONG).show();
-        mVb.statusMessage.setText(R.string.txt_tap_on_thumbnail_to_zoom);
+        vb.statusMessage.setText(R.string.txt_tap_on_thumbnail_to_zoom);
 
     }
 
@@ -355,7 +355,7 @@ public class CoverBrowserDialogFragment
             final Bundle args = new Bundle(4);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
             args.putString(DBKey.TITLE, bookTitle);
-            args.putString(DBKey.KEY_ISBN, isbn);
+            args.putString(DBKey.BOOK_ISBN, isbn);
             args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);
 
             final DialogFragment fragment = new CoverBrowserDialogFragment();
@@ -445,12 +445,12 @@ public class CoverBrowserDialogFragment
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-            if (mVm.isCancelled()) {
+            if (vm.isCancelled()) {
                 return;
             }
 
-            final String isbn = mVm.getEditions().get(position);
-            final ImageFileInfo imageFileInfo = mVm.getFileInfo(isbn);
+            final String isbn = vm.getEditions().get(position);
+            final ImageFileInfo imageFileInfo = vm.getFileInfo(isbn);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                 Log.d(TAG, "onBindViewHolder"
@@ -463,7 +463,7 @@ public class CoverBrowserDialogFragment
                 mImageLoader.placeholder(holder.vb.coverImage0,
                                          R.drawable.ic_baseline_image_24);
                 // and queue a request for it.
-                mVm.fetchGalleryImage(isbn);
+                vm.fetchGalleryImage(isbn);
                 holder.vb.lblSite.setText("");
 
             } else {
@@ -495,7 +495,7 @@ public class CoverBrowserDialogFragment
 
         @Override
         public int getItemCount() {
-            return mVm.getEditions().size();
+            return vm.getEditions().size();
         }
     }
 }

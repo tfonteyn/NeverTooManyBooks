@@ -54,15 +54,15 @@ public class StripInfoWriter
 
     /** Export configuration. */
     @NonNull
-    private final SyncWriterHelper mSyncWriterHelper;
+    private final SyncWriterHelper syncWriterHelper;
 
-    private final boolean mDeleteLocalBook;
+    private final boolean deleteLocalBook;
 
     @NonNull
-    private final CollectionFormUploader mCollectionForm = new CollectionFormUploader();
+    private final CollectionFormUploader collectionForm = new CollectionFormUploader();
 
     @SuppressWarnings("FieldCanBeLocal")
-    private SyncWriterResults mResults;
+    private SyncWriterResults results;
 
     /**
      * Constructor.
@@ -70,13 +70,13 @@ public class StripInfoWriter
      * @param syncWriterHelper export configuration
      */
     public StripInfoWriter(@NonNull final SyncWriterHelper syncWriterHelper) {
-        mSyncWriterHelper = syncWriterHelper;
-        mDeleteLocalBook = mSyncWriterHelper.isDeleteLocalBooks();
+        this.syncWriterHelper = syncWriterHelper;
+        deleteLocalBook = this.syncWriterHelper.isDeleteLocalBooks();
     }
 
     @Override
     public void cancel() {
-        mCollectionForm.cancel();
+        collectionForm.cancel();
     }
 
     @NonNull
@@ -85,7 +85,7 @@ public class StripInfoWriter
                                    @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        mResults = new SyncWriterResults();
+        results = new SyncWriterResults();
 
         progressListener.setIndeterminate(true);
         progressListener.publishProgress(
@@ -96,7 +96,7 @@ public class StripInfoWriter
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         final LocalDateTime dateSince;
-        if (mSyncWriterHelper.isIncremental()) {
+        if (syncWriterHelper.isIncremental()) {
             dateSince = new ISODateParser().parse(
                     global.getString(StripInfoAuth.PK_LAST_SYNC, null));
         } else {
@@ -114,17 +114,17 @@ public class StripInfoWriter
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
                 final Book book = Book.from(cursor);
                 try {
-                    mCollectionForm.send(book);
-                    mResults.addBook(book.getId());
+                    collectionForm.send(book);
+                    results.addBook(book.getId());
 
                 } catch (@NonNull final HttpNotFoundException e404) {
                     // The book no longer exists on the server.
-                    if (mDeleteLocalBook) {
+                    if (deleteLocalBook) {
                         bookDao.delete(book);
                     } else {
                         // keep the book itself, but remove the stripInfo data for it
                         stripInfoDao.delete(book);
-                        mCollectionForm.removeFields(book);
+                        collectionForm.removeFields(book);
                     }
                 } catch (@NonNull final JSONException e) {
                     // ignore, just move on to the next book
@@ -148,7 +148,7 @@ public class StripInfoWriter
               .putString(StripInfoAuth.PK_LAST_SYNC, LocalDateTime.now(ZoneOffset.UTC).format(
                       DateTimeFormatter.ISO_LOCAL_DATE_TIME))
               .apply();
-        return mResults;
+        return results;
     }
 
     @Override

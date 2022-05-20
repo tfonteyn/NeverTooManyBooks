@@ -74,7 +74,7 @@ public class GoogleBooksSearchEngine
 
     private static final Pattern SPACE_LITERAL = Pattern.compile(" ", Pattern.LITERAL);
     @Nullable
-    private FutureHttpGet<Boolean> mFutureHttpGet;
+    private FutureHttpGet<Boolean> futureHttpGet;
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -153,7 +153,7 @@ public class GoogleBooksSearchEngine
             throws StorageException,
                    SearchException {
 
-        mFutureHttpGet = createFutureGetRequest();
+        futureHttpGet = createFutureGetRequest();
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         // get the booklist, can return multiple books ('entry' elements)
@@ -161,7 +161,7 @@ public class GoogleBooksSearchEngine
 
         try {
             final SAXParser parser = factory.newSAXParser();
-            mFutureHttpGet.get(url, request -> {
+            futureHttpGet.get(url, request -> {
                 try (BufferedInputStream bis = new BufferedInputStream(request.getInputStream())) {
                     parser.parse(bis, listHandler);
                     return true;
@@ -185,7 +185,7 @@ public class GoogleBooksSearchEngine
                         this, fetchCovers, bookData, getLocale(context));
 
                 // only using the first one found, maybe future enhancement?
-                mFutureHttpGet.get(urlList.get(0), request -> {
+                futureHttpGet.get(urlList.get(0), request -> {
                     try (BufferedInputStream bis = new BufferedInputStream(
                             request.getInputStream())) {
                         parser.parse(bis, handler);
@@ -213,7 +213,7 @@ public class GoogleBooksSearchEngine
         } catch (@NonNull final ParserConfigurationException | IOException e) {
             throw new SearchException(getName(context), e);
         } finally {
-            mFutureHttpGet = null;
+            futureHttpGet = null;
         }
     }
 
@@ -221,8 +221,8 @@ public class GoogleBooksSearchEngine
     public void cancel() {
         synchronized (this) {
             super.cancel();
-            if (mFutureHttpGet != null) {
-                mFutureHttpGet.cancel();
+            if (futureHttpGet != null) {
+                futureHttpGet.cancel();
             }
         }
     }

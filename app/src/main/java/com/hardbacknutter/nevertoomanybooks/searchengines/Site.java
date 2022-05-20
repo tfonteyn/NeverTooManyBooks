@@ -72,20 +72,20 @@ public final class Site
      */
     private static final String PREF_SUFFIX_ENABLED = "enabled";
 
-    /** SearchEngine ID. Used to (re)create {@link #mSearchEngine}. */
+    /** SearchEngine ID. Used to (re)create {@link #searchEngine}. */
     @SearchSites.EngineId
     public final int engineId;
 
     /** Type of this site. */
     @NonNull
-    private final Type mType;
+    private final Type type;
 
     /** user preference: enable/disable this site. */
-    private boolean mEnabled;
+    private boolean enabled;
 
     /** the class which implements the search engine for a specific site. */
     @Nullable
-    private SearchEngine mSearchEngine;
+    private SearchEngine searchEngine;
 
     /**
      * Constructor.
@@ -99,8 +99,8 @@ public final class Site
                  final boolean enabled) {
 
         this.engineId = engineId;
-        mType = type;
-        mEnabled = enabled;
+        this.type = type;
+        this.enabled = enabled;
     }
 
     /**
@@ -110,12 +110,12 @@ public final class Site
      */
     private Site(@NonNull final Site from) {
         engineId = from.engineId;
-        mType = from.mType;
+        type = from.type;
 
         // Copy the current state
-        mEnabled = from.mEnabled;
+        enabled = from.enabled;
         // don't copy the mSearchEngine, let it be recreated.
-        mSearchEngine = null;
+        searchEngine = null;
     }
 
     /**
@@ -126,8 +126,8 @@ public final class Site
     private Site(@NonNull final Parcel in) {
         engineId = in.readInt();
         //noinspection ConstantConditions
-        mType = in.readParcelable(Type.class.getClassLoader());
-        mEnabled = in.readByte() != 0;
+        type = in.readParcelable(Type.class.getClassLoader());
+        enabled = in.readByte() != 0;
     }
 
     /**
@@ -218,8 +218,8 @@ public final class Site
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         dest.writeInt(engineId);
-        dest.writeParcelable(mType, flags);
-        dest.writeByte((byte) (mEnabled ? 1 : 0));
+        dest.writeParcelable(type, flags);
+        dest.writeByte((byte) (enabled ? 1 : 0));
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -236,26 +236,26 @@ public final class Site
      */
     @NonNull
     public SearchEngine getSearchEngine() {
-        if (mSearchEngine == null) {
-            mSearchEngine = SearchEngineRegistry
+        if (searchEngine == null) {
+            searchEngine = SearchEngineRegistry
                     .getInstance().createSearchEngine(engineId);
         }
 
-        mSearchEngine.reset();
-        return mSearchEngine;
+        searchEngine.reset();
+        return searchEngine;
     }
 
     @NonNull
     public Type getType() {
-        return mType;
+        return type;
     }
 
     public boolean isEnabled() {
-        return mEnabled;
+        return enabled;
     }
 
     public void setEnabled(final boolean enabled) {
-        mEnabled = enabled;
+        this.enabled = enabled;
     }
 
     /**
@@ -268,16 +268,16 @@ public final class Site
         return PREF_PREFIX
                + SearchEngineRegistry.getInstance().getByEngineId(engineId).getPreferenceKey()
                + '.'
-               + mType.typeName
+               + type.typeName
                + '.';
     }
 
     private void loadFromPrefs(@NonNull final SharedPreferences prefs) {
-        mEnabled = prefs.getBoolean(getPrefPrefix() + PREF_SUFFIX_ENABLED, mEnabled);
+        enabled = prefs.getBoolean(getPrefPrefix() + PREF_SUFFIX_ENABLED, enabled);
     }
 
     private void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
-        editor.putBoolean(getPrefPrefix() + PREF_SUFFIX_ENABLED, mEnabled);
+        editor.putBoolean(getPrefPrefix() + PREF_SUFFIX_ENABLED, enabled);
     }
 
     @Override
@@ -285,9 +285,9 @@ public final class Site
     public String toString() {
         return "Site{"
                + "engineId=" + engineId
-               + ", mType=" + mType
-               + ", mEnabled=" + mEnabled
-               + ", mSearchEngine=" + mSearchEngine
+               + ", mType=" + type
+               + ", mEnabled=" + enabled
+               + ", mSearchEngine=" + searchEngine
                + '}';
     }
 

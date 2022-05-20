@@ -90,83 +90,83 @@ public class EditBookViewModel
     private static final String TAG = "EditBookViewModel";
 
     /** the list with all fields. */
-    private final List<Field<?, ? extends View>> mFields = new ArrayList<>();
+    private final List<Field<?, ? extends View>> fields = new ArrayList<>();
 
     /** The key is the fragment tag. */
-    private final Collection<FragmentId> mFragmentsWithUnfinishedEdits =
+    private final Collection<FragmentId> fragmentsWithUnfinishedEdits =
             EnumSet.noneOf(FragmentId.class);
 
-    private final MutableLiveData<List<Author>> mAuthorList = new MutableLiveData<>();
-    private final MutableLiveData<List<Series>> mSeriesList = new MutableLiveData<>();
-    private final MutableLiveData<List<Publisher>> mPublisherList = new MutableLiveData<>();
-    private final List<MenuHandler> mMenuHandlers = new ArrayList<>();
-    private final Collection<FieldGroup> mFieldGroups = EnumSet.noneOf(FieldGroup.class);
+    private final MutableLiveData<List<Author>> authorList = new MutableLiveData<>();
+    private final MutableLiveData<List<Series>> seriesList = new MutableLiveData<>();
+    private final MutableLiveData<List<Publisher>> publisherList = new MutableLiveData<>();
+    private final List<MenuHandler> menuHandlers = new ArrayList<>();
+    private final Collection<FieldGroup> fieldGroups = EnumSet.noneOf(FieldGroup.class);
 
     /**
      * The Book we're editing (creating/updating).
      */
-    private Book mBook;
+    private Book book;
     /**
      * Field drop down lists.
      * Lists in database so far, we cache them for performance but only load
      * them when really needed.
      */
     @Nullable
-    private List<String> mGenres;
+    private List<String> genres;
     /** Field drop down list. */
     @Nullable
-    private List<String> mLocations;
+    private List<String> locations;
     /** Field drop down list. */
     @Nullable
-    private List<String> mFormats;
+    private List<String> formats;
     /** Field drop down list. */
     @Nullable
-    private List<String> mColors;
+    private List<String> colors;
     /** Field drop down list. */
     @Nullable
-    private List<String> mLanguagesCodes;
+    private List<String> languagesCodes;
     /** Field drop down list. */
     @Nullable
-    private List<String> mPricePaidCurrencies;
+    private List<String> pricePaidCurrencies;
     /** Field drop down list. */
     @Nullable
-    private List<String> mListPriceCurrencies;
+    private List<String> listPriceCurrencies;
     /** Field drop down list. */
     @Nullable
     private List<String> mAuthorNamesFormatted;
     /** Field drop down list. */
     @Nullable
-    private List<String> mAuthorFamilyNames;
+    private List<String> authorFamilyNames;
     /** Field drop down list. */
     @Nullable
-    private List<String> mAuthorGivenNames;
+    private List<String> authorGivenNames;
     /** Field drop down list. */
     @Nullable
-    private List<String> mPublisherNames;
+    private List<String> publisherNames;
     /** Field drop down list. */
     @Nullable
-    private List<String> mSeriesTitles;
+    private List<String> seriesTitles;
 
     /** The currently displayed tab. */
-    private int mCurrentTab;
+    private int currentTab;
 
     /** These FieldFormatters can be shared between multiple fields. */
-    private FieldFormatter<String> mDateFormatter;
-    private FieldFormatter<String> mLanguageFormatter;
-    private ListFormatter<Entity> mNormalDetailListFormatter;
-    private DoubleNumberFormatter mDoubleNumberFormatter;
+    private FieldFormatter<String> dateFormatter;
+    private FieldFormatter<String> languageFormatter;
+    private ListFormatter<Entity> normalDetailListFormatter;
+    private DoubleNumberFormatter doubleNumberFormatter;
 
-    private boolean mIsChanged;
+    private boolean changed;
 
-    private String mErrStrNonBlankRequired;
-    private String mErrStrReadStartAfterEnd;
+    private String errStrNonBlankRequired;
+    private String errStrReadStartAfterEnd;
 
     int getCurrentTab() {
-        return mCurrentTab;
+        return currentTab;
     }
 
     void setCurrentTab(final int currentTab) {
-        mCurrentTab = currentTab;
+        this.currentTab = currentTab;
     }
 
     /**
@@ -178,59 +178,59 @@ public class EditBookViewModel
     void init(@NonNull final Context context,
               @Nullable final Bundle args) {
 
-        if (mBook == null) {
-            mErrStrNonBlankRequired = context.getString(R.string.vldt_non_blank_required);
-            mErrStrReadStartAfterEnd = context.getString(R.string.vldt_read_start_after_end);
+        if (book == null) {
+            errStrNonBlankRequired = context.getString(R.string.vldt_non_blank_required);
+            errStrReadStartAfterEnd = context.getString(R.string.vldt_read_start_after_end);
 
             final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
-            mDateFormatter = new DateFieldFormatter(locale);
-            mLanguageFormatter = new LanguageFormatter(locale);
-            mNormalDetailListFormatter = new ListFormatter<>(Details.Normal, null);
-            mDoubleNumberFormatter = new DoubleNumberFormatter();
+            dateFormatter = new DateFieldFormatter(locale);
+            languageFormatter = new LanguageFormatter(locale);
+            normalDetailListFormatter = new ListFormatter<>(Details.Normal, null);
+            doubleNumberFormatter = new DoubleNumberFormatter();
 
             if (args != null) {
                 // 1. Do we have a bundle? e.g. after an internet search
                 final Bundle bookData = args.getBundle(Book.BKEY_DATA_BUNDLE);
                 if (bookData != null) {
-                    mBook = Book.from(bookData);
+                    book = Book.from(bookData);
                 } else {
                     // 2. Do we have an id?, e.g. user clicked on a book in a list.
                     final long bookId = args.getLong(DBKey.FK_BOOK, 0);
                     if (bookId > 0) {
-                        mBook = Book.from(bookId);
+                        book = Book.from(bookId);
                     } else {
-                        mBook = new Book();
+                        book = new Book();
                     }
                     // has unchanged data, hence 'WriteAble'
-                    mBook.setStage(EntityStage.Stage.WriteAble);
+                    book.setStage(EntityStage.Stage.WriteAble);
                 }
             } else {
                 // 3. No args, we want an empty new book (e.g. user wants to add one manually).
-                mBook = new Book();
+                book = new Book();
                 // has no data, hence 'WriteAble'
-                mBook.setStage(EntityStage.Stage.WriteAble);
+                book.setStage(EntityStage.Stage.WriteAble);
             }
 
-            mBook.addValidators();
-            mBook.ensureBookshelf(context);
-            mBook.ensureLanguage(context);
+            book.addValidators();
+            book.ensureBookshelf(context);
+            book.ensureLanguage(context);
         }
     }
 
     @NonNull
     List<MenuHandler> getMenuHandlers() {
-        if (mMenuHandlers.isEmpty()) {
-            mMenuHandlers.add(new ViewBookOnWebsiteHandler());
-            mMenuHandlers.add(new AmazonHandler());
+        if (menuHandlers.isEmpty()) {
+            menuHandlers.add(new ViewBookOnWebsiteHandler());
+            menuHandlers.add(new AmazonHandler());
         }
-        return mMenuHandlers;
+        return menuHandlers;
     }
 
     @NonNull
     List<Field<?, ? extends View>> getFields(@NonNull final FragmentId fragmentId) {
-        return mFields.stream()
-                      .filter(field -> field.getFragmentId() == fragmentId)
-                      .collect(Collectors.toList());
+        return fields.stream()
+                     .filter(field -> field.getFragmentId() == fragmentId)
+                     .collect(Collectors.toList());
     }
 
     /**
@@ -244,9 +244,9 @@ public class EditBookViewModel
      */
     @NonNull
     Optional<Field<?, ? extends View>> getField(@IdRes final int id) {
-        return mFields.stream()
-                      .filter(field -> field.getFieldViewId() == id)
-                      .findFirst();
+        return fields.stream()
+                     .filter(field -> field.getFieldViewId() == id)
+                     .findFirst();
     }
 
     /**
@@ -263,7 +263,7 @@ public class EditBookViewModel
     @NonNull
     <T, V extends View> Field<T, V> requireField(@IdRes final int id) {
         //noinspection unchecked
-        return (Field<T, V>) mFields
+        return (Field<T, V>) fields
                 .stream()
                 .filter(field -> field.getFieldViewId() == id)
                 .findFirst()
@@ -289,12 +289,12 @@ public class EditBookViewModel
      */
     @NonNull
     Collection<FragmentId> getUnfinishedEdits() {
-        return mFragmentsWithUnfinishedEdits;
+        return fragmentsWithUnfinishedEdits;
     }
 
     @NonNull
     Book getBook() {
-        return mBook;
+        return book;
     }
 
     /**
@@ -308,13 +308,13 @@ public class EditBookViewModel
     void saveBook(@NonNull final Context context)
             throws StorageException, DaoWriteException {
 
-        if (mBook.isNew()) {
-            ServiceLocator.getInstance().getBookDao().insert(context, mBook, 0);
+        if (book.isNew()) {
+            ServiceLocator.getInstance().getBookDao().insert(context, book, 0);
         } else {
-            ServiceLocator.getInstance().getBookDao().update(context, mBook, 0);
+            ServiceLocator.getInstance().getBookDao().update(context, book, 0);
         }
-        mIsChanged = true;
-        mBook.setStage(EntityStage.Stage.Clean);
+        changed = true;
+        book.setStage(EntityStage.Stage.Clean);
     }
 
     /**
@@ -324,7 +324,7 @@ public class EditBookViewModel
      * @return {@code true} if the book was changed and successfully saved.
      */
     public boolean isChanged() {
-        return mIsChanged;
+        return changed;
     }
 
     /**
@@ -349,7 +349,7 @@ public class EditBookViewModel
      */
     @NonNull
     Author getPrimaryAuthor(@NonNull final Context context) {
-        return Objects.requireNonNullElseGet(mBook.getPrimaryAuthor(),
+        return Objects.requireNonNullElseGet(book.getPrimaryAuthor(),
                                              () -> Author.createUnknownAuthor(context));
     }
 
@@ -359,8 +359,8 @@ public class EditBookViewModel
      * @return {@code true} if it does
      */
     boolean bookExists() {
-        if (mBook.isNew()) {
-            final String isbnStr = mBook.getString(DBKey.KEY_ISBN);
+        if (book.isNew()) {
+            final String isbnStr = book.getString(DBKey.BOOK_ISBN);
             if (!isbnStr.isEmpty()) {
                 return ServiceLocator.getInstance().getBookDao().bookExistsByIsbn(isbnStr);
             }
@@ -380,8 +380,8 @@ public class EditBookViewModel
             if (bookData != null) {
                 bookData.keySet()
                         .stream()
-                        .filter(key -> !mBook.contains(key))
-                        .forEach(key -> mBook.put(key, bookData.get(key)));
+                        .filter(key -> !book.contains(key))
+                        .forEach(key -> book.put(key, bookData.get(key)));
             }
         }
     }
@@ -414,11 +414,11 @@ public class EditBookViewModel
      */
     @NonNull
     List<String> getAllAuthorFamilyNames() {
-        if (mAuthorFamilyNames == null) {
-            mAuthorFamilyNames = ServiceLocator.getInstance().getAuthorDao()
-                                               .getNames(DBKey.AUTHOR_FAMILY_NAME);
+        if (authorFamilyNames == null) {
+            authorFamilyNames = ServiceLocator.getInstance().getAuthorDao()
+                                              .getNames(DBKey.AUTHOR_FAMILY_NAME);
         }
-        return mAuthorFamilyNames;
+        return authorFamilyNames;
     }
 
     /**
@@ -428,11 +428,11 @@ public class EditBookViewModel
      */
     @NonNull
     List<String> getAllAuthorGivenNames() {
-        if (mAuthorGivenNames == null) {
-            mAuthorGivenNames = ServiceLocator.getInstance().getAuthorDao()
-                                              .getNames(DBKey.AUTHOR_GIVEN_NAMES);
+        if (authorGivenNames == null) {
+            authorGivenNames = ServiceLocator.getInstance().getAuthorDao()
+                                             .getNames(DBKey.AUTHOR_GIVEN_NAMES);
         }
-        return mAuthorGivenNames;
+        return authorGivenNames;
     }
 
     /**
@@ -442,10 +442,10 @@ public class EditBookViewModel
      */
     @NonNull
     List<String> getAllPublisherNames() {
-        if (mPublisherNames == null) {
-            mPublisherNames = ServiceLocator.getInstance().getPublisherDao().getNames();
+        if (publisherNames == null) {
+            publisherNames = ServiceLocator.getInstance().getPublisherDao().getNames();
         }
-        return mPublisherNames;
+        return publisherNames;
     }
 
     /**
@@ -455,10 +455,10 @@ public class EditBookViewModel
      */
     @NonNull
     List<String> getAllSeriesTitles() {
-        if (mSeriesTitles == null) {
-            mSeriesTitles = ServiceLocator.getInstance().getSeriesDao().getNames();
+        if (seriesTitles == null) {
+            seriesTitles = ServiceLocator.getInstance().getSeriesDao().getNames();
         }
-        return mSeriesTitles;
+        return seriesTitles;
     }
 
     /**
@@ -471,9 +471,9 @@ public class EditBookViewModel
                             final boolean hasUnfinishedEdits) {
         if (hasUnfinishedEdits) {
             // Flag up this fragment as having unfinished edits.
-            mFragmentsWithUnfinishedEdits.add(fragmentId);
+            fragmentsWithUnfinishedEdits.add(fragmentId);
         } else {
-            mFragmentsWithUnfinishedEdits.remove(fragmentId);
+            fragmentsWithUnfinishedEdits.remove(fragmentId);
         }
     }
 
@@ -487,10 +487,10 @@ public class EditBookViewModel
      */
     @NonNull
     private List<String> getAllLanguagesCodes() {
-        if (mLanguagesCodes == null) {
-            mLanguagesCodes = ServiceLocator.getInstance().getLanguageDao().getList();
+        if (languagesCodes == null) {
+            languagesCodes = ServiceLocator.getInstance().getLanguageDao().getList();
         }
-        return mLanguagesCodes;
+        return languagesCodes;
     }
 
     /**
@@ -500,10 +500,10 @@ public class EditBookViewModel
      */
     @NonNull
     private List<String> getAllFormats() {
-        if (mFormats == null) {
-            mFormats = ServiceLocator.getInstance().getFormatDao().getList();
+        if (formats == null) {
+            formats = ServiceLocator.getInstance().getFormatDao().getList();
         }
-        return mFormats;
+        return formats;
     }
 
     /**
@@ -513,10 +513,10 @@ public class EditBookViewModel
      */
     @NonNull
     private List<String> getAllColors() {
-        if (mColors == null) {
-            mColors = ServiceLocator.getInstance().getColorDao().getList();
+        if (colors == null) {
+            colors = ServiceLocator.getInstance().getColorDao().getList();
         }
-        return mColors;
+        return colors;
     }
 
     /**
@@ -526,10 +526,10 @@ public class EditBookViewModel
      */
     @NonNull
     private List<String> getAllGenres() {
-        if (mGenres == null) {
-            mGenres = ServiceLocator.getInstance().getGenreDao().getList();
+        if (genres == null) {
+            genres = ServiceLocator.getInstance().getGenreDao().getList();
         }
-        return mGenres;
+        return genres;
     }
 
     /**
@@ -539,10 +539,10 @@ public class EditBookViewModel
      */
     @NonNull
     private List<String> getAllLocations() {
-        if (mLocations == null) {
-            mLocations = ServiceLocator.getInstance().getLocationDao().getList();
+        if (locations == null) {
+            locations = ServiceLocator.getInstance().getLocationDao().getList();
         }
-        return mLocations;
+        return locations;
     }
 
     /**
@@ -552,11 +552,11 @@ public class EditBookViewModel
      */
     @NonNull
     private List<String> getAllListPriceCurrencyCodes() {
-        if (mListPriceCurrencies == null) {
-            mListPriceCurrencies = ServiceLocator
+        if (listPriceCurrencies == null) {
+            listPriceCurrencies = ServiceLocator
                     .getInstance().getBookDao().getCurrencyCodes(DBKey.PRICE_LISTED_CURRENCY);
         }
-        return mListPriceCurrencies;
+        return listPriceCurrencies;
     }
 
     /**
@@ -569,12 +569,12 @@ public class EditBookViewModel
      */
     boolean isSingleUsage(@NonNull final Context context,
                           @NonNull final Author author) {
-        final Locale bookLocale = mBook.getLocale(context);
+        final Locale bookLocale = book.getLocale(context);
 
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
         final long nrOfReferences = authorDao.countBooks(context, author, bookLocale)
                                     + authorDao.countTocEntries(context, author, bookLocale);
-        return nrOfReferences <= (mBook.isNew() ? 0 : 1);
+        return nrOfReferences <= (book.isNew() ? 0 : 1);
     }
 
     /**
@@ -587,10 +587,10 @@ public class EditBookViewModel
      */
     boolean isSingleUsage(@NonNull final Context context,
                           @NonNull final Series series) {
-        final Locale bookLocale = mBook.getLocale(context);
+        final Locale bookLocale = book.getLocale(context);
         final long nrOfReferences = ServiceLocator.getInstance().getSeriesDao()
                                                   .countBooks(context, series, bookLocale);
-        return nrOfReferences <= (mBook.isNew() ? 0 : 1);
+        return nrOfReferences <= (book.isNew() ? 0 : 1);
     }
 
     /**
@@ -603,40 +603,40 @@ public class EditBookViewModel
      */
     boolean isSingleUsage(@NonNull final Context context,
                           @NonNull final Publisher publisher) {
-        final Locale bookLocale = mBook.getLocale(context);
+        final Locale bookLocale = book.getLocale(context);
         final long nrOfReferences = ServiceLocator.getInstance().getPublisherDao()
                                                   .countBooks(context, publisher, bookLocale);
-        return nrOfReferences <= (mBook.isNew() ? 0 : 1);
+        return nrOfReferences <= (book.isNew() ? 0 : 1);
     }
 
     @NonNull
     LiveData<List<Author>> onAuthorList() {
-        return mAuthorList;
+        return authorList;
     }
 
     @NonNull
     LiveData<List<Series>> onSeriesList() {
-        return mSeriesList;
+        return seriesList;
     }
 
     @NonNull
     LiveData<List<Publisher>> onPublisherList() {
-        return mPublisherList;
+        return publisherList;
     }
 
     void updateAuthors(@NonNull final List<Author> list) {
-        mBook.setAuthors(list);
-        mAuthorList.setValue(list);
+        book.setAuthors(list);
+        authorList.setValue(list);
     }
 
     void updateSeries(@NonNull final List<Series> list) {
-        mBook.setSeries(list);
-        mSeriesList.setValue(list);
+        book.setSeries(list);
+        seriesList.setValue(list);
     }
 
     void updatePublishers(@NonNull final List<Publisher> list) {
-        mBook.setPublishers(list);
-        mPublisherList.setValue(list);
+        book.setPublishers(list);
+        publisherList.setValue(list);
     }
 
     boolean changeForThisBook(@NonNull final Context context,
@@ -644,14 +644,14 @@ public class EditBookViewModel
                               @NonNull final Author modified) {
 
         if (ServiceLocator.getInstance().getAuthorDao().insert(context, modified) > 0) {
-            final List<Author> list = mBook.getAuthors();
+            final List<Author> list = book.getAuthors();
             // unlink the original, and link with the new one
             // Note that the original *might* be orphaned at this time.
             // That's ok, it will get garbage collected from the database sooner or later.
             list.remove(original);
             list.add(modified);
-            mBook.setAuthors(list);
-            mBook.pruneAuthors(context, true);
+            book.setAuthors(list);
+            book.pruneAuthors(context, true);
             return true;
         }
         Logger.error(TAG, new Throwable(), "Could not update", "original=" + original,
@@ -666,8 +666,8 @@ public class EditBookViewModel
         original.copyFrom(modified, true);
 
         if (ServiceLocator.getInstance().getAuthorDao().update(context, original)) {
-            mBook.pruneAuthors(context, true);
-            mBook.refreshAuthorList(context);
+            book.pruneAuthors(context, true);
+            book.refreshAuthorList(context);
             return true;
         }
 
@@ -680,15 +680,15 @@ public class EditBookViewModel
                               @NonNull final Series original,
                               @NonNull final Series modified) {
         if (ServiceLocator.getInstance().getSeriesDao()
-                          .insert(context, modified, mBook.getLocale(context)) > 0) {
-            final List<Series> list = mBook.getSeries();
+                          .insert(context, modified, book.getLocale(context)) > 0) {
+            final List<Series> list = book.getSeries();
             // unlink the original, and link with the new one
             // Note that the original *might* be orphaned at this time.
             // That's ok, it will get garbage collected from the database sooner or later.
             list.remove(original);
             list.add(modified);
-            mBook.setSeries(list);
-            mBook.pruneSeries(context, true);
+            book.setSeries(list);
+            book.pruneSeries(context, true);
             return true;
         }
 
@@ -704,9 +704,9 @@ public class EditBookViewModel
         original.copyFrom(modified, true);
 
         if (ServiceLocator.getInstance().getSeriesDao()
-                          .update(context, original, mBook.getLocale(context))) {
-            mBook.pruneSeries(context, true);
-            mBook.refreshSeriesList(context);
+                          .update(context, original, book.getLocale(context))) {
+            book.pruneSeries(context, true);
+            book.refreshSeriesList(context);
             return true;
         }
         Logger.error(TAG, new Throwable(), "Could not update", "original=" + original,
@@ -719,15 +719,15 @@ public class EditBookViewModel
                               @NonNull final Publisher modified) {
 
         if (ServiceLocator.getInstance().getPublisherDao()
-                          .insert(context, modified, mBook.getLocale(context)) > 0) {
-            final List<Publisher> list = mBook.getPublishers();
+                          .insert(context, modified, book.getLocale(context)) > 0) {
+            final List<Publisher> list = book.getPublishers();
             // unlink the original, and link with the new one
             // Note that the original *might* be orphaned at this time.
             // That's ok, it will get garbage collected from the database sooner or later.
             list.remove(original);
             list.add(modified);
-            mBook.setPublishers(list);
-            mBook.prunePublishers(context, true);
+            book.setPublishers(list);
+            book.prunePublishers(context, true);
             return true;
         }
         Logger.error(TAG, new Throwable(), "Could not update", "original=" + original,
@@ -742,9 +742,9 @@ public class EditBookViewModel
         original.copyFrom(modified);
 
         if (ServiceLocator.getInstance().getPublisherDao()
-                          .update(context, original, mBook.getLocale(context))) {
-            mBook.prunePublishers(context, true);
-            mBook.refreshPublishersList(context);
+                          .update(context, original, book.getLocale(context))) {
+            book.prunePublishers(context, true);
+            book.refreshPublishersList(context);
             return true;
         }
         Logger.error(TAG, new Throwable(), "Could not update", "original=" + original,
@@ -755,25 +755,25 @@ public class EditBookViewModel
     void fixId(@NonNull final Context context,
                @NonNull final Author author) {
         ServiceLocator.getInstance().getAuthorDao()
-                      .fixId(context, author, true, mBook.getLocale(context));
+                      .fixId(context, author, true, book.getLocale(context));
     }
 
     void fixId(@NonNull final Context context,
                @NonNull final Series series) {
         ServiceLocator.getInstance().getSeriesDao()
-                      .fixId(context, series, true, mBook.getLocale(context));
+                      .fixId(context, series, true, book.getLocale(context));
     }
 
     void fixId(@NonNull final Context context,
                @NonNull final Publisher publisher) {
         ServiceLocator.getInstance().getPublisherDao()
-                      .fixId(context, publisher, true, mBook.getLocale(context));
+                      .fixId(context, publisher, true, book.getLocale(context));
     }
 
     void fixId(@NonNull final Context context,
                @NonNull final TocEntry tocEntry) {
         ServiceLocator.getInstance().getTocEntryDao()
-                      .fixId(context, tocEntry, true, mBook.getLocale(context));
+                      .fixId(context, tocEntry, true, book.getLocale(context));
     }
 
     /**
@@ -783,11 +783,11 @@ public class EditBookViewModel
      */
     @NonNull
     private List<String> getAllPricePaidCurrencyCodes() {
-        if (mPricePaidCurrencies == null) {
-            mPricePaidCurrencies = ServiceLocator
+        if (pricePaidCurrencies == null) {
+            pricePaidCurrencies = ServiceLocator
                     .getInstance().getBookDao().getCurrencyCodes(DBKey.PRICE_PAID_CURRENCY);
         }
-        return mPricePaidCurrencies;
+        return pricePaidCurrencies;
     }
 
     /**
@@ -808,10 +808,10 @@ public class EditBookViewModel
                     @NonNull final FieldGroup fieldGroup) {
 
         // init once only for each group
-        if (mFieldGroups.contains(fieldGroup)) {
+        if (fieldGroups.contains(fieldGroup)) {
             return;
         }
-        mFieldGroups.add(fieldGroup);
+        fieldGroups.add(fieldGroup);
 
         switch (fieldGroup) {
             case Main:
@@ -834,162 +834,162 @@ public class EditBookViewModel
 
     private void initFieldsMain(@NonNull final FragmentId fragmentId) {
 
-        mFields.add(new TextViewField<>(fragmentId, R.id.author, Book.BKEY_AUTHOR_LIST,
-                                        DBKey.FK_AUTHOR,
-                                        mNormalDetailListFormatter)
-                            .setTextInputLayoutId(R.id.lbl_author)
-                            .setValidator(field -> field.setErrorIfEmpty(
-                                    mErrStrNonBlankRequired)));
+        fields.add(new TextViewField<>(fragmentId, R.id.author, Book.BKEY_AUTHOR_LIST,
+                                       DBKey.FK_AUTHOR,
+                                       normalDetailListFormatter)
+                           .setTextInputLayoutId(R.id.lbl_author)
+                           .setValidator(field -> field.setErrorIfEmpty(
+                                   errStrNonBlankRequired)));
 
-        mFields.add(new TextViewField<>(fragmentId, R.id.series_title, Book.BKEY_SERIES_LIST,
-                                        DBKey.SERIES_TITLE,
-                                        mNormalDetailListFormatter)
-                            .setTextInputLayoutId(R.id.lbl_series));
+        fields.add(new TextViewField<>(fragmentId, R.id.series_title, Book.BKEY_SERIES_LIST,
+                                       DBKey.FK_SERIES,
+                                       normalDetailListFormatter)
+                           .setTextInputLayoutId(R.id.lbl_series));
 
-        mFields.add(new EditTextField<>(fragmentId, R.id.title, DBKey.TITLE)
-                            .setTextInputLayoutId(R.id.lbl_title)
-                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
-                            .setValidator(field -> field.setErrorIfEmpty(
-                                    mErrStrNonBlankRequired)));
+        fields.add(new EditTextField<>(fragmentId, R.id.title, DBKey.TITLE)
+                           .setTextInputLayoutId(R.id.lbl_title)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
+                           .setValidator(field -> field.setErrorIfEmpty(
+                                   errStrNonBlankRequired)));
 
-        mFields.add(new EditTextField<>(fragmentId, R.id.description, DBKey.DESCRIPTION)
-                            .setTextInputLayoutId(R.id.lbl_description)
-                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+        fields.add(new EditTextField<>(fragmentId, R.id.description, DBKey.DESCRIPTION)
+                           .setTextInputLayoutId(R.id.lbl_description)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         // Not using a EditIsbn custom View, as we want to be able to enter invalid codes here.
-        mFields.add(new EditTextField<>(fragmentId, R.id.isbn, DBKey.KEY_ISBN)
-                            .setTextInputLayoutId(R.id.lbl_isbn));
+        fields.add(new EditTextField<>(fragmentId, R.id.isbn, DBKey.BOOK_ISBN)
+                           .setTextInputLayoutId(R.id.lbl_isbn));
         // don't do this for now. There is a scan icon as end-icon.
         //                  .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
 
-        mFields.add(new AutoCompleteTextField(fragmentId, R.id.language, DBKey.LANGUAGE,
-                                              mLanguageFormatter, true,
-                                              this::getAllLanguagesCodes)
-                            .setTextInputLayoutId(R.id.lbl_language)
-                            .setValidator(field -> field.setErrorIfEmpty(
-                                    mErrStrNonBlankRequired)));
+        fields.add(new AutoCompleteTextField(fragmentId, R.id.language, DBKey.LANGUAGE,
+                                             languageFormatter, true,
+                                             this::getAllLanguagesCodes)
+                           .setTextInputLayoutId(R.id.lbl_language)
+                           .setValidator(field -> field.setErrorIfEmpty(
+                                   errStrNonBlankRequired)));
 
-        mFields.add(new AutoCompleteTextField(fragmentId, R.id.genre, DBKey.GENRE,
-                                              this::getAllGenres)
-                            .setTextInputLayoutId(R.id.lbl_genre));
+        fields.add(new AutoCompleteTextField(fragmentId, R.id.genre, DBKey.GENRE,
+                                             this::getAllGenres)
+                           .setTextInputLayoutId(R.id.lbl_genre));
 
         // Personal fields
 
-        mFields.add(new TextViewField<>(fragmentId, R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
-                                        DBKey.FK_BOOKSHELF,
-                                        mNormalDetailListFormatter)
-                            .setTextInputLayoutId(R.id.lbl_bookshelves)
-                            .setValidator(field -> field.setErrorIfEmpty(
-                                    mErrStrNonBlankRequired)));
+        fields.add(new TextViewField<>(fragmentId, R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
+                                       DBKey.FK_BOOKSHELF,
+                                       normalDetailListFormatter)
+                           .setTextInputLayoutId(R.id.lbl_bookshelves)
+                           .setValidator(field -> field.setErrorIfEmpty(
+                                   errStrNonBlankRequired)));
     }
 
     private void initFieldsPublication(@NonNull final FragmentId fragmentId) {
 
-        mFields.add(new AutoCompleteTextField(fragmentId, R.id.format, DBKey.BOOK_FORMAT,
-                                              this::getAllFormats)
-                            .setTextInputLayoutId(R.id.lbl_format));
+        fields.add(new AutoCompleteTextField(fragmentId, R.id.format, DBKey.FORMAT,
+                                             this::getAllFormats)
+                           .setTextInputLayoutId(R.id.lbl_format));
 
-        mFields.add(new AutoCompleteTextField(fragmentId, R.id.color, DBKey.COLOR,
-                                              this::getAllColors)
-                            .setTextInputLayoutId(R.id.lbl_color));
+        fields.add(new AutoCompleteTextField(fragmentId, R.id.color, DBKey.COLOR,
+                                             this::getAllColors)
+                           .setTextInputLayoutId(R.id.lbl_color));
 
-        mFields.add(new TextViewField<>(fragmentId, R.id.publisher, Book.BKEY_PUBLISHER_LIST,
-                                        DBKey.PUBLISHER_NAME,
-                                        mNormalDetailListFormatter)
-                            .setTextInputLayoutId(R.id.lbl_publisher));
+        fields.add(new TextViewField<>(fragmentId, R.id.publisher, Book.BKEY_PUBLISHER_LIST,
+                                       DBKey.FK_PUBLISHER,
+                                       normalDetailListFormatter)
+                           .setTextInputLayoutId(R.id.lbl_publisher));
 
-        mFields.add(new TextViewField<>(fragmentId, R.id.first_publication,
-                                        DBKey.DATE_FIRST_PUBLICATION,
-                                        mDateFormatter)
-                            .setTextInputLayoutId(R.id.lbl_first_publication)
-                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+        fields.add(new TextViewField<>(fragmentId, R.id.first_publication,
+                                       DBKey.FIRST_PUBLICATION__DATE,
+                                       dateFormatter)
+                           .setTextInputLayoutId(R.id.lbl_first_publication)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        mFields.add(new TextViewField<>(fragmentId, R.id.date_published,
-                                        DBKey.DATE_BOOK_PUBLICATION,
-                                        mDateFormatter)
-                            .setTextInputLayoutId(R.id.lbl_date_published)
-                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+        fields.add(new TextViewField<>(fragmentId, R.id.date_published,
+                                       DBKey.BOOK_PUBLICATION__DATE,
+                                       dateFormatter)
+                           .setTextInputLayoutId(R.id.lbl_date_published)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        mFields.add(new EditTextField<>(fragmentId, R.id.pages, DBKey.PAGES)
-                            .setTextInputLayoutId(R.id.lbl_pages)
-                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+        fields.add(new EditTextField<>(fragmentId, R.id.pages, DBKey.PAGE_COUNT)
+                           .setTextInputLayoutId(R.id.lbl_pages)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
 
         // MUST be defined before the currency field is defined.
-        mFields.add(new DecimalEditTextField(fragmentId, R.id.price_listed, DBKey.PRICE_LISTED,
-                                             mDoubleNumberFormatter)
-                            .setTextInputLayoutId(R.id.lbl_price_listed)
-                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+        fields.add(new DecimalEditTextField(fragmentId, R.id.price_listed, DBKey.PRICE_LISTED,
+                                            doubleNumberFormatter)
+                           .setTextInputLayoutId(R.id.lbl_price_listed)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        mFields.add(new AutoCompleteTextField(fragmentId, R.id.price_listed_currency,
-                                              DBKey.PRICE_LISTED_CURRENCY,
-                                              this::getAllListPriceCurrencyCodes)
-                            .setTextInputLayoutId(R.id.lbl_price_listed_currency)
-                            .addRelatedViews(R.id.lbl_price_listed, R.id.price_listed_currency));
+        fields.add(new AutoCompleteTextField(fragmentId, R.id.price_listed_currency,
+                                             DBKey.PRICE_LISTED_CURRENCY,
+                                             this::getAllListPriceCurrencyCodes)
+                           .setTextInputLayoutId(R.id.lbl_price_listed_currency)
+                           .addRelatedViews(R.id.lbl_price_listed, R.id.price_listed_currency));
 
-        mFields.add(new EditTextField<>(fragmentId, R.id.print_run, DBKey.PRINT_RUN)
-                            .setTextInputLayoutId(R.id.lbl_print_run)
-                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+        fields.add(new EditTextField<>(fragmentId, R.id.print_run, DBKey.PRINT_RUN)
+                           .setTextInputLayoutId(R.id.lbl_print_run)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        mFields.add(new BitmaskChipGroupField(fragmentId, R.id.edition, DBKey.BITMASK_EDITION,
-                                              Book.Edition::getEditions)
-                            .addRelatedViews(R.id.lbl_edition));
+        fields.add(new BitmaskChipGroupField(fragmentId, R.id.edition, DBKey.EDITION__BITMASK,
+                                             Book.Edition::getEditions)
+                           .addRelatedViews(R.id.lbl_edition));
     }
 
     private void initFieldsNotes(@NonNull final Context context,
                                  @NonNull final FragmentId fragmentId) {
-        mFields.add(new CompoundButtonField(fragmentId, R.id.cbx_read, DBKey.READ__BOOL));
+        fields.add(new CompoundButtonField(fragmentId, R.id.cbx_read, DBKey.READ__BOOL));
 
-        mFields.add(new CompoundButtonField(fragmentId, R.id.cbx_signed, DBKey.SIGNED__BOOL));
+        fields.add(new CompoundButtonField(fragmentId, R.id.cbx_signed, DBKey.SIGNED__BOOL));
 
-        mFields.add(new RatingBarEditField(fragmentId, R.id.rating, DBKey.RATING));
+        fields.add(new RatingBarEditField(fragmentId, R.id.rating, DBKey.RATING));
 
-        mFields.add(new EditTextField<>(fragmentId, R.id.notes, DBKey.PERSONAL_NOTES)
-                            .setTextInputLayoutId(R.id.lbl_notes)
-                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+        fields.add(new EditTextField<>(fragmentId, R.id.notes, DBKey.PERSONAL_NOTES)
+                           .setTextInputLayoutId(R.id.lbl_notes)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         // MUST be defined before the currency.
-        mFields.add(new DecimalEditTextField(fragmentId, R.id.price_paid, DBKey.PRICE_PAID,
-                                             mDoubleNumberFormatter)
-                            .setTextInputLayoutId(R.id.lbl_price_paid)
-                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+        fields.add(new DecimalEditTextField(fragmentId, R.id.price_paid, DBKey.PRICE_PAID,
+                                            doubleNumberFormatter)
+                           .setTextInputLayoutId(R.id.lbl_price_paid)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        mFields.add(new AutoCompleteTextField(fragmentId, R.id.price_paid_currency,
-                                              DBKey.PRICE_PAID_CURRENCY,
-                                              this::getAllPricePaidCurrencyCodes)
-                            .setTextInputLayoutId(R.id.lbl_price_paid_currency)
-                            .addRelatedViews(R.id.lbl_price_paid, R.id.price_paid_currency));
+        fields.add(new AutoCompleteTextField(fragmentId, R.id.price_paid_currency,
+                                             DBKey.PRICE_PAID_CURRENCY,
+                                             this::getAllPricePaidCurrencyCodes)
+                           .setTextInputLayoutId(R.id.lbl_price_paid_currency)
+                           .addRelatedViews(R.id.lbl_price_paid, R.id.price_paid_currency));
 
-        mFields.add(new StringArrayDropDownMenuField(fragmentId, R.id.condition,
-                                                     DBKey.BOOK_CONDITION,
-                                                     context, R.array.conditions_book)
-                            .setTextInputLayoutId(R.id.lbl_condition));
+        fields.add(new StringArrayDropDownMenuField(fragmentId, R.id.condition,
+                                                    DBKey.BOOK_CONDITION,
+                                                    context, R.array.conditions_book)
+                           .setTextInputLayoutId(R.id.lbl_condition));
 
-        mFields.add(new StringArrayDropDownMenuField(fragmentId, R.id.condition_cover,
-                                                     DBKey.BOOK_CONDITION_COVER,
-                                                     context, R.array.conditions_dust_cover)
-                            .setTextInputLayoutId(R.id.lbl_condition_cover));
+        fields.add(new StringArrayDropDownMenuField(fragmentId, R.id.condition_cover,
+                                                    DBKey.BOOK_CONDITION_COVER,
+                                                    context, R.array.conditions_dust_cover)
+                           .setTextInputLayoutId(R.id.lbl_condition_cover));
 
-        mFields.add(new AutoCompleteTextField(fragmentId, R.id.location, DBKey.LOCATION,
-                                              this::getAllLocations)
-                            .setTextInputLayoutId(R.id.lbl_location));
+        fields.add(new AutoCompleteTextField(fragmentId, R.id.location, DBKey.LOCATION,
+                                             this::getAllLocations)
+                           .setTextInputLayoutId(R.id.lbl_location));
 
-        mFields.add(new TextViewField<>(fragmentId, R.id.date_acquired, DBKey.DATE_ACQUIRED,
-                                        mDateFormatter)
-                            .setTextInputLayoutId(R.id.lbl_date_acquired)
-                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+        fields.add(new TextViewField<>(fragmentId, R.id.date_acquired, DBKey.DATE_ACQUIRED,
+                                       dateFormatter)
+                           .setTextInputLayoutId(R.id.lbl_date_acquired)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        mFields.add(new TextViewField<>(fragmentId, R.id.read_start, DBKey.READ_START__DATE,
-                                        mDateFormatter)
-                            .setTextInputLayoutId(R.id.lbl_read_start)
-                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
-                            .setValidator(this::validateReadStartAndEndFields));
+        fields.add(new TextViewField<>(fragmentId, R.id.read_start, DBKey.READ_START__DATE,
+                                       dateFormatter)
+                           .setTextInputLayoutId(R.id.lbl_read_start)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
+                           .setValidator(this::validateReadStartAndEndFields));
 
-        mFields.add(new TextViewField<>(fragmentId, R.id.read_end, DBKey.READ_END__DATE,
-                                        mDateFormatter)
-                            .setTextInputLayoutId(R.id.lbl_read_end)
-                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
-                            .setValidator(this::validateReadStartAndEndFields));
+        fields.add(new TextViewField<>(fragmentId, R.id.read_end, DBKey.READ_END__DATE,
+                                       dateFormatter)
+                           .setTextInputLayoutId(R.id.lbl_read_end)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
+                           .setValidator(this::validateReadStartAndEndFields));
     }
 
     private void validateReadStartAndEndFields(@NonNull final Field<String, TextView> field) {
@@ -1013,7 +1013,7 @@ public class EditBookViewModel
         }
 
         if (start.compareToIgnoreCase(end) > 0) {
-            endField.setError(mErrStrReadStartAfterEnd);
+            endField.setError(errStrReadStartAfterEnd);
 
         } else {
             startField.setError(null);
@@ -1023,11 +1023,11 @@ public class EditBookViewModel
 
     private void initFieldsToc(@NonNull final Context context,
                                @NonNull final FragmentId fragmentId) {
-        mFields.add(new EntityListDropDownMenuField<>(fragmentId, R.id.book_type,
-                                                      DBKey.BITMASK_TOC,
-                                                      context,
-                                                      Arrays.asList(Book.ContentType.values()))
-                            .setTextInputLayoutId(R.id.lbl_book_type));
+        fields.add(new EntityListDropDownMenuField<>(fragmentId, R.id.book_type,
+                                                     DBKey.TOC_TYPE__BITMASK,
+                                                     context,
+                                                     Arrays.asList(Book.ContentType.values()))
+                           .setTextInputLayoutId(R.id.lbl_book_type));
     }
 
     private void initFieldsExternalId(@NonNull final FragmentId fragmentId) {
@@ -1035,30 +1035,30 @@ public class EditBookViewModel
         // These FieldFormatters can be shared between multiple fields.
         final FieldFormatter<Number> longNumberFormatter = new LongNumberFormatter();
 
-        mFields.add(new EditTextField<>(fragmentId, R.id.site_goodreads, DBKey.SID_GOODREADS_BOOK,
-                                        longNumberFormatter, true)
-                            .setTextInputLayoutId(R.id.lbl_site_goodreads)
-                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+        fields.add(new EditTextField<>(fragmentId, R.id.site_goodreads, DBKey.SID_GOODREADS_BOOK,
+                                       longNumberFormatter, true)
+                           .setTextInputLayoutId(R.id.lbl_site_goodreads)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        mFields.add(new EditTextField<>(fragmentId, R.id.site_isfdb, DBKey.SID_ISFDB,
-                                        longNumberFormatter, true)
-                            .setTextInputLayoutId(R.id.lbl_site_isfdb)
-                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+        fields.add(new EditTextField<>(fragmentId, R.id.site_isfdb, DBKey.SID_ISFDB,
+                                       longNumberFormatter, true)
+                           .setTextInputLayoutId(R.id.lbl_site_isfdb)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        mFields.add(new EditTextField<>(fragmentId, R.id.site_library_thing,
-                                        DBKey.SID_LIBRARY_THING,
-                                        longNumberFormatter, true)
-                            .setTextInputLayoutId(R.id.lbl_site_library_thing)
-                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+        fields.add(new EditTextField<>(fragmentId, R.id.site_library_thing,
+                                       DBKey.SID_LIBRARY_THING,
+                                       longNumberFormatter, true)
+                           .setTextInputLayoutId(R.id.lbl_site_library_thing)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        mFields.add(new EditTextField<>(fragmentId, R.id.site_strip_info_be, DBKey.SID_STRIP_INFO,
-                                        longNumberFormatter, true)
-                            .setTextInputLayoutId(R.id.lbl_site_strip_info_be)
-                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+        fields.add(new EditTextField<>(fragmentId, R.id.site_strip_info_be, DBKey.SID_STRIP_INFO,
+                                       longNumberFormatter, true)
+                           .setTextInputLayoutId(R.id.lbl_site_strip_info_be)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        mFields.add(new EditTextField<>(fragmentId, R.id.site_open_library, DBKey.SID_OPEN_LIBRARY)
-                            .setTextInputLayoutId(R.id.lbl_site_open_library)
-                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+        fields.add(new EditTextField<>(fragmentId, R.id.site_open_library, DBKey.SID_OPEN_LIBRARY)
+                           .setTextInputLayoutId(R.id.lbl_site_open_library)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
     }
 
     /**
@@ -1066,10 +1066,10 @@ public class EditBookViewModel
      */
     public boolean handlesField(@NonNull final FragmentId fragmentId,
                                 final int fieldId) {
-        return mFields.stream()
-                      // This will return a single field (or none)
-                      .filter(field -> field.getFieldViewId() == fieldId)
-                      // lets see if its owned by the given fragment
-                      .anyMatch(field -> field.getFragmentId() == fragmentId);
+        return fields.stream()
+                     // This will return a single field (or none)
+                     .filter(field -> field.getFieldViewId() == fieldId)
+                     // lets see if its owned by the given fragment
+                     .anyMatch(field -> field.getFragmentId() == fragmentId);
     }
 }

@@ -173,11 +173,11 @@ public class ShowBookDetailsActivityViewModel
                            .addRelatedViews(R.id.lbl_author));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.series_title, Book.BKEY_SERIES_LIST,
-                                       DBKey.SERIES_TITLE,
+                                       DBKey.FK_SERIES,
                                        fullDetailListFormatter)
                            .addRelatedViews(R.id.lbl_series));
 
-        fields.add(new TextViewField<>(FragmentId.Main, R.id.isbn, DBKey.KEY_ISBN)
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.isbn, DBKey.BOOK_ISBN)
                            .addRelatedViews(R.id.lbl_isbn));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.description, DBKey.DESCRIPTION,
@@ -190,27 +190,27 @@ public class ShowBookDetailsActivityViewModel
                                        new LanguageFormatter(userLocale))
                            .addRelatedViews(R.id.lbl_language));
 
-        fields.add(new TextViewField<>(FragmentId.Main, R.id.pages, DBKey.PAGES,
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.pages, DBKey.PAGE_COUNT,
                                        new PagesFormatter()));
 
-        fields.add(new TextViewField<>(FragmentId.Main, R.id.format, DBKey.BOOK_FORMAT));
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.format, DBKey.FORMAT));
         fields.add(new TextViewField<>(FragmentId.Main, R.id.color, DBKey.COLOR));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.publisher, Book.BKEY_PUBLISHER_LIST,
-                                       DBKey.PUBLISHER_NAME,
+                                       DBKey.FK_PUBLISHER,
                                        normalDetailListFormatter));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.date_published,
-                                       DBKey.DATE_BOOK_PUBLICATION,
+                                       DBKey.BOOK_PUBLICATION__DATE,
                                        dateFormatter)
                            .addRelatedViews(R.id.lbl_date_published));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.first_publication,
-                                       DBKey.DATE_FIRST_PUBLICATION,
+                                       DBKey.FIRST_PUBLICATION__DATE,
                                        dateFormatter)
                            .addRelatedViews(R.id.lbl_first_publication));
 
-        fields.add(new TextViewField<>(FragmentId.Main, R.id.edition, DBKey.BITMASK_EDITION,
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.edition, DBKey.EDITION__BITMASK,
                                        new BitmaskFormatter(Details.Normal,
                                                             Book.Edition.getEditions(context)))
                            .addRelatedViews(R.id.lbl_edition));
