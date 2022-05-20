@@ -29,6 +29,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -128,7 +129,10 @@ public class StyleDaoImpl
      */
     public static void onPostCreate(@NonNull final SQLiteDatabase db) {
         try (SQLiteStatement stmt = db.compileStatement(INSERT_BUILTIN_STYLE)) {
-            for (final BuiltinStyle.Definition styleDef : BuiltinStyle.ALL) {
+            final List<BuiltinStyle.Definition> all = BuiltinStyle.ALL;
+            // start at element 1 !
+            for (int i = 1; i < all.size(); i++) {
+                final BuiltinStyle.Definition styleDef = all.get(i);
                 stmt.bindLong(1, styleDef.id);
                 stmt.bindString(2, styleDef.uuid);
                 // builtin: true

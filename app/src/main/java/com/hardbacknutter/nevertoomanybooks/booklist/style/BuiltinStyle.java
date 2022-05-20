@@ -264,6 +264,10 @@ public final class BuiltinStyle
     public static BuiltinStyle createFromDatabase(@NonNull final DataHolder rowData) {
 
         final int id = rowData.getInt(DBKey.PK_ID);
+        if (id >= 0) {
+            throw new IllegalStateException("Style id from the db: " + id + " is >= 0");
+        }
+
         final boolean preferred = rowData.getBoolean(DBKey.STYLE_IS_PREFERRED);
         final int menuPosition = rowData.getInt(DBKey.STYLE_MENU_POSITION);
 
