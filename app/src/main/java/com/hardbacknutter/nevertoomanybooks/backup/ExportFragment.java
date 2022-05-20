@@ -375,7 +375,7 @@ public class ExportFragment
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_baseline_info_24)
                         .setTitle(R.string.menu_backup_and_export)
-                        .setMessage(R.string.warning_no_matching_book_found)
+                        .setMessage(R.string.warning_export_contains_no_data)
                         .setPositiveButton(R.string.action_done, (d, w)
                                 -> getActivity().finish())
                         .create()
@@ -447,11 +447,11 @@ public class ExportFragment
                                 getString(R.string.lbl_bookshelves),
                                 String.valueOf(result.bookshelves)));
         }
-//        if (result.calibreLibraries > 0) {
-//            items.add(getString(R.string.name_colon_value,
-//                                getString(R.string.lbl_library),
-//                                String.valueOf(result.calibreLibraries)));
-//        }
+        if (result.calibreLibraries > 0) {
+            items.add(getString(R.string.name_colon_value,
+                                getString(R.string.lbl_library),
+                                String.valueOf(result.calibreLibraries)));
+        }
         if (result.styles > 0) {
             items.add(getString(R.string.name_colon_value,
                                 getString(R.string.lbl_styles),

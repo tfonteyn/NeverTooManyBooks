@@ -42,9 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 public class DbArchiveWriter
         implements DataWriter<ExportResults> {
 
-    /** 1 mb buffer. */
-    private static final int BUFFER_SIZE = 1_024_000;
-
     /** Export configuration. */
     @NonNull
     private final ExportHelper mHelper;

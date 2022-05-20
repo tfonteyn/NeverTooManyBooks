@@ -139,6 +139,10 @@ public class ExportResults
         styles += results.styles;
         preferences += results.preferences;
         certificates += results.certificates;
+
+        if (results.database) {
+            database = true;
+        }
     }
 
     @Override

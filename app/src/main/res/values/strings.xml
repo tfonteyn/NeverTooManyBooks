@@ -211,6 +211,8 @@
          Only 10 line numbers will be listed -->
     <string name="warning_import_failed_for_lines_lots">Parsing failed for lines \n%1$s\n and others.</string>
 
+    <string name="warning_export_contains_no_data">There was nothing to export</string>
+
     <!-- STARTING a search has failed / no attempt to search was possible; this is an error! -->
     <string name="error_search_could_not_be_started">Searching for the book failed.</string>
     <!-- A search WAS done, but there is no book-data available; this is not an error. -->
