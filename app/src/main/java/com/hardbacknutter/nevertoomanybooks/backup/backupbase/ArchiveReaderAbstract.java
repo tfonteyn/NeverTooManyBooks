@@ -160,6 +160,15 @@ public abstract class ArchiveReaderAbstract
         return new BufferedInputStream(is, RecordReader.BUFFER_SIZE);
     }
 
+    /**
+     * An archive based on this class <strong>MUST</strong> have an info block.
+     * <p>
+     * On any failure, this method throws an exception + {@link #metaData} will be {@code null}.
+     *
+     * @param context Current context
+     *
+     * @return a populated Optional with the metadata + {@link #metaData} assigned.
+     */
     @Override
     @WorkerThread
     @NonNull
@@ -167,25 +176,38 @@ public abstract class ArchiveReaderAbstract
             throws DataReaderException, IOException {
 
         if (metaData == null) {
-            final ArchiveReaderRecord record = seek(RecordType.MetaData)
-                    .orElseThrow(() -> new DataReaderException(
-                            context.getString(R.string.error_file_not_recognized)));
+            RecordReader reader = null;
+            try {
+                final ArchiveReaderRecord record = seek(RecordType.MetaData)
+                        .orElseThrow(() -> new DataReaderException(
+                                context.getString(R.string.error_file_not_recognized)));
 
-            final Optional<RecordEncoding> encoding = record.getEncoding();
-            if (encoding.isPresent()) {
-                try (RecordReader recordReader = encoding
-                        .get().createReader(context, EnumSet.of(RecordType.MetaData))) {
-                    metaData = recordReader.readMetaData(context, record).orElse(null);
+                final RecordEncoding encoding = record
+                        .getEncoding().orElseThrow(() -> new DataReaderException(
+                                context.getString(R.string.error_file_not_recognized)));
+
+                reader = encoding
+                        .createReader(context, EnumSet.of(RecordType.MetaData))
+                        .orElseThrow(() -> new DataReaderException(
+                                context.getString(R.string.error_file_not_recognized)));
+
+                metaData = reader
+                        .readMetaData(context, record)
+                        .orElseThrow(() -> new DataReaderException(
+                                context.getString(R.string.error_file_not_recognized)));
+
+                // Once here, the metaData should never be null, but AndroidStudio
+                // does not seem to realise this; hence adding if/throw
+                if (metaData == null) {
+                    throw new DataReaderException(context.getString(
+                            R.string.error_file_not_recognized));
                 }
-            }
-
-            // We MUST reset the stream here, so the caller gets a pristine stream.
-            closeInputStream();
-
-            // An archive based on this class <strong>must</strong> have an info block.
-            if (metaData == null) {
-                throw new DataReaderException(context.getString(
-                        R.string.error_file_not_recognized));
+            } finally {
+                if (reader != null) {
+                    reader.close();
+                }
+                // We MUST reset the stream here, so the caller gets a pristine stream.
+                closeInputStream();
             }
         }
 
@@ -333,11 +355,12 @@ public abstract class ArchiveReaderAbstract
                             @NonNull final ProgressListener progressListener)
             throws DataReaderException, IOException, StorageException {
 
-        final Optional<RecordEncoding> encoding = record.getEncoding();
-        if (encoding.isPresent()) {
+        final Optional<RecordEncoding> recordEncoding = record.getEncoding();
+        if (recordEncoding.isPresent()) {
+            final RecordEncoding encoding = recordEncoding.get();
 
             // there will be many covers... we're re-using a single RecordReader
-            if (encoding.get() == RecordEncoding.Cover) {
+            if (encoding == RecordEncoding.Cover) {
                 //noinspection ConstantConditions
                 results.add(coverReader.read(context, record, importHelper, progressListener));
                 // send accumulated progress for the total nr of covers
@@ -350,12 +373,24 @@ public abstract class ArchiveReaderAbstract
 
             } else {
                 // everything else, keep it clean and create a new reader for each entry.
-                try (RecordReader recordReader = encoding
-                        .get().createReader(context, importEntriesAllowed)) {
-
-                    results.add(recordReader.read(context, record, importHelper, progressListener));
+                RecordReader reader = null;
+                try {
+                    final Optional<RecordReader> optReader = encoding
+                            .createReader(context, importEntriesAllowed);
+                    if (optReader.isPresent()) {
+                        reader = optReader.get();
+                        results.add(reader.read(context, record, importHelper, progressListener));
+                    } else {
+                        results.recordsSkipped++;
+                    }
+                } finally {
+                    if (reader != null) {
+                        reader.close();
+                    }
                 }
             }
+        } else {
+            results.recordsSkipped++;
         }
     }
 

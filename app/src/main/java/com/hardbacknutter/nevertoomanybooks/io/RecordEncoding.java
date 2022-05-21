@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordWriter;
@@ -125,25 +124,33 @@ public enum RecordEncoding {
         throw new IllegalStateException(DataWriter.ERROR_NO_WRITER_AVAILABLE);
     }
 
+    /**
+     * @param context              Current context
+     * @param importEntriesAllowed the record types which the reader
+     *                             will be <strong>allowed</strong> to read
+     *
+     * @return Optional reader
+     *
+     * @throws IllegalStateException if requesting a known but invalid reader
+     *                               (i.e. the developer made a boo-boo)
+     */
     @NonNull
-    public RecordReader createReader(@NonNull final Context context,
-                                     @NonNull final Set<RecordType> importEntriesAllowed)
-            throws DataReaderException {
+    public Optional<RecordReader> createReader(@NonNull final Context context,
+                                               @NonNull
+                                               final Set<RecordType> importEntriesAllowed) {
         switch (this) {
             case Json:
-                return new JsonRecordReader(context, importEntriesAllowed);
+                return Optional.of(new JsonRecordReader(context, importEntriesAllowed));
             case Csv:
-                return new CsvRecordReader(context);
+                return Optional.of(new CsvRecordReader(context));
             case Xml:
                 //noinspection deprecation
-                return new XmlRecordReader(context);
+                return Optional.of(new XmlRecordReader(context));
             case Cover:
                 // discourage creating a new CoverRecordReader for each cover.
                 throw new IllegalStateException("CoverRecordReader should be re-used");
-                // return new CoverRecordReader();
             default:
-                break;
+                return Optional.empty();
         }
-        throw new DataReaderException(context.getString(R.string.error_file_not_recognized));
     }
 }
