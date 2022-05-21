@@ -58,6 +58,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * <p>
  * Currently supported formats.
  * <ul>
+ *     <li>v5: identical to v4,
+ *              but a number of internal preferences have been changed/deleted.
+ *     </li>
  *     <li>v4: Books will contain REFERENCES to Bookshelves and CalibreLibraries;
  *              and FULL data on other related objects.
  *         <ul>
@@ -219,6 +222,7 @@ public abstract class ArchiveReaderAbstract
 
         final int archiveVersion = metaData.getArchiveVersion();
         switch (archiveVersion) {
+            case 5:
             case 4:
             case 3:
             case 2:

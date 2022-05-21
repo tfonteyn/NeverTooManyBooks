@@ -91,7 +91,7 @@ public abstract class ArchiveWriterAbstract
      * <p>
      * RELEASE: set correct archiver version
      */
-    private static final int VERSION = 4;
+    private static final int VERSION = 5;
 
     /**
      * Arbitrary number of steps added to the progress max value.
@@ -324,21 +324,22 @@ public abstract class ArchiveWriterAbstract
 
         final RecordEncoding encoding = getEncoding(recordType);
 
-        final ExportResults results;
+        final ExportResults writeResults;
 
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
              RecordWriter recordWriter = encoding.createWriter(null)) {
-            results = recordWriter.write(context, bw, EnumSet.of(recordType), progressListener);
+            writeResults = recordWriter.write(context, bw, EnumSet.of(recordType),
+                                              progressListener);
         }
 
         // Only copy the result/output if we actually wrote something
-        if (results.has(recordType)) {
+        if (writeResults.has(recordType)) {
             putByteArray(recordType.getName() + encoding.getFileExt(), os.toByteArray(), true);
         }
 
-        return results;
+        return writeResults;
     }
 
     /**
