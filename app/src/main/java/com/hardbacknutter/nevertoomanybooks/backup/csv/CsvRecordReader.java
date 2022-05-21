@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
@@ -247,13 +246,9 @@ public class CsvRecordReader
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }
-            } catch (@NonNull final DaoWriteException
+            } catch (@NonNull final DaoWriteException | DataReaderException
                     | SQLiteDoneException e) {
-                //TODO: use a meaningful user-displaying string.
-                handleRowException(row, e, context.getString(R.string.error_import_csv_line, row));
-
-            } catch (@NonNull final DataReaderException e) {
-                handleRowException(row, e, e.getUserMessage(context));
+                results.handleRowException(context, row, e, null);
 
             } finally {
                 if (txLock != null) {
@@ -280,23 +275,6 @@ public class CsvRecordReader
 
         // minus 1 to compensate for the last increment
         results.booksProcessed = row - 1;
-    }
-
-    private void handleRowException(final int row,
-                                    @NonNull final Exception e,
-                                    @NonNull final String msg) {
-        results.booksFailed++;
-        results.failedLinesMessage.add(msg);
-        results.failedLinesNr.add(row);
-
-        if (BuildConfig.DEBUG /* always */) {
-            if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                Logger.w(TAG, "Import failed at row " + row + "|e=" + e.getMessage());
-            } else if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
-                // logging with the full exception is VERY HEAVY
-                Logger.e(TAG, "Import failed at row " + row, e);
-            }
-        }
     }
 
     /**

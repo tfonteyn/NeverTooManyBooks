@@ -37,8 +37,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
@@ -449,8 +447,7 @@ public class JsonRecordReader
                     db.setTransactionSuccessful();
                 }
             } catch (@NonNull final DaoWriteException | SQLiteDoneException e) {
-                //TODO: use a meaningful user-displaying string.
-                handleRowException(row, e, context.getString(R.string.error_import_csv_line, row));
+                results.handleRowException(context, row, e, null);
 
             } finally {
                 if (txLock != null) {
@@ -476,22 +473,5 @@ public class JsonRecordReader
         }
         // minus 1 to compensate for the last increment
         results.booksProcessed = row - 1;
-    }
-
-    private void handleRowException(final int row,
-                                    @NonNull final Exception e,
-                                    @NonNull final String msg) {
-        results.booksFailed++;
-        results.failedLinesMessage.add(msg);
-        results.failedLinesNr.add(row);
-
-        if (BuildConfig.DEBUG /* always */) {
-            if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                Logger.w(TAG, "Import failed at row " + row + "|e=" + e.getMessage());
-            } else if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
-                // logging with the full exception is VERY HEAVY
-                Logger.e(TAG, "Import failed at row " + row, e);
-            }
-        }
     }
 }
