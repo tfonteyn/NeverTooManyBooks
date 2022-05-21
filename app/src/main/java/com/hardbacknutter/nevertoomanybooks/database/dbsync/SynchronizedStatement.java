@@ -355,7 +355,7 @@ public class SynchronizedStatement
                 Log.d(TAG, "executeInsert|" + mStatement + "|id=" + id);
 
                 if (id == -1) {
-                    Logger.error(TAG, new Throwable(), "Insert failed|mStatement=" + mStatement);
+                    Logger.e(TAG, new Throwable(), "Insert failed|mStatement=" + mStatement);
                 }
             }
             return id;

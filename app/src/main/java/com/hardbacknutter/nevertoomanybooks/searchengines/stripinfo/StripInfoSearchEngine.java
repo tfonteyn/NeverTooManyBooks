@@ -460,7 +460,7 @@ public class StripInfoSearchEngine
 
             } catch (@NonNull final Exception e) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.d(TAG, "row=" + row, e);
+                    Logger.d(TAG, e, "row=" + row);
                 }
             }
         }
@@ -993,8 +993,8 @@ public class StripInfoSearchEngine
 
             } catch (@NonNull final IOException | StorageException e) {
                 if (BuildConfig.DEBUG  /* always */) {
-                    Logger.d(TAG, "stripId=" + externalId
-                                  + "|collectieId=" + collectionId, e);
+                    Logger.d(TAG, e, "stripId=" + externalId
+                                     + "|collectieId=" + collectionId);
                 }
             }
         }

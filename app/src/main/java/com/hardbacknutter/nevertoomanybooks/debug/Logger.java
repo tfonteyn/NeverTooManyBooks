@@ -102,7 +102,7 @@ public final class Logger {
         writeToLog(tag, ERROR, msg, e);
 
         if (BuildConfig.DEBUG /* always */) {
-            e(tag, msg, e);
+            e(tag, e, msg);
         }
     }
 
@@ -234,7 +234,7 @@ public final class Logger {
             }
             d(tag, method, buf.toString("UTF-8"));
         } catch (@NonNull final IOException e) {
-            d(tag, "dumping failed: ", e);
+            d(tag, e, "dumping failed: ");
         }
     }
 
@@ -307,8 +307,9 @@ public final class Logger {
 
     /** JUnit aware wrapper for {@link Log#w(String, String)}. */
     public static void w(@NonNull final String tag,
-                         @NonNull final String msg) {
+                         @NonNull final Object... params) {
         if (BuildConfig.DEBUG /* always */) {
+            final String msg = concat(params);
             if (TestFlags.isJUnit) {
                 System.out.println("JUnit|WARN|" + tag + "|" + msg);
             } else {
@@ -319,8 +320,8 @@ public final class Logger {
 
     /** JUnit aware wrapper for {@link Log#e(String, String, Throwable)}. */
     public static void e(@NonNull final String tag,
-                         @NonNull final String msg,
-                         @Nullable final Throwable e) {
+                         @Nullable final Throwable e,
+                         @NonNull final String msg) {
         if (BuildConfig.DEBUG /* always */) {
             if (TestFlags.isJUnit) {
                 System.out.println("JUnit|ERROR|" + tag + "|" + msg
@@ -356,8 +357,8 @@ public final class Logger {
 
     /** JUnit aware wrapper for {@link Log#d(String, String, Throwable)}. */
     public static void d(@NonNull final String tag,
-                         @NonNull final String msg,
-                         @NonNull final Throwable e) {
+                         @NonNull final Throwable e,
+                         @NonNull final String msg) {
         if (BuildConfig.DEBUG /* always */) {
             if (TestFlags.isJUnit) {
                 System.out.println("JUnit|DEBUG|" + tag + "|" + msg

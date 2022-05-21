@@ -181,7 +181,7 @@ public class StripInfoAuth
                     }
                 } catch (@NonNull final UnsupportedEncodingException | JSONException e) {
                     if (BuildConfig.DEBUG /* always */) {
-                        Logger.e(TAG, "cookie.getValue()=" + cookie.getValue(), e);
+                        Logger.e(TAG, e, "cookie.getValue()=" + cookie.getValue());
                     }
                 }
             }

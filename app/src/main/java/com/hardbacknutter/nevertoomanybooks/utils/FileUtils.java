@@ -231,8 +231,9 @@ public final class FileUtils {
         //sanity check
         if (source.getAbsolutePath().equals(destination.getAbsolutePath())) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.e(TAG, "renameOrThrow|source==destination=="
-                              + source.getAbsolutePath(), new Throwable());
+                Logger.e(TAG, new Throwable(),
+                         "renameOrThrow|source==destination=="
+                         + source.getAbsolutePath());
             }
             return;
         }
@@ -265,7 +266,7 @@ public final class FileUtils {
                 file.delete();
             } catch (@NonNull final /* SecurityException */ RuntimeException e) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.e(TAG, "delete|file=" + file, e);
+                    Logger.e(TAG, e, "delete|file=" + file);
                 }
             }
         }

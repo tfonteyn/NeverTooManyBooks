@@ -198,7 +198,7 @@ public class ISBN {
                     }
                 } catch (@NonNull final NumberFormatException e) {
                     if (BuildConfig.DEBUG /* always */) {
-                        Logger.d(TAG, "text=`" + text + '`', e);
+                        Logger.d(TAG, e, "text=`" + text + '`');
                     }
                 }
 

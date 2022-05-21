@@ -39,7 +39,6 @@ import static org.junit.Assert.assertTrue;
 @SmallTest
 public class LoggerTest {
 
-    private static final int MAX_FILES = 50;
     private int msgNr;
 
     @Test

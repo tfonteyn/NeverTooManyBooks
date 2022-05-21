@@ -501,7 +501,9 @@ public class BooklistAdapter
                                           .getQuantityString(R.plurals.n_stars, i, i);
                         }
                     } catch (@NonNull final NumberFormatException e) {
-                        Logger.error(TAG, e);
+                        if (BuildConfig.DEBUG /* always */) {
+                            Logger.d(TAG, e, "RATING=" + text);
+                        }
                     }
                     return text;
                 }

@@ -88,6 +88,9 @@ public class EditBookViewModel
 
     /** Log tag. */
     private static final String TAG = "EditBookViewModel";
+    public static final String COULD_NOT_UPDATE = "Could not update";
+    public static final String ORIGINAL = "original=";
+    public static final String MODIFIED = "modified=";
 
     /** the list with all fields. */
     private final List<Field<?, ? extends View>> fields = new ArrayList<>();
@@ -654,8 +657,8 @@ public class EditBookViewModel
             book.pruneAuthors(context, true);
             return true;
         }
-        Logger.error(TAG, new Throwable(), "Could not update", "original=" + original,
-                     "modified=" + modified);
+        Logger.error(TAG, new Throwable(), COULD_NOT_UPDATE, ORIGINAL + original,
+                     MODIFIED + modified);
         return false;
     }
 
@@ -671,8 +674,8 @@ public class EditBookViewModel
             return true;
         }
 
-        Logger.error(TAG, new Throwable(), "Could not update", "original=" + original,
-                     "modified=" + modified);
+        Logger.error(TAG, new Throwable(), COULD_NOT_UPDATE, ORIGINAL + original,
+                     MODIFIED + modified);
         return false;
     }
 
@@ -692,8 +695,8 @@ public class EditBookViewModel
             return true;
         }
 
-        Logger.error(TAG, new Throwable(), "Could not update", "original=" + original,
-                     "modified=" + modified);
+        Logger.error(TAG, new Throwable(), COULD_NOT_UPDATE, ORIGINAL + original,
+                     MODIFIED + modified);
         return false;
     }
 
@@ -709,8 +712,8 @@ public class EditBookViewModel
             book.refreshSeriesList(context);
             return true;
         }
-        Logger.error(TAG, new Throwable(), "Could not update", "original=" + original,
-                     "modified=" + modified);
+        Logger.error(TAG, new Throwable(), COULD_NOT_UPDATE, ORIGINAL + original,
+                     MODIFIED + modified);
         return false;
     }
 
@@ -730,8 +733,8 @@ public class EditBookViewModel
             book.prunePublishers(context, true);
             return true;
         }
-        Logger.error(TAG, new Throwable(), "Could not update", "original=" + original,
-                     "modified=" + modified);
+        Logger.error(TAG, new Throwable(), COULD_NOT_UPDATE, ORIGINAL + original,
+                     MODIFIED + modified);
         return false;
     }
 
@@ -747,8 +750,8 @@ public class EditBookViewModel
             book.refreshPublishersList(context);
             return true;
         }
-        Logger.error(TAG, new Throwable(), "Could not update", "original=" + original,
-                     "modified=" + modified);
+        Logger.error(TAG, new Throwable(), COULD_NOT_UPDATE, ORIGINAL + original,
+                     MODIFIED + modified);
         return false;
     }
 

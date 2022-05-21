@@ -194,7 +194,7 @@ public class PartialDate
                 }
             } catch (@NonNull final DateTimeParseException e) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.d(TAG, "dateStr=" + dateStr, e);
+                    Logger.d(TAG, e, "dateStr=" + dateStr);
                 }
             }
         }

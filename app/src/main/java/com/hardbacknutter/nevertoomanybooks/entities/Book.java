@@ -832,10 +832,10 @@ public class Book
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-            Logger.d(TAG, "bookId=" + getId()
-                          + "|cIdx=" + cIdx
-                          + "|file=" + (coverFile == null ? "null" : coverFile.getAbsolutePath()),
-                     new Throwable("getCoverFile")
+            Logger.d(TAG, new Throwable("getCoverFile"),
+                     "bookId=" + getId()
+                     + "|cIdx=" + cIdx
+                     + "|file=" + (coverFile == null ? "null" : coverFile.getAbsolutePath())
                     );
         }
         if (coverFile != null && coverFile.exists()) {
@@ -873,11 +873,13 @@ public class Book
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-            Logger.d(TAG, "bookId=" + getId()
-                          + "|cIdx=" + cIdx
-                          + "|exists=" + coverFile.exists()
-                          + "|file=" + coverFile.getAbsolutePath(),
-                     new Throwable("createTempCoverFile"));
+            Logger.d(TAG, new Throwable("createTempCoverFile"),
+                     "bookId=" + getId()
+                     + "|cIdx=" + cIdx
+                     + "|exists=" + coverFile.exists()
+                     + "|file="
+                     + coverFile.getAbsolutePath()
+                    );
         }
         return coverFile;
     }
@@ -914,10 +916,11 @@ public class Book
 
             if (file != null) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                    Logger.d(TAG, "editing"
-                                  + "|bookId=" + getId()
-                                  + "|cIdx=" + cIdx
-                                  + "|file=" + file.getAbsolutePath(), new Throwable("setCover")
+                    Logger.d(TAG, new Throwable("setCover"),
+                             "editing"
+                             + "|bookId=" + getId()
+                             + "|cIdx=" + cIdx
+                             + "|file=" + file.getAbsolutePath()
                             );
                 }
                 // #storeCovers will do the actual storing
@@ -925,10 +928,11 @@ public class Book
 
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                    Logger.d(TAG, "editing"
-                                  + "|bookId=" + getId()
-                                  + "|cIdx=" + cIdx
-                                  + "|deleting", new Throwable("setCover")
+                    Logger.d(TAG, new Throwable("setCover"),
+                             "editing"
+                             + "|bookId=" + getId()
+                             + "|cIdx=" + cIdx
+                             + "|deleting"
                             );
                 }
                 // explicitly set to "" to let #storeCovers do the delete
@@ -955,19 +959,21 @@ public class Book
                     // No further action needed as we have the cover "in-place"
                     // ... not actually sure when this would be the case; keep an eye on logs
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                        Logger.d(TAG, "readOnly"
-                                      + "|bookId=" + getId()
-                                      + "|cIdx=" + cIdx
-                                      + "|uuid, in-place", new Throwable("setCover")
+                        Logger.d(TAG, new Throwable("setCover"),
+                                 "readOnly"
+                                 + "|bookId=" + getId()
+                                 + "|cIdx=" + cIdx
+                                 + "|uuid, in-place"
                                 );
                     }
                 } else {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                        Logger.d(TAG, "readOnly"
-                                      + "|bookId=" + getId()
-                                      + "|cIdx=" + cIdx
-                                      + "|will rename="
-                                      + file.getAbsolutePath(), new Throwable("setCover")
+                        Logger.d(TAG, new Throwable("setCover"),
+                                 "readOnly"
+                                 + "|bookId=" + getId()
+                                 + "|cIdx=" + cIdx
+                                 + "|will rename="
+                                 + file.getAbsolutePath()
                                 );
                     }
 
@@ -976,10 +982,11 @@ public class Book
                 }
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                    Logger.d(TAG, "readOnly"
-                                  + "|bookId=" + getId()
-                                  + "|cIdx=" + cIdx
-                                  + "|deleting", new Throwable("setCover")
+                    Logger.d(TAG, new Throwable("setCover"),
+                             "readOnly"
+                             + "|bookId=" + getId()
+                             + "|cIdx=" + cIdx
+                             + "|deleting"
                             );
                 }
 

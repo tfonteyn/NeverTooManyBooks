@@ -137,7 +137,7 @@ public class ImportResults
                 Logger.w(TAG, "Import failed for book " + row + "|e=" + e.getMessage());
             } else if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
                 // logging with the full exception is VERY HEAVY
-                Logger.e(TAG, "Import failed for book " + row, e);
+                Logger.e(TAG, e, "Import failed for book " + row);
             }
         }
     }
