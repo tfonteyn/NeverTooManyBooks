@@ -219,7 +219,7 @@ public class DebugReport {
     @NonNull
     private List<File> collectFiles(@NonNull final File dir,
                                     final int maxFiles) {
-        List<File> list = FileUtils.collectFiles(dir, false, null, Integer.MAX_VALUE);
+        List<File> list = FileUtils.collectFiles(dir, null);
         // Sort in reverse order. Newest file first.
         list.sort((o1, o2) -> Long.compare(o2.lastModified(), o1.lastModified()));
         list = list.subList(0, Math.min(maxFiles, list.size()));

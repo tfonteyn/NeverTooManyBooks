@@ -127,7 +127,7 @@ public class BookTest {
 
         // empty the temp dir
         //noinspection ResultOfMethodCallIgnored
-        FileUtils.collectFiles(tempDir, mJpgFilter, Integer.MAX_VALUE).forEach(File::delete);
+        FileUtils.collectFiles(tempDir, mJpgFilter).forEach(File::delete);
 
 
         mBookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT);

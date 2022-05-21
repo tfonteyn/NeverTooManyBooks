@@ -25,6 +25,7 @@ import android.os.StatFs;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.documentfile.provider.DocumentFile;
 
 import java.io.File;
@@ -347,16 +348,22 @@ public final class FileUtils {
         return totalSize;
     }
 
-
     /**
-     * Recursively collect applicable files for the given directory.
+     * Collect applicable files for the given directory - subdirectories are ignored.
      *
-     * @param root     directory to collect from
-     * @param filter   (optional) to apply; {@code null} for all files.
-     * @param maxFiles the maximum amount of files to collect
+     * @param root   directory to collect from
+     * @param filter (optional) to apply; {@code null} for all files.
      *
      * @return list of files
      */
+    @NonNull
+    public static List<File> collectFiles(@NonNull final File root,
+                                          @Nullable final FileFilter filter) {
+        return collectFiles(root, filter, Integer.MAX_VALUE);
+    }
+
+    // allow faster testing by limiting the number of files
+    @VisibleForTesting
     @NonNull
     public static List<File> collectFiles(@NonNull final File root,
                                           @Nullable final FileFilter filter,
@@ -370,8 +377,6 @@ public final class FileUtils {
                 while (i < files.length && list.size() < maxFiles) {
                     if (files[i].isFile()) {
                         list.add(files[i]);
-                    } else if (files[i].isDirectory()) {
-                        list.addAll(collectFiles(files[i], filter, maxFiles));
                     }
                     i++;
                 }

@@ -56,7 +56,7 @@ public class LoggerTest {
 
         List<File> files;
 
-        files = FileUtils.collectFiles(logDir, null, MAX_FILES);
+        files = FileUtils.collectFiles(logDir, null);
         assertTrue(files.isEmpty());
 
         for (int i = 0; i < 6; i++) {
@@ -67,7 +67,7 @@ public class LoggerTest {
             Logger.cycleLogs();
         }
 
-        files = FileUtils.collectFiles(logDir, null, MAX_FILES);
+        files = FileUtils.collectFiles(logDir, null);
         // 4 files: .bak, .bak.1, .bak.2, .bak.3
         assertEquals(4, files.size());
         Logger.warn("final", files.toString());
