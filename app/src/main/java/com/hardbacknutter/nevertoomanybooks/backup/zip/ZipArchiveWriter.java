@@ -51,7 +51,7 @@ public class ZipArchiveWriter
 
     /** The output stream for the archive. */
     @NonNull
-    private final ZipOutputStream mOutputStream;
+    private final ZipOutputStream zipOutputStream;
 
     /**
      * Constructor.
@@ -66,7 +66,7 @@ public class ZipArchiveWriter
             throws FileNotFoundException {
         super(helper);
 
-        mOutputStream = new ZipOutputStream(new BufferedOutputStream(
+        zipOutputStream = new ZipOutputStream(new BufferedOutputStream(
                 helper.createOutputStream(context), RecordWriter.BUFFER_SIZE));
     }
 
@@ -112,11 +112,11 @@ public class ZipArchiveWriter
             entry.setCrc(crc32.getValue());
         }
 
-        mOutputStream.putNextEntry(entry);
+        zipOutputStream.putNextEntry(entry);
         try (InputStream is = new ByteArrayInputStream(bytes)) {
-            FileUtils.copy(is, mOutputStream);
+            FileUtils.copy(is, zipOutputStream);
         } finally {
-            mOutputStream.closeEntry();
+            zipOutputStream.closeEntry();
         }
     }
 
@@ -124,16 +124,6 @@ public class ZipArchiveWriter
                         @NonNull final File file,
                         final boolean compress)
             throws IOException {
-
-        // First convert to byte[] or use the original File code below
-        // does not seem to make much difference... either way, we're still reading the file
-        // data twice
-//        final ByteArrayOutputStream tmpOs = new ByteArrayOutputStream();
-//        try (InputStream is = new FileInputStream(file)) {
-//            FileUtils.copy(is, tmpOs);
-//        }
-//        putByteArray(name, tmpOs.toByteArray(), compress);
-
 
         final ZipEntry entry = new ZipEntry(name);
         entry.setTime(file.lastModified());
@@ -148,18 +138,18 @@ public class ZipArchiveWriter
             entry.setCrc(crc32.getValue());
         }
 
-        mOutputStream.putNextEntry(entry);
+        zipOutputStream.putNextEntry(entry);
         try (InputStream is = new FileInputStream(file)) {
-            FileUtils.copy(is, mOutputStream);
+            FileUtils.copy(is, zipOutputStream);
         } finally {
-            mOutputStream.closeEntry();
+            zipOutputStream.closeEntry();
         }
     }
 
     @Override
     public void close()
             throws IOException {
-        mOutputStream.close();
+        zipOutputStream.close();
         super.close();
     }
 }
