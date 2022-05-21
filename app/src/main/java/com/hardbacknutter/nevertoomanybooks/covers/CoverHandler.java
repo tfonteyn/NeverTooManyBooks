@@ -425,10 +425,6 @@ public class CoverHandler {
         final File dstFile = getTempFile();
         FileUtils.delete(dstFile);
 
-        //TODO: we really should revoke the permissions afterwards
-        final Uri srcUri = GenericFileProvider.createUri(context, srcFile);
-        final Uri dstUri = GenericFileProvider.createUri(context, dstFile);
-
         // <manifest ...>
         //
         // Needed since Android 11:
@@ -455,6 +451,8 @@ public class CoverHandler {
         //                android:resource="@xml/provider_paths" />
         //        </provider>
 
+        final Uri srcUri = GenericFileProvider.createUri(context, srcFile);
+        final Uri dstUri = GenericFileProvider.createUri(context, dstFile);
         final Intent intent = new Intent(Intent.ACTION_EDIT)
                 .setDataAndType(srcUri, IMAGE_MIME_TYPE)
                 // read access to the input uri

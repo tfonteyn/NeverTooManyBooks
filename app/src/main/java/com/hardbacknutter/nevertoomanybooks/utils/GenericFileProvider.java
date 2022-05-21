@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,17 +32,46 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 /**
  * <a href="https://developer.android.com/reference/androidx/core/content/FileProvider">
  * https://developer.android.com/reference/androidx/core/content/FileProvider</a>
+ * <p>
+ * Note that the only reason we create this subclass is to have a central point to manage the
+ * authority string transparently to the rest of the app.
+ * <p>
+ * The {@link #AUTHORITY} must match the Manifest attribute {@code "android:authorities"}:
+ * <pre>
+ * {@code
+ * <provider
+ *     android:name=".utils.GenericFileProvider"
+ *     android:authorities="${applicationId}.GenericFileProvider"
+ *     android:exported="false"
+ *     android:grantUriPermissions="true">
+ *     <meta-data
+ *         android:name="android.support.FILE_PROVIDER_PATHS"
+ *         android:resource="@xml/provider_paths" />
+ * </provider>
+ * }
+ *  res/xml/provider_paths.xml
+ * {@code
+ * <paths>
+ *     <external-files-path
+ *         name="external-path-pics"
+ *         path="Pictures/" />
+ *     <files-path
+ *         name="files-path-root"
+ *         path="./" />
+ *     <cache-path
+ *         name="cache-path-root"
+ *         path="./" />
+ * </paths>
+ * }
+ * </pre>
  */
 public class GenericFileProvider
         extends FileProvider {
 
+    private static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".GenericFileProvider";
+
     /**
      * Get a FileProvider URI for the given file.
-     * <p>
-     * The string matches the Manifest entry:
-     * {@code
-     * android:authorities="${packageName}.GenericFileProvider "
-     * }
      *
      * @param context Current context
      * @param file    to uri-fy
@@ -52,7 +81,22 @@ public class GenericFileProvider
     @NonNull
     public static Uri createUri(@NonNull final Context context,
                                 @NonNull final File file) {
-        return getUriForFile(context, BuildConfig.APPLICATION_ID + ".GenericFileProvider",
-                             file);
+        return getUriForFile(context, AUTHORITY, file);
+    }
+
+    /**
+     * Get a FileProvider URI for the given file.
+     *
+     * @param context     Current context
+     * @param file        to uri-fy
+     * @param displayName the name to display instead of the original file name
+     *
+     * @return the uri
+     */
+    @NonNull
+    public static Uri createUri(@NonNull final Context context,
+                                @NonNull final File file,
+                                @NonNull final String displayName) {
+        return getUriForFile(context, AUTHORITY, file, displayName);
     }
 }

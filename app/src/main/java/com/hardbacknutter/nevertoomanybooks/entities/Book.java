@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -1205,22 +1206,21 @@ public class Book
             ratingStr = "";
         }
 
-        // The share intent is limited to a single *type* of data.
-        // We cannot send the cover AND the text; for now we send the text only.
-        //   String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
-        //   // prepare the front-cover to post
-        //   File coverFile = CoverDir.getCoverFile(context, uuid, 0);
-        //   if (coverFile.exists()) {
-        //       Uri uri = GenericFileProvider.getUriForFile(context, coverFile);
-        //   }
-
         final String text = context.getString(R.string.txt_share_book_im_reading,
                                               title, seriesStr, authorStr, ratingStr);
 
-        return Intent.createChooser(new Intent(Intent.ACTION_SEND)
-                                            .setType("text/plain")
-                                            .putExtra(Intent.EXTRA_TEXT, text),
-                                    context.getString(R.string.whichSendApplication));
+        final Intent intent = new Intent(Intent.ACTION_SEND)
+                .setType("text/plain")
+                .putExtra(Intent.EXTRA_TEXT, text);
+
+        getCoverFile(0).ifPresent(file -> intent
+                // read access to the input uri
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                .putExtra(Intent.EXTRA_STREAM,
+                          GenericFileProvider.createUri(context, file, title)));
+
+
+        return Intent.createChooser(intent, context.getString(R.string.whichSendApplication));
     }
 
     @Override

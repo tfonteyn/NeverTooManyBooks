@@ -20,22 +20,32 @@
 
 <!--
     https://developer.android.com/reference/androidx/core/content/FileProvider
-
-    Rather rough... we make them all available.
 -->
 <paths>
-    <!-- to access the Pictures directory. -->
-    <external-path
-        name="external-path"
-        path="./" />
+    <!-- Represents files in the root of your app's external storage area.
+         The root path of this subdirectory is the same as the value returned
+         by Context#getExternalFilesDir(String).
 
-    <!-- log and Upgrades -->
+         Access limited to the Pictures directory. -->
+    <external-files-path
+        name="external-path-pics"
+        path="Pictures/" />
+
+    <!-- Represents files in the files/ subdirectory of your app's internal
+         storage area. This subdirectory is the same as the value returned by
+         Context#getFilesDir().
+
+         Log and Upgrades; just expose the root. -->
     <files-path
-        name="files-path"
+        name="files-path-root"
         path="./" />
 
-    <!-- For the debug-report attachments. -->
+    <!-- Represents files in the cache subdirectory of your app's internal
+         storage area. The root path of this subdirectory is the same as the
+         value returned by Context#getCacheDir().
+
+         For the debug-report attachments, just expose the root. -->
     <cache-path
-        name="cache-path"
+        name="cache-path-root"
         path="./" />
 </paths>
