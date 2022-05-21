@@ -100,11 +100,11 @@ public class MultiChoiceDialogFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
 
         return new MultiChoiceAlertDialogBuilder<Long>(getLayoutInflater())
-                .setDialogTitle(mDialogTitle)
-                .setDialogMessage(mDialogMessage)
+                .setTitle(mDialogTitle)
+                .setMessage(mDialogMessage)
                 .setItems(mItemIds, mItemLabels)
                 .setSelectedItems(mSelectedItems)
-                .setResultConsumer(this::saveChanges)
+                .setPositiveButton(android.R.string.ok, this::saveChanges)
                 .setOnDismiss(this::dismiss)
                 .create();
     }
