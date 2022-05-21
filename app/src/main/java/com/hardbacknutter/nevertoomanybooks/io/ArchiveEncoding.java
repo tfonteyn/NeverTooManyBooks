@@ -289,7 +289,7 @@ public enum ArchiveEncoding
                 return new CsvArchiveWriter(helper);
 
             case SqLiteDb:
-                return new DbArchiveWriter(helper);
+                return new DbArchiveWriter(context, helper);
 
             case Json:
                 return new JsonArchiveWriter(helper);

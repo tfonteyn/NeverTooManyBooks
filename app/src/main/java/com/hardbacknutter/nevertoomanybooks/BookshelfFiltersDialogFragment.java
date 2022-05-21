@@ -453,11 +453,11 @@ public class BookshelfFiltersDialogFragment
                                                     .map(entity -> entity.getLabel(context))
                                                     .collect(Collectors.toList());
 
-                new MultiChoiceAlertDialogBuilder<Long>(LayoutInflater.from(context))
-                        .setDialogTitle(context.getString(R.string.lbl_bookshelves))
+                new MultiChoiceAlertDialogBuilder<Long>(context)
+                        .setTitle(context.getString(R.string.lbl_bookshelves))
                         .setItems(ids, labels)
                         .setSelectedItems(filter.getValue())
-                        .setResultConsumer(value -> {
+                        .setPositiveButton(android.R.string.ok, value -> {
                             filter.setValue(value);
                             mVb.filter.setText(filter.getValueText(context));
                             mModificationListener.setModified(true);
@@ -496,11 +496,11 @@ public class BookshelfFiltersDialogFragment
                                                          .map(context::getString)
                                                          .collect(Collectors.toList());
 
-                new MultiChoiceAlertDialogBuilder<Integer>(LayoutInflater.from(context))
-                        .setDialogTitle(context.getString(R.string.lbl_edition))
+                new MultiChoiceAlertDialogBuilder<Integer>(context)
+                        .setTitle(context.getString(R.string.lbl_edition))
                         .setItems(ids, labels)
                         .setSelectedItems(filter.getValue())
-                        .setResultConsumer(value -> {
+                        .setPositiveButton(android.R.string.ok, value -> {
                             filter.setValue(value);
                             mVb.filter.setText(filter.getValueText(context));
                             mModificationListener.setModified(true);
