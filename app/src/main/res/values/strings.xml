@@ -1660,6 +1660,8 @@
     <string name="lbl_book_type">Book type</string>
     <string name="lbl_filter">Filter</string>
     <string name="lbl_add_filter">Add filter</string>
+    <string name="lbl_logfiles">Log files</string>
+    <string name="lbl_database_upgrade">Database last upgrade</string>
 
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
