@@ -29,10 +29,17 @@ import android.os.Build;
 import android.util.DisplayMetrics;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -41,137 +48,186 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
-public final class DebugReport {
+public class DebugReport {
 
-    /** Log tag. */
-    private static final String TAG = "DebugReport";
+    private final Collection<File> files = new ArrayList<>();
+    @NonNull
+    private final Context context;
+    private final String dateTime;
+    @Nullable
+    private String message;
+    @Nullable
+    private String preferences;
 
-    /** Prefix for the filename of a database backup. */
-    private static final String DB_FILE_PREFIX = "NTMBDebug";
-
-    private DebugReport() {
+    public DebugReport(@NonNull final Context context) {
+        this.context = context;
+        // User local zone - it's for THEIR reference.
+        dateTime = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 
-    /**
-     * Collect and send debug info using email.
-     * <p>
-     * ENHANCE: need a better way to send the db file... mail accounts limit the size of attachments
-     *
-     * @param context Current context
-     */
-    public static boolean sendDebugInfo(@NonNull final Context context) {
-
-        final StringBuilder message = new StringBuilder();
-
+    @NonNull
+    public DebugReport addDefaultMessage() {
         final PackageInfoWrapper info = PackageInfoWrapper.createWithSignatures(context);
-        message.append("App: ").append(info.getPackageName()).append('\n')
-               .append("Version: ").append(info.getVersionName())
-               /* */.append(" (")
-               /* */.append(info.getVersionCode())
-               /* */.append(", ")
-               /* */.append(BuildConfig.TIMESTAMP)
-               /* */.append(")\n")
-               .append("SDK: ")
-               /* */.append(Build.VERSION.RELEASE)
-               /* */.append(" (").append(Build.VERSION.SDK_INT).append(' ')
-               /* */.append(Build.TAGS).append(")\n")
-               .append("Model: ").append(Build.MODEL).append('\n')
-               .append("Manufacturer: ").append(Build.MANUFACTURER).append('\n')
-               .append("Device: ").append(Build.DEVICE).append('\n')
-               .append("Product: ").append(Build.PRODUCT).append('\n')
-               .append("Brand: ").append(Build.BRAND).append('\n')
-               .append("ID: ").append(Build.ID).append('\n')
-               .append("Signed-By: ").append(info.getSignedBy()).append('\n');
 
-        Logger.warn(TAG, "sendDebugInfo|" + message);
-        logPreferences(context);
-
-        // last part; the user should (hopefully) add their comment to the email
-        message.append("\nDetails:\n\n")
-               .append(context.getString(R.string.debug_body))
-               .append("\n\n");
-
-        // Find all files of interest to send
-        final Collection<File> files = new ArrayList<>();
-
-        // Note we deliberately do NOT create a zip file with all files.
-        // This can make the email larger, but is friendlier for the user
-        // to remove files they do not want to send.
-        try {
-            // Copy the database from the internal protected area to the cache dir
-            // so we can create a valid Uri for it.
-            final String fileName =
-                    DB_FILE_PREFIX
-                    // User local zone - it's for THEIR reference.
-                    + '-' + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                    + ".db";
-            final File dbFile = new File(context.getCacheDir(), fileName);
-            dbFile.deleteOnExit();
-            FileUtils.copy(DBHelper.getDatabasePath(context), dbFile);
-            files.add(dbFile);
-
-            // arbitrarily collect 5 and 10 files max.
-            files.addAll(FileUtils.collectFiles(ServiceLocator.getUpgradesDir(), null, 5));
-            files.addAll(FileUtils.collectFiles(ServiceLocator.getLogDir(), null, 10));
-
-            // Build the attachment list
-            final ArrayList<Uri> uriList = files
-                    .stream()
-                    .filter(file -> file.exists() && file.length() > 0)
-                    .map(file -> GenericFileProvider.createUri(context, file))
-                    .collect(Collectors.toCollection(ArrayList::new));
-
-
-            // setup the mail message
-            final String[] to = BuildConfig.EMAIL_DEBUG_REPORT.split(";");
-            final String subject = "[" + context.getString(R.string.app_name) + "] "
-                                   + context.getString(R.string.debug_subject);
-
-            final Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
-                    .setType("text/plain")
-                    .putExtra(Intent.EXTRA_EMAIL, to)
-                    .putExtra(Intent.EXTRA_SUBJECT, subject)
-                    .putExtra(Intent.EXTRA_TEXT, message.toString())
-                    .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);
-            context.startActivity(intent);
-            return true;
-
-        } catch (@NonNull final ActivityNotFoundException | IOException e) {
-            Logger.error(TAG, e);
-            return false;
-        }
+        message = "App: " + info.getPackageName() + '\n'
+                  + "Version: " + info.getVersionName()
+                  + " (" + info.getVersionCode() + ", " + BuildConfig.TIMESTAMP + ")\n"
+                  + "SDK: " + Build.VERSION.RELEASE
+                  + " (" + Build.VERSION.SDK_INT + ' ' + Build.TAGS + ")\n"
+                  + "Model: " + Build.MODEL + '\n'
+                  + "Manufacturer: " + Build.MANUFACTURER + '\n'
+                  + "Device: " + Build.DEVICE + '\n'
+                  + "Product: " + Build.PRODUCT + '\n'
+                  + "Brand: " + Build.BRAND + '\n'
+                  + "Build: " + Build.ID + '\n'
+                  + "Signed-By: " + info.getSignedBy() + '\n';
+        return this;
     }
 
-    /**
-     * Write the global preferences to the log file.
-     *
-     * @param context Current context
-     */
-    public static void logPreferences(@NonNull final Context context) {
+    @NonNull
+    public DebugReport addDatabase()
+            throws IOException {
+
+        final File file = new File(context.getCacheDir(), "nevertoomanybooks.db");
+        file.deleteOnExit();
+        // Copy the database from the internal protected area to the cache dir
+        // so we can create a valid Uri for it.
+        FileUtils.copy(DBHelper.getDatabasePath(context), file);
+        files.add(file);
+
+        return this;
+    }
+
+    @NonNull
+    public DebugReport addDatabaseUpgrades(final int maxFiles)
+            throws IOException {
+        files.addAll(collectFiles(ServiceLocator.getUpgradesDir(), maxFiles));
+        return this;
+    }
+
+    @NonNull
+    public DebugReport addLogs(final int maxFiles)
+            throws IOException {
+        files.addAll(collectFiles(ServiceLocator.getLogDir(), maxFiles));
+        return this;
+    }
+
+    @NonNull
+    public DebugReport addPreferences()
+            throws FileNotFoundException {
         final Map<String, ?> map = PreferenceManager
                 .getDefaultSharedPreferences(context).getAll();
         final List<String> keyList = new ArrayList<>(map.keySet());
         Collections.sort(keyList);
 
-        final StringBuilder sb = new StringBuilder("dumpPreferences|\n\nSharedPreferences:");
+        final StringBuilder sb = new StringBuilder();
         for (final String key : keyList) {
-            sb.append('\n').append(key).append('=').append(map.get(key));
+            sb.append(key).append('=').append(map.get(key)).append('\n');
         }
-        sb.append("\n\n");
 
-        Logger.warn(TAG, sb.toString());
+        preferences = sb.toString();
+
+        return this;
     }
 
-    public static void logScreenParams(@NonNull final Context context) {
+    public void sendAsEmail()
+            throws ActivityNotFoundException, IOException {
+
+        if (preferences != null) {
+            final File file = new File(context.getCacheDir(), "preferences.txt");
+            file.deleteOnExit();
+            try (PrintWriter printWriter = new PrintWriter(file, "UTF-8")) {
+                printWriter.println(preferences);
+            }
+            files.add(file);
+        }
+
+        final Uri uri = zip();
+
+        // the user should (hopefully) add their comment to the email
+        final StringBuilder sb = new StringBuilder();
+        if (message != null) {
+            sb.append(message).append('\n');
+        }
+        sb.append("Details:\n\n")
+          .append(context.getString(R.string.debug_body))
+          .append("\n\n");
+
+        final String[] to = BuildConfig.EMAIL_DEBUG_REPORT.split(";");
+        final String subject = "[" + context.getString(R.string.app_name) + "] "
+                               + context.getString(R.string.debug_subject);
+
+        // Reminder, to send multiple Uri's use:
+        //    Intent.ACTION_SEND_MULTIPLE
+        //     .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList)
+        final Intent intent = new Intent(Intent.ACTION_SEND)
+                .setType("text/plain")
+                .putExtra(Intent.EXTRA_EMAIL, to)
+                .putExtra(Intent.EXTRA_SUBJECT, subject)
+                .putExtra(Intent.EXTRA_TEXT, sb.toString())
+                .putExtra(Intent.EXTRA_STREAM, uri);
+        context.startActivity(intent);
+    }
+
+    private Uri zip()
+            throws IOException {
+        final File zipFile = new File(context.getCacheDir(),
+                                      String.format("NTMBBugReport-%s.zip", dateTime));
+        zipFile.deleteOnExit();
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(
+                new BufferedOutputStream(new FileOutputStream(zipFile),
+                                         RecordWriter.BUFFER_SIZE))) {
+
+            for (final File file : files) {
+                final ZipEntry entry = new ZipEntry(file.getName());
+                entry.setTime(file.lastModified());
+                entry.setMethod(ZipEntry.DEFLATED);
+                zipOutputStream.putNextEntry(entry);
+                try (InputStream is = new FileInputStream(file)) {
+                    FileUtils.copy(is, zipOutputStream);
+                } finally {
+                    zipOutputStream.closeEntry();
+                }
+            }
+        }
+
+        return GenericFileProvider.createUri(context, zipFile);
+    }
+
+    @NonNull
+    public ArrayList<Uri> createUriList() {
+        // Build the attachment list
+        return files
+                .stream()
+                .filter(file -> file.exists() && file.length() > 0)
+                .map(file -> GenericFileProvider.createUri(context, file))
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    @NonNull
+    private List<File> collectFiles(@NonNull final File dir,
+                                    final int maxFiles) {
+        List<File> list = FileUtils.collectFiles(dir, false, null, Integer.MAX_VALUE);
+        // Sort in reverse order. Newest file first.
+        list.sort((o1, o2) -> Long.compare(o2.lastModified(), o1.lastModified()));
+        list = list.subList(0, Math.min(maxFiles, list.size()));
+        return list;
+    }
+
+    @NonNull
+    public DebugReport addScreenParams() {
         final Resources resources = context.getResources();
         final Configuration configuration = resources.getConfiguration();
         final DisplayMetrics metrics = resources.getDisplayMetrics();
@@ -189,6 +245,12 @@ public final class DebugReport {
                 + "  heightPixels=" + metrics.heightPixels + '\n'
                 + "  density=" + metrics.density + '\n';
 
-        Logger.warn(TAG, sb);
+        if (message != null) {
+            message += "\n" + sb;
+        } else {
+            message = sb;
+        }
+
+        return this;
     }
 }
