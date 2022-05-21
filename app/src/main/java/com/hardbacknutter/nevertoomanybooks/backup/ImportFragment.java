@@ -559,9 +559,8 @@ public class ImportFragment
 
         @StringRes
         final int fs;
-        if (failed > 10) {
-            // keep it sensible, list maximum 10 lines.
-            failed = 10;
+        if (failed > ImportResults.MAX_FAIL_LINES) {
+            failed = ImportResults.MAX_FAIL_LINES;
             fs = R.string.warning_import_failed_for_lines_lots;
         } else {
             fs = R.string.warning_import_failed_for_lines_some;
