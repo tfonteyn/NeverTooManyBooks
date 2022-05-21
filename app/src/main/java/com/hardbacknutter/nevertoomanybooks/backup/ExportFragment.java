@@ -453,10 +453,10 @@ public class ExportFragment
                                 String.valueOf(result.calibreLibraries)));
         }
         if (result.styles > 0) {
-            items.add(getString(R.string.name_colon_value,
-                                getString(R.string.lbl_styles),
-                                // deduct built-in styles
-                                String.valueOf(result.styles - BuiltinStyle.ALL.size() - 1)));
+            // deduct built-in styles
+            final int nr = result.styles - BuiltinStyle.ALL.size() + 1;
+            items.add(getString(R.string.name_colon_value, getString(R.string.lbl_styles),
+                                String.valueOf(nr)));
         }
         if (result.preferences > 0) {
             items.add(getString(R.string.lbl_settings));
