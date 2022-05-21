@@ -29,13 +29,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -183,9 +186,9 @@ public final class Logger {
 
         try {
             final File logFile = new File(ServiceLocator.getLogDir(), ERROR_LOG_FILE);
-            //noinspection ImplicitDefaultCharsetUsage
-            try (FileWriter fw = new FileWriter(logFile, true);
-                 PrintWriter out = new PrintWriter(fw)) {
+            try (FileOutputStream fos = new FileOutputStream(logFile, true);
+                 OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+                 PrintWriter out = new PrintWriter(new BufferedWriter(osw))) {
                 out.println(fullMsg);
             }
         } catch (@NonNull final Exception ignore) {
