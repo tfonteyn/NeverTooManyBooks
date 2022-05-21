@@ -44,15 +44,21 @@ public class DbArchiveWriter
 
     /** Export configuration. */
     @NonNull
-    private final ExportHelper mHelper;
+    private final ExportHelper exportHelper;
+
+    @NonNull
+    private final File databasePath;
 
     /**
      * Constructor.
      *
-     * @param helper export configuration
+     * @param context Current context
+     * @param helper  export configuration
      */
-    public DbArchiveWriter(@NonNull final ExportHelper helper) {
-        mHelper = helper;
+    public DbArchiveWriter(@NonNull final Context context,
+                           @NonNull final ExportHelper helper) {
+        exportHelper = helper;
+        databasePath = DBHelper.getDatabasePath(context);
     }
 
     @NonNull
@@ -61,10 +67,8 @@ public class DbArchiveWriter
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        final File databasePath = DBHelper.getDatabasePath(context);
-
         try (FileChannel ic = new FileInputStream(databasePath).getChannel();
-             FileChannel oc = mHelper.createOutputStream(context).getChannel()) {
+             FileChannel oc = exportHelper.createOutputStream(context).getChannel()) {
             ic.transferTo(0, ic.size(), oc);
         }
 
