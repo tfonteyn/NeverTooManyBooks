@@ -133,7 +133,7 @@ public enum RecordType {
 
     /** Used as the fixed archive entry name when <strong>WRITING</strong>. */
     @NonNull
-    private final String mName;
+    private final String name;
 
     /** Used to detect the archive entry name when <strong>READING</strong>. */
     @SuppressWarnings("FieldNotUsedInToString")
@@ -142,7 +142,7 @@ public enum RecordType {
 
     RecordType(@NonNull final String name) {
         // for now the same, but keeping this open to change
-        mName = name;
+        this.name = name;
         mPrefix = name;
     }
 
@@ -190,14 +190,14 @@ public enum RecordType {
      */
     @NonNull
     public String getName() {
-        return mName;
+        return name;
     }
 
     @Override
     @NonNull
     public String toString() {
         return "RecordType{"
-               + "mName='" + mName + '\''
+               + "name='" + name + '\''
                + '}';
     }
 }
