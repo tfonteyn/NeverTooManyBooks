@@ -498,14 +498,12 @@ public class ExportFragment
         final String subject = '[' + getString(R.string.app_name) + "] "
                                + getString(R.string.lbl_backup);
 
-        final ArrayList<Uri> uriList = new ArrayList<>();
-        uriList.add(uri);
         try {
-            final Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
+            final Intent intent = new Intent(Intent.ACTION_SEND)
                     .setType("text/plain")
                     .putExtra(Intent.EXTRA_SUBJECT, subject)
                     .putExtra(Intent.EXTRA_TEXT, report)
-                    .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);
+                    .putExtra(Intent.EXTRA_STREAM, uri);
             startActivity(intent);
             //noinspection ConstantConditions
             getActivity().finish();
