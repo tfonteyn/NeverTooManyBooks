@@ -197,8 +197,8 @@ public class ExportHelper
         final ExportResults results = new ExportResults();
 
         try {
-            mDataWriter = encoding.createWriter(context, this);
-            results.add(mDataWriter.write(context, progressListener));
+            dataWriter = encoding.createWriter(context, this);
+            results.add(dataWriter.write(context, progressListener));
 
         } catch (@NonNull final IOException e) {
             // The zip archiver (maybe others as well?) can throw an IOException
@@ -209,9 +209,9 @@ public class ExportHelper
             }
         } finally {
             synchronized (this) {
-                if (mDataWriter != null) {
-                    mDataWriter.close();
-                    mDataWriter = null;
+                if (dataWriter != null) {
+                    dataWriter.close();
+                    dataWriter = null;
                 }
             }
         }

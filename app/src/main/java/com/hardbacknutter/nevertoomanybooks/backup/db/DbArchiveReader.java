@@ -58,14 +58,14 @@ public class DbArchiveReader
     /** Import configuration. */
     @SuppressWarnings("FieldCanBeLocal")
     @NonNull
-    private final ImportHelper mHelper;
+    private final ImportHelper importHelper;
 
     @Nullable
-    private final SQLiteDatabase mSQLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
     @SuppressWarnings("unused")
     @Nullable
-    private DataReader<ArchiveMetaData, ImportResults> mDelegateDataReader;
+    private DataReader<ArchiveMetaData, ImportResults> delegateDataReader;
 
 
     /**
@@ -81,18 +81,18 @@ public class DbArchiveReader
                            @NonNull final ImportHelper helper)
             throws StorageException, IOException {
 
-        mHelper = helper;
+        importHelper = helper;
 
-        try (InputStream is = context.getContentResolver().openInputStream(mHelper.getUri())) {
+        try (InputStream is = context.getContentResolver().openInputStream(importHelper.getUri())) {
             if (is == null) {
-                throw new FileNotFoundException(mHelper.getUri().toString());
+                throw new FileNotFoundException(importHelper.getUri().toString());
             }
 
             // Copy the file from the uri to a place where we can access it as a database.
             File tmpDb = new File(context.getCacheDir(), System.nanoTime() + ".db");
             tmpDb = ImageUtils.copy(is, tmpDb);
-            mSQLiteDatabase = SQLiteDatabase.openDatabase(tmpDb.getAbsolutePath(), null,
-                                                          SQLiteDatabase.OPEN_READONLY);
+            sqLiteDatabase = SQLiteDatabase.openDatabase(tmpDb.getAbsolutePath(), null,
+                                                         SQLiteDatabase.OPEN_READONLY);
         }
     }
 
@@ -100,19 +100,20 @@ public class DbArchiveReader
     @Override
     public void validate(@NonNull final Context context)
             throws DataReaderException,
-                   FileNotFoundException {
+                   IOException, CredentialsException {
 
         // sanity check
-        if (mSQLiteDatabase == null) {
+        if (sqLiteDatabase == null) {
             throw new FileNotFoundException("no db file");
         }
 
         // Determine if the database file is a supported format
-//        mDelegateDataReader = SomeDatabaseArchiveReader.getReader(context, mSQLiteDatabase, mHelper);
-//        if (mDelegateDataReader != null) {
-//            mDelegateDataReader.validate(context);
-//            return;
-//        }
+//        delegateDataReader = SomeDatabaseArchiveReader.getReader(context, sqLiteDatabase,
+//                                                                 importHelper);
+        if (delegateDataReader != null) {
+            delegateDataReader.validate(context);
+            return;
+        }
 
         throw new DataReaderException(context.getString(R.string.error_file_not_recognized));
     }
@@ -125,8 +126,8 @@ public class DbArchiveReader
                    CredentialsException,
                    StorageException,
                    IOException {
-        if (mDelegateDataReader != null) {
-            return mDelegateDataReader.readMetaData(context);
+        if (delegateDataReader != null) {
+            return delegateDataReader.readMetaData(context);
         } else {
             return Optional.empty();
         }
@@ -144,26 +145,26 @@ public class DbArchiveReader
                    IOException {
 
         // sanity check, we should not even get here if the database is not supported
-        if (mDelegateDataReader == null) {
+        if (delegateDataReader == null) {
             throw new DataReaderException(context.getString(
                     R.string.error_file_not_recognized));
         }
 
-        return mDelegateDataReader.read(context, progressListener);
+        return delegateDataReader.read(context, progressListener);
     }
 
     @Override
     public void close()
             throws IOException {
         try {
-            if (mDelegateDataReader != null) {
-                mDelegateDataReader.close();
+            if (delegateDataReader != null) {
+                delegateDataReader.close();
             }
         } finally {
-            if (mSQLiteDatabase != null) {
-                mSQLiteDatabase.close();
+            if (sqLiteDatabase != null) {
+                sqLiteDatabase.close();
                 // all done, no need to keep this file.
-                FileUtils.delete(new File(mSQLiteDatabase.getPath()));
+                FileUtils.delete(new File(sqLiteDatabase.getPath()));
             }
         }
     }

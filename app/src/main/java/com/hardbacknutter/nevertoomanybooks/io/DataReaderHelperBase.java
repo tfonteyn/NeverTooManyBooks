@@ -61,34 +61,34 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
 
     /** <strong>What</strong> is going to be imported. */
     @NonNull
-    private final EnumSet<RecordType> mRecordTypes = EnumSet.noneOf(RecordType.class);
+    private final EnumSet<RecordType> recordTypes = EnumSet.noneOf(RecordType.class);
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
-    private DataReader<METADATA, RESULTS> mDataReader;
+    private DataReader<METADATA, RESULTS> dataReader;
     @Nullable
-    private METADATA mMetaData;
+    private METADATA metadata;
 
     /**
      * <strong>How</strong> to handle existing books/covers.
-     * New Books/Covers are always imported according to {@link #mRecordTypes}.
+     * New Books/Covers are always imported according to {@link #recordTypes}.
      */
     @NonNull
-    private DataReader.Updates mUpdateOption = DataReader.Updates.Skip;
+    private DataReader.Updates updateOption = DataReader.Updates.Skip;
 
     public void addRecordType(@NonNull final Set<RecordType> recordTypes) {
-        mRecordTypes.addAll(recordTypes);
+        this.recordTypes.addAll(recordTypes);
     }
 
     public void addRecordType(@NonNull final RecordType recordType) {
-        mRecordTypes.add(recordType);
+        recordTypes.add(recordType);
     }
 
     public void setRecordType(final boolean add,
                               @NonNull final RecordType recordType) {
         if (add) {
-            mRecordTypes.add(recordType);
+            recordTypes.add(recordType);
         } else {
-            mRecordTypes.remove(recordType);
+            recordTypes.remove(recordType);
         }
     }
 
@@ -100,8 +100,8 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
     @NonNull
     public Set<RecordType> getRecordTypes() {
         // sanity check
-        mRecordTypes.remove(RecordType.MetaData);
-        return EnumSet.copyOf(mRecordTypes);
+        recordTypes.remove(RecordType.MetaData);
+        return EnumSet.copyOf(recordTypes);
     }
 
     /**
@@ -111,17 +111,17 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
      */
     @NonNull
     public DataReader.Updates getUpdateOption() {
-        return mUpdateOption;
+        return updateOption;
     }
 
     public void setUpdateOption(@NonNull final DataReader.Updates updateOption) {
-        mUpdateOption = updateOption;
+        this.updateOption = updateOption;
     }
 
     @NonNull
     public Optional<METADATA> getMetaData() {
-        if (mMetaData != null) {
-            return Optional.of(mMetaData);
+        if (metadata != null) {
+            return Optional.of(metadata);
         } else {
             return Optional.empty();
         }
@@ -165,15 +165,15 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
                    IOException {
 
         try {
-            mDataReader = createReader(context);
-            final Optional<METADATA> metaData = mDataReader.readMetaData(context);
-            mMetaData = metaData.orElse(null);
+            dataReader = createReader(context);
+            final Optional<METADATA> metaData = dataReader.readMetaData(context);
+            metadata = metaData.orElse(null);
             return metaData;
         } finally {
             synchronized (this) {
-                if (mDataReader != null) {
-                    mDataReader.close();
-                    mDataReader = null;
+                if (dataReader != null) {
+                    dataReader.close();
+                    dataReader = null;
                 }
             }
         }
@@ -199,16 +199,16 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
                    StorageException,
                    IOException {
 
-        SanityCheck.requireValue(mRecordTypes, "mRecordTypes");
+        SanityCheck.requireValue(recordTypes, "mRecordTypes");
 
         try {
-            mDataReader = createReader(context);
-            return mDataReader.read(context, progressListener);
+            dataReader = createReader(context);
+            return dataReader.read(context, progressListener);
         } finally {
             synchronized (this) {
-                if (mDataReader != null) {
-                    mDataReader.close();
-                    mDataReader = null;
+                if (dataReader != null) {
+                    dataReader.close();
+                    dataReader = null;
                 }
             }
         }
@@ -216,8 +216,8 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
 
     public void cancel() {
         synchronized (this) {
-            if (mDataReader != null) {
-                mDataReader.cancel();
+            if (dataReader != null) {
+                dataReader.cancel();
             }
         }
     }
@@ -226,9 +226,9 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
     @NonNull
     public String toString() {
         return "DataReaderHelperBase{"
-               + "mRecordTypes=" + mRecordTypes
-               + ", mUpdateOption=" + mUpdateOption
-               + ", mMetaData=" + mMetaData
+               + "recordTypes=" + recordTypes
+               + ", updateOption=" + updateOption
+               + ", metadata=" + metadata
                + '}';
     }
 

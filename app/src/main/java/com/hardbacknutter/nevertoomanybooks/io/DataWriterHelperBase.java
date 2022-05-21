@@ -60,11 +60,11 @@ public abstract class DataWriterHelperBase<RESULTS> {
 
     /** <strong>What</strong> is going to be exported. */
     @NonNull
-    private final EnumSet<RecordType> mRecordTypes = EnumSet.noneOf(RecordType.class);
+    private final EnumSet<RecordType> recordTypes = EnumSet.noneOf(RecordType.class);
 
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
-    protected DataWriter<RESULTS> mDataWriter;
+    protected DataWriter<RESULTS> dataWriter;
 
     /**
      * Do an incremental export. Definition of incremental depends on the writer.
@@ -73,22 +73,22 @@ public abstract class DataWriterHelperBase<RESULTS> {
      *     <li>{@code true}: books added/updated</li>
      * </ul>
      */
-    private boolean mIncremental;
+    private boolean incremental;
 
     public void addRecordType(@NonNull final Set<RecordType> recordTypes) {
-        mRecordTypes.addAll(recordTypes);
+        this.recordTypes.addAll(recordTypes);
     }
 
     public void removeRecordType(@NonNull final Set<RecordType> recordTypes) {
-        mRecordTypes.removeAll(recordTypes);
+        this.recordTypes.removeAll(recordTypes);
     }
 
     public void setRecordType(final boolean add,
                               @NonNull final RecordType recordType) {
         if (add) {
-            mRecordTypes.add(recordType);
+            recordTypes.add(recordType);
         } else {
-            mRecordTypes.remove(recordType);
+            recordTypes.remove(recordType);
         }
     }
 
@@ -100,16 +100,16 @@ public abstract class DataWriterHelperBase<RESULTS> {
     @NonNull
     public Set<RecordType> getRecordTypes() {
         // sanity check
-        mRecordTypes.remove(RecordType.MetaData);
-        return EnumSet.copyOf(mRecordTypes);
+        recordTypes.remove(RecordType.MetaData);
+        return EnumSet.copyOf(recordTypes);
     }
 
     public boolean isIncremental() {
-        return mIncremental;
+        return incremental;
     }
 
     public void setIncremental(final boolean incremental) {
-        mIncremental = incremental;
+        this.incremental = incremental;
     }
 
     /**
@@ -135,8 +135,8 @@ public abstract class DataWriterHelperBase<RESULTS> {
 
     public void cancel() {
         synchronized (this) {
-            if (mDataWriter != null) {
-                mDataWriter.cancel();
+            if (dataWriter != null) {
+                dataWriter.cancel();
             }
         }
     }
@@ -145,8 +145,8 @@ public abstract class DataWriterHelperBase<RESULTS> {
     @NonNull
     public String toString() {
         return "DataWriterHelperBase{"
-               + "mRecordTypes=" + mRecordTypes
-               + ", mIncremental=" + mIncremental
+               + "recordTypes=" + recordTypes
+               + ", incremental=" + incremental
                + '}';
     }
 

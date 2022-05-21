@@ -49,22 +49,22 @@ public class ExportViewModel
             ArchiveEncoding.SqLiteDb};
 
     @NonNull
-    private final ExportHelper mHelper = new ExportHelper();
+    private final ExportHelper exportHelper = new ExportHelper();
 
     /** UI helper. */
-    private boolean mQuickOptionsAlreadyShown;
+    private boolean quickOptionsAlreadyShown;
 
     boolean isQuickOptionsAlreadyShown() {
-        return mQuickOptionsAlreadyShown;
+        return quickOptionsAlreadyShown;
     }
 
     void setQuickOptionsAlreadyShown() {
-        mQuickOptionsAlreadyShown = true;
+        quickOptionsAlreadyShown = true;
     }
 
     @NonNull
     ExportHelper getExportHelper() {
-        return mHelper;
+        return exportHelper;
     }
 
     /**
@@ -89,7 +89,7 @@ public class ExportViewModel
      */
     @NonNull
     Pair<Integer, ArrayList<String>> getFormatOptions(@NonNull final Context context) {
-        final ArchiveEncoding currentEncoding = mHelper.getEncoding();
+        final ArchiveEncoding currentEncoding = exportHelper.getEncoding();
         int initialPos = 0;
         final ArrayList<String> list = new ArrayList<>();
         for (int i = 0; i < ENCODINGS.length; i++) {
@@ -107,11 +107,11 @@ public class ExportViewModel
     public boolean isReadyToGo() {
         // slightly bogus test... right now Prefs/Styles are always included,
         // but we're keeping all variations of DataReader/DataWriter classes the same
-        return mHelper.getRecordTypes().size() > 1;
+        return exportHelper.getRecordTypes().size() > 1;
     }
 
     void startExport(@NonNull final Uri uri) {
-        mHelper.setUri(uri);
-        startWritingData(mHelper);
+        exportHelper.setUri(uri);
+        startWritingData(exportHelper);
     }
 }

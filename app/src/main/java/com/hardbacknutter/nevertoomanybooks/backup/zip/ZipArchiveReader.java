@@ -49,10 +49,10 @@ public class ZipArchiveReader
 
     /**
      * The data stream for the archive.
-     * Do <strong>NOT</strong> use this directly, see {@link #getInputStream()}
+     * Do <strong>NOT</strong> use this directly, see {@link #getZipInputStream()}
      */
     @Nullable
-    private ZipInputStream mInputStream;
+    private ZipInputStream zipInputStream;
 
     /**
      * Constructor.
@@ -73,7 +73,7 @@ public class ZipArchiveReader
         try {
             ZipEntry entry;
             while (true) {
-                entry = getInputStream().getNextEntry();
+                entry = getZipInputStream().getNextEntry();
                 if (entry == null) {
                     return Optional.empty();
                 }
@@ -94,7 +94,7 @@ public class ZipArchiveReader
     public Optional<ArchiveReaderRecord> next()
             throws IOException {
 
-        final ZipEntry entry = getInputStream().getNextEntry();
+        final ZipEntry entry = getZipInputStream().getNextEntry();
         if (entry == null) {
             return Optional.empty();
         }
@@ -114,20 +114,20 @@ public class ZipArchiveReader
      * @throws FileNotFoundException on ...
      */
     @NonNull
-    private ZipInputStream getInputStream()
+    private ZipInputStream getZipInputStream()
             throws FileNotFoundException {
-        if (mInputStream == null) {
-            mInputStream = new ZipInputStream(openInputStream());
+        if (zipInputStream == null) {
+            zipInputStream = new ZipInputStream(openInputStream());
         }
-        return mInputStream;
+        return zipInputStream;
     }
 
     @Override
     protected void closeInputStream()
             throws IOException {
-        if (mInputStream != null) {
-            mInputStream.close();
-            mInputStream = null;
+        if (zipInputStream != null) {
+            zipInputStream.close();
+            zipInputStream = null;
         }
     }
 
@@ -187,7 +187,7 @@ public class ZipArchiveReader
         public InputStream getInputStream()
                 throws FileNotFoundException {
             // The reader can open/close the stream at will, so always ask the reader
-            return mReader.getInputStream();
+            return mReader.getZipInputStream();
         }
     }
 }

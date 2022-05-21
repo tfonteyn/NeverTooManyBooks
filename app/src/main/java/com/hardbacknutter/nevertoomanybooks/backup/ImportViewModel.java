@@ -37,7 +37,7 @@ public class ImportViewModel
         extends DataReaderViewModel<ArchiveMetaData, ImportResults> {
 
     @Nullable
-    private ImportHelper mHelper;
+    private ImportHelper importHelper;
 
     // not an 'init' as the helper can only be created after the user selected a uri
     @NonNull
@@ -45,23 +45,23 @@ public class ImportViewModel
                                         @NonNull final Uri uri)
             throws DataReaderException, FileNotFoundException {
 
-        mHelper = new ImportHelper(context, uri);
-        return mHelper;
+        importHelper = new ImportHelper(context, uri);
+        return importHelper;
     }
 
     boolean hasUri() {
         // simple check... the uri will always exist if the helper exists.
-        return mHelper != null;
+        return importHelper != null;
     }
 
     @Override
     @NonNull
     public ImportHelper getDataReaderHelper() {
-        return Objects.requireNonNull(mHelper, "mImportHelper");
+        return Objects.requireNonNull(importHelper, "importHelper");
     }
 
     @Override
     public boolean isReadyToGo() {
-        return mHelper != null && mHelper.getMetaData().isPresent();
+        return importHelper != null && importHelper.getMetaData().isPresent();
     }
 }

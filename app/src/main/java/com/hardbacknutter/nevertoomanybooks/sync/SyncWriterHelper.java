@@ -98,13 +98,13 @@ public class SyncWriterHelper
         Objects.requireNonNull(syncServer, "mSyncServer");
 
         try {
-            mDataWriter = syncServer.createWriter(context, this);
-            return mDataWriter.write(context, progressListener);
+            dataWriter = syncServer.createWriter(context, this);
+            return dataWriter.write(context, progressListener);
         } finally {
             synchronized (this) {
-                if (mDataWriter != null) {
-                    mDataWriter.close();
-                    mDataWriter = null;
+                if (dataWriter != null) {
+                    dataWriter.close();
+                    dataWriter = null;
                 }
             }
         }
