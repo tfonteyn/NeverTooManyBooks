@@ -111,18 +111,6 @@
             />
 
         <Button
-            android:id="@+id/btn_debug_dump_prefs"
-            style="@style/Button.Menu"
-            android:text="@string/debug_dump_prefs"
-            android:visibility="gone"
-            app:icon="@drawable/ic_baseline_content_copy_24"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_debug_send_mail"
-            tools:visibility="visible"
-            />
-
-        <Button
             android:id="@+id/btn_debug_sq_shell"
             style="@style/Button.Menu"
             android:text="@string/debug_sq_shell"
@@ -130,7 +118,7 @@
             app:icon="@drawable/ic_baseline_keyboard_24"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_debug_dump_prefs"
+            app:layout_constraintTop_toBottomOf="@id/btn_debug_send_mail"
             tools:visibility="visible"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>

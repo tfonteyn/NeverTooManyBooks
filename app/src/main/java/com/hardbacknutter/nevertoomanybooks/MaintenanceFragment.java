@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -34,14 +35,18 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.FileFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceAlertDialogBuilder;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -54,6 +59,11 @@ public class MaintenanceFragment
 
     /** Log tag. */
     public static final String TAG = "MaintenanceFragment";
+
+    private static final int DBG_SEND_DATABASE = 0;
+    private static final int DBG_SEND_DATABASE_UPGRADE = 1;
+    private static final int DBG_SEND_LOGFILES = 2;
+    private static final int DBG_SEND_PREFERENCES = 3;
 
     /** The length of a UUID string. */
     private static final int UUID_LEN = 32;
@@ -94,7 +104,6 @@ public class MaintenanceFragment
         vb.btnDebug.setOnClickListener(v -> {
             debugClicks++;
             if (debugClicks >= DEBUG_CLICKS) {
-                vb.btnDebugDumpPrefs.setVisibility(View.VISIBLE);
                 vb.btnDebugSqShell.setVisibility(View.VISIBLE);
             }
 
@@ -200,27 +209,58 @@ public class MaintenanceFragment
                 .create()
                 .show());
 
-        vb.btnDebugSendMail.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
-                .setIcon(R.drawable.ic_baseline_warning_24)
-                .setTitle(R.string.debug)
-                .setMessage(R.string.debug_send_info_text)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w) -> {
-                    if (!DebugReport.sendDebugInfo(v.getContext())) {
-                        //noinspection ConstantConditions
-                        Snackbar.make(getView(), R.string.error_email_failed,
-                                      Snackbar.LENGTH_LONG).show();
-                    }
-                })
-                .create()
-                .show());
+        vb.btnDebugSendMail.setOnClickListener(v -> {
+            final Context context = v.getContext();
 
-        //noinspection ConstantConditions
-        vb.btnDebugDumpPrefs.setOnClickListener(v -> DebugReport.logPreferences(getContext()));
+            new MultiChoiceAlertDialogBuilder<Integer>(context)
+                    .setIcon(R.drawable.ic_baseline_warning_24)
+                    .setTitle(R.string.debug)
+                    .setMessage(R.string.debug_send_info_text)
+                    .setSelectedItems(Set.of(DBG_SEND_LOGFILES,
+                                             DBG_SEND_PREFERENCES))
+                    .setItems(List.of(DBG_SEND_DATABASE,
+                                      DBG_SEND_DATABASE_UPGRADE,
+                                      DBG_SEND_LOGFILES,
+                                      DBG_SEND_PREFERENCES),
+                              List.of(context.getString(R.string.lbl_database),
+                                      context.getString(R.string.lbl_database_upgrade),
+                                      context.getString(R.string.lbl_logfiles),
+                                      context.getString(R.string.lbl_settings)))
+                    .setPositiveButton(android.R.string.ok, this::sendDebug)
+                    .create()
+                    .show();
+        });
 
         vb.btnDebugSqShell.setOnClickListener(v -> replaceFragment(
                 SqliteShellFragment.create(debugSqLiteAllowsUpdates),
                 SqliteShellFragment.TAG));
+    }
+
+    private void sendDebug(@NonNull final Set<Integer> selectedItems) {
+        try {
+            //noinspection ConstantConditions
+            final DebugReport builder = new DebugReport(getContext())
+                    .addDefaultMessage();
+
+            if (selectedItems.contains(DBG_SEND_DATABASE)) {
+                builder.addDatabase();
+            }
+            if (selectedItems.contains(DBG_SEND_DATABASE_UPGRADE)) {
+                builder.addDatabaseUpgrades(1);
+            }
+            if (selectedItems.contains(DBG_SEND_LOGFILES)) {
+                builder.addLogs(10);
+            }
+            if (selectedItems.contains(DBG_SEND_PREFERENCES)) {
+                builder.addPreferences();
+            }
+            builder.sendAsEmail();
+
+        } catch (@NonNull final ActivityNotFoundException | IOException e) {
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), R.string.error_email_failed,
+                          Snackbar.LENGTH_LONG).show();
+        }
     }
 
     /**
