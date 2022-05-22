@@ -1914,11 +1914,10 @@ public class BooksOnBookshelf
         final boolean isExpanded = node.isExpanded();
 
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG + ":scrollTo",
-                  "\nposition=" + position
-                  + "\nonScreen= " + onScreen
-                  + "\nisExpanded= " + isExpanded
-                  + "\nisBook= " + isBook
+            Log.d(TAG + ":scrollTo", "position=" + position
+                                     + ", onScreen= " + onScreen
+                                     + ", isExpanded= " + isExpanded
+                                     + ", isBook= " + isBook
                  );
         }
         //FIXME: more fine-tuning needed
@@ -2084,7 +2083,7 @@ public class BooksOnBookshelf
             holder.filterText.setText(header);
             holder.filterText.setVisibility(header != null ? View.VISIBLE : View.GONE);
 
-            header =headerContent.getBookCount();
+            header = headerContent.getBookCount();
             holder.bookCount.setText(header);
             holder.bookCount.setVisibility(header != null ? View.VISIBLE : View.GONE);
         }
