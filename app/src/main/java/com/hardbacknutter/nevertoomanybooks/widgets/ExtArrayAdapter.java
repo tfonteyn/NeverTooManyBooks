@@ -54,21 +54,26 @@ import java.util.regex.Pattern;
  * Do <strong>NOT</strong> overwrite from a newer version of the above.
  * A diff/merge will be needed.
  * <p>
- * Modified to allow easier extending + some optimizations + annotations added.
+ * Modified to allow easier extending + easier filter support + some optimizations + annotations.
  * <p>
- * Key features:
+ * Construct with {@link #ExtArrayAdapter(Context, int, FilterType, List)}
+ * or use {@link #setFilterType(FilterType)} to override the default {@link Filter}
  * <p>
- * {@link #getItemText(Object)} can/should be overridden if T is not a String.
+ * {@link #getItemText(Object)} can/should be overridden if {@code T} is not a String.
  * This allows a custom conversion to be done instead of the default toString().
- * <p>
- * {@link #ExtArrayAdapter(Context, int, FilterType, List)}
- * or {@link #setFilterType(FilterType)} to override the default {@link Filter}
+ *
  * <ul>
- *      <li>The Android original: {@link ExtArrayAdapter.FilterType#Default}</li>
- *      <li>Augment the original with Diacritic support:
- *          {@link ExtArrayAdapter.FilterType#Diacritic}</li>
- *      <li>For a material.io ExposedDropDownMenu:
- *          {@link ExtArrayAdapter.FilterType#Passthrough}</li>
+ *      <li>{@link FilterType#Default}:
+ *      <br>The Android original.</li>
+ *      <li>{@link FilterType#Diacritic}:
+ *          <br>Adds diacritic support.
+ *          <br>Meant for use with AutoComplete fields.
+ *          <br>i.e. the user can type the value in.
+ *      </li>
+ *      <li>{@link FilterType#Passthrough}:
+ *          <br>Meant for use with ExposedDropDownMenu.
+ *          <br>i.e. the user can select from a fixed list of values.
+ *      </li>
  * </ul>
  *
  * @param <T> type of list item
@@ -655,9 +660,9 @@ public class ExtArrayAdapter<T>
      * {@link android.service.autofill.AutofillService} autofill the view backed by the adapter.
      *
      * @return values from the string array used by
-     * {@link #createFromResource(Context, int, FilterType, int)},
-     * or {@code null} if object was created otherwise or if contents were dynamically changed after
-     * creation.
+     *         {@link #createFromResource(Context, int, FilterType, int)},
+     *         or {@code null} if object was created otherwise or if contents were dynamically changed after
+     *         creation.
      */
     @Override
     public CharSequence[] getAutofillOptions() {
@@ -679,7 +684,9 @@ public class ExtArrayAdapter<T>
 
     /** Builtin Filters. */
     public enum FilterType {
-        Default, Diacritic, Passthrough
+        Default,
+        Diacritic,
+        Passthrough
     }
 
     /**
