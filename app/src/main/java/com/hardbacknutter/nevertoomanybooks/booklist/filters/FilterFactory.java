@@ -24,7 +24,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -34,8 +33,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_EDITION;
@@ -145,33 +144,35 @@ public final class FilterFactory {
      * @return adapter
      */
     @Nullable
-    public static FieldArrayAdapter createListAdapter(@NonNull final Context context,
-                                                      @SuppressWarnings("TypeMayBeWeakened")
-                                                      @NonNull final PStringEqualityFilter filter) {
+    public static FieldArrayAdapter createAdapter(@NonNull final Context context,
+                                                  @SuppressWarnings("TypeMayBeWeakened")
+                                                  @NonNull final PStringEqualityFilter filter) {
         switch (filter.getDBKey()) {
             case DBKey.COLOR: {
-                final ArrayList<String> items =
-                        ServiceLocator.getInstance().getColorDao().getList();
-                return new FieldArrayAdapter(context, items, null);
+                return new FieldArrayAdapter(context, ExtArrayAdapter.FilterType.Passthrough,
+                                             ServiceLocator.getInstance()
+                                                           .getColorDao().getList(),
+                                             null);
             }
 
             case DBKey.FORMAT: {
-                final ArrayList<String> items =
-                        ServiceLocator.getInstance().getFormatDao().getList();
-                return new FieldArrayAdapter(context, items, null);
+                return new FieldArrayAdapter(context, ExtArrayAdapter.FilterType.Passthrough,
+                                             ServiceLocator.getInstance()
+                                                           .getFormatDao().getList(),
+                                             null);
             }
 
             case DBKey.LANGUAGE: {
-                final ArrayList<String> items =
-                        ServiceLocator.getInstance().getLanguageDao().getList();
-                final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
-                final FieldFormatter<String> formatter = new LanguageFormatter(locale);
-                return new FieldArrayAdapter(context, items, formatter);
+                final Locale locale = context.getResources().getConfiguration()
+                                             .getLocales().get(0);
+                return new FieldArrayAdapter(context, ExtArrayAdapter.FilterType.Passthrough,
+                                             ServiceLocator.getInstance()
+                                                           .getLanguageDao().getList(),
+                                             new LanguageFormatter(locale));
             }
 
             default:
                 return null;
         }
     }
-
 }

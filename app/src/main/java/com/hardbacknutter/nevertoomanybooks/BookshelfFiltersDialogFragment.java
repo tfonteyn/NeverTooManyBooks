@@ -21,8 +21,6 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -68,6 +66,9 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceAlertDialogBuilde
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 
 public class BookshelfFiltersDialogFragment
         extends FFBaseDialogFragment {
@@ -396,40 +397,34 @@ public class BookshelfFiltersDialogFragment
             final PStringEqualityFilter filter = (PStringEqualityFilter) pFilter;
             mVb.lblFilter.setText(filter.getLabel(context));
 
-            mVb.filter.setText(filter.getValueText(context));
-
-            // We cannot share this adapter between multiple Holder instances as it depends
-            // on the DBKey of the filer.
-            final FieldArrayAdapter fieldAdapter = FilterFactory
-                    .createListAdapter(context, filter);
+            // We cannot share this adapter/formatter between multiple Holder instances
+            // as they depends on the DBKey of the filter.
+            @Nullable
+            final FieldArrayAdapter fieldAdapter =
+                    FilterFactory.createAdapter(context, filter);
+            // likewise, always set the adapter even when null
             mVb.filter.setAdapter(fieldAdapter);
 
-            mVb.filter.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(final CharSequence s,
-                                              final int start,
-                                              final int count,
-                                              final int after) {
+            @Nullable
+            final FieldFormatter<String> fieldFormatter =
+                    fieldAdapter != null ? fieldAdapter.getFormatter() : null;
 
+            final String initialValue;
+            if (fieldFormatter != null) {
+                initialValue = fieldFormatter.format(context, filter.getValueText(context));
+            } else {
+                initialValue = filter.getValueText(context);
+            }
+            mVb.filter.setText(initialValue);
+
+            mVb.filter.addTextChangedListener((ExtTextWatcher) s -> {
+                if (fieldFormatter instanceof EditFieldFormatter) {
+                    filter.setValue(((EditFieldFormatter<String>) fieldFormatter)
+                                            .extract(context, s.toString()));
+                } else {
+                    filter.setValue(s.toString());
                 }
-
-                @Override
-                public void onTextChanged(final CharSequence s,
-                                          final int start,
-                                          final int before,
-                                          final int count) {
-
-                }
-
-                @Override
-                public void afterTextChanged(final Editable s) {
-                    if (fieldAdapter != null) {
-                        filter.setValue(fieldAdapter.extractValue(s.toString()));
-                    } else {
-                        filter.setValue(s.toString());
-                    }
-                    mModificationListener.setModified(true);
-                }
+                mModificationListener.setModified(true);
             });
         }
     }
