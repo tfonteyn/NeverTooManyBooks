@@ -76,14 +76,13 @@ public class App
                                                    .penaltyLog()
                                                    .build());
             }
-            if (DEBUG_SWITCHES.STRICT_MODE_VM) {
-                StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                                               .detectLeakedSqlLiteObjects()
-                                               .detectLeakedClosableObjects()
-                                               .detectActivityLeaks()
-                                               .penaltyLog()
-                                               .build());
-            }
+
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                                           .detectLeakedSqlLiteObjects()
+                                           .detectLeakedClosableObjects()
+                                           .detectActivityLeaks()
+                                           .penaltyLog()
+                                           .build());
         }
     }
 
