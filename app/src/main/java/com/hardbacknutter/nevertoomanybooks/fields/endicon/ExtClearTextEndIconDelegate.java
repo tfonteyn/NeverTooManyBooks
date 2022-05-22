@@ -24,7 +24,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
-import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -43,6 +42,7 @@ import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 
 /**
  * https://github.com/material-components/material-components-android/pull/2025
@@ -62,21 +62,7 @@ public class ExtClearTextEndIconDelegate
     private static final float ANIMATION_SCALE_FROM_VALUE = 0.8f;
 
     private TextInputLayout textInputLayout;
-    private final TextWatcher clearTextEndIconTextWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(final CharSequence s,
-                                      final int start,
-                                      final int count,
-                                      final int after) {
-        }
-
-        @Override
-        public void onTextChanged(final CharSequence s,
-                                  final int start,
-                                  final int before,
-                                  final int count) {
-        }
-
+    private final TextWatcher clearTextEndIconTextWatcher = new ExtTextWatcher() {
         @Override
         public void afterTextChanged(@NonNull final Editable s) {
             if (textInputLayout.getSuffixText() != null) {
@@ -138,7 +124,7 @@ public class ExtClearTextEndIconDelegate
         this.endIconOnClickConsumer = endIconOnClickConsumer;
     }
 
-    /** Called from {@link Field#setParentView(View, SharedPreferences)} */
+    /** Called from {@link Field#setParentView(View)} */
     @Override
     public void setTextInputLayout(@NonNull final TextInputLayout til) {
         textInputLayout = til;
