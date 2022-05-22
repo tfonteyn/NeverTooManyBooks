@@ -55,6 +55,12 @@ public class LanguageDaoImpl
         super(TAG, DBKey.LANGUAGE);
     }
 
+    /**
+     * Get the list of all language codes; sorted by by last-updated date.
+     * i.e. the language last used when updating a book will show first in the list.
+     *
+     * @return list with iso3 language codes
+     */
     @Override
     @NonNull
     public ArrayList<String> getList() {
