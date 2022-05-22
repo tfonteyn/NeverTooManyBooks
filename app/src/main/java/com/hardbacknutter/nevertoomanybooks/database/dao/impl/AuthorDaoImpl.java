@@ -254,6 +254,7 @@ public class AuthorDaoImpl
 
     /** Virtual: "FamilyName, GivenName". */
     private static final Domain DOM_AUTHOR_FORMATTED_FAMILY_FIRST;
+    public static final String[] Z_ARRAY_STRING = new String[0];
 
     static {
         DOM_AUTHOR_FORMATTED_FAMILY_FIRST =
@@ -491,8 +492,7 @@ public class AuthorDaoImpl
         sql += _ORDER_BY_ + DBKey.KEY_TITLE_OB + _COLLATION;
 
         final ArrayList<AuthorWork> list = new ArrayList<>();
-        //noinspection ZeroLengthArrayAllocation
-        try (Cursor cursor = mDb.rawQuery(sql, paramList.toArray(new String[0]))) {
+        try (Cursor cursor = mDb.rawQuery(sql, paramList.toArray(Z_ARRAY_STRING))) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final AuthorWork.Type type =
