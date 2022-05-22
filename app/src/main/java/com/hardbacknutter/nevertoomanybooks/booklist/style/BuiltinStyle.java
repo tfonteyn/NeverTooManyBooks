@@ -79,7 +79,7 @@ public final class BuiltinStyle
      * NEVER change the UUID values.
      */
     @SuppressWarnings("ZeroLengthArrayAllocation")
-    public static List<Definition> ALL = List.of(
+    public static final List<Definition> ALL = List.of(
             // not used.
             new Definition(0, "", 0, new int[0]),
 
@@ -193,7 +193,7 @@ public final class BuiltinStyle
                            new int[]{BooklistGroup.DATE_LAST_UPDATE_YEAR,
                                      BooklistGroup.DATE_LAST_UPDATE_MONTH,
                                      BooklistGroup.DATE_LAST_UPDATE_DAY})
-                                                );
+                                                      );
 
     /**
      * Absolute/initial default.
