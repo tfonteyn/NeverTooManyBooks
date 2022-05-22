@@ -114,8 +114,7 @@ public class Booklist
     /** The current list cursor. */
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
-    private BooklistCursor listCursor;
-
+    private Cursor listCursor;
 
     /** {@link #getVisibleBookNodes}. */
     @SuppressWarnings("FieldNotUsedInToString")
@@ -218,13 +217,11 @@ public class Booklist
 
     /**
      * Get the list cursor.
-     * <p>
-     * Note this is a {@link BooklistCursor}
      *
      * @return cursor
      */
     @NonNull
-    public BooklistCursor getNewListCursor() {
+    public Cursor getNewListCursor() {
         if (listCursor != null) {
             listCursor.close();
         }

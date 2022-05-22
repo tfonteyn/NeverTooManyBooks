@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.annotation.IntRange;
@@ -40,7 +41,6 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
@@ -250,7 +250,6 @@ public class BooksOnBookshelfViewModel
     int getSelectedBookshelfSpinnerPosition(@NonNull final Context context) {
         Objects.requireNonNull(bookshelf, Bookshelf.TAG);
 
-        final List<Bookshelf> bookshelfList = getBookshelfList();
         // Not strictly needed, but guard against future changes
         if (bookshelfList.isEmpty()) {
             reloadBookshelfList(context);
@@ -262,13 +261,13 @@ public class BooksOnBookshelfViewModel
         Integer defaultPosition = null;
 
         for (int i = 0; i < bookshelfList.size(); i++) {
-            final Bookshelf bookshelf = bookshelfList.get(i);
+            final long id = bookshelfList.get(i).getId();
             // find the position of the default shelf.
-            if (bookshelf.getId() == Bookshelf.DEFAULT) {
+            if (id == Bookshelf.DEFAULT) {
                 defaultPosition = i;
             }
             // find the position of the selected shelf
-            if (bookshelf.getId() == this.bookshelf.getId()) {
+            if (id == bookshelf.getId()) {
                 selectedPosition = i;
             }
         }
@@ -534,12 +533,11 @@ public class BooksOnBookshelfViewModel
 
     /**
      * Wrapper to get the list cursor.
-     * Note this is a {@link BooklistCursor}
      *
      * @return cursor
      */
     @NonNull
-    BooklistCursor getNewListCursor() {
+    Cursor getNewListCursor() {
         Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
         return booklist.getNewListCursor();
     }
