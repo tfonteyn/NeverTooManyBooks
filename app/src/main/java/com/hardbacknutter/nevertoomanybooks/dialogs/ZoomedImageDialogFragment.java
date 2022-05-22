@@ -49,9 +49,9 @@ public class ZoomedImageDialogFragment
     private static final String BKEY_IMAGE_PATH = TAG + ":path";
 
     /** File to display. */
-    private File mImageFile;
+    private File imageFile;
 
-    private ImageView mImageView;
+    private ImageView imageView;
 
     /**
      * No-arg constructor for OS use.
@@ -84,15 +84,15 @@ public class ZoomedImageDialogFragment
         final Bundle args = requireArguments();
         final String fileSpec = args.getString(BKEY_IMAGE_PATH);
         SanityCheck.requireValue(fileSpec, "fileSpec");
-        mImageFile = new File(fileSpec);
+        imageFile = new File(fileSpec);
     }
 
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mImageView = view.findViewById(R.id.cover_image_0);
-        mImageView.setOnClickListener(v -> dismiss());
+        imageView = view.findViewById(R.id.cover_image_0);
+        imageView.setOnClickListener(v -> dismiss());
     }
 
     @Override
@@ -141,6 +141,6 @@ public class ZoomedImageDialogFragment
                             ImageView.ScaleType.FIT_CENTER,
                             maxWidth, maxHeight,
                             false)
-                .fromFile(mImageView, mImageFile, null);
+                .fromFile(imageView, imageFile, null);
     }
 }

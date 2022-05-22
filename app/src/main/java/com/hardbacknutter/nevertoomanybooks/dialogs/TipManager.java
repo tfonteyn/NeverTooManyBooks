@@ -210,17 +210,17 @@ public final class TipManager {
     private static final class Tip {
 
         @StringRes
-        private final int mDefaultStringId;
+        private final int defaultStringId;
         /** Preferences key suffix specific to this tip. */
         @NonNull
-        private final String mDefaultKey;
+        private final String defaultKey;
 
         /** Layout for this Tip. */
         @LayoutRes
-        private int mLayoutId;
+        private int layoutId;
 
         /** Indicates that this tip was displayed already in this instance of the app. */
-        private boolean mHasBeenDisplayed;
+        private boolean previouslyDisplayed;
 
         /**
          * Constructor.
@@ -229,9 +229,9 @@ public final class TipManager {
          */
         Tip(@StringRes final int id,
             @NonNull final String defaultKey) {
-            mDefaultStringId = id;
-            mDefaultKey = defaultKey;
-            mLayoutId = R.layout.dialog_tip;
+            defaultStringId = id;
+            this.defaultKey = defaultKey;
+            layoutId = R.layout.dialog_tip;
         }
 
         /**
@@ -240,7 +240,7 @@ public final class TipManager {
          * @param layoutId to use
          */
         Tip setLayoutId(@SuppressWarnings("SameParameterValue") @LayoutRes final int layoutId) {
-            mLayoutId = layoutId;
+            this.layoutId = layoutId;
             return this;
         }
 
@@ -252,7 +252,7 @@ public final class TipManager {
          * @return {@code true} if this Tip should be displayed
          */
         boolean shouldBeShown(@NonNull final Context context) {
-            return shouldBeShown(context, mDefaultKey);
+            return shouldBeShown(context, defaultKey);
         }
 
         /**
@@ -265,7 +265,7 @@ public final class TipManager {
          */
         boolean shouldBeShown(@NonNull final Context context,
                               @NonNull final String key) {
-            return !mHasBeenDisplayed
+            return !previouslyDisplayed
                    && PreferenceManager.getDefaultSharedPreferences(context)
                                        .getBoolean(PREF_TIP + key, true);
         }
@@ -280,7 +280,7 @@ public final class TipManager {
         void display(@NonNull final Context context,
                      @Nullable final Object[] args,
                      @Nullable final Runnable postRun) {
-            display(context, mDefaultKey, mDefaultStringId, args, postRun);
+            display(context, defaultKey, defaultStringId, args, postRun);
         }
 
         /**
@@ -295,7 +295,7 @@ public final class TipManager {
                      @NonNull final String key,
                      @Nullable final Object[] args,
                      @Nullable final Runnable postRun) {
-            display(context, key, mDefaultStringId, args, postRun);
+            display(context, key, defaultStringId, args, postRun);
         }
 
         /**
@@ -314,7 +314,7 @@ public final class TipManager {
                      @Nullable final Runnable postRun) {
 
             // Build the tip dialog
-            final View root = LayoutInflater.from(context).inflate(mLayoutId, null);
+            final View root = LayoutInflater.from(context).inflate(layoutId, null);
 
             // Setup the message; this is an optional View but present in the default layout.
             final TextView messageView = root.findViewById(R.id.content);
@@ -344,7 +344,7 @@ public final class TipManager {
                     .create()
                     .show();
 
-            mHasBeenDisplayed = true;
+            previouslyDisplayed = true;
         }
     }
 }

@@ -33,16 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
  * <p>
  * If we ever use this class... sql concat with user-entered strings is a security issue.
  * MUST use PreparedStatements instead !
- *
- * <pre>
- *  {@code
- *      public void setFilterOnSeriesName(@Nullable final String filter){
- *          if (filter!=null&&!filter.trim().isEmpty()){
- *              mFilters.add(new WildcardFilter(TBL_SERIES,KEY_SERIES_TITLE,filter));
- *          }
- *      }
- *  }
- * </pre>
  */
 public class WildcardFilter
         implements Filter {

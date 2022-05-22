@@ -567,7 +567,7 @@ class BooklistBuilder {
 
             if (!collationIsCaseSensitive) {
                 // can't do this, IndexDefinition class does not support DESC columns for now.
-                // mListTable.addIndex("SDI", false, helper.getSortedDomains());
+                //  listTable.addIndex("SDI", false, helper.getSortedDomains());
                 db.execSQL(
                         "CREATE INDEX " + listTable.getName() + "_SDI ON " + listTable.getName()
                         + "(" + getSortedDomainsIndexColumns() + ")");

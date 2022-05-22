@@ -60,39 +60,39 @@ public class MultiChoiceDialogFragment
     /** Argument. */
     private static final String BKEY_SELECTED = TAG + ":selected";
     /** FragmentResultListener request key to use for our response. */
-    private String mRequestKey;
+    private String requestKey;
     @Nullable
-    private String mDialogTitle;
+    private String dialogTitle;
     @Nullable
-    private String mDialogMessage;
+    private String dialogMessage;
 
     /** The list of items to display. */
-    private List<Long> mItemIds;
-    private List<String> mItemLabels;
+    private List<Long> itemIds;
+    private List<String> itemLabels;
     /** The selected items. */
-    private Set<Long> mSelectedItems;
+    private Set<Long> selectedItems;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
-        mDialogTitle = args.getString(BKEY_DIALOG_TITLE, getString(R.string.action_edit));
-        mDialogMessage = args.getString(BKEY_DIALOG_MESSAGE, null);
+        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        dialogTitle = args.getString(BKEY_DIALOG_TITLE, getString(R.string.action_edit));
+        dialogMessage = args.getString(BKEY_DIALOG_MESSAGE, null);
 
-        mItemIds = Arrays.stream(Objects.requireNonNull(
-                                 args.getLongArray(BKEY_ALL_IDS), BKEY_ALL_IDS))
-                         .boxed().collect(Collectors.toList());
-        mItemLabels = Arrays.stream(Objects.requireNonNull(
-                                    args.getStringArray(BKEY_ALL_LABELS), BKEY_ALL_LABELS))
-                            .collect(Collectors.toList());
+        itemIds = Arrays.stream(Objects.requireNonNull(
+                                args.getLongArray(BKEY_ALL_IDS), BKEY_ALL_IDS))
+                        .boxed().collect(Collectors.toList());
+        itemLabels = Arrays.stream(Objects.requireNonNull(
+                                   args.getStringArray(BKEY_ALL_LABELS), BKEY_ALL_LABELS))
+                           .collect(Collectors.toList());
 
         args = savedInstanceState != null ? savedInstanceState : args;
 
-        mSelectedItems = Arrays.stream(Objects.requireNonNull(
-                                       args.getLongArray(BKEY_SELECTED), BKEY_SELECTED))
-                               .boxed().collect(Collectors.toSet());
+        selectedItems = Arrays.stream(Objects.requireNonNull(
+                                      args.getLongArray(BKEY_SELECTED), BKEY_SELECTED))
+                              .boxed().collect(Collectors.toSet());
     }
 
     @NonNull
@@ -100,32 +100,32 @@ public class MultiChoiceDialogFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
 
         return new MultiChoiceAlertDialogBuilder<Long>(getLayoutInflater())
-                .setTitle(mDialogTitle)
-                .setMessage(mDialogMessage)
-                .setItems(mItemIds, mItemLabels)
-                .setSelectedItems(mSelectedItems)
+                .setTitle(dialogTitle)
+                .setMessage(dialogMessage)
+                .setItems(itemIds, itemLabels)
+                .setSelectedItems(selectedItems)
                 .setPositiveButton(android.R.string.ok, this::saveChanges)
                 .setOnDismiss(this::dismiss)
                 .create();
     }
 
     private void saveChanges(@NonNull final Set<Long> selection) {
-        Launcher.setResult(this, mRequestKey, selection);
+        Launcher.setResult(this, requestKey, selection);
     }
 
     @Override
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putLongArray(BKEY_SELECTED, mSelectedItems.stream().mapToLong(o -> o).toArray());
+        outState.putLongArray(BKEY_SELECTED, selectedItems.stream().mapToLong(o -> o).toArray());
     }
 
     public abstract static class Launcher<T extends ParcelableEntity>
             implements FragmentResultListener {
 
         private static final String SELECTED = "selected";
-        private String mRequestKey;
-        private FragmentManager mFragmentManager;
+        private String requestKey;
+        private FragmentManager fragmentManager;
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
@@ -138,9 +138,9 @@ public class MultiChoiceDialogFragment
         public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
                                               @NonNull final String requestKey,
                                               @NonNull final LifecycleOwner lifecycleOwner) {
-            mFragmentManager = fragmentManager;
-            mRequestKey = requestKey;
-            mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
+            this.fragmentManager = fragmentManager;
+            this.requestKey = requestKey;
+            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
         }
 
         /**
@@ -157,7 +157,7 @@ public class MultiChoiceDialogFragment
                            @NonNull final List<T> selectedItems) {
 
             final Bundle args = new Bundle(5);
-            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+            args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putString(BKEY_DIALOG_TITLE, dialogTitle);
 
             args.putLongArray(BKEY_ALL_IDS, allItems
@@ -170,7 +170,7 @@ public class MultiChoiceDialogFragment
 
             final DialogFragment frag = new MultiChoiceDialogFragment();
             frag.setArguments(args);
-            frag.show(mFragmentManager, TAG);
+            frag.show(fragmentManager, TAG);
         }
 
         @Override

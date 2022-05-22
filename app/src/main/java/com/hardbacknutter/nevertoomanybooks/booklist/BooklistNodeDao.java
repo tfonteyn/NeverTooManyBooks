@@ -716,7 +716,7 @@ public class BooklistNodeDao {
                 + ',' + DBKey.KEY_BL_NODE_EXPANDED
                 + ',' + DBKey.KEY_BL_NODE_VISIBLE
 
-                + _FROM_ + /* mListTable.getName() */ "%s"
+                + _FROM_ + /* listTable.getName() */ "%s"
                 + _WHERE_ + "(" + DBKey.KEY_BL_NODE_EXPANDED + "=1 OR "
                 + DBKey.KEY_BL_NODE_VISIBLE + "=1)";
 
@@ -730,7 +730,7 @@ public class BooklistNodeDao {
                 // and only between the given nodes
                 + _AND_ + DBKey.KEY_BL_NODE_KEY + " IN ("
                 + SELECT_DISTINCT_ + DBKey.KEY_BL_NODE_KEY + _FROM_
-                + /* mListTable.getName() */ "%s"
+                + /* listTable.getName() */ "%s"
                 + _WHERE_ + DBKey.PK_ID + ">=? AND " + DBKey.PK_ID + "<? )";
 
         /** Insert statement for {@link #saveNodesBetween}. */
@@ -740,7 +740,7 @@ public class BooklistNodeDao {
 
         /** {@link #findNextNode}. */
         private static final String FIND_NEXT_NODE =
-                SELECT_ + DBKey.PK_ID + _FROM_ + /* mListTable.getName() */ "%s"
+                SELECT_ + DBKey.PK_ID + _FROM_ + /* listTable.getName() */ "%s"
                 + _WHERE_ + DBKey.PK_ID + ">?" + _AND_ + DBKey.KEY_BL_NODE_LEVEL + "<=?"
                 + _ORDER_BY_ + DBKey.PK_ID + " LIMIT 1";
 
@@ -749,7 +749,7 @@ public class BooklistNodeDao {
          * Simply set all of them to invisible/unexpanded.
          */
         private static final String COLLAPSE_AND_HIDE_NODES_BETWEEN =
-                UPDATE_ + /* mListTable.getName() */ "%s"
+                UPDATE_ + /* listTable.getName() */ "%s"
                 + _SET_ + DBKey.KEY_BL_NODE_VISIBLE + "=0," + DBKey.KEY_BL_NODE_EXPANDED + "=0"
                 + _WHERE_ + DBKey.PK_ID + ">?" + _AND_ + DBKey.PK_ID + "<?";
 
@@ -758,7 +758,7 @@ public class BooklistNodeDao {
          * Handle all levels except the lowest level.
          */
         private static final String UPDATE_NODES_BETWEEN_1 =
-                UPDATE_ + /* mListTable.getName() */ "%s"
+                UPDATE_ + /* listTable.getName() */ "%s"
                 + _SET_ + DBKey.KEY_BL_NODE_VISIBLE + "=1," + DBKey.KEY_BL_NODE_EXPANDED + "=1"
                 + _WHERE_ + DBKey.PK_ID + ">?" + _AND_ + DBKey.PK_ID + "<?"
                 + _AND_ + DBKey.KEY_BL_NODE_LEVEL + "<?";
@@ -768,7 +768,7 @@ public class BooklistNodeDao {
          * The lowest level we want visible but not expanded.
          */
         private static final String UPDATE_NODES_BETWEEN_2 =
-                UPDATE_ + /* mListTable.getName() */ "%s"
+                UPDATE_ + /* listTable.getName() */ "%s"
                 + _SET_ + DBKey.KEY_BL_NODE_VISIBLE + "=1," + DBKey.KEY_BL_NODE_EXPANDED + "=0"
                 + _WHERE_ + DBKey.PK_ID + ">?" + _AND_ + DBKey.PK_ID + "<?"
                 + _AND_ + DBKey.KEY_BL_NODE_LEVEL + "=?";
@@ -776,7 +776,7 @@ public class BooklistNodeDao {
 
         /** {@link #updateNode}. */
         private static final String UPDATE_NODE =
-                UPDATE_ + /* mListTable.getName() */ "%s"
+                UPDATE_ + /* listTable.getName() */ "%s"
                 + _SET_ + DBKey.KEY_BL_NODE_EXPANDED + "=?"
                 + ',' + DBKey.KEY_BL_NODE_VISIBLE + "=1"
                 + _WHERE_ + DBKey.PK_ID + "=?";
@@ -784,14 +784,14 @@ public class BooklistNodeDao {
         /** {@link #adjustVisibility()}. */
         private static final String ADJUST_VISIBILITY_1 =
                 SELECT_DISTINCT_ + DBKey.KEY_BL_NODE_KEY + ',' + DBKey.KEY_BL_NODE_LEVEL
-                + _FROM_ + /* mListTable.getName() */ "%s"
+                + _FROM_ + /* listTable.getName() */ "%s"
                 + _WHERE_ + DBKey.KEY_BL_NODE_VISIBLE + "=1"
                 // Groups only - Don't do books
                 + _AND_ + DBKey.KEY_BL_NODE_LEVEL + " BETWEEN 2 AND ?";
 
         /** {@link #adjustVisibility()}. */
         private static final String ADJUST_VISIBILITY_2 =
-                UPDATE_ + /* mListTable.getName() */ "%s"
+                UPDATE_ + /* listTable.getName() */ "%s"
                 + _SET_ + DBKey.KEY_BL_NODE_VISIBLE + "=1"
                 + _WHERE_ + DBKey.KEY_BL_NODE_VISIBLE + "=0"
                 + _AND_ + DBKey.KEY_BL_NODE_LEVEL + "=?"

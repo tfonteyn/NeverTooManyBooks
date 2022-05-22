@@ -797,7 +797,6 @@ public class BooklistGroup {
         }
 
         final BooklistGroup that = (BooklistGroup) o;
-        // mPersisted/mStyle is NOT part of the values to compare!
         return id == that.id
                && Objects.equals(groupKey, that.groupKey)
                && Objects.equals(accumulatedDomains, that.accumulatedDomains);

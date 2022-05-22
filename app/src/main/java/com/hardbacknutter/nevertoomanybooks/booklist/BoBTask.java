@@ -381,24 +381,24 @@ public class BoBTask
     public static class Outcome {
 
         @NonNull
-        private final Booklist mList;
+        private final Booklist booklist;
         @NonNull
-        private final List<BooklistNode> mTargetNodes;
+        private final List<BooklistNode> targetNodes;
 
-        Outcome(@NonNull final Booklist list,
+        Outcome(@NonNull final Booklist booklist,
                 @NonNull final List<BooklistNode> targetNodes) {
-            this.mList = list;
-            this.mTargetNodes = targetNodes;
+            this.booklist = booklist;
+            this.targetNodes = targetNodes;
         }
 
         @NonNull
         public Booklist getList() {
-            return mList;
+            return booklist;
         }
 
         @NonNull
         public List<BooklistNode> getTargetNodes() {
-            return mTargetNodes;
+            return targetNodes;
         }
     }
 }

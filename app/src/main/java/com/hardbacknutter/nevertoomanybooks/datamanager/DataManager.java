@@ -80,7 +80,7 @@ public class DataManager
     private static final String TAG = "DataManager";
     /** DataValidators. */
     private final Map<String, DataValidator> validatorsMap = new HashMap<>();
-    /** DataValidators. Same key as mValidatorsMap; value: @StringRes. */
+    /** DataValidators. Same key as {@link #validatorsMap}; value: @StringRes. */
     @SuppressWarnings("FieldNotUsedInToString")
     private final Map<String, Integer> validatorErrorIdMap = new HashMap<>();
 

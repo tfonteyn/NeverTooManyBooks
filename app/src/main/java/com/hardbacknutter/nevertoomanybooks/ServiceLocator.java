@@ -314,11 +314,11 @@ public final class ServiceLocator {
             dbHelper.close();
         }
 
-        final Context appContext = sInstance.appContext;
-        final Supplier<Bundle> bundleSupplier = sInstance.bundleSupplier;
+        final Context tmpAppContext = sInstance.appContext;
+        final Supplier<Bundle> tmpBundleSupplier = sInstance.bundleSupplier;
         //noinspection ConstantConditions
         sInstance = null;
-        create(appContext, bundleSupplier);
+        create(tmpAppContext, tmpBundleSupplier);
     }
 
     /**

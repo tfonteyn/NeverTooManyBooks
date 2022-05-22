@@ -48,7 +48,7 @@ public class DefaultFieldValidator
 
     /**
      * Gets the current value, and if {@code null} or empty,
-     * replaces it with the mDefaultValue value.
+     * replaces it with the  {@link #defaultValue}.
      *
      * @param context         Current context
      * @param dataManager     The DataManager object

@@ -605,7 +605,7 @@ public class CalibreContentServer
                                             final int bookId)
             throws StorageException, IOException, JSONException {
 
-        final Set<CalibreCustomField> calibreCustomFields = new HashSet<>();
+        final Set<CalibreCustomField> fields = new HashSet<>();
         final JSONObject calibreBook = getBook(library.getLibraryStringId(), bookId);
         final JSONObject userMetaData = calibreBook.optJSONObject(CalibreBook.USER_METADATA);
         if (userMetaData != null) {
@@ -615,12 +615,12 @@ public class CalibreContentServer
                 // do we have a match? (this check is needed, it's NOT a sanity check)
                 if (data != null && cf.type.equals(data.getString(
                         CalibreCustomField.METADATA_DATATYPE))) {
-                    calibreCustomFields.add(cf);
+                    fields.add(cf);
                 }
             }
         }
         // finally, hook them up to the library itself.
-        library.setCustomFields(calibreCustomFields);
+        library.setCustomFields(fields);
     }
 
     @SuppressWarnings("unused")

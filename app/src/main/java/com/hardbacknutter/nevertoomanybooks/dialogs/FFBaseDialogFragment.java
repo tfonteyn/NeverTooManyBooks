@@ -81,22 +81,22 @@ public abstract class FFBaseDialogFragment
     //  LONG_DURATION_MS = 2750;
     private static final int USE_DEFAULT = -1;
     /** The <strong>Dialog</strong> Toolbar. Not to be confused with the Activity's Toolbar! */
-    Toolbar mDialogToolbar;
+    Toolbar dialogToolbar;
     @Nullable
-    private View mButtonPanel;
+    private View buttonPanel;
     /** Show the dialog fullscreen (default) or as a floating dialog. */
-    private boolean mFullscreen;
-    private boolean mForceFullscreen;
+    private boolean fullscreen;
+    private boolean forceFullscreen;
 
     /** FLOATING DIALOG mode only. Default set in {@link #onAttach(Context)}. */
     @DimenRes
-    private int mWidthDimenResId = USE_DEFAULT;
+    private int widthDimenResId = USE_DEFAULT;
     /** FLOATING DIALOG mode only. Default set in {@link #onAttach(Context)}. */
     @DimenRes
-    private int mDHeightDimenResId = USE_DEFAULT;
+    private int heightDimenResId = USE_DEFAULT;
     /** FLOATING DIALOG mode only. Default set in {@link #onAttach(Context)}. */
     @DimenRes
-    private int mMarginBottomDimenResId = USE_DEFAULT;
+    private int marginBottomDimenResId = USE_DEFAULT;
 
     /**
      * Constructor.
@@ -111,7 +111,7 @@ public abstract class FFBaseDialogFragment
      * If required, this <strong>MUST</strong> be called from the constructor.
      */
     protected void setForceFullscreen() {
-        mForceFullscreen = true;
+        forceFullscreen = true;
     }
 
     /**
@@ -124,7 +124,7 @@ public abstract class FFBaseDialogFragment
      */
     protected void setFloatingDialogWidth(@SuppressWarnings("SameParameterValue")
                                           @DimenRes final int dimenResId) {
-        mWidthDimenResId = dimenResId;
+        widthDimenResId = dimenResId;
     }
 
     /**
@@ -137,7 +137,7 @@ public abstract class FFBaseDialogFragment
      */
     protected void setFloatingDialogHeight(@SuppressWarnings("SameParameterValue")
                                            @DimenRes final int dimenResId) {
-        mDHeightDimenResId = dimenResId;
+        heightDimenResId = dimenResId;
     }
 
     /**
@@ -150,29 +150,29 @@ public abstract class FFBaseDialogFragment
      */
     protected void setFloatingDialogMarginBottom(@SuppressWarnings("SameParameterValue")
                                                  @DimenRes final int dimenResId) {
-        mMarginBottomDimenResId = dimenResId;
+        marginBottomDimenResId = dimenResId;
     }
 
     @Override
     @CallSuper
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        mFullscreen = !getResources().getBoolean(R.bool.floating_dialogs_enabled)
-                      || mForceFullscreen;
-        if (mFullscreen) {
+        fullscreen = !getResources().getBoolean(R.bool.floating_dialogs_enabled)
+                     || forceFullscreen;
+        if (fullscreen) {
             setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
 
         } else {
 //            setStyle(DialogFragment.STYLE_NO_FRAME, 0);
 
-            if (mWidthDimenResId == USE_DEFAULT) {
-                mWidthDimenResId = R.dimen.floating_dialogs_width;
+            if (widthDimenResId == USE_DEFAULT) {
+                widthDimenResId = R.dimen.floating_dialogs_width;
             }
-            if (mDHeightDimenResId == USE_DEFAULT) {
-                mDHeightDimenResId = 0;
+            if (heightDimenResId == USE_DEFAULT) {
+                heightDimenResId = 0;
             }
-            if (mMarginBottomDimenResId == USE_DEFAULT) {
-                mMarginBottomDimenResId = AttrUtils.getResId(context, R.attr.actionBarSize);
+            if (marginBottomDimenResId == USE_DEFAULT) {
+                marginBottomDimenResId = AttrUtils.getResId(context, R.attr.actionBarSize);
             }
         }
     }
@@ -213,26 +213,26 @@ public abstract class FFBaseDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mDialogToolbar = Objects.requireNonNull(view.findViewById(R.id.toolbar), "R.id.toolbar");
+        dialogToolbar = Objects.requireNonNull(view.findViewById(R.id.toolbar), "R.id.toolbar");
 
         // dialogs that are set as full-screen ONLY will NOT have a button bar.
-        mButtonPanel = view.findViewById(R.id.buttonPanel);
+        buttonPanel = view.findViewById(R.id.buttonPanel);
 
         hookupButtons();
 
-        if (!mFullscreen) {
+        if (!fullscreen) {
             final Resources res = getResources();
 
-            if (mWidthDimenResId != 0) {
-                view.getLayoutParams().width = res.getDimensionPixelSize(mWidthDimenResId);
+            if (widthDimenResId != 0) {
+                view.getLayoutParams().width = res.getDimensionPixelSize(widthDimenResId);
             }
 
-            if (mDHeightDimenResId != 0) {
-                view.getLayoutParams().height = res.getDimensionPixelSize(mDHeightDimenResId);
+            if (heightDimenResId != 0) {
+                view.getLayoutParams().height = res.getDimensionPixelSize(heightDimenResId);
             }
 
-            if (mMarginBottomDimenResId != 0) {
-                final int marginBottom = res.getDimensionPixelSize(mMarginBottomDimenResId);
+            if (marginBottomDimenResId != 0) {
+                final int marginBottom = res.getDimensionPixelSize(marginBottomDimenResId);
                 final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
                         view.findViewById(R.id.body_frame).getLayoutParams();
                 lp.setMargins(0, 0, 0, marginBottom);
@@ -250,18 +250,18 @@ public abstract class FFBaseDialogFragment
      */
     private void hookupButtons() {
 
-        mDialogToolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
-        mDialogToolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClick);
+        dialogToolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
+        dialogToolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClick);
 
-        if (mFullscreen) {
+        if (fullscreen) {
             // Always hide the button bar
-            if (mButtonPanel != null) {
-                mButtonPanel.setVisibility(View.GONE);
+            if (buttonPanel != null) {
+                buttonPanel.setVisibility(View.GONE);
             }
 
             // Hook-up the toolbar 'confirm' button with the menu 'title' attribute
             // and redirect a click to our default menu listener.
-            final MenuItem menuItem = mDialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
+            final MenuItem menuItem = dialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
             if (menuItem != null) {
                 // the ok-button is a button inside the action view of the toolbar menu item
                 final Button okButton = menuItem.getActionView().findViewById(R.id.btn_confirm);
@@ -272,17 +272,17 @@ public abstract class FFBaseDialogFragment
             }
 
         } else {
-            if (mButtonPanel != null) {
+            if (buttonPanel != null) {
                 // Always show the button bar
-                mButtonPanel.setVisibility(View.VISIBLE);
+                buttonPanel.setVisibility(View.VISIBLE);
                 // Toolbar confirmation menu item is mapped to the ok button.
                 final MenuItem menuItem =
-                        mDialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
+                        dialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
                 if (menuItem != null) {
                     // The menu item is hidden.
                     menuItem.setVisible(false);
                     // the ok-button is a simple button on the button panel.
-                    final Button okButton = mButtonPanel.findViewById(R.id.btn_ok);
+                    final Button okButton = buttonPanel.findViewById(R.id.btn_ok);
                     if (okButton != null) {
                         okButton.setVisibility(View.VISIBLE);
                         okButton.setText(menuItem.getTitle());
@@ -291,10 +291,10 @@ public abstract class FFBaseDialogFragment
                 }
 
                 // Toolbar navigation icon is mapped to the cancel button. Both are visible.
-                final Button cancelBtn = mButtonPanel.findViewById(R.id.btn_cancel);
+                final Button cancelBtn = buttonPanel.findViewById(R.id.btn_cancel);
                 if (cancelBtn != null) {
                     // If the nav button has a description, use it for the 'cancel' button.
-                    final CharSequence text = mDialogToolbar.getNavigationContentDescription();
+                    final CharSequence text = dialogToolbar.getNavigationContentDescription();
                     if (text != null) {
                         cancelBtn.setText(text);
                     }

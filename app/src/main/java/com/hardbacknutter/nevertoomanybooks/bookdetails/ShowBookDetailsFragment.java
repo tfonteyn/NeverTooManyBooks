@@ -172,7 +172,7 @@ public class ShowBookDetailsFragment
 
         final Bundle args = requireArguments();
 
-        // mEmbedded = getResources().getBoolean(R.bool.book_details_embedded)
+        // embedded = getResources().getBoolean(R.bool.book_details_embedded)
         embedded = args.getBoolean(BKEY_EMBEDDED, false);
 
         //noinspection ConstantConditions
@@ -291,7 +291,7 @@ public class ShowBookDetailsFragment
 
     @Override
     public void reloadImage(@IntRange(from = 0, to = 1) final int cIdx) {
-        //TODO: don't reload the whole book, just use mCoverHandler[cIdx].onBindView(...);
+        //TODO: don't reload the whole book, just use coverHandler[cIdx].onBindView(...);
         vm.reloadBook();
 
         if (bookChangedListener != null) {

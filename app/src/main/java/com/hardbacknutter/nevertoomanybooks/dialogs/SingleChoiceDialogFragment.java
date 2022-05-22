@@ -69,39 +69,39 @@ public class SingleChoiceDialogFragment
     /** Argument. */
     private static final String BKEY_SELECTED = TAG + ":selected";
     /** FragmentResultListener request key to use for our response. */
-    private String mRequestKey;
+    private String requestKey;
     @IdRes
-    private int mFieldId;
+    private int fieldId;
     @Nullable
-    private String mDialogTitle;
+    private String dialogTitle;
     @Nullable
-    private String mDialogMessage;
+    private String dialogMessage;
 
     /** The list of items to display. */
-    private List<Long> mItemIds;
-    private List<String> mItemLabels;
-    private long mSelectedItem;
+    private List<Long> itemIds;
+    private List<String> itemLabels;
+    private long selectedItem;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
-        mDialogTitle = args.getString(BKEY_DIALOG_TITLE, getString(R.string.action_select));
-        mDialogMessage = args.getString(BKEY_DIALOG_MESSAGE, null);
-        mFieldId = args.getInt(BKEY_FIELD_ID);
+        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        dialogTitle = args.getString(BKEY_DIALOG_TITLE, getString(R.string.action_select));
+        dialogMessage = args.getString(BKEY_DIALOG_MESSAGE, null);
+        fieldId = args.getInt(BKEY_FIELD_ID);
 
-        mItemIds = Arrays.stream(Objects.requireNonNull(
-                                 args.getLongArray(BKEY_ALL_IDS), BKEY_ALL_IDS))
-                         .boxed().collect(Collectors.toList());
-        mItemLabels = Arrays.stream(Objects.requireNonNull(
-                                    args.getStringArray(BKEY_ALL_LABELS), BKEY_ALL_LABELS))
-                            .collect(Collectors.toList());
+        itemIds = Arrays.stream(Objects.requireNonNull(
+                                args.getLongArray(BKEY_ALL_IDS), BKEY_ALL_IDS))
+                        .boxed().collect(Collectors.toList());
+        itemLabels = Arrays.stream(Objects.requireNonNull(
+                                   args.getStringArray(BKEY_ALL_LABELS), BKEY_ALL_LABELS))
+                           .collect(Collectors.toList());
 
         args = savedInstanceState != null ? savedInstanceState : args;
 
-        mSelectedItem = args.getLong(BKEY_SELECTED);
+        selectedItem = args.getLong(BKEY_SELECTED);
     }
 
     @NonNull
@@ -111,8 +111,8 @@ public class SingleChoiceDialogFragment
         final View view = getLayoutInflater().inflate(R.layout.dialog_choose_one, null);
 
         final TextView messageView = view.findViewById(R.id.message);
-        if (mDialogMessage != null && !mDialogMessage.isEmpty()) {
-            messageView.setText(mDialogMessage);
+        if (dialogMessage != null && !dialogMessage.isEmpty()) {
+            messageView.setText(dialogMessage);
             messageView.setVisibility(View.VISIBLE);
         } else {
             messageView.setVisibility(View.GONE);
@@ -122,29 +122,29 @@ public class SingleChoiceDialogFragment
 
         //noinspection ConstantConditions
         final RadioGroupRecyclerAdapter<Long, String> adapter =
-                new RadioGroupRecyclerAdapter<>(context, mItemIds, mItemLabels, mSelectedItem,
-                                                id -> mSelectedItem = id);
+                new RadioGroupRecyclerAdapter<>(context, itemIds, itemLabels, selectedItem,
+                                                id -> selectedItem = id);
 
         final RecyclerView listView = view.findViewById(R.id.item_list);
         listView.setAdapter(adapter);
 
         return new MaterialAlertDialogBuilder(context)
                 .setView(view)
-                .setTitle(mDialogTitle)
+                .setTitle(dialogTitle)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
                 .setPositiveButton(android.R.string.ok, (d, which) -> saveChanges())
                 .create();
     }
 
     private void saveChanges() {
-        Launcher.setResult(this, mRequestKey, mFieldId, mSelectedItem);
+        Launcher.setResult(this, requestKey, fieldId, selectedItem);
     }
 
     @Override
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putLong(BKEY_SELECTED, mSelectedItem);
+        outState.putLong(BKEY_SELECTED, selectedItem);
     }
 
     public abstract static class Launcher<T extends ParcelableEntity>
@@ -152,8 +152,8 @@ public class SingleChoiceDialogFragment
 
         private static final String FIELD_ID = "fieldId";
         private static final String SELECTED = "selected";
-        private String mRequestKey;
-        private FragmentManager mFragmentManager;
+        private String requestKey;
+        private FragmentManager fragmentManager;
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
@@ -168,9 +168,9 @@ public class SingleChoiceDialogFragment
         public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
                                               @NonNull final String requestKey,
                                               @NonNull final LifecycleOwner lifecycleOwner) {
-            mFragmentManager = fragmentManager;
-            mRequestKey = requestKey;
-            mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
+            this.fragmentManager = fragmentManager;
+            this.requestKey = requestKey;
+            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
         }
 
         /**
@@ -189,7 +189,7 @@ public class SingleChoiceDialogFragment
                            @NonNull final T selectedItem) {
 
             final Bundle args = new Bundle(5);
-            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+            args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putString(BKEY_DIALOG_TITLE, dialogTitle);
             args.putInt(BKEY_FIELD_ID, fieldId);
 
@@ -202,7 +202,7 @@ public class SingleChoiceDialogFragment
 
             final DialogFragment frag = new SingleChoiceDialogFragment();
             frag.setArguments(args);
-            frag.show(mFragmentManager, TAG);
+            frag.show(fragmentManager, TAG);
         }
 
         @Override

@@ -86,40 +86,40 @@ public class PartialDatePickerDialogFragment
     /** range: 0: 'not set' or 1..31. */
     private static final String SIS_BKEY_DAY = TAG + ":day";
     /** FragmentResultListener request key to use for our response. */
-    private String mRequestKey;
+    private String requestKey;
     @IdRes
-    private int mFieldId;
+    private int fieldId;
 
     /** Currently displayed; {@code 0} if empty/invalid. */
-    private int mYear;
+    private int year;
     /**
      * Currently displayed; {@code 0} if invalid/empty.
      * <strong>IMPORTANT:</strong> 1..12 based. (the jdk internals expect 0..11).
      */
-    private int mMonth;
+    private int month;
     /** Currently displayed; {@code 0} if empty/invalid. */
-    private int mDay;
+    private int day;
 
-    private NumberPicker mDayPicker;
+    private NumberPicker dayPicker;
 
     /** This listener is called after <strong>any change</strong> made to the pickers. */
-    private final NumberPicker.OnValueChangeListener mOnValueChangeListener =
+    private final NumberPicker.OnValueChangeListener valueChangeListener =
             (picker, oldVal, newVal) -> {
                 final int pickerId = picker.getId();
 
                 if (pickerId == R.id.year) {
-                    mYear = newVal;
+                    year = newVal;
                     // only February can be different number of days
-                    if (mMonth == 2) {
+                    if (month == 2) {
                         updateDaysInMonth();
                     }
 
                 } else if (pickerId == R.id.month) {
-                    mMonth = newVal;
+                    month = newVal;
                     updateDaysInMonth();
 
                 } else if (pickerId == R.id.day) {
-                    mDay = newVal;
+                    day = newVal;
 
                 } else {
                     if (BuildConfig.DEBUG /* always */) {
@@ -129,7 +129,7 @@ public class PartialDatePickerDialogFragment
             };
 
     @StringRes
-    private int mDialogTitleId;
+    private int dialogTitleId;
 
     /**
      * No-arg constructor for OS use.
@@ -144,24 +144,24 @@ public class PartialDatePickerDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
-        mDialogTitleId = args.getInt(BKEY_DIALOG_TITLE);
-        mFieldId = args.getInt(BKEY_FIELD_ID);
+        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        dialogTitleId = args.getInt(BKEY_DIALOG_TITLE);
+        fieldId = args.getInt(BKEY_FIELD_ID);
 
         if (savedInstanceState == null) {
             // BKEY_DATE is only present in the original args
             parseDate(args.getString(BKEY_DATE));
         } else {
             // These are only present in the savedInstanceState
-            mYear = savedInstanceState.getInt(SIS_YEAR);
-            mMonth = savedInstanceState.getInt(SIS_MONTH);
-            mDay = savedInstanceState.getInt(SIS_BKEY_DAY);
+            year = savedInstanceState.getInt(SIS_YEAR);
+            month = savedInstanceState.getInt(SIS_MONTH);
+            day = savedInstanceState.getInt(SIS_BKEY_DAY);
         }
 
         // can't have a 0 year. (but month/day can be 0)
         // The user can/should use the "clear" button if they want no date at all.
-        if (mYear == 0) {
-            mYear = LocalDate.now().getYear();
+        if (year == 0) {
+            year = LocalDate.now().getYear();
         }
     }
 
@@ -173,36 +173,36 @@ public class PartialDatePickerDialogFragment
         // Ensure components match current Locale order
         reorderPickers(view);
 
-        mDialogToolbar.setTitle(mDialogTitleId != 0 ? mDialogTitleId : R.string.action_edit);
+        dialogToolbar.setTitle(dialogTitleId != 0 ? dialogTitleId : R.string.action_edit);
 
         final NumberPicker yearPicker = view.findViewById(R.id.year);
         // 0: 'not set'
         yearPicker.setMinValue(0);
         // we're optimistic...
         yearPicker.setMaxValue(2100);
-        yearPicker.setOnValueChangedListener(mOnValueChangeListener);
+        yearPicker.setOnValueChangedListener(valueChangeListener);
 
         final NumberPicker monthPicker = view.findViewById(R.id.month);
         // 0: 'not set' + 1..12 real months
         monthPicker.setMinValue(0);
         monthPicker.setMaxValue(12);
         monthPicker.setDisplayedValues(getMonthAbbr());
-        monthPicker.setOnValueChangedListener(mOnValueChangeListener);
+        monthPicker.setOnValueChangedListener(valueChangeListener);
 
-        mDayPicker = view.findViewById(R.id.day);
+        dayPicker = view.findViewById(R.id.day);
         // 0: 'not set'
-        mDayPicker.setMinValue(0);
+        dayPicker.setMinValue(0);
         // Make sure that the picker can initially take any 'day' value. Otherwise,
         // when a dialog is reconstructed after rotation, the 'day' field will not be
         // restored by Android.
-        mDayPicker.setMaxValue(31);
-        mDayPicker.setFormatter(value -> value == 0 ? UNKNOWN_DAY : String.valueOf(value));
-        mDayPicker.setOnValueChangedListener(mOnValueChangeListener);
+        dayPicker.setMaxValue(31);
+        dayPicker.setFormatter(value -> value == 0 ? UNKNOWN_DAY : String.valueOf(value));
+        dayPicker.setOnValueChangedListener(valueChangeListener);
 
         // set the initial date
-        yearPicker.setValue(mYear != 0 ? mYear : LocalDate.now().getYear());
-        monthPicker.setValue(mMonth);
-        mDayPicker.setValue(mDay);
+        yearPicker.setValue(year != 0 ? year : LocalDate.now().getYear());
+        monthPicker.setValue(month);
+        dayPicker.setValue(day);
         updateDaysInMonth();
     }
 
@@ -218,18 +218,18 @@ public class PartialDatePickerDialogFragment
     }
 
     private boolean saveChanges() {
-        if (mDay != 0 && mMonth == 0) {
+        if (day != 0 && month == 0) {
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.warning_if_day_set_month_and_year_must_be,
                           Snackbar.LENGTH_LONG).show();
 
-        } else if (mMonth != 0 && mYear == 0) {
+        } else if (month != 0 && year == 0) {
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.warning_if_month_set_year_must_be,
                           Snackbar.LENGTH_LONG).show();
 
         } else {
-            Launcher.setResult(this, mRequestKey, mFieldId, mYear, mMonth, mDay);
+            Launcher.setResult(this, requestKey, fieldId, year, month, day);
             return true;
         }
 
@@ -254,14 +254,14 @@ public class PartialDatePickerDialogFragment
      * Depending on year/month selected, set the correct number of days.
      */
     private void updateDaysInMonth() {
-        int currentlySelectedDay = mDay;
+        int currentlySelectedDay = day;
 
         // Determine the total days if we have a valid month/year
         int totalDays;
-        if (mYear != 0 && mMonth != 0) {
+        if (year != 0 && month != 0) {
             try {
                 // Should never throw here, but paranoia...
-                totalDays = LocalDate.of(mYear, mMonth, 1).lengthOfMonth();
+                totalDays = LocalDate.of(year, month, 1).lengthOfMonth();
             } catch (@NonNull final DateTimeException e) {
                 totalDays = 31;
             }
@@ -270,16 +270,16 @@ public class PartialDatePickerDialogFragment
             totalDays = 31;
         }
 
-        mDayPicker.setMaxValue(totalDays);
+        dayPicker.setMaxValue(totalDays);
 
         // Ensure selected day is valid
         if (currentlySelectedDay == 0) {
-            mDayPicker.setValue(0);
+            dayPicker.setValue(0);
         } else {
             if (currentlySelectedDay > totalDays) {
                 currentlySelectedDay = totalDays;
             }
-            mDayPicker.setValue(currentlySelectedDay);
+            dayPicker.setValue(currentlySelectedDay);
         }
     }
 
@@ -333,9 +333,9 @@ public class PartialDatePickerDialogFragment
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(SIS_YEAR, mYear);
-        outState.putInt(SIS_MONTH, mMonth);
-        outState.putInt(SIS_BKEY_DAY, mDay);
+        outState.putInt(SIS_YEAR, year);
+        outState.putInt(SIS_MONTH, month);
+        outState.putInt(SIS_BKEY_DAY, day);
     }
 
     /**
@@ -356,9 +356,9 @@ public class PartialDatePickerDialogFragment
      */
     private void parseDate(@Nullable final String dateString) {
         if (dateString == null || dateString.isEmpty()) {
-            mYear = 0;
-            mMonth = 0;
-            mDay = 0;
+            year = 0;
+            month = 0;
+            day = 0;
             return;
         }
 
@@ -379,9 +379,9 @@ public class PartialDatePickerDialogFragment
             // ignore. Any values we did get, are used.
         }
 
-        mYear = yyyy;
-        mMonth = mm;
-        mDay = dd;
+        year = yyyy;
+        month = mm;
+        day = dd;
     }
 
     public abstract static class Launcher
@@ -391,8 +391,8 @@ public class PartialDatePickerDialogFragment
         private static final String YEAR = "year";
         private static final String MONTH = "month";
         private static final String DAY = "day";
-        private String mRequestKey;
-        private FragmentManager mFragmentManager;
+        private String requestKey;
+        private FragmentManager fragmentManager;
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
@@ -412,9 +412,9 @@ public class PartialDatePickerDialogFragment
         public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
                                               @NonNull final String requestKey,
                                               @NonNull final LifecycleOwner lifecycleOwner) {
-            mFragmentManager = fragmentManager;
-            mRequestKey = requestKey;
-            mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
+            this.fragmentManager = fragmentManager;
+            this.requestKey = requestKey;
+            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
         }
 
         /**
@@ -438,14 +438,14 @@ public class PartialDatePickerDialogFragment
             }
 
             final Bundle args = new Bundle(4);
-            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+            args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putInt(BKEY_DIALOG_TITLE, dialogTitleId);
             args.putInt(BKEY_FIELD_ID, fieldId);
             args.putString(BKEY_DATE, dateStr);
 
             final DialogFragment frag = new PartialDatePickerDialogFragment();
             frag.setArguments(args);
-            frag.show(mFragmentManager, TAG);
+            frag.show(fragmentManager, TAG);
         }
 
         @Override

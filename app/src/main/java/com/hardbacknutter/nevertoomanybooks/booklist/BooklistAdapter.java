@@ -111,7 +111,7 @@ public class BooklistAdapter
     /** Cached locale. */
     @NonNull
     private final Locale userLocale;
-    /** The padding indent (in pixels) added for each level: padding = (level-1) * mLevelIndent. */
+    /** The padding indent (in pixels) added for each level: padding = (level-1) * levelIndent. */
     private final int levelIndent;
     /** Cached inflater. */
     @NonNull
@@ -140,7 +140,7 @@ public class BooklistAdapter
     private DataHolder nodeData;
     /** The combined click and long-click listeners for a single row. */
     @Nullable
-    private OnRowClickedListener onRowClickedListener;
+    private OnRowClickedListener rowClickedListener;
 
     /**
      * Constructor.
@@ -311,16 +311,16 @@ public class BooklistAdapter
                 break;
         }
 
-        // test for the mOnRowClickedListener inside the lambda, this allows changing it if needed
+        // test for the OnRowClickedListener inside the lambda, this allows changing it if needed
         holder.onClickTargetView.setOnClickListener(v -> {
-            if (onRowClickedListener != null) {
-                onRowClickedListener.onItemClick(holder.getBindingAdapterPosition());
+            if (rowClickedListener != null) {
+                rowClickedListener.onItemClick(holder.getBindingAdapterPosition());
             }
         });
 
         holder.onClickTargetView.setOnLongClickListener(v -> {
-            if (onRowClickedListener != null) {
-                return onRowClickedListener.onItemLongClick(v, holder.getBindingAdapterPosition());
+            if (rowClickedListener != null) {
+                return rowClickedListener.onItemLongClick(v, holder.getBindingAdapterPosition());
             }
             return false;
         });
@@ -727,8 +727,8 @@ public class BooklistAdapter
         return null;
     }
 
-    public void setOnRowClickedListener(@Nullable final OnRowClickedListener onRowClickedListener) {
-        this.onRowClickedListener = onRowClickedListener;
+    public void setOnRowClickedListener(@Nullable final OnRowClickedListener rowClickedListener) {
+        this.rowClickedListener = rowClickedListener;
     }
 
     /**
@@ -980,7 +980,6 @@ public class BooklistAdapter
 
             // disabled (for now?) as it makes less sense in this particular view/holder,
             // and slows down scrolling.
-            // mReorderTitle = ItemWithTitle.isReorderTitleForDisplaying(context);
             reorderTitle = false;
 
             inUse = fieldsInUse;
@@ -1237,7 +1236,7 @@ public class BooklistAdapter
             // Check if the file exists; if it does not...
             //noinspection SimplifyOptionalCallChains
             if (!file.isPresent()) {
-                // leave the space blank, but preserve the width BASED on the mMaxHeight!
+                // leave the space blank, but preserve the width BASED on the coverLongestSide!
                 final ViewGroup.LayoutParams lp = coverView.getLayoutParams();
                 lp.width = (int) (coverLongestSide * HW_RATIO);
                 lp.height = 0;
