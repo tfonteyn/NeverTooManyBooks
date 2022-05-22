@@ -108,7 +108,7 @@ public class PEntityListFilter<T extends Entity>
 
     @Override
     @NonNull
-    public String getPrefName() {
+    public String getDBKey() {
         return name;
     }
 

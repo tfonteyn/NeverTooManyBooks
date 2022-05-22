@@ -67,6 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceAlertDialogBuilder;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
+import com.hardbacknutter.nevertoomanybooks.fields.FieldArrayAdapter;
 
 public class BookshelfFiltersDialogFragment
         extends FFBaseDialogFragment {
@@ -86,8 +87,7 @@ public class BookshelfFiltersDialogFragment
     /** FragmentResultListener request key to use for our response. */
     private String requestKey;
     private boolean modified;
-    private final ModificationListener modificationListener =
-            modified -> BookshelfFiltersDialogFragment.this.modified = modified;
+    private final ModificationListener modificationListener = isModified -> modified = isModified;
     /** The list we're editing. */
     private List<PFilter<?>> filterList;
 
@@ -171,8 +171,8 @@ public class BookshelfFiltersDialogFragment
                 .setTitle(R.string.lbl_add_filter)
                 .setSingleChoiceItems(map.keySet().toArray(Z_ARRAY_STRING), -1, (dialog, which) -> {
                     final String dbKey = map.values().toArray(Z_ARRAY_STRING)[which];
-                    if (filterList.stream().noneMatch(f -> f.getPrefName().equals(dbKey))) {
-                        FilterFactory.create(dbKey).ifPresent(filter -> {
+                    if (filterList.stream().noneMatch(f -> f.getDBKey().equals(dbKey))) {
+                        FilterFactory.createFilter(dbKey).ifPresent(filter -> {
                             filterList.add(filter);
                             listAdapter.notifyItemInserted(filterList.size());
                         });
@@ -392,11 +392,17 @@ public class BookshelfFiltersDialogFragment
 
         public void onBind(@NonNull final Context context,
                            @NonNull final PFilter<?> pFilter) {
+            //noinspection TypeMayBeWeakened
             final PStringEqualityFilter filter = (PStringEqualityFilter) pFilter;
             mVb.lblFilter.setText(filter.getLabel(context));
 
             mVb.filter.setText(filter.getValueText(context));
-            mVb.filter.setAdapter(filter.createListAdapter(context));
+
+            // We cannot share this adapter between multiple Holder instances as it depends
+            // on the DBKey of the filer.
+            final FieldArrayAdapter fieldAdapter = FilterFactory
+                    .createListAdapter(context, filter);
+            mVb.filter.setAdapter(fieldAdapter);
 
             mVb.filter.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -417,7 +423,11 @@ public class BookshelfFiltersDialogFragment
 
                 @Override
                 public void afterTextChanged(final Editable s) {
-                    filter.setValue(s.toString());
+                    if (fieldAdapter != null) {
+                        filter.setValue(fieldAdapter.extractValue(s.toString()));
+                    } else {
+                        filter.setValue(s.toString());
+                    }
                     mModificationListener.setModified(true);
                 }
             });

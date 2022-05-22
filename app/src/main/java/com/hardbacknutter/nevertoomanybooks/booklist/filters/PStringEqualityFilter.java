@@ -26,15 +26,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import java.util.ArrayList;
-import java.util.function.Supplier;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 /**
  * <ul>
@@ -50,26 +46,23 @@ public class PStringEqualityFilter
     @StringRes
     private final int labelResId;
     @NonNull
-    private final String name;
-    @Nullable
-    private final Supplier<ArrayList<String>> listSupplier;
-    @NonNull
-    private final Domain domain;
+    private final String dbKey;
     @NonNull
     private final TableDefinition table;
+    @NonNull
+    private final Domain domain;
+
     @Nullable
     private String value;
 
-    PStringEqualityFilter(@NonNull final String name,
+    PStringEqualityFilter(@NonNull final String dbKey,
                           @StringRes final int labelResId,
                           @NonNull final TableDefinition table,
-                          @NonNull final Domain domain,
-                          @Nullable final Supplier<ArrayList<String>> listSupplier) {
-        this.name = name;
+                          @NonNull final Domain domain) {
+        this.dbKey = dbKey;
         this.labelResId = labelResId;
         this.table = table;
         this.domain = domain;
-        this.listSupplier = listSupplier;
     }
 
     @Override
@@ -89,8 +82,8 @@ public class PStringEqualityFilter
 
     @Override
     @NonNull
-    public String getPrefName() {
-        return name;
+    public String getDBKey() {
+        return dbKey;
     }
 
     @Nullable
@@ -106,16 +99,6 @@ public class PStringEqualityFilter
     @Override
     public void setValueAsString(@Nullable final String value) {
         this.value = value;
-    }
-
-    @Nullable
-    public ExtArrayAdapter<String> createListAdapter(@NonNull final Context context) {
-        if (listSupplier != null) {
-            return new ExtArrayAdapter<>(context, R.layout.popup_dropdown_menu_item,
-                                         ExtArrayAdapter.FilterType.Diacritic,
-                                         listSupplier.get());
-        }
-        return null;
     }
 
     @Nullable

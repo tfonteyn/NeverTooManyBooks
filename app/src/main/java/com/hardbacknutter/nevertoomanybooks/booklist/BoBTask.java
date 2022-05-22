@@ -231,7 +231,7 @@ public class BoBTask
                     // do we already have a Bookshelf based filter?
                     final Optional<PFilter<?>> bookshelfFilter = filters
                             .stream()
-                            .filter(pFilter -> DBKey.FK_BOOKSHELF.equals(pFilter.getPrefName()))
+                            .filter(pFilter -> DBKey.FK_BOOKSHELF.equals(pFilter.getDBKey()))
                             .findFirst();
 
                     if (bookshelfFilter.isPresent()) {

@@ -19,15 +19,23 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
-import androidx.annotation.NonNull;
+import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.fields.FieldArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_EDITION;
@@ -49,7 +57,7 @@ public final class FilterFactory {
             List.of(DBKey.READ__BOOL,
                     DBKey.SIGNED__BOOL,
                     DBKey.BOOK_ISBN,
-                    DBKey.TOC_TYPE__BITMASK,
+                    DBKey.FK_TOC_ENTRY,
                     DBKey.LOANEE_NAME,
 
                     DBKey.FK_BOOKSHELF,
@@ -65,8 +73,7 @@ public final class FilterFactory {
     }
 
     @NonNull
-    public static Optional<PFilter<?>> create(@NonNull final String dbKey) {
-
+    public static Optional<PFilter<?>> createFilter(@NonNull final String dbKey) {
         switch (dbKey) {
             case DBKey.READ__BOOL:
                 return Optional.of(new PBooleanFilter(
@@ -83,7 +90,7 @@ public final class FilterFactory {
                         dbKey, R.string.lbl_isbn, R.array.pe_bob_filter_isbn,
                         TBL_BOOKS, DOM_BOOK_ISBN));
 
-            case DBKey.TOC_TYPE__BITMASK:
+            case DBKey.FK_TOC_ENTRY:
                 return Optional.of(new PBooleanFilter(
                         dbKey, R.string.lbl_anthology, R.array.pe_bob_filter_anthology,
                         TBL_BOOKS, DOM_BOOK_TOC_TYPE));
@@ -97,20 +104,17 @@ public final class FilterFactory {
             case DBKey.COLOR:
                 return Optional.of(new PStringEqualityFilter(
                         dbKey, R.string.lbl_color,
-                        TBL_BOOKS, DOM_BOOK_COLOR,
-                        () -> ServiceLocator.getInstance().getColorDao().getList()));
+                        TBL_BOOKS, DOM_BOOK_COLOR));
 
             case DBKey.FORMAT:
                 return Optional.of(new PStringEqualityFilter(
                         dbKey, R.string.lbl_format,
-                        TBL_BOOKS, DOM_BOOK_FORMAT,
-                        () -> ServiceLocator.getInstance().getFormatDao().getList()));
+                        TBL_BOOKS, DOM_BOOK_FORMAT));
 
             case DBKey.LANGUAGE:
                 return Optional.of(new PStringEqualityFilter(
                         dbKey, R.string.lbl_language,
-                        TBL_BOOKS, DOM_BOOK_LANGUAGE,
-                        () -> ServiceLocator.getInstance().getLanguageDao().getList()));
+                        TBL_BOOKS, DOM_BOOK_LANGUAGE));
 
 
             case DBKey.FK_BOOKSHELF:
@@ -131,4 +135,43 @@ public final class FilterFactory {
                 return Optional.empty();
         }
     }
+
+    /**
+     * Create a list adapter for a {@link PStringEqualityFilter}.
+     *
+     * @param context Current context
+     * @param filter  a {@link PStringEqualityFilter}.
+     *
+     * @return adapter
+     */
+    @Nullable
+    public static FieldArrayAdapter createListAdapter(@NonNull final Context context,
+                                                      @SuppressWarnings("TypeMayBeWeakened")
+                                                      @NonNull final PStringEqualityFilter filter) {
+        switch (filter.getDBKey()) {
+            case DBKey.COLOR: {
+                final ArrayList<String> items =
+                        ServiceLocator.getInstance().getColorDao().getList();
+                return new FieldArrayAdapter(context, items, null);
+            }
+
+            case DBKey.FORMAT: {
+                final ArrayList<String> items =
+                        ServiceLocator.getInstance().getFormatDao().getList();
+                return new FieldArrayAdapter(context, items, null);
+            }
+
+            case DBKey.LANGUAGE: {
+                final ArrayList<String> items =
+                        ServiceLocator.getInstance().getLanguageDao().getList();
+                final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+                final FieldFormatter<String> formatter = new LanguageFormatter(locale);
+                return new FieldArrayAdapter(context, items, formatter);
+            }
+
+            default:
+                return null;
+        }
+    }
+
 }

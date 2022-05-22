@@ -25,8 +25,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
@@ -34,26 +36,38 @@ public class FieldArrayAdapter
         extends ExtArrayAdapter<String> {
 
     /** The formatter to apply on each line item. */
-    @NonNull
+    @Nullable
     private final FieldFormatter<String> formatter;
 
     /**
      * Constructor.
      *
      * @param context   Current context.
-     * @param objects   The objects to represent in the list view
+     * @param items     The values to represent in the list view
      * @param formatter to use
      */
-    FieldArrayAdapter(@NonNull final Context context,
-                      @NonNull final List<String> objects,
-                      @NonNull final FieldFormatter<String> formatter) {
-        super(context, R.layout.popup_dropdown_menu_item, FilterType.Diacritic, objects);
+    public FieldArrayAdapter(@NonNull final Context context,
+                             @NonNull final List<String> items,
+                             @Nullable final FieldFormatter<String> formatter) {
+        super(context, R.layout.popup_dropdown_menu_item, FilterType.Diacritic, items);
         this.formatter = formatter;
+    }
+
+    @Nullable
+    public String extractValue(@NonNull final String text) {
+        if (formatter instanceof EditFieldFormatter) {
+            return ((EditFieldFormatter<String>) formatter).extract(getContext(), text);
+        }
+        return text;
     }
 
     @NonNull
     @Override
-    protected CharSequence getItemText(@Nullable final String item) {
-        return formatter.format(getContext(), item);
+    protected CharSequence getItemText(@Nullable final String text) {
+        if (formatter != null) {
+            return formatter.format(getContext(), text);
+        } else {
+            return Objects.requireNonNullElse(text, "");
+        }
     }
 }

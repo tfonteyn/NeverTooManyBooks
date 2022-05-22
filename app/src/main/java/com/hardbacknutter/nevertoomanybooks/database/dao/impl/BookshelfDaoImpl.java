@@ -243,7 +243,7 @@ public class BookshelfDaoImpl
                 final String dbKey = rowData.getString(DBKey.FILTER_DBKEY);
                 final String value = rowData.getString(DBKey.FILTER_VALUE, null);
                 if (value != null) {
-                    FilterFactory.create(dbKey).ifPresent(filter -> {
+                    FilterFactory.createFilter(dbKey).ifPresent(filter -> {
                         filter.setValueAsString(value);
                         list.add(filter);
                     });
@@ -284,7 +284,7 @@ public class BookshelfDaoImpl
             try (SynchronizedStatement stmt = mDb.compileStatement(INSERT_FILTER)) {
                 list.forEach(filter -> {
                     stmt.bindLong(1, bookshelfId);
-                    stmt.bindString(2, filter.getPrefName());
+                    stmt.bindString(2, filter.getDBKey());
                     stmt.bindString(3, filter.getValueAsString());
                     stmt.executeInsert();
                 });

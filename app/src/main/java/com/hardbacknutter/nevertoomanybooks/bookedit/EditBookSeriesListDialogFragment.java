@@ -128,10 +128,10 @@ public class EditBookSeriesListDialogFragment
         mVb.toolbar.setSubtitle(mVm.getBook().getTitle());
 
         //noinspection ConstantConditions
-        final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
+        final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, mVm.getAllSeriesTitles());
-        mVb.seriesTitle.setAdapter(nameAdapter);
+        mVb.seriesTitle.setAdapter(titleAdapter);
         mVb.seriesTitle.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 mVb.seriesTitle.setError(null);

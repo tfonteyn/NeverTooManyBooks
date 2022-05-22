@@ -89,11 +89,13 @@ public abstract class FieldVisibility {
             // bit 24..27
             DBKey.PERSONAL_NOTES,
             DBKey.RATING,
-            DBKey.READ_START__DATE,
-            DBKey.READ_END__DATE,
+            DBKey.SIGNED__BOOL,
+            DBKey.READ__BOOL,
 
             // bit 28..31
-            DBKey.SIGNED__BOOL);
+            DBKey.READ_START__DATE,
+            DBKey.READ_END__DATE
+                                                       );
 
     /** Simple mapping for {@link #DB_KEYS} to the label to show the user. */
     private static final List<Integer> LABELS = List.of(
@@ -129,10 +131,12 @@ public abstract class FieldVisibility {
 
             R.string.lbl_personal_notes,
             R.string.lbl_rating,
-            R.string.lbl_read_start,
-            R.string.lbl_read_end,
+            R.string.lbl_signed,
+            R.string.lbl_read,
 
-            R.string.lbl_signed);
+            R.string.lbl_read_start,
+            R.string.lbl_read_end
+                                                       );
 
     @NonNull
     private final Set<String> keys;

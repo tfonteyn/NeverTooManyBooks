@@ -109,7 +109,7 @@ public class PBitmaskFilter
 
     @Override
     @NonNull
-    public String getPrefName() {
+    public String getDBKey() {
         return name;
     }
 

@@ -44,7 +44,7 @@ public interface PFilter<T>
      * @see FilterFactory
      */
     @NonNull
-    String getPrefName();
+    String getDBKey();
 
     /**
      * Get the stringified version of the value to store in the database table.
@@ -108,6 +108,11 @@ public interface PFilter<T>
         return context.getString(R.string.lbl_filter);
     }
 
+    /**
+     * UI usage: get the layout id for use in the Filter setup dialog.
+     *
+     * @return layout res id
+     */
     @LayoutRes
     int getPrefLayoutId();
 }

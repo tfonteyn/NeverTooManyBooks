@@ -47,8 +47,8 @@ public class EntityArrayAdapter<T extends Entity>
      */
     public EntityArrayAdapter(@NonNull final Context context,
                               @NonNull final List<T> list) {
-        super(context, R.layout.popup_dropdown_menu_item,
-              ExtArrayAdapter.FilterType.Passthrough, list);
+        super(context, R.layout.popup_dropdown_menu_item, ExtArrayAdapter.FilterType.Passthrough,
+              list);
     }
 
     /**
