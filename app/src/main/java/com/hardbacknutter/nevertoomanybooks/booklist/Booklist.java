@@ -296,6 +296,9 @@ public class Booklist
     public void setAllNodes(@IntRange(from = 1) final int topLevel,
                             final boolean expand) {
         nodeDao.setAllNodes(topLevel, expand);
+        if (listCursor != null) {
+            listCursor.close();
+        }
         listCursor = null;
     }
 
