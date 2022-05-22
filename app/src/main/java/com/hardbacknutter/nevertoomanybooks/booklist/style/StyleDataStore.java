@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist.style;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.MutableLiveData;
 import androidx.preference.PreferenceDataStore;
 import androidx.preference.PreferenceScreen;
 
@@ -112,11 +113,15 @@ public class StyleDataStore
 
     @NonNull
     private final UserStyle style;
+    @NonNull
+    private final MutableLiveData<Void> onModified;
 
     private boolean modified;
 
-    public StyleDataStore(@NonNull final UserStyle style) {
+    public StyleDataStore(@NonNull final UserStyle style,
+                          @NonNull final MutableLiveData<Void> onModified) {
         this.style = style;
+        this.onModified = onModified;
     }
 
     /**
@@ -163,6 +168,11 @@ public class StyleDataStore
         return stringSet;
     }
 
+    private void setModified() {
+        modified = true;
+        onModified.setValue(null);
+    }
+
     public boolean isModified() {
         return modified;
     }
@@ -186,7 +196,7 @@ public class StyleDataStore
             default:
                 throw new IllegalArgumentException(key);
         }
-        modified = true;
+        setModified();
     }
 
     @Override
@@ -283,7 +293,7 @@ public class StyleDataStore
                 }
                 break;
         }
-        modified = true;
+        setModified();
     }
 
     @Override
@@ -364,7 +374,7 @@ public class StyleDataStore
         } else {
             throw new IllegalArgumentException(key);
         }
-        modified = true;
+        setModified();
     }
 
     @Nullable
@@ -392,7 +402,7 @@ public class StyleDataStore
             default:
                 throw new IllegalArgumentException(key);
         }
-        modified = true;
+        setModified();
     }
 
     @Nullable

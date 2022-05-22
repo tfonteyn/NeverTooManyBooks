@@ -26,6 +26,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
@@ -54,6 +55,8 @@ public class StyleViewModel
 
     @Nullable
     private StyleDataStore styleDataStore;
+
+    private final MutableLiveData<Void> onModified = new MutableLiveData<>();
 
     /**
      * Pseudo constructor.
@@ -88,8 +91,13 @@ public class StyleViewModel
                 style.setPreferred(true);
             }
 
-            styleDataStore = new StyleDataStore(style);
+            styleDataStore = new StyleDataStore(style, onModified);
         }
+    }
+
+    @NonNull
+    public MutableLiveData<Void> onModified() {
+        return onModified;
     }
 
     @NonNull

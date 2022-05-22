@@ -146,6 +146,8 @@ public class StyleFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
+        vm.onModified().observe(getViewLifecycleOwner(), aVoid -> updateSummaries());
+
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             TipManager.getInstance()
