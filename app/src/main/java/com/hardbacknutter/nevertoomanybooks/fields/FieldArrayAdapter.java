@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
@@ -36,38 +35,37 @@ public class FieldArrayAdapter
         extends ExtArrayAdapter<String> {
 
     /** The formatter to apply on each line item. */
-    @Nullable
+    @NonNull
     private final FieldFormatter<String> formatter;
 
     /**
      * Constructor.
      *
-     * @param context   Current context.
-     * @param items     The values to represent in the list view
-     * @param formatter to use
+     * @param context    Current context.
+     * @param filterType use {@link FilterType#Diacritic} for AutoComplete fields.
+     *                   i.e. the user can type the value in.
+     *                   use {@link FilterType#Passthrough} for drop-down menu's.
+     *                   i.e. the user can select from a fixed list of values
+     * @param items      The values to represent in the list view
+     * @param formatter  (optional) formatter to use
      */
     public FieldArrayAdapter(@NonNull final Context context,
+                             @NonNull final FilterType filterType,
                              @NonNull final List<String> items,
                              @Nullable final FieldFormatter<String> formatter) {
-        super(context, R.layout.popup_dropdown_menu_item, FilterType.Diacritic, items);
-        this.formatter = formatter;
+        super(context, R.layout.popup_dropdown_menu_item, filterType, items);
+        this.formatter = Objects.requireNonNullElseGet(
+                formatter, () -> (c, value) -> value != null ? value : "");
     }
 
-    @Nullable
-    public String extractValue(@NonNull final String text) {
-        if (formatter instanceof EditFieldFormatter) {
-            return ((EditFieldFormatter<String>) formatter).extract(getContext(), text);
-        }
-        return text;
+    @NonNull
+    public FieldFormatter<String> getFormatter() {
+        return formatter;
     }
 
     @NonNull
     @Override
     protected CharSequence getItemText(@Nullable final String text) {
-        if (formatter != null) {
-            return formatter.format(getContext(), text);
-        } else {
-            return Objects.requireNonNullElse(text, "");
-        }
+        return formatter.format(getContext(), text);
     }
 }

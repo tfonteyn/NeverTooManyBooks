@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 
 /**
@@ -78,7 +79,9 @@ public class AutoCompleteTextField
     public void setParentView(@NonNull final View parent) {
         super.setParentView(parent);
         requireView().setAdapter(new FieldArrayAdapter(parent.getContext(),
-                                                       listSupplier.get(), formatter));
+                                                       ExtArrayAdapter.FilterType.Diacritic,
+                                                       listSupplier.get(),
+                                                       formatter));
     }
 
     @Override
