@@ -75,22 +75,20 @@ public class SearchFtsFragment
     private static final int NANO_TO_SECONDS = 1_000_000_000;
 
     @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider mToolbarMenuProvider;
-
-    /** Detect text changes and call userIsActive(...). */
-    private final TextWatcher mTextWatcher = (ExtTextWatcher) editable -> {
-        // we're not changing the Editable, no need to toggle this listener
-        userIsActive(true);
-    };
-
+    private MenuProvider toolbarMenuProvider;
     /** Indicates user has changed something since the last search. */
     private boolean searchIsDirty;
     /** Timer reset each time the user clicks, in order to detect an idle time. */
     private long idleStart;
     /** Timer object for background idle searches. */
     @Nullable
-    private Timer mTimer;
-    private SearchFtsViewModel mVm;
+    private Timer timer;
+    /** Detect text changes and call userIsActive(...). */
+    private final TextWatcher textWatcher = (ExtTextWatcher) editable -> {
+        // we're not changing the Editable, no need to toggle this listener
+        userIsActive(true);
+    };
+    private SearchFtsViewModel vm;
 
     /** View Binding. */
     private FragmentAdvancedSearchBinding vb;
