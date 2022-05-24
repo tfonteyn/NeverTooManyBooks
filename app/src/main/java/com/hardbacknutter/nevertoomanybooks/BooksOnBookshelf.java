@@ -35,7 +35,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
@@ -99,6 +98,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfHeaderBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -647,7 +647,6 @@ public class BooksOnBookshelf
     /**
      * Listener for clicks on the list.
      */
-
     private void createBookshelfSpinner() {
         // remove the default title to make space for the spinner.
         setTitle("");
@@ -795,7 +794,7 @@ public class BooksOnBookshelf
         super.onResume();
 
         // don't build the list needlessly
-        if (mRecreateVm.isRecreating() || isFinishing() || isDestroyed()) {
+        if (recreateVm.isRecreating() || isFinishing() || isDestroyed()) {
             return;
         }
 
@@ -1050,7 +1049,7 @@ public class BooksOnBookshelf
         // The majority of the time this is not needed, but a fringe case (toggle node)
         // showed it should indeed be done.
         // Paranoia: if the user can click it, then this should be fine.
-        Objects.requireNonNull(adapter, "mAdapter");
+        Objects.requireNonNull(adapter, "adapter");
         final Cursor cursor = adapter.getCursor();
         if (!cursor.moveToPosition(position)) {
             return false;
@@ -1557,7 +1556,7 @@ public class BooksOnBookshelf
     private void buildBookList() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             Log.d(TAG, "buildBookList"
-                       + "| mVm.isBuilding()=" + vm.isBuilding()
+                       + "| isBuilding()=" + vm.isBuilding()
                        + "|called from:", new Throwable());
         }
 
@@ -1847,7 +1846,7 @@ public class BooksOnBookshelf
      * Saves the potentially changed position after the scrolling is done.
      */
     private void scrollToSavedPosition() {
-        Objects.requireNonNull(adapter, "mAdapter");
+        Objects.requireNonNull(adapter, "adapter");
 
         final Bookshelf bookshelf = vm.getCurrentBookshelf();
         final int position = bookshelf.getFirstVisibleItemPosition();
@@ -1872,7 +1871,7 @@ public class BooksOnBookshelf
      * @param node to scroll to
      */
     private void scrollTo(@NonNull final BooklistNode node) {
-        Objects.requireNonNull(adapter, "mAdapter");
+        Objects.requireNonNull(adapter, "adapter");
 
         final int firstVisiblePos = layoutManager.findFirstVisibleItemPosition();
         // sanity check, we should never get here
@@ -1964,15 +1963,11 @@ public class BooksOnBookshelf
             extends RecyclerView.ViewHolder {
 
         @NonNull
-        final TextView styleName;
-        final TextView filterText;
-        final TextView bookCount;
+        private final BooksonbookshelfHeaderBinding vb;
 
-        HeaderViewHolder(@NonNull final View itemView) {
-            super(itemView);
-            styleName = itemView.findViewById(R.id.style_name);
-            filterText = itemView.findViewById(R.id.filter_text);
-            bookCount = itemView.findViewById(R.id.book_count);
+        HeaderViewHolder(@NonNull final BooksonbookshelfHeaderBinding vb) {
+            super(vb.getRoot());
+            this.vb = vb;
         }
     }
 
@@ -2064,8 +2059,9 @@ public class BooksOnBookshelf
         @Override
         public HeaderViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
                                                    final int viewType) {
-            final View view = inflater.inflate(R.layout.booksonbookshelf_header, parent, false);
-            return new HeaderViewHolder(view);
+            final BooksonbookshelfHeaderBinding hVb = BooksonbookshelfHeaderBinding
+                    .inflate(inflater, parent, false);
+            return new HeaderViewHolder(hVb);
         }
 
         @Override
@@ -2076,16 +2072,20 @@ public class BooksOnBookshelf
 
             String header;
             header = headerContent.getStyleName();
-            holder.styleName.setText(header);
-            holder.styleName.setVisibility(header != null ? View.VISIBLE : View.GONE);
+            holder.vb.styleName.setText(header);
+            holder.vb.styleName.setVisibility(header != null ? View.VISIBLE : View.GONE);
 
             header = headerContent.getFilterText();
-            holder.filterText.setText(header);
-            holder.filterText.setVisibility(header != null ? View.VISIBLE : View.GONE);
+            holder.vb.filterText.setText(header);
+            holder.vb.filterText.setVisibility(header != null ? View.VISIBLE : View.GONE);
+
+            header = headerContent.getSearchText();
+            holder.vb.searchText.setText(header);
+            holder.vb.searchText.setVisibility(header != null ? View.VISIBLE : View.GONE);
 
             header = headerContent.getBookCount();
-            holder.bookCount.setText(header);
-            holder.bookCount.setVisibility(header != null ? View.VISIBLE : View.GONE);
+            holder.vb.bookCount.setText(header);
+            holder.vb.bookCount.setVisibility(header != null ? View.VISIBLE : View.GONE);
         }
 
         @Override

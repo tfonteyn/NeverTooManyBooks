@@ -27,7 +27,6 @@ import androidx.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,16 +43,15 @@ public class BooklistHeader {
      * <p>
      * not in use:
      * 1 << 1
-     * 1 << 2
      */
     public static final int SHOW_BOOK_COUNT = 1;
-    /** the amount of details to show in the header. */
+    public static final int SHOW_SEARCH_CRITERIA = 1 << 2;
     public static final int SHOW_STYLE_NAME = 1 << 3;
-    /** the amount of details to show in the header. */
     public static final int SHOW_FILTERS = 1 << 4;
     /** the amount of details to show in the header. This is also the default. */
     public static final int BITMASK_ALL =
             SHOW_BOOK_COUNT
+            | SHOW_SEARCH_CRITERIA
             | SHOW_STYLE_NAME
             | SHOW_FILTERS;
 
@@ -63,6 +61,8 @@ public class BooklistHeader {
     private String bookCount;
     @Nullable
     private String filterText;
+    @Nullable
+    private String searchText;
 
     public BooklistHeader(@NonNull final Context context,
                           @NonNull final Style style,
@@ -87,21 +87,22 @@ public class BooklistHeader {
             }
         }
 
+        if (style.isShowHeaderField(SHOW_SEARCH_CRITERIA)) {
+            if (searchCriteria != null) {
+                searchCriteria.getDisplayText().ifPresent(
+                        list -> searchText = String.join(", ", list));
+            }
+        }
+
         if (style.isShowHeaderField(SHOW_FILTERS)) {
-            final Collection<String> list = filters
+            final String text = filters
                     .stream()
                     .filter(f -> f.isActive(context))
-                    .map(filter -> filter.getLabel(context))
-                    .collect(Collectors.toList());
+                    .map(filter -> filter.getValueText(context))
+                    .collect(Collectors.joining(", "));
 
-            if (searchCriteria != null) {
-                searchCriteria.getDisplayText()
-                              .ifPresent(text -> list.add('"' + text + '"'));
-            }
-
-            if (!list.isEmpty()) {
-                filterText = context.getString(R.string.lbl_search_filtered_on_x,
-                                               String.join(", ", list));
+            if (!text.isEmpty()) {
+                filterText = context.getString(R.string.lbl_search_filtered_on_x, text);
             }
         }
     }
@@ -121,7 +122,13 @@ public class BooklistHeader {
         return filterText;
     }
 
+    @Nullable
+    public String getSearchText() {
+        return searchText;
+    }
+
     @IntDef(flag = true, value = {SHOW_BOOK_COUNT,
+                                  SHOW_SEARCH_CRITERIA,
                                   SHOW_STYLE_NAME,
                                   SHOW_FILTERS})
     @Retention(RetentionPolicy.SOURCE)

@@ -24,7 +24,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/BoB.Header.Container"
-    tools:viewBindingIgnore="true"
     >
 
     <TextView
@@ -37,21 +36,33 @@
         />
 
     <TextView
-        android:id="@+id/filter_text"
+        android:id="@+id/book_count"
         style="@style/BoB.Header.Small"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/style_name"
         tools:ignore="SelectableText"
-        tools:text="the optional search text"
+        tools:text="@string/txt_displaying_n_books_in_m_entries"
         />
 
     <TextView
-        android:id="@+id/book_count"
+        android:id="@+id/filter_text"
         style="@style/BoB.Header.Small"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/book_count"
+        tools:ignore="SelectableText"
+        tools:text="the optional filter text"
+        />
+
+    <TextView
+        android:id="@+id/search_text"
+        style="@style/BoB.Header.Small"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/filter_text"
         tools:ignore="SelectableText"
-        tools:text="@string/txt_displaying_n_books_in_m_entries"
+        tools:text="the optional search text"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

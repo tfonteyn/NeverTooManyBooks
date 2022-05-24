@@ -24,13 +24,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/BoB.Header.Container"
-    tools:viewBindingIgnore="true"
     >
 
     <TextView
         android:id="@+id/style_name"
         style="@style/BoB.Header.Large"
-        app:layout_constraintEnd_toStartOf="@id/book_count"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"
@@ -40,20 +38,40 @@
     <TextView
         android:id="@+id/book_count"
         style="@style/BoB.Header.Small"
-        app:layout_constraintBottom_toBottomOf="@id/style_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/style_name"
+        android:layout_width="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/style_name"
         tools:ignore="SelectableText"
         tools:text="@string/txt_displaying_n_books_in_m_entries"
+        />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/col1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="end"
+        app:constraint_referenced_ids="book_count,style_name"
         />
 
     <TextView
         android:id="@+id/filter_text"
         style="@style/BoB.Header.Small"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/style_name"
+        android:layout_marginStart="20dp"
+        app:layout_constraintBottom_toBottomOf="@id/style_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/col1"
+        tools:ignore="SelectableText"
+        tools:text="the optional filter text"
+        />
+
+    <TextView
+        android:id="@+id/search_text"
+        style="@style/BoB.Header.Small"
+        android:layout_marginStart="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/col1"
+        app:layout_constraintTop_toBottomOf="@id/filter_text"
         tools:ignore="SelectableText"
         tools:text="the optional search text"
         />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
