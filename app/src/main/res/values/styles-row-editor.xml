@@ -41,7 +41,7 @@
     <!-- ImageView - handle to let the user drag & drop rows to re-order them -->
     <style name="RowEditor.Button.DragHandle" parent="Base.RowEditor.Button">
         <item name="android:src">@drawable/ic_baseline_drag_handle_24</item>
-        <item name="android:contentDescription">@string/hint_btn_drag_handle</item>
+        <item name="android:contentDescription">@string/cd_btn_drag_handle</item>
     </style>
 
     <!-- CheckBox -->
