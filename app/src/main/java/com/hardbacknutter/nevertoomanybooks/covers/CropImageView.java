@@ -538,14 +538,14 @@ public class CropImageView
         /** Drag handle. */
         private final Drawable resizeHorizontal;
         /** Drag handle. */
-        private final Drawable mResizeVertical;
-        private final Paint mFocusPaint = new Paint();
-        private final Paint mOutlinePaint = new Paint();
-        private final RectF mDrawRectF = new RectF();
-        @NonNull
-        private ModifyMode mMode = ModifyMode.None;
+        private final Drawable resizeVertical;
+        private final Paint focusPaint = new Paint();
+        private final Paint outlinePaint = new Paint();
+        private final RectF drawRectF = new RectF();
         /** in screen space. */
-        Rect mDrawRect;
+        Rect drawRect;
+        @NonNull
+        private ModifyMode modifyMode = ModifyMode.None;
 
         /**
          * Constructor.
