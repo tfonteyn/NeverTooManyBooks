@@ -47,17 +47,17 @@ public class ImageViewLoader {
     private static final String TAG = "ImageViewLoader";
 
     @NonNull
-    private final Handler mHandler;
+    private final Handler handler;
     @NonNull
-    private final Executor mExecutor;
+    private final Executor executor;
 
-    private final int mWidth;
-    private final int mHeight;
+    private final int width;
+    private final int height;
 
     @NonNull
-    private final ImageView.ScaleType mScaleType;
+    private final ImageView.ScaleType scaleType;
 
-    private final boolean mEnforceMaxSize;
+    private final boolean enforceMaxSize;
 
     @UiThread
     public ImageViewLoader(@NonNull final Executor executor,
@@ -82,14 +82,14 @@ public class ImageViewLoader {
                            final int height,
                            final boolean enforceMaxSize) {
 
-        mHandler = new Handler(Looper.getMainLooper());
+        handler = new Handler(Looper.getMainLooper());
 
-        mExecutor = executor;
+        this.executor = executor;
 
-        mScaleType = scaleType;
-        mWidth = width;
-        mHeight = height;
-        mEnforceMaxSize = enforceMaxSize;
+        this.scaleType = scaleType;
+        this.width = width;
+        this.height = height;
+        this.enforceMaxSize = enforceMaxSize;
     }
 
     /**
@@ -102,8 +102,8 @@ public class ImageViewLoader {
     public void placeholder(@NonNull final ImageView imageView,
                             @DrawableRes final int drawable) {
         final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-        lp.width = mWidth;
-        lp.height = mHeight;
+        lp.width = width;
+        lp.height = height;
         imageView.setLayoutParams(lp);
 
         imageView.setPadding(0, 0, 0, 0);
@@ -131,10 +131,10 @@ public class ImageViewLoader {
         if (bitmap.getWidth() < bitmap.getHeight()) {
             // image is portrait; limit the height
             lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            lp.height = mHeight;
+            lp.height = height;
         } else {
             // image is landscape; limit the width
-            lp.width = mWidth;
+            lp.width = width;
             lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
         imageView.setLayoutParams(lp);
@@ -143,14 +143,14 @@ public class ImageViewLoader {
         imageView.setPadding(0, 0, 0, 0);
         // essential, so lets not reply on it having been set in xml
         imageView.setAdjustViewBounds(true);
-        if (mEnforceMaxSize) {
-            imageView.setMaxHeight(mHeight);
-            imageView.setMaxWidth(mWidth);
+        if (enforceMaxSize) {
+            imageView.setMaxHeight(height);
+            imageView.setMaxWidth(width);
         } else {
             imageView.setMaxHeight(Integer.MAX_VALUE);
             imageView.setMaxWidth(Integer.MAX_VALUE);
         }
-        imageView.setScaleType(mScaleType);
+        imageView.setScaleType(scaleType);
         imageView.setImageBitmap(bitmap);
     }
 
@@ -171,14 +171,14 @@ public class ImageViewLoader {
         imageView.setTag(R.id.TAG_THUMBNAIL_TASK, this);
         final WeakReference<ImageView> viewWeakReference = new WeakReference<>(imageView);
 
-        mExecutor.execute(() -> {
+        executor.execute(() -> {
             Thread.currentThread().setName(TAG);
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             // do the actual background work.
-            final Bitmap bitmap = ImageUtils.decodeFile(file, mWidth, mHeight);
+            final Bitmap bitmap = ImageUtils.decodeFile(file, width, height);
 
             // all done; back to the UI thread.
-            mHandler.post(() -> {
+            handler.post(() -> {
                 // are we still associated with this view ? (remember: views are recycled)
                 final ImageView view = viewWeakReference.get();
                 if (view != null && this.equals(view.getTag(R.id.TAG_THUMBNAIL_TASK))) {
