@@ -63,7 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
+import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -404,7 +404,7 @@ public class IsfdbSearchEngine
     public String searchCoverByIsbn(@NonNull final Context context,
                                     @NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
-                                    @Nullable final ImageFileInfo.Size size)
+                                    @Nullable final Size size)
             throws StorageException, SearchException, CredentialsException {
 
         final List<Edition> editions = fetchEditionsByIsbn(context, validIsbn);

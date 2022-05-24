@@ -31,7 +31,6 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 
 /**
@@ -54,13 +53,13 @@ public class ImageFileInfo
     };
     private static final String TAG = "ImageFileInfo";
     @NonNull
-    private final String mIsbn;
+    private final String isbn;
     @Nullable
-    private final Size mSize;
+    private final Size size;
     @Nullable
-    private final String mFileSpec;
+    private final String fileSpec;
     @SearchSites.EngineId
-    private final int mEngineId;
+    private final int engineId;
 
     /**
      * Constructor. No file.
@@ -68,10 +67,10 @@ public class ImageFileInfo
      * @param isbn of the book for this cover
      */
     ImageFileInfo(@NonNull final String isbn) {
-        mIsbn = isbn;
-        mFileSpec = null;
-        mSize = null;
-        mEngineId = 0;
+        this.isbn = isbn;
+        fileSpec = null;
+        size = null;
+        engineId = 0;
     }
 
     /**
@@ -86,10 +85,10 @@ public class ImageFileInfo
                   @Nullable final String fileSpec,
                   @Nullable final Size size,
                   @SearchSites.EngineId final int engineId) {
-        mIsbn = isbn;
-        mFileSpec = fileSpec;
-        mSize = size;
-        mEngineId = engineId;
+        this.isbn = isbn;
+        this.fileSpec = fileSpec;
+        this.size = size;
+        this.engineId = engineId;
     }
 
     /**
@@ -99,47 +98,40 @@ public class ImageFileInfo
      */
     private ImageFileInfo(@NonNull final Parcel in) {
         //noinspection ConstantConditions
-        mIsbn = in.readString();
-        mFileSpec = in.readString();
-        mEngineId = in.readInt();
-
-        final int sizeOrdinal = in.readInt();
-        if (sizeOrdinal >= 0) {
-            mSize = Size.values()[sizeOrdinal];
-        } else {
-            mSize = null;
-        }
+        isbn = in.readString();
+        fileSpec = in.readString();
+        engineId = in.readInt();
+        size = in.readParcelable(getClass().getClassLoader());
     }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeString(mIsbn);
-        dest.writeString(mFileSpec);
-        dest.writeInt(mEngineId);
-
-        dest.writeInt(mSize != null ? mSize.ordinal() : -1);
+        dest.writeString(isbn);
+        dest.writeString(fileSpec);
+        dest.writeInt(engineId);
+        dest.writeParcelable(size, flags);
     }
 
     @NonNull
     public String getIsbn() {
-        return mIsbn;
+        return isbn;
     }
 
     @Nullable
     public Size getSize() {
-        return mSize;
+        return size;
     }
 
     @SearchSites.EngineId
     int getEngineId() {
-        return mEngineId;
+        return engineId;
     }
 
     @NonNull
     public Optional<File> getFile() {
-        if (mFileSpec != null && !mFileSpec.isEmpty()) {
-            final File file = new File(mFileSpec);
+        if (fileSpec != null && !fileSpec.isEmpty()) {
+            final File file = new File(fileSpec);
             if (file.exists()) {
                 return Optional.of(file);
             }
@@ -153,12 +145,12 @@ public class ImageFileInfo
      *
      * @param size to compare to
      */
-    boolean isUseThisImage(@NonNull final ImageFileInfo.Size size) {
+    boolean isUseThisImage(@NonNull final Size size) {
         // Does it have an actual file ?
-        if (mFileSpec != null) {
+        if (fileSpec != null) {
             // There is a file and it is good (as determined at download time)
             // But is the size we have suitable ? Bigger files are always better (we hope)...
-            if (mSize != null && mSize.compareTo(size) >= 0) {
+            if (this.size != null && this.size.compareTo(size) >= 0) {
                 // YES, use the file we already have
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                     Log.d(TAG, "search|PRESENT|SUCCESS|imageFileInfo=" + this);
@@ -190,27 +182,12 @@ public class ImageFileInfo
     @Override
     public String toString() {
         return "ImageFileInfo{"
-               + "mIsbn=`" + mIsbn + '`'
-               + ", mSize=" + mSize
-               + ", mEngineId=" + mEngineId
-               + ", mFileSpec=`"
-               + (mFileSpec == null ? "" : mFileSpec.substring(mFileSpec.lastIndexOf('/')))
+               + "isbn=`" + isbn + '`'
+               + ", size=" + size
+               + ", engineId=" + engineId
+               + ", fileSpec=`"
+               + (fileSpec == null ? "" : fileSpec.substring(fileSpec.lastIndexOf('/')))
                + '`'
                + '}';
-    }
-
-    /**
-     * Sizes of images downloaded by {@link SearchEngine} implementations.
-     * These are open to interpretation (or not used at all) by individual sites.
-     * <p>
-     * The order must be from Small to Large so we can use {@link Enum#compareTo(Enum)}.
-     */
-    public enum Size {
-        Small,
-        Medium,
-        Large;
-
-        public static final Size[] SMALL_FIRST = {Small, Medium, Large};
-        public static final Size[] LARGE_FIRST = {Large, Medium, Small};
     }
 }

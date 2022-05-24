@@ -40,7 +40,7 @@ import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
+import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -458,7 +458,7 @@ public interface SearchEngine
         String searchCoverByIsbn(@NonNull Context context,
                                  @NonNull String validIsbn,
                                  @IntRange(from = 0, to = 1) int cIdx,
-                                 @Nullable ImageFileInfo.Size size)
+                                 @Nullable Size size)
                 throws StorageException,
                        SearchException,
                        CredentialsException;
@@ -488,13 +488,13 @@ public interface SearchEngine
 
             final ArrayList<String> list = new ArrayList<>();
             String fileSpec = searchCoverByIsbn(context, validIsbn, cIdx,
-                                                ImageFileInfo.Size.Large);
+                                                Size.Large);
             if (fileSpec == null && getConfig().supportsMultipleCoverSizes()) {
                 fileSpec = searchCoverByIsbn(context, validIsbn, cIdx,
-                                             ImageFileInfo.Size.Medium);
+                                             Size.Medium);
                 if (fileSpec == null) {
                     fileSpec = searchCoverByIsbn(context, validIsbn, cIdx,
-                                                 ImageFileInfo.Size.Small);
+                                                 Size.Small);
                 }
             }
             if (fileSpec != null) {

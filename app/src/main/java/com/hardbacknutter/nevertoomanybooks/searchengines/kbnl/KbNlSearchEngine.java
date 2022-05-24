@@ -41,7 +41,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
+import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -209,7 +209,7 @@ public class KbNlSearchEngine
     public String searchCoverByIsbn(@NonNull final Context context,
                                     @NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
-                                    @Nullable final ImageFileInfo.Size size)
+                                    @Nullable final Size size)
             throws StorageException {
         final String sizeParam;
         if (size == null) {

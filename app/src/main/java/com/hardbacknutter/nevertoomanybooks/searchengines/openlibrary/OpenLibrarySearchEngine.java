@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
+import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -255,7 +255,7 @@ public class OpenLibrarySearchEngine
     public String searchCoverByIsbn(@NonNull final Context context,
                                     @NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
-                                    @Nullable final ImageFileInfo.Size size)
+                                    @Nullable final Size size)
             throws StorageException {
         final String sizeParam;
         if (size == null) {
@@ -709,13 +709,13 @@ public class OpenLibrarySearchEngine
         // get the largest cover image available.
         final JSONObject o = element.optJSONObject("cover");
         if (o != null) {
-            ImageFileInfo.Size size = ImageFileInfo.Size.Large;
+            Size size = Size.Large;
             String coverUrl = o.optString("large");
             if (coverUrl.isEmpty()) {
-                size = ImageFileInfo.Size.Medium;
+                size = Size.Medium;
                 coverUrl = o.optString("medium");
                 if (coverUrl.isEmpty()) {
-                    size = ImageFileInfo.Size.Small;
+                    size = Size.Small;
                     coverUrl = o.optString("small");
                 }
             }

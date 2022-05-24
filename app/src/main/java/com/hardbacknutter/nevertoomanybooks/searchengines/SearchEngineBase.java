@@ -37,7 +37,7 @@ import java.util.regex.Matcher;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
+import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -193,7 +193,7 @@ public abstract class SearchEngineBase
     public String saveImage(@NonNull final String url,
                             @Nullable final String bookId,
                             @IntRange(from = 0, to = 1) final int cIdx,
-                            @Nullable final ImageFileInfo.Size size)
+                            @Nullable final Size size)
             throws StorageException {
 
         final File tmpFile = imageDownloader.getTempFile(getConfig().getFilenameSuffix(),
