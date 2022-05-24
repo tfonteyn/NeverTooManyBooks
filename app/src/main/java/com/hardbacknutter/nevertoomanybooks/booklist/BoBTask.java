@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.FtsMatchFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.RowIdFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -190,7 +189,7 @@ public class BoBTask
             addConditionalDomains(builder, style);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-                Log.d(TAG, "mSearchCriteria=" + searchCriteria);
+                Log.d(TAG, "searchCriteria=" + searchCriteria);
             }
 
             if (!searchCriteria.isEmpty()) {
@@ -245,8 +244,8 @@ public class BoBTask
 
                     } else {
                         // Filter os the current one only
-                        builder.addFilter(new RowIdFilter(TBL_BOOKSHELF, DOM_PK_ID,
-                                                          bookshelf.getId()));
+                        builder.addFilter(new NumberListFilter<>(TBL_BOOKSHELF, DOM_PK_ID,
+                                                                 bookshelf.getId()));
                     }
                 }
             }
