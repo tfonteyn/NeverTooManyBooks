@@ -415,7 +415,7 @@ public class ISBN {
         if (type == Type.Invalid) {
             return codeText;
         }
-        Objects.requireNonNull(codeDigits, "mDigits");
+        Objects.requireNonNull(codeDigits, "codeDigits");
 
         switch (type) {
             case Isbn13: {
@@ -818,9 +818,8 @@ public class ISBN {
 
         final int value;
 
-        Validity(final int prefValue) {
-
-            value = prefValue;
+        Validity(final int value) {
+            this.value = value;
         }
 
         /**
