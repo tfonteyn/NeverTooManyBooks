@@ -65,9 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceAlertDialogBuilder;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
-import com.hardbacknutter.nevertoomanybooks.fields.FieldArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 
 public class BookshelfFiltersDialogFragment
@@ -173,10 +171,11 @@ public class BookshelfFiltersDialogFragment
                 .setSingleChoiceItems(map.keySet().toArray(Z_ARRAY_STRING), -1, (dialog, which) -> {
                     final String dbKey = map.values().toArray(Z_ARRAY_STRING)[which];
                     if (filterList.stream().noneMatch(f -> f.getDBKey().equals(dbKey))) {
-                        FilterFactory.createFilter(dbKey).ifPresent(filter -> {
+                        final PFilter<?> filter = FilterFactory.createFilter(dbKey);
+                        if (filter != null) {
                             filterList.add(filter);
                             listAdapter.notifyItemInserted(filterList.size());
-                        });
+                        }
                     }
 
                     dialog.dismiss();
@@ -366,6 +365,7 @@ public class BookshelfFiltersDialogFragment
                 mVb.filter.clearCheck();
             } else {
                 mVb.valueTrue.setChecked(value);
+                mVb.valueFalse.setChecked(!value);
             }
 
             mVb.filter.setOnCheckedChangeListener((group, checkedId) -> {
@@ -393,37 +393,20 @@ public class BookshelfFiltersDialogFragment
 
         public void onBind(@NonNull final Context context,
                            @NonNull final PFilter<?> pFilter) {
-            //noinspection TypeMayBeWeakened
             final PStringEqualityFilter filter = (PStringEqualityFilter) pFilter;
             mVb.lblFilter.setText(filter.getLabel(context));
 
             // We cannot share this adapter/formatter between multiple Holder instances
             // as they depends on the DBKey of the filter.
             @Nullable
-            final FieldArrayAdapter fieldAdapter =
-                    FilterFactory.createAdapter(context, filter);
+            final ExtArrayAdapter<String> adapter = FilterFactory
+                    .createAdapter(context, filter.getDBKey());
             // likewise, always set the adapter even when null
-            mVb.filter.setAdapter(fieldAdapter);
+            mVb.filter.setAdapter(adapter);
 
-            @Nullable
-            final FieldFormatter<String> fieldFormatter =
-                    fieldAdapter != null ? fieldAdapter.getFormatter() : null;
-
-            final String initialValue;
-            if (fieldFormatter != null) {
-                initialValue = fieldFormatter.format(context, filter.getValueText(context));
-            } else {
-                initialValue = filter.getValueText(context);
-            }
-            mVb.filter.setText(initialValue);
-
+            mVb.filter.setText(filter.getValueText(context));
             mVb.filter.addTextChangedListener((ExtTextWatcher) s -> {
-                if (fieldFormatter instanceof EditFieldFormatter) {
-                    filter.setValue(((EditFieldFormatter<String>) fieldFormatter)
-                                            .extract(context, s.toString()));
-                } else {
-                    filter.setValue(s.toString());
-                }
+                filter.setValueText(context, s.toString());
                 mModificationListener.setModified(true);
             });
         }
@@ -494,12 +477,9 @@ public class BookshelfFiltersDialogFragment
             mVb.filter.setText(filter.getValueText(context));
 
             mVb.ROWONCLICKTARGET.setOnClickListener(v -> {
-                final Map<Integer, Integer> bitsAndLabels = filter.getBitsAndLabels();
+                final Map<Integer, String> bitsAndLabels = filter.getBitsAndLabels(context);
                 final List<Integer> ids = new ArrayList<>(bitsAndLabels.keySet());
-                final List<String> labels = bitsAndLabels.values()
-                                                         .stream()
-                                                         .map(context::getString)
-                                                         .collect(Collectors.toList());
+                final List<String> labels = new ArrayList<>(bitsAndLabels.values());
 
                 new MultiChoiceAlertDialogBuilder<Integer>(context)
                         .setTitle(context.getString(R.string.lbl_edition))

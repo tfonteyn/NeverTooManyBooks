@@ -50,20 +50,20 @@ public class PBooleanFilter
     private final int acEntries;
 
     @NonNull
-    private final String name;
+    protected final Domain domain;
     @NonNull
-    private final Domain domain;
+    protected final TableDefinition table;
     @NonNull
-    private final TableDefinition table;
+    private final String dbKey;
     @Nullable
-    private Boolean value;
+    protected Boolean value;
 
-    PBooleanFilter(@NonNull final String name,
+    PBooleanFilter(@NonNull final String dbKey,
                    @StringRes final int labelResId,
                    @ArrayRes final int acEntries,
                    @NonNull final TableDefinition table,
                    @NonNull final Domain domain) {
-        this.name = name;
+        this.dbKey = dbKey;
         this.labelResId = labelResId;
         this.acEntries = acEntries;
         this.table = table;
@@ -89,17 +89,17 @@ public class PBooleanFilter
     @Override
     @NonNull
     public String getDBKey() {
-        return name;
+        return dbKey;
     }
 
     @Nullable
     @Override
-    public String getValueAsString() {
+    public String getPersistedValue() {
         return value == null ? "-1" : value ? "1" : "0";
     }
 
     @Override
-    public void setValueAsString(@Nullable final String value) {
+    public void setPersistedValue(@Nullable final String value) {
         this.value = value == null ? null : "1".equals(value);
     }
 

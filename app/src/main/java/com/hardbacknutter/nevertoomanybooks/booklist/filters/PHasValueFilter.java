@@ -21,40 +21,39 @@ package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.content.Context;
 
+import androidx.annotation.ArrayRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 /**
- * Filter on a specific/single row id.
+ * <ul>
+ * <li>Variant of {@link PBooleanFilter} with the expression testing the presence of a value</li>
+ * <li>The value is a {@code Boolean}.</li>
+ * <li>A {@code null} value indicates an inactive filter.</li>
+ * </ul>
  */
-public class RowIdFilter
-        implements Filter {
+public class PHasValueFilter
+        extends PBooleanFilter {
 
-    @NonNull
-    private final TableDefinition table;
-    @NonNull
-    private final Domain domain;
-
-    private final long id;
-
-    public RowIdFilter(@NonNull final TableDefinition table,
-                       @NonNull final Domain domain,
-                       final long id) {
-        this.table = table;
-        this.domain = domain;
-        this.id = id;
+    PHasValueFilter(@NonNull final String dbKey,
+                    @StringRes final int labelResId,
+                    @ArrayRes final int acEntries,
+                    @NonNull final TableDefinition table,
+                    @NonNull final Domain domain) {
+        super(dbKey, labelResId, acEntries, table, domain);
     }
 
-    @Override
     @NonNull
+    @Override
     public String getExpression(@NonNull final Context context) {
-        return '(' + table.dot(domain) + '=' + id + ')';
-    }
-
-    @Override
-    public boolean isActive(@NonNull final Context context) {
-        return id > 0;
+        final String column = table.dot(domain);
+        if (Boolean.TRUE.equals(value)) {
+            return '(' + column + " IS NOT NULL AND " + column + "<>'')";
+        } else {
+            return '(' + column + " IS NULL OR " + column + "='')";
+        }
     }
 }

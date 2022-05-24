@@ -131,17 +131,17 @@ public class ExtArrayAdapter<T>
      * {@link #mObjects} is modified.
      */
     private boolean mNotifyOnChange = true;
-
-    // A copy of the original mObjects array, initialized from and then used instead as soon as
-    // the mFilter ExtArrayFilter is used. mObjects will then only contain the filtered values.
+    /**
+     * A copy of the original {@link #mObjects} array, initialized from and then
+     * used instead as soon as the {@link #mFilter} {@link Filter} is used.
+     * {@link #mObjects} will then only contain the filtered values.
+     */
     @Nullable
     private ArrayList<T> mOriginalValues;
-
     @Nullable
     private Filter mFilter;
     @NonNull
     private FilterType mFilterType = FilterType.Default;
-
 
     /**
      * Constructor.
@@ -661,8 +661,8 @@ public class ExtArrayAdapter<T>
      *
      * @return values from the string array used by
      *         {@link #createFromResource(Context, int, FilterType, int)},
-     *         or {@code null} if object was created otherwise or if contents were dynamically changed after
-     *         creation.
+     *         or {@code null} if object was created otherwise or if contents
+     *         were dynamically changed after creation.
      */
     @Override
     public CharSequence[] getAutofillOptions() {

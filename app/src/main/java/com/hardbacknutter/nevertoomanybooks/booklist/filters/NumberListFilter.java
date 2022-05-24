@@ -45,6 +45,14 @@ public class NumberListFilter<T extends Number>
     @NonNull
     private final List<T> list;
 
+    public NumberListFilter(@NonNull final TableDefinition table,
+                            @NonNull final Domain domain,
+                            @NonNull final T id) {
+        this.domain = domain;
+        this.table = table;
+        this.list = List.of(id);
+    }
+
     /**
      * Constructor.
      *
@@ -67,9 +75,8 @@ public class NumberListFilter<T extends Number>
             return list.stream()
                        .map(String::valueOf)
                        .collect(Collectors.joining(
-                                ",",
-                                '(' + table.dot(domain) + " IN ("
-                                , "))"));
+                               ",",
+                               '(' + table.dot(domain) + " IN (", "))"));
         }
     }
 

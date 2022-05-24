@@ -243,10 +243,11 @@ public class BookshelfDaoImpl
                 final String dbKey = rowData.getString(DBKey.FILTER_DBKEY);
                 final String value = rowData.getString(DBKey.FILTER_VALUE, null);
                 if (value != null) {
-                    FilterFactory.createFilter(dbKey).ifPresent(filter -> {
-                        filter.setValueAsString(value);
+                    final PFilter<?> filter = FilterFactory.createFilter(dbKey);
+                    if (filter != null) {
+                        filter.setPersistedValue(value);
                         list.add(filter);
-                    });
+                    }
                 }
             }
         }
@@ -285,7 +286,7 @@ public class BookshelfDaoImpl
                 list.forEach(filter -> {
                     stmt.bindLong(1, bookshelfId);
                     stmt.bindString(2, filter.getDBKey());
-                    stmt.bindString(3, filter.getValueAsString());
+                    stmt.bindString(3, filter.getPersistedValue());
                     stmt.executeInsert();
                 });
             }

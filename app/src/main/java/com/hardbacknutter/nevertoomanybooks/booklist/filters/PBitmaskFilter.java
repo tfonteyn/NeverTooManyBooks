@@ -26,8 +26,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -63,28 +63,27 @@ public class PBitmaskFilter
     @StringRes
     private final int labelResId;
     @NonNull
-    private final String name;
+    private final String dbKey;
     @NonNull
     private final Domain domain;
     @NonNull
     private final TableDefinition table;
-    // key: int with a single bit set; value: a string resId with the user label
     @NonNull
-    private final Supplier<Map<Integer, Integer>> bitsAndLabels;
+    private final Supplier<Map<Integer, Integer>> mapSupplier;
 
     @Nullable
     private Set<Integer> value;
 
-    PBitmaskFilter(@NonNull final String name,
+    PBitmaskFilter(@NonNull final String dbKey,
                    @StringRes final int labelResId,
                    @NonNull final TableDefinition table,
                    @NonNull final Domain domain,
-                   @NonNull final Supplier<Map<Integer, Integer>> bitsAndLabelSupplier) {
-        this.name = name;
+                   @NonNull final Supplier<Map<Integer, Integer>> mapSupplier) {
+        this.dbKey = dbKey;
         this.labelResId = labelResId;
         this.domain = domain;
         this.table = table;
-        bitsAndLabels = bitsAndLabelSupplier;
+        this.mapSupplier = mapSupplier;
     }
 
     @Override
@@ -103,24 +102,26 @@ public class PBitmaskFilter
         if (value.isEmpty()) {
             return "(" + table.dot(domain) + "=0)";
         } else {
-            return "((" + table.dot(domain) + " & " + getValueAsString() + ")<>0)";
+            return "((" + table.dot(domain) + " & " + getPersistedValue() + ")<>0)";
         }
     }
 
     @Override
     @NonNull
     public String getDBKey() {
-        return name;
+        return dbKey;
     }
 
     @NonNull
-    public Map<Integer, Integer> getBitsAndLabels() {
-        return Collections.unmodifiableMap(bitsAndLabels.get());
+    public Map<Integer, String> getBitsAndLabels(@NonNull final Context context) {
+        final Map<Integer, String> result = new LinkedHashMap<>();
+        mapSupplier.get().forEach((key, lblId) -> result.put(key, context.getString(lblId)));
+        return result;
     }
 
     @Nullable
     @Override
-    public String getValueAsString() {
+    public String getPersistedValue() {
         if (value == null) {
             return null;
         } else {
@@ -131,7 +132,7 @@ public class PBitmaskFilter
     }
 
     @Override
-    public void setValueAsString(@Nullable final String value) {
+    public void setPersistedValue(@Nullable final String value) {
         if (value == null || value.isEmpty()) {
             this.value = null;
         } else {
@@ -160,7 +161,7 @@ public class PBitmaskFilter
         if (value == null) {
             return null;
         } else {
-            return Set.copyOf(value);
+            return new HashSet<>(value);
         }
     }
 
@@ -178,14 +179,13 @@ public class PBitmaskFilter
         } else if (value.isEmpty()) {
             return context.getString(R.string.btn_all_books);
         } else {
-            final Map<Integer, Integer> blMap = bitsAndLabels.get();
-            //noinspection ConstantConditions
-            return blMap.keySet()
-                        .stream()
-                        .filter(value::contains)
-                        .map(blMap::get)
-                        .map(context::getString)
-                        .collect(Collectors.joining("; "));
+            return mapSupplier.get()
+                              .entrySet()
+                              .stream()
+                              .filter(entry -> value.contains(entry.getKey()))
+                              .map(Map.Entry::getValue)
+                              .map(context::getString)
+                              .collect(Collectors.joining("; "));
         }
     }
 

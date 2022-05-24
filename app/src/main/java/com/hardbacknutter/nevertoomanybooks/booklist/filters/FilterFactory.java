@@ -25,8 +25,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -55,120 +53,126 @@ public final class FilterFactory {
     public static final List<String> SUPPORTED =
             List.of(DBKey.READ__BOOL,
                     DBKey.SIGNED__BOOL,
-                    DBKey.BOOK_ISBN,
-                    DBKey.FK_TOC_ENTRY,
-                    DBKey.LOANEE_NAME,
 
-                    DBKey.FK_BOOKSHELF,
+                    DBKey.BOOK_ISBN,
+                    DBKey.LOANEE_NAME,
 
                     DBKey.COLOR,
                     DBKey.FORMAT,
                     DBKey.LANGUAGE,
 
-                    DBKey.EDITION__BITMASK
+                    DBKey.EDITION__BITMASK,
+
+                    DBKey.FK_BOOKSHELF,
+                    DBKey.FK_TOC_ENTRY
                    );
 
     private FilterFactory() {
     }
 
-    @NonNull
-    public static Optional<PFilter<?>> createFilter(@NonNull final String dbKey) {
+    @Nullable
+    public static PFilter<?> createFilter(@NonNull final String dbKey) {
         switch (dbKey) {
-            case DBKey.READ__BOOL:
-                return Optional.of(new PBooleanFilter(
+            case DBKey.READ__BOOL: {
+                return new PBooleanFilter(
                         dbKey, R.string.lbl_read, R.array.pe_bob_filter_read,
-                        TBL_BOOKS, DOM_BOOK_READ));
-
-            case DBKey.SIGNED__BOOL:
-                return Optional.of(new PBooleanFilter(
+                        TBL_BOOKS, DOM_BOOK_READ);
+            }
+            case DBKey.SIGNED__BOOL: {
+                return new PBooleanFilter(
                         dbKey, R.string.lbl_signed, R.array.pe_bob_filter_signed,
-                        TBL_BOOKS, DOM_BOOK_SIGNED));
+                        TBL_BOOKS, DOM_BOOK_SIGNED);
+            }
 
-            case DBKey.BOOK_ISBN:
-                return Optional.of(new PBooleanFilter(
+
+            // Does the book have an ISBN (or any other code) or none.
+            case DBKey.BOOK_ISBN: {
+                return new PHasValueFilter(
                         dbKey, R.string.lbl_isbn, R.array.pe_bob_filter_isbn,
-                        TBL_BOOKS, DOM_BOOK_ISBN));
-
-            case DBKey.FK_TOC_ENTRY:
-                return Optional.of(new PBooleanFilter(
-                        dbKey, R.string.lbl_anthology, R.array.pe_bob_filter_anthology,
-                        TBL_BOOKS, DOM_BOOK_TOC_TYPE));
-
-            case DBKey.LOANEE_NAME:
-                return Optional.of(new PBooleanFilter(
+                        TBL_BOOKS, DOM_BOOK_ISBN);
+            }
+            // Is the book lend out or not.
+            case DBKey.LOANEE_NAME: {
+                return new PHasValueFilter(
                         dbKey, R.string.lbl_lend_out, R.array.pe_bob_filter_lending,
-                        TBL_BOOK_LOANEE, DOM_LOANEE));
+                        TBL_BOOK_LOANEE, DOM_LOANEE);
+            }
 
 
-            case DBKey.COLOR:
-                return Optional.of(new PStringEqualityFilter(
+            case DBKey.COLOR: {
+                return new PStringEqualityFilter(
                         dbKey, R.string.lbl_color,
-                        TBL_BOOKS, DOM_BOOK_COLOR));
-
-            case DBKey.FORMAT:
-                return Optional.of(new PStringEqualityFilter(
+                        TBL_BOOKS, DOM_BOOK_COLOR);
+            }
+            case DBKey.FORMAT: {
+                return new PStringEqualityFilter(
                         dbKey, R.string.lbl_format,
-                        TBL_BOOKS, DOM_BOOK_FORMAT));
-
-            case DBKey.LANGUAGE:
-                return Optional.of(new PStringEqualityFilter(
+                        TBL_BOOKS, DOM_BOOK_FORMAT);
+            }
+            case DBKey.LANGUAGE: {
+                final PStringEqualityFilter filter = new PStringEqualityFilter(
                         dbKey, R.string.lbl_language,
-                        TBL_BOOKS, DOM_BOOK_LANGUAGE));
+                        TBL_BOOKS, DOM_BOOK_LANGUAGE);
+
+                filter.setFormatter(LanguageFormatter::new);
+                return filter;
+            }
 
 
-            case DBKey.FK_BOOKSHELF:
-                return Optional.of(new PEntityListFilter<>(
-                        dbKey, R.string.lbl_bookshelves,
-                        TBL_BOOK_BOOKSHELF, DOM_FK_BOOKSHELF,
-                        () -> ServiceLocator.getInstance().getBookshelfDao().getAll(),
-                        id -> ServiceLocator.getInstance().getBookshelfDao().getById(id)));
-
-
-            case DBKey.EDITION__BITMASK:
-                return Optional.of(new PBitmaskFilter(
+            case DBKey.EDITION__BITMASK: {
+                return new PBitmaskFilter(
                         dbKey, R.string.lbl_edition,
                         TBL_BOOKS, DOM_BOOK_EDITION,
-                        Book.Edition::getEditions));
+                        Book.Edition::getAll);
+            }
+
+
+            case DBKey.FK_BOOKSHELF: {
+                return new PEntityListFilter<>(
+                        dbKey, R.string.lbl_bookshelves,
+                        TBL_BOOK_BOOKSHELF, DOM_FK_BOOKSHELF,
+                        () -> ServiceLocator.getInstance().getBookshelfDao().getAll());
+            }
+
+            case DBKey.FK_TOC_ENTRY: {
+                return new PEntityListFilter<>(
+                        dbKey, R.string.lbl_anthology,
+                        TBL_BOOKS, DOM_BOOK_TOC_TYPE,
+                        Book.ContentType::getAll);
+            }
 
             default:
-                return Optional.empty();
+                return null;
         }
     }
 
     /**
-     * Create a list adapter for a {@link PStringEqualityFilter}.
+     * Create a list adapter for a string based {@link PFilter}.
      *
      * @param context Current context
-     * @param filter  a {@link PStringEqualityFilter}.
      *
      * @return adapter
      */
     @Nullable
-    public static FieldArrayAdapter createAdapter(@NonNull final Context context,
-                                                  @SuppressWarnings("TypeMayBeWeakened")
-                                                  @NonNull final PStringEqualityFilter filter) {
-        switch (filter.getDBKey()) {
+    public static ExtArrayAdapter<String> createAdapter(@NonNull final Context context,
+                                                        @NonNull final String dbKey) {
+        switch (dbKey) {
             case DBKey.COLOR: {
-                return new FieldArrayAdapter(context, ExtArrayAdapter.FilterType.Passthrough,
-                                             ServiceLocator.getInstance()
-                                                           .getColorDao().getList(),
-                                             null);
+                return FieldArrayAdapter.createStringDropDown(
+                        context, ServiceLocator.getInstance().getColorDao().getList(), null);
             }
-
             case DBKey.FORMAT: {
-                return new FieldArrayAdapter(context, ExtArrayAdapter.FilterType.Passthrough,
-                                             ServiceLocator.getInstance()
-                                                           .getFormatDao().getList(),
-                                             null);
+                return FieldArrayAdapter.createStringDropDown(
+                        context, ServiceLocator.getInstance().getFormatDao().getList(), null);
             }
-
             case DBKey.LANGUAGE: {
-                final Locale locale = context.getResources().getConfiguration()
-                                             .getLocales().get(0);
-                return new FieldArrayAdapter(context, ExtArrayAdapter.FilterType.Passthrough,
-                                             ServiceLocator.getInstance()
-                                                           .getLanguageDao().getList(),
-                                             new LanguageFormatter(locale));
+                return FieldArrayAdapter.createStringDropDown(
+                        context, ServiceLocator.getInstance().getLanguageDao().getList(),
+                        new LanguageFormatter(context));
+            }
+            case DBKey.FK_TOC_ENTRY: {
+                return FieldArrayAdapter.createEntityDropDown(
+                        context, Book.ContentType.getAll());
             }
 
             default:

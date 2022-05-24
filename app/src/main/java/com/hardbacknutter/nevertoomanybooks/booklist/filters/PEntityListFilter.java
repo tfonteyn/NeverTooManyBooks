@@ -29,8 +29,9 @@ import androidx.annotation.StringRes;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -57,30 +58,28 @@ public class PEntityListFilter<T extends Entity>
     @StringRes
     private final int labelResId;
     @NonNull
-    private final String name;
+    private final String dbKey;
     @NonNull
     private final Domain domain;
     @NonNull
     private final TableDefinition table;
     @NonNull
     private final Supplier<List<T>> listSupplier;
-    @NonNull
-    private final Function<Long, Entity> entitySupplier;
 
     private final Set<Long> value = new HashSet<>();
+    @Nullable
+    private Map<Long, Entity> entityMap;
 
-    PEntityListFilter(@NonNull final String name,
+    PEntityListFilter(@NonNull final String dbKey,
                       @StringRes final int labelResId,
                       @NonNull final TableDefinition table,
                       @NonNull final Domain domain,
-                      @NonNull final Supplier<List<T>> listSupplier,
-                      @NonNull final Function<Long, Entity> entitySupplier) {
-        this.name = name;
+                      @NonNull final Supplier<List<T>> listSupplier) {
+        this.dbKey = dbKey;
         this.labelResId = labelResId;
         this.table = table;
         this.domain = domain;
         this.listSupplier = listSupplier;
-        this.entitySupplier = entitySupplier;
     }
 
     @Override
@@ -100,28 +99,28 @@ public class PEntityListFilter<T extends Entity>
             return value.stream()
                         .map(String::valueOf)
                         .collect(Collectors.joining(
-                                 ",",
-                                 '(' + table.dot(domain) + " IN ("
-                                 , "))"));
+                                ",",
+                                '(' + table.dot(domain) + " IN ("
+                                , "))"));
         }
     }
 
     @Override
     @NonNull
     public String getDBKey() {
-        return name;
+        return dbKey;
     }
 
     @Nullable
     @Override
-    public String getValueAsString() {
+    public String getPersistedValue() {
         return value.stream()
                     .map(String::valueOf)
                     .collect(Collectors.joining(","));
     }
 
     @Override
-    public void setValueAsString(@Nullable final String csvString) {
+    public void setPersistedValue(@Nullable final String csvString) {
         value.clear();
         if (csvString != null && !csvString.isEmpty()) {
             value.addAll(Arrays.stream(csvString.split(","))
@@ -138,7 +137,7 @@ public class PEntityListFilter<T extends Entity>
     @NonNull
     @Override
     public Set<Long> getValue() {
-        return Set.copyOf(value);
+        return new HashSet<>(value);
     }
 
     @Override
@@ -156,8 +155,16 @@ public class PEntityListFilter<T extends Entity>
         if (value == null || value.isEmpty()) {
             return context.getString(R.string.bob_empty_field);
         } else {
+            if (entityMap == null) {
+                entityMap = listSupplier
+                        .get()
+                        .stream()
+                        .collect(Collectors.toMap(Entity::getId, entity -> entity));
+            }
+            //noinspection ConstantConditions
             return value.stream()
-                        .map(entitySupplier)
+                        .map(entityMap::get)
+                        .filter(Objects::nonNull)
                         .map(entity -> entity.getLabel(context))
                         .collect(Collectors.joining("; "));
         }

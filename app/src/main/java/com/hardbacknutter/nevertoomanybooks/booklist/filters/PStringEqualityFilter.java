@@ -26,11 +26,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import java.util.function.Function;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 
 /**
  * <ul>
@@ -54,6 +58,12 @@ public class PStringEqualityFilter
 
     @Nullable
     private String value;
+
+    /** The formatter to apply on each line item. */
+    @Nullable
+    private Function<Context, FieldFormatter<String>> formatterSupplier;
+    @Nullable
+    private FieldFormatter<String> formatter;
 
     PStringEqualityFilter(@NonNull final String dbKey,
                           @StringRes final int labelResId,
@@ -88,7 +98,7 @@ public class PStringEqualityFilter
 
     @Nullable
     @Override
-    public String getValueAsString() {
+    public String getPersistedValue() {
         if (value == null || value.isEmpty()) {
             return null;
         } else {
@@ -97,7 +107,7 @@ public class PStringEqualityFilter
     }
 
     @Override
-    public void setValueAsString(@Nullable final String value) {
+    public void setPersistedValue(@Nullable final String value) {
         this.value = value;
     }
 
@@ -112,6 +122,29 @@ public class PStringEqualityFilter
         this.value = value;
     }
 
+    /**
+     * UI support.
+     */
+    public void setFormatter(@Nullable final Function<Context, FieldFormatter<String>> supplier) {
+        this.formatterSupplier = supplier;
+    }
+
+    /**
+     * UI support.
+     */
+    @Nullable
+    private FieldFormatter<String> getFormatter(@NonNull final Context context) {
+        if (formatterSupplier != null) {
+            if (formatter == null) {
+                formatter = formatterSupplier.apply(context);
+            }
+        }
+        return formatter;
+    }
+
+    /**
+     * UI support.
+     */
     @NonNull
     @Override
     public String getValueText(@NonNull final Context context,
@@ -119,16 +152,44 @@ public class PStringEqualityFilter
         if (value == null || value.isEmpty()) {
             return context.getString(R.string.bob_empty_field);
         } else {
-            return value;
+            final FieldFormatter<String> fmt = getFormatter(context);
+            if (fmt != null) {
+                return fmt.format(context, value);
+            } else {
+                return value;
+            }
         }
     }
 
+    /**
+     * UI support.
+     */
+    public void setValueText(@NonNull final Context context,
+                             @Nullable final String value) {
+        if (value == null) {
+            setValue(null);
+        } else {
+            final FieldFormatter<String> fmt = getFormatter(context);
+            if (fmt instanceof EditFieldFormatter) {
+                setValue(((EditFieldFormatter<String>) fmt).extract(context, value));
+            } else {
+                setValue(value);
+            }
+        }
+    }
+
+    /**
+     * UI support.
+     */
     @NonNull
     @Override
     public String getLabel(@NonNull final Context context) {
         return context.getString(labelResId);
     }
 
+    /**
+     * UI support.
+     */
     @LayoutRes
     @Override
     public int getPrefLayoutId() {

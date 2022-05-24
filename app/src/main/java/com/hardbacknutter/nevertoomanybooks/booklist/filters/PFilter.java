@@ -48,27 +48,23 @@ public interface PFilter<T>
 
     /**
      * Get the stringified version of the value to store in the database table.
-     * <p>
-     * Used when saving the value to the database table.
      *
      * @return string
      */
     @Nullable
-    String getValueAsString();
+    String getPersistedValue();
 
     /**
-     * Set the typed value.
-     * <p>
-     * Used when loading the value from the database table.
+     * Set the stringified version value of the value as loaded from the database table.
      */
-    void setValueAsString(@Nullable String value);
+    void setPersistedValue(@Nullable String value);
 
     /**
      * Get the typed value.
      * <p>
-     * Implementations <strong>MUST</strong> return an immutable copy of the internal value.
+     * Implementations <strong>MUST</strong> return a copy of the internal value.
      *
-     * @return immutable object or {@code null}
+     * @return value or {@code null}
      */
     @Nullable
     T getValue();
@@ -77,6 +73,21 @@ public interface PFilter<T>
      * Set the typed value.
      */
     void setValue(@Nullable T value);
+
+
+    /**
+     * UI usage: get a human readable name for this filter.
+     * <p>
+     * Returns "Filter" for generic/dynamic filters.
+     *
+     * @param context Current context
+     *
+     * @return a human readable label/name for this filter.
+     */
+    @NonNull
+    default String getLabel(@NonNull final Context context) {
+        return context.getString(R.string.lbl_filter);
+    }
 
     /**
      * UI usage: get the text to show the user representing the value.
@@ -92,20 +103,6 @@ public interface PFilter<T>
     @NonNull
     default String getValueText(@NonNull final Context context) {
         return getValueText(context, getValue());
-    }
-
-    /**
-     * UI usage: get a human readable label/name for this filter.
-     * <p>
-     * Returns "Filter" for generic/dynamic filters.
-     *
-     * @param context Current context
-     *
-     * @return a human readable label/name for this filter.
-     */
-    @NonNull
-    default String getLabel(@NonNull final Context context) {
-        return context.getString(R.string.lbl_filter);
     }
 
     /**

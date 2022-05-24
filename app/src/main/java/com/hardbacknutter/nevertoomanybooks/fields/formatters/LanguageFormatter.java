@@ -38,7 +38,7 @@ public class LanguageFormatter
         implements EditFieldFormatter<String> {
 
     @NonNull
-    private final Locale mLocale;
+    private final Locale locale;
 
     /**
      * Constructor.
@@ -46,7 +46,11 @@ public class LanguageFormatter
      * @param locale to use
      */
     public LanguageFormatter(@NonNull final Locale locale) {
-        mLocale = locale;
+        this.locale = locale;
+    }
+
+    public LanguageFormatter(@NonNull final Context context) {
+        this.locale = context.getResources().getConfiguration().getLocales().get(0);
     }
 
     @Override
@@ -71,6 +75,6 @@ public class LanguageFormatter
     public String extract(@NonNull final Context context,
                           @NonNull final String text) {
         return ServiceLocator.getInstance().getLanguages()
-                             .getISO3FromDisplayName(mLocale, text);
+                             .getISO3FromDisplayName(locale, text);
     }
 }
