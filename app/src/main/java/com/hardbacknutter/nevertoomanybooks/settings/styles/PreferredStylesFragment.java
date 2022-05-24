@@ -308,9 +308,9 @@ public class PreferredStylesFragment
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
 
-            final RowEditPreferredStylesBinding vb = RowEditPreferredStylesBinding
+            final RowEditPreferredStylesBinding hVb = RowEditPreferredStylesBinding
                     .inflate(getLayoutInflater(), parent, false);
-            final Holder holder = new Holder(vb);
+            final Holder holder = new Holder(hVb);
 
             // click the checkbox -> toggle the 'preferred' status
             //noinspection ConstantConditions
