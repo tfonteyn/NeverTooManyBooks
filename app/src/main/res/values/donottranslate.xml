@@ -256,14 +256,16 @@
     <!-- this is a multi-select, i.e. each item is a checkbox, the user can select any/all -->
     <string-array name="pe_bob_header">
         <item>@string/pv_bob_header_style_name</item>
-        <item>@string/pv_bob_header_filters</item>
         <item>@string/pv_bob_header_nr_of_books</item>
+        <item>@string/pv_bob_header_filters</item>
+        <item>@string/lbl_keywords</item>
     </string-array>
     <!-- multi-select: use bitmask values: 1,2,4,8,...-->
     <string-array name="pv_bob_header">
         <item>8</item>
-        <item>16</item>
         <item>1</item>
+        <item>16</item>
+        <item>4</item>
     </string-array>
 
     <!-- SeekBarPreference - Summary text - Scale text. -->
