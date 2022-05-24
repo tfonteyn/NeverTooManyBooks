@@ -30,11 +30,10 @@ import com.hardbacknutter.nevertoomanybooks.R;
 
 public enum SyncAction
         implements Parcelable {
-    // NEVER change the order, we store the ordinal in SharedPreferences.
-    Skip(R.string.action_skip),
-    CopyIfBlank(R.string.lbl_field_usage_copy_if_blank),
-    Append(R.string.lbl_field_usage_append),
-    Overwrite(R.string.lbl_field_usage_overwrite);
+    Skip(0, R.string.action_skip),
+    CopyIfBlank(1, R.string.lbl_field_usage_copy_if_blank),
+    Append(2, R.string.lbl_field_usage_append),
+    Overwrite(3, R.string.lbl_field_usage_overwrite);
 
     /** {@link Parcelable}. */
     public static final Creator<SyncAction> CREATOR = new Creator<>() {
@@ -51,27 +50,35 @@ public enum SyncAction
         }
     };
 
+    private final int value;
     @StringRes
     private final int labelResId;
 
-    SyncAction(@StringRes final int labelResId) {
+    SyncAction(final int value,
+               @StringRes final int labelResId) {
+        this.value = value;
         this.labelResId = labelResId;
     }
 
     public static SyncAction read(@NonNull final SharedPreferences prefs,
                                   @NonNull final String key,
-                                  @NonNull final SyncAction defValue) {
-        final int ordinal = prefs.getInt(key, -1);
-        if (ordinal == -1) {
-            return defValue;
-        } else {
-            return values()[ordinal];
+                                  @NonNull final SyncAction defAction) {
+        switch (prefs.getInt(key, defAction.value)) {
+            case 3:
+                return Overwrite;
+            case 2:
+                return Append;
+            case 1:
+                return CopyIfBlank;
+            case 0:
+            default:
+                return Skip;
         }
     }
 
     public void write(@NonNull final SharedPreferences.Editor ed,
                       @NonNull final String key) {
-        ed.putInt(key, ordinal());
+        ed.putInt(key, value);
     }
 
     @NonNull
@@ -115,6 +122,6 @@ public enum SyncAction
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeInt(this.ordinal());
+        dest.writeInt(ordinal());
     }
 }
