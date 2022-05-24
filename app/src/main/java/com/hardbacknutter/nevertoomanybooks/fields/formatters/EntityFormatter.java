@@ -33,11 +33,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
  * </ul>
  */
 public class EntityFormatter<T extends Entity>
-        extends HtmlFormatter<T> {
+        implements FieldFormatter<T> {
 
     /** how much details to show. */
     @NonNull
-    private final Details mDetails;
+    private final Details details;
 
     /**
      * Constructor.
@@ -45,13 +45,13 @@ public class EntityFormatter<T extends Entity>
      * @param details how much details to show
      */
     public EntityFormatter(@NonNull final Details details) {
-        mDetails = details;
+        this.details = details;
     }
 
     @Override
     @NonNull
     public String format(@NonNull final Context context,
                          @Nullable final T entity) {
-        return entity == null ? "" : entity.getLabel(context, mDetails, null);
+        return entity == null ? "" : entity.getLabel(context, details, null);
     }
 }
