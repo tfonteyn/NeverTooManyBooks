@@ -56,10 +56,10 @@ public class ImageDownloader {
     private static final String DATA_IMAGE_JPEG_BASE_64 = "data:image/jpeg;base64,";
 
     @NonNull
-    private final FutureHttpGet<File> mFutureHttpGet;
+    private final FutureHttpGet<File> futureHttpGet;
 
     public ImageDownloader(@NonNull final FutureHttpGet<File> futureHttpGet) {
-        mFutureHttpGet = futureHttpGet;
+        this.futureHttpGet = futureHttpGet;
     }
 
     /**
@@ -80,7 +80,7 @@ public class ImageDownloader {
     public File getTempFile(@NonNull final String source,
                             @Nullable final String bookId,
                             @IntRange(from = 0, to = 1) final int cIdx,
-                            @Nullable final ImageFileInfo.Size size)
+                            @Nullable final Size size)
             throws StorageException {
 
         // keep all "_" even for empty parts. Easier to parse the name if needed.
@@ -123,7 +123,7 @@ public class ImageDownloader {
                 }
                 savedFile = destination;
             } else {
-                savedFile = mFutureHttpGet.get(url, request -> {
+                savedFile = futureHttpGet.get(url, request -> {
                     try (BufferedInputStream bis = new BufferedInputStream(
                             request.getInputStream())) {
                         return ImageUtils.copy(bis, destination);
@@ -166,8 +166,8 @@ public class ImageDownloader {
     }
 
     public void cancel() {
-        synchronized (mFutureHttpGet) {
-            mFutureHttpGet.cancel();
+        synchronized (futureHttpGet) {
+            futureHttpGet.cancel();
         }
     }
 }
