@@ -78,9 +78,9 @@
     <string name="bytes">%.0fB</string>
     <string name="X_confirm_continue">Weet je zeker dat je door wilt gaan ?</string>
     <string name="confirm_delete_book">Dit zal het boek met de titel „%1$s” door %2$s compleet verwijderen.\n\nWeet je zeker dat je door wilt gaan?</string>
-    <string name="confirm_delete_bookshelf">Echt boekenplank „%1$s” verwijderen? De boeken zelf worden niet verwijderd. Ze zullen nog steeds aanwezig zijn op alle andere schappen, of op de „%2$s” -plank.</string>
-    <string name="confirm_delete_publisher">Wilt je werkelijk de uitgever „%1$s” verwijderen?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de uitgever te bewerken en de naam te veranderen om deze gegevens te behouden</string>
-    <string name="confirm_delete_series">Wilt je werkelijk de reeks „%1$s” verwijderen?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de reeks te bewerken en de reeksnaam te veranderen om deze gegevens te behouden</string>
+    <string name="confirm_delete_bookshelf">De boekenplank „%1$s” verwijderen? De boeken zelf worden niet verwijderd. Ze zullen nog steeds aanwezig zijn op alle andere schappen, of op de „%2$s” -plank.</string>
+    <string name="confirm_delete_publisher">De uitgever „%1$s” verwijderen?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de uitgever te bewerken en de naam te veranderen om deze gegevens te behouden</string>
+    <string name="confirm_delete_series">De reeks „%1$s” verwijderen?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de reeks te bewerken en de reeksnaam te veranderen om deze gegevens te behouden</string>
     <string name="confirm_delete_toc_entry_everywhere">De titel „%1$s” (door %2$s) echt verwijderen? Het wordt verwijderd uit alle boeken waarin het wordt vermeld. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_duplicate_book_message">Het boek dat je wil toevoegen is al aanwezig in de database, weet je zeker dat je nog een exemplaar wilt toevoegen?</string>
     <string name="confirm_email_file">Wilt je dit bestand naar iemand e-mailen?</string>
@@ -137,7 +137,7 @@
     <string name="X_lbl_completed">Gereed</string>
     <string name="X_lbl_failed">Mislukt</string>
     <string name="X_lbl_queued">In de wachtrij</string>
-    <string name="hint_btn_drag_handle">Sleep om deze lijst opnieuw te ordenen.</string>
+    <string name="cd_btn_drag_handle">Sleep om deze lijst opnieuw te ordenen.</string>
     <string name="bob_empty_author">(De auteur ontbreekt)</string>
     <string name="bob_empty_day">(Dag niet ingevuld)</string>
     <string name="bob_empty_field">(Leeg)</string>
@@ -297,7 +297,6 @@
     <string name="lbl_search_filtered_on_x">Gefiltered: %1$s</string>
     <string name="lbl_search_for_books">Zoeken naar boeken</string>
     <string name="lbl_search_isbn">ISBN zoeken</string>
-    <string name="X_lbl_select_an_action">Selecteer een actie</string>
     <string name="lbl_select_fields">Selecteer velden</string>
     <string name="X_lbl_select_style">Selecteer een stijl</string>
     <string name="lbl_select_website">Selecteer een website:</string>
@@ -573,8 +572,6 @@
     <string name="X_lbl_clear_search_filters">Filters verwijderen</string>
     <string name="X_lbl_data_import_export">Back-up &amp; import</string>
     <string name="X_lbl_delete_book">Boek verwijderen</string>
-    <string name="X_lbl_delete_series">Verwijderen reeks</string>
-    <string name="X_lbl_delete_toc_entry">Titel verwijderen</string>
     <string name="X_lbl_edit_author">Auteur bewerken</string>
     <string name="X_lbl_edit_bookshelf">Boekenplank bewerken</string>
     <string name="X_lbl_edit_publisher">Uitgever bewerken</string>
@@ -698,4 +695,10 @@
     <string name="disabled">Uitgeschakeld</string>
     <string name="error_unsupported_version_v">Niet-ondersteunde versie: %1$d</string>
     <string name="cd_clear_text_end_icon">Tekst wissen</string>
+    <string name="lbl_add_filter">Filter toevoegen</string>
+    <string name="lbl_filter">Filter</string>
+    <string name="warning_export_contains_no_data">Er viel niets te exporteren.</string>
+    <string name="warning_book_not_always_found">Niet alle sites hebben geldige gegevens geretourneerd.</string>
+    <string name="menu_book_sync_list_with_details">Synchroniseer/positioneer de lijst</string>
+    <string name="warning_no_site_supports_this_method">WAARSCHUWING: geen van de momenteel geselecteerde sites ondersteunt zoeken op %1$s. Gebruik het sitemenu om alternatieve sites in te schakelen, of gebruik een andere zoekmethode.</string>
 </resources>

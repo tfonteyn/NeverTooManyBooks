@@ -121,7 +121,7 @@
     <string name="X_lbl_failed">Errore</string>
     <string name="X_lbl_queued">In coda</string>
     <string name="action_help">Guida</string>
-    <string name="hint_btn_drag_handle">Trascina per riordinare questo elenco.</string>
+    <string name="cd_btn_drag_handle">Trascina per riordinare questo elenco.</string>
     <string name="bob_empty_author">(L\'autore è mancante)</string>
     <string name="bob_empty_field">(Vuoto)</string>
     <string name="bob_empty_language">(Nessuna lingua compilata)</string>
@@ -132,7 +132,7 @@
     <string name="preference_not_set">Non impostato</string>
     <string name="X_info_site_authorization_successful">Autorizzazione %1$s concessa</string>
     <string name="txt_cleanup_files">File eliminabili attualmente occupano %1$s sulla scheda SD. Si tratta di file di log e altri dati salvati sulla scheda SD ad ogni aggiornamento, ad ogni backup del database o quando l\'applicazione va in crash. Clicca sul pulsante qui sotto per eliminare questi file dalla SD. Se sono avvenuti crash o altri errori, valuta se cliccare il pulsante «%2$s» prima di eliminarli.</string>
-    <string name="txt_displaying_n_books_in_m_entries">Visualizzati %1$d libri, in %2$d voci</string>
+    <string name="txt_displaying_n_books_in_m_entries">%1$d libri, in %2$d voci</string>
     <string name="txt_export_backup_all">Tutti i libri, copertine, impostazioni e stili personalizzati saranno esportati nell\'archivio.</string>
     <string name="X_txt_import_books_option_all_books">Verranno aggiunti nuovi libri. I libri esistenti verranno aggiornati.</string>
     <string name="X_txt_import_books_option_new_and_changed">Importa solo i libri nuovi, o che sono stati aggiornati più di recente nell\'archivio. Utile per sincronizzare due apparecchi.</string>
@@ -482,8 +482,6 @@
     <string name="lbl_clone_style">Duplica stile</string>
     <string name="X_lbl_cover_long">Immagine di copertina</string>
     <string name="X_lbl_delete_book">Cancella libro</string>
-    <string name="X_lbl_delete_series">Cancella serie</string>
-    <string name="X_lbl_delete_toc_entry">Elimina il titolo</string>
     <string name="lbl_details_have_changed">Dettagli modificati</string>
     <string name="lbl_duplicate_book">Duplica titolo libro</string>
     <string name="X_lbl_edit_author">Modifica autore</string>
@@ -500,7 +498,6 @@
     <string name="error_search_could_not_be_started">Ricerca del libro fallita.</string>
     <string name="lbl_search_for_books">Cerca per libro</string>
     <string name="lbl_search_isbn">Cerca ISBN</string>
-    <string name="X_lbl_select_an_action">Seleziona un\'azione</string>
     <string name="X_lbl_select_image">Seleziona immagine…</string>
     <string name="X_lbl_select_style">Seleziona Stile</string>
     <string name="unknown_author">[Autore sconosciuto]</string>
@@ -700,4 +697,10 @@
     <string name="disabled">Spento</string>
     <string name="error_unsupported_version_v">Versione non supportata: %1$d</string>
     <string name="cd_clear_text_end_icon">Cancella testo</string>
+    <string name="lbl_filter">Filtro</string>
+    <string name="lbl_add_filter">Aggiungi filtro</string>
+    <string name="warning_export_contains_no_data">Non c\'era niente da esportare.</string>
+    <string name="warning_book_not_always_found">Non tutti i siti hanno restituito dati validi.</string>
+    <string name="menu_book_sync_list_with_details">Sincronizza/posiziona la lista</string>
+    <string name="warning_no_site_supports_this_method">ATTENZIONE: nessuno dei siti attualmente selezionati supporta la ricerca di %1$s. Utilizza il menu del sito per abilitare siti alternativi o utilizza un metodo di ricerca diverso.</string>
 </resources>

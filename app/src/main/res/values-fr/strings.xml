@@ -81,7 +81,7 @@
     <string name="bytes">%.0f octets</string>
     <string name="X_confirm_continue">Es-tu sur de vouloir continuer ?</string>
     <string name="confirm_delete_book">Cela effacera totalement le livre intitulé «%1$s» par %2$s.\n\nÊtes vous sûr de vouloir poursuivre ?</string>
-    <string name="confirm_delete_bookshelf" tools:ignore="TypographyQuotes">Voulez-vous vraiment supprimer l\'étagère «%1$s»? Les livres eux-mêmes ne seront pas supprimés. Ils seront toujours présents sur toutes les autres étagères, ou sur l\'étagère «%2$s».</string>
+    <string name="confirm_delete_bookshelf" tools:ignore="TypographyQuotes">Supprimer l\'étagère «%1$s»? Les livres eux-mêmes ne seront pas supprimés. Ils seront toujours présents sur toutes les autres étagères, ou sur l\'étagère «%2$s».</string>
     <string name="confirm_delete_publisher" tools:ignore="TypographyQuotes">Supprimer l\'éditeur «%1$s»?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\nEnvisagez de modifier l\'éditeur et de remplacer le nom pour conserver ces données.</string>
     <string name="confirm_delete_series">Supprimer la série «%1$s» ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\n Envisagez de modifier la série et d\'en changer le nom pour conserver ces données.</string>
     <string name="confirm_delete_toc_entry_everywhere">Vraiment supprimer le titre «%1$s» (par %2$s)? Il sera supprimé de tous les livres dans lesquels il est répertorié. Les livres eux-mêmes ne seront pas supprimés.</string>
@@ -140,7 +140,7 @@
     <string name="X_lbl_completed">Terminé</string>
     <string name="X_lbl_failed">Échoué</string>
     <string name="X_lbl_queued">En file d\'attente</string>
-    <string name="hint_btn_drag_handle">Faites glisser pour réorganiser cette liste.</string>
+    <string name="cd_btn_drag_handle">Faites glisser pour réorganiser cette liste.</string>
     <string name="bob_empty_author">(L\'auteur est manquant)</string>
     <string name="bob_empty_day">(Jour non défini)</string>
     <string name="bob_empty_field">(Vide)</string>
@@ -300,7 +300,6 @@
     <string name="lbl_search_filtered_on_x">Filtré: %1$s</string>
     <string name="lbl_search_for_books">Rechercher des livres</string>
     <string name="lbl_search_isbn">recherche par ISBN</string>
-    <string name="X_lbl_select_an_action">Choisissez une action</string>
     <string name="lbl_select_fields">Sélection des champs</string>
     <string name="X_lbl_select_style">Sélectionner un style</string>
     <string name="lbl_select_website">Sélectionnez un site web:</string>
@@ -515,7 +514,7 @@
     <string name="tip_update_fields_from_internet">Les liens de sites externes ne sont traités que si le site est effectivement contacté. En conséquence, le menu «Voir sur…» ne montrera également que ce qui est disponible.</string>
     <string name="tip_view_only_help">Vous pouvez glisser vers la gauche ou la droite pour passer d\'un livre à l\'autre.</string>
     <string name="txt_cleanup_files">Les fichiers supprimables occupent actuellement %1$s sur la carte SD. Les fichiers journaux et d\'autres données sont sauvegardées sur la carte SD à chaque mise à jour, lorsque vous sauvegardez la base de données ou lorsque l\'application plante. Cliquez sur le bouton ci-dessous pour purger ces fichiers de votre carte SD. Si vous avez fait l\'expérience de plantages ou d\'autres erreurs, envisagez d\'abord d\'utiliser le bouton «%2$s»</string>
-    <string name="txt_displaying_n_books_in_m_entries">Affichage de %1$d livres, parmi %2$d entrées</string>
+    <string name="txt_displaying_n_books_in_m_entries">%1$d livres, parmi %2$d entrées</string>
     <string name="txt_export_backup_all">Tous les livres, couvertures, préférence et styles de liste personnels du catalogue seront enregistrés dans la sauvegarde.</string>
     <string name="X_txt_import_books_option_all_books">De nouveaux livres seront ajoutés. Les livres existants seront mis à jour.</string>
     <string name="X_txt_import_books_option_new_and_changed">Seuls les livres récemment ajoutés ou mis à jour dans la sauvegarde seront mis à jour. Cette option est utile lors de la synchronisation de deux appareils.</string>
@@ -576,8 +575,6 @@
     <string name="X_lbl_clear_search_filters">Effacer les filtres</string>
     <string name="X_lbl_data_import_export">Sauvegarde et importation</string>
     <string name="X_lbl_delete_book">Supprimer un livre</string>
-    <string name="X_lbl_delete_series">Supprimer la série</string>
-    <string name="X_lbl_delete_toc_entry">Supprimer le titre</string>
     <string name="X_lbl_edit_author">Modifier l\'auteur</string>
     <string name="X_lbl_edit_bookshelf">modifier la bibliothèque</string>
     <string name="X_lbl_edit_publisher">Modifier l\'éditeur</string>
@@ -702,5 +699,11 @@
     <string name="disabled">Désactivé</string>
     <string name="error_unsupported_version_v">Version non prise en charge: %1$d</string>
     <string name="cd_clear_text_end_icon">Effacer le texte</string>
+    <string name="lbl_filter">Filtre</string>
+    <string name="lbl_add_filter">Ajouter un filtre</string>
+    <string name="warning_export_contains_no_data">Il n\'y avait rien à exporter.</string>
+    <string name="warning_book_not_always_found">Pas tous les sites ont renvoyé de données valides.</string>
+    <string name="menu_book_sync_list_with_details">Synchroniser/positionner la liste</string>
+    <string name="warning_no_site_supports_this_method">AVERTISSEMENT : aucun des sites actuellement sélectionnés ne prend en charge la recherche par %1$s. Veuillez utiliser le menu du site pour activer les sites alternatifs ou utiliser une autre méthode de recherche.</string>
 
 </resources>

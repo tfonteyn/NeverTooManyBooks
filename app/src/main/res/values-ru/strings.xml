@@ -120,7 +120,7 @@
     <string name="X_lbl_failed">Неудача</string>
     <string name="X_lbl_queued">В очереди</string>
     <string name="action_help">Справка</string>
-    <string name="hint_btn_drag_handle">Перетащите меня, чтобы изменить порядок в этом списке.</string>
+    <string name="cd_btn_drag_handle">Перетащите меня, чтобы изменить порядок в этом списке.</string>
     <string name="bob_empty_author">(Автор отсутствует)</string>
     <string name="bob_empty_field">(Пусто)</string>
     <string name="bob_empty_language">(Язык не указан)</string>
@@ -131,7 +131,7 @@
     <string name="preference_not_set">Не указано</string>
     <string name="X_info_site_authorization_successful">Авторизация %1$s прошла успешно</string>
     <string name="txt_cleanup_files">Файлы, подлежащие очистке сейчас занимают %1$s на SD-карте. Лог-файлы и другие данные сохраняются на SD-карте при каждом обновлении, когда происходит резервное копирование базы, или в случае аварийного завершения программы. Нажмите кнопку внизу экрана, чтобы очистить эти файлы с SD-карты. Если у вас аварийно завершается программа или происходят иные ошибки, пожалуйста, сначала воспользуйтесь кнопкой «%2$s».</string>
-    <string name="txt_displaying_n_books_in_m_entries">отображается %1$d книг, в %2$d элементах</string>
+    <string name="txt_displaying_n_books_in_m_entries">%1$d книг, в %2$d элементах</string>
     <string name="txt_export_backup_all">Все книги, обложки, настройки и пользовательские стили будут экспортированы в архив.</string>
     <string name="X_txt_import_books_option_all_books">Будут добавлены новые книги. существующие книги будут обновлены.</string>
     <string name="X_txt_import_books_option_new_and_changed">Импортировать только новые книги или только те, что обновлены более поздно. Это удобно, когда синхронизируются несклоько устройств.</string>
@@ -477,8 +477,6 @@
     <string name="lbl_clone_style">Клонировать стиль</string>
     <string name="X_lbl_cover_long">Эскиз обложки</string>
     <string name="X_lbl_delete_book">Удалить книгу</string>
-    <string name="X_lbl_delete_series">Удаление серии</string>
-    <string name="X_lbl_delete_toc_entry">Удалить заголовок</string>
     <string name="lbl_details_have_changed">Детали были измененны</string>
     <string name="lbl_duplicate_book">Копия книги</string>
     <string name="X_lbl_edit_author">Редактирование автора</string>
@@ -495,7 +493,6 @@
     <string name="error_search_could_not_be_started">Поиск книги не удался.</string>
     <string name="lbl_search_for_books">Поиск книг</string>
     <string name="lbl_search_isbn">поиск по ISBN</string>
-    <string name="X_lbl_select_an_action">Выберете дествие</string>
     <string name="X_lbl_select_image">Выбор картинки…</string>
     <string name="X_lbl_select_style">Выбрать стиль</string>
     <string name="unknown_author">[Неизвестный автор]</string>
@@ -698,4 +695,10 @@
     <string name="disabled">Выключен</string>
     <string name="error_unsupported_version_v">Неподдерживаемая версия: %1$d</string>
     <string name="cd_clear_text_end_icon">Очистить текстовое поле</string>
+    <string name="lbl_filter">Фильтр</string>
+    <string name="lbl_add_filter">Добавить фильтр</string>
+    <string name="warning_export_contains_no_data">Экспортировать было нечего.</string>
+    <string name="warning_book_not_always_found">Не все сайты вернули достоверные данные.</string>
+    <string name="menu_book_sync_list_with_details">Синхронизировать/позиционировать список</string>
+    <string name="warning_no_site_supports_this_method">ВНИМАНИЕ: ни один из выбранных в данный момент сайтов не поддерживает поиск по %1$s. Пожалуйста, используйте меню сайта, чтобы включить альтернативные сайты, или используйте другой метод поиска.</string>
 </resources>

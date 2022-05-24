@@ -121,7 +121,7 @@
     <string name="X_lbl_failed">Απέτυχαν</string>
     <string name="X_lbl_queued">Σε σειρά</string>
     <string name="action_help">Βοήθεια</string>
-    <string name="hint_btn_drag_handle">Σύρετε με για να αναδιατάξετε αυτήν τη λίστα.</string>
+    <string name="cd_btn_drag_handle">Σύρετε με για να αναδιατάξετε αυτήν τη λίστα.</string>
     <string name="bob_empty_author">(Ο συγγραφέας λείπει)</string>
     <string name="bob_empty_field">(Κενή)</string>
     <string name="bob_empty_language">(Δεν υπάρχει πλήρης γλώσσα)</string>
@@ -132,7 +132,7 @@
     <string name="preference_not_set">Δεν έχει οριστεί</string>
     <string name="X_info_site_authorization_successful">Επιτυχής η αδειοδότηση %1$s</string>
     <string name="txt_cleanup_files">Τα προσωρινά αρχεία χρησιμοποιούν %1$s στην κάρτα SD. Αρχεία καταγραφής και άλλων δεδομένων αποθηκεύονται στην κάρτα SD σε κάθε ενημέρωση, όταν γινονται αντίγραφα ασφαλείας της βάσης δεδομένων και όταν η εφαρμογή σταματάει να λειτουργεί. Πατήστε το παρακάτω κουμπί για να καθαρίσετε αυτά τα αρχεία από την κάρτα SD. Εαν αντιμετωπίζετε διακοπές λειτουργίας ή άλλα σφάλματα, παρακαλούμε σκεφτείτε να πατήσετε πρώτα το κουμπί «%2$s».</string>
-    <string name="txt_displaying_n_books_in_m_entries">εμφανίζονται %1$d βιβλία, σε %2$d καταχωρήσεις</string>
+    <string name="txt_displaying_n_books_in_m_entries">%1$d βιβλία, σε %2$d καταχωρήσεις</string>
     <string name="txt_export_backup_all">Όλα τα βιβλία, εξώφυλλα, ρυθμίσεις και προσαρμοσμένα στυλ θα εξαχθούν στο Αρχείο.</string>
     <string name="X_txt_import_books_option_all_books">Θα προστεθούν νέα βιβλία. τα υπάρχοντα βιβλία θα ενημερωθούν.</string>
     <string name="X_txt_import_books_option_new_and_changed">Εισαγωγή μόνο βιβλίων που είναι καινούρια, ή που έχουν ενημερωθεί πιο πρόσφατα στο Αρχείο. Χρήσιμο όταν συγχρονίζετε δύο συσκευές.</string>
@@ -483,8 +483,6 @@
     <string name="X_lbl_backing_up">Δημιουργείται Αντίγραφο Ασφαλείας…</string>
     <string name="lbl_clone_style">Αντιγραφή στυλ</string>
     <string name="X_lbl_delete_book">Διαγραφή Βιβλίου</string>
-    <string name="X_lbl_delete_series">Διαγραφή Σειράς</string>
-    <string name="X_lbl_delete_toc_entry">Διαγράψτε τον τίτλο</string>
     <string name="lbl_details_have_changed">Κάποιες λεπτομέρειες έχουν αλλάξει</string>
     <string name="lbl_duplicate_book">Διπλοεγγραφή Βιβλίου</string>
     <string name="X_lbl_edit_author">Επεξεργασία Συγγραφέα</string>
@@ -501,7 +499,6 @@
     <string name="error_search_could_not_be_started">Η αναζήτηση του βιβλίου απέτυχε.</string>
     <string name="lbl_search_for_books">Αναζήτηση για βιβλία</string>
     <string name="lbl_search_isbn">ISBN Αναζήτηση</string>
-    <string name="X_lbl_select_an_action">Επιλέξτε μια ενέργεια</string>
     <string name="X_lbl_select_image">Επιλογή εικόνας…</string>
     <string name="X_lbl_select_style">Επιλογή Στυλ</string>
     <string name="unknown_author">[Άγνωστος συγγραφέας]</string>
@@ -701,4 +698,10 @@
     <string name="disabled">Απενεργοποιημένο</string>
     <string name="error_unsupported_version_v">Μη υποστηριζόμενη έκδοση: %1$d</string>
     <string name="cd_clear_text_end_icon">Διαγραφή κειμένου</string>
+    <string name="lbl_filter">Φίλτρο</string>
+    <string name="lbl_add_filter">Προσθήκη φίλτρου</string>
+    <string name="warning_export_contains_no_data">Δεν υπήρχε τίποτα για εξαγωγή.</string>
+    <string name="warning_book_not_always_found">Δεν επέστρεψαν όλοι οι ιστότοποι έγκυρα δεδομένα.</string>
+    <string name="menu_book_sync_list_with_details">Συγχρονισμός/τοποθέτηση της λίστας</string>
+    <string name="warning_no_site_supports_this_method">ΠΡΟΕΙΔΟΠΟΙΗΣΗ: κανένας από τους επιλεγμένους ιστότοπους δεν υποστηρίζει την αναζήτηση κατά %1$s. Χρησιμοποιήστε το μενού ιστότοπου για να ενεργοποιήσετε εναλλακτικούς ιστότοπους ή χρησιμοποιήστε διαφορετική μέθοδο αναζήτησης.</string>
 </resources>

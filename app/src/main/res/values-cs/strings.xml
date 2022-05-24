@@ -120,7 +120,7 @@
     <string name="X_lbl_failed">Neúspěšný</string>
     <string name="X_lbl_queued">Fronta</string>
     <string name="action_help">Nápověda</string>
-    <string name="hint_btn_drag_handle">Přetažením tohoto seznamu změníte pořadí.</string>
+    <string name="cd_btn_drag_handle">Přetažením tohoto seznamu změníte pořadí.</string>
     <string name="bob_empty_author">(Chybí autor)</string>
     <string name="bob_empty_field">(Prázdné)</string>
     <string name="bob_empty_language">(Není vyplněn žádný jazyk)</string>
@@ -131,7 +131,7 @@
     <string name="preference_not_set">Nenastaveno</string>
     <string name="X_info_site_authorization_successful">%1$s autorizace v pořádku</string>
     <string name="txt_cleanup_files">Dočasné soubory momentálně zabírají %1$s na SD kartě. Logovací soubory a další data jsou ukládána na SD kartu při každé aktualizaci, při zálohování databáze, nebo při pádu aplikace. Stiskněte tlačítko níže pro odstranění těchto dat. Pokud jste se však v minulosti setkal s pádem aplikace, nebo dalšími problémy při jejím používání, uvažujte prosím nejprve o zaslání těchto informací prostřednictvím tlačítka „%2$s“.</string>
-    <string name="txt_displaying_n_books_in_m_entries">Zobrazení %1$d knih v položkách %2$d</string>
+    <string name="txt_displaying_n_books_in_m_entries">%1$d knih ve heslech %2$d</string>
     <string name="txt_export_backup_all">Všechny knihy, obaly, předvolby a vlastní styly budou exportovány do archivu.</string>
     <string name="X_txt_import_books_option_all_books">Budou přidány nové knihy. Stávající knihy budou aktualizovány.</string>
     <string name="X_txt_import_books_option_new_and_changed">Importujte pouze knihy, které jsou nové nebo které byly aktualizovány v archivu. To je užitečné při synchronizaci dvou zařízení.</string>
@@ -477,8 +477,6 @@
     <string name="X_lbl_backing_up">Zálohování…</string>
     <string name="lbl_clone_style">Klonovat styl</string>
     <string name="X_lbl_delete_book">Smazat knihu</string>
-    <string name="X_lbl_delete_series">Smazat série</string>
-    <string name="X_lbl_delete_toc_entry">Smazat název</string>
     <string name="lbl_details_have_changed">Podrobnosti se změnily</string>
     <string name="lbl_duplicate_book">Duplicitní kniha</string>
     <string name="X_lbl_edit_author">Upravit autory</string>
@@ -495,7 +493,6 @@
     <string name="error_search_could_not_be_started">Vyhledávání knihy se nezdařilo.</string>
     <string name="lbl_search_for_books">Hledat knihy</string>
     <string name="lbl_search_isbn">Hledat ISBN</string>
-    <string name="X_lbl_select_an_action">Zvolte akci</string>
     <string name="X_lbl_select_image">Zvolit obrázek…</string>
     <string name="X_lbl_select_style">Zvolit styl</string>
     <string name="unknown_author">[Neznámý autor]</string>
@@ -698,4 +695,10 @@
     <string name="disabled">Vypnutý</string>
     <string name="error_unsupported_version_v">Nepodporovaná verze: %1$d</string>
     <string name="cd_clear_text_end_icon">Vymazat text</string>
+    <string name="lbl_filter">Filtr</string>
+    <string name="lbl_add_filter">Přidat filtr</string>
+    <string name="warning_export_contains_no_data">Nebylo co vyvážet.</string>
+    <string name="warning_book_not_always_found">Ne všechny weby vrátily platná data.</string>
+    <string name="menu_book_sync_list_with_details">Synchronizujte/umístěte seznam</string>
+    <string name="warning_no_site_supports_this_method">VAROVÁNÍ: žádná z aktuálně vybraných stránek nepodporuje vyhledávání podle %1$s. Pomocí nabídky stránek povolte alternativní stránky nebo použijte jinou metodu vyhledávání.</string>
 </resources>

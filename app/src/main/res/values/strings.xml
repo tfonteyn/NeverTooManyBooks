@@ -211,7 +211,7 @@
          Only 10 line numbers will be listed -->
     <string name="warning_import_failed_for_lines_lots">Parsing failed for lines \n%1$s\n and others.</string>
 
-    <string name="warning_export_contains_no_data">There was nothing to export</string>
+    <string name="warning_export_contains_no_data">There was nothing to export.</string>
 
     <!-- STARTING a search has failed / no attempt to search was possible; this is an error! -->
     <string name="error_search_could_not_be_started">Searching for the book failed.</string>
@@ -260,6 +260,8 @@
     <string name="warning_toc_confirm">Please confirm that these titles are (mostly) correct.</string>
     <string name="warning_backup_request">Would you like to backup your database to your sdcard?</string>
 
+    <string name="warning_no_site_supports_this_method">WARNING: none of the currently selected sites supports searching by %1$s. Please use the site menu to enable alternative sites, or use a different search method.</string>
+
     <!-- ####################################################################################### -->
     <!-- ========== Info/help messages ========== -->
     <!-- ####################################################################################### -->
@@ -270,7 +272,7 @@
     <string name="txt_thank_you">Thank you!</string>
 
     <!-- Shown in the heading of booklist. -->
-    <string name="txt_displaying_n_books_in_m_entries">Displaying %1$d books, in %2$d entries</string>
+    <string name="txt_displaying_n_books_in_m_entries">%1$d books, in %2$d entries</string>
 
     <!-- param 1: file size; param 2: button text -->
     <string name="txt_cleanup_files">
@@ -328,9 +330,9 @@
 
     <string name="confirm_unsaved_edits">You have unsaved changes, if you exit now they will be lost.</string>
 
-    <string name="confirm_delete_series">Really delete series “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the series and changing the series name to that of another series to preserve this data.</string>
-    <string name="confirm_delete_publisher">Really delete publisher “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the publisher and changing the publisher name to that of another publisher to preserve this data.</string>
-    <string name="confirm_delete_bookshelf">Really delete bookshelf “%1$s”? The books themselves will not be deleted. They will still be present on any other shelves, or on the “%2$s” shelf.</string>
+    <string name="confirm_delete_series">Delete the series “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the series and changing the series name to that of another series to preserve this data.</string>
+    <string name="confirm_delete_publisher">Delete the publisher “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the publisher and changing the publisher name to that of another publisher to preserve this data.</string>
+    <string name="confirm_delete_bookshelf">Delete the bookshelf “%1$s”? The books themselves will not be deleted. They will still be present on any other shelves, or on the “%2$s” shelf.</string>
 
     <string name="confirm_delete_toc_entry_everywhere">Really delete the title “%1$s” by %2$s? It will be deleted from all books in which it is listed. The books themselves will not be deleted.</string>
 
@@ -343,7 +345,7 @@
 
     <string name="confirm_delete_book">This will completely delete the book entitled “%1$s” by %2$s.\n\nAre you sure you want to continue?</string>
 
-    <string name="confirm_delete_style">Really delete style “%1$s”?</string>
+    <string name="confirm_delete_style">Delete the style “%1$s”?</string>
 
     <string name="confirm_merge_bookshelves">The bookshelf you are modifying already exists. Would you like to merge them?</string>
     <string name="confirm_merge_authors">The author you are modifying already exists. Would you like to merge them?</string>
@@ -961,6 +963,8 @@
     <!-- menu option on Advanced preferences -->
     <string name="menu_rebuild_index">Rebuild index</string>
 
+    <string name="menu_book_sync_list_with_details">Synchronize/position the list</string>
+
     <!-- ####################################################################################### -->
     <!-- == Button texts, must be short == -->
     <!-- ####################################################################################### -->
@@ -1066,9 +1070,11 @@
     <string name="btn_this_book">This book only</string>
     <string name="btn_all_books">All books</string>
 
-    <!-- Hint text for the drag handle button in re-order-able lists -->
-    <string name="hint_btn_drag_handle">Drag to reorder this list</string>
+    <!-- ContentDescription text for the drag handle button in re-order-able lists -->
+    <string name="cd_btn_drag_handle">Drag to reorder this list</string>
 
+    <!-- [VERIFIED] ContentDescription text -->
+    <string name="cd_clear_text_end_icon">Clear text</string>
 
     <!-- ####################################################################################### -->
     <!-- == BoB specific place holder text for empty fields.  == -->
@@ -1559,7 +1565,11 @@
     <string name="lbl_sql_query">SQL query</string>
     <string name="lbl_book_detail_screen">Book details page</string>
 
+    <string name="lbl_filter">Filter</string>
+    <string name="lbl_add_filter">Add filter</string>
 
+    <!-- [VERIFIED] Admin GROUP -->
+    <string name="lbl_advanced_options">Advanced</string>
     <!-- [VERIFIED] Admin advanced - collect debug information and prepare an email to the developers -->
     <string name="lbl_send_debug">Bug report</string>
     <!-- Admin advanced - cleanup log, temp files -->
@@ -1575,9 +1585,6 @@
     <string name="X_lbl_failed">Failed</string>
     <string name="X_lbl_queued">Queued</string>
     <string name="X_lbl_updated">Updated</string>
-
-    <!-- [VERIFIED] Admin GROUP -->
-    <string name="lbl_advanced_options">Advanced</string>
 
     <string name="X_lbl_about_sourcecode">Source Code</string>
 
@@ -1599,12 +1606,9 @@
     <!-- when warned you have unsaved edits -->
     <string name="X_btn_continue_edit">Continue Editing</string>
 
-    <string name="X_lbl_select_an_action">Select an action</string>
     <string name="X_lbl_select_style">Select Style</string>
 
     <string name="X_lbl_delete_book">Delete Book</string>
-    <string name="X_lbl_delete_series">Delete Series</string>
-    <string name="X_lbl_delete_toc_entry">Delete entry</string>
 
     <string name="X_lbl_edit_author">Edit Author</string>
     <string name="X_lbl_edit_series">Edit Series</string>
@@ -1648,18 +1652,13 @@
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
 
-
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Wishlist mapped bookshelf</string>
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>
 
-    <string name="menu_book_sync_list_with_details">Synchronize/scroll the list</string>
-    <string name="warning_no_site_supports_this_method">WARNING: none of the currently selected sites supports searching by %1$s. Please use the site menu to enable alternative sites, or use a different search method.</string>
 
-    <!-- [VERIFIED] -->
-    <string name="cd_clear_text_end_icon">Clear text</string>
+
+
     <string name="lbl_book_type">Book type</string>
-    <string name="lbl_filter">Filter</string>
-    <string name="lbl_add_filter">Add filter</string>
     <string name="lbl_logfiles">Log files</string>
     <string name="lbl_database_upgrade">Database last upgrade</string>
 
