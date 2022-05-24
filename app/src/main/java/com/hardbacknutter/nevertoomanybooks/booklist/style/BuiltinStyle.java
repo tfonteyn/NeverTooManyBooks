@@ -72,16 +72,16 @@ public final class BuiltinStyle
     private static final int ID_BOOKSHELF = -18;
     private static final int ID_DATE_LAST_UPDATE = -19;
 
+    private static final int[] Z_INT_ARRAY = new int[0];
     /**
      * Use the NEGATIVE builtin style id to get the definition for it.
      * Element 0 is not used.
      * NEVER change the order.
      * NEVER change the UUID values.
      */
-    @SuppressWarnings("ZeroLengthArrayAllocation")
     public static final List<Definition> ALL = List.of(
             // not used.
-            new Definition(0, "", 0, new int[0]),
+            new Definition(0, "", 0, Z_INT_ARRAY),
 
             new Definition(ID_AUTHOR_THEN_SERIES,
                            "6a82c4c0-48f1-4130-8a62-bbf478ffe184",
