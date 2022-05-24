@@ -35,7 +35,7 @@
     <group android:id="@id/MENU_GROUP_BLNS">
         <item
             android:id="@id/MENU_PURGE_BLNS"
-            android:icon="@drawable/ic_baseline_delete_24"
+            android:icon="@drawable/ic_baseline_wash_24"
             android:orderInCategory="@integer/MENU_ORDER_PURGE_BLNS"
             android:title="@string/lbl_purge_blns" />
     </group>
