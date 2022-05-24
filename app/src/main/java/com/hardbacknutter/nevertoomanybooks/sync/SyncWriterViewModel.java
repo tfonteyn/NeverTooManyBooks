@@ -72,7 +72,7 @@ public class SyncWriterViewModel
     }
 
     void startExport() {
-        Objects.requireNonNull(helper, "mHelper");
+        Objects.requireNonNull(helper, "helper");
         startWritingData(helper);
     }
 }

@@ -73,7 +73,7 @@ public class BooksOnBookshelfViewModel
     /** Allows to set an explicit shelf. */
     static final String BKEY_BOOKSHELF = TAG + ":bs";
 
-    private static final String ERROR_NULL_BOOKLIST = "mBooklist";
+    private static final String ERROR_NULL_BOOKLIST = "booklist";
     /** Cache for all bookshelves. */
     private final List<Bookshelf> bookshelfList = new ArrayList<>();
     private final BoBTask boBTask = new BoBTask();
@@ -518,7 +518,7 @@ public class BooksOnBookshelfViewModel
     @NonNull
     BooklistHeader getHeaderContent(@NonNull final Context context) {
         Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-        Objects.requireNonNull(bookshelf, "mBookshelf");
+        Objects.requireNonNull(bookshelf, "bookshelf");
         return new BooklistHeader(context, getStyle(context),
                                   booklist.countBooks(), booklist.countDistinctBooks(),
                                   bookshelf.getFilters(),

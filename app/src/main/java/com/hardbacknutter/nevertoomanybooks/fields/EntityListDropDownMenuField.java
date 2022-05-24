@@ -59,7 +59,7 @@ public class EntityListDropDownMenuField<T extends Entity>
         this.items = items;
         adapter = new EntityArrayAdapter<>(context, items);
 
-        SanityCheck.requirePositiveValue(adapter.getCount(), "mAdapter.getCount()");
+        SanityCheck.requirePositiveValue(adapter.getCount(), "adapter.getCount()");
     }
 
     @NonNull

@@ -451,13 +451,12 @@ public class SearchCoordinator
 
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                Log.d(TAG, "mSearchTaskListener.onFinished"
-                           + "|finished=" + searchEngineRegistry.getByEngineId(taskId)
-                                                                .getName(context));
+                Log.d(TAG, "onSearchTaskFinished|finished="
+                           + searchEngineRegistry.getByEngineId(taskId)
+                                                 .getName(context));
 
                 for (final SearchTask searchTask : activeTasks) {
-                    Log.d(TAG, "mSearchTaskListener.onFinished"
-                               + "|running="
+                    Log.d(TAG, "onSearchTaskFinished|running="
                                + searchEngineRegistry.getByEngineId(searchTask.getTaskId())
                                                      .getName(context));
                 }
@@ -489,7 +488,7 @@ public class SearchCoordinator
                     isbnSearchText = result.getString(DBKey.BOOK_ISBN, "");
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                        Log.d(TAG, "onSearchTaskFinished|mWaitingForExactCode|isbn="
+                        Log.d(TAG, "onSearchTaskFinished|waitingForExactCode|isbn="
                                    + isbnSearchText);
                     }
 
@@ -531,8 +530,8 @@ public class SearchCoordinator
             }
 
             if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "mSearchTaskListener.onFinished"
-                           + "|wasCancelled=" + cancelled.get()
+                Log.d(TAG, "onSearchTaskFinished"
+                           + "|cancelled=" + cancelled.get()
                            + "|searchErrors=" + searchErrors);
 
                 if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
@@ -546,29 +545,29 @@ public class SearchCoordinator
                                                                       .getName(context);
 
                         if (end != 0) {
-                            Log.d(TAG, String.format(Locale.ENGLISH,
-                                                     "mSearchTaskListener.onFinished"
-                                                     + "|engine=%20s:%10d ms",
-                                                     engineName,
-                                                     (end - start) / NANO_TO_MILLIS));
+                            Log.d(TAG, String.format(
+                                    Locale.ENGLISH,
+                                    "onSearchTaskFinished|engine=%20s:%10d ms",
+                                    engineName,
+                                    (end - start) / NANO_TO_MILLIS));
                         } else {
-                            Log.d(TAG, String.format(Locale.ENGLISH,
-                                                     "mSearchTaskListener.onFinished"
-                                                     + "|engine=%20s|never finished",
-                                                     engineName));
+                            Log.d(TAG, String.format(
+                                    Locale.ENGLISH,
+                                    "onSearchTaskFinished|engine=%20s|never finished",
+                                    engineName));
                         }
                     }
 
-                    Log.d(TAG, String.format(Locale.ENGLISH,
-                                             "mSearchTaskListener.onFinished"
-                                             + "|total search time: %10d ms",
-                                             (processTime - searchStartTime)
-                                             / NANO_TO_MILLIS));
-                    Log.d(TAG, String.format(Locale.ENGLISH,
-                                             "mSearchTaskListener.onFinished"
-                                             + "|processing time: %10d ms",
-                                             (System.nanoTime() - processTime)
-                                             / NANO_TO_MILLIS));
+                    Log.d(TAG, String.format(
+                            Locale.ENGLISH,
+                            "onSearchTaskFinished|total search time: %10d ms",
+                            (processTime - searchStartTime)
+                            / NANO_TO_MILLIS));
+                    Log.d(TAG, String.format(
+                            Locale.ENGLISH,
+                            "onSearchTaskFinished|processing time: %10d ms",
+                            (System.nanoTime() - processTime)
+                            / NANO_TO_MILLIS));
                 }
             }
         }
@@ -618,28 +617,6 @@ public class SearchCoordinator
             onSearchTaskFinished(taskId, null);
         }
     };
-
-    /**
-     * Clear all search criteria.
-     */
-    public void clearSearchCriteria() {
-        externalIdSearchText = null;
-        isbnSearchText = "";
-        authorSearchText = "";
-        titleSearchText = "";
-        publisherSearchText = "";
-    }
-
-    /**
-     * Search criteria.
-     *
-     * @param externalIds one or more ID's
-     *                    The key is the engine id,
-     *                    The value us the value of the external domain for that engine
-     */
-    public void setExternalIds(@Nullable final SparseArray<String> externalIds) {
-        externalIdSearchText = externalIds;
-    }
 
     @NonNull
     public String getIsbnSearchText() {

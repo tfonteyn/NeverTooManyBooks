@@ -90,7 +90,7 @@ public class CoverHandler {
     /** Log tag. */
     private static final String TAG = "CoverHandler";
 
-    /** FragmentResultListener request key. Append the mCIdx value! */
+    /** FragmentResultListener request key. Append the cIdx value! */
     private static final String RK_COVER_BROWSER = TAG + ":rk:" + CoverBrowserDialogFragment.TAG;
 
     private static final String IMAGE_MIME_TYPE = "image/*";
@@ -181,7 +181,7 @@ public class CoverHandler {
 
         vm.onFinished().observe(lifecycleOwner, message -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                Log.d(TAG, "mTransFormTaskViewModel.onFinished()|event=" + message);
+                Log.d(TAG, "vm.onFinished()|event=" + message);
             }
             hideProgress();
             message.getData().map(TaskResult::requireResult).ifPresent(this::onAfterTransform);

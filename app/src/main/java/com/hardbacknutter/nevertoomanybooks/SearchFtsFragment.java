@@ -84,23 +84,23 @@ public class SearchFtsFragment
     };
 
     /** Indicates user has changed something since the last search. */
-    private boolean mSearchIsDirty;
+    private boolean searchIsDirty;
     /** Timer reset each time the user clicks, in order to detect an idle time. */
-    private long mIdleStart;
+    private long idleStart;
     /** Timer object for background idle searches. */
     @Nullable
     private Timer mTimer;
     private SearchFtsViewModel mVm;
 
     /** View Binding. */
-    private FragmentAdvancedSearchBinding mVb;
+    private FragmentAdvancedSearchBinding vb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mVm = new ViewModelProvider(this).get(SearchFtsViewModel.class);
-        mVm.init(getArguments());
+        vm = new ViewModelProvider(this).get(SearchFtsViewModel.class);
+        vm.init(getArguments());
     }
 
     @Nullable
@@ -108,8 +108,8 @@ public class SearchFtsFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentAdvancedSearchBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentAdvancedSearchBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -119,35 +119,35 @@ public class SearchFtsFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        mToolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
+        toolbarMenuProvider = new ToolbarMenuProvider();
+        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
         toolbar.setTitle(R.string.lbl_local_search);
 
-        mVm.onSearchCriteriaUpdate().observe(getViewLifecycleOwner(), this::onSearchCriteriaUpdate);
-        mVm.onBooklistUpdate().observe(getViewLifecycleOwner(), this::onBooklistUpdate);
+        vm.onSearchCriteriaUpdate().observe(getViewLifecycleOwner(), this::onSearchCriteriaUpdate);
+        vm.onBooklistUpdate().observe(getViewLifecycleOwner(), this::onBooklistUpdate);
 
         // Detect when user touches something.
-        mVb.content.setOnTouchListener((v, event) -> {
+        vb.content.setOnTouchListener((v, event) -> {
             userIsActive(false);
             return false;
         });
 
         // Detect when user types something.
-        mVb.title.addTextChangedListener(mTextWatcher);
-        mVb.seriesTitle.addTextChangedListener(mTextWatcher);
-        mVb.author.addTextChangedListener(mTextWatcher);
-        mVb.publisher.addTextChangedListener(mTextWatcher);
-        mVb.keywords.addTextChangedListener(mTextWatcher);
+        vb.title.addTextChangedListener(textWatcher);
+        vb.seriesTitle.addTextChangedListener(textWatcher);
+        vb.author.addTextChangedListener(textWatcher);
+        vb.publisher.addTextChangedListener(textWatcher);
+        vb.keywords.addTextChangedListener(textWatcher);
 
         // Timer will be started in OnResume().
     }
 
     private void onSearchCriteriaUpdate(@NonNull final SearchCriteria criteria) {
-        mVb.title.setText(criteria.getFtsBookTitle());
-        mVb.seriesTitle.setText(criteria.getFtsSeriesTitle());
-        mVb.author.setText(criteria.getFtsAuthor());
-        mVb.publisher.setText(criteria.getFtsPublisher());
-        mVb.keywords.setText(criteria.getFtsKeywords());
+        vb.title.setText(criteria.getFtsBookTitle());
+        vb.seriesTitle.setText(criteria.getFtsSeriesTitle());
+        vb.author.setText(criteria.getFtsAuthor());
+        vb.publisher.setText(criteria.getFtsPublisher());
+        vb.keywords.setText(criteria.getFtsKeywords());
         onBooklistUpdate(criteria.getBookIdList());
     }
 
@@ -161,7 +161,7 @@ public class SearchFtsFragment
      * When the show results buttons is tapped, return and show the resulting booklist.
      */
     private void showFullResults() {
-        final Intent resultIntent = new Intent().putExtra(SearchCriteria.BKEY, mVm.getCriteria());
+        final Intent resultIntent = new Intent().putExtra(SearchCriteria.BKEY, vm.getCriteria());
         //noinspection ConstantConditions
         getActivity().setResult(Activity.RESULT_OK, resultIntent);
         getActivity().finish();
@@ -190,17 +190,17 @@ public class SearchFtsFragment
     }
 
     private void viewToModel() {
-        final SearchCriteria criteria = mVm.getCriteria();
+        final SearchCriteria criteria = vm.getCriteria();
         //noinspection ConstantConditions
-        criteria.setFtsBookTitle(mVb.title.getText().toString().trim());
+        criteria.setFtsBookTitle(vb.title.getText().toString().trim());
         //noinspection ConstantConditions
-        criteria.setFtsSeriesTitle(mVb.seriesTitle.getText().toString().trim());
+        criteria.setFtsSeriesTitle(vb.seriesTitle.getText().toString().trim());
         //noinspection ConstantConditions
-        criteria.setFtsAuthor(mVb.author.getText().toString().trim());
+        criteria.setFtsAuthor(vb.author.getText().toString().trim());
         //noinspection ConstantConditions
-        criteria.setFtsPublisher(mVb.publisher.getText().toString().trim());
+        criteria.setFtsPublisher(vb.publisher.getText().toString().trim());
         //noinspection ConstantConditions
-        criteria.setFtsKeywords(mVb.keywords.getText().toString().trim());
+        criteria.setFtsKeywords(vb.keywords.getText().toString().trim());
     }
 
     /**
@@ -211,11 +211,11 @@ public class SearchFtsFragment
     private void userIsActive(final boolean dirty) {
         synchronized (this) {
             // Mark search dirty if necessary
-            mSearchIsDirty = mSearchIsDirty || dirty;
+            searchIsDirty = searchIsDirty || dirty;
             // Reset the idle timer since the user did something
-            mIdleStart = System.nanoTime();
+            idleStart = System.nanoTime();
             // If the search is dirty, make sure idle timer is running and update UI
-            if (mSearchIsDirty) {
+            if (searchIsDirty) {
                 startIdleTimer();
             }
         }
@@ -234,14 +234,14 @@ public class SearchFtsFragment
     private void startIdleTimer() {
         // Synchronize since this is relevant to more than 1 thread.
         synchronized (this) {
-            if (mTimer != null) {
+            if (timer != null) {
                 return;
             }
-            mTimer = new Timer();
-            mIdleStart = System.nanoTime();
+            timer = new Timer();
+            idleStart = System.nanoTime();
         }
 
-        mTimer.schedule(new SearchUpdateTimer(), 0, TIMER_TICK_MS);
+        timer.schedule(new SearchUpdateTimer(), 0, TIMER_TICK_MS);
     }
 
     /**
@@ -251,8 +251,8 @@ public class SearchFtsFragment
         final Timer timer;
         // Synchronize since this is relevant to more than 1 thread.
         synchronized (this) {
-            timer = mTimer;
-            mTimer = null;
+            timer = this.timer;
+            this.timer = null;
         }
         if (timer != null) {
             timer.cancel();
@@ -272,13 +272,13 @@ public class SearchFtsFragment
             boolean doSearch = false;
             // Synchronize as we might have more than one timer running (but shouldn't)
             synchronized (this) {
-                final boolean idle = (System.nanoTime() - mIdleStart) > NANO_TO_SECONDS;
+                final boolean idle = (System.nanoTime() - idleStart) > NANO_TO_SECONDS;
                 if (idle) {
                     // Stop the timer, it will be restarted when the user changes something
                     stopIdleTimer();
-                    if (mSearchIsDirty) {
+                    if (searchIsDirty) {
                         doSearch = true;
-                        mSearchIsDirty = false;
+                        searchIsDirty = false;
                     }
                 }
             }
@@ -286,7 +286,7 @@ public class SearchFtsFragment
             if (doSearch) {
                 // we CAN actually read the Views here ?!
                 viewToModel();
-                mVm.search();
+                vm.search();
             }
         }
     }

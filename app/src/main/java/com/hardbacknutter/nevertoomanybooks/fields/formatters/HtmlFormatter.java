@@ -38,8 +38,8 @@ import java.util.regex.Pattern;
 /**
  * FieldFormatter for HTML fields.
  * <ul>
- *      <li>Multiple fields: <strong>yes</strong> with the caveat that {@link #mEnableLinks}
- *      and {@link #mConvertLineFeeds} must use the same value.</li>
+ *      <li>Multiple fields: <strong>yes</strong> with the caveat that {@link #enableLinks}
+ *      and {@link #convertLineFeeds} must use the same value.</li>
  * </ul>
  *
  * @param <T> type of Field value.
@@ -50,16 +50,16 @@ public class HtmlFormatter<T>
     private static final Pattern LINEFEED_PATTERN = Pattern.compile("\n", Pattern.LITERAL);
 
     /** Whether to make links clickable. */
-    private final boolean mEnableLinks;
+    private final boolean enableLinks;
 
-    private final boolean mConvertLineFeeds;
+    private final boolean convertLineFeeds;
 
     /**
      * Constructor.
      */
     HtmlFormatter() {
-        mEnableLinks = false;
-        mConvertLineFeeds = false;
+        enableLinks = false;
+        convertLineFeeds = false;
     }
 
     /**
@@ -71,8 +71,8 @@ public class HtmlFormatter<T>
      */
     public HtmlFormatter(final boolean enableLinks,
                          final boolean convertLineFeeds) {
-        mEnableLinks = enableLinks;
-        mConvertLineFeeds = convertLineFeeds;
+        this.enableLinks = enableLinks;
+        this.convertLineFeeds = convertLineFeeds;
     }
 
     /**
@@ -119,7 +119,7 @@ public class HtmlFormatter<T>
     public String format(@NonNull final Context context,
                          @Nullable final T rawValue) {
         if (rawValue != null) {
-            if (mConvertLineFeeds) {
+            if (convertLineFeeds) {
                 return LINEFEED_PATTERN.matcher(String.valueOf(rawValue))
                                        .replaceAll(Matcher.quoteReplacement("<br>"));
             } else {
@@ -135,7 +135,7 @@ public class HtmlFormatter<T>
 
         view.setText(linkify(format(view.getContext(), rawValue)));
 
-        if (mEnableLinks && !view.hasOnClickListeners()) {
+        if (enableLinks && !view.hasOnClickListeners()) {
             view.setMovementMethod(LinkMovementMethod.getInstance());
         }
     }

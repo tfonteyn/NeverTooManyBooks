@@ -208,7 +208,9 @@ public class TocFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final RowTocEntryBinding hVb = RowTocEntryBinding.inflate(mInflater, parent, false);
+
+            final RowTocEntryBinding hVb = RowTocEntryBinding
+                    .inflate(inflater, parent, false);
             final Holder holder = new Holder(hVb);
             initTypeButton(holder, viewType);
 

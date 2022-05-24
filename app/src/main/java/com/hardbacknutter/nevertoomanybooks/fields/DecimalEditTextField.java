@@ -77,7 +77,7 @@ public class DecimalEditTextField
 
         private static final String DIGITS = "0123456789";
         @NonNull
-        private final String mDecimalSeparator;
+        private final String decimalSeparator;
 
         /**
          * Strong reference to View is fine.
@@ -85,17 +85,17 @@ public class DecimalEditTextField
          * <strong>Note:</strong> do NOT keep a strong reference to the watcher itself!
          */
         @NonNull
-        private final EditText mView;
+        private final EditText editText;
 
         DecimalTextWatcher(@NonNull final EditText view) {
-            mView = view;
-            final Context context = mView.getContext();
+            editText = view;
+            final Context context = editText.getContext();
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             final DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(userLocale);
             final DecimalFormatSymbols symbols = nf.getDecimalFormatSymbols();
-            mDecimalSeparator = Character.toString(symbols.getDecimalSeparator());
+            decimalSeparator = Character.toString(symbols.getDecimalSeparator());
 
-            enableListener(mView.getText());
+            enableListener(editText.getText());
         }
 
         @Override
@@ -106,17 +106,17 @@ public class DecimalEditTextField
 
         private void enableListener(@Nullable final Editable editable) {
             // allow only one decimal separator
-            if (editable != null && editable.toString().contains(mDecimalSeparator)) {
-                mView.setKeyListener(DigitsKeyListener.getInstance(DIGITS));
+            if (editable != null && editable.toString().contains(decimalSeparator)) {
+                editText.setKeyListener(DigitsKeyListener.getInstance(DIGITS));
             } else {
-                mView.setKeyListener(DigitsKeyListener.getInstance(DIGITS + mDecimalSeparator));
+                editText.setKeyListener(DigitsKeyListener.getInstance(DIGITS + decimalSeparator));
             }
         }
 
 //        public static class DecimalDigitsInputFilter
 //                implements InputFilter {
 //
-//            Pattern mPattern;
+//            Pattern pattern;
 //
 //            public DecimalDigitsInputFilter(@NonNull final Context context,
 //                                            final int digitsBeforeZero,
@@ -124,7 +124,7 @@ public class DecimalEditTextField
 //                DecimalFormatSymbols d =
 //                        new DecimalFormatSymbols(AppLocale.getUserLocale(context));
 //                String s = "\\\\" + d.getDecimalSeparator();
-//                mPattern = Pattern.compile(
+//                pattern = Pattern.compile(
 //                        "[0-9]{0," + (digitsBeforeZero - 1) + "}+"
 //                        + "((" + s + "[0-9]{0," + (digitsAfterZero - 1) + "})?)"
 //                        + ""
@@ -139,7 +139,7 @@ public class DecimalEditTextField
 //                                       int dstart,
 //                                       int dend) {
 //
-//                Matcher matcher = mPattern.matcher(dest);
+//                Matcher matcher = pattern.matcher(dest);
 //                if (!matcher.matches()) {
 //                    return "";
 //                }

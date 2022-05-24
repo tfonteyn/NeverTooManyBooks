@@ -57,12 +57,12 @@ public class StartupActivity
     private static WeakReference<StartupActivity> sStartupActivity;
 
     /** The Activity ViewModel. */
-    private StartupViewModel mVm;
+    private StartupViewModel vm;
 
     /** View Binding. */
-    private ActivityStartupBinding mVb;
+    private ActivityStartupBinding vb;
 
-    private int mVolumeChangedOptionChosen;
+    private int volumeChangedOptionChosen;
 
     /**
      * Kludge to allow the database open-helper to get a reference to the currently running
@@ -93,25 +93,25 @@ public class StartupActivity
             return;
         }
 
-        mVm = new ViewModelProvider(this).get(StartupViewModel.class);
-        mVm.init(this);
+        vm = new ViewModelProvider(this).get(StartupViewModel.class);
+        vm.init(this);
 
-        mVb = ActivityStartupBinding.inflate(getLayoutInflater());
-        setContentView(mVb.getRoot());
+        vb = ActivityStartupBinding.inflate(getLayoutInflater());
+        setContentView(vb.getRoot());
 
         // Display the version.
         final PackageInfoWrapper info = PackageInfoWrapper.create(this);
-        mVb.version.setText(info.getVersionName());
+        vb.version.setText(info.getVersionName());
 
-        mVm.onProgress().observe(this, message -> message.getData().ifPresent(
+        vm.onProgress().observe(this, message -> message.getData().ifPresent(
                 data -> onProgress(data.text)));
 
         // when all tasks are done, move on to next startup-stage
-        mVm.onFinished().observe(this, message -> message.getData().ifPresent(
+        vm.onFinished().observe(this, message -> message.getData().ifPresent(
                 data -> nextStage()));
 
         // Not called for now, see {@link StartupViewModel} #mTaskListener.
-        mVm.onFailure().observe(this, message -> message.getData().ifPresent(
+        vm.onFailure().observe(this, message -> message.getData().ifPresent(
                 data -> onFailure(data.getResult())));
 
         nextStage();
@@ -121,7 +121,7 @@ public class StartupActivity
      * Startup stages.
      */
     private void nextStage() {
-        switch (mVm.getNextStartupStage(4)) {
+        switch (vm.getNextStartupStage(4)) {
             case 1:
                 initStorage();
                 break;
@@ -146,7 +146,7 @@ public class StartupActivity
                 ((App) getApplication()).setHotStart();
                 // and hand over to the real main activity
                 final Intent intent = new Intent(this, BooksOnBookshelf.class);
-                if (mVm.isProposeBackup()) {
+                if (vm.isProposeBackup()) {
                     intent.putExtra(BooksOnBookshelfViewModel.BKEY_PROPOSE_BACKUP, true);
                 }
                 startActivity(intent);
@@ -195,7 +195,7 @@ public class StartupActivity
      * When the last tasks finishes, it will trigger the next startup stage.
      */
     private void startTasks() {
-        if (!mVm.startTasks(this)) {
+        if (!vm.startTasks(this)) {
             // If no task were started, simply move to the next startup stage.
             nextStage();
         }
@@ -208,7 +208,7 @@ public class StartupActivity
      * @param message to display
      */
     public void onProgress(@Nullable final CharSequence message) {
-        mVb.progressMessage.setText(message);
+        vb.progressMessage.setText(message);
     }
 
     /**
@@ -257,9 +257,9 @@ public class StartupActivity
                 .setTitle(R.string.lbl_storage_volume)
                 // this dialog is important. Make sure the user pays some attention
                 .setCancelable(false)
-                .setSingleChoiceItems(items, 0, (d, w) -> mVolumeChangedOptionChosen = w)
+                .setSingleChoiceItems(items, 0, (d, w) -> volumeChangedOptionChosen = w)
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
-                    switch (mVolumeChangedOptionChosen) {
+                    switch (volumeChangedOptionChosen) {
                         case 0: {
                             // exit the app, and let the user insert the correct sdcard
                             finishAndRemoveTask();

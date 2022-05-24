@@ -60,7 +60,7 @@ public class StringArrayDropDownMenuField
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Passthrough, arrayResId);
 
-        SanityCheck.requirePositiveValue(adapter.getCount(), "mAdapter.getCount()");
+        SanityCheck.requirePositiveValue(adapter.getCount(), "adapter.getCount()");
     }
 
     @NonNull

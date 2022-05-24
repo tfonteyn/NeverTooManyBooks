@@ -199,7 +199,7 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
                    StorageException,
                    IOException {
 
-        SanityCheck.requireValue(recordTypes, "mRecordTypes");
+        SanityCheck.requireValue(recordTypes, "recordTypes");
 
         try {
             dataReader = createReader(context);

@@ -361,15 +361,16 @@ public class SearchBookUpdatesFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final RowUpdateFromInternetBinding vb = RowUpdateFromInternetBinding
+
+            final RowUpdateFromInternetBinding hVb = RowUpdateFromInternetBinding
                     .inflate(mInflater, parent, false);
-            final Holder holder = new Holder(vb);
+            final Holder holder = new Holder(hVb);
 
             holder.vb.cbxUsage.setOnClickListener(v -> {
                 final SyncField fs = mSyncFields[holder.getBindingAdapterPosition()];
                 fs.nextState();
-                vb.cbxUsage.setChecked(fs.getAction() != SyncAction.Skip);
-                vb.cbxUsage.setText(fs.getActionLabelResId());
+                hVb.cbxUsage.setChecked(fs.getAction() != SyncAction.Skip);
+                hVb.cbxUsage.setText(fs.getActionLabelResId());
             });
             return holder;
         }

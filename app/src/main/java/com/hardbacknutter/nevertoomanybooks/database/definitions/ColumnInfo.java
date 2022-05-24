@@ -71,8 +71,8 @@ public class ColumnInfo {
     public final String name;
     @NonNull
     public final StorageClass storageClass;
-    private final boolean mIsPrimaryKey;
-    private final boolean mNullable;
+    private final boolean primaryKey;
+    private final boolean nullable;
     @NonNull
     private final String typeName;
     @SuppressWarnings("unused")
@@ -90,23 +90,23 @@ public class ColumnInfo {
         position = cursor.getInt(0);
         name = cursor.getString(1);
         typeName = cursor.getString(2);
-        mNullable = cursor.getInt(3) == 0;
+        nullable = cursor.getInt(3) == 0;
 
         // can be null
         defaultValue = cursor.getString(4);
 
-        mIsPrimaryKey = cursor.getInt(5) == 1;
+        primaryKey = cursor.getInt(5) == 1;
 
         // derived
         storageClass = StorageClass.newInstance(typeName);
     }
 
     public boolean isNullable() {
-        return mNullable;
+        return nullable;
     }
 
     public boolean isPrimaryKey() {
-        return mIsPrimaryKey;
+        return primaryKey;
     }
 
     /**
@@ -145,11 +145,11 @@ public class ColumnInfo {
     public String toString() {
         return "\nColumnInfo{"
                + "name=`" + name + '`'
-               + ", mIsPrimaryKey=" + mIsPrimaryKey
+               + ", primaryKey=" + primaryKey
                + ", storageClass=" + storageClass
                + ", position=" + position
                + ", typeName=`" + typeName + '`'
-               + ", mNullable=" + mNullable
+               + ", nullable=" + nullable
                + ", defaultValue=`" + defaultValue + '`'
                + '}';
     }

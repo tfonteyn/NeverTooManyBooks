@@ -65,7 +65,7 @@ public class SyncWriterHelper
 
     @NonNull
     public SyncServer getSyncServer() {
-        return Objects.requireNonNull(syncServer, "mSyncServer");
+        return Objects.requireNonNull(syncServer, "syncServer");
     }
 
     public void setSyncServer(@NonNull final SyncServer syncServer) {
@@ -95,7 +95,7 @@ public class SyncWriterHelper
                    StorageException,
                    IOException {
 
-        Objects.requireNonNull(syncServer, "mSyncServer");
+        Objects.requireNonNull(syncServer, "syncServer");
 
         try {
             dataWriter = syncServer.createWriter(context, this);
@@ -115,9 +115,9 @@ public class SyncWriterHelper
     public String toString() {
         return "SyncWriterHelper{"
                + super.toString()
-               + ", mSyncServer=" + syncServer
-               + ", mDeleteLocalBooks=" + deleteLocalBooks
-               + ", mExtraArgs=" + extraArgs
+               + ", syncServer=" + syncServer
+               + ", deleteLocalBooks=" + deleteLocalBooks
+               + ", extraArgs=" + extraArgs
                + '}';
     }
 }

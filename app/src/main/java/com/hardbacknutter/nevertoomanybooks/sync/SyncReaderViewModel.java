@@ -51,12 +51,12 @@ public class SyncReaderViewModel
     @Override
     @NonNull
     public SyncReaderHelper getDataReaderHelper() {
-        return Objects.requireNonNull(syncReaderHelper, "mHelper");
+        return Objects.requireNonNull(syncReaderHelper, "syncReaderHelper");
     }
 
     @Override
     public boolean isReadyToGo() {
-        Objects.requireNonNull(syncReaderHelper, "mSyncReaderHelper");
+        Objects.requireNonNull(syncReaderHelper, "syncReaderHelper");
 
         switch (syncReaderHelper.getSyncServer()) {
             case CalibreCS: {

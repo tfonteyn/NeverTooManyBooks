@@ -571,7 +571,7 @@ public class CalibreContentServer
         }
 
         // Sanity check
-        Objects.requireNonNull(defaultLibrary, "mDefaultLibrary");
+        Objects.requireNonNull(defaultLibrary, "defaultLibrary");
     }
 
     private void processVirtualLibraries(@NonNull final CalibreLibraryDao dao,
@@ -647,7 +647,7 @@ public class CalibreContentServer
      */
     @NonNull
     public CalibreLibrary getDefaultLibrary() {
-        return Objects.requireNonNull(defaultLibrary, "mDefaultLibrary");
+        return Objects.requireNonNull(defaultLibrary, "defaultLibrary");
     }
 
     /**

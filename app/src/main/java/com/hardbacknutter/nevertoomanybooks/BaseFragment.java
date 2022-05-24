@@ -33,38 +33,38 @@ import java.util.Objects;
 public abstract class BaseFragment
         extends Fragment {
 
-    private View mProgressFrame;
-    private Toolbar mToolbar;
-    private FloatingActionButton mFab;
+    private View progressFrame;
+    private Toolbar toolbar;
+    private FloatingActionButton fab;
 
     @NonNull
     protected View getProgressFrame() {
-        if (mProgressFrame == null) {
+        if (progressFrame == null) {
             //noinspection ConstantConditions
-            mProgressFrame = Objects.requireNonNull(getActivity().findViewById(R.id.progress_frame),
-                                                    "R.id.progress_frame");
+            progressFrame = Objects.requireNonNull(getActivity().findViewById(R.id.progress_frame),
+                                                   "R.id.progress_frame");
         }
-        return mProgressFrame;
+        return progressFrame;
     }
 
     @NonNull
     protected Toolbar getToolbar() {
-        if (mToolbar == null) {
+        if (toolbar == null) {
             //noinspection ConstantConditions
-            mToolbar = Objects.requireNonNull(getActivity().findViewById(R.id.toolbar),
-                                              "R.id.toolbar");
+            toolbar = Objects.requireNonNull(getActivity().findViewById(R.id.toolbar),
+                                             "R.id.toolbar");
         }
-        return mToolbar;
+        return toolbar;
     }
 
     @NonNull
     protected FloatingActionButton getFab() {
-        if (mFab == null) {
+        if (fab == null) {
             //noinspection ConstantConditions
-            mFab = Objects.requireNonNull(getActivity().findViewById(R.id.fab),
-                                          "R.id.fab");
+            fab = Objects.requireNonNull(getActivity().findViewById(R.id.fab),
+                                         "R.id.fab");
         }
-        return mFab;
+        return fab;
     }
 
     protected void replaceFragment(@NonNull final Fragment fragment,

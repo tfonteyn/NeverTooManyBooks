@@ -211,7 +211,7 @@ public class CoverBrowserDialogFragment
      * Show the user a selection of other covers and allow selection of a replacement.
      */
     private void showGallery(@Nullable final Collection<String> result) {
-        Objects.requireNonNull(galleryAdapter, "mGalleryAdapter");
+        Objects.requireNonNull(galleryAdapter, "galleryAdapter");
 
         if (result == null || result.isEmpty()) {
             vb.progressBar.hide();
@@ -236,7 +236,7 @@ public class CoverBrowserDialogFragment
      * @param imageFileInfo to display
      */
     private void setGalleryImage(@Nullable final ImageFileInfo imageFileInfo) {
-        Objects.requireNonNull(galleryAdapter, "mGalleryAdapter");
+        Objects.requireNonNull(galleryAdapter, "galleryAdapter");
 
         final int editionIndex;
         if (imageFileInfo != null) {
@@ -283,7 +283,7 @@ public class CoverBrowserDialogFragment
      */
     private void onGalleryImageSelected(@NonNull final ImageFileInfo imageFileInfo) {
         imageFileInfo.getFile().ifPresent(file -> {
-            if (ImageFileInfo.Size.Large == imageFileInfo.getSize()) {
+            if (Size.Large == imageFileInfo.getSize()) {
                 // the gallery image IS a valid large image, so just display it
                 setSelectedImage(imageFileInfo);
             } else {
@@ -330,8 +330,8 @@ public class CoverBrowserDialogFragment
             implements FragmentResultListener {
 
         private static final String COVER_FILE_SPEC = "fileSpec";
-        private String mRequestKey;
-        private FragmentManager mFragmentManager;
+        private String requestKey;
+        private FragmentManager fragmentManager;
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
@@ -353,22 +353,22 @@ public class CoverBrowserDialogFragment
                            @IntRange(from = 0, to = 1) final int cIdx) {
 
             final Bundle args = new Bundle(4);
-            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+            args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putString(DBKey.TITLE, bookTitle);
             args.putString(DBKey.BOOK_ISBN, isbn);
             args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);
 
             final DialogFragment fragment = new CoverBrowserDialogFragment();
             fragment.setArguments(args);
-            fragment.show(mFragmentManager, TAG);
+            fragment.show(fragmentManager, TAG);
         }
 
         public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
                                               @NonNull final String requestKey,
                                               @NonNull final LifecycleOwner lifecycleOwner) {
-            mFragmentManager = fragmentManager;
-            mRequestKey = requestKey;
-            mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
+            this.fragmentManager = fragmentManager;
+            this.requestKey = requestKey;
+            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
         }
 
         @Override
@@ -412,12 +412,12 @@ public class CoverBrowserDialogFragment
         private static final String TAG = "GalleryAdapter";
 
         /** A single image fixed width. */
-        private final int mMaxWidth;
+        private final int maxWidth;
         /** A single image fixed height. */
-        private final int mMaxHeight;
+        private final int maxHeight;
 
         @NonNull
-        private final ImageViewLoader mImageLoader;
+        private final ImageViewLoader imageLoader;
 
         /**
          * Constructor.
@@ -427,19 +427,20 @@ public class CoverBrowserDialogFragment
         @SuppressWarnings("SameParameterValue")
         GalleryAdapter(@NonNull final Executor executor) {
             final Resources res = getResources();
-            mMaxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_gallery_width);
-            mMaxHeight = res.getDimensionPixelSize(R.dimen.cover_browser_gallery_height);
+            maxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_gallery_width);
+            maxHeight = res.getDimensionPixelSize(R.dimen.cover_browser_gallery_height);
 
-            mImageLoader = new ImageViewLoader(executor, mMaxWidth, mMaxHeight);
+            imageLoader = new ImageViewLoader(executor, maxWidth, maxHeight);
         }
 
         @Override
         @NonNull
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final RowCoverBrowserGalleryBinding vb = RowCoverBrowserGalleryBinding
+
+            final RowCoverBrowserGalleryBinding hVb = RowCoverBrowserGalleryBinding
                     .inflate(getLayoutInflater(), parent, false);
-            return new Holder(vb, mMaxWidth, mMaxHeight);
+            return new Holder(hVb, maxWidth, maxHeight);
         }
 
         @Override
@@ -460,8 +461,8 @@ public class CoverBrowserDialogFragment
 
             if (imageFileInfo == null) {
                 // not in the cache,; use a placeholder but preserve the available space
-                mImageLoader.placeholder(holder.vb.coverImage0,
-                                         R.drawable.ic_baseline_image_24);
+                imageLoader.placeholder(holder.vb.coverImage0,
+                                        R.drawable.ic_baseline_image_24);
                 // and queue a request for it.
                 vm.fetchGalleryImage(isbn);
                 holder.vb.lblSite.setText("");
@@ -471,7 +472,7 @@ public class CoverBrowserDialogFragment
                 final Optional<File> file = imageFileInfo.getFile();
                 if (file.isPresent()) {
                     // YES, load it into the view.
-                    mImageLoader.fromFile(holder.vb.coverImage0, file.get(), null);
+                    imageLoader.fromFile(holder.vb.coverImage0, file.get(), null);
 
                     // keep this statement here, or we would need to call file.exists() twice
                     holder.vb.coverImage0.setOnClickListener(
@@ -486,8 +487,8 @@ public class CoverBrowserDialogFragment
                     // no file. Theoretically we should not get here,
                     // as a failed search should have removed the isbn from the edition list,
                     // but race-conditions + paranoia...
-                    mImageLoader.placeholder(holder.vb.coverImage0,
-                                             R.drawable.ic_baseline_broken_image_24);
+                    imageLoader.placeholder(holder.vb.coverImage0,
+                                            R.drawable.ic_baseline_broken_image_24);
                     holder.vb.lblSite.setText("");
                 }
             }

@@ -58,24 +58,24 @@ public class SearchBookByIsbnViewModel
     private static final int BUFFER_SIZE = 65535;
 
     /** The batch mode queue. */
-    private final List<ISBN> mScanQueue = new ArrayList<>();
+    private final List<ISBN> scanQueue = new ArrayList<>();
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    private final Bundle mResultData = ServiceLocator.newBundle();
+    private final Bundle resultData = ServiceLocator.newBundle();
 
     /** Database Access. */
-    private BookDao mBookDao;
+    private BookDao bookDao;
 
     @NonNull
-    private ScanMode mScannerMode = ScanMode.Off;
+    private ScanMode scannerMode = ScanMode.Off;
 
     /** Only start the scanner automatically upon the very first start of the fragment. */
-    private boolean mFirstStart = true;
+    private boolean firstStart = true;
 
     @NonNull
     public Bundle getResultData() {
-        return mResultData;
+        return resultData;
     }
 
     /**
@@ -84,13 +84,13 @@ public class SearchBookByIsbnViewModel
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@Nullable final Bundle args) {
-        if (mBookDao == null) {
-            mBookDao = ServiceLocator.getInstance().getBookDao();
+        if (bookDao == null) {
+            bookDao = ServiceLocator.getInstance().getBookDao();
 
             if (args != null) {
                 final ScanMode scanMode = args.getParcelable(BKEY_SCAN_MODE);
                 if (scanMode != null) {
-                    mScannerMode = scanMode;
+                    scannerMode = scanMode;
                 }
             }
         }
@@ -102,8 +102,8 @@ public class SearchBookByIsbnViewModel
      * @return flag
      */
     boolean isAutoStart() {
-        if ((mScannerMode != ScanMode.Off) && mFirstStart) {
-            mFirstStart = false;
+        if ((scannerMode != ScanMode.Off) && firstStart) {
+            firstStart = false;
             return true;
         }
         return false;
@@ -111,24 +111,24 @@ public class SearchBookByIsbnViewModel
 
     @NonNull
     List<ISBN> getScanQueue() {
-        return mScanQueue;
+        return scanQueue;
     }
 
     @NonNull
     ScanMode getScannerMode() {
-        return mScannerMode;
+        return scannerMode;
     }
 
     void setScannerMode(@NonNull final ScanMode scannerMode) {
-        mScannerMode = scannerMode;
-        if (mScannerMode == ScanMode.Single || mScannerMode == ScanMode.Batch) {
-            mScanQueue.clear();
+        this.scannerMode = scannerMode;
+        if (this.scannerMode == ScanMode.Single || this.scannerMode == ScanMode.Batch) {
+            scanQueue.clear();
         }
     }
 
     void addToQueue(@NonNull final ISBN code) {
-        if (!mScanQueue.contains(code)) {
-            mScanQueue.add(code);
+        if (!scanQueue.contains(code)) {
+            scanQueue.add(code);
         }
     }
 
@@ -156,12 +156,12 @@ public class SearchBookByIsbnViewModel
                 try (Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
                      BufferedReader reader = new BufferedReader(isr, BUFFER_SIZE)) {
 
-                    mScanQueue.addAll(
+                    scanQueue.addAll(
                             reader.lines()
                                   .distinct()
                                   .map(s -> new ISBN(s, strictIsbn))
                                   .filter(isbn -> isbn.isValid(strictIsbn))
-                                  .filter(isbn -> !mScanQueue.contains(isbn))
+                                  .filter(isbn -> !scanQueue.contains(isbn))
                                   .collect(Collectors.toList()));
 
                 } catch (@NonNull final UncheckedIOException e) {
@@ -175,7 +175,7 @@ public class SearchBookByIsbnViewModel
 
     @NonNull
     ArrayList<Pair<Long, String>> getBookIdAndTitlesByIsbn(@NonNull final ISBN code) {
-        return mBookDao.getBookIdAndTitleByIsbn(code);
+        return bookDao.getBookIdAndTitleByIsbn(code);
     }
 
     public enum ScanMode
@@ -210,7 +210,7 @@ public class SearchBookByIsbnViewModel
         @Override
         public void writeToParcel(@NonNull final Parcel dest,
                                   final int flags) {
-            dest.writeInt(this.ordinal());
+            dest.writeInt(ordinal());
         }
     }
 }

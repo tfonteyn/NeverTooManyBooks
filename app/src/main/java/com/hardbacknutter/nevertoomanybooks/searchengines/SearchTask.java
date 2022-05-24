@@ -193,19 +193,19 @@ public class SearchTask
         final Bundle bookData;
         switch (by) {
             case ExternalId:
-                SanityCheck.requireValue(externalId, "mExternalId");
+                SanityCheck.requireValue(externalId, "externalId");
                 bookData = ((SearchEngine.ByExternalId) searchEngine)
                         .searchByExternalId(context, externalId, fetchCovers);
                 break;
 
             case Isbn:
-                SanityCheck.requireValue(isbnStr, "mIsbnStr");
+                SanityCheck.requireValue(isbnStr, "isbnStr");
                 bookData = ((SearchEngine.ByIsbn) searchEngine)
                         .searchByIsbn(context, isbnStr, fetchCovers);
                 break;
 
             case Barcode:
-                SanityCheck.requireValue(isbnStr, "mIsbnStr");
+                SanityCheck.requireValue(isbnStr, "isbnStr");
                 bookData = ((SearchEngine.ByBarcode) searchEngine)
                         .searchByBarcode(context, isbnStr, fetchCovers);
                 break;

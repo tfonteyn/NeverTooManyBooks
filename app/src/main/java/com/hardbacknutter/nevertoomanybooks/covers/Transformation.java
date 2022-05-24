@@ -42,14 +42,14 @@ class Transformation {
     private static final String TAG = "Transformation";
 
     @NonNull
-    private final File mSrcFile;
+    private final File srcFile;
 
-    private int mMaxWidth = ImageUtils.MAX_IMAGE_WIDTH_PX;
-    private int mMaxHeight = ImageUtils.MAX_IMAGE_HEIGHT_PX;
-    private boolean mScale;
+    private int maxWidth = ImageUtils.MAX_IMAGE_WIDTH_PX;
+    private int maxHeight = ImageUtils.MAX_IMAGE_HEIGHT_PX;
+    private boolean scale;
 
-    private int mExplicitRotation;
-    private int mSurfaceRotation;
+    private int explicitRotation;
+    private int surfaceRotation;
 
     /**
      * Constructor.
@@ -59,7 +59,7 @@ class Transformation {
      * @param file to transform; The file will not be modified.
      */
     Transformation(@NonNull final File file) {
-        mSrcFile = file;
+        srcFile = file;
     }
 
     /**
@@ -71,7 +71,7 @@ class Transformation {
      */
     @NonNull
     Transformation setScale(final boolean scale) {
-        mScale = scale;
+        this.scale = scale;
         return this;
     }
 
@@ -87,9 +87,9 @@ class Transformation {
     @NonNull
     Transformation setScale(final int width,
                             final int height) {
-        mMaxWidth = width;
-        mMaxHeight = height;
-        mScale = true;
+        maxWidth = width;
+        maxHeight = height;
+        scale = true;
         return this;
     }
 
@@ -102,7 +102,7 @@ class Transformation {
      */
     @NonNull
     Transformation setRotation(final int rotation) {
-        mExplicitRotation = rotation;
+        explicitRotation = rotation;
         return this;
     }
 
@@ -118,17 +118,17 @@ class Transformation {
     Transformation setSurfaceRotation(final int surfaceRotation) {
         switch (surfaceRotation) {
             case Surface.ROTATION_0:
-                mSurfaceRotation = 90;
+                this.surfaceRotation = 90;
                 break;
 
             case Surface.ROTATION_180:
-                mSurfaceRotation = -90;
+                this.surfaceRotation = -90;
                 break;
 
             case Surface.ROTATION_90:
             case Surface.ROTATION_270:
             default:
-                mSurfaceRotation = 0;
+                this.surfaceRotation = 0;
                 break;
         }
 
@@ -146,25 +146,25 @@ class Transformation {
         // Read either a scaled down version (but NOT exact dimensions),
         // or the original version.
         final Bitmap bitmap;
-        if (mScale) {
-            bitmap = ImageUtils.decodeFile(mSrcFile, mMaxWidth, mMaxHeight);
+        if (scale) {
+            bitmap = ImageUtils.decodeFile(srcFile, maxWidth, maxHeight);
         } else {
-            bitmap = BitmapFactory.decodeFile(mSrcFile.getAbsolutePath());
+            bitmap = BitmapFactory.decodeFile(srcFile.getAbsolutePath());
         }
 
         if (bitmap != null) {
             final int angle;
-            if (mExplicitRotation != 0) {
+            if (explicitRotation != 0) {
                 // just use the explicit value, ignore device and source file rotation
-                angle = mExplicitRotation;
+                angle = explicitRotation;
             } else {
                 // Try to adjust the rotation automatically:
-                final int exifAngle = getExifAngle(mSrcFile);
-                angle = mSurfaceRotation - exifAngle;
+                final int exifAngle = getExifAngle(srcFile);
+                angle = surfaceRotation - exifAngle;
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                     Log.d(TAG, "exif=" + exifAngle
-                               + "|mSurfaceRotation=" + mSurfaceRotation
+                               + "|mSurfaceRotation=" + surfaceRotation
                                + "|angle=" + angle
                                + "|(angle % 360)=" + angle % 360);
                 }

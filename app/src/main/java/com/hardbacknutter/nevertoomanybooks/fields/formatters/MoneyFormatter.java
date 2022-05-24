@@ -49,7 +49,7 @@ public class MoneyFormatter
     /** Log tag. */
     private static final String TAG = "MoneyFormatter";
     @NonNull
-    private final Locale mLocale;
+    private final Locale locale;
 
     /**
      * Constructor.
@@ -57,7 +57,7 @@ public class MoneyFormatter
      * @param locale to use
      */
     public MoneyFormatter(@NonNull final Locale locale) {
-        mLocale = locale;
+        this.locale = locale;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class MoneyFormatter
         }
 
         try {
-            final DecimalFormat nf = (DecimalFormat) DecimalFormat.getCurrencyInstance(mLocale);
+            final DecimalFormat nf = (DecimalFormat) DecimalFormat.getCurrencyInstance(locale);
             nf.setCurrency(currency);
             return nf.format(rawValue.getValue());
 

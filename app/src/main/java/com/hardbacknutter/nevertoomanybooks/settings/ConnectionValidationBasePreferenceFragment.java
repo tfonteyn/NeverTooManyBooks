@@ -95,7 +95,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
     }
 
     private void proposeValidation() {
-        Objects.requireNonNull(pkEnabled, "mPkEnabled");
+        Objects.requireNonNull(pkEnabled, "pkEnabled");
         final SwitchPreference sp = findPreference(pkEnabled);
         //noinspection ConstantConditions
         if (sp.isChecked()) {

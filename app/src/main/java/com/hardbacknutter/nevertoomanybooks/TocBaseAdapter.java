@@ -46,13 +46,13 @@ public abstract class TocBaseAdapter
         implements FastScroller.PopupTextProvider {
 
     /** Cached inflater. */
-    protected final LayoutInflater mInflater;
+    protected final LayoutInflater inflater;
     @NonNull
-    protected final List<AuthorWork> mAuthorWorkList;
-    private final String mBookStr;
-    private final Drawable mBookEntryIcon;
-    private final String mMultipleBooksStr;
-    private final Drawable mTocEntryIcon;
+    protected final List<AuthorWork> authorWorkList;
+    private final String bookStr;
+    private final Drawable bookEntryIcon;
+    private final String multipleBooksStr;
+    private final Drawable tocEntryIcon;
 
     /**
      * Constructor.
@@ -63,18 +63,18 @@ public abstract class TocBaseAdapter
     @SuppressLint("UseCompatLoadingForDrawables")
     public TocBaseAdapter(@NonNull final Context context,
                           @NonNull final List<AuthorWork> authorWorkList) {
-        mInflater = LayoutInflater.from(context);
-        mAuthorWorkList = authorWorkList;
+        inflater = LayoutInflater.from(context);
+        this.authorWorkList = authorWorkList;
 
         final Resources.Theme theme = context.getTheme();
         final Resources res = context.getResources();
 
         // The entry is an actual book
-        mBookStr = res.getString(R.string.lbl_book);
-        mBookEntryIcon = res.getDrawable(R.drawable.ic_baseline_book_24, theme);
+        bookStr = res.getString(R.string.lbl_book);
+        bookEntryIcon = res.getDrawable(R.drawable.ic_baseline_book_24, theme);
         // The entry is a story (etc...) which appears in multiple books.
-        mMultipleBooksStr = res.getString(R.string.tip_authors_works_multiple_books);
-        mTocEntryIcon = res.getDrawable(R.drawable.ic_baseline_library_books_24, theme);
+        multipleBooksStr = res.getString(R.string.tip_authors_works_multiple_books);
+        tocEntryIcon = res.getDrawable(R.drawable.ic_baseline_library_books_24, theme);
     }
 
     protected void initTypeButton(@NonNull final TocHolder holder,
@@ -82,12 +82,12 @@ public abstract class TocBaseAdapter
         final ImageButton btnType = holder.getIconBtnView();
 
         if (viewType == AuthorWork.Type.TocEntry.value) {
-            btnType.setImageDrawable(mTocEntryIcon);
-            btnType.setContentDescription(mMultipleBooksStr);
+            btnType.setImageDrawable(tocEntryIcon);
+            btnType.setContentDescription(multipleBooksStr);
 
             btnType.setOnClickListener(v -> {
                 final Context context = v.getContext();
-                final String titles = mAuthorWorkList
+                final String titles = authorWorkList
                         .get(holder.getBindingAdapterPosition())
                         .getBookTitles(context)
                         .stream()
@@ -103,8 +103,8 @@ public abstract class TocBaseAdapter
         } else {
             // AuthorWork.Type.Book
             // AuthorWork.Type.BookLight
-            btnType.setImageDrawable(mBookEntryIcon);
-            btnType.setContentDescription(mBookStr);
+            btnType.setImageDrawable(bookEntryIcon);
+            btnType.setContentDescription(bookStr);
         }
     }
 
@@ -112,9 +112,9 @@ public abstract class TocBaseAdapter
     public void onBindViewHolder(@NonNull final TocHolder holder,
                                  final int position) {
 
-        final Context context = mInflater.getContext();
+        final Context context = inflater.getContext();
 
-        final AuthorWork work = mAuthorWorkList.get(position);
+        final AuthorWork work = authorWorkList.get(position);
 
         // No icon for TocEntry which appear in a single book
         if (work.getWorkType() == AuthorWork.Type.TocEntry && work.getBookCount() <= 1) {
@@ -141,26 +141,26 @@ public abstract class TocBaseAdapter
         if (authorView != null) {
             final Author author = work.getPrimaryAuthor();
             if (author != null) {
-                authorView.setText(author.getLabel(mInflater.getContext()));
+                authorView.setText(author.getLabel(inflater.getContext()));
             }
         }
     }
 
     @Override
     public int getItemViewType(final int position) {
-        final AuthorWork work = mAuthorWorkList.get(position);
+        final AuthorWork work = authorWorkList.get(position);
         return work.getWorkType().value;
     }
 
     @Override
     public int getItemCount() {
-        return mAuthorWorkList.size();
+        return authorWorkList.size();
     }
 
     @NonNull
     @Override
     public String[] getPopupText(final int position) {
-        return new String[]{mAuthorWorkList.get(position).getLabel(mInflater.getContext())};
+        return new String[]{authorWorkList.get(position).getLabel(inflater.getContext())};
     }
 
     public abstract static class TocHolder

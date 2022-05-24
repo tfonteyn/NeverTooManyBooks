@@ -135,8 +135,8 @@ public class CalibreVirtualLibrary
     public String toString() {
         return "CalibreVirtualLibrary{"
                + super.toString()
-               + ", mLibraryId=" + libraryId
-               + ", mExpr=" + searchExpression
+               + ", libraryId=" + libraryId
+               + ", searchExpression=" + searchExpression
                + '}';
     }
 }

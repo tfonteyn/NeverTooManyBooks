@@ -76,7 +76,7 @@ public class CalibreCustomField
     @NonNull
     public final String type;
     /** Row ID. */
-    private long mId;
+    private long id;
 
     /**
      * Constructor without ID.
@@ -97,7 +97,7 @@ public class CalibreCustomField
      */
     public CalibreCustomField(final long id,
                               @NonNull final DataHolder rowData) {
-        mId = id;
+        this.id = id;
         calibreKey = rowData.getString(DBKey.CALIBRE_CUSTOM_FIELD_NAME);
         type = rowData.getString(DBKey.CALIBRE_CUSTOM_FIELD_TYPE);
         dbKey = rowData.getString(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING);
@@ -109,7 +109,7 @@ public class CalibreCustomField
      * @param in Parcel to construct the object from
      */
     private CalibreCustomField(@NonNull final Parcel in) {
-        mId = in.readLong();
+        id = in.readLong();
         //noinspection ConstantConditions
         calibreKey = in.readString();
         //noinspection ConstantConditions
@@ -119,17 +119,17 @@ public class CalibreCustomField
     }
 
     public long getId() {
-        return mId;
+        return id;
     }
 
     public void setId(final long id) {
-        mId = id;
+        this.id = id;
     }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeLong(mId);
+        dest.writeLong(id);
         dest.writeString(calibreKey);
         dest.writeString(dbKey);
         dest.writeString(type);
@@ -144,7 +144,7 @@ public class CalibreCustomField
     @NonNull
     public String toString() {
         return "CalibreCustomField{"
-               + "mId=" + mId
+               + "id=" + id
                + ", calibreKey=`" + calibreKey + '`'
                + ", dbKey=`" + dbKey + '`'
                + ", type=`" + type + '`'

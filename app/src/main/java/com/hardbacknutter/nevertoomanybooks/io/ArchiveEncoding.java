@@ -107,8 +107,8 @@ public enum ArchiveEncoding
 
     /** The <strong>proposed</strong> archive filename extension to write to. */
     @NonNull
-    private final String mFileExt;
-    private final int mSelectorResId;
+    private final String fileExt;
+    private final int selectorResId;
     private final int shortDescResId;
 
     /**
@@ -119,8 +119,8 @@ public enum ArchiveEncoding
     ArchiveEncoding(@NonNull final String fileExt,
                     final int selectorResId,
                     final int shortDescResId) {
-        mFileExt = fileExt;
-        mSelectorResId = selectorResId;
+        this.fileExt = fileExt;
+        this.selectorResId = selectorResId;
         this.shortDescResId = shortDescResId;
     }
 
@@ -251,12 +251,12 @@ public enum ArchiveEncoding
      */
     @NonNull
     public String getFileExt() {
-        return mFileExt;
+        return fileExt;
     }
 
     @StringRes
     public int getSelectorResId() {
-        return mSelectorResId;
+        return selectorResId;
     }
 
     @StringRes
@@ -362,6 +362,6 @@ public enum ArchiveEncoding
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeInt(this.ordinal());
+        dest.writeInt(ordinal());
     }
 }

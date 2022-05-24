@@ -42,14 +42,14 @@ class FetchImageTask
     private static final String TAG = "FetchImageTask";
 
     @NonNull
-    private final String mIsbn;
+    private final String isbn;
 
     @NonNull
-    private final FileManager mFileManager;
+    private final FileManager fileManager;
     /** Image index we're handling. */
-    private final int mCIdx;
+    private final int cIdx;
     @NonNull
-    private final ImageFileInfo.Size[] mSizes;
+    private final Size[] sizes;
 
     /**
      * Constructor.
@@ -68,18 +68,18 @@ class FetchImageTask
                    @IntRange(from = 0, to = 1) final int cIdx,
                    @NonNull final FileManager fileManager,
                    @NonNull final TaskListener<ImageFileInfo> taskListener,
-                   @NonNull final ImageFileInfo.Size... sizes) {
+                   @NonNull final Size... sizes) {
         super(taskId, TAG, taskListener);
-        mCIdx = cIdx;
-        mSizes = sizes;
+        this.cIdx = cIdx;
+        this.sizes = sizes;
 
         // sanity check
         if (BuildConfig.DEBUG /* always */) {
             ISBN.requireValidIsbn(validIsbn);
         }
 
-        mIsbn = validIsbn;
-        mFileManager = fileManager;
+        isbn = validIsbn;
+        this.fileManager = fileManager;
     }
 
     public void start() {
@@ -93,14 +93,14 @@ class FetchImageTask
             throws StorageException {
         // We need to catch the exceptions we really want to thrown, but catch all others.
         try {
-            return mFileManager.search(context, this, mIsbn, mCIdx, mSizes);
+            return fileManager.search(context, this, isbn, cIdx, sizes);
 
         } catch (@NonNull final StorageException e) {
             throw e;
 
         } catch (@NonNull final Exception ignore) {
             // failing is ok, but we need to return the isbn + null fileSpec
-            return new ImageFileInfo(mIsbn);
+            return new ImageFileInfo(isbn);
         }
     }
 }

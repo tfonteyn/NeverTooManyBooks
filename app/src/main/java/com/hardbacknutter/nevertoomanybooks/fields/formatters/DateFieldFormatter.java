@@ -51,7 +51,7 @@ public class DateFieldFormatter
         implements EditFieldFormatter<String> {
 
     @NonNull
-    private final Locale mLocale;
+    private final Locale locale;
 
     /**
      * Constructor.
@@ -59,7 +59,7 @@ public class DateFieldFormatter
      * @param locale to use
      */
     public DateFieldFormatter(@NonNull final Locale locale) {
-        mLocale = locale;
+        this.locale = locale;
     }
 
     /**
@@ -74,7 +74,7 @@ public class DateFieldFormatter
         if (rawValue == null || rawValue.isEmpty()) {
             return "";
         } else {
-            return new PartialDate(rawValue).toDisplay(mLocale, rawValue);
+            return new PartialDate(rawValue).toDisplay(locale, rawValue);
         }
     }
 

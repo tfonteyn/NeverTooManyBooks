@@ -125,10 +125,10 @@ public final class SyncReaderHelper
     public String toString() {
         return "SyncReaderHelper{"
                + super.toString()
-               + ", mSyncDate=" + syncDate
-               + ", mExtraArgs=" + extraArgs
-               + ", mSyncProcessor=" + syncProcessor
-               + ", mSyncServer=" + syncServer
+               + ", syncDate=" + syncDate
+               + ", extraArgs=" + extraArgs
+               + ", syncProcessor=" + syncProcessor
+               + ", syncServer=" + syncServer
                + '}';
     }
 }

@@ -77,52 +77,52 @@ public class CropImageView
     private static final int ZOOM_FACTOR = 4;
 
     /** This is the base transformation which is used to show the image initially. */
-    private final Matrix mBaseMatrix = new Matrix();
+    private final Matrix baseMatrix = new Matrix();
     /**
      * This is the supplementary transformation which reflects what
      * the user has done in terms of zooming and panning.
      */
-    private final Matrix mSuppMatrix = new Matrix();
+    private final Matrix suppMatrix = new Matrix();
     /**
      * This is the final matrix which is computed as the concatenation
      * of the base matrix and the supplementary matrix.
      */
-    private final Matrix mDisplayMatrix = new Matrix();
+    private final Matrix displayMatrix = new Matrix();
 
     /** Temporary buffer used for getting the values out of a matrix. */
-    private final float[] mMatrixValues = new float[9];
+    private final float[] matrixValues = new float[9];
 
     /** The bitmap currently being displayed. */
     @Nullable
-    private Bitmap mBitmap;
+    private Bitmap bitmap;
 
-    private int mLeft;
-    private int mRight;
-    private int mTop;
-    private int mBottom;
-    private int mWidth = -1;
-    private int mHeight = -1;
+    private int left;
+    private int right;
+    private int top;
+    private int bottom;
+    private int width = -1;
+    private int height = -1;
 
     @Nullable
-    private HighlightView mHighlightView;
+    private HighlightView highlightView;
     @Nullable
-    private HighlightView mMotionHighlightView;
+    private HighlightView motionHighlightView;
     @HighlightView.MotionEdgeHit
-    private int mMotionEdge;
+    private int motionEdge;
 
-    private float mLastX;
-    private float mLastY;
-    private float mMaxZoom;
+    private float lastX;
+    private float lastY;
+    private float maxZoom;
 
     /**
      * A runnable which will be executed during the {@link #onLayout} stage.
      * It is used to run the {@link #setBitmapMatrix} at that time.
      */
     @Nullable
-    private Runnable mOnLayoutRunnable;
+    private Runnable onLayoutRunnable;
 
     /** Set by the activity when it is saving/quiting. */
-    private boolean mNoTouching;
+    private boolean noTouching;
 
     /**
      * Constructor used by the xml inflater.
@@ -153,28 +153,29 @@ public class CropImageView
             center();
         }
 
-        final int width = bitmap.getWidth();
-        final int height = bitmap.getHeight();
+        final int bitmapWidth = bitmap.getWidth();
+        final int bitmapHeight = bitmap.getHeight();
 
-        final Rect imageRect = new Rect(0, 0, width, height);
+        final Rect imageRect = new Rect(0, 0, bitmapWidth, bitmapHeight);
 
         final int cropWidth;
         final int cropHeight;
         if (wholeImage) {
-            cropWidth = width;
-            cropHeight = height;
+            cropWidth = bitmapWidth;
+            cropHeight = bitmapHeight;
         } else {
-            final int dv = Math.min(width, height);
+            final int dv = Math.min(bitmapWidth, bitmapHeight);
             cropWidth = dv;
             cropHeight = dv;
         }
 
-        final int left = (width - cropWidth) / 2;
-        final int top = (height - cropHeight) / 2;
+        final int cropLeft = (bitmapWidth - cropWidth) / 2;
+        final int cropTop = (bitmapHeight - cropHeight) / 2;
 
-        final RectF cropRect = new RectF(left, top, left + cropWidth, top + cropHeight);
+        final RectF cropRect = new RectF(cropLeft, cropTop,
+                                         cropLeft + cropWidth, cropTop + cropHeight);
 
-        mHighlightView = new HighlightView(this, imageRect, cropRect);
+        highlightView = new HighlightView(this, imageRect, cropRect);
         invalidate();
     }
 
@@ -186,24 +187,25 @@ public class CropImageView
      */
     @Nullable
     public Bitmap getCroppedBitmap() {
-        if (mHighlightView == null || mBitmap == null) {
+        if (highlightView == null || bitmap == null) {
             return null;
         }
 
         // Stop responding to user touches.
-        mNoTouching = true;
+        noTouching = true;
 
-        final Rect cropRect = new Rect((int) mHighlightView.mCropRect.left,
-                                       (int) mHighlightView.mCropRect.top,
-                                       (int) mHighlightView.mCropRect.right,
-                                       (int) mHighlightView.mCropRect.bottom);
-        final int width = cropRect.width();
-        final int height = cropRect.height();
+        final Rect cropRect = new Rect((int) highlightView.cropRect.left,
+                                       (int) highlightView.cropRect.top,
+                                       (int) highlightView.cropRect.right,
+                                       (int) highlightView.cropRect.bottom);
+        final int cropWidth = cropRect.width();
+        final int cropHeight = cropRect.height();
 
-        final Bitmap croppedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        final Bitmap croppedBitmap = Bitmap.createBitmap(cropWidth, cropHeight,
+                                                         Bitmap.Config.ARGB_8888);
         final Canvas canvas = new Canvas(croppedBitmap);
-        final Rect dstRect = new Rect(0, 0, width, height);
-        canvas.drawBitmap(mBitmap, cropRect, dstRect, null);
+        final Rect dstRect = new Rect(0, 0, cropWidth, cropHeight);
+        canvas.drawBitmap(bitmap, cropRect, dstRect, null);
         return croppedBitmap;
     }
 
@@ -215,49 +217,49 @@ public class CropImageView
                             final int right,
                             final int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        mLeft = left;
-        mRight = right;
-        mTop = top;
-        mBottom = bottom;
-        mWidth = right - left;
-        mHeight = bottom - top;
-        final Runnable r = mOnLayoutRunnable;
+        this.left = left;
+        this.right = right;
+        this.top = top;
+        this.bottom = bottom;
+        width = right - left;
+        height = bottom - top;
+        final Runnable r = onLayoutRunnable;
         if (r != null) {
-            mOnLayoutRunnable = null;
+            onLayoutRunnable = null;
             r.run();
         }
-        if (mBitmap != null) {
-            setBaseMatrix(mBitmap);
+        if (bitmap != null) {
+            setBaseMatrix(bitmap);
             setImageMatrix(getImageViewMatrix());
         }
-        if (mBitmap != null && mHighlightView != null) {
-            mHighlightView.mMatrix.set(getImageMatrix());
-            mHighlightView.invalidate();
-            centerOn(mHighlightView);
+        if (bitmap != null && highlightView != null) {
+            highlightView.matrix.set(getImageMatrix());
+            highlightView.invalidate();
+            centerOn(highlightView);
         }
     }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(@NonNull final MotionEvent event) {
-        if (mNoTouching) {
+        if (noTouching) {
             return false;
         }
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
-                if (mHighlightView != null) {
+                if (highlightView != null) {
                     @HighlightView.MotionEdgeHit
-                    final int edge = mHighlightView.getMotionEdgeHit(event.getX(), event.getY());
+                    final int edge = highlightView.getMotionEdgeHit(event.getX(), event.getY());
                     if (edge != HighlightView.GROW_NONE) {
-                        mMotionEdge = edge;
-                        mMotionHighlightView = mHighlightView;
-                        mLastX = event.getX();
-                        mLastY = event.getY();
+                        motionEdge = edge;
+                        motionHighlightView = highlightView;
+                        lastX = event.getX();
+                        lastY = event.getY();
                         if (edge == HighlightView.MOVE) {
-                            mMotionHighlightView.setMode(HighlightView.ModifyMode.Move);
+                            motionHighlightView.setMode(HighlightView.ModifyMode.Move);
                         } else {
-                            mMotionHighlightView.setMode(HighlightView.ModifyMode.Grow);
+                            motionHighlightView.setMode(HighlightView.ModifyMode.Grow);
                         }
                         break;
                     }
@@ -265,22 +267,22 @@ public class CropImageView
                 break;
             }
             case MotionEvent.ACTION_UP: {
-                if (mMotionHighlightView != null) {
-                    centerOn(mMotionHighlightView);
-                    mMotionHighlightView.setMode(HighlightView.ModifyMode.None);
+                if (motionHighlightView != null) {
+                    centerOn(motionHighlightView);
+                    motionHighlightView.setMode(HighlightView.ModifyMode.None);
                 }
-                mMotionHighlightView = null;
+                motionHighlightView = null;
                 center();
                 break;
             }
             case MotionEvent.ACTION_MOVE: {
-                if (mMotionHighlightView != null) {
-                    mMotionHighlightView.handleMotion(mMotionEdge,
-                                                      event.getX() - mLastX,
-                                                      event.getY() - mLastY);
-                    mLastX = event.getX();
-                    mLastY = event.getY();
-                    ensureVisible(mMotionHighlightView);
+                if (motionHighlightView != null) {
+                    motionHighlightView.handleMotion(motionEdge,
+                                                     event.getX() - lastX,
+                                                     event.getY() - lastY);
+                    lastX = event.getX();
+                    lastY = event.getY();
+                    ensureVisible(motionHighlightView);
                 }
 
                 // if we're not zoomed then there's no point in even allowing
@@ -301,14 +303,14 @@ public class CropImageView
     @Override
     public void setImageBitmap(@Nullable final Bitmap bitmap) {
         super.setImageBitmap(bitmap);
-        mBitmap = bitmap;
+        this.bitmap = bitmap;
     }
 
     @Override
     protected void onDraw(@NonNull final Canvas canvas) {
         super.onDraw(canvas);
-        if (mHighlightView != null) {
-            mHighlightView.onDraw(canvas);
+        if (highlightView != null) {
+            highlightView.onDraw(canvas);
         }
     }
 
@@ -330,8 +332,8 @@ public class CropImageView
      * @return factor
      */
     private float getScale() {
-        mSuppMatrix.getValues(mMatrixValues);
-        return mMatrixValues[Matrix.MSCALE_X];
+        suppMatrix.getValues(matrixValues);
+        return matrixValues[Matrix.MSCALE_X];
     }
 
     /**
@@ -341,24 +343,24 @@ public class CropImageView
     private void setBitmapMatrix(@NonNull final Bitmap bitmap) {
         // postpone to run during layout pass if the View has not been measured yet.
         if (getWidth() <= 0) {
-            mOnLayoutRunnable = () -> setBitmapMatrix(bitmap);
+            onLayoutRunnable = () -> setBitmapMatrix(bitmap);
             return;
         }
 
         setBaseMatrix(bitmap);
         setImageBitmap(bitmap);
-        mSuppMatrix.reset();
+        suppMatrix.reset();
         setImageMatrix(getImageViewMatrix());
 
         // Set the maximum zoom, which is relative to the base matrix.
-        mMaxZoom = ZOOM_FACTOR * Math.max((float) bitmap.getWidth() / (float) mWidth,
-                                          (float) bitmap.getHeight() / (float) mHeight);
+        maxZoom = ZOOM_FACTOR * Math.max((float) bitmap.getWidth() / (float) width,
+                                         (float) bitmap.getHeight() / (float) height);
     }
 
     /** Setup the base matrix so that the image is centered and scaled properly. */
     private void setBaseMatrix(@NonNull final Bitmap bitmap) {
 
-        mBaseMatrix.reset();
+        baseMatrix.reset();
 
         final float widthScale = Math.min((float) getWidth() / (float) bitmap.getWidth(),
                                           Float.MAX_VALUE);
@@ -366,12 +368,12 @@ public class CropImageView
                                            Float.MAX_VALUE);
         final float scaleFactor = Math.min(widthScale, heightScale);
 
-        mBaseMatrix.postScale(scaleFactor, scaleFactor);
+        baseMatrix.postScale(scaleFactor, scaleFactor);
 
         final float bitmapWidth = (float) bitmap.getWidth() * scaleFactor;
         final float bitmapHeight = (float) bitmap.getHeight() * scaleFactor;
-        mBaseMatrix.postTranslate(((float) getWidth() - bitmapWidth) / 2f,
-                                  ((float) getHeight() - bitmapHeight) / 2f);
+        baseMatrix.postTranslate(((float) getWidth() - bitmapWidth) / 2f,
+                                 ((float) getHeight() - bitmapHeight) / 2f);
     }
 
     /**
@@ -379,9 +381,9 @@ public class CropImageView
      */
     @NonNull
     private Matrix getImageViewMatrix() {
-        mDisplayMatrix.set(mBaseMatrix);
-        mDisplayMatrix.postConcat(mSuppMatrix);
-        return mDisplayMatrix;
+        displayMatrix.set(baseMatrix);
+        displayMatrix.postConcat(suppMatrix);
+        return displayMatrix;
     }
 
     /**
@@ -391,21 +393,21 @@ public class CropImageView
      * translate it back into view (i.e. eliminate black bars).
      */
     private void center() {
-        if (mBitmap == null) {
+        if (bitmap == null) {
             return;
         }
 
         final RectF rect = new RectF(0, 0,
-                                     mBitmap.getWidth(),
-                                     mBitmap.getHeight());
+                                     bitmap.getWidth(),
+                                     bitmap.getHeight());
 
         getImageViewMatrix().mapRect(rect);
 
         final float deltaX;
         final int viewWidth = getWidth();
-        final float width = rect.width();
-        if (width < viewWidth) {
-            deltaX = (viewWidth - width) / 2 - rect.left;
+        final float rectWidth = rect.width();
+        if (rectWidth < viewWidth) {
+            deltaX = (viewWidth - rectWidth) / 2 - rect.left;
         } else if (rect.left > 0) {
             deltaX = -rect.left;
         } else if (rect.right < viewWidth) {
@@ -416,9 +418,9 @@ public class CropImageView
 
         final float deltaY;
         final int viewHeight = getHeight();
-        final float height = rect.height();
-        if (height < viewHeight) {
-            deltaY = (viewHeight - height) / 2 - rect.top;
+        final float rectHeight = rect.height();
+        if (rectHeight < viewHeight) {
+            deltaY = (viewHeight - rectHeight) / 2 - rect.top;
         } else if (rect.top > 0) {
             deltaY = -rect.top;
         } else if (rect.bottom < viewHeight) {
@@ -437,13 +439,13 @@ public class CropImageView
      */
     private void centerOn(@NonNull final HighlightView hv) {
 
-        float zoom = Math.min((float) getWidth() / (float) hv.mDrawRect.width() * 0.6f,
-                              (float) getHeight() / (float) hv.mDrawRect.height() * 0.6f)
+        float zoom = Math.min((float) getWidth() / (float) hv.drawRect.width() * 0.6f,
+                              (float) getHeight() / (float) hv.drawRect.height() * 0.6f)
                      * getScale();
         zoom = Math.max(1f, zoom);
 
         if ((Math.abs(zoom - getScale()) / zoom) > 0.1) {
-            final float[] coordinates = {hv.mCropRect.centerX(), hv.mCropRect.centerY()};
+            final float[] coordinates = {hv.cropRect.centerX(), hv.cropRect.centerY()};
             getImageMatrix().mapPoints(coordinates);
             final float duration = 300f;
             final float incrementPerMs = (zoom - getScale()) / duration;
@@ -469,14 +471,14 @@ public class CropImageView
 
     /** Pan the displayed image to make sure the cropping rectangle is visible. */
     private void ensureVisible(@NonNull final HighlightView hv) {
-        final Rect r = hv.mDrawRect;
+        final Rect r = hv.drawRect;
 
-        final int panDeltaX1 = Math.max(0, mLeft - r.left);
-        final int panDeltaX2 = Math.min(0, mRight - r.right);
+        final int panDeltaX1 = Math.max(0, left - r.left);
+        final int panDeltaX2 = Math.min(0, right - r.right);
         final int panDeltaX = panDeltaX1 != 0 ? panDeltaX1 : panDeltaX2;
 
-        final int panDeltaY1 = Math.max(0, mTop - r.top);
-        final int panDeltaY2 = Math.min(0, mBottom - r.bottom);
+        final int panDeltaY1 = Math.max(0, top - r.top);
+        final int panDeltaY2 = Math.min(0, bottom - r.bottom);
         final int panDeltaY = panDeltaY1 != 0 ? panDeltaY1 : panDeltaY2;
 
         if (panDeltaX != 0 || panDeltaY != 0) {
@@ -488,22 +490,22 @@ public class CropImageView
     private void zoomTo(final float scale,
                         final float centerX,
                         final float centerY) {
-        final float deltaScale = Math.max(scale, mMaxZoom) / getScale();
-        mSuppMatrix.postScale(deltaScale, deltaScale, centerX, centerY);
+        final float deltaScale = Math.max(scale, maxZoom) / getScale();
+        suppMatrix.postScale(deltaScale, deltaScale, centerX, centerY);
         setImageMatrix(getImageViewMatrix());
         center();
-        if (mHighlightView != null) {
-            mHighlightView.mMatrix.set(getImageMatrix());
-            mHighlightView.invalidate();
+        if (highlightView != null) {
+            highlightView.matrix.set(getImageMatrix());
+            highlightView.invalidate();
         }
     }
 
     private void postTranslate(final float dx,
                                final float dy) {
-        mSuppMatrix.postTranslate(dx, dy);
-        if (mHighlightView != null) {
-            mHighlightView.mMatrix.postTranslate(dx, dy);
-            mHighlightView.invalidate();
+        suppMatrix.postTranslate(dx, dy);
+        if (highlightView != null) {
+            highlightView.matrix.postTranslate(dx, dy);
+            highlightView.invalidate();
         }
     }
 
@@ -525,16 +527,16 @@ public class CropImageView
         private static final float HYSTERESIS = 40f;
 
         /** in image space. */
-        final RectF mCropRect;
-        final Matrix mMatrix;
-        final Rect mImageViewDrawingRect = new Rect();
+        final RectF cropRect;
+        final Matrix matrix;
+        final Rect imageViewDrawingRect = new Rect();
         final Path path = new Path();
         /** The View displaying the image. */
-        private final CropImageView mImageView;
+        private final CropImageView imageView;
         /*** in image space. */
-        private final RectF mImageRect;
+        private final RectF imageRect;
         /** Drag handle. */
-        private final Drawable mResizeHorizontal;
+        private final Drawable resizeHorizontal;
         /** Drag handle. */
         private final Drawable mResizeVertical;
         private final Paint mFocusPaint = new Paint();
@@ -556,79 +558,79 @@ public class CropImageView
         HighlightView(@NonNull final CropImageView imageView,
                       @NonNull final Rect imageRect,
                       @NonNull final RectF cropRect) {
-            mImageView = imageView;
-            mMatrix = new Matrix(mImageView.getImageMatrix());
-            mImageRect = new RectF(imageRect);
-            mCropRect = cropRect;
+            this.imageView = imageView;
+            matrix = new Matrix(this.imageView.getImageMatrix());
+            this.imageRect = new RectF(imageRect);
+            this.cropRect = cropRect;
 
-            mDrawRect = computeLayout();
+            drawRect = computeLayout();
 
-            final Context context = mImageView.getContext();
+            final Context context = this.imageView.getContext();
             final Resources res = context.getResources();
             final Resources.Theme theme = context.getTheme();
 
-            mResizeHorizontal = res.getDrawable(R.drawable.ic_baseline_adjust_24, theme);
-            mResizeVertical = res.getDrawable(R.drawable.ic_baseline_adjust_24, theme);
+            resizeHorizontal = res.getDrawable(R.drawable.ic_baseline_adjust_24, theme);
+            resizeVertical = res.getDrawable(R.drawable.ic_baseline_adjust_24, theme);
 
-            mFocusPaint.setColor(res.getColor(R.color.cropper_focus, theme));
+            focusPaint.setColor(res.getColor(R.color.cropper_focus, theme));
 
-            mOutlinePaint.setStrokeWidth(3F);
-            mOutlinePaint.setStyle(Paint.Style.STROKE);
-            mOutlinePaint.setAntiAlias(true);
-            mOutlinePaint.setColor(res.getColor(R.color.cropper_outline_rectangle, theme));
+            outlinePaint.setStrokeWidth(3F);
+            outlinePaint.setStyle(Paint.Style.STROKE);
+            outlinePaint.setAntiAlias(true);
+            outlinePaint.setColor(res.getColor(R.color.cropper_outline_rectangle, theme));
         }
 
         void onDraw(@NonNull final Canvas canvas) {
             canvas.save();
 
-            mImageView.getDrawingRect(mImageViewDrawingRect);
+            imageView.getDrawingRect(imageViewDrawingRect);
 
             path.reset();
-            mDrawRectF.set(mDrawRect);
-            path.addRect(mDrawRectF, Path.Direction.CW);
+            drawRectF.set(drawRect);
+            path.addRect(drawRectF, Path.Direction.CW);
 
             canvas.clipOutPath(path);
-            canvas.drawRect(mImageViewDrawingRect, mFocusPaint);
+            canvas.drawRect(imageViewDrawingRect, focusPaint);
             canvas.restore();
-            canvas.drawPath(path, mOutlinePaint);
+            canvas.drawPath(path, outlinePaint);
 
-            if (mMode == ModifyMode.Grow) {
+            if (modifyMode == ModifyMode.Grow) {
                 int width;
                 int height;
                 int middle;
 
                 // draw the two horizontal resize handles
-                width = mResizeHorizontal.getIntrinsicWidth();
-                height = mResizeHorizontal.getIntrinsicHeight();
-                middle = mDrawRect.top + ((mDrawRect.bottom - mDrawRect.top) / 2);
+                width = resizeHorizontal.getIntrinsicWidth();
+                height = resizeHorizontal.getIntrinsicHeight();
+                middle = drawRect.top + ((drawRect.bottom - drawRect.top) / 2);
 
-                mResizeHorizontal.setBounds(mDrawRect.left - width, middle - height,
-                                            mDrawRect.left + width, middle + height);
-                mResizeHorizontal.draw(canvas);
+                resizeHorizontal.setBounds(drawRect.left - width, middle - height,
+                                           drawRect.left + width, middle + height);
+                resizeHorizontal.draw(canvas);
 
-                mResizeHorizontal.setBounds(mDrawRect.right - width, middle - height,
-                                            mDrawRect.right + width, middle + height);
-                mResizeHorizontal.draw(canvas);
+                resizeHorizontal.setBounds(drawRect.right - width, middle - height,
+                                           drawRect.right + width, middle + height);
+                resizeHorizontal.draw(canvas);
 
                 // draw the two vertical resize handles
-                width = mResizeVertical.getIntrinsicWidth();
-                height = mResizeVertical.getIntrinsicHeight();
-                middle = mDrawRect.left + ((mDrawRect.right - mDrawRect.left) / 2);
+                width = resizeVertical.getIntrinsicWidth();
+                height = resizeVertical.getIntrinsicHeight();
+                middle = drawRect.left + ((drawRect.right - drawRect.left) / 2);
 
-                mResizeVertical.setBounds(middle - width, mDrawRect.top - height,
-                                          middle + width, mDrawRect.top + height);
-                mResizeVertical.draw(canvas);
+                resizeVertical.setBounds(middle - width, drawRect.top - height,
+                                         middle + width, drawRect.top + height);
+                resizeVertical.draw(canvas);
 
-                mResizeVertical.setBounds(middle - width, mDrawRect.bottom - height,
-                                          middle + width, mDrawRect.bottom + height);
-                mResizeVertical.draw(canvas);
+                resizeVertical.setBounds(middle - width, drawRect.bottom - height,
+                                         middle + width, drawRect.bottom + height);
+                resizeVertical.draw(canvas);
             }
         }
 
         public void setMode(@NonNull final ModifyMode mode) {
-            if (mode != mMode) {
-                mMode = mode;
-                mImageView.invalidate();
+            if (mode != modifyMode) {
+                modifyMode = mode;
+                imageView.invalidate();
             }
         }
 
@@ -683,8 +685,8 @@ public class CropImageView
             final Rect r = computeLayout();
             if (edge == MOVE) {
                 // Convert to image space before sending to moveBy().
-                moveBy(dx * (mCropRect.width() / r.width()),
-                       dy * (mCropRect.height() / r.height()));
+                moveBy(dx * (cropRect.width() / r.width()),
+                       dy * (cropRect.height() / r.height()));
             } else {
                 if (((GROW_LEFT_EDGE | GROW_RIGHT_EDGE) & edge) == 0) {
                     dx = 0;
@@ -695,8 +697,8 @@ public class CropImageView
                 }
 
                 // Convert to image space before sending to growBy().
-                final float xDelta = dx * (mCropRect.width() / r.width());
-                final float yDelta = dy * (mCropRect.height() / r.height());
+                final float xDelta = dx * (cropRect.width() / r.width());
+                final float yDelta = dy * (cropRect.height() / r.height());
                 growBy((((edge & GROW_LEFT_EDGE) != 0) ? -1 : 1) * xDelta,
                        (((edge & GROW_TOP_EDGE) != 0) ? -1 : 1) * yDelta);
             }
@@ -706,21 +708,21 @@ public class CropImageView
         private void moveBy(final float dx,
                             final float dy) {
 
-            final Rect rect = new Rect(mDrawRect);
+            final Rect rect = new Rect(drawRect);
 
-            mCropRect.offset(dx, dy);
+            cropRect.offset(dx, dy);
 
             // Put the cropping rectangle inside image rectangle.
-            mCropRect.offset(Math.max(0, mImageRect.left - mCropRect.left),
-                             Math.max(0, mImageRect.top - mCropRect.top));
+            cropRect.offset(Math.max(0, imageRect.left - cropRect.left),
+                            Math.max(0, imageRect.top - cropRect.top));
 
-            mCropRect.offset(Math.min(0, mImageRect.right - mCropRect.right),
-                             Math.min(0, mImageRect.bottom - mCropRect.bottom));
+            cropRect.offset(Math.min(0, imageRect.right - cropRect.right),
+                            Math.min(0, imageRect.bottom - cropRect.bottom));
 
-            mDrawRect = computeLayout();
-            rect.union(mDrawRect);
+            drawRect = computeLayout();
+            rect.union(drawRect);
             rect.inset(-10, -10);
-            mImageView.invalidate();
+            imageView.invalidate();
         }
 
         /** Grows the cropping rectangle by (dx, dy) in image space. */
@@ -730,14 +732,14 @@ public class CropImageView
             // Don't let the cropping rectangle grow too fast.
             // Grow at most half of the difference between the image rectangle and
             // the cropping rectangle.
-            final RectF rect = new RectF(mCropRect);
-            if (dx > 0F && rect.width() + 2 * dx > mImageRect.width()) {
+            final RectF rect = new RectF(cropRect);
+            if (dx > 0F && rect.width() + 2 * dx > imageRect.width()) {
                 // adjustment
-                dx = (mImageRect.width() - rect.width()) / 2f;
+                dx = (imageRect.width() - rect.width()) / 2f;
             }
-            if (dy > 0F && rect.height() + 2 * dy > mImageRect.height()) {
+            if (dy > 0F && rect.height() + 2 * dy > imageRect.height()) {
                 // adjustment
-                dy = (mImageRect.height() - rect.height()) / 2f;
+                dy = (imageRect.height() - rect.height()) / 2f;
             }
 
             rect.inset(-dx, -dy);
@@ -752,35 +754,35 @@ public class CropImageView
             }
 
             // Put the cropping rectangle inside the image rectangle.
-            if (rect.left < mImageRect.left) {
-                rect.offset(mImageRect.left - rect.left, 0F);
-            } else if (rect.right > mImageRect.right) {
-                rect.offset(-(rect.right - mImageRect.right), 0);
+            if (rect.left < imageRect.left) {
+                rect.offset(imageRect.left - rect.left, 0F);
+            } else if (rect.right > imageRect.right) {
+                rect.offset(-(rect.right - imageRect.right), 0);
             }
 
-            if (rect.top < mImageRect.top) {
-                rect.offset(0F, mImageRect.top - rect.top);
-            } else if (rect.bottom > mImageRect.bottom) {
-                rect.offset(0F, -(rect.bottom - mImageRect.bottom));
+            if (rect.top < imageRect.top) {
+                rect.offset(0F, imageRect.top - rect.top);
+            } else if (rect.bottom > imageRect.bottom) {
+                rect.offset(0F, -(rect.bottom - imageRect.bottom));
             }
 
-            mCropRect.set(rect);
-            mDrawRect = computeLayout();
-            mImageView.invalidate();
+            cropRect.set(rect);
+            drawRect = computeLayout();
+            imageView.invalidate();
         }
 
         /** Maps the cropping rectangle from image space to screen space. */
         @NonNull
         private Rect computeLayout() {
-            final RectF r = new RectF(mCropRect.left, mCropRect.top,
-                                      mCropRect.right, mCropRect.bottom);
-            mMatrix.mapRect(r);
+            final RectF r = new RectF(cropRect.left, cropRect.top,
+                                      cropRect.right, cropRect.bottom);
+            matrix.mapRect(r);
             return new Rect(Math.round(r.left), Math.round(r.top),
                             Math.round(r.right), Math.round(r.bottom));
         }
 
         void invalidate() {
-            mDrawRect = computeLayout();
+            drawRect = computeLayout();
         }
 
         enum ModifyMode {

@@ -376,7 +376,7 @@ public abstract class BaseField<T, V extends View>
 
             } else {
                 if (BuildConfig.DEBUG /* always */) {
-                    // mAfterFieldChangeListener == null is perfectly fine.
+                    // the listener being null is perfectly fine.
                     // i.e. it will be null during population of fields.
                     if (afterFieldChangeListener != null) {
                         // The REFERENT being dead is however not fine, so log this in debug.
@@ -397,15 +397,15 @@ public abstract class BaseField<T, V extends View>
     @NonNull
     public String toString() {
         return "BaseField{"
-               + "mFieldKey=" + fieldKey
-               + ", mIsUsedKey=" + usedKey
-               + ": mFragmentId=" + fragmentId
-               + ", mRelatedFields=" + relatedViews
-               + ", mInitialValue=`" + initialValue + "`"
-               + ", mRawValue=`" + rawValue + "`"
-               + ", mCurrentValue=`" + getValue() + "`"
-               + ", mErrorText=`" + errorText + "`"
-               + ", mValidator=" + validator
+               + "fieldKey=" + fieldKey
+               + ", usedKey=" + usedKey
+               + ": fragmentId=" + fragmentId
+               + ", relatedViews=" + relatedViews
+               + ", initialValue=`" + initialValue + "`"
+               + ", rawValue=`" + rawValue + "`"
+               + ", getValue=`" + getValue() + "`"
+               + ", errorText=`" + errorText + "`"
+               + ", validator=" + validator
                + '}';
     }
 }

@@ -26,29 +26,29 @@ public class RecreateViewModel
         extends ViewModel {
 
     @Nullable
-    private Recreate mRecreate;
+    private Recreate recreate;
 
     public void onCreate() {
-        if (mRecreate == null) {
-            mRecreate = Recreate.No;
+        if (recreate == null) {
+            recreate = Recreate.No;
         }
     }
 
     public void setRecreationRequired() {
-        this.mRecreate = Recreate.Required;
+        this.recreate = Recreate.Required;
     }
 
     boolean isRecreating() {
-        return mRecreate == Recreate.Pending;
+        return recreate == Recreate.Pending;
     }
 
     public boolean isRecreationRequired() {
-        if (mRecreate == Recreate.Required) {
-            mRecreate = Recreate.Pending;
+        if (recreate == Recreate.Required) {
+            recreate = Recreate.Pending;
             return true;
 
         } else {
-            mRecreate = Recreate.No;
+            recreate = Recreate.No;
         }
 
         return false;

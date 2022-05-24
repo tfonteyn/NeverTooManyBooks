@@ -400,8 +400,9 @@ public class AuthorWorksFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final RowAuthorWorkBinding vb = RowAuthorWorkBinding.inflate(mInflater, parent, false);
-            final Holder holder = new Holder(vb);
+            final RowAuthorWorkBinding hVb = RowAuthorWorkBinding
+                    .inflate(inflater, parent, false);
+            final Holder holder = new Holder(hVb);
             initTypeButton(holder, viewType);
 
             // click -> get the book(s) for that entry and display.

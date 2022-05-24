@@ -101,10 +101,10 @@ public class Edition {
     @NonNull
     public String toString() {
         return "Edition{"
-               + "mIsfdbId=" + isfdbId
-               + ", mIsbn=`" + isbn + '`'
-               + ", mLangIso3=`" + langIso3 + '`'
-               + ", mDoc?=" + (document != null)
+               + "isfdbId=" + isfdbId
+               + ", isbn=`" + isbn + '`'
+               + ", langIso3=`" + langIso3 + '`'
+               + ", document?=" + (document != null)
                + '}';
     }
 }

@@ -97,8 +97,8 @@ public class SyncWriterResults
     @NonNull
     public String toString() {
         return "SyncWriterResults{"
-               + "mBookCount=" + bookCount
-               + ", mCoverCount=" + coverCount
+               + "bookCount=" + bookCount
+               + ", coverCount=" + coverCount
                + '}';
     }
 }

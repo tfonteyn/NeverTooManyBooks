@@ -52,9 +52,9 @@ public class TransFormTask
     /** Log tag. */
     private static final String TAG = "TransFormTask";
 
-    private Transformation mTransformation;
-    private File mDestFile;
-    private CoverHandler.NextAction mNextAction;
+    private Transformation transformation;
+    private File destFile;
+    private CoverHandler.NextAction nextAction;
 
     TransFormTask() {
         super(R.id.TASK_ID_IMAGE_TRANSFORMATION, TAG);
@@ -63,9 +63,9 @@ public class TransFormTask
     void transform(@NonNull final Transformation transformation,
                    @NonNull final File destFile,
                    @NonNull final CoverHandler.NextAction action) {
-        mTransformation = transformation;
-        mDestFile = destFile;
-        mNextAction = action;
+        this.transformation = transformation;
+        this.destFile = destFile;
+        nextAction = action;
         execute();
     }
 
@@ -74,12 +74,12 @@ public class TransFormTask
     @WorkerThread
     protected TransformedData doWork(@NonNull final Context context) {
 
-        if (mTransformation.transform().isPresent()) {
+        if (transformation.transform().isPresent()) {
             try {
                 final Bitmap bitmap =
-                        ImageUtils.writeFile(mTransformation.transform().get(), mDestFile);
+                        ImageUtils.writeFile(transformation.transform().get(), destFile);
                 if (bitmap != null) {
-                    return new TransformedData(bitmap, mDestFile, mNextAction);
+                    return new TransformedData(bitmap, destFile, nextAction);
                 }
             } catch (@NonNull final IOException e) {
                 if (BuildConfig.DEBUG /* always */) {
@@ -88,7 +88,7 @@ public class TransFormTask
             }
         }
 
-        return new TransformedData(null, mDestFile, mNextAction);
+        return new TransformedData(null, destFile, nextAction);
     }
 
     /**
@@ -97,11 +97,11 @@ public class TransFormTask
     static class TransformedData {
 
         @Nullable
-        private final Bitmap mBitmap;
+        private final Bitmap bitmap;
         @NonNull
-        private final File mFile;
+        private final File file;
         @NonNull
-        private final CoverHandler.NextAction mNextAction;
+        private final CoverHandler.NextAction nextAction;
 
         /**
          * Constructor.
@@ -114,33 +114,33 @@ public class TransFormTask
         TransformedData(@Nullable final Bitmap bitmap,
                         @NonNull final File file,
                         @NonNull final CoverHandler.NextAction action) {
-            mBitmap = bitmap;
-            mFile = file;
-            mNextAction = action;
+            this.bitmap = bitmap;
+            this.file = file;
+            nextAction = action;
         }
 
         @Nullable
         Bitmap getBitmap() {
-            return mBitmap;
+            return bitmap;
         }
 
         @NonNull
         File getFile() {
-            return mFile;
+            return file;
         }
 
         @NonNull
         CoverHandler.NextAction getNextAction() {
-            return mNextAction;
+            return nextAction;
         }
 
         @Override
         @NonNull
         public String toString() {
             return "TransformedData{"
-                   + "mBitmap=" + (mBitmap != null)
-                   + ", mFile=" + mFile.getAbsolutePath()
-                   + ", mNextAction=" + mNextAction
+                   + "bitmap=" + (bitmap != null)
+                   + ", file=" + file.getAbsolutePath()
+                   + ", nextAction=" + nextAction
                    + '}';
         }
     }

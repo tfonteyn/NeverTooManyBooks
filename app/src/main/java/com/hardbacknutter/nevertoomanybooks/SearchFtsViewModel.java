@@ -36,46 +36,46 @@ public class SearchFtsViewModel
 
     /** The maximum number of suggestions we'll show during a live search. */
     private static final int MAX_SUGGESTIONS = 20;
-    private final MutableLiveData<SearchCriteria> mSearchCriteriaMutableLiveData =
+    private final MutableLiveData<SearchCriteria> searchCriteriaMutableLiveData =
             new MutableLiveData<>();
-    private final MutableLiveData<ArrayList<Long>> mBooklist = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<Long>> booklist = new MutableLiveData<>();
     /** Database Access. */
-    private FtsDao mDao;
+    private FtsDao dao;
     @Nullable
-    private SearchCriteria mCriteria;
+    private SearchCriteria criteria;
 
     public void init(@Nullable final Bundle args) {
-        if (mDao == null) {
-            mDao = ServiceLocator.getInstance().getFtsDao();
+        if (dao == null) {
+            dao = ServiceLocator.getInstance().getFtsDao();
 
             if (args != null) {
-                mCriteria = args.getParcelable(SearchCriteria.BKEY);
+                criteria = args.getParcelable(SearchCriteria.BKEY);
             }
-            if (mCriteria == null) {
-                mCriteria = new SearchCriteria();
+            if (criteria == null) {
+                criteria = new SearchCriteria();
             }
         }
-        mSearchCriteriaMutableLiveData.setValue(mCriteria);
+        searchCriteriaMutableLiveData.setValue(criteria);
     }
 
     @NonNull
     public MutableLiveData<ArrayList<Long>> onBooklistUpdate() {
-        return mBooklist;
+        return booklist;
     }
 
     @NonNull
     public MutableLiveData<SearchCriteria> onSearchCriteriaUpdate() {
-        return mSearchCriteriaMutableLiveData;
+        return searchCriteriaMutableLiveData;
     }
 
     @NonNull
     public SearchCriteria getCriteria() {
-        return Objects.requireNonNull(mCriteria);
+        return Objects.requireNonNull(criteria);
     }
 
     public void search() {
         //noinspection ConstantConditions
-        mCriteria.search(mDao, MAX_SUGGESTIONS);
-        mBooklist.postValue(mCriteria.getBookIdList());
+        criteria.search(dao, MAX_SUGGESTIONS);
+        booklist.postValue(criteria.getBookIdList());
     }
 }

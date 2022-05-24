@@ -58,30 +58,29 @@ public abstract class BaseActivity
      */
     public static final int ERROR_DELAY_MS = 3000;
 
-
-    private final ActivityResultLauncher<Long> mManageBookshelvesBaseLauncher =
+    private final ActivityResultLauncher<Long> manageBookshelvesBaseLauncher =
             registerForActivityResult(new EditBookshelvesContract(),
                                       bookshelfId -> {
                                       });
 
     @SuppressWarnings("WeakerAccess")
-    protected RecreateViewModel mRecreateVm;
+    protected RecreateViewModel recreateVm;
 
-    private final ActivityResultLauncher<String> mSettingsLauncher =
+    private final ActivityResultLauncher<String> editSettingsLauncher =
             registerForActivityResult(new SettingsContract(), recreateActivity -> {
                 if (recreateActivity) {
-                    mRecreateVm.setRecreationRequired();
+                    recreateVm.setRecreationRequired();
                 }
             });
 
     /** Optional - The side/navigation panel. */
     @Nullable
-    DrawerLayout mDrawerLayout;
+    DrawerLayout drawerLayout;
     /** Optional - The side/navigation menu. */
     @Nullable
-    private NavigationView mNavigationView;
+    private NavigationView navigationView;
 
-    private Toolbar mToolbar;
+    private Toolbar toolbar;
 
     /**
      * Hide the keyboard.
@@ -96,10 +95,11 @@ public abstract class BaseActivity
 
     @NonNull
     public Toolbar getToolbar() {
-        if (mToolbar == null) {
-            mToolbar = Objects.requireNonNull((Toolbar) findViewById(R.id.toolbar), "R.id.toolbar");
+        if (toolbar == null) {
+            toolbar = findViewById(R.id.toolbar);
+            Objects.requireNonNull(toolbar, "R.id.toolbar");
         }
-        return mToolbar;
+        return toolbar;
     }
 
     @Override
@@ -110,18 +110,18 @@ public abstract class BaseActivity
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        mRecreateVm = new ViewModelProvider(this).get(RecreateViewModel.class);
-        mRecreateVm.onCreate();
+        recreateVm = new ViewModelProvider(this).get(RecreateViewModel.class);
+        recreateVm.onCreate();
 
         super.onCreate(savedInstanceState);
     }
 
     @CallSuper
     void initNavDrawer() {
-        mDrawerLayout = findViewById(R.id.drawer_layout);
-        if (mDrawerLayout != null) {
-            mNavigationView = mDrawerLayout.findViewById(R.id.nav_view);
-            mNavigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        if (drawerLayout != null) {
+            navigationView = drawerLayout.findViewById(R.id.nav_view);
+            navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
         }
     }
 
@@ -170,7 +170,7 @@ public abstract class BaseActivity
      * Trigger a recreate() on the Activity if needed.
      */
     protected void recreateIfNeeded() {
-        if (mRecreateVm.isRecreationRequired()) {
+        if (recreateVm.isRecreationRequired()) {
             recreate();
         }
     }
@@ -181,8 +181,8 @@ public abstract class BaseActivity
      */
     @Override
     public void onBackPressed() {
-        if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-            mDrawerLayout.closeDrawer(GravityCompat.START);
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
 
         } else {
             // Will call any (enabled) registered OnBackPressedCallback handlers.
@@ -196,13 +196,13 @@ public abstract class BaseActivity
     @Nullable
     protected MenuItem getNavigationMenuItem(@SuppressWarnings("SameParameterValue")
                                              @IdRes final int itemId) {
-        return mNavigationView != null ? mNavigationView.getMenu().findItem(itemId) : null;
+        return navigationView != null ? navigationView.getMenu().findItem(itemId) : null;
     }
 
     @NonNull
     View getNavigationMenuItemView(final int itemId) {
         //noinspection ConstantConditions
-        final View anchor = mNavigationView.findViewById(itemId);
+        final View anchor = navigationView.findViewById(itemId);
         // Not 100% we are using a legal way of getting the View...
         Objects.requireNonNull(anchor, "mNavigationView.findViewById(" + itemId + ")");
         return anchor;
@@ -217,11 +217,11 @@ public abstract class BaseActivity
         if (itemId == R.id.MENU_MANAGE_BOOKSHELVES) {
             // child classes which have a 'current bookshelf' should
             // override and pass the current bookshelf id
-            mManageBookshelvesBaseLauncher.launch(0L);
+            manageBookshelvesBaseLauncher.launch(0L);
             return true;
 
         } else if (itemId == R.id.MENU_SETTINGS) {
-            mSettingsLauncher.launch(null);
+            editSettingsLauncher.launch(null);
             return true;
 
         } else if (itemId == R.id.MENU_ABOUT) {
@@ -233,8 +233,8 @@ public abstract class BaseActivity
     }
 
     void closeNavigationDrawer() {
-        if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-            mDrawerLayout.closeDrawer(GravityCompat.START);
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
         }
     }
 }

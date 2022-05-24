@@ -141,7 +141,7 @@ public abstract class BaseStyle
     @Override
     @NonNull
     public UserStyle clone(@NonNull final Context context) {
-        SanityCheck.requireValue(uuid, "mUuid");
+        SanityCheck.requireValue(uuid, "uuid");
         // A cloned style is *always* a UserStyle/persistent regardless of the original
         // being a UserStyle or BuiltinStyle.
         return new UserStyle(context, this, 0, UUID.randomUUID().toString());

@@ -214,16 +214,16 @@ public enum SyncServer
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeInt(this.ordinal());
+        dest.writeInt(ordinal());
     }
 
     @Override
     @NonNull
     public String toString() {
         return "SyncServer{"
-               + "mLabel=" + labelResId
-               + ", mHasLastUpdateDateField=" + hasLastUpdateDateField
-               + ", mSyncDateIsUserEditable=" + syncDateIsUserEditable
+               + "labelResId=" + labelResId
+               + ", hasLastUpdateDateField=" + hasLastUpdateDateField
+               + ", syncDateIsUserEditable=" + syncDateIsUserEditable
                + '}';
     }
 }

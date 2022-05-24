@@ -112,7 +112,7 @@ public class StyleViewModel
 
     @NonNull
     public String getTemplateUuid() {
-        return Objects.requireNonNull(templateUuid, "mTemplateUuid");
+        return Objects.requireNonNull(templateUuid, "templateUuid");
     }
 
     public boolean isModified() {

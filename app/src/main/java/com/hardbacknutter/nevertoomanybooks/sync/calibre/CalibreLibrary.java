@@ -248,11 +248,11 @@ public class CalibreLibrary
     public String toString() {
         return "CalibreLibrary{"
                + super.toString()
-               + ", mUuid=`" + uuid + '`'
-               + ", mLibraryId=`" + libraryStringId + '`'
-               + ", mLastSyncDate=`" + lastSyncDate + '`'
-               + ", mTotalBooks=" + totalBooks
-               + ", mVirtualLibraries=" + virtualLibraries
+               + ", uuid=`" + uuid + '`'
+               + ", libraryStringId=`" + libraryStringId + '`'
+               + ", lastSyncDate=`" + lastSyncDate + '`'
+               + ", totalBooks=" + totalBooks
+               + ", virtualLibraries=" + virtualLibraries
                + '}';
     }
 

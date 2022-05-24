@@ -58,11 +58,11 @@ public class FileManager {
      * Downloaded files.
      * key = isbn
      */
-    private final Map<String, ImageFileInfo> mFiles =
+    private final Map<String, ImageFileInfo> files =
             Collections.synchronizedMap(new HashMap<>());
 
     /** The Sites the user wants to search for cover images. */
-    private final List<Site> mSiteList;
+    private final List<Site> siteList;
 
     /**
      * Constructor.
@@ -70,7 +70,7 @@ public class FileManager {
      * @param sites site list
      */
     FileManager(@NonNull final List<Site> sites) {
-        mSiteList = sites;
+        siteList = sites;
     }
 
     /**
@@ -84,15 +84,15 @@ public class FileManager {
     @Nullable
     @AnyThread
     ImageFileInfo getFileInfo(@NonNull final String isbn) {
-        return mFiles.get(isbn);
+        return files.get(isbn);
     }
 
     /**
-     * Search for a file according to preference of {@link ImageFileInfo.Size} and {@link Site}.
+     * Search for a file according to preference of {@link Size} and {@link Site}.
      * <p>
      * First checks the cache. If we already have a good image, abort the search and use it.
      * <p>
-     * We loop on {@link ImageFileInfo.Size} first, and for each, loop again on {@link Site}.
+     * We loop on {@link Size} first, and for each, loop again on {@link Site}.
      * The for() loop will break/return <strong>as soon as a cover file is found.</strong>
      * The first Site which has an image is accepted.
      * <p>
@@ -111,10 +111,10 @@ public class FileManager {
                                 @NonNull final Cancellable caller,
                                 @NonNull final String isbn,
                                 @IntRange(from = 0, to = 1) final int cIdx,
-                                @NonNull final ImageFileInfo.Size... sizes)
+                                @NonNull final Size... sizes)
             throws StorageException, CredentialsException {
 
-        final List<Site> enabledSites = Site.filterForEnabled(mSiteList);
+        final List<Site> enabledSites = Site.filterForEnabled(siteList);
 
         // We will disable sites on the fly for the *current* search without
         // modifying the list by using a simple bitmask.
@@ -129,13 +129,13 @@ public class FileManager {
         // We need to use the size as the outer loop.
         // The idea is to check all sites for the same size first.
         // If none respond with that size, try the next size inline.
-        for (final ImageFileInfo.Size size : sizes) {
+        for (final Size size : sizes) {
             if (caller.isCancelled()) {
                 return new ImageFileInfo(isbn);
             }
 
             // Do we already have a file previously downloaded?
-            imageFileInfo = mFiles.get(isbn);
+            imageFileInfo = files.get(isbn);
             if (imageFileInfo != null && imageFileInfo.isUseThisImage(size)) {
                 return imageFileInfo;
             }
@@ -188,7 +188,7 @@ public class FileManager {
                             // we got a file
                             imageFileInfo = new ImageFileInfo(isbn, fileSpec, size,
                                                               seConfig.getEngineId());
-                            mFiles.put(isbn, imageFileInfo);
+                            files.put(isbn, imageFileInfo);
 
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                                 Log.d(TAG, "search|SUCCESS"
@@ -230,7 +230,7 @@ public class FileManager {
 
         // Failed to find any size on all sites, record the failure to prevent future attempt
         imageFileInfo = new ImageFileInfo(isbn);
-        mFiles.put(isbn, imageFileInfo);
+        files.put(isbn, imageFileInfo);
         // and return the failure
         return imageFileInfo;
     }
@@ -239,14 +239,14 @@ public class FileManager {
      * Clean up all files we handled in this class.
      */
     public void purge() {
-        mFiles.values()
-              .stream()
-              .filter(Objects::nonNull)
-              .map(ImageFileInfo::getFile)
-              .forEach(file -> file.ifPresent(FileUtils::delete));
+        files.values()
+             .stream()
+             .filter(Objects::nonNull)
+             .map(ImageFileInfo::getFile)
+             .forEach(file -> file.ifPresent(FileUtils::delete));
 
         // not strictly needed, but future-proof
-        mFiles.clear();
+        files.clear();
     }
 
 }

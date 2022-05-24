@@ -241,7 +241,7 @@ public class BooklistAdapter
      */
     @NonNull
     public Cursor getCursor() {
-        return Objects.requireNonNull(cursor, "mCursor");
+        return Objects.requireNonNull(cursor, "cursor");
     }
 
     @Override

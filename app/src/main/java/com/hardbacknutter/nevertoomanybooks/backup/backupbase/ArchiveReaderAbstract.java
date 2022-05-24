@@ -240,7 +240,7 @@ public abstract class ArchiveReaderAbstract
 
         // Sanity check: the archive info should have been read during the validate phase
         // This is also a check that the validate method has been called.
-        Objects.requireNonNull(metaData, "mMetaData");
+        Objects.requireNonNull(metaData, "metaData");
 
         final int archiveVersion = metaData.getArchiveVersion();
         switch (archiveVersion) {

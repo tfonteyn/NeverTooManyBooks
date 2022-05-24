@@ -112,7 +112,7 @@ public class ExportHelper
 
     @NonNull
     public Uri getUri() {
-        return Objects.requireNonNull(uri, "mUri");
+        return Objects.requireNonNull(uri, "uri");
     }
 
     public void setUri(@NonNull final Uri uri) {
@@ -192,7 +192,7 @@ public class ExportHelper
                    StorageException,
                    IOException {
 
-        Objects.requireNonNull(uri, "mUri");
+        Objects.requireNonNull(uri, "uri");
 
         final ExportResults results = new ExportResults();
 

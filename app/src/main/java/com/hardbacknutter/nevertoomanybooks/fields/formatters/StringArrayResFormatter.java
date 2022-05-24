@@ -39,21 +39,21 @@ public class StringArrayResFormatter
         implements FieldFormatter<Long> {
 
     @NonNull
-    private final String[] mStringArray;
+    private final String[] stringArray;
 
     public StringArrayResFormatter(@NonNull final Context context,
                                    @ArrayRes final int arrayResId) {
-        mStringArray = context.getResources().getStringArray(arrayResId);
+        stringArray = context.getResources().getStringArray(arrayResId);
     }
 
     @Override
     @NonNull
     public String format(@NonNull final Context context,
                          @Nullable final Long rawValue) {
-        if (rawValue == null || rawValue < 0 || rawValue >= mStringArray.length) {
-            return mStringArray[0];
+        if (rawValue == null || rawValue < 0 || rawValue >= stringArray.length) {
+            return stringArray[0];
         } else {
-            return mStringArray[rawValue.intValue()];
+            return stringArray[rawValue.intValue()];
         }
     }
 }

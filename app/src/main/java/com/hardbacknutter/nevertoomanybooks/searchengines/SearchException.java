@@ -61,7 +61,7 @@ public class SearchException
     @NonNull
     public String toString() {
         return "SearchException{"
-               + "mSiteName='" + siteName + '\''
+               + "siteName='" + siteName + '\''
                + ", " + super.toString()
                + '}';
     }

@@ -101,10 +101,10 @@ public class CropImageActivity
     private static final long ESTIMATED_PICTURE_SIZE = 100_000L;
 
     /** The destination URI where to write the result to. */
-    private Uri mDestinationUri;
+    private Uri destinationUri;
 
     /** View Binding. */
-    private ActivityCropimageBinding mVb;
+    private ActivityCropimageBinding vb;
 
     @Override
     protected void attachBaseContext(@NonNull final Context base) {
@@ -116,13 +116,13 @@ public class CropImageActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         // uses full-screen theme, see manifest
         super.onCreate(savedInstanceState);
-        mVb = ActivityCropimageBinding.inflate(getLayoutInflater());
-        setContentView(mVb.getRoot());
+        vb = ActivityCropimageBinding.inflate(getLayoutInflater());
+        setContentView(vb.getRoot());
 
         // make an educated guess how many pics we can store.
         try {
             if (FileUtils.getFreeSpace(CoverDir.getDir(this)) / ESTIMATED_PICTURE_SIZE < 1) {
-                Snackbar.make(mVb.coverImage0, R.string.error_storage_no_space_left,
+                Snackbar.make(vb.coverImage0, R.string.error_storage_no_space_left,
                               Snackbar.LENGTH_LONG).show();
             }
 
@@ -163,12 +163,12 @@ public class CropImageActivity
         if (bitmap != null) {
             final String dstPath = Objects.requireNonNull(args.getString(BKEY_DESTINATION),
                                                           "dstPath");
-            mDestinationUri = Uri.fromFile(new File(dstPath));
+            destinationUri = Uri.fromFile(new File(dstPath));
 
-            mVb.coverImage0.initCropView(bitmap);
+            vb.coverImage0.initCropView(bitmap);
 
             // the FAB button saves the image, use 'back' to cancel.
-            mVb.fab.setOnClickListener(v -> onSave());
+            vb.fab.setOnClickListener(v -> onSave());
 
         } else {
             finish();
@@ -177,14 +177,14 @@ public class CropImageActivity
 
     private void onSave() {
         // prevent multiple saves (cropping the bitmap might take some time)
-        mVb.fab.setEnabled(false);
+        vb.fab.setEnabled(false);
 
-        Bitmap bitmap = mVb.coverImage0.getCroppedBitmap();
+        Bitmap bitmap = vb.coverImage0.getCroppedBitmap();
         if (bitmap != null) {
-            try (OutputStream os = getContentResolver().openOutputStream(mDestinationUri)) {
+            try (OutputStream os = getContentResolver().openOutputStream(destinationUri)) {
                 if (os != null) {
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
-                    setResult(Activity.RESULT_OK, new Intent().setData(mDestinationUri));
+                    setResult(Activity.RESULT_OK, new Intent().setData(destinationUri));
                 }
             } catch (@NonNull final IOException e) {
                 Logger.error(TAG, e);
@@ -202,7 +202,7 @@ public class CropImageActivity
     public static class ResultContract
             extends ActivityResultContract<ResultContract.Input, Uri> {
 
-        private File mDstFile;
+        private File dstFile;
 
         @CallSuper
         @NonNull
@@ -210,12 +210,12 @@ public class CropImageActivity
         public Intent createIntent(@NonNull final Context context,
                                    @NonNull final ResultContract.Input input) {
 
-            mDstFile = input.dstFile;
-            FileUtils.delete(mDstFile);
+            dstFile = input.dstFile;
+            FileUtils.delete(dstFile);
 
             return new Intent(context, CropImageActivity.class)
                     .putExtra(BKEY_SOURCE, input.srcFile.getAbsolutePath())
-                    .putExtra(BKEY_DESTINATION, mDstFile.getAbsolutePath());
+                    .putExtra(BKEY_DESTINATION, dstFile.getAbsolutePath());
         }
 
         @Nullable
@@ -227,7 +227,7 @@ public class CropImageActivity
             }
 
             if (intent == null || resultCode != Activity.RESULT_OK) {
-                FileUtils.delete(mDstFile);
+                FileUtils.delete(dstFile);
                 return null;
             }
             return intent.getData();

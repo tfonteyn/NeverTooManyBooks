@@ -285,9 +285,9 @@ public final class Site
     public String toString() {
         return "Site{"
                + "engineId=" + engineId
-               + ", mType=" + type
-               + ", mEnabled=" + enabled
-               + ", mSearchEngine=" + searchEngine
+               + ", type=" + type
+               + ", enabled=" + enabled
+               + ", searchEngine=" + searchEngine
                + '}';
     }
 
@@ -605,7 +605,7 @@ public final class Site
         @Override
         public void writeToParcel(@NonNull final Parcel dest,
                                   final int flags) {
-            dest.writeInt(this.ordinal());
+            dest.writeInt(ordinal());
         }
     }
 }
