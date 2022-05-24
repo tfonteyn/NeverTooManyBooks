@@ -34,6 +34,7 @@ import androidx.annotation.VisibleForTesting;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -1272,6 +1273,11 @@ public class Book
             }
         }
 
+        @NonNull
+        public static List<ContentType> getAll() {
+            return Arrays.asList(values());
+        }
+
         @Override
         public long getId() {
             return value;
@@ -1282,6 +1288,7 @@ public class Book
         public String getLabel(@NonNull final Context context) {
             return context.getString(labelResId);
         }
+
     }
 
     /**
@@ -1348,24 +1355,12 @@ public class Book
         }
 
         /**
-         * Retrieve a <strong>copy</strong> of the ALL map,
-         * with the string resource id as the user Locale actual String.
-         * <p>
-         * i.e. : (int,int) -> (int,String)
-         *
-         * @param context Current context
+         * Retrieve a <strong>copy</strong> of the ALL map.
          *
          * @return map
          */
         @NonNull
-        public static Map<Integer, String> getEditions(@NonNull final Context context) {
-            final Map<Integer, String> result = new LinkedHashMap<>();
-            ALL.forEach((key, value) -> result.put(key, context.getString(value)));
-            return result;
-        }
-
-        @NonNull
-        public static Map<Integer, Integer> getEditions() {
+        public static Map<Integer, Integer> getAll() {
             return new LinkedHashMap<>(ALL);
         }
     }

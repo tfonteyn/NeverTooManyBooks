@@ -212,7 +212,7 @@ public class ShowBookDetailsActivityViewModel
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.edition, DBKey.EDITION__BITMASK,
                                        new BitmaskFormatter(Details.Normal,
-                                                            Book.Edition.getEditions(context)))
+                                                            Book.Edition::getAll))
                            .addRelatedViews(R.id.lbl_edition));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.print_run, DBKey.PRINT_RUN));

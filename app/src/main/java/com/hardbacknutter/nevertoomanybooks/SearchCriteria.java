@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -238,13 +237,13 @@ public class SearchCriteria
     }
 
     /**
-     * Get a single string with all search words, for displaying.
+     * Get a list with all search words, for displaying.
      *
-     * @return an Optional with a csv string.
+     * @return an Optional with the list of criteria
      */
     @NonNull
-    public Optional<String> getDisplayText() {
-        final Collection<String> list = new ArrayList<>();
+    public Optional<List<String>> getDisplayText() {
+        final List<String> list = new ArrayList<>();
 
         if (ftsBookTitle != null && !ftsBookTitle.isEmpty()) {
             list.add(ftsBookTitle);
@@ -265,11 +264,10 @@ public class SearchCriteria
             list.add(loanee);
         }
 
-        final String text = String.join(",", list);
-        if (text.isEmpty()) {
+        if (list.isEmpty()) {
             return Optional.empty();
         } else {
-            return Optional.of(text);
+            return Optional.of(list);
         }
     }
 

@@ -582,6 +582,28 @@ public class SearchCoordinator
         fetchCover = fetchCovers;
     }
 
+    /**
+     * Clear all search criteria.
+     */
+    public void clearSearchCriteria() {
+        externalIdSearchText = null;
+        isbnSearchText = "";
+        authorSearchText = "";
+        titleSearchText = "";
+        publisherSearchText = "";
+    }
+
+    /**
+     * Search criteria.
+     *
+     * @param externalIds one or more ID's
+     *                    The key is the engine id,
+     *                    The value us the value of the external domain for that engine
+     */
+    public void setExternalIds(@Nullable final SparseArray<String> externalIds) {
+        externalIdSearchText = externalIds;
+    }
+
     /** Listener for <strong>individual</strong> search tasks. */
     private final TaskListener<Bundle> mSearchTaskListener = new TaskListener<>() {
 

@@ -36,7 +36,6 @@ import androidx.lifecycle.ViewModel;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
@@ -86,12 +85,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 public class EditBookViewModel
         extends ViewModel {
 
-    /** Log tag. */
-    private static final String TAG = "EditBookViewModel";
     public static final String COULD_NOT_UPDATE = "Could not update";
     public static final String ORIGINAL = "original=";
     public static final String MODIFIED = "modified=";
-
+    /** Log tag. */
+    private static final String TAG = "EditBookViewModel";
     /** the list with all fields. */
     private final List<Field<?, ? extends View>> fields = new ArrayList<>();
 
@@ -935,7 +933,7 @@ public class EditBookViewModel
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         fields.add(new BitmaskChipGroupField(fragmentId, R.id.edition, DBKey.EDITION__BITMASK,
-                                             Book.Edition::getEditions)
+                                             Book.Edition::getAll)
                            .addRelatedViews(R.id.lbl_edition));
     }
 
@@ -1029,7 +1027,7 @@ public class EditBookViewModel
         fields.add(new EntityListDropDownMenuField<>(fragmentId, R.id.book_type,
                                                      DBKey.TOC_TYPE__BITMASK,
                                                      context,
-                                                     Arrays.asList(Book.ContentType.values()))
+                                                     Book.ContentType.getAll())
                            .setTextInputLayoutId(R.id.lbl_book_type));
     }
 

@@ -31,7 +31,7 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
@@ -47,7 +47,7 @@ public class BitmaskChipGroupField
         extends BaseField<Integer, ChipGroup> {
 
     @NonNull
-    private final Function<Context, Map<Integer, String>> valuesSupplier;
+    private final Supplier<Map<Integer, Integer>> mapSupplier;
 
     @Nullable
     private final View.OnClickListener editChipListener;
@@ -55,14 +55,14 @@ public class BitmaskChipGroupField
     /**
      * Constructor.
      *
-     * @param supplier for a Map with all <strong>possible</strong> values
+     * @param mapSupplier for a Map with all <strong>possible</strong> values
      */
     public BitmaskChipGroupField(@NonNull final FragmentId fragmentId,
                                  @IdRes final int fieldViewId,
                                  @NonNull final String fieldKey,
-                                 @NonNull final Function<Context, Map<Integer, String>> supplier) {
+                                 @NonNull final Supplier<Map<Integer, Integer>> mapSupplier) {
         super(fragmentId, fieldViewId, fieldKey, fieldKey);
-        valuesSupplier = supplier;
+        this.mapSupplier = mapSupplier;
 
         editChipListener = view -> {
             final Integer previous = rawValue;
@@ -94,21 +94,20 @@ public class BitmaskChipGroupField
 
             final Context context = chipGroup.getContext();
 
-            for (final Map.Entry<Integer, String> entry :
-                    valuesSupplier.apply(context).entrySet()) {
+            mapSupplier.get().forEach((key, resId) -> {
 
                 final Chip chip = new Chip(context, null, R.attr.appChipFilterStyle);
-                chip.setChecked((entry.getKey() & rawValue) != 0);
+                chip.setChecked((key & rawValue) != 0);
                 chip.setOnClickListener(editChipListener);
 
                 // RTL-friendly Chip Layout
                 chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
 
-                chip.setTag(entry.getKey());
-                chip.setText(entry.getValue());
+                chip.setTag(key);
+                chip.setText(resId);
 
                 chipGroup.addView(chip);
-            }
+            });
         }
     }
 

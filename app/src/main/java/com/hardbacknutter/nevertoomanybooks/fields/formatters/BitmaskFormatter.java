@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -43,49 +44,49 @@ public class BitmaskFormatter
         extends HtmlFormatter<Long> {
 
     @NonNull
-    private final Map<Integer, String> mValues;
+    private final Supplier<Map<Integer, Integer>> mapSupplier;
 
     @NonNull
-    private final Details mDetails;
+    private final Details details;
 
     @NonNull
-    private final String mDelimiter;
+    private final String delimiter;
 
     /**
      * Constructor.
      *
-     * @param details how much details to show
-     * @param values  the full list of possible values
+     * @param details     how much details to show
+     * @param mapSupplier for a Map with all <strong>possible</strong> values
      */
     public BitmaskFormatter(@NonNull final Details details,
-                            @NonNull final Map<Integer, String> values) {
-        this(details, "; ", values);
+                            @NonNull final Supplier<Map<Integer, Integer>> mapSupplier) {
+        this(details, "; ", mapSupplier);
     }
 
     /**
      * Use {@link Details#Normal} with the given delimiter.
      *
-     * @param delimiter to use
-     * @param values    the full list of possible values
+     * @param delimiter   to use
+     * @param mapSupplier for a Map with all <strong>possible</strong> values
      */
     public BitmaskFormatter(@NonNull final String delimiter,
-                            @NonNull final Map<Integer, String> values) {
-        this(Details.Normal, delimiter, values);
+                            @NonNull final Supplier<Map<Integer, Integer>> mapSupplier) {
+        this(Details.Normal, delimiter, mapSupplier);
     }
 
     /**
      * Constructor.
      *
-     * @param details   how much details to show
-     * @param delimiter to use if details is {@link Details#Normal}
-     * @param values    the full list of possible values
+     * @param details     how much details to show
+     * @param delimiter   to use if details is {@link Details#Normal}
+     * @param mapSupplier for a Map with all <strong>possible</strong> values
      */
-    public BitmaskFormatter(@NonNull final Details details,
-                            @NonNull final String delimiter,
-                            @NonNull final Map<Integer, String> values) {
-        mDetails = details;
-        mValues = values;
-        mDelimiter = delimiter;
+    private BitmaskFormatter(@NonNull final Details details,
+                             @NonNull final String delimiter,
+                             @NonNull final Supplier<Map<Integer, Integer>> mapSupplier) {
+        this.details = details;
+        this.mapSupplier = mapSupplier;
+        this.delimiter = delimiter;
     }
 
     @NonNull
@@ -97,19 +98,21 @@ public class BitmaskFormatter
         }
         final int value = rawValue.intValue();
 
-        final List<String> list = mValues.entrySet()
-                                         .stream()
-                                         .filter(entry -> (entry.getKey() & value) != 0)
-                                         .map(Map.Entry::getValue)
-                                         .collect(Collectors.toList());
-        switch (mDetails) {
+        final List<String> list = mapSupplier.get()
+                                             .entrySet()
+                                             .stream()
+                                             .filter(entry -> (entry.getKey() & value) != 0)
+                                             .map(Map.Entry::getValue)
+                                             .map(context::getString)
+                                             .collect(Collectors.toList());
+        switch (details) {
             case Full: {
                 return list.stream()
                            .map(s -> "<li>" + s + "</li>")
                            .collect(Collectors.joining("", "<ul>", "</ul>"));
             }
             case Normal: {
-                return String.join(mDelimiter, list);
+                return String.join(delimiter, list);
             }
             case Short: {
                 if (list.size() > 1) {
