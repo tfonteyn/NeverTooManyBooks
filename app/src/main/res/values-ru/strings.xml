@@ -701,4 +701,10 @@
     <string name="warning_book_not_always_found">Не все сайты вернули достоверные данные.</string>
     <string name="menu_book_sync_list_with_details">Синхронизировать/позиционировать список</string>
     <string name="warning_no_site_supports_this_method">ВНИМАНИЕ: ни один из выбранных в данный момент сайтов не поддерживает поиск по %1$s. Пожалуйста, используйте меню сайта, чтобы включить альтернативные сайты, или используйте другой метод поиска.</string>
+    <string name="confirm_remove_toc_entry">Удалить название «%1$s» пользователя %2$s из этой книги?</string>
+    <string name="lbl_logfiles">Лог-файлы.</string>
+    <string name="lbl_database_upgrade">Файлы обновления базы данных.</string>
+    <string name="confirm_delete_style">Удалить стиль «%1$s»?</string>
+    <string name="confirm_scope_for_delete">Удалить заголовок «%1$s» пользователем %2$s.\n\nКак вы хотите применить это изменение? Примечание.\nВНИМАНИЕ «%3$s» нельзя отменить!</string>
+    <string name="lbl_book_type">Тип книги</string>
 </resources>

@@ -705,5 +705,11 @@
     <string name="warning_book_not_always_found">Pas tous les sites ont renvoyé de données valides.</string>
     <string name="menu_book_sync_list_with_details">Synchroniser/positionner la liste</string>
     <string name="warning_no_site_supports_this_method">AVERTISSEMENT : aucun des sites actuellement sélectionnés ne prend en charge la recherche par %1$s. Veuillez utiliser le menu du site pour activer les sites alternatifs ou utiliser une autre méthode de recherche.</string>
+    <string name="confirm_remove_toc_entry">Supprimer le titre «%1$s» par %2$s de ce livre ?</string>
+    <string name="confirm_delete_style">Supprimer le style «%1$s» ?</string>
+    <string name="lbl_logfiles">Fichiers journaux.</string>
+    <string name="lbl_database_upgrade">Fichiers de mise à niveau de la base de données.</string>
+    <string name="confirm_scope_for_delete">Supprimer le titre «%1$s» par %2$s.\n\nComment souhaitez-vous appliquer ce changement ?\nAVERTISSEMENT : Le choix « %3$s » ne peut pas être annulé !</string>
+    <string name="lbl_book_type">Type de livre</string>
 
 </resources>

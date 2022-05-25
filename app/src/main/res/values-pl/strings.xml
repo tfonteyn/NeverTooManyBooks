@@ -701,4 +701,10 @@
     <string name="warning_book_not_always_found">Nie wszystkie witryny zwróciły prawidłowe dane.</string>
     <string name="menu_book_sync_list_with_details">Synchronizuj/ustaw listę</string>
     <string name="warning_no_site_supports_this_method">OSTRZEŻENIE: żadna z aktualnie wybranych witryn nie obsługuje wyszukiwania według %1$s. Użyj menu witryny, aby włączyć alternatywne witryny lub użyj innej metody wyszukiwania.</string>
+    <string name="confirm_remove_toc_entry">Usunąć tytuł „%1$s” autorstwa %2$s z tej książki?</string>
+    <string name="lbl_logfiles">Pliki dziennika.</string>
+    <string name="lbl_database_upgrade">Pliki aktualizacji bazy danych.</string>
+    <string name="confirm_delete_style">Usunąć styl „%1$s”?</string>
+    <string name="confirm_scope_for_delete">Usuń tytuł „%1$s” do %2$s.\n\nJak chcesz zastosować tę zmianę?\nOSTRZEŻENIE: wyboru „%3$s” nie można cofnąć!</string>
+    <string name="lbl_book_type">Typ książki</string>
 </resources>

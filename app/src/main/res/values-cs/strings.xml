@@ -701,4 +701,10 @@
     <string name="warning_book_not_always_found">Ne všechny weby vrátily platná data.</string>
     <string name="menu_book_sync_list_with_details">Synchronizujte/umístěte seznam</string>
     <string name="warning_no_site_supports_this_method">VAROVÁNÍ: žádná z aktuálně vybraných stránek nepodporuje vyhledávání podle %1$s. Pomocí nabídky stránek povolte alternativní stránky nebo použijte jinou metodu vyhledávání.</string>
+    <string name="lbl_database_upgrade">Soubory aktualizace databáze.</string>
+    <string name="lbl_logfiles">Záznam souborů.</string>
+    <string name="confirm_delete_style">Smazat styl „%1$s“?</string>
+    <string name="confirm_remove_toc_entry">Odebrat z této knihy titul „%1$s“ od autora %2$s?</string>
+    <string name="confirm_scope_for_delete">Smazat název „%1$s“ od %2$s.\n\nJak chcete tuto změnu uplatnit?\nVAROVÁNÍ: Volbu „%3$s“ nelze vrátit zpět!</string>
+    <string name="lbl_book_type">Typ knihy</string>
 </resources>

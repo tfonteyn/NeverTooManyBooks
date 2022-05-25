@@ -95,16 +95,9 @@
 
     <string name="debug_subject">Gathered debugging information</string>
     <string name="debug_body">Please take the time to briefly describe the problem you are experiencing.</string>
-    <string name="debug_send_info_text">
-        This will create a backup copy of your database as well as any log files and send it to the developers.
-        If you do not wish to send any of these files, delete them from the mail attachments before sending.
-    </string>
+    <string name="debug_send_info_text">This will create a backup copy of your database as well as any log files and send it to the developers. If you do not wish to send any of these files, delete them from the mail attachments before sending.</string>
 
-    <string name="acra_resDialogText">
-        It looks like &APP_NAME; has crashed. If possible describe anything you think may be
-        relevant below and press “OK” to send us an email about the crash. You will see the email before it is sent.
-    </string>
-
+    <string name="acra_resDialogText">It looks like &APP_NAME; has crashed. If possible describe anything you think may be relevant below and press “OK” to send us an email about the crash. You will see the email before it is sent.</string>
     <string name="acra_resToastText">&APP_NAME; has crashed unexpectedly. Please help us to make the application better by reporting this crash.</string>
     <string name="acra_resDialogCommentPrompt">Your comments (or just leave blank):</string>
 
@@ -193,12 +186,7 @@
     <!-- ####################################################################################### -->
     <!-- ========== Warning messages ========== -->
     <!-- ####################################################################################### -->
-    <string name="warning_import_csv">
-        Warning. Importing data may update existing book records with new information if the
-        uuid column is not present and the id in the import file is the same as an existing id.
-        This is usually fine if you changed a field in an exported file. If you created a new book record,
-        or are importing someone else\'s books, ensure the uuid field is present or the id field is blank.
-    </string>
+    <string name="warning_import_csv">Warning. Importing data may update existing book records with new information if the uuid column is not present and the id in the import file is the same as an existing id. This is usually fine if you changed a field in an exported file. If you created a new book record, or are importing someone else\'s books, ensure the uuid field is present or the id field is blank.</string>
 
     <!-- Importing a CSV book list; individual lines can fail. Report the exact position.
      This is a warning only; import will continue. -->
@@ -275,12 +263,7 @@
     <string name="txt_displaying_n_books_in_m_entries">%1$d books, in %2$d entries</string>
 
     <!-- param 1: file size; param 2: button text -->
-    <string name="txt_cleanup_files">
-        Purgeable files currently use %1$s on the SD card. Log files and other data are saved on the SD card
-        at each upgrade, when you backup the database, or when the application crashes. Tap the button below
-        to purge these files from your SD card. If you have been experiencing crashing or other errors,
-        please consider using the “%2$s” button first.
-    </string>
+    <string name="txt_cleanup_files">Purgeable files currently use %1$s on the SD card. Log files and other data are saved on the SD card at each upgrade, when you backup the database, or when the application crashes. Tap the button below to purge these files from your SD card. If you have been experiencing crashing or other errors, please consider using the “%2$s” button first.</string>
 
     <string name="txt_share_book_im_reading">I\'m reading “%1$s” %2$s by %3$s %4$s</string>
     <string name="txt_tap_on_thumbnail_to_zoom">Tap on a thumbnail to display a larger image.</string>
@@ -326,7 +309,6 @@
     <!-- ####################################################################################### -->
     <!-- ========== Messages for actions that need confirming first. ========== -->
     <!-- ####################################################################################### -->
-    <string name="X_confirm_continue">Are you sure you want to continue ?</string>
 
     <string name="confirm_unsaved_edits">You have unsaved changes, if you exit now they will be lost.</string>
 
@@ -447,10 +429,7 @@
     <string name="tip_reset_all">Reset tips</string>
     <string name="tip_reset_done">Tips have been reset</string>
 
-    <string name="tip_book_search_by_text">
-        Adding books by ISBN is much more accurate than adding by author and title and is generally preferred.
-        Please remember you can sometimes find the correct barcode on the inside front cover.
-    </string>
+    <string name="tip_book_search_by_text">Adding books by ISBN is much more accurate than adding by author and title and is generally preferred. Please remember you can sometimes find the correct barcode on the inside front cover.</string>
     <string name="tip_booklist_styles_editor">
         You can use this screen to customize the list of styles that will be displayed in your
         default styles menu. A “tick” indicates the style will be shown in the list,
@@ -472,18 +451,9 @@
         variety of other preferences to build a style that you find useful.
     </string>
 
-    <string name="tip_authors_book_may_appear_more_than_once">
-        If shown for every author, a single book may appear more than once in a list.
-        In such a case deleting one of those books will delete all instances from the list.
-    </string>
-    <string name="tip_series_book_may_appear_more_than_once">
-        If shown in every series, a single book may appear more than once in a list.
-        In such a case deleting one of those books will delete all instances from the list.
-    </string>
-    <string name="tip_autorotate_camera_images">
-        If you find yourself always rotating camera images in the same direction,
-        try changing the application preferences to specify a rotation to apply automatically.
-    </string>
+    <string name="tip_authors_book_may_appear_more_than_once">If shown for every author, a single book may appear more than once in a list. In such a case deleting one of those books will delete all instances from the list.</string>
+    <string name="tip_series_book_may_appear_more_than_once">If shown in every series, a single book may appear more than once in a list. In such a case deleting one of those books will delete all instances from the list.</string>
+    <string name="tip_autorotate_camera_images">If you find yourself always rotating camera images in the same direction, try changing the application preferences to specify a rotation to apply automatically.</string>
     <!-- Tip text displayed when user enters the 'read-only' book view -->
     <string name="tip_view_only_help">You can swipe left or right to navigate to other books.</string>
     <!-- Tip text displayed when user enters the booklist -->
@@ -765,7 +735,6 @@
 
     <!-- Navigation panel menu option -->
     <string name="menu_backup_and_export">Backup &amp; Export</string>
-    <string name="X_lbl_data_import_export">Backup &amp; Import</string>
 
     <!-- Button text; must be short. -->
     <string name="action_import">Import</string>
@@ -804,9 +773,6 @@
     <!-- Info text for the RB -->
     <string name="txt_import_books_option_all">Import new books and overwrite existing books. Use this for restoring a backup.</string>
 
-    <string name="X_txt_import_books_option_all_books">New books will be added. Existing books will be updated.</string>
-    <string name="X_txt_import_books_option_new_and_changed">Only import books that are new, or which have been updated more recently in the archive. This is useful when synchronizing two devices.</string>
-
     <!-- progress final message - all data was imported. -->
     <string name="progress_end_import_complete">Import complete</string>
     <!-- progress final message - some data was imported. The user probably canceled before we finished. -->
@@ -822,7 +788,6 @@
     <string name="error_import_csv_line">Unknown error in row %1$d</string>
     <string name="error_import_csv_line_to_long">Line too long (row=%1$d, length=%2$d)</string>
     <string name="error_import_csv_column_count_mismatch">Column count mismatch in row %1$d</string>
-    <string name="X_error_import_csv_column_is_blank">Column “%1$s” is blank at row %2$d.</string>
     <!-- The user selected a file to import which *is* recognized, but cannot be imported. -->
     <string name="error_import_file_not_supported">The selected file cannot be imported.</string>
 
@@ -832,8 +797,6 @@
 
     <!-- Dialog title. -->
     <string name="lbl_backup">Backup</string>
-    <!-- Progress Dialog title. -->
-    <string name="X_lbl_backing_up">Backing up…</string>
     <!-- Dialog export all options. -->
     <string name="lbl_export_options">Select what will be exported.</string>
     <string name="lbl_export_books_option_all">All books</string>
@@ -1434,7 +1397,6 @@
     <string name="lbl_select_website">Select a website:</string>
 
     <string name="lbl_library">Library</string>
-    <string name="X_lbl_virtual_library">Virtual Library</string>
     <string name="lbl_virtual_libraries">Virtual libraries in this library</string>
     <string name="lbl_delete_removed_books">Delete local books which are no longer present on the server</string>
 
@@ -1536,7 +1498,10 @@
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
     <string name="lbl_archive_format_db_info">The SQLite database.</string>
     <string name="lbl_database">Database</string>
+    <string name="lbl_database_upgrade">Database upgrade files</string>
 
+    <string name="lbl_book_type">Book type</string>
+    <string name="lbl_logfiles">Log files</string>
 
     <!-- [VERIFIED] - heading/titles for settings/preference screens. -->
     <string name="lbl_settings">Settings</string>
@@ -1585,15 +1550,18 @@
     <string name="X_lbl_failed">Failed</string>
     <string name="X_lbl_queued">Queued</string>
     <string name="X_lbl_updated">Updated</string>
+    <string name="X_lbl_data_import_export">Backup &amp; Import</string>
+    <string name="X_txt_import_books_option_all_books">New books will be added. Existing books will be updated.</string>
+    <string name="X_txt_import_books_option_new_and_changed">Only import books that are new, or which have been updated more recently in the archive. This is useful when synchronizing two devices.</string>
+    <string name="X_error_import_csv_column_is_blank">Column “%1$s” is blank at row %2$d.</string>
+    <string name="X_lbl_backing_up">Backing up…</string>
+    <string name="X_lbl_virtual_library">Virtual Library</string>
 
     <string name="X_lbl_about_sourcecode">Source Code</string>
 
-    <string name="X_tip_booklist_global_properties">
-        You can use this screen to set the default characteristics of all booklist styles.
-        Most properties can be overridden by individual styles, but the default values are
-        defined here. You can change how lists are displayed at startup, and adjust a
-        variety of other preferences that will be applied to all your styles when possible.
-    </string>
+    <string name="X_tip_booklist_global_properties">You can use this screen to set the default characteristics of all booklist styles. Most properties can be overridden by individual styles, but the default values are defined here. You can change how lists are displayed at startup, and adjust a variety of other preferences that will be applied to all your styles when possible.</string>
+
+    <string name="X_confirm_continue">Are you sure you want to continue ?</string>
 
     <!-- in theory, this should never be shown unless we have a bug in the validators. -->
     <string name="X_vldt_failed_for_x">Validation failed for “%1$s”</string>
@@ -1654,13 +1622,6 @@
 
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Wishlist mapped bookshelf</string>
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>
-
-
-
-
-    <string name="lbl_book_type">Book type</string>
-    <string name="lbl_logfiles">Log files</string>
-    <string name="lbl_database_upgrade">Database last upgrade</string>
 
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->

@@ -701,4 +701,10 @@
     <string name="warning_book_not_always_found">Niet alle sites hebben geldige gegevens geretourneerd.</string>
     <string name="menu_book_sync_list_with_details">Synchroniseer/positioneer de lijst</string>
     <string name="warning_no_site_supports_this_method">WAARSCHUWING: geen van de momenteel geselecteerde sites ondersteunt zoeken op %1$s. Gebruik het sitemenu om alternatieve sites in te schakelen, of gebruik een andere zoekmethode.</string>
+    <string name="confirm_remove_toc_entry">De titel „%1$s” door %2$s uit dit boek verwijderen?</string>
+    <string name="confirm_delete_style">De stijl „%1$s” verwijderen?</string>
+    <string name="lbl_logfiles">Log bestanden.</string>
+    <string name="lbl_database_upgrade">Database-upgradebestanden.</string>
+    <string name="confirm_scope_for_delete">Verwijder de titel „%1$s” door %2$s.\n\nHoe wilt u deze wijziging toepassen?\nWAARSCHUWING: De keuze „%3$s” kan niet ongedaan worden gemaakt!</string>
+    <string name="lbl_book_type">Boektype</string>
 </resources>

@@ -702,4 +702,10 @@
     <string name="warning_book_not_always_found">Tüm siteler geçerli veri döndürmedi.</string>
     <string name="menu_book_sync_list_with_details">Listeyi senkronize edin/konumlandırın</string>
     <string name="warning_no_site_supports_this_method">UYARI: Şu anda seçili sitelerin hiçbiri %1$s ile aramayı desteklemiyor. Alternatif siteleri etkinleştirmek için lütfen site menüsünü kullanın veya farklı bir arama yöntemi kullanın.</string>
+    <string name="confirm_remove_toc_entry">“%1$s” başlığı %2$s tarafından bu kitaptan kaldırılsın mı?</string>
+    <string name="lbl_logfiles">Log dosyaları.</string>
+    <string name="lbl_database_upgrade">Veritabanı yükseltme dosyaları.</string>
+    <string name="confirm_delete_style">“%1$s” stili silinsin mi?</string>
+    <string name="confirm_scope_for_delete">“%1$s” başlığını %2$s ile silin.\n\nBu değişikliği nasıl uygulamak istersiniz?\nUYARI: “%3$s” seçimi geri alınamaz!</string>
+    <string name="lbl_book_type">Kitap türü</string>
 </resources>

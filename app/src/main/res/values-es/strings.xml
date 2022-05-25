@@ -704,4 +704,10 @@
     <string name="warning_book_not_always_found">No todos los sitios devolvieron datos válidos.</string>
     <string name="menu_book_sync_list_with_details">Sincronizar/posicionar la lista</string>
     <string name="warning_no_site_supports_this_method">ADVERTENCIA: ninguno de los sitios seleccionados actualmente admite la búsqueda por %1$s. Utilice el menú del sitio para habilitar sitios alternativos o utilice un método de búsqueda diferente.</string>
+    <string name="confirm_remove_toc_entry">¿Eliminar el título «%1$s» de %2$s de este libro?</string>
+    <string name="confirm_delete_style">¿Eliminar el estilo «%1$s»?</string>
+    <string name="lbl_logfiles">Archivos de registro.</string>
+    <string name="lbl_database_upgrade">Archivos de actualización de base de datos.</string>
+    <string name="confirm_scope_for_delete">Eliminar el título «%1$s» por %2$s.\n\n¿Cómo desea aplicar este cambio?\nADVERTENCIA: ¡La opción «%3$s» no se puede deshacer!</string>
+    <string name="lbl_book_type">tipo de libro</string>
 </resources>

@@ -704,5 +704,11 @@
     <string name="warning_book_not_always_found">Nicht alle Websites haben gültige Daten zurückgegeben.</string>
     <string name="menu_book_sync_list_with_details">Liste synchronisieren/positionieren</string>
     <string name="warning_no_site_supports_this_method">WARNUNG: Keine der derzeit ausgewählten Websites unterstützt die Suche nach %1$s. Bitte verwenden Sie das Website-Menü, um alternative Websites zu aktivieren, oder verwenden Sie eine andere Suchmethode.</string>
+    <string name="confirm_remove_toc_entry">Den Titel „%1$s“ von %2$s aus diesem Buch entfernen?</string>
+    <string name="lbl_logfiles">Protokolldateien.</string>
+    <string name="lbl_database_upgrade">Datenbank-Upgrade-Dateien.</string>
+    <string name="confirm_delete_style">Den Stil „%1$s“ löschen?</string>
+    <string name="confirm_scope_for_delete">Lösche den Titel „%1$s“ von %2$s.\n\nWie möchten Sie diese Änderung anwenden?\nWARNUNG: Die Auswahl „%3$s“ kann nicht rückgängig gemacht werden!</string>
+    <string name="lbl_book_type">Buchart</string>
 
 </resources>

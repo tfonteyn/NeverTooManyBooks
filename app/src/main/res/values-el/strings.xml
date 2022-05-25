@@ -704,4 +704,10 @@
     <string name="warning_book_not_always_found">Δεν επέστρεψαν όλοι οι ιστότοποι έγκυρα δεδομένα.</string>
     <string name="menu_book_sync_list_with_details">Συγχρονισμός/τοποθέτηση της λίστας</string>
     <string name="warning_no_site_supports_this_method">ΠΡΟΕΙΔΟΠΟΙΗΣΗ: κανένας από τους επιλεγμένους ιστότοπους δεν υποστηρίζει την αναζήτηση κατά %1$s. Χρησιμοποιήστε το μενού ιστότοπου για να ενεργοποιήσετε εναλλακτικούς ιστότοπους ή χρησιμοποιήστε διαφορετική μέθοδο αναζήτησης.</string>
+    <string name="confirm_remove_toc_entry">Να καταργηθεί ο τίτλος «%1$s» κατά %2$s από αυτό το βιβλίο;</string>
+    <string name="confirm_delete_style">Διαγραφή του στυλ «%1$s»;</string>
+    <string name="lbl_logfiles">Αρχεία καταγραφής.</string>
+    <string name="lbl_database_upgrade">Αρχεία αναβάθμισης βάσης δεδομένων.</string>
+    <string name="confirm_scope_for_delete">Διαγράψτε τον τίτλο «%1$s» κατά %2$s\n\nΠώς θέλετε να εφαρμόσετε αυτήν την αλλαγή;\nΠΡΟΕΙΔΟΠΟΙΗΣΗ: Η επιλογή «%3$s» δεν μπορεί να αναιρεθεί!</string>
+    <string name="lbl_book_type">Τύπος βιβλίου</string>
 </resources>
