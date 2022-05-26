@@ -290,7 +290,6 @@ dependencies {
     // https://www.acra.ch/docs/Setup/
     implementation("ch.acra:acra-core:${acra_version}")
     implementation("ch.acra:acra-mail:${acra_version}")
-    implementation("ch.acra:acra-toast:${acra_version}")
     implementation("ch.acra:acra-dialog:${acra_version}")
 
     // local tests use JUnit5

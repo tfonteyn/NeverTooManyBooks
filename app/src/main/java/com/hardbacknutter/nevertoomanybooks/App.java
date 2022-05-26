@@ -33,7 +33,6 @@ import org.acra.ReportField;
 import org.acra.config.CoreConfigurationBuilder;
 import org.acra.config.DialogConfigurationBuilder;
 import org.acra.config.MailSenderConfigurationBuilder;
-import org.acra.config.ToastConfigurationBuilder;
 import org.acra.data.StringFormat;
 import org.acra.file.Directory;
 
@@ -115,12 +114,10 @@ public class App
                                   // Device
                                   ReportField.PHONE_MODEL,
                                   ReportField.BRAND,
-                                  // ReportField.PRODUCT,
-                                  // ReportField.DEVICE_FEATURES,
                                   ReportField.DISPLAY,
                                   ReportField.ANDROID_VERSION,
                                   ReportField.BUILD,
-                                  // ReportField.ENVIRONMENT,
+                                  ReportField.ENVIRONMENT,
                                   ReportField.TOTAL_MEM_SIZE,
                                   ReportField.AVAILABLE_MEM_SIZE,
 
@@ -152,12 +149,6 @@ public class App
                                   new MailSenderConfigurationBuilder()
                                           .withMailTo(BuildConfig.EMAIL_ACRA)
                                           .withReportFileName(EMAIL_ACRA_ATTACHMENTS)
-                                          .withEnabled(true)
-                                          .build(),
-                                  // Optional, displayed as soon as the crash occurs,
-                                  // before collecting data which can take a few seconds
-                                  new ToastConfigurationBuilder()
-                                          .withText(getString(R.string.acra_resToastText))
                                           .withEnabled(true)
                                           .build(),
                                   new DialogConfigurationBuilder()
