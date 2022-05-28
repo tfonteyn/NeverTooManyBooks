@@ -1,37 +1,11 @@
 Supported Android versions:
 
 * v2.1.0 requires Android 8.0 (API 26)
-* v2.0.0 requires Android 7.0 (API 24)
-* v1.2.0 requires Android 7.0 (API 24)
-* v1.1.2 runs on Android 6.0 (API 23)
-
-Recent code changes using classes from the "coreLibraryDesugaring" functionality,
-and "minSdkVersion 23" led to startup crashes on devices with API 23.
-The same configuration works fine on devices with API 24.
-The reason seems related to https://developer.android.com/studio/build/multidex.html
-Not fixing.
 
 ----------------------------------------------------------------------------------------------------
 Amazon...
  * Goodreads is owned by Amazon and is shutting their API down.
  * LibraryThing is 40% owned by AbeBooks which is owned by Amazon and the API is already shut down.
-
-----------------------------------------------------------------------------------------------------
-ENHANCE: (Calibre) tags... implement a full tag system in our own database.
- * bookshelves 'are' tags? redefine the meaning of bookshelf as a 'tag'?
- * and then define some tags as being shelves ?
-
-ENHANCE: identifier... adopt the Calibre free-style identifiers as our own
-
-ENHANCE: usage "profile": comics versus fiction books versus non-fiction books.
- * optimize all search engines
- * optimize visible fields.
- * show/hide only certain author types.
-
-TODO: move Location, Format ... to separate tables ?
-
-ENHANCE: image url loading... keep DIY, or move to Glide (v4.10.0 is using androidx)
-
 ----------------------------------------------------------------------------------------------------
 
 Issues checked: 834 down to 677 (inc)

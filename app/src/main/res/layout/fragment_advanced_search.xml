@@ -43,7 +43,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/author"
-                style="@style/TIE"
+                style="@style/TIE.Generic"
                 android:imeOptions="actionDone"
                 android:inputType="textMultiLine"
                 tools:ignore="Autofill"
@@ -62,7 +62,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/title"
-                style="@style/TIE"
+                style="@style/TIE.Generic"
                 android:imeOptions="actionDone"
                 android:inputType="textMultiLine"
                 tools:ignore="Autofill"
@@ -82,7 +82,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/series_title"
-                style="@style/TIE"
+                style="@style/TIE.Generic"
                 android:imeOptions="actionDone"
                 android:inputType="textMultiLine"
                 tools:ignore="Autofill"
@@ -102,7 +102,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/publisher"
-                style="@style/TIE"
+                style="@style/TIE.Generic"
                 android:imeOptions="actionDone"
                 android:inputType="textMultiLine"
                 tools:ignore="Autofill"
@@ -122,7 +122,7 @@
 
         <!--        <com.google.android.material.textfield.TextInputEditText-->
         <!--            android:id="@+id/loanee"-->
-        <!--            style="@style/TIE"-->
+        <!--            style="@style/TIE.Generic"-->
         <!--            android:imeOptions="actionDone"-->
         <!--            android:inputType="textMultiLine"-->
         <!--            tools:ignore="Autofill"-->
@@ -142,7 +142,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/keywords"
-                style="@style/TIE"
+                style="@style/TIE.Generic"
                 android:imeOptions="actionDone"
                 android:inputType="textMultiLine"
                 tools:ignore="Autofill"

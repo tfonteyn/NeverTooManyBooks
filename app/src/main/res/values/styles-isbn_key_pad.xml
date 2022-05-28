@@ -23,8 +23,7 @@
 <resources
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Base style; not to be used directly in layouts. -->
-    <style name="IsbnKeyPad" parent="Widget.Material3.Button.ElevatedButton">
+    <style name="Base.IsbnKeyPad" parent="Widget.Material3.Button.ElevatedButton">
         <item name="android:layout_width">@dimen/isbn_keypad_key_width</item>
         <item name="android:layout_height">@dimen/isbn_keypad_key_height</item>
         <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>
@@ -34,8 +33,14 @@
     </style>
 
     <!-- 0..9 and X -->
-    <style name="IsbnKeyPad.NumberButton">
+    <style name="IsbnKeyPad.NumberButton" parent="Base.IsbnKeyPad">
         <item name="android:textSize">@dimen/isbn_keypad_number_text_size</item>
+    </style>
+
+    <style name="IsbnKeyPad.SearchButton" parent="Base.IsbnKeyPad">
+        <item name="android:textAppearance">?attr/textAppearanceButton</item>
+        <item name="android:textSize">@dimen/isbn_keypad_search_text_size</item>
+        <item name="android:text">@android:string/search_go</item>
     </style>
 
     <style name="IsbnKeyPad.BackspaceButton" parent="Widget.Material3.Button.IconButton">
@@ -46,12 +51,6 @@
         <item name="icon">@drawable/ic_baseline_backspace_24</item>
         <item name="iconTint">?attr/colorOnSurfaceVariant</item>
         <item name="android:contentDescription">@string/action_delete</item>
-    </style>
-
-    <style name="IsbnKeyPad.SearchButton">
-        <item name="android:textAppearance">?attr/textAppearanceButton</item>
-        <item name="android:textSize">12sp</item>
-        <item name="android:text">@android:string/search_go</item>
     </style>
 
     <style name="IsbnKeyPad.ClearQueueButton" parent="Widget.Material3.Button.ElevatedButton.Icon">

@@ -65,7 +65,7 @@
         <item name="android:orientation">vertical</item>
     </style>
 
-    <!-- a row inside a list details row; not to be used directly in layouts -->
+    <!-- bae style for a row inside a list details row -->
     <style name="Base.RowEditor.Text" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

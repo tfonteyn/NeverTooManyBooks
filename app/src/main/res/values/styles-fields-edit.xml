@@ -21,14 +21,13 @@
 
 <!--
     Edit fields;
-    'TIL'      == com.google.android.material.textfield.TextInputLayout
-    'TIE'      == com.google.android.material.textfield.TextInputEditText
-    'TIA'      == com.google.android.material.textfield.MaterialAutoCompleteTextView
+    'TIL' == com.google.android.material.textfield.TextInputLayout
+    'TIE' == com.google.android.material.textfield.TextInputEditText
+    'TIA' == com.google.android.material.textfield.MaterialAutoCompleteTextView
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Base style; not to be used directly in layouts. -->
-    <style name="TIL" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense">
+    <style name="Base.TIL" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <!-- 4x so we can override individually (is this another Android bug?) -->
@@ -39,13 +38,13 @@
     </style>
 
     <!-- See "TIE.ReadOnly" -->
-    <style name="TIL.ReadOnly">
+    <style name="TIL.ReadOnly" parent="Base.TIL">
         <item name="endIconMode">none</item>
         <item name="android:focusable">false</item>
         <item name="android:focusableInTouchMode">false</item>
     </style>
 
-    <style name="TIL.Text">
+    <style name="TIL.Text" parent="Base.TIL">
         <item name="endIconMode">custom</item>
     </style>
 
@@ -100,7 +99,7 @@
     </style>
 
     <!-- Brings up a dialog/screen to let the user pick item(s) from a list -->
-    <style name="TIL.ListPicker">
+    <style name="TIL.ListPicker" parent="Base.TIL">
         <item name="endIconMode">custom</item>
         <item name="endIconDrawable">@drawable/ic_baseline_edit_24</item>
         <item name="android:focusable">false</item>
@@ -108,7 +107,7 @@
     </style>
 
     <!-- Brings up a dialog/screen to let the user pick a date; the end-icon clears the field -->
-    <style name="TIL.DatePicker">
+    <style name="TIL.DatePicker" parent="Base.TIL">
         <item name="endIconMode">custom</item>
         <item name="endIconDrawable">@drawable/ic_baseline_cancel_24</item>
         <item name="android:focusable">false</item>
@@ -187,8 +186,7 @@
 
     <!-- *************************************************************************************** -->
 
-    <!-- Generic input field + base style for some localized styles. -->
-    <style name="TIE" parent="Widget.Material3.TextInputEditText.OutlinedBox.Dense">
+    <style name="Base.TIE" parent="Widget.Material3.TextInputEditText.OutlinedBox.Dense">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
@@ -197,7 +195,7 @@
          Not localized.
          See "TIL.DatePicker" + "TIL.ListPicker"
      -->
-    <style name="TIE.ReadOnly">
+    <style name="TIE.ReadOnly" parent="Base.TIE">
         <item name="android:inputType">none</item>
         <!-- installing an onClickListener will flip this to 'true' -->
         <item name="android:clickable">false</item>
@@ -209,10 +207,14 @@
         <item name="android:focusableInTouchMode">false</item>
     </style>
 
+    <style name="TIE.Generic" parent="Base.TIE">
+
+    </style>
+
     <!-- Dedicated series 'number' field.
          Not localized.
      -->
-    <style name="TIE.SeriesNumber">
+    <style name="TIE.SeriesNumber" parent="Base.TIE">
         <item name="android:inputType">text</item>
         <item name="android:singleLine">true</item>
     </style>
@@ -220,7 +222,7 @@
     <!-- Plain 4 digit year field.
          Not localized.
      -->
-    <style name="TIE.Year">
+    <style name="TIE.Year" parent="Base.TIE">
         <item name="android:inputType">number</item>
         <item name="android:maxLength">4</item>
     </style>
@@ -228,28 +230,29 @@
     <!-- ISBN / EAN or other code
          Not localized.
      -->
-    <style name="TIE.Isbn">
+    <style name="TIE.Isbn" parent="Base.TIE">
         <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
         <item name="android:digits">1234567890xX</item>
     </style>
 
-    <!-- Base style; not to be used directly in layouts.
-         Not localized.
-     -->
-    <style name="TIE.Price">
+    <style name="Base.TIE.Price">
         <item name="android:textAlignment">viewEnd</item>
         <item name="android:completionThreshold">1</item>
         <item name="android:singleLine">true</item>
         <item name="android:background">@null</item>
     </style>
 
-    <!-- The price LISTED field. This field can come from a search, hence it must be text based. -->
-    <style name="TIE.Price.Listed">
+    <!-- The price LISTED field. This field can come from a search, hence it must be text based.
+        Not localized.
+    -->
+    <style name="TIE.Price.Listed" parent="Base.TIE.Price">
         <item name="android:inputType">textCapWords</item>
     </style>
 
-    <!-- Price PAID is user input only -->
-    <style name="TIE.Price.Paid">
+    <!-- Price PAID is user input only
+        Not localized.
+    -->
+    <style name="TIE.Price.Paid" parent="Base.TIE.Price">
         <item name="android:inputType">numberDecimal</item>
     </style>
 

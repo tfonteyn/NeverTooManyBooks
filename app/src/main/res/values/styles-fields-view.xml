@@ -22,8 +22,7 @@
 <!-- Data fields. -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Base style; not to be used directly in layouts. -->
-    <style name="Field" parent="Widget.MaterialComponents.TextView">
+    <style name="Base.Field" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textIsSelectable">true</item>
@@ -34,7 +33,7 @@
     <!-- 'medium' detail field; for example Series title, ...
     Set app:layout_constraintStart_toStartOf="@id/thisFieldsLabel"
     -->
-    <style name="Field.Generic">
+    <style name="Field.Generic" parent="Base.Field">
         <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
     </style>
 
@@ -43,7 +42,7 @@
         <item name="layout_goneMarginStart">@dimen/field_margin_start</item>
     </style>
 
-    <style name="Field.BookTitle">
+    <style name="Field.BookTitle" parent="Base.Field">
         <item name="android:textStyle">italic</item>
         <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
         <item name="android:maxLines">2</item>
@@ -54,12 +53,12 @@
         <item name="android:textSize">22sp</item>
     </style>
 
-    <style name="Field.Isbn">
+    <style name="Field.Isbn" parent="Base.Field">
         <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
     </style>
 
     <!-- Book personal notes. -->
-    <style name="Field.Notes">
+    <style name="Field.Notes" parent="Base.Field">
         <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
         <!-- A bigger text field just looks nicer with these start/end margins. -->
         <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
@@ -67,7 +66,7 @@
     </style>
 
     <!-- Book Description. -->
-    <style name="Field.Description">
+    <style name="Field.Description" parent="Base.Field">
         <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
         <item name="android:background">@drawable/bg_large_text_field</item>
         <!-- serves as it's own label. -->
@@ -78,7 +77,7 @@
     </style>
 
     <!-- Lend out to X. -->
-    <style name="Field.LendOutToBar">
+    <style name="Field.LendOutToBar" parent="Base.Field">
         <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
         <item name="android:background">?attr/colorSurfaceInverse</item>
         <item name="android:textColor">?android:attr/textColorPrimaryInverse</item>

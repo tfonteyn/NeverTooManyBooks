@@ -131,7 +131,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/pages"
-                style="@style/TIE"
+                style="@style/TIE.Generic"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="999"
