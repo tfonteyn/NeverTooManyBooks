@@ -29,6 +29,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 
 import org.jsoup.nodes.Document;
@@ -67,12 +68,12 @@ public class LastDodoSearchEngine
      * Param 1: external book ID; really a 'long'.
      * Param 2: 147==comics
      */
-    private static final String BY_EXTERNAL_ID = "/search?q=%1$s&type=147";
+    private static final String BY_EXTERNAL_ID = "/nl/items/%1$s";
     /**
      * Param 1: ISBN.
      * Param 2: 147==comics.
      */
-    private static final String BY_ISBN = "/search?q=%1$s&type=147";
+    private static final String BY_ISBN = "/nl/areas/search?q=%1$s&type_id=147";
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -89,7 +90,7 @@ public class LastDodoSearchEngine
                                               SearchSites.LAST_DODO,
                                               R.string.site_lastdodo_nl,
                                               "lastdodo",
-                                              "https://www.lastdodo.nl/")
+                                              "https://www.lastdodo.nl")
                 .setCountry("NL", "nl")
                 .setFilenameSuffix("LDD")
 
@@ -157,11 +158,16 @@ public class LastDodoSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         // Grab the first search result, and redirect to that page
-        final Element section = document.selectFirst("div.cw-lot_content");
+        final Element section = document.selectFirst("div.card-body");
         if (section != null) {
             final Element urlElement = section.selectFirst("a");
             if (urlElement != null) {
-                final Document redirected = loadDocument(context, urlElement.attr("href"));
+                String url = urlElement.attr("href");
+                // sanity check - it normally does NOT have the protocol/site part
+                if (url.startsWith("/")) {
+                    url = getSiteUrl() + url;
+                }
+                final Document redirected = loadDocument(context, url);
                 if (!isCancelled()) {
                     parse(context, redirected, fetchCovers, bookData);
                 }
@@ -181,111 +187,119 @@ public class LastDodoSearchEngine
         //noinspection NonConstantStringShouldBeStringBuffer
         String tmpSeriesNr = null;
 
-        final Element container = document.getElementById("catalogue_information");
-        if (container == null) {
+        final Elements sections = document.select("section.inner");
+        if (sections.size() < 1) {
+            return;
+        }
+
+        final Element sectionTitle = sections.get(0).selectFirst("h2.section-title");
+        if (sectionTitle == null || !"Catalogusgegevens".equals(sectionTitle.text())) {
             return;
         }
 
         String tmpString;
 
-        for (final Element tr : container.select("tr")) {
-            final Element th = tr.child(0);
-            final Element td = tr.child(1);
-            switch (th.text()) {
-                case "LastDodo nummer:":
-                    processText(td, DBKey.SID_LAST_DODO_NL, bookData);
-                    break;
+        for (final Element divRows : sections.get(0).select("div.row-information")) {
+            final Element th = divRows.selectFirst("div.label");
+            final Element td = divRows.selectFirst("div.value");
+            if (th != null && td != null) {
 
-                case "Titel:":
-                    processText(td, DBKey.TITLE, bookData);
-                    break;
+                switch (th.text()) {
+                    case "LastDodo nummer":
+                        processText(td, DBKey.SID_LAST_DODO_NL, bookData);
+                        break;
 
-                case "Serie / held:":
-                    processSeries(td);
-                    break;
+                    case "Titel":
+                        processText(td, DBKey.TITLE, bookData);
+                        break;
 
-                case "Reeks:":
-                    processText(td.child(0), SiteField.KEY_REEKS, bookData);
-                    break;
+                    case "Serie / held":
+                        processSeries(td);
+                        break;
 
-                case "Nummer in reeks:":
-                    tmpSeriesNr = td.text().trim();
-                    break;
+                    case "Reeks":
+                        processText(td.child(0), SiteField.KEY_REEKS, bookData);
+                        break;
 
-                case "Nummertoevoeging:":
-                    tmpString = td.text().trim();
-                    if (!tmpString.isEmpty()) {
-                        //noinspection StringConcatenationInLoop
-                        tmpSeriesNr += '|' + tmpString;
-                    }
-                    break;
+                    case "Nummer in reeks":
+                        tmpSeriesNr = td.text().trim();
+                        break;
 
-                case "Tekenaar:": {
-                    processAuthor(td, Author.TYPE_ARTIST);
-                    break;
-                }
-                case "Scenarist:": {
-                    processAuthor(td, Author.TYPE_WRITER);
-                    break;
-                }
-                case "Uitgeverij:":
-                    processPublisher(td);
-                    break;
-
-                case "Jaar:":
-                    processText(td, DBKey.BOOK_PUBLICATION__DATE, bookData);
-                    break;
-
-                case "Cover:":
-                    processText(td, DBKey.FORMAT, bookData);
-                    break;
-
-                case "Druk:":
-                    processText(td, SiteField.KEY_PRINTING, bookData);
-                    break;
-
-                case "Inkleuring:":
-                    processText(td, DBKey.COLOR, bookData);
-                    break;
-
-                case "ISBN:":
-                    tmpString = td.text();
-                    if (!"Geen".equals(tmpString)) {
-                        tmpString = ISBN.cleanText(tmpString);
+                    case "Nummertoevoeging":
+                        tmpString = td.text().trim();
                         if (!tmpString.isEmpty()) {
-                            bookData.putString(DBKey.BOOK_ISBN, tmpString);
+                            //noinspection StringConcatenationInLoop
+                            tmpSeriesNr += '|' + tmpString;
                         }
+                        break;
+
+                    case "Tekenaar": {
+                        processAuthor(td, Author.TYPE_ARTIST);
+                        break;
                     }
-                    break;
-
-                case "Oplage:":
-                    processText(td, DBKey.PRINT_RUN, bookData);
-                    break;
-
-                case "Aantal bladzijden:":
-                    processText(td, DBKey.PAGE_COUNT, bookData);
-                    break;
-
-                case "Afmetingen:":
-                    if (!"? x ? cm".equals(td.text())) {
-                        processText(td, SiteField.KEY_SIZE, bookData);
+                    case "Scenarist": {
+                        processAuthor(td, Author.TYPE_WRITER);
+                        break;
                     }
-                    break;
+                    case "Uitgeverij":
+                        processPublisher(td);
+                        break;
 
-                case "Taal / dialect:":
-                    processLanguage(context, td, bookData);
-                    break;
+                    case "Jaar":
+                        processText(td, DBKey.BOOK_PUBLICATION__DATE, bookData);
+                        break;
 
-                case "Soort:":
-                    processType(td, bookData);
-                    break;
+                    case "Cover":
+                        processText(td, DBKey.FORMAT, bookData);
+                        break;
 
-                case "Bijzonderheden:":
-                    processText(td, DBKey.DESCRIPTION, bookData);
-                    break;
+                    case "Druk":
+                        processText(td, SiteField.KEY_PRINTING, bookData);
+                        break;
 
-                default:
-                    break;
+                    case "Inkleuring":
+                        processText(td, DBKey.COLOR, bookData);
+                        break;
+
+                    case "ISBN":
+                        tmpString = td.text();
+                        if (!"Geen".equals(tmpString)) {
+                            tmpString = ISBN.cleanText(tmpString);
+                            if (!tmpString.isEmpty()) {
+                                bookData.putString(DBKey.BOOK_ISBN, tmpString);
+                            }
+                        }
+                        break;
+
+                    case "Oplage":
+                        processText(td, DBKey.PRINT_RUN, bookData);
+                        break;
+
+                    case "Aantal bladzijden":
+                        processText(td, DBKey.PAGE_COUNT, bookData);
+                        break;
+
+                    case "Afmetingen":
+                        if (!"? x ? cm".equals(td.text())) {
+                            processText(td, SiteField.KEY_SIZE, bookData);
+                        }
+                        break;
+
+                    case "Taal / dialect":
+                        processLanguage(context, td, bookData);
+                        break;
+
+                    case "Soort":
+                        processType(td, bookData);
+                        break;
+
+                    case "Bijzonderheden":
+                        processText(td, DBKey.DESCRIPTION, bookData);
+                        break;
+
+                    default:
+                        break;
+                }
             }
         }
 
@@ -307,7 +321,7 @@ public class LastDodoSearchEngine
         }
 
         // We DON'T store a toc with a single entry (i.e. the book title itself).
-        parseToc(document).ifPresent(toc -> {
+        parseToc(sections).ifPresent(toc -> {
             bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
             if (TocEntry.hasMultipleAuthors(toc)) {
                 bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Anthology.value);
@@ -385,21 +399,38 @@ public class LastDodoSearchEngine
      * <p>
      * This is not practical in the scope of this application.
      *
-     * @param document to parse
+     * @param sections to parse
      *
      * @return toc list with at least 2 entries
      */
     @NonNull
-    private Optional<ArrayList<TocEntry>> parseToc(@NonNull final Document document) {
-        Element section = document.selectFirst("legend:contains(Verhalen in dit Album)");
-        if (section != null) {
-            final ArrayList<TocEntry> toc = new ArrayList<>();
-            section = section.nextElementSibling();
-            if (section != null) {
-                for (final Element tr : section.select("tr:contains(Verhaaltitel)")) {
-                    toc.add(new TocEntry(authorList.get(0), tr.child(1).text()));
+    private Optional<ArrayList<TocEntry>> parseToc(@NonNull final Collection<Element> sections) {
+
+        // section 0 was the "Catalogusgegevens"; normally section 3 is the one we need here...
+        Element tocSection = null;
+        for (final Element section : sections) {
+            final Element sectionTitle = section.selectFirst("h2.section-title");
+            if (sectionTitle != null) {
+                if ("Verhalen in dit album".equals(sectionTitle.text())) {
+                    tocSection = section;
+                    break;
                 }
             }
+        }
+
+
+        if (tocSection != null) {
+            final ArrayList<TocEntry> toc = new ArrayList<>();
+            for (final Element divRows : tocSection.select("div.row-information")) {
+                final Element th = divRows.selectFirst("div.label");
+                final Element td = divRows.selectFirst("div.value");
+                if (th != null && td != null) {
+                    if ("Verhaaltitel".equals(th.text())) {
+                        toc.add(new TocEntry(authorList.get(0), td.text()));
+                    }
+                }
+            }
+
             if (toc.size() > 1) {
                 return Optional.of(toc);
             }

@@ -44,7 +44,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_goodreads"
-                style="@style/TIE"
+                style="@style/TIE.Generic"
                 android:imeOptions="actionNext"
                 android:inputType="number"
                 tools:ignore="Autofill"
@@ -64,7 +64,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_isfdb"
-                style="@style/TIE"
+                style="@style/TIE.Generic"
                 android:imeOptions="actionNext"
                 android:inputType="number"
                 tools:ignore="Autofill"
@@ -84,7 +84,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_library_thing"
-                style="@style/TIE"
+                style="@style/TIE.Generic"
                 android:imeOptions="actionNext"
                 android:inputType="number"
                 tools:ignore="Autofill"
@@ -104,7 +104,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_open_library"
-                style="@style/TIE"
+                style="@style/TIE.Generic"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="abc123"
@@ -123,7 +123,27 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_strip_info_be"
-                style="@style/TIE"
+                style="@style/TIE.Generic"
+                android:imeOptions="actionDone"
+                android:inputType="number"
+                tools:ignore="Autofill"
+                tools:text="123456"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_site_last_dodo_nl"
+            style="@style/TIL.Text.ExternalId"
+            android:hint="@string/site_lastdodo_nl"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_site_strip_info_be"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/site_last_dodo_nl"
+                style="@style/TIE.Generic"
                 android:imeOptions="actionDone"
                 android:inputType="number"
                 tools:ignore="Autofill"

@@ -59,10 +59,7 @@ class LastDodoTest
     @Test
     void parse01() {
         setLocale(Locale.FRANCE);
-        //final String locationHeader = "https://www.lastdodo.nl/search?q=9789463064385&type=147";
-
-        final String locationHeader = "https://www.lastdodo.nl/catalogus/strips/series-helden/"
-                                      + "hauteville-house/7323911-de-37ste-parallel";
+        final String locationHeader = "https://www.lastdodo.nl/nl/items/7323911-de-37ste-parallel";
         final String filename = "/lastdodo/7323911-de-37ste-parallel.html";
 
         loadData(mContext, mSearchEngine, UTF_8, locationHeader, filename,

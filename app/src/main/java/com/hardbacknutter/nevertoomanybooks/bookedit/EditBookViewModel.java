@@ -85,9 +85,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 public class EditBookViewModel
         extends ViewModel {
 
-    public static final String COULD_NOT_UPDATE = "Could not update";
-    public static final String ORIGINAL = "original=";
-    public static final String MODIFIED = "modified=";
+    private static final String COULD_NOT_UPDATE = "Could not update";
+    private static final String ORIGINAL = "original=";
+    private static final String MODIFIED = "modified=";
     /** Log tag. */
     private static final String TAG = "EditBookViewModel";
     /** the list with all fields. */
@@ -1052,13 +1052,18 @@ public class EditBookViewModel
                            .setTextInputLayoutId(R.id.lbl_site_library_thing)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
+        fields.add(new EditTextField<>(fragmentId, R.id.site_open_library, DBKey.SID_OPEN_LIBRARY)
+                           .setTextInputLayoutId(R.id.lbl_site_open_library)
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+
         fields.add(new EditTextField<>(fragmentId, R.id.site_strip_info_be, DBKey.SID_STRIP_INFO,
                                        longNumberFormatter, true)
                            .setTextInputLayoutId(R.id.lbl_site_strip_info_be)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
-        fields.add(new EditTextField<>(fragmentId, R.id.site_open_library, DBKey.SID_OPEN_LIBRARY)
-                           .setTextInputLayoutId(R.id.lbl_site_open_library)
+        fields.add(new EditTextField<>(fragmentId, R.id.site_last_dodo_nl, DBKey.SID_LAST_DODO_NL,
+                                       longNumberFormatter, true)
+                           .setTextInputLayoutId(R.id.lbl_site_last_dodo_nl)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
     }
 
