@@ -39,11 +39,6 @@ public class GoodreadsSearchEngine
         extends SearchEngineBase
         implements SearchEngine.ViewBookByExternalId {
 
-    /** Preferences prefix. */
-    private static final String PREF_KEY = "goodreads";
-
-    private static final String BASE_URL = "https://www.goodreads.com";
-
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
@@ -58,13 +53,12 @@ public class GoodreadsSearchEngine
         return new SearchEngineConfig.Builder(GoodreadsSearchEngine.class,
                                               SearchSites.GOODREADS,
                                               R.string.site_goodreads,
-                                              PREF_KEY,
-                                              BASE_URL)
+                                              "goodreads",
+                                              "https://www.goodreads.com")
 
                 .setDomainKey(DBKey.SID_GOODREADS_BOOK)
                 .setDomainViewId(R.id.site_goodreads)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS)
-
                 .build();
     }
 

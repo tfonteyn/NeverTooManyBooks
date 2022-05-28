@@ -113,7 +113,7 @@ public class KbNlSearchEngine
                                               SearchSites.KB_NL,
                                               R.string.site_kb_nl,
                                               PREF_KEY,
-                                              "https://opc-kb.oclc.org/")
+                                              "https://opc-kb.oclc.org")
                 .setCountry("NL", "nl")
                 .setFilenameSuffix("KB")
                 .setSupportsMultipleCoverSizes(true)
