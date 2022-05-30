@@ -23,7 +23,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@id/MENU_SYNC_CALIBRE"
-        android:icon="@drawable/ic_baseline_cloud_24"
         android:title="@string/site_calibre">
         <!--        <menu>-->
         <!--            <item-->
@@ -40,7 +39,6 @@
 
     <item
         android:id="@id/MENU_SYNC_STRIP_INFO"
-        android:icon="@drawable/ic_stripinfo"
         android:title="@string/site_stripinfo_be">
         <!--        <menu>-->
         <!--            <item-->
