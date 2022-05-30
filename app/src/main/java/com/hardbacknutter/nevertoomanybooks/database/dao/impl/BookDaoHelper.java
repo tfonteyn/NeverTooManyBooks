@@ -271,7 +271,7 @@ public class BookDaoHelper {
                        } else {
                            final String v = o.toString();
                            if (v.isEmpty() || "0".equals(v)) {
-                               // remove empty/zero values
+                               // remove blank/zero values
                                book.remove(key);
                            }
                        }
@@ -280,7 +280,7 @@ public class BookDaoHelper {
                        if (o != null) {
                            final String v = o.toString();
                            if (v.isEmpty() || "0".equals(v)) {
-                               // replace "0" and empty strings with a null
+                               // replace blank/zero values with a null
                                book.putNull(key);
                            }
                        }
