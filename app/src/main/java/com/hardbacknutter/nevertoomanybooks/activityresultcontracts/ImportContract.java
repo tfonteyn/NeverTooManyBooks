@@ -38,18 +38,22 @@ public class ImportContract
         extends ActivityResultContract<Void, ImportResults> {
 
     private static final String TAG = "ImportContract";
-    private static final String BKEY_RESULTS = TAG + ":results";
+
+    /**
+     * Create the result which {@link #parseResult(int, Intent)} will receive.
+     *
+     * @return Intent
+     */
+    @NonNull
+    public static Intent createResult(@NonNull final ImportResults result) {
+        return new Intent().putExtra(ImportResults.BKEY, result);
+    }
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @Nullable final Void aVoid) {
         return FragmentHostActivity.createIntent(context, ImportFragment.class);
-    }
-
-    @NonNull
-    public static Intent createResultIntent(@NonNull final ImportResults result) {
-        return new Intent().putExtra(BKEY_RESULTS, result);
     }
 
     @Override
@@ -63,6 +67,6 @@ public class ImportContract
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return null;
         }
-        return intent.getParcelableExtra(BKEY_RESULTS);
+        return intent.getParcelableExtra(ImportResults.BKEY);
     }
 }

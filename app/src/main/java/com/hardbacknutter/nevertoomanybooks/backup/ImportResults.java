@@ -60,7 +60,11 @@ public class ImportResults
         }
     };
     public static final int MAX_FAIL_LINES = 10;
+    /** Log tag. */
     private static final String TAG = "ImportResults";
+    /** Bundle key if we get passed around. */
+    public static final String BKEY = TAG;
+
     /**
      * Keeps track of failed import lines in a text file.
      * Not strictly needed as row number should be part of the messages.

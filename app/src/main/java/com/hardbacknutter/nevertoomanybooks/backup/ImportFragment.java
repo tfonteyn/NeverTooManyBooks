@@ -497,7 +497,7 @@ public class ImportFragment
                 .setTitle(titleId)
                 .setMessage(createReport(result))
                 .setPositiveButton(R.string.action_done, (d, w) -> {
-                    final Intent resultIntent = ImportContract.createResultIntent(result);
+                    final Intent resultIntent = ImportContract.createResult(result);
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
