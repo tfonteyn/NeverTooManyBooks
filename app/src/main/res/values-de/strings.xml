@@ -404,7 +404,7 @@
     <string name="progress_msg_saving_image">Bild speichern…</string>
     <string name="progress_msg_searching_editions">Suche Ausgaben…</string>
     <string name="progress_msg_searching_site">Suche bei %1$s</string>
-    <string name="progress_msg_searching">Suche…</string>
+    <string name="progress_msg_searching">Suche läuft…</string>
     <string name="progress_msg_skip_s">Überspringe - %1$s</string>
     <string name="progress_msg_starting_up">Gleich geht\'s los…</string>
     <string name="progress_msg_upgrading">Upgrade läuft…</string>
@@ -710,5 +710,8 @@
     <string name="confirm_delete_style">Den Stil „%1$s“ löschen?</string>
     <string name="confirm_scope_for_delete">Lösche den Titel „%1$s“ von %2$s.\n\nWie möchten Sie diese Änderung anwenden?\nWARNUNG: Die Auswahl „%3$s“ kann nicht rückgängig gemacht werden!</string>
     <string name="lbl_book_type">Buchart</string>
+    <string name="lbl_storage_settings">Speicher</string>
+    <string name="action_select_all">Wählen Sie Alle</string>
+    <string name="action_select_none">Alles wiederufen</string>
 
 </resources>

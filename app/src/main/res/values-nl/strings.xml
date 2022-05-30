@@ -402,7 +402,7 @@
     <string name="progress_msg_saving_image">Scan wordt bewaard…</string>
     <string name="progress_msg_searching_editions">Zoeken naar uitgaven…</string>
     <string name="progress_msg_searching_site">Zoeken bij %1$s</string>
-    <string name="progress_msg_searching">Aan \'t zoeken…</string>
+    <string name="progress_msg_searching">Zoeken…</string>
     <string name="progress_msg_skip_s">Overslaan van - %1$s</string>
     <string name="progress_msg_starting_up">Opstarten…</string>
     <string name="progress_msg_upgrading">Nieuwe versie voorbereiden…</string>
@@ -707,4 +707,8 @@
     <string name="lbl_database_upgrade">Database-upgradebestanden.</string>
     <string name="confirm_scope_for_delete">Verwijder de titel „%1$s” door %2$s.\n\nHoe wilt u deze wijziging toepassen?\nWAARSCHUWING: De keuze „%3$s” kan niet ongedaan worden gemaakt!</string>
     <string name="lbl_book_type">Boektype</string>
+    <string name="lbl_storage_settings">Opslagruimte</string>
+    <string name="action_select_all">Selecteer alles</string>
+    <string name="action_select_none">Alles deselecteren</string>
+
 </resources>

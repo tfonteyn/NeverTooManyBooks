@@ -711,5 +711,8 @@
     <string name="lbl_database_upgrade">Fichiers de mise à niveau de la base de données.</string>
     <string name="confirm_scope_for_delete">Supprimer le titre «%1$s» par %2$s.\n\nComment souhaitez-vous appliquer ce changement ?\nAVERTISSEMENT : Le choix « %3$s » ne peut pas être annulé !</string>
     <string name="lbl_book_type">Type de livre</string>
+    <string name="lbl_storage_settings">Stockage</string>
+    <string name="action_select_all">Tout sélectionner</string>
+    <string name="action_select_none">Tout déselectionner</string>
 
 </resources>

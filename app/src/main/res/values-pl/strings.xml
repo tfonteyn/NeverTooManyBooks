@@ -373,8 +373,8 @@
     <string name="progress_msg_please_wait">Zaczekaj…</string>
     <string name="progress_msg_rebuilding_search_index">Przebudowywanie indeksu wyszukiwania…</string>
     <string name="progress_msg_saving_image">Zapisywanie obrazu…</string>
-    <string name="progress_msg_searching">Badawczy…</string>
-    <string name="progress_msg_searching_site">Przeszukiwanie %1$s</string>
+    <string name="progress_msg_searching">Wyszukiwanie…</string>
+    <string name="progress_msg_searching_site">Wyszukiwanie %1$s</string>
     <string name="progress_msg_skip_s">Pomiń - %1$s</string>
     <string name="progress_msg_starting_up">Rozpoczęcie…</string>
     <string name="progress_msg_upgrading">Aktualizacja…</string>
@@ -707,4 +707,8 @@
     <string name="confirm_delete_style">Usunąć styl „%1$s”?</string>
     <string name="confirm_scope_for_delete">Usuń tytuł „%1$s” do %2$s.\n\nJak chcesz zastosować tę zmianę?\nOSTRZEŻENIE: wyboru „%3$s” nie można cofnąć!</string>
     <string name="lbl_book_type">Typ książki</string>
+    <string name="lbl_storage_settings">Pamięć wewnętrzna</string>
+    <string name="action_select_all">Zaznacz wszystko</string>
+    <string name="action_select_none">Odznacz wszystko</string>
+
 </resources>

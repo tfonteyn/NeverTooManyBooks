@@ -709,4 +709,8 @@
     <string name="lbl_logfiles">Log files.</string>
     <string name="confirm_scope_for_delete">Elimina il titolo «%1$s» di %2$s.\n\nCome desideri applicare questa modifica?\nATTENZIONE: la scelta «%3$s» non può essere annullata!</string>
     <string name="lbl_book_type">Tipo di libro</string>
+    <string name="lbl_storage_settings">Spazio di archiviazione</string>
+    <string name="action_select_all">Seleziona tutto</string>
+    <string name="action_select_none">Deseleziona tutto</string>
+
 </resources>

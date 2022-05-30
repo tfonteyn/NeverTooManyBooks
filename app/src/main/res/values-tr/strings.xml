@@ -376,7 +376,7 @@
     <string name="progress_msg_please_wait">Lütfen bekleyin…</string>
     <string name="progress_msg_rebuilding_search_index">Arama dizini yeniden oluşturuluyor…</string>
     <string name="progress_msg_saving_image">Resim kaydediliyor…</string>
-    <string name="progress_msg_searching">Aranıyor…</string>
+    <string name="progress_msg_searching">Arıyor…</string>
     <string name="progress_msg_searching_site">%1$s aranıyor</string>
     <string name="progress_msg_skip_s">Atla - %1$s</string>
     <string name="progress_msg_starting_up">Başlatılıyor…</string>
@@ -708,4 +708,8 @@
     <string name="confirm_delete_style">“%1$s” stili silinsin mi?</string>
     <string name="confirm_scope_for_delete">“%1$s” başlığını %2$s ile silin.\n\nBu değişikliği nasıl uygulamak istersiniz?\nUYARI: “%3$s” seçimi geri alınamaz!</string>
     <string name="lbl_book_type">Kitap türü</string>
+    <string name="lbl_storage_settings">Depolama</string>
+    <string name="action_select_all">Hepsini seç</string>
+    <string name="action_select_none">Tümünün seçimini kaldır</string>
+
 </resources>

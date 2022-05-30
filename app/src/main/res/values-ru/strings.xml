@@ -707,4 +707,8 @@
     <string name="confirm_delete_style">Удалить стиль «%1$s»?</string>
     <string name="confirm_scope_for_delete">Удалить заголовок «%1$s» пользователем %2$s.\n\nКак вы хотите применить это изменение? Примечание.\nВНИМАНИЕ «%3$s» нельзя отменить!</string>
     <string name="lbl_book_type">Тип книги</string>
+    <string name="lbl_storage_settings">Хранилище</string>
+    <string name="action_select_all">Выбрать все</string>
+    <string name="action_select_none">Снять все</string>
+
 </resources>

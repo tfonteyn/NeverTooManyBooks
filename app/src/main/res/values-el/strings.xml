@@ -375,7 +375,7 @@
     <string name="progress_msg_please_wait">Περιμένετε…</string>
     <string name="progress_msg_rebuilding_search_index">Ανακατασκευή Ευρετηρίου Αναζήτησης…</string>
     <string name="progress_msg_saving_image">Αποθήκευση της εικόνας…</string>
-    <string name="progress_msg_searching">Γίνεται αναζήτηση…</string>
+    <string name="progress_msg_searching">Αναζήτηση…</string>
     <string name="progress_msg_searching_site">Αναζήτηση στο %1$s</string>
     <string name="progress_msg_skip_s">Παράβλεψη - %1$s</string>
     <string name="progress_msg_starting_up">Εκκίνηση…</string>
@@ -710,4 +710,8 @@
     <string name="lbl_database_upgrade">Αρχεία αναβάθμισης βάσης δεδομένων.</string>
     <string name="confirm_scope_for_delete">Διαγράψτε τον τίτλο «%1$s» κατά %2$s\n\nΠώς θέλετε να εφαρμόσετε αυτήν την αλλαγή;\nΠΡΟΕΙΔΟΠΟΙΗΣΗ: Η επιλογή «%3$s» δεν μπορεί να αναιρεθεί!</string>
     <string name="lbl_book_type">Τύπος βιβλίου</string>
+    <string name="lbl_storage_settings">Αποθηκευτικός χώρος</string>
+    <string name="action_select_all">Επιλογή όλων</string>
+    <string name="action_select_none">Καταργήστε την επιλογή όλων</string>
+
 </resources>

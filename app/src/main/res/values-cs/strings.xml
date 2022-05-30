@@ -372,7 +372,7 @@
     <string name="progress_msg_please_wait">Prosím čekejte…</string>
     <string name="progress_msg_rebuilding_search_index">Obnovování indexu pro vyhledávání…</string>
     <string name="progress_msg_saving_image">Uložení obrázku…</string>
-    <string name="progress_msg_searching">Vyhledávání…</string>
+    <string name="progress_msg_searching">Hledání…</string>
     <string name="progress_msg_searching_site">Vyhledávám na %1$s</string>
     <string name="progress_msg_skip_s">Vynechat - %1$s</string>
     <string name="progress_msg_starting_up">Spouštění…</string>
@@ -707,4 +707,8 @@
     <string name="confirm_remove_toc_entry">Odebrat z této knihy titul „%1$s“ od autora %2$s?</string>
     <string name="confirm_scope_for_delete">Smazat název „%1$s“ od %2$s.\n\nJak chcete tuto změnu uplatnit?\nVAROVÁNÍ: Volbu „%3$s“ nelze vrátit zpět!</string>
     <string name="lbl_book_type">Typ knihy</string>
+    <string name="lbl_storage_settings">Úložiště</string>
+    <string name="action_select_all">Vybrat vše</string>
+    <string name="action_select_none">Odznačit vše</string>
+
 </resources>

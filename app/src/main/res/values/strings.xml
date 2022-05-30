@@ -395,7 +395,7 @@
     <string name="progress_msg_rebuilding_search_index">Rebuilding Search Index…</string>
     <string name="progress_msg_optimizing">Optimizing…</string>
 
-    <!-- Search. -->
+    <!-- [VERIFIED] Progress message. -->
     <string name="progress_msg_searching">Searching…</string>
     <string name="progress_msg_searching_site">Searching %1$s</string>
     <!-- displayed while searching for alternative editions of the book, to get cover images. -->
@@ -1011,6 +1011,10 @@
     <!-- Duplication or Clone. Not the same as 'copy'. -->
     <string name="action_duplicate">Duplicate</string>
 
+
+    <string name="action_select_all">Select all</string>
+    <string name="action_select_none">Unselect all</string>
+
     <!-- button text. -->
     <string name="btn_options">Options</string>
 
@@ -1509,6 +1513,8 @@
 
     <string name="lbl_websites">Websites</string>
 
+    <!-- [VERIFIED] -->
+    <string name="lbl_storage_settings">Storage</string>
     <string name="lbl_storage_volume">Storage volume</string>
     <string name="lbl_storage_quit_and_reinsert_sdcard">Quit and reinsert the correct SD CARD</string>
     <string name="lbl_storage_select">Use “%1$s”</string>

@@ -710,4 +710,8 @@
     <string name="lbl_database_upgrade">Archivos de actualización de base de datos.</string>
     <string name="confirm_scope_for_delete">Eliminar el título «%1$s» por %2$s.\n\n¿Cómo desea aplicar este cambio?\nADVERTENCIA: ¡La opción «%3$s» no se puede deshacer!</string>
     <string name="lbl_book_type">tipo de libro</string>
+    <string name="lbl_storage_settings">Almacenamiento</string>
+    <string name="action_select_all">Seleccionar todo</string>
+    <string name="action_select_none">Deselecciona todo</string>
+
 </resources>
