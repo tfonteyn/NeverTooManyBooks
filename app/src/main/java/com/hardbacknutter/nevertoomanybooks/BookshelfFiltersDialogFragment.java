@@ -205,8 +205,8 @@ public class BookshelfFiltersDialogFragment
 
         private static final String BKEY_MODIFIED = TAG + ":m";
 
-        private String mRequestKey;
-        private FragmentManager mFragmentManager;
+        private String requestKey;
+        private FragmentManager fragmentManager;
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
@@ -219,9 +219,9 @@ public class BookshelfFiltersDialogFragment
         public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
                                               @NonNull final String requestKey,
                                               @NonNull final LifecycleOwner lifecycleOwner) {
-            mFragmentManager = fragmentManager;
-            mRequestKey = requestKey;
-            mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
+            this.fragmentManager = fragmentManager;
+            this.requestKey = requestKey;
+            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
         }
 
         /**
@@ -230,12 +230,12 @@ public class BookshelfFiltersDialogFragment
         public void launch(@NonNull final Bookshelf bookshelf) {
 
             final Bundle args = new Bundle(2);
-            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+            args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putParcelable(DBKey.FK_BOOKSHELF, bookshelf);
 
             final DialogFragment frag = new BookshelfFiltersDialogFragment();
             frag.setArguments(args);
-            frag.show(mFragmentManager, TAG);
+            frag.show(fragmentManager, TAG);
         }
 
         @Override
@@ -254,50 +254,50 @@ public class BookshelfFiltersDialogFragment
             extends RecyclerView.Adapter<Holder> {
 
         @NonNull
-        private final List<PFilter<?>> mItems;
+        private final List<PFilter<?>> filters;
         @NonNull
-        private final ModificationListener mModificationListener;
-        private final LayoutInflater mLayoutInflater;
+        private final ModificationListener modificationListener;
+        private final LayoutInflater layoutInflater;
 
         /**
          * Constructor.
          *
          * @param context Current context
-         * @param items   List of items
+         * @param filters List of items
          */
         FilterListAdapter(@NonNull final Context context,
-                          @NonNull final List<PFilter<?>> items,
+                          @NonNull final List<PFilter<?>> filters,
                           @NonNull final ModificationListener modificationListener) {
-            mLayoutInflater = LayoutInflater.from(context);
-            mItems = items;
-            mModificationListener = modificationListener;
+            layoutInflater = LayoutInflater.from(context);
+            this.filters = filters;
+            this.modificationListener = modificationListener;
         }
 
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final View view = mLayoutInflater.inflate(viewType, parent, false);
+            final View view = layoutInflater.inflate(viewType, parent, false);
 
             final Holder holder;
             if (viewType == PBooleanFilter.LAYOUT_ID) {
-                holder = new BooleanHolder(view, mModificationListener);
+                holder = new BooleanHolder(view, modificationListener);
             } else if (viewType == PStringEqualityFilter.LAYOUT_ID) {
-                holder = new StringEqualityHolder(view, mModificationListener);
+                holder = new StringEqualityHolder(view, modificationListener);
             } else if (viewType == PEntityListFilter.LAYOUT_ID) {
-                holder = new EntityListHolder<>(view, mModificationListener);
+                holder = new EntityListHolder<>(view, modificationListener);
             } else if (viewType == PBitmaskFilter.LAYOUT_ID) {
-                holder = new BitmaskHolder(view, mModificationListener);
+                holder = new BitmaskHolder(view, modificationListener);
             } else {
                 throw new IllegalArgumentException("Unknown viewType");
             }
 
-            if (holder.mDelBtn != null) {
-                holder.mDelBtn.setOnClickListener(v -> {
+            if (holder.delBtn != null) {
+                holder.delBtn.setOnClickListener(v -> {
                     final int pos = holder.getBindingAdapterPosition();
-                    mItems.remove(pos);
+                    filters.remove(pos);
                     notifyItemRemoved(pos);
-                    mModificationListener.setModified(true);
+                    modificationListener.setModified(true);
                 });
             }
             return holder;
@@ -306,17 +306,17 @@ public class BookshelfFiltersDialogFragment
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-            holder.onBind(holder.itemView.getContext(), mItems.get(position));
+            holder.onBind(holder.itemView.getContext(), filters.get(position));
         }
 
         @Override
         public int getItemViewType(final int position) {
-            return mItems.get(position).getPrefLayoutId();
+            return filters.get(position).getPrefLayoutId();
         }
 
         @Override
         public int getItemCount() {
-            return mItems.size();
+            return filters.size();
         }
     }
 
@@ -324,15 +324,15 @@ public class BookshelfFiltersDialogFragment
             extends RecyclerView.ViewHolder {
 
         @Nullable
-        final ImageButton mDelBtn;
+        final ImageButton delBtn;
         @NonNull
-        final ModificationListener mModificationListener;
+        final ModificationListener modificationListener;
 
         Holder(@NonNull final View itemView,
                @NonNull final ModificationListener modificationListener) {
             super(itemView);
-            mModificationListener = modificationListener;
-            mDelBtn = itemView.findViewById(R.id.btn_del);
+            this.modificationListener = modificationListener;
+            delBtn = itemView.findViewById(R.id.btn_del);
         }
 
         public abstract void onBind(@NonNull Context context,
@@ -343,38 +343,38 @@ public class BookshelfFiltersDialogFragment
             extends Holder {
 
         @NonNull
-        private final RowEditBookshelfFilterBooleanBinding mVb;
+        private final RowEditBookshelfFilterBooleanBinding vb;
 
         BooleanHolder(@NonNull final View itemView,
                       @NonNull final ModificationListener modificationListener) {
             super(itemView, modificationListener);
-            mVb = RowEditBookshelfFilterBooleanBinding.bind(itemView);
+            vb = RowEditBookshelfFilterBooleanBinding.bind(itemView);
         }
 
         public void onBind(@NonNull final Context context,
                            @NonNull final PFilter<?> pFilter) {
             final PBooleanFilter filter = (PBooleanFilter) pFilter;
-            mVb.lblFilter.setText(filter.getLabel(context));
+            vb.lblFilter.setText(filter.getLabel(context));
 
-            mVb.valueTrue.setText(filter.getValueText(context, true));
-            mVb.valueFalse.setText(filter.getValueText(context, false));
+            vb.valueTrue.setText(filter.getValueText(context, true));
+            vb.valueFalse.setText(filter.getValueText(context, false));
 
-            mVb.filter.setOnCheckedChangeListener(null);
+            vb.filter.setOnCheckedChangeListener(null);
             final Boolean value = filter.getValue();
             if (value == null) {
-                mVb.filter.clearCheck();
+                vb.filter.clearCheck();
             } else {
-                mVb.valueTrue.setChecked(value);
-                mVb.valueFalse.setChecked(!value);
+                vb.valueTrue.setChecked(value);
+                vb.valueFalse.setChecked(!value);
             }
 
-            mVb.filter.setOnCheckedChangeListener((group, checkedId) -> {
+            vb.filter.setOnCheckedChangeListener((group, checkedId) -> {
                 if (checkedId == -1) {
                     filter.setValue(null);
                 } else {
-                    filter.setValue(checkedId == mVb.valueTrue.getId());
+                    filter.setValue(checkedId == vb.valueTrue.getId());
                 }
-                mModificationListener.setModified(true);
+                modificationListener.setModified(true);
             });
         }
     }
@@ -383,18 +383,18 @@ public class BookshelfFiltersDialogFragment
             extends Holder {
 
         @NonNull
-        private final RowEditBookshelfFilterStringEqualityBinding mVb;
+        private final RowEditBookshelfFilterStringEqualityBinding vb;
 
         StringEqualityHolder(@NonNull final View itemView,
                              @NonNull final ModificationListener modificationListener) {
             super(itemView, modificationListener);
-            mVb = RowEditBookshelfFilterStringEqualityBinding.bind(itemView);
+            vb = RowEditBookshelfFilterStringEqualityBinding.bind(itemView);
         }
 
         public void onBind(@NonNull final Context context,
                            @NonNull final PFilter<?> pFilter) {
             final PStringEqualityFilter filter = (PStringEqualityFilter) pFilter;
-            mVb.lblFilter.setText(filter.getLabel(context));
+            vb.lblFilter.setText(filter.getLabel(context));
 
             // We cannot share this adapter/formatter between multiple Holder instances
             // as they depends on the DBKey of the filter.
@@ -402,12 +402,12 @@ public class BookshelfFiltersDialogFragment
             final ExtArrayAdapter<String> adapter = FilterFactory
                     .createAdapter(context, filter.getDBKey());
             // likewise, always set the adapter even when null
-            mVb.filter.setAdapter(adapter);
+            vb.filter.setAdapter(adapter);
 
-            mVb.filter.setText(filter.getValueText(context));
-            mVb.filter.addTextChangedListener((ExtTextWatcher) s -> {
+            vb.filter.setText(filter.getValueText(context));
+            vb.filter.addTextChangedListener((ExtTextWatcher) s -> {
                 filter.setValueText(context, s.toString());
-                mModificationListener.setModified(true);
+                modificationListener.setModified(true);
             });
         }
     }
@@ -416,23 +416,23 @@ public class BookshelfFiltersDialogFragment
             extends Holder {
 
         @NonNull
-        private final RowEditBookshelfFilterEntityListBinding mVb;
+        private final RowEditBookshelfFilterEntityListBinding vb;
 
         EntityListHolder(@NonNull final View itemView,
                          @NonNull final ModificationListener modificationListener) {
             super(itemView, modificationListener);
-            mVb = RowEditBookshelfFilterEntityListBinding.bind(itemView);
+            vb = RowEditBookshelfFilterEntityListBinding.bind(itemView);
         }
 
         public void onBind(@NonNull final Context context,
                            @NonNull final PFilter<?> pFilter) {
             //noinspection unchecked
             final PEntityListFilter<T> filter = (PEntityListFilter<T>) pFilter;
-            mVb.lblFilter.setText(filter.getLabel(context));
+            vb.lblFilter.setText(filter.getLabel(context));
 
-            mVb.filter.setText(filter.getValueText(context));
+            vb.filter.setText(filter.getValueText(context));
 
-            mVb.ROWONCLICKTARGET.setOnClickListener(v -> {
+            vb.ROWONCLICKTARGET.setOnClickListener(v -> {
                 final List<T> entities = filter.getEntities();
                 final List<Long> ids = entities.stream()
                                                .map(Entity::getId)
@@ -447,8 +447,8 @@ public class BookshelfFiltersDialogFragment
                         .setSelectedItems(filter.getValue())
                         .setPositiveButton(android.R.string.ok, value -> {
                             filter.setValue(value);
-                            mVb.filter.setText(filter.getValueText(context));
-                            mModificationListener.setModified(true);
+                            vb.filter.setText(filter.getValueText(context));
+                            modificationListener.setModified(true);
                         })
                         .create()
                         .show();
@@ -460,23 +460,23 @@ public class BookshelfFiltersDialogFragment
             extends Holder {
 
         @NonNull
-        private final RowEditBookshelfFilterBitmaskBinding mVb;
+        private final RowEditBookshelfFilterBitmaskBinding vb;
 
         BitmaskHolder(@NonNull final View itemView,
                       @NonNull final ModificationListener modificationListener) {
             super(itemView, modificationListener);
-            mVb = RowEditBookshelfFilterBitmaskBinding.bind(itemView);
+            vb = RowEditBookshelfFilterBitmaskBinding.bind(itemView);
         }
 
         @Override
         public void onBind(@NonNull final Context context,
                            @NonNull final PFilter<?> pFilter) {
             final PBitmaskFilter filter = (PBitmaskFilter) pFilter;
-            mVb.lblFilter.setText(filter.getLabel(context));
+            vb.lblFilter.setText(filter.getLabel(context));
 
-            mVb.filter.setText(filter.getValueText(context));
+            vb.filter.setText(filter.getValueText(context));
 
-            mVb.ROWONCLICKTARGET.setOnClickListener(v -> {
+            vb.ROWONCLICKTARGET.setOnClickListener(v -> {
                 final Map<Integer, String> bitsAndLabels = filter.getBitsAndLabels(context);
                 final List<Integer> ids = new ArrayList<>(bitsAndLabels.keySet());
                 final List<String> labels = new ArrayList<>(bitsAndLabels.values());
@@ -487,8 +487,8 @@ public class BookshelfFiltersDialogFragment
                         .setSelectedItems(filter.getValue())
                         .setPositiveButton(android.R.string.ok, value -> {
                             filter.setValue(value);
-                            mVb.filter.setText(filter.getValueText(context));
-                            mModificationListener.setModified(true);
+                            vb.filter.setText(filter.getValueText(context));
+                            modificationListener.setModified(true);
                         })
                         .create()
                         .show();

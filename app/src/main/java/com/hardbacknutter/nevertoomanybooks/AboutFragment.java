@@ -38,15 +38,15 @@ public class AboutFragment
         extends BaseFragment {
 
     /** View Binding. */
-    private FragmentAboutBinding mVb;
+    private FragmentAboutBinding vb;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentAboutBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentAboutBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @Override
@@ -60,22 +60,22 @@ public class AboutFragment
         //noinspection ConstantConditions
         final PackageInfoWrapper packageInfoWrapper = PackageInfoWrapper.create(getContext());
         // show the version in the header
-        mVb.version.setText(packageInfoWrapper.getVersionName());
+        vb.version.setText(packageInfoWrapper.getVersionName());
 
         // show the full version + build date in the bottom corner
         final String code = "a" + packageInfoWrapper.getVersionCode()
                             + " d" + DBHelper.DATABASE_VERSION
                             + " b" + BuildConfig.TIMESTAMP;
-        mVb.debugVersion.setText(code);
+        vb.debugVersion.setText(code);
 
-        mVb.btnSourcecodeUrl.setOnClickListener(v -> startActivity(
+        vb.btnSourcecodeUrl.setOnClickListener(v -> startActivity(
                 new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.sourcecode_url)))));
 
         // just running these on the UI thread...
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        mVb.bookCount.setText(String.valueOf(serviceLocator.getBookDao().count()));
-        mVb.seriesCount.setText(String.valueOf(serviceLocator.getSeriesDao().count()));
-        mVb.authorCount.setText(String.valueOf(serviceLocator.getAuthorDao().count()));
-        mVb.publisherCount.setText(String.valueOf(serviceLocator.getPublisherDao().count()));
+        vb.bookCount.setText(String.valueOf(serviceLocator.getBookDao().count()));
+        vb.seriesCount.setText(String.valueOf(serviceLocator.getSeriesDao().count()));
+        vb.authorCount.setText(String.valueOf(serviceLocator.getAuthorDao().count()));
+        vb.publisherCount.setText(String.valueOf(serviceLocator.getPublisherDao().count()));
     }
 }

@@ -47,7 +47,7 @@ public class AuthorWorksViewModel
         extends ViewModel {
 
     /** The list of TOC/Books we're displaying. */
-    private final ArrayList<AuthorWork> mList = new ArrayList<>();
+    private final ArrayList<AuthorWork> workslist = new ArrayList<>();
 
     /** Database Access. */
     private BookDao bookDao;
@@ -106,14 +106,14 @@ public class AuthorWorksViewModel
     }
 
     void reloadWorkList() {
-        mList.clear();
+        workslist.clear();
         final long bookshelfId = allBookshelves ? Bookshelf.ALL_BOOKS : bookshelf.getId();
 
         final ArrayList<AuthorWork> authorWorks =
                 ServiceLocator.getInstance().getAuthorDao()
                               .getAuthorWorks(author, bookshelfId, withTocEntries, withBooks);
 
-        mList.addAll(authorWorks);
+        workslist.addAll(authorWorks);
     }
 
     @NonNull
@@ -136,7 +136,7 @@ public class AuthorWorksViewModel
     @NonNull
     ArrayList<AuthorWork> getList() {
         // used directly by the adapter
-        return mList;
+        return workslist;
     }
 
     @NonNull
@@ -181,7 +181,7 @@ public class AuthorWorksViewModel
         }
 
         if (success) {
-            mList.remove(work);
+            workslist.remove(work);
         }
         return success;
     }
