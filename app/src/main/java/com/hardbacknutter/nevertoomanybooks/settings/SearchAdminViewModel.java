@@ -55,14 +55,13 @@ public class SearchAdminViewModel
     /**
      * Pseudo constructor.
      * <p>
-     * If a single tab is asked for, we read the list first from the arguments if present.
-     * When all tabs are asked for, we get the system/user preferred lists.
+     * If the {@link #BKEY_LIST} argument is present,, we read a single list/type from it.
+     * Otherwise, we get the system/user preferred lists.
      *
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@Nullable final Bundle args) {
         if (typeAndSites.isEmpty()) {
-            // editing a single list ? load the TEMPORARY list of sites from the args.
             if (args != null) {
                 final ArrayList<Site> siteList = args.getParcelableArrayList(BKEY_LIST);
                 if (siteList != null && !siteList.isEmpty()) {
