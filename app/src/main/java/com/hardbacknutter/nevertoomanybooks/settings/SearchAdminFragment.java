@@ -63,17 +63,16 @@ public class SearchAdminFragment
                 public void handleOnBackPressed() {
                     final boolean hasSites = vm.validate();
                     if (hasSites) {
+                        // 2022-05-29: we now always persist.
+                        vm.persist();
+                        // but to keep changes minimal, we still return the list if it's single.
                         if (vm.getTypes().size() == 1) {
-                            // single-list is NOT persisted, just returned for temporary usage.
                             final Site.Type type = vm.getTypes().get(0);
                             final Intent resultIntent = new Intent()
                                     .putParcelableArrayListExtra(type.getBundleKey(),
                                                                  vm.getList(type));
                             //noinspection ConstantConditions
                             getActivity().setResult(Activity.RESULT_OK, resultIntent);
-
-                        } else {
-                            vm.persist();
                         }
                         //noinspection ConstantConditions
                         getActivity().finish();
@@ -138,7 +137,7 @@ public class SearchAdminFragment
             extends FragmentStateAdapter {
 
         @NonNull
-        private final List<Site.Type> mTypes;
+        private final List<Site.Type> siteTypeList;
 
         /**
          * Constructor.
@@ -149,23 +148,23 @@ public class SearchAdminFragment
         TabAdapter(@NonNull final FragmentActivity container,
                    @NonNull final List<Site.Type> types) {
             super(container);
-            mTypes = types;
+            siteTypeList = types;
         }
 
         @Override
         public int getItemCount() {
-            return mTypes.size();
+            return siteTypeList.size();
         }
 
         @NonNull
         @Override
         public Fragment createFragment(final int position) {
-            return SearchOrderFragment.create(mTypes.get(position));
+            return SearchOrderFragment.create(siteTypeList.get(position));
         }
 
         @StringRes
         int getTabTitle(final int position) {
-            return mTypes.get(position).getLabelResId();
+            return siteTypeList.get(position).getLabelResId();
         }
     }
 }
