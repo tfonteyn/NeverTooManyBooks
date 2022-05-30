@@ -80,6 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsCon
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.StripInfoSyncContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooksOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsFragment;
@@ -200,9 +201,7 @@ public class BooksOnBookshelf
     private BooklistAdapter adapter;
     /** The Activity ViewModel. */
     private BooksOnBookshelfViewModel vm;
-    /** Display a Book. */
-    private final ActivityResultLauncher<ShowBookPagerContract.Input> displayBookLauncher =
-            registerForActivityResult(new ShowBookPagerContract(), this::onBookEditFinished);
+
     /** Do an import. */
     private final ActivityResultLauncher<Void> importLauncher =
             registerForActivityResult(new ImportContract(), this::onImportFinished);
@@ -216,31 +215,38 @@ public class BooksOnBookshelf
                     }
 
                     // This is independent from the above style having been modified ot not.
-                    if (data.isModified) {
+                    if (data.modified) {
                         vm.setForceRebuildInOnResume(true);
                     }
                 }
             });
 
+    /**
+     * Display a Book. We still call {@link #onBookEditFinished(EditBookOutput)} as
+     * the user might have done so from the displaying fragment.
+     */
+    private final ActivityResultLauncher<ShowBookPagerContract.Input> displayBookLauncher =
+            registerForActivityResult(new ShowBookPagerContract(), this::onBookEditFinished);
+    /** Add a Book by doing a search on the internet. */
+    private final ActivityResultLauncher<AddBookBySearchContract.By> addBookBySearchLauncher =
+            registerForActivityResult(new AddBookBySearchContract(), this::onBookEditFinished);
     /** Edit a Book. */
     private final ActivityResultLauncher<Long> editByIdLauncher =
             registerForActivityResult(new EditBookByIdContract(), this::onBookEditFinished);
-
     /** Duplicate and edit a Book. */
     private final ActivityResultLauncher<Bundle> duplicateLauncher =
             registerForActivityResult(new EditBookFromBundleContract(), this::onBookEditFinished);
 
+
     /** Update an individual Book with information from the internet. */
     private final ActivityResultLauncher<Book> updateBookLauncher =
-            registerForActivityResult(new UpdateSingleBookContract(), this::onBookEditFinished);
-
-    /** Add a Book by doing a search on the internet. */
-    private final ActivityResultLauncher<AddBookBySearchContract.By> addBookBySearchLauncher =
-            registerForActivityResult(new AddBookBySearchContract(), this::onBookEditFinished);
-
+            registerForActivityResult(new UpdateSingleBookContract(),
+                                      this::onBookAutoUpdateFinished);
     /** Update a list of Books with information from the internet. */
     private final ActivityResultLauncher<UpdateBooklistContract.Input> updateBookListLauncher =
-            registerForActivityResult(new UpdateBooklistContract(), this::onBookEditFinished);
+            registerForActivityResult(new UpdateBooklistContract(),
+                                      this::onBookAutoUpdateFinished);
+
 
     /** View all works of an Author. */
     private final ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher =
@@ -1508,10 +1514,34 @@ public class BooksOnBookshelf
     }
 
     /**
-     * This method is called from a ActivityResultContract after the result intent is parsed.
+     * Called when a book/book-list was updated with internet data.
      * After this method is executed, the flow will take us to #onResume.
      *
-     * @param data returned from the view/edit Activity
+     * @param data returned from the update contract
+     */
+    private void onBookAutoUpdateFinished(@Nullable final UpdateBooksOutput data) {
+        if (data != null) {
+            if (data.listModified) {
+                // we processed a list, just force a rebuild
+                vm.setForceRebuildInOnResume(true);
+
+            } else if (data.bookModified > 0) {
+                //URGENT: we processed a single book, we should NOT do a full rebuild
+                vm.setForceRebuildInOnResume(true);
+            }
+
+            // If we got an reposition id back, make any potential rebuild re-position to it.
+            if (data.repositionToBookId > 0) {
+                vm.setCurrentCenteredBookId(data.repositionToBookId);
+            }
+        }
+    }
+
+    /**
+     * This method is called from an ActivityResultContract after the result intent is parsed.
+     * After this method is executed, the flow will take us to #onResume.
+     *
+     * @param data returned from the view/edit contract
      */
     private void onBookEditFinished(@Nullable final EditBookOutput data) {
         if (data != null) {
@@ -1519,9 +1549,9 @@ public class BooksOnBookshelf
                 vm.setForceRebuildInOnResume(true);
             }
 
-            // If we got an id back, make any (potential) rebuild re-position to it.
-            if (data.bookId > 0) {
-                vm.setCurrentCenteredBookId(data.bookId);
+            // If we got an reposition id back, make any potential rebuild re-position to it.
+            if (data.repositionToBookId > 0) {
+                vm.setCurrentCenteredBookId(data.repositionToBookId);
             }
         }
     }

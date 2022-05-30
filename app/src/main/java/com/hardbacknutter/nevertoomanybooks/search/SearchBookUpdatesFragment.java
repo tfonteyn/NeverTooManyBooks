@@ -48,9 +48,7 @@ import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesSingleListContract;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -89,7 +87,6 @@ public class SearchBookUpdatesFragment
             registerForActivityResult(new SearchSitesSingleListContract(),
                                       sites -> {
                                           if (sites != null) {
-                                              // no changes committed, temporary usage only
                                               vm.setSiteList(sites);
                                           }
                                       });
@@ -255,21 +252,12 @@ public class SearchBookUpdatesFragment
 
     private void onAllDone(@NonNull final LiveDataEvent<TaskResult<Bundle>> message) {
         closeProgressDialog();
+
         message.getData().ifPresent(data -> {
             final Bundle result = data.getResult();
-
             if (result != null) {
-                final long lastBookId =
-                        result.getLong(SearchBookUpdatesViewModel.BKEY_LAST_BOOK_ID, 0);
-
-                final Intent resultIntent = EditBookOutput
-                        .createResultIntent(
-                                result.getLong(DBKey.FK_BOOK, 0),
-                                result.getBoolean(SearchBookUpdatesViewModel.BKEY_MODIFIED, false))
-                        .putExtra(SearchBookUpdatesViewModel.BKEY_LAST_BOOK_ID, lastBookId);
-
                 //noinspection ConstantConditions
-                getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                getActivity().setResult(Activity.RESULT_OK, new Intent().putExtras(result));
             }
 
             //noinspection ConstantConditions
@@ -340,9 +328,9 @@ public class SearchBookUpdatesFragment
 
         /** Cached inflater. */
         @NonNull
-        private final LayoutInflater mInflater;
+        private final LayoutInflater layoutInflater;
 
-        private final SyncField[] mSyncFields;
+        private final SyncField[] syncFields;
 
         /**
          * Constructor.
@@ -352,9 +340,9 @@ public class SearchBookUpdatesFragment
          */
         SyncFieldAdapter(@NonNull final Context context,
                          @NonNull final Collection<SyncField> syncFields) {
-            mInflater = LayoutInflater.from(context);
+            layoutInflater = LayoutInflater.from(context);
             //noinspection ZeroLengthArrayAllocation
-            mSyncFields = syncFields.toArray(new SyncField[0]);
+            this.syncFields = syncFields.toArray(new SyncField[0]);
         }
 
         @NonNull
@@ -363,11 +351,11 @@ public class SearchBookUpdatesFragment
                                          final int viewType) {
 
             final RowUpdateFromInternetBinding hVb = RowUpdateFromInternetBinding
-                    .inflate(mInflater, parent, false);
+                    .inflate(layoutInflater, parent, false);
             final Holder holder = new Holder(hVb);
 
             holder.vb.cbxUsage.setOnClickListener(v -> {
-                final SyncField fs = mSyncFields[holder.getBindingAdapterPosition()];
+                final SyncField fs = syncFields[holder.getBindingAdapterPosition()];
                 fs.nextState();
                 hVb.cbxUsage.setChecked(fs.getAction() != SyncAction.Skip);
                 hVb.cbxUsage.setText(fs.getActionLabelResId());
@@ -379,7 +367,7 @@ public class SearchBookUpdatesFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
-            final SyncField syncField = mSyncFields[position];
+            final SyncField syncField = syncFields[position];
 
             holder.vb.field.setText(syncField.getFieldLabel());
             holder.vb.cbxUsage.setChecked(syncField.getAction() != SyncAction.Skip);
@@ -388,7 +376,7 @@ public class SearchBookUpdatesFragment
 
         @Override
         public int getItemCount() {
-            return mSyncFields.length;
+            return syncFields.length;
         }
     }
 
@@ -405,6 +393,10 @@ public class SearchBookUpdatesFragment
                 .setIcon(R.drawable.ic_baseline_find_in_page_24)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
+            menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET_SKIP_ALL,
+                     0, R.string.action_select_none)
+                .setIcon(R.drawable.ic_baseline_check_box_outline_blank_24);
+
             menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_reset_to_default)
                 .setIcon(R.drawable.ic_baseline_undo_24);
         }
@@ -417,8 +409,13 @@ public class SearchBookUpdatesFragment
                 editSitesLauncher.launch(vm.getSiteList());
                 return true;
 
+            } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_SKIP_ALL) {
+                vm.setAll(SyncAction.Skip);
+                initAdapter();
+                return true;
+
             } else if (itemId == R.id.MENU_RESET) {
-                vm.resetPreferences();
+                vm.resetAll();
                 initAdapter();
                 return true;
             }

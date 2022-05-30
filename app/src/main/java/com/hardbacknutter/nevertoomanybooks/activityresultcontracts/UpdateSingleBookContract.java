@@ -33,17 +33,19 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesFragment;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesViewModel;
 import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
 
 /**
  * Update a single Book.
  */
 public class UpdateSingleBookContract
-        extends ActivityResultContract<Book, EditBookOutput> {
+        extends ActivityResultContract<Book, UpdateBooksOutput> {
 
     private static final String TAG = "Update1BookContract";
 
@@ -70,8 +72,8 @@ public class UpdateSingleBookContract
 
     @Override
     @Nullable
-    public EditBookOutput parseResult(final int resultCode,
-                                      @Nullable final Intent intent) {
+    public UpdateBooksOutput parseResult(final int resultCode,
+                                         @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
@@ -80,6 +82,18 @@ public class UpdateSingleBookContract
             return null;
         }
 
-        return intent.getParcelableExtra(EditBookOutput.BKEY);
+        final long repositionToBookId =
+                intent.getLongExtra(DBKey.FK_BOOK, 0);
+        final long bookModified =
+                intent.getLongExtra(SearchBookUpdatesViewModel.BKEY_BOOK_MODIFIED, 0);
+        final long lastBookIdProcessed =
+                intent.getLongExtra(SearchBookUpdatesViewModel.BKEY_LAST_BOOK_ID_PROCESSED, 0);
+        final boolean listModified =
+                intent.getBooleanExtra(SearchBookUpdatesViewModel.BKEY_LIST_MODIFIED, false);
+
+        return new UpdateBooksOutput(repositionToBookId,
+                                     bookModified,
+                                     lastBookIdProcessed,
+                                     listModified);
     }
 }

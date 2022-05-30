@@ -42,8 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 public class ShowBookPagerFragment
         extends BaseFragment {
 
-    public static final String TAG = "ShowBookPagerFragment";
-
     /** View Binding with the ViewPager2. */
     private ViewPager2 viewPager;
 
@@ -60,7 +58,7 @@ public class ShowBookPagerFragment
                     // always set the *current* book, so BoB can reposition more accurately.
                     final long bookId = vm.getBookIdAtPosition(viewPager.getCurrentItem());
                     final Intent resultIntent = EditBookOutput
-                            .createResultIntent(bookId, aVm.isModified());
+                            .createResult(bookId, aVm.isModified());
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();

@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooksOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
@@ -120,10 +121,10 @@ public class ShowBookDetailsFragment
 
     /** User edits a book. */
     private final ActivityResultLauncher<Long> editBookLauncher = registerForActivityResult(
-            new EditBookByIdContract(), this::onBookUpdated);
+            new EditBookByIdContract(), this::onBookEditFinished);
     /** User updates a book with internet data. */
     private final ActivityResultLauncher<Book> updateBookLauncher = registerForActivityResult(
-            new UpdateSingleBookContract(), this::onBookUpdated);
+            new UpdateSingleBookContract(), this::onBookAutoUpdateFinished);
 
     /** Handle the edit-lender dialog. */
     private final EditLenderDialogFragment.Launcher editLenderLauncher =
@@ -267,21 +268,42 @@ public class ShowBookDetailsFragment
     }
 
     /**
-     * Called when the Book was changed somehow.
+     * Called when the Book was updated with internet data.
      *
      * @param data (optional) details
      */
-    private void onBookUpdated(@Nullable final EditBookOutput data) {
+    private void onBookAutoUpdateFinished(@Nullable final UpdateBooksOutput data) {
+        if (data != null) {
+            // only override if 'true'; i.e. if we got an id back
+            if (data.bookModified > 0) {
+                aVm.updateFragmentResult();
+            }
+
+            vm.reloadBook();
+
+            if (bookChangedListener != null) {
+                bookChangedListener.onBookUpdated(vm.getBook(), (String) null);
+            }
+        }
+    }
+
+    /**
+     * Called when the Book was edited.
+     *
+     * @param data (optional) details
+     */
+    private void onBookEditFinished(@Nullable final EditBookOutput data) {
         if (data != null) {
             // only override if 'true'
             if (data.modified) {
                 aVm.updateFragmentResult();
             }
-        }
-        vm.reloadBook();
 
-        if (bookChangedListener != null) {
-            bookChangedListener.onBookUpdated(vm.getBook(), (String) null);
+            vm.reloadBook();
+
+            if (bookChangedListener != null) {
+                bookChangedListener.onBookUpdated(vm.getBook(), (String) null);
+            }
         }
     }
 
@@ -660,7 +682,7 @@ public class ShowBookDetailsFragment
 
                 } else {
                     final Intent resultIntent = EditBookOutput
-                            .createResultIntent(0, true);
+                            .createResult(0, true);
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();

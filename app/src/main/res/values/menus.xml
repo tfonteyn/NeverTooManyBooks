@@ -92,6 +92,7 @@
     <item name="MENU_SEARCH" type="id" />
 
     <item name="MENU_UPDATE_FROM_INTERNET" type="id" />
+    <item name="MENU_UPDATE_FROM_INTERNET_SKIP_ALL" type="id" />
     <item name="MENU_UPDATE_FROM_INTERNET_THIS_SHELF_ONLY" type="id" />
     <item name="MENU_UPDATE_FROM_INTERNET_ALL_SHELVES" type="id" />
 

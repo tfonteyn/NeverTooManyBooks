@@ -64,8 +64,14 @@ public class SearchBookUpdatesViewModel
 
     /** Log tag. */
     private static final String TAG = "SearchBookUpdatesViewModel";
-    static final String BKEY_LAST_BOOK_ID = TAG + ":lastId";
-    static final String BKEY_MODIFIED = TAG + ":m";
+    public static final String BKEY_LAST_BOOK_ID_PROCESSED = TAG + ":lastId";
+    /** Boolean - whether a list was processed/modified. */
+    public static final String BKEY_LIST_MODIFIED = TAG + ":modified:list";
+    /**
+     * Long - if this was a single-book request, the book id if it was modified.
+     * Only present if {@link #BKEY_LIST_MODIFIED} is NOT present.
+     */
+    public static final String BKEY_BOOK_MODIFIED = TAG + ":modified:book";
 
     /** Prefix to store the settings. */
     private static final String SYNC_PROCESSOR_PREFIX = "fields.update.usage.";
@@ -99,7 +105,7 @@ public class SearchBookUpdatesViewModel
     private List<Long> bookIdList;
 
     /** Allows restarting an update task from the given book id onwards. 0 for all. */
-    private long fromBookIdOnwards;
+    private long lastBookIdProcessed;
 
     /** The (subset) of fields relevant to the current book. */
     private Map<String, SyncField> currentFieldsWanted;
@@ -154,6 +160,9 @@ public class SearchBookUpdatesViewModel
 
     @NonNull
     private SyncReaderProcessor.Builder createSyncProcessorBuilder(@NonNull final Context context) {
+        final SyncReaderProcessor.Builder builder =
+                new SyncReaderProcessor.Builder(SYNC_PROCESSOR_PREFIX);
+
         final SortedMap<String, String[]> map = new TreeMap<>();
         map.put(context.getString(R.string.lbl_cover_front),
                 new String[]{FieldVisibility.COVER[0]});
@@ -192,11 +201,6 @@ public class SearchBookUpdatesViewModel
         map.put(context.getString(R.string.lbl_publishers),
                 new String[]{DBKey.FK_PUBLISHER, Book.BKEY_PUBLISHER_LIST});
 
-
-        final SyncReaderProcessor.Builder builder =
-                new SyncReaderProcessor.Builder(SYNC_PROCESSOR_PREFIX);
-
-        // add the sorted fields
         map.forEach(builder::add);
 
         builder.addRelatedField(FieldVisibility.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
@@ -204,14 +208,15 @@ public class SearchBookUpdatesViewModel
                .addRelatedField(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY);
 
 
-        // always added at the end, not sorted.
-        for (final SearchEngineConfig seConfig : SearchEngineRegistry.getInstance().getAll()) {
+        // Add the external-id fields at the end.
+        final SortedMap<String, String> sidMap = new TreeMap<>();
+        SearchEngineRegistry.getInstance().getAll().forEach(seConfig -> {
             final Domain domain = seConfig.getExternalIdDomain();
             if (domain != null) {
-                builder.add(context.getString(seConfig.getLabelResId()),
-                            domain.getName(), SyncAction.Overwrite);
+                sidMap.put(context.getString(seConfig.getLabelResId()), domain.getName());
             }
-        }
+        });
+        sidMap.forEach((label, key) -> builder.add(label, key, SyncAction.Overwrite));
 
         return builder;
     }
@@ -253,12 +258,12 @@ public class SearchBookUpdatesViewModel
      * Allows to set the 'lowest' Book id to start from.
      * See {@link BookDao#fetchFromIdOnwards(long)}
      *
-     * @param fromBookIdOnwards the lowest book id to start from.
-     *                          This allows to fetch a subset of the requested set.
-     *                          Defaults to 0, i.e. the full set.
+     * @param id the lowest book id to start from.
+     *           This allows to fetch a subset of the requested set.
+     *           Defaults to 0, i.e. the full set.
      */
-    void setFromBookIdOnwards(final long fromBookIdOnwards) {
-        this.fromBookIdOnwards = fromBookIdOnwards;
+    void setNextBookIdToProcess(final long id) {
+        this.lastBookIdProcessed = id;
     }
 
     /**
@@ -271,8 +276,12 @@ public class SearchBookUpdatesViewModel
     /**
      * Reset current usage back to defaults, and write to preferences.
      */
-    void resetPreferences() {
+    void resetAll() {
         syncProcessorBuilder.resetPreferences();
+    }
+
+    public void setAll(@NonNull final SyncAction action) {
+        syncProcessorBuilder.setSyncAction(action);
     }
 
     /**
@@ -290,7 +299,7 @@ public class SearchBookUpdatesViewModel
 
         try {
             if (bookIdList == null || bookIdList.isEmpty()) {
-                currentCursor = bookDao.fetchFromIdOnwards(fromBookIdOnwards);
+                currentCursor = bookDao.fetchFromIdOnwards(lastBookIdProcessed);
             } else {
                 currentCursor = bookDao.fetchById(bookIdList);
             }
@@ -411,7 +420,7 @@ public class SearchBookUpdatesViewModel
             return false;
         }
 
-        postSearch(null);
+        postSearch(false);
         return false;
     }
 
@@ -456,14 +465,16 @@ public class SearchBookUpdatesViewModel
      * Cleanup up and report the final outcome.
      *
      * <ul>Callers:
-     *      <li>when we've not started a search (for whatever reason, including we're all done)</li>
-     *      <li>when an exception is thrown</li>
-     *      <li>when we're cancelled</li>
+     * <li>when we're all done; success==true</li>
+     * <li>when we've not started a search (for whatever reason)</li>
+     * <li>when we're cancelled</li>
      * </ul>
-     *
-     * @param e (optional) exception
+     * <p>
+     * Result message contains:
+     * - BKEY_LAST_BOOK_ID_PROCESSED for later resuming
+     * - DBKey.FK_BOOK: the first book in the list / the only book; not set if we did 'all' books
      */
-    private void postSearch(@Nullable final Exception e) {
+    private void postSearch(final boolean wasCancelled) {
         if (currentCursor != null) {
             currentCursor.close();
         }
@@ -473,44 +484,74 @@ public class SearchBookUpdatesViewModel
         super.cancel();
 
         // the last book id which was handled; can be used to restart the update.
-        fromBookIdOnwards = currentBookId;
+        lastBookIdProcessed = currentBookId;
 
         final Bundle results = ServiceLocator.newBundle();
-        results.putLong(BKEY_LAST_BOOK_ID, fromBookIdOnwards);
+        results.putLong(BKEY_LAST_BOOK_ID_PROCESSED, lastBookIdProcessed);
 
-        // all books || a list of books || (single book && ) not cancelled
-        if (bookIdList == null || bookIdList.size() > 1 || !isCancelled()) {
-            // One or more books were changed.
+        // all books || a list of books (i.e. 2 or more books)
+        if (bookIdList == null || bookIdList.size() > 1) {
             // Technically speaking when doing a list of books, the task might have been
             // cancelled before the first book was done. We disregard this fringe case.
-            results.putBoolean(BKEY_MODIFIED, true);
-
-            // if applicable, pass the first book for repositioning the list on screen
-            if (bookIdList != null && !bookIdList.isEmpty()) {
-                results.putLong(DBKey.FK_BOOK, bookIdList.get(0));
-            }
+            results.putBoolean(BKEY_LIST_MODIFIED, true);
         }
 
-        if (e != null) {
-            Logger.error(TAG, e);
-            final LiveDataEvent<TaskResult<Exception>> message =
-                    new LiveDataEvent<>(new TaskResult<>(R.id.TASK_ID_UPDATE_FIELDS, e));
-            listFailed.setValue(message);
+        // a single book
+        if (bookIdList != null && bookIdList.size() == 1) {
+            //URGENT: we should only return this is we actually modified the book
+            results.putLong(BKEY_BOOK_MODIFIED, bookIdList.get(0));
+        }
 
+        // if applicable, pass the first book for repositioning the list on screen
+        if (bookIdList != null && !bookIdList.isEmpty()) {
+            results.putLong(DBKey.FK_BOOK, bookIdList.get(0));
+        }
+
+        final LiveDataEvent<TaskResult<Bundle>> message =
+                new LiveDataEvent<>(new TaskResult<>(R.id.TASK_ID_UPDATE_FIELDS, results));
+        if (wasCancelled) {
+            searchCoordinatorCancelled.setValue(message);
         } else {
-            final LiveDataEvent<TaskResult<Bundle>> message =
-                    new LiveDataEvent<>(new TaskResult<>(R.id.TASK_ID_UPDATE_FIELDS, results));
-            if (isCancelled()) {
-                searchCoordinatorCancelled.setValue(message);
-            } else {
-                listFinished.setValue(message);
-            }
+            listFinished.setValue(message);
         }
+    }
+
+    /**
+     * There was an Exception thrown during the search;
+     * Cleanup up and report the final outcome.
+     *
+     * @param e exception
+     */
+    private void postSearch(@NonNull final Exception e) {
+        Logger.error(TAG, e);
+
+        if (currentCursor != null) {
+            currentCursor.close();
+        }
+
+        // Tell the SearchCoordinator we're done and it should clean up.
+        setBaseMessage(null);
+        super.cancel();
+
+        // the last book id which was handled; can be used to restart the update.
+        lastBookIdProcessed = currentBookId;
+
+//        final Bundle results = ServiceLocator.newBundle();
+//        results.putLong(BKEY_LAST_BOOK_ID_PROCESSED, lastBookIdProcessed);
+//
+//        // if applicable, pass the first book for repositioning the list on screen
+//        if (bookIdList != null && !bookIdList.isEmpty()) {
+//            results.putLong(DBKey.FK_BOOK, bookIdList.get(0));
+//        }
+
+        final LiveDataEvent<TaskResult<Exception>> message =
+                new LiveDataEvent<>(new TaskResult<>(R.id.TASK_ID_UPDATE_FIELDS, e));
+        listFailed.setValue(message);
     }
 
     @Override
     public void cancel() {
         super.cancel();
-        postSearch(null);
+        postSearch(true);
     }
 }
