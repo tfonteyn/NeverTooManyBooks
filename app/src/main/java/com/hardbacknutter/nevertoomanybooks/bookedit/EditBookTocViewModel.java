@@ -38,49 +38,49 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 public class EditBookTocViewModel
         extends ViewModel {
 
-    private final IsfdbGetEditionsTask mIsfdbGetEditionsTask = new IsfdbGetEditionsTask();
-    private final IsfdbGetBookTask mIsfdbGetBookTask = new IsfdbGetBookTask();
+    private final IsfdbGetEditionsTask isfdbGetEditionsTask = new IsfdbGetEditionsTask();
+    private final IsfdbGetBookTask isfdbGetBookTask = new IsfdbGetBookTask();
 
     void searchByIsbn(@NonNull final ISBN isbn) {
-        mIsfdbGetEditionsTask.search(isbn);
+        isfdbGetEditionsTask.search(isbn);
     }
 
     @NonNull
     LiveData<LiveDataEvent<TaskResult<List<Edition>>>> onIsfdbEditions() {
-        return mIsfdbGetEditionsTask.onFinished();
+        return isfdbGetEditionsTask.onFinished();
     }
 
     @NonNull
     LiveData<LiveDataEvent<TaskResult<List<Edition>>>> onIsfdbEditionsCancelled() {
-        return mIsfdbGetEditionsTask.onCancelled();
+        return isfdbGetEditionsTask.onCancelled();
     }
 
     @NonNull
     LiveData<LiveDataEvent<TaskResult<Exception>>> onIsfdbEditionsFailure() {
-        return mIsfdbGetEditionsTask.onFailure();
+        return isfdbGetEditionsTask.onFailure();
     }
 
 
     void searchBook(final long isfdbId) {
-        mIsfdbGetBookTask.search(isfdbId);
+        isfdbGetBookTask.search(isfdbId);
     }
 
     @NonNull
     LiveData<LiveDataEvent<TaskResult<Bundle>>> onIsfdbBook() {
-        return mIsfdbGetBookTask.onFinished();
+        return isfdbGetBookTask.onFinished();
     }
 
     @NonNull
     LiveData<LiveDataEvent<TaskResult<Bundle>>> onIsfdbBookCancelled() {
-        return mIsfdbGetBookTask.onCancelled();
+        return isfdbGetBookTask.onCancelled();
     }
 
     @NonNull
     LiveData<LiveDataEvent<TaskResult<Exception>>> onIsfdbBookFailure() {
-        return mIsfdbGetBookTask.onFailure();
+        return isfdbGetBookTask.onFailure();
     }
 
     void searchEdition(@NonNull final Edition edition) {
-        mIsfdbGetBookTask.search(edition);
+        isfdbGetBookTask.search(edition);
     }
 }

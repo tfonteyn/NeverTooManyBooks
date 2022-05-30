@@ -493,23 +493,23 @@ public class EditBookTocFragment
         private static final String BKEY_REQUEST_KEY = TAG + ":rk";
         private static final String BKEY_HAS_OTHER_EDITIONS = TAG + ":hasOtherEditions";
         /** FragmentResultListener request key to use for our response. */
-        private String mRequestKey;
-        private boolean mHasOtherEditions;
-        private Book.ContentType mBookTocType;
-        private ArrayList<TocEntry> mTocEntries;
+        private String requestKey;
+        private boolean hasOtherEditions;
+        private Book.ContentType bookTocType;
+        private ArrayList<TocEntry> tocEntries;
 
         @Override
         public void onCreate(@Nullable final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
             final Bundle args = requireArguments();
-            mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                                 BKEY_REQUEST_KEY);
-            mTocEntries = Objects.requireNonNull(args.getParcelableArrayList(Book.BKEY_TOC_LIST),
-                                                 Book.BKEY_TOC_LIST);
+            requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
+                                                BKEY_REQUEST_KEY);
+            tocEntries = Objects.requireNonNull(args.getParcelableArrayList(Book.BKEY_TOC_LIST),
+                                                Book.BKEY_TOC_LIST);
 
-            mBookTocType = Book.ContentType.getType(args.getLong(DBKey.TOC_TYPE__BITMASK));
-            mHasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS, false);
+            bookTocType = Book.ContentType.getType(args.getLong(DBKey.TOC_TYPE__BITMASK));
+            hasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS, false);
         }
 
         @NonNull
@@ -519,15 +519,15 @@ public class EditBookTocFragment
                     .inflate(R.layout.dialog_toc_confirm, null, false);
             final TextView contentView = rootView.findViewById(R.id.content);
 
-            final boolean hasToc = mTocEntries != null && !mTocEntries.isEmpty();
+            final boolean hasToc = tocEntries != null && !tocEntries.isEmpty();
             if (hasToc) {
                 //noinspection ConstantConditions
                 final StringBuilder message =
                         new StringBuilder(getString(R.string.warning_toc_confirm))
                                 .append("\n\n")
-                                .append(mTocEntries.stream()
-                                                   .map(entry -> entry.getLabel(getContext()))
-                                                   .collect(Collectors.joining(", ")));
+                                .append(tocEntries.stream()
+                                                  .map(entry -> entry.getLabel(getContext()))
+                                                  .collect(Collectors.joining(", ")));
                 contentView.setText(message);
 
             } else {
@@ -544,14 +544,14 @@ public class EditBookTocFragment
 
             if (hasToc) {
                 dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
-                                 (d, which) -> Launcher.setResult(this, mRequestKey,
-                                                                  mBookTocType, mTocEntries));
+                                 (d, which) -> Launcher.setResult(this, requestKey,
+                                                                  bookTocType, tocEntries));
             }
 
             // if we found multiple editions, allow a re-try with the next edition
-            if (mHasOtherEditions) {
+            if (hasOtherEditions) {
                 dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.action_retry),
-                                 (d, which) -> Launcher.searchNextEdition(this, mRequestKey));
+                                 (d, which) -> Launcher.searchNextEdition(this, requestKey));
             }
 
             return dialog;

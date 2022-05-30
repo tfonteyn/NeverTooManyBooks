@@ -134,7 +134,7 @@ public class EditBookViewModel
     private List<String> listPriceCurrencies;
     /** Field drop down list. */
     @Nullable
-    private List<String> mAuthorNamesFormatted;
+    private List<String> authorNamesFormatted;
     /** Field drop down list. */
     @Nullable
     private List<String> authorFamilyNames;
@@ -401,11 +401,11 @@ public class EditBookViewModel
      */
     @NonNull
     List<String> getAllAuthorNames() {
-        if (mAuthorNamesFormatted == null) {
-            mAuthorNamesFormatted = ServiceLocator.getInstance().getAuthorDao()
-                                                  .getNames(DBKey.KEY_AUTHOR_FORMATTED);
+        if (authorNamesFormatted == null) {
+            authorNamesFormatted = ServiceLocator.getInstance().getAuthorDao()
+                                                 .getNames(DBKey.KEY_AUTHOR_FORMATTED);
         }
-        return mAuthorNamesFormatted;
+        return authorNamesFormatted;
     }
 
     /**
