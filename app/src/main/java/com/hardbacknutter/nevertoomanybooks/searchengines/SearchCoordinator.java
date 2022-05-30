@@ -604,8 +604,88 @@ public class SearchCoordinator
         externalIdSearchText = externalIds;
     }
 
+    /**
+     * Start specified site search.
+     *
+     * @param searchEngine to use
+     *
+     * @return {@code true} if the search was started.
+     */
+    private boolean startSearch(@NonNull final SearchEngine searchEngine) {
+
+        // refuse new searches if we're shutting down.
+        if (cancelled.get()) {
+            return false;
+        }
+
+        if (!searchEngine.isAvailable()) {
+            return false;
+        }
+
+        // check for a external id matching the site.
+        String externalId = null;
+        if (externalIdSearchText != null
+            && externalIdSearchText.size() > 0) {
+            final int engineId = searchEngine.getEngineId();
+            if (externalIdSearchText.get(engineId) != null) {
+                externalId = externalIdSearchText.get(engineId);
+            }
+        }
+
+        final SearchTask task = new SearchTask(searchEngine, searchTaskListener);
+        task.setExecutor(ASyncExecutor.MAIN);
+
+        task.setFetchCovers(fetchCover);
+
+        if (externalId != null && !externalId.isEmpty()
+            && (searchEngine instanceof SearchEngine.ByExternalId)) {
+            task.setSearchBy(SearchTask.By.ExternalId);
+            task.setExternalId(externalId);
+
+        } else if (isbn.isValid(true)
+                   && (searchEngine instanceof SearchEngine.ByIsbn)) {
+            task.setSearchBy(SearchTask.By.Isbn);
+            if (searchEngine.getConfig().isSearchPrefersIsbn10() && isbn.isIsbn10Compat()) {
+                task.setIsbn(isbn.asText(ISBN.Type.Isbn10));
+            } else {
+                task.setIsbn(isbn.asText());
+            }
+
+        } else if (isbn.isValid(false)
+                   && (searchEngine instanceof SearchEngine.ByBarcode)) {
+            task.setSearchBy(SearchTask.By.Barcode);
+            task.setIsbn(isbn.asText());
+
+        } else if (searchEngine instanceof SearchEngine.ByText) {
+            task.setSearchBy(SearchTask.By.Text);
+            task.setIsbn(isbn.asText());
+            task.setAuthor(authorSearchText);
+            task.setTitle(titleSearchText);
+            task.setPublisher(publisherSearchText);
+
+        } else {
+            // search data and engine have nothing in common, abort silently.
+            return false;
+        }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
+            searchTasksStartTime.put(task.getTaskId(), System.nanoTime());
+        }
+
+        synchronized (activeTasks) {
+            activeTasks.add(task);
+        }
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            Log.d(TAG, "startSearch|searchEngine="
+                       + searchEngine.getName(ServiceLocator.getAppContext()));
+        }
+
+        task.startSearch();
+        return true;
+    }
+
     /** Listener for <strong>individual</strong> search tasks. */
-    private final TaskListener<Bundle> mSearchTaskListener = new TaskListener<>() {
+    private final TaskListener<Bundle> searchTaskListener = new TaskListener<>() {
 
         @Override
         public void onProgress(@NonNull final TaskProgress message) {
@@ -785,85 +865,202 @@ public class SearchCoordinator
         return isbnStr != null && !isbnStr.trim().isEmpty();
     }
 
-    /**
-     * Start specified site search.
-     *
-     * @param searchEngine to use
-     *
-     * @return {@code true} if the search was started.
-     */
-    private boolean startSearch(@NonNull final SearchEngine searchEngine) {
+    private static class ResultsAccumulator {
 
-        // refuse new searches if we're shutting down.
-        if (cancelled.get()) {
-            return false;
-        }
+        private static final Set<String> LIST_KEYS = Set.of(Book.BKEY_AUTHOR_LIST,
+                                                            Book.BKEY_SERIES_LIST,
+                                                            Book.BKEY_PUBLISHER_LIST,
+                                                            Book.BKEY_TOC_LIST,
+                                                            BKEY_FILE_SPEC_ARRAY[0],
+                                                            BKEY_FILE_SPEC_ARRAY[1]);
+        private static final Set<String> DATE_KEYS = Set.of(DBKey.BOOK_PUBLICATION__DATE,
+                                                            DBKey.FIRST_PUBLICATION__DATE);
 
-        if (!searchEngine.isAvailable()) {
-            return false;
-        }
+        private final CoverFilter coverFilter = new CoverFilter();
 
-        // check for a external id matching the site.
-        String externalId = null;
-        if (externalIdSearchText != null
-            && externalIdSearchText.size() > 0) {
-            final int engineId = searchEngine.getEngineId();
-            if (externalIdSearchText.get(engineId) != null) {
-                externalId = externalIdSearchText.get(engineId);
+        private final DateParser dateParser;
+        /** Mappers to apply. */
+        private final Collection<Mapper> mappers = new ArrayList<>();
+
+        ResultsAccumulator(@NonNull final Context context) {
+            dateParser = new FullDateParser(context);
+
+            if (FormatMapper.isMappingAllowed()) {
+                mappers.add(new FormatMapper());
+            }
+            if (ColorMapper.isMappingAllowed()) {
+                mappers.add(new ColorMapper());
             }
         }
 
-        final SearchTask task = new SearchTask(searchEngine, mSearchTaskListener);
-        task.setExecutor(ASyncExecutor.MAIN);
+        /**
+         * Accumulate all data from the given sites.
+         * <p>
+         * The Bundle will contain by default only String and ArrayList based data.
+         * Long etc... types will be stored as String data.
+         * <p>
+         * NEWTHINGS: if you add a new Search task that adds non-string based data,
+         * handle that here.
+         *
+         * @param context  Current context
+         * @param sites    the ordered list of sites
+         * @param bookData Destination bundle
+         */
+        public void process(@NonNull final Context context,
+                            @NonNull final List<Site> sites,
+                            @NonNull final Map<Integer, Bundle> searchResultsBySite,
+                            @NonNull final Bundle bookData) {
+            sites.stream()
+                 .map(Site::getSearchEngine)
+                 .forEach(searchEngine -> {
+                     final Bundle siteData = searchResultsBySite.get(searchEngine.getEngineId());
+                     if (siteData != null && !siteData.isEmpty()) {
+                         final Locale siteLocale = searchEngine.getLocale(context);
 
-        task.setFetchCovers(fetchCover);
+                         for (final String key : siteData.keySet()) {
+                             if (DATE_KEYS.contains(key)) {
+                                 processDate(siteLocale, key, siteData, bookData);
 
-        if (externalId != null && !externalId.isEmpty()
-            && (searchEngine instanceof SearchEngine.ByExternalId)) {
-            task.setSearchBy(SearchTask.By.ExternalId);
-            task.setExternalId(externalId);
+                             } else if (LIST_KEYS.contains(key)) {
+                                 processList(key, siteData, bookData);
 
-        } else if (isbn.isValid(true)
-                   && (searchEngine instanceof SearchEngine.ByIsbn)) {
-            task.setSearchBy(SearchTask.By.Isbn);
-            if (((SearchEngine.ByIsbn) searchEngine).isPreferIsbn10()
-                && isbn.isIsbn10Compat()) {
-                task.setIsbn(isbn.asText(ISBN.Type.Isbn10));
+                             } else {
+                                 //FIXME: doing this will for example put a LONG id in
+                                 // the bundle as a String. This is as-designed, but you
+                                 // do get an Exception in the log when the data gets to
+                                 // the EditBook formatters. Harmless, but not clean.
+
+                                 // handle all normal String based entries
+                                 processString(key, siteData, bookData);
+                             }
+                         }
+                     }
+                 });
+
+            // run the mappers
+            mappers.forEach(mapper -> mapper.map(context, bookData));
+
+            // Pick the best covers for each list (if any) and clean/delete all others.
+            coverFilter.filter(bookData);
+        }
+
+        /**
+         * Grabs the 'new' date and checks if it's parsable.
+         * If so, then check if the previous date was actually valid at all.
+         * if not, use new date.
+         *
+         * @param siteLocale the specific Locale of the website
+         * @param key        for the date field
+         * @param siteData   Source Bundle
+         * @param bookData   Destination bundle
+         */
+        private void processDate(@NonNull final Locale siteLocale,
+                                 @NonNull final String key,
+                                 @NonNull final Bundle siteData,
+                                 @NonNull final Bundle bookData) {
+            final String currentDateHeld = bookData.getString(key);
+            final String dataToAdd = siteData.getString(key);
+
+            if (currentDateHeld == null || currentDateHeld.isEmpty()) {
+                // copy, even if the incoming date might not be valid.
+                // We'll deal with that later.
+                bookData.putString(key, dataToAdd);
+
             } else {
-                task.setIsbn(isbn.asText());
+                // FIXME: there is overlap with some SearchEngines which already do a full
+                //  validity check on the dates they gather. We should avoid a double-check.
+                //
+                // Overwrite with the new date if we can parse it and
+                // if the current one was present but not valid.
+                if (dataToAdd != null) {
+                    final LocalDateTime newDate = dateParser.parse(dataToAdd, siteLocale);
+                    if (newDate != null) {
+                        if (dateParser.parse(currentDateHeld, siteLocale) == null) {
+                            // current date was invalid, use the new one instead.
+                            // (theoretically this check was not needed, as we should not have
+                            // an invalid date stored anyhow... but paranoia rules)
+                            bookData.putString(key,
+                                               newDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                                Log.d(TAG, "processDate|copied"
+                                           + "|key=" + key + "|value=`" + dataToAdd + '`');
+                            }
+                        } else {
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                                Log.d(TAG, "processDate|skipped|key=" + key);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /**
+         * Accumulate ParcelableArrayList data.
+         * Add if not present, or append.
+         *
+         * @param <T>      type of items in the ArrayList
+         * @param key      Key of data
+         * @param siteData Source Bundle
+         * @param bookData Destination bundle
+         */
+        private <T extends Parcelable> void processList(@NonNull final String key,
+                                                        @NonNull final Bundle siteData,
+                                                        @NonNull final Bundle bookData) {
+            final ArrayList<T> dataToAdd = siteData.getParcelableArrayList(key);
+            if (dataToAdd == null || dataToAdd.isEmpty()) {
+                return;
             }
 
-        } else if (isbn.isValid(false)
-                   && (searchEngine instanceof SearchEngine.ByBarcode)) {
-            task.setSearchBy(SearchTask.By.Barcode);
-            task.setIsbn(isbn.asText());
-
-        } else if (searchEngine instanceof SearchEngine.ByText) {
-            task.setSearchBy(SearchTask.By.Text);
-            task.setIsbn(isbn.asText());
-            task.setAuthor(authorSearchText);
-            task.setTitle(titleSearchText);
-            task.setPublisher(publisherSearchText);
-
-        } else {
-            // search data and engine have nothing in common, abort silently.
-            return false;
+            ArrayList<T> dest = bookData.getParcelableArrayList(key);
+            if (dest == null || dest.isEmpty()) {
+                // just copy
+                dest = dataToAdd;
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                    Log.d(TAG, "processList|copied"
+                               + "|key=" + key + "|value=`" + dataToAdd + '`');
+                }
+            } else {
+                // append
+                dest.addAll(dataToAdd);
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                    Log.d(TAG, "processList|appended"
+                               + "|key=" + key + "|value=`" + dataToAdd + '`');
+                }
+            }
+            bookData.putParcelableArrayList(key, dest);
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
-            searchTasksStartTime.put(task.getTaskId(), System.nanoTime());
-        }
+        /**
+         * Accumulate String data.
+         * Handles other types via a .toString()
+         *
+         * @param key      Key of data
+         * @param siteData Source Bundle
+         * @param bookData Destination bundle
+         */
+        private void processString(@NonNull final String key,
+                                   @NonNull final Bundle siteData,
+                                   @NonNull final Bundle bookData) {
+            final Object dataToAdd = siteData.get(key);
+            if (dataToAdd == null || dataToAdd.toString().trim().isEmpty()) {
+                return;
+            }
 
-        synchronized (activeTasks) {
-            activeTasks.add(task);
+            final String dest = bookData.getString(key);
+            if (dest == null || dest.isEmpty()) {
+                // just use it
+                bookData.putString(key, dataToAdd.toString());
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                    Log.d(TAG, "processString|copied"
+                               + "|key=" + key + "|value=`" + dataToAdd + '`');
+                }
+            } else {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                    Log.d(TAG, "processString|skipping|key=" + key);
+                }
+            }
         }
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            Log.d(TAG, "startSearch|searchEngine="
-                       + searchEngine.getName(ServiceLocator.getAppContext()));
-        }
-
-        task.startSearch();
-        return true;
     }
 
     /**
@@ -997,203 +1194,6 @@ public class SearchCoordinator
         return bookData;
     }
 
-    private static class ResultsAccumulator {
-
-        private static final Set<String> LIST_KEYS = Set.of(Book.BKEY_AUTHOR_LIST,
-                                                            Book.BKEY_SERIES_LIST,
-                                                            Book.BKEY_PUBLISHER_LIST,
-                                                            Book.BKEY_TOC_LIST,
-                                                            BKEY_FILE_SPEC_ARRAY[0],
-                                                            BKEY_FILE_SPEC_ARRAY[1]);
-        private static final Set<String> DATE_KEYS = Set.of(DBKey.BOOK_PUBLICATION__DATE,
-                                                            DBKey.FIRST_PUBLICATION__DATE);
-
-        private final CoverFilter mCoverFilter = new CoverFilter();
-
-        private final DateParser mDateParser;
-        /** Mappers to apply. */
-        private final Collection<Mapper> mMappers = new ArrayList<>();
-
-        ResultsAccumulator(@NonNull final Context context) {
-            mDateParser = new FullDateParser(context);
-
-            if (FormatMapper.isMappingAllowed()) {
-                mMappers.add(new FormatMapper());
-            }
-            if (ColorMapper.isMappingAllowed()) {
-                mMappers.add(new ColorMapper());
-            }
-        }
-
-        /**
-         * Accumulate all data from the given sites.
-         * <p>
-         * The Bundle will contain by default only String and ArrayList based data.
-         * Long etc... types will be stored as String data.
-         * <p>
-         * NEWTHINGS: if you add a new Search task that adds non-string based data,
-         * handle that here.
-         *
-         * @param context  Current context
-         * @param sites    the ordered list of sites
-         * @param bookData Destination bundle
-         */
-        public void process(@NonNull final Context context,
-                            @NonNull final List<Site> sites,
-                            @NonNull final Map<Integer, Bundle> searchResultsBySite,
-                            @NonNull final Bundle bookData) {
-            sites.stream()
-                 .map(Site::getSearchEngine)
-                 .forEach(searchEngine -> {
-                     final Bundle siteData = searchResultsBySite.get(searchEngine.getEngineId());
-                     if (siteData != null && !siteData.isEmpty()) {
-                         final Locale siteLocale = searchEngine.getLocale(context);
-
-                         for (final String key : siteData.keySet()) {
-                             if (DATE_KEYS.contains(key)) {
-                                 processDate(siteLocale, key, siteData, bookData);
-
-                             } else if (LIST_KEYS.contains(key)) {
-                                 processList(key, siteData, bookData);
-
-                             } else {
-                                 //FIXME: doing this will for example put a LONG id in
-                                 // the bundle as a String. This is as-designed, but you
-                                 // do get an Exception in the log when the data gets to
-                                 // the EditBook formatters. Harmless, but not clean.
-
-                                 // handle all normal String based entries
-                                 processString(key, siteData, bookData);
-                             }
-                         }
-                     }
-                 });
-
-            // run the mappers
-            mMappers.forEach(mapper -> mapper.map(context, bookData));
-
-            // Pick the best covers for each list (if any) and clean/delete all others.
-            mCoverFilter.filter(bookData);
-        }
-
-        /**
-         * Grabs the 'new' date and checks if it's parsable.
-         * If so, then check if the previous date was actually valid at all.
-         * if not, use new date.
-         *
-         * @param siteLocale the specific Locale of the website
-         * @param key        for the date field
-         * @param siteData   Source Bundle
-         * @param bookData   Destination bundle
-         */
-        private void processDate(@NonNull final Locale siteLocale,
-                                 @NonNull final String key,
-                                 @NonNull final Bundle siteData,
-                                 @NonNull final Bundle bookData) {
-            final String currentDateHeld = bookData.getString(key);
-            final String dataToAdd = siteData.getString(key);
-
-            if (currentDateHeld == null || currentDateHeld.isEmpty()) {
-                // copy, even if the incoming date might not be valid.
-                // We'll deal with that later.
-                bookData.putString(key, dataToAdd);
-
-            } else {
-                // FIXME: there is overlap with some SearchEngines which already do a full
-                //  validity check on the dates they gather. We should avoid a double-check.
-                //
-                // Overwrite with the new date if we can parse it and
-                // if the current one was present but not valid.
-                if (dataToAdd != null) {
-                    final LocalDateTime newDate = mDateParser.parse(dataToAdd, siteLocale);
-                    if (newDate != null) {
-                        if (mDateParser.parse(currentDateHeld, siteLocale) == null) {
-                            // current date was invalid, use the new one instead.
-                            // (theoretically this check was not needed, as we should not have
-                            // an invalid date stored anyhow... but paranoia rules)
-                            bookData.putString(key,
-                                               newDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
-                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                                Log.d(TAG, "processDate|copied"
-                                           + "|key=" + key + "|value=`" + dataToAdd + '`');
-                            }
-                        } else {
-                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                                Log.d(TAG, "processDate|skipped|key=" + key);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        /**
-         * Accumulate ParcelableArrayList data.
-         * Add if not present, or append.
-         *
-         * @param <T>      type of items in the ArrayList
-         * @param key      Key of data
-         * @param siteData Source Bundle
-         * @param bookData Destination bundle
-         */
-        private <T extends Parcelable> void processList(@NonNull final String key,
-                                                        @NonNull final Bundle siteData,
-                                                        @NonNull final Bundle bookData) {
-            final ArrayList<T> dataToAdd = siteData.getParcelableArrayList(key);
-            if (dataToAdd == null || dataToAdd.isEmpty()) {
-                return;
-            }
-
-            ArrayList<T> dest = bookData.getParcelableArrayList(key);
-            if (dest == null || dest.isEmpty()) {
-                // just copy
-                dest = dataToAdd;
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "processList|copied"
-                               + "|key=" + key + "|value=`" + dataToAdd + '`');
-                }
-            } else {
-                // append
-                dest.addAll(dataToAdd);
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "processList|appended"
-                               + "|key=" + key + "|value=`" + dataToAdd + '`');
-                }
-            }
-            bookData.putParcelableArrayList(key, dest);
-        }
-
-        /**
-         * Accumulate String data.
-         * Handles other types via a .toString()
-         *
-         * @param key      Key of data
-         * @param siteData Source Bundle
-         * @param bookData Destination bundle
-         */
-        private void processString(@NonNull final String key,
-                                   @NonNull final Bundle siteData,
-                                   @NonNull final Bundle bookData) {
-            final Object dataToAdd = siteData.get(key);
-            if (dataToAdd == null || dataToAdd.toString().trim().isEmpty()) {
-                return;
-            }
-
-            final String dest = bookData.getString(key);
-            if (dest == null || dest.isEmpty()) {
-                // just use it
-                bookData.putString(key, dataToAdd.toString());
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "processString|copied"
-                               + "|key=" + key + "|value=`" + dataToAdd + '`');
-                }
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "processString|skipping|key=" + key);
-                }
-            }
-        }
-    }
 
     private static class CoverFilter {
 

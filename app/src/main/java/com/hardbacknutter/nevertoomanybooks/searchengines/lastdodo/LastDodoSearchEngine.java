@@ -93,6 +93,7 @@ public class LastDodoSearchEngine
                                               "https://www.lastdodo.nl")
                 .setCountry("NL", "nl")
                 .setFilenameSuffix("LDD")
+                .setSearchPrefersIsbn10(true)
 
                 .setDomainKey(DBKey.SID_LAST_DODO_NL)
                 .setDomainViewId(R.id.site_last_dodo_nl)
@@ -159,6 +160,7 @@ public class LastDodoSearchEngine
 
         // Grab the first search result, and redirect to that page
         final Element section = document.selectFirst("div.card-body");
+        // it will be null if there were no results.
         if (section != null) {
             final Element urlElement = section.selectFirst("a");
             if (urlElement != null) {
