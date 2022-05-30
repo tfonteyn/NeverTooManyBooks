@@ -44,7 +44,7 @@ public class SearchSitesSingleListContract
     /** Log tag. */
     private static final String TAG = "SearchSitesSingleList";
     /** The key (list type) to retrieve the result. */
-    private String mListKey;
+    private String listKey;
 
     @NonNull
     @Override
@@ -52,7 +52,7 @@ public class SearchSitesSingleListContract
                                @NonNull final ArrayList<Site> list) {
 
         // All sites in a list are always of the same type; just grab it from the first entry
-        mListKey = list.get(0).getType().getBundleKey();
+        listKey = list.get(0).getType().getBundleKey();
 
         return FragmentHostActivity
                 .createIntent(context, R.layout.activity_admin_search, SearchAdminFragment.class)
@@ -65,13 +65,13 @@ public class SearchSitesSingleListContract
                                        @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent
-                                         + "|mListKey=" + mListKey);
+                                         + "|mListKey=" + listKey);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return null;
         }
 
-        return intent.getParcelableArrayListExtra(mListKey);
+        return intent.getParcelableArrayListExtra(listKey);
     }
 }
