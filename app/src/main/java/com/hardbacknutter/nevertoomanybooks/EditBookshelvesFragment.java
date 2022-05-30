@@ -81,7 +81,7 @@ public class EditBookshelvesFragment
                 @Override
                 public void handleOnBackPressed() {
                     final Intent resultIntent = EditBookshelvesContract
-                            .createResultIntent(vm.getSelectedBookshelf());
+                            .createResult(vm.getSelectedBookshelf());
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();

@@ -40,8 +40,13 @@ public class EditBookshelvesContract
 
     private static final String TAG = "EditBookshelvesContract";
 
+    /**
+     * Create the result which {@link #parseResult(int, Intent)} will receive.
+     *
+     * @return Intent
+     */
     @NonNull
-    public static Intent createResultIntent(@Nullable final Bookshelf selectedBookshelf) {
+    public static Intent createResult(@Nullable final Bookshelf selectedBookshelf) {
         final Intent resultIntent = new Intent();
         if (selectedBookshelf != null) {
             resultIntent.putExtra(DBKey.FK_BOOKSHELF, selectedBookshelf.getId());
