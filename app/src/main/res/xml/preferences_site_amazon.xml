@@ -31,6 +31,14 @@
             android:summary="@string/preference_not_set"
             android:title="@string/lbl_website_address" />
 
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_barcode"
+            android:key="amazon.search.byIsbn.prefer.10"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_search_prefer_isbn10" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

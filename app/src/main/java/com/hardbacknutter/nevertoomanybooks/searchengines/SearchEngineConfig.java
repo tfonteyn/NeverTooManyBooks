@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -40,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * Configuration data for a {@link SearchEngine}.
  * See {@link SearchSites} for more details.
  */
+@SuppressWarnings("WeakerAccess")
 public final class SearchEngineConfig {
 
     @NonNull
@@ -82,6 +84,9 @@ public final class SearchEngineConfig {
     @Nullable
     private final Throttler throttler;
 
+    /** The DEFAULT for the engine. */
+    private final boolean searchPrefersIsbn10;
+
     /** {@link SearchEngine.CoverByIsbn} only. */
     private final boolean supportsMultipleCoverSizes;
 
@@ -122,6 +127,8 @@ public final class SearchEngineConfig {
         readTimeoutMs = builder.readTimeoutMs;
 
         throttler = builder.throttler;
+
+        searchPrefersIsbn10 = builder.searchPrefersIsbn10;
 
         supportsMultipleCoverSizes = builder.supportsMultipleCoverSizes;
         filenameSuffix = builder.filenameSuffix != null ? builder.filenameSuffix : "";
@@ -172,12 +179,12 @@ public final class SearchEngineConfig {
     }
 
     @NonNull
-    String getPreferenceKey() {
+    public String getPreferenceKey() {
         return prefKey;
     }
 
     @NonNull
-    String getFilenameSuffix() {
+    public String getFilenameSuffix() {
         return filenameSuffix;
     }
 
@@ -203,13 +210,37 @@ public final class SearchEngineConfig {
         return externalIdDomain;
     }
 
+    /**
+     * Indicates if ISBN code should be forced down to ISBN10 (if possible) before a search.
+     * <p>
+     * By default, we search on the ISBN entered by the user.
+     * A preference setting per site can override this.
+     * If set, and an ISBN13 is passed in, it will be translated to an ISBN10 before starting
+     * the search.
+     * <p>
+     * We first try to get the engine specific setting, and if that does not exist,
+     * the global setting. The global default is {@code false}.
+     *
+     * @return {@code true} if ISBN10 should be preferred.
+     */
+    public boolean isSearchPrefersIsbn10() {
+        final SharedPreferences preferences = ServiceLocator.getPreferences();
+
+        final String engineKey = prefKey + "." + Prefs.pk_search_isbn_prefer_10;
+        if (preferences.contains(engineKey)) {
+            return preferences.getBoolean(engineKey, searchPrefersIsbn10);
+        } else {
+            return preferences.getBoolean(Prefs.pk_search_isbn_prefer_10, false);
+        }
+    }
+
     @IdRes
-    int getDomainViewId() {
+    public int getDomainViewId() {
         return domainViewId;
     }
 
     @IdRes
-    int getDomainMenuId() {
+    public int getDomainMenuId() {
         return domainMenuId;
     }
 
@@ -219,7 +250,7 @@ public final class SearchEngineConfig {
      * @return milli seconds
      */
     public int getConnectTimeoutInMs() {
-        return Prefs.getTimeoutValueInMs(prefKey + Prefs.pk_suffix_timeout_connect_in_seconds,
+        return Prefs.getTimeoutValueInMs(prefKey + "." + Prefs.pk_timeout_connect_in_seconds,
                                          connectTimeoutMs);
     }
 
@@ -229,7 +260,7 @@ public final class SearchEngineConfig {
      * @return milli seconds
      */
     public int getReadTimeoutInMs() {
-        return Prefs.getTimeoutValueInMs(prefKey + Prefs.pk_suffix_timeout_read_in_seconds,
+        return Prefs.getTimeoutValueInMs(prefKey + "." + Prefs.pk_timeout_read_in_seconds,
                                          readTimeoutMs);
     }
 
@@ -272,6 +303,7 @@ public final class SearchEngineConfig {
                + ", connectTimeoutMs=" + connectTimeoutMs
                + ", readTimeoutMs=" + readTimeoutMs
                + ", throttler=" + throttler
+               + ", searchPrefersIsbn10=" + searchPrefersIsbn10
                + ", supportsMultipleCoverSizes=" + supportsMultipleCoverSizes
                + ", filenameSuffix=`" + filenameSuffix + '`'
                + '}';
@@ -324,6 +356,8 @@ public final class SearchEngineConfig {
         /** file suffix for cover files. */
         @Nullable
         private String filenameSuffix;
+
+        private boolean searchPrefersIsbn10;
 
 
         public Builder(@NonNull final Class<? extends SearchEngine> clazz,
@@ -396,6 +430,11 @@ public final class SearchEngineConfig {
         @NonNull
         public Builder setFilenameSuffix(@NonNull final String filenameSuffix) {
             this.filenameSuffix = filenameSuffix;
+            return this;
+        }
+
+        public Builder setSearchPrefersIsbn10(final boolean searchPrefersIsbn10) {
+            this.searchPrefersIsbn10 = searchPrefersIsbn10;
             return this;
         }
     }

@@ -17,49 +17,24 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.settings;
+package com.hardbacknutter.nevertoomanybooks.settings.sites;
 
 import android.os.Bundle;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
-/**
- * Used/defined in xml/preferences.xml
- */
 @Keep
-public class SearchInternetPreferenceFragment
+public class LastDodoPreferencesFragment
         extends BasePreferenceFragment {
-
-    private static final String psk_search_site_ = "psk_search_site_";
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-        setPreferencesFromResource(R.xml.preferences_site_searches, rootKey);
-
-        //noinspection ConstantConditions
-        findPreference(psk_search_site_ + "googlebooks")
-                .setVisible(BuildConfig.ENABLE_GOOGLE_BOOKS);
-
-        //noinspection ConstantConditions
-        findPreference(psk_search_site_ + "kbnl")
-                .setVisible(BuildConfig.ENABLE_KB_NL);
-
-        //noinspection ConstantConditions
-        findPreference(psk_search_site_ + "lastdodo")
-                .setVisible(BuildConfig.ENABLE_LAST_DODO);
-
-        //noinspection ConstantConditions
-        findPreference(psk_search_site_ + "librarything")
-                .setVisible(BuildConfig.ENABLE_LIBRARY_THING_ALT_ED);
-
-        //noinspection ConstantConditions
-        findPreference(psk_search_site_ + "stripinfo")
-                .setVisible(BuildConfig.ENABLE_STRIP_INFO);
+        setPreferencesFromResource(R.xml.preferences_site_lastdodo, rootKey);
     }
 }

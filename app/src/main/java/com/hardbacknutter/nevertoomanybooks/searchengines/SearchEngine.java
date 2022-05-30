@@ -39,11 +39,9 @@ import java.util.Locale;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -348,24 +346,6 @@ public interface SearchEngine
                 throws StorageException,
                        SearchException,
                        CredentialsException;
-
-        /**
-         * Indicates if ISBN code should be forced down to ISBN10 (if possible) before a search.
-         * <p>
-         * By default, we search on the ISBN entered by the user.
-         * A preference setting per site can override this.
-         * If set, and an ISBN13 is passed in, it will be translated to an ISBN10 before starting
-         * the search.
-         * <p>
-         * This default implementation returns the global setting.
-         *
-         * @return {@code true} if ISBN10 should be preferred.
-         */
-        @AnyThread
-        default boolean isPreferIsbn10() {
-            return ServiceLocator.getPreferences()
-                                 .getBoolean(Prefs.pk_search_isbn_prefer_10, false);
-        }
     }
 
     /**

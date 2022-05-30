@@ -20,34 +20,18 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+                  xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
-        android:title="@string/site_isfdb">
+        android:title="@string/site_kb_nl">
 
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_barcode"
-            android:key="isfdb.search.byIsbn.prefer.10"
+            android:key="kbnl.search.byIsbn.prefer.10"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_search_prefer_isbn10" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_search_24"
-            android:key="isfdb.search.uses.publisher"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_search_uses_publisher" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_cloud_download_24"
-            android:key="isfdb.search.toc.series"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_collect_series_info_from_toc" />
 
     </PreferenceCategory>
 
@@ -56,7 +40,7 @@
         <SeekBarPreference
             android:defaultValue="20"
             android:icon="@drawable/ic_baseline_more_time_24"
-            android:key="isfdb.timeout.connect"
+            android:key="kbnl.timeout.connect"
             android:max="60"
             android:title="@string/lbl_connection_timeout"
             app:min="3"
@@ -65,7 +49,7 @@
         <SeekBarPreference
             android:defaultValue="60"
             android:icon="@drawable/ic_baseline_more_time_24"
-            android:key="isfdb.timeout.read"
+            android:key="kbnl.timeout.read"
             android:max="120"
             android:title="@string/lbl_read_timeout"
             app:min="3"

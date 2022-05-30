@@ -31,6 +31,7 @@ import androidx.preference.ListPreference;
 
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -44,6 +45,8 @@ public class StripInfoBePreferencesFragment
         extends ConnectionValidationBasePreferenceFragment {
 
     public static final String TAG = "StripInfoBePrefFrag";
+    // category
+    private static final String PSK_SYNC_OPTIONS = "psk_sync_options";
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -52,40 +55,47 @@ public class StripInfoBePreferencesFragment
         init(R.string.site_stripinfo_be, StripInfoHandler.PK_ENABLED);
         setPreferencesFromResource(R.xml.preferences_site_stripinfo, rootKey);
 
-        EditTextPreference etp;
-
-        etp = findPreference(StripInfoAuth.PK_HOST_USER);
         //noinspection ConstantConditions
-        etp.setOnBindEditTextListener(editText -> {
-            editText.setInputType(InputType.TYPE_CLASS_TEXT);
-            editText.selectAll();
-        });
-        etp.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
+        findPreference(PSK_SYNC_OPTIONS)
+                .setVisible(BuildConfig.ENABLE_STRIP_INFO_LOGIN);
 
-        etp = findPreference(StripInfoAuth.PK_HOST_PASS);
-        //noinspection ConstantConditions
-        etp.setOnBindEditTextListener(editText -> {
-            editText.setInputType(InputType.TYPE_CLASS_TEXT
-                                  | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            editText.selectAll();
-        });
-        etp.setSummaryProvider(preference -> {
-            final String value = ((EditTextPreference) preference).getText();
-            if (value == null || value.isEmpty()) {
-                return getString(R.string.preference_not_set);
-            } else {
-                return "********";
-            }
-        });
+        if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
 
-        //noinspection ConstantConditions
-        final String defValue = String.valueOf(
-                Bookshelf.getBookshelf(getContext(), Bookshelf.PREFERRED, Bookshelf.DEFAULT)
-                         .getId());
+            EditTextPreference etp;
 
-        final Pair<CharSequence[], CharSequence[]> values = getBookshelves();
-        initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_OWNED, defValue, values);
-        initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_WISHLIST, defValue, values);
+            etp = findPreference(StripInfoAuth.PK_HOST_USER);
+            //noinspection ConstantConditions
+            etp.setOnBindEditTextListener(editText -> {
+                editText.setInputType(InputType.TYPE_CLASS_TEXT);
+                editText.selectAll();
+            });
+            etp.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
+
+            etp = findPreference(StripInfoAuth.PK_HOST_PASS);
+            //noinspection ConstantConditions
+            etp.setOnBindEditTextListener(editText -> {
+                editText.setInputType(InputType.TYPE_CLASS_TEXT
+                                      | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                editText.selectAll();
+            });
+            etp.setSummaryProvider(preference -> {
+                final String value = ((EditTextPreference) preference).getText();
+                if (value == null || value.isEmpty()) {
+                    return getString(R.string.preference_not_set);
+                } else {
+                    return "********";
+                }
+            });
+
+            //noinspection ConstantConditions
+            final String defValue = String.valueOf(
+                    Bookshelf.getBookshelf(getContext(), Bookshelf.PREFERRED, Bookshelf.DEFAULT)
+                             .getId());
+
+            final Pair<CharSequence[], CharSequence[]> values = getBookshelves();
+            initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_OWNED, defValue, values);
+            initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_WISHLIST, defValue, values);
+        }
     }
 
     /**

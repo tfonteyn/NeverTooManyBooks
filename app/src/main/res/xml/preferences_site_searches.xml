@@ -19,7 +19,8 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
         android:title="@string/lbl_format">
@@ -40,48 +41,56 @@
             android:title="@string/pt_search_reformat_color" />
     </PreferenceCategory>
 
+    <!-- FIXME: orderingFromXml does not seem to work here ? -->
     <PreferenceCategory
-        android:title="@android:string/search_go">
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_barcode"
-            android:key="search.byIsbn.prefer.10"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_search_prefer_isbn10" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/pt_site_settings">
+        android:title="@string/lbl_websites"
+        app:orderingFromXml="false">
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.AmazonPreferencesFragment"
-            android:icon="@drawable/ic_baseline_find_in_page_24"
             android:key="psk_search_site_amazon"
             android:title="@string/site_amazon">
         </Preference>
 
         <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.GoogleBooksPreferencesFragment"
+            android:key="psk_search_site_googlebooks"
+            android:title="@string/site_google_books">
+        </Preference>
+
+        <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.IsfdbPreferencesFragment"
-            android:icon="@drawable/ic_baseline_find_in_page_24"
             android:key="psk_search_site_isfdb"
             android:title="@string/site_isfdb">
         </Preference>
 
         <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.KbNlPreferencesFragment"
+            android:key="psk_search_site_kbnl"
+            android:title="@string/site_kb_nl">
+        </Preference>
+
+        <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.LibraryThingPreferencesFragment"
-            android:icon="@drawable/ic_baseline_find_in_page_24"
             android:key="psk_search_site_librarything"
             android:title="@string/site_library_thing">
         </Preference>
 
-        <!-- under development - disabled in release. -->
+        <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.OpenLibraryPreferencesFragment"
+            android:key="psk_search_site_openlibrary"
+            android:title="@string/site_open_library">
+        </Preference>
+
+        <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.LastDodoPreferencesFragment"
+            android:key="psk_search_site_lastdodo"
+            android:title="@string/site_lastdodo_nl">
+        </Preference>
+
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.StripInfoBePreferencesFragment"
-            android:icon="@drawable/ic_baseline_find_in_page_24"
-            android:key="psk_search_site_stripinfo_be"
+            android:key="psk_search_site_stripinfo"
             android:title="@string/site_stripinfo_be">
         </Preference>
 

@@ -22,23 +22,15 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:title="@string/site_library_thing">
-
-        <EditTextPreference
-            android:defaultValue="https://www.librarything.com"
-            android:icon="@drawable/ic_baseline_link_24"
-            android:key="librarything.host.url"
-            android:summary="@string/preference_not_set"
-            android:title="@string/lbl_website_address" />
+        android:title="@string/site_google_books">
 
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_barcode"
-            android:key="librarything.search.byIsbn.prefer.10"
+            android:key="googlebooks.search.byIsbn.prefer.10"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_search_prefer_isbn10" />
 
     </PreferenceCategory>
-
 </PreferenceScreen>

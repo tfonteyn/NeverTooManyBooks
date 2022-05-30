@@ -20,11 +20,25 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+                  xmlns:app="http://schemas.android.com/apk/res-auto"
+                  xmlns:tools="http://schemas.android.com/tools">
 
     <PreferenceCategory
         android:title="@string/site_stripinfo_be">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_barcode"
+            android:key="stripinfo.search.byIsbn.prefer.10"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_search_prefer_isbn10" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="psk_sync_options"
+        android:title="@string/action_synchronize">
 
         <SwitchPreference
             android:defaultValue="false"
@@ -81,7 +95,6 @@
         android:title="@string/lbl_timeouts">
         <SeekBarPreference
             android:defaultValue="10"
-            android:dependency="stripinfo.enabled"
             android:icon="@drawable/ic_baseline_more_time_24"
             android:key="stripinfo.timeout.connect"
             android:max="60"
@@ -91,7 +104,6 @@
             />
         <SeekBarPreference
             android:defaultValue="60"
-            android:dependency="stripinfo.enabled"
             android:icon="@drawable/ic_baseline_more_time_24"
             android:key="stripinfo.timeout.read"
             android:max="120"
