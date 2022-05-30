@@ -176,13 +176,11 @@ public final class SyncReaderProcessor
                                 }
 
                             } else {
-                                // all other fields can be 'empty string' tested
-                                // If the original was blank, add to list
+                                // If the original was blank/zero, add to list
                                 final String value = book.getString(field.key);
-                                if (value.isEmpty()) {
+                                if (value.isEmpty() || "0".equals(value)) {
                                     filteredMap.put(field.key, field);
                                 }
-
                             }
                             break;
                     }
@@ -301,9 +299,7 @@ public final class SyncReaderProcessor
             case Book.BKEY_TOC_LIST:
             case Book.BKEY_BOOKSHELF_LIST:
                 if (book.contains(key)) {
-                    if (!book.getParcelableArrayList(key).isEmpty()) {
-                        return true;
-                    }
+                    return !book.getParcelableArrayList(key).isEmpty();
                 }
                 break;
 
@@ -311,9 +307,7 @@ public final class SyncReaderProcessor
                 final Object o = book.get(key);
                 if (o != null) {
                     final String value = o.toString().trim();
-                    if (!value.isEmpty() && !"0".equals(value)) {
-                        return true;
-                    }
+                    return !value.isEmpty() && !"0".equals(value);
                 }
                 break;
         }
@@ -422,8 +416,8 @@ public final class SyncReaderProcessor
         @NonNull
         private final SharedPreferences prefs;
 
-        private final Map<String, SyncField> mFields = new LinkedHashMap<>();
-        private final Map<String, String> mRelatedFields = new LinkedHashMap<>();
+        private final Map<String, SyncField> fields = new LinkedHashMap<>();
+        private final Map<String, String> relatedFields = new LinkedHashMap<>();
 
         public Builder(@NonNull final String preferencePrefix) {
             this.preferencePrefix = preferencePrefix;
@@ -436,7 +430,7 @@ public final class SyncReaderProcessor
         public void writePreferences() {
 
             final SharedPreferences.Editor ed = prefs.edit();
-            for (final SyncField syncField : mFields.values()) {
+            for (final SyncField syncField : fields.values()) {
                 syncField.getAction().write(ed, preferencePrefix + syncField.key);
             }
             ed.apply();
@@ -447,7 +441,7 @@ public final class SyncReaderProcessor
          */
         public void resetPreferences() {
 
-            for (final SyncField syncField : mFields.values()) {
+            for (final SyncField syncField : fields.values()) {
                 syncField.setDefaultAction();
             }
             writePreferences();
@@ -455,7 +449,7 @@ public final class SyncReaderProcessor
 
         @NonNull
         public Collection<SyncField> getSyncFields() {
-            return mFields.values();
+            return fields.values();
         }
 
         /**
@@ -467,7 +461,7 @@ public final class SyncReaderProcessor
          */
         @Nullable
         public SyncAction getSyncAction(@NonNull final String key) {
-            final SyncField syncField = mFields.get(key);
+            final SyncField syncField = fields.get(key);
             if (syncField != null) {
                 return syncField.getAction();
             }
@@ -483,10 +477,19 @@ public final class SyncReaderProcessor
          */
         public void setSyncAction(@NonNull final String key,
                                   @NonNull final SyncAction syncAction) {
-            final SyncField syncField = mFields.get(key);
+            final SyncField syncField = fields.get(key);
             if (syncField != null) {
                 syncField.setAction(syncAction);
             }
+        }
+
+        /**
+         * Update the {@link SyncAction} for all keys.
+         *
+         * @param syncAction to set
+         */
+        public void setSyncAction(@NonNull final SyncAction syncAction) {
+            fields.forEach((key, value) -> value.setAction(syncAction));
         }
 
         /**
@@ -526,8 +529,8 @@ public final class SyncReaderProcessor
             if (GlobalFieldVisibility.isUsed(key)) {
                 final SyncAction action = SyncAction
                         .read(prefs, preferencePrefix + key, defaultAction);
-                mFields.put(key, new SyncField(key, label, false,
-                                               defaultAction, action));
+                fields.put(key, new SyncField(key, label, false,
+                                              defaultAction, action));
             }
         }
 
@@ -548,8 +551,8 @@ public final class SyncReaderProcessor
             if (GlobalFieldVisibility.isUsed(prefKey)) {
                 final SyncAction action = SyncAction
                         .read(prefs, preferencePrefix + key, SyncAction.Append);
-                mFields.put(key, new SyncField(key, label, true,
-                                               SyncAction.Append, action));
+                fields.put(key, new SyncField(key, label, true,
+                                              SyncAction.Append, action));
             }
         }
 
@@ -565,20 +568,20 @@ public final class SyncReaderProcessor
                                        @NonNull final String relatedKey) {
             // Don't check on key being present in mFields here. We'll do that at usage time.
             //This allows out-of-order adding.
-            mRelatedFields.put(key, relatedKey);
+            relatedFields.put(key, relatedKey);
             return this;
         }
 
         @NonNull
         public SyncReaderProcessor build() {
-            for (final Map.Entry<String, String> entry : mRelatedFields.entrySet()) {
-                final SyncField syncField = mFields.get(entry.getKey());
+            for (final Map.Entry<String, String> entry : relatedFields.entrySet()) {
+                final SyncField syncField = fields.get(entry.getKey());
                 if (syncField != null && (syncField.getAction() != SyncAction.Skip)) {
                     final String relatedKey = entry.getValue();
-                    mFields.put(relatedKey, syncField.createRelatedField(relatedKey));
+                    fields.put(relatedKey, syncField.createRelatedField(relatedKey));
                 }
             }
-            return new SyncReaderProcessor(mFields);
+            return new SyncReaderProcessor(fields);
         }
     }
 }
