@@ -141,8 +141,7 @@ public class CalibreContentServer
     static final String PREF_KEY = "calibre";
 
     /** Type: {@code String}. Matches "res/xml/preferences_calibre.xml". */
-    public static final String PK_HOST_URL =
-            PREF_KEY + Prefs.pk_suffix_host_url;
+    public static final String PK_HOST_URL = PREF_KEY + Prefs.pk_suffix_host_url;
     public static final String PK_HOST_USER = PREF_KEY + ".host.user";
     public static final String PK_HOST_PASS = PREF_KEY + ".host.password";
     /** A text "None" as value. Can/will be seen. This is the python equivalent of {@code null}. */
@@ -272,10 +271,10 @@ public class CalibreContentServer
         }
 
         connectTimeoutInMs = Prefs.getTimeoutValueInMs(
-                PREF_KEY + Prefs.pk_suffix_timeout_connect_in_seconds,
+                PREF_KEY + "." + Prefs.pk_timeout_connect_in_seconds,
                 CONNECT_TIMEOUT_IN_MS);
         readTimeoutInMs = Prefs.getTimeoutValueInMs(
-                PREF_KEY + Prefs.pk_suffix_timeout_read_in_seconds,
+                PREF_KEY + "." + Prefs.pk_timeout_read_in_seconds,
                 READ_TIMEOUT_IN_MS);
 
         calibreCustomFields.addAll(ServiceLocator.getInstance().getCalibreCustomFieldDao()

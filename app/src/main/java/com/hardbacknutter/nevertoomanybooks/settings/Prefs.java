@@ -68,8 +68,8 @@ public final class Prefs {
 
     public static final String pk_suffix_host_url = ".host.url";
 
-    public static final String pk_suffix_timeout_connect_in_seconds = ".timeout.connect";
-    public static final String pk_suffix_timeout_read_in_seconds = ".timeout.read";
+    public static final String pk_timeout_connect_in_seconds = "timeout.connect";
+    public static final String pk_timeout_read_in_seconds = "timeout.read";
 
 
     private Prefs() {
