@@ -81,10 +81,13 @@ public class AddBookBySearchContract
             return null;
         }
 
-        return intent.getParcelableExtra(EditBookOutput.BKEY);
+        return EditBookOutput.parseResult(intent);
     }
 
     public enum By {
-        Isbn, Scan, Text, ExternalId
+        Isbn,
+        Scan,
+        Text,
+        ExternalId
     }
 }

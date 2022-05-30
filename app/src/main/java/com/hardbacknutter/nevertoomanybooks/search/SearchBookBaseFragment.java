@@ -81,7 +81,6 @@ public abstract class SearchBookBaseFragment
             registerForActivityResult(new SearchSitesSingleListContract(),
                                       sites -> {
                                           if (sites != null) {
-                                              // no changes committed, temporary usage only
                                               coordinator.setSiteList(sites);
                                           }
                                           explainSitesSupport(sites);
@@ -99,7 +98,7 @@ public abstract class SearchBookBaseFragment
     @CallSuper
     void onBookEditingDone(@Nullable final EditBookOutput data) {
         if (data != null) {
-            getResultData().putParcelable(EditBookOutput.BKEY, data);
+            EditBookOutput.toBundle(data, getResultData());
         }
     }
 

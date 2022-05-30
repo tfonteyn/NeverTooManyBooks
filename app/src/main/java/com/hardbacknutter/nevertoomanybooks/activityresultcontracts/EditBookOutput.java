@@ -20,67 +20,55 @@
 package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 
 import android.content.Intent;
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.os.Bundle;
 
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 
-public class EditBookOutput
-        implements Parcelable {
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
-    /** tag used when parceling. */
-    public static final String BKEY = "EditBookOutput";
+public final class EditBookOutput {
 
-    public static final Creator<EditBookOutput> CREATOR = new Creator<>() {
-        @Override
-        public EditBookOutput createFromParcel(@NonNull final Parcel in) {
-            return new EditBookOutput(in);
-        }
+    private static final String TAG = "EditBookOutput";
 
-        @Override
-        public EditBookOutput[] newArray(final int size) {
-            return new EditBookOutput[size];
-        }
-    };
-
-    /** The book id handled. This normally means the book that BoB should center on. */
-    public final long bookId;
+    private static final String BKEY_MODIFIED = TAG + ":m";
+    /** The BoB should reposition on this book. */
+    public final long repositionToBookId;
 
     /** SOMETHING was modified. This normally means that BoB will need to rebuild. */
     public final boolean modified;
 
-    private EditBookOutput(final long bookId,
+    private EditBookOutput(final long repositionToBookId,
                            final boolean modified) {
-        this.bookId = bookId;
+        this.repositionToBookId = repositionToBookId;
         this.modified = modified;
     }
 
     /**
-     * {@link Parcelable} Constructor.
+     * Create the result which {@link ActivityResultContract#parseResult(int, Intent)} will receive.
      *
-     * @param in Parcel to construct the object from
+     * @return Intent
      */
-    private EditBookOutput(@NonNull final Parcel in) {
-        bookId = in.readLong();
-        modified = in.readByte() != 0;
-    }
-
     @NonNull
-    public static Intent createResultIntent(final long bookId,
-                                            final boolean modified) {
-        final Parcelable output = new EditBookOutput(bookId, modified);
-        return new Intent().putExtra(BKEY, output);
+    public static Intent createResult(final long bookId,
+                                      final boolean modified) {
+        return new Intent().putExtra(DBKey.FK_BOOK, bookId)
+                           .putExtra(BKEY_MODIFIED, modified);
     }
 
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeLong(bookId);
-        dest.writeByte((byte) (modified ? 1 : 0));
+    public static void toBundle(@NonNull final EditBookOutput input,
+                                @NonNull final Bundle output) {
+        output.putLong(DBKey.FK_BOOK, input.repositionToBookId);
+        output.putBoolean(BKEY_MODIFIED, input.modified);
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public static EditBookOutput parseResult(@NonNull final Intent intent) {
+        final long repositionToBookId =
+                intent.getLongExtra(DBKey.FK_BOOK, 0);
+        final boolean modified =
+                intent.getBooleanExtra(BKEY_MODIFIED, false);
+
+        return new EditBookOutput(repositionToBookId, modified);
     }
+
 }

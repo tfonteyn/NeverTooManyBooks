@@ -98,7 +98,7 @@ public class AuthorWorksFragment
                 @Override
                 public void handleOnBackPressed() {
                     final Intent resultIntent = EditBookOutput
-                            .createResultIntent(0, vm.isDataModified());
+                            .createResult(0, vm.isDataModified());
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();

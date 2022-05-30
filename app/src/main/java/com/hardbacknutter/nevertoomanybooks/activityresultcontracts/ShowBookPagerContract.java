@@ -75,7 +75,7 @@ public class ShowBookPagerContract
             return null;
         }
 
-        return intent.getParcelableExtra(EditBookOutput.BKEY);
+        return EditBookOutput.parseResult(intent);
     }
 
     public static class Input {

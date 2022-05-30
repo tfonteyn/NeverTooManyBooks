@@ -278,7 +278,7 @@ public class EditBookFragment
     /** Single point of exit for this Activity. */
     public void setResultsAndFinish() {
         final Intent resultIntent = EditBookOutput
-                .createResultIntent(vm.getBook().getId(), vm.isChanged());
+                .createResult(vm.getBook().getId(), vm.isChanged());
         //noinspection ConstantConditions
         getActivity().setResult(Activity.RESULT_OK, resultIntent);
         getActivity().finish();

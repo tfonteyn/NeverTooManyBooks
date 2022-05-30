@@ -62,6 +62,6 @@ public class EditBookFromBundleContract
             return null;
         }
 
-        return intent.getParcelableExtra(EditBookOutput.BKEY);
+        return EditBookOutput.parseResult(intent);
     }
 }
