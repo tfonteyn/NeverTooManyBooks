@@ -81,7 +81,7 @@ public class PreferredStylesFragment
                     final Style selectedStyle = vm.getSelectedStyle();
                     final String uuid = selectedStyle != null ? selectedStyle.getUuid() : null;
                     final Intent resultIntent = PreferredStylesContract
-                            .createResultIntent(uuid, vm.isDirty());
+                            .createResult(uuid, vm.isDirty());
 
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);

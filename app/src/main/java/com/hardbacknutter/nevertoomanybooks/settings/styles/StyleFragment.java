@@ -67,9 +67,9 @@ public class StyleFragment
                     vm.updateOrInsertStyle();
 
                     final Intent resultIntent = EditStyleContract
-                            .createResultIntent(vm.getTemplateUuid(),
-                                                vm.isModified(),
-                                                vm.getStyle().getUuid());
+                            .createResult(vm.getTemplateUuid(),
+                                          vm.isModified(),
+                                          vm.getStyle().getUuid());
 
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);

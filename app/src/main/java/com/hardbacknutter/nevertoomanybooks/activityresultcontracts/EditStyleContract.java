@@ -22,8 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.IntDef;
@@ -32,6 +30,7 @@ import androidx.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -50,6 +49,8 @@ public class EditStyleContract
     public static final String BKEY_ACTION = TAG + ":action";
     public static final String BKEY_SET_AS_PREFERRED = TAG + ":setAsPreferred";
 
+    private static final String BKEY_MODIFIED = TAG + ":m";
+    private static final String BKEY_TEMPLATE_UUID = TAG + ":template";
 
     @NonNull
     public static Input duplicate(@NonNull final Style style) {
@@ -67,12 +68,18 @@ public class EditStyleContract
         return new Input(ACTION_EDIT, style, setAsPreferred);
     }
 
+    /**
+     * Create the result which {@link #parseResult(int, Intent)} will receive.
+     *
+     * @return Intent
+     */
     @NonNull
-    public static Intent createResultIntent(@NonNull final String templateUuid,
-                                            final boolean modified,
-                                            @Nullable final String uuid) {
-        final Parcelable output = new Output(templateUuid, modified, uuid);
-        return new Intent().putExtra(Output.BKEY, output);
+    public static Intent createResult(@NonNull final String templateUuid,
+                                      final boolean modified,
+                                      @Nullable final String uuid) {
+        return new Intent().putExtra(BKEY_TEMPLATE_UUID, templateUuid)
+                           .putExtra(BKEY_MODIFIED, modified)
+                           .putExtra(Style.BKEY_UUID, uuid);
     }
 
     @NonNull
@@ -98,7 +105,12 @@ public class EditStyleContract
             return null;
         }
 
-        return intent.getParcelableExtra(Output.BKEY);
+        final String templateUuid = Objects.requireNonNull(
+                intent.getStringExtra(BKEY_TEMPLATE_UUID), BKEY_TEMPLATE_UUID);
+        final String uuid = intent.getStringExtra(Style.BKEY_UUID);
+        final boolean modified = intent.getBooleanExtra(BKEY_MODIFIED, false);
+
+        return new Output(templateUuid, modified, uuid);
     }
 
     @IntDef({ACTION_CLONE, ACTION_EDIT})
@@ -130,22 +142,7 @@ public class EditStyleContract
         }
     }
 
-    public static class Output
-            implements Parcelable {
-
-        public static final Creator<Output> CREATOR = new Creator<>() {
-            @Override
-            public Output createFromParcel(@NonNull final Parcel in) {
-                return new Output(in);
-            }
-
-            @Override
-            public Output[] newArray(final int size) {
-                return new Output[size];
-            }
-        };
-
-        private static final String BKEY = TAG + ":Output";
+    public static final class Output {
 
         /** The uuid which was passed into the {@link Input#uuid} for editing. */
         @NonNull
@@ -166,31 +163,6 @@ public class EditStyleContract
             this.templateUuid = templateUuid;
             this.modified = modified;
             this.uuid = uuid;
-        }
-
-        /**
-         * {@link Parcelable} Constructor.
-         *
-         * @param in Parcel to construct the object from
-         */
-        private Output(@NonNull final Parcel in) {
-            uuid = in.readString();
-            //noinspection ConstantConditions
-            templateUuid = in.readString();
-            modified = in.readByte() != 0;
-        }
-
-        @Override
-        public void writeToParcel(@NonNull final Parcel dest,
-                                  final int flags) {
-            dest.writeString(uuid);
-            dest.writeString(templateUuid);
-            dest.writeByte((byte) (modified ? 1 : 0));
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
         }
     }
 }

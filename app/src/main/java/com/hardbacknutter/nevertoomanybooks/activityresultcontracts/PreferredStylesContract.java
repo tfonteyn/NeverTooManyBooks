@@ -22,8 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -41,11 +39,18 @@ public class PreferredStylesContract
 
     private static final String TAG = "PreferredStylesContract";
 
+    private static final String BKEY_MODIFIED = TAG + ":m";
+
+    /**
+     * Create the result which {@link #parseResult(int, Intent)} will receive.
+     *
+     * @return Intent
+     */
     @NonNull
-    public static Intent createResultIntent(@Nullable final String uuid,
-                                            final boolean modified) {
-        final Parcelable output = new Output(uuid, modified);
-        return new Intent().putExtra(Output.BKEY, output);
+    public static Intent createResult(@Nullable final String uuid,
+                                      final boolean modified) {
+        return new Intent().putExtra(Style.BKEY_UUID, uuid)
+                           .putExtra(BKEY_MODIFIED, modified);
     }
 
     @NonNull
@@ -69,58 +74,25 @@ public class PreferredStylesContract
             return null;
         }
 
-        return intent.getParcelableExtra(Output.BKEY);
+        final String uuid = intent.getStringExtra(Style.BKEY_UUID);
+        final boolean modified = intent.getBooleanExtra(BKEY_MODIFIED, false);
+        return new Output(uuid, modified);
     }
 
-    public static class Output
-            implements Parcelable {
+    public static final class Output {
 
-        public static final Creator<Output> CREATOR = new Creator<>() {
-            @Override
-            public Output createFromParcel(@NonNull final Parcel in) {
-                return new Output(in);
-            }
-
-            @Override
-            public Output[] newArray(final int size) {
-                return new Output[size];
-            }
-        };
-        private static final String BKEY = TAG + ":Output";
         // Return the currently selected style UUID, so the caller can apply it.
         // This is independent from any modification to this or another style,
         // or the order of the styles.
         @Nullable
         public final String uuid;
         // Same here, this is independent from the returned style
-        public final boolean isModified;
+        public final boolean modified;
 
         private Output(@Nullable final String uuid,
                        final boolean modified) {
             this.uuid = uuid;
-            this.isModified = modified;
-        }
-
-        /**
-         * {@link Parcelable} Constructor.
-         *
-         * @param in Parcel to construct the object from
-         */
-        private Output(@NonNull final Parcel in) {
-            uuid = in.readString();
-            isModified = in.readByte() != 0;
-        }
-
-        @Override
-        public void writeToParcel(@NonNull final Parcel dest,
-                                  final int flags) {
-            dest.writeString(uuid);
-            dest.writeByte((byte) (isModified ? 1 : 0));
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
+            this.modified = modified;
         }
     }
 }
