@@ -254,7 +254,7 @@ public class StartupActivity
 
         new MaterialAlertDialogBuilder(this)
                 .setIcon(R.drawable.ic_baseline_warning_24)
-                .setTitle(R.string.lbl_storage_volume)
+                .setTitle(R.string.lbl_storage_settings)
                 // this dialog is important. Make sure the user pays some attention
                 .setCancelable(false)
                 .setSingleChoiceItems(items, 0, (d, w) -> volumeChangedOptionChosen = w)
