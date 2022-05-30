@@ -108,7 +108,7 @@ public class SettingsFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    final Intent resultIntent = SettingsContract.createResultIntent(
+                    final Intent resultIntent = SettingsContract.createResult(
                             vm.getRequiresActivityRecreation());
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
@@ -286,7 +286,7 @@ public class SettingsFragment
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(R.string.lbl_storage_volume)
+                    .setTitle(R.string.lbl_storage_settings)
                     // this dialog is important. Make sure the user pays some attention
                     .setCancelable(false)
                     .setMessage(getString(R.string.lbl_storage_select, newVolumeDesc))
@@ -307,7 +307,7 @@ public class SettingsFragment
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(R.string.lbl_storage_volume)
+                    .setTitle(R.string.lbl_storage_settings)
                     // this dialog is important. Make sure the user pays some attention
                     .setCancelable(false)
                     .setSingleChoiceItems(items, 1, (d, w) -> volumeChangedOptionChosen = w)

@@ -42,8 +42,13 @@ public class SettingsContract
     /** Something changed (or not) that requires a recreation of the caller Activity. */
     private static final String BKEY_RECREATE_ACTIVITY = SettingsFragment.TAG + ":recreate";
 
+    /**
+     * Create the result which {@link #parseResult(int, Intent)} will receive.
+     *
+     * @return Intent
+     */
     @NonNull
-    public static Intent createResultIntent(final boolean requiresRecreation) {
+    public static Intent createResult(final boolean requiresRecreation) {
         return new Intent().putExtra(BKEY_RECREATE_ACTIVITY, requiresRecreation);
     }
 
