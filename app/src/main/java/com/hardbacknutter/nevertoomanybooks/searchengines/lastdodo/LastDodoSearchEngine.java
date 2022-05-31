@@ -70,7 +70,7 @@ public class LastDodoSearchEngine
      */
     private static final String BY_EXTERNAL_ID = "/nl/items/%1$s";
     /**
-     * Param 1: ISBN.
+     * Param 1: ISBN. Must include the '-' characters! (2022-05-31)
      * Param 2: 147==comics.
      */
     private static final String BY_ISBN = "/nl/areas/search?q=%1$s&type_id=147";
@@ -132,7 +132,10 @@ public class LastDodoSearchEngine
 
         final Bundle bookData = ServiceLocator.newBundle();
 
-        final String url = getSiteUrl() + String.format(BY_ISBN, validIsbn);
+        // This is silly...
+        // 2022-05-31: searching the site with the ISBN now REQUIRES the dashes between
+        // the digits.
+        final String url = getSiteUrl() + String.format(BY_ISBN, ISBN.prettyPrint(validIsbn));
         final Document document = loadDocument(context, url);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -144,7 +147,7 @@ public class LastDodoSearchEngine
 
     /**
      * A multi result page was returned. Try and parse it.
-     * The <strong>first book</strong> link will be extracted and retries.
+     * The <strong>first book</strong> link will be extracted and retrieved.
      *
      * @param context     Current context
      * @param document    to parse

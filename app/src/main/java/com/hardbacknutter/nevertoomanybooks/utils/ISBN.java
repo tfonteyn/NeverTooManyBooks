@@ -285,13 +285,45 @@ public class ISBN {
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             final char c = s.charAt(i);
-            // allows an X anywhere instead of just at the end; doesn't really matter.
+            // allows an X anywhere instead of just at the end; doesn't really matter,
+            // we're not looking for a fully valid isbn here.
             if (Character.isDigit(c) || ((c == 'X' || c == 'x'))) {
                 sb.append(c);
             }
         }
         // ... but let empty Strings here just return.
         return sb.toString();
+    }
+
+    /**
+     * Takes a string which (hopefully) contains a 12 or 13 digit ISBN number,
+     * and formats it in the traditional way with '-' characters.
+     * Any non valid string is returned as-is;  a {@code null} becomes {@code ""}
+     *
+     * @param s to format
+     *
+     * @return dash formatted isbn
+     */
+    @NonNull
+    public static String prettyPrint(@Nullable final String s) {
+        if (s == null) {
+            return "";
+
+        } else if (s.length() == 10) {
+            return s.substring(0, 2) + '-'
+                   + s.substring(2, 6) + '-'
+                   + s.substring(6, 9) + '-'
+                   + s.charAt(9);
+
+        } else if (s.length() == 13) {
+            return s.substring(0, 3) + '-'
+                   + s.substring(3, 5) + '-'
+                   + s.substring(5, 9) + '-'
+                   + s.substring(9, 12) + '-'
+                   + s.charAt(12);
+        } else {
+            return s;
+        }
     }
 
     /**
