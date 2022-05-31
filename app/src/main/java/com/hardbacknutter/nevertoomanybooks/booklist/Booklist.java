@@ -594,7 +594,7 @@ public class Booklist
                 final int nextCol = node.from(cursor);
                 final String uuid = cursor.getString(nextCol);
                 final Optional<File> file = Book.getPersistedCoverFile(uuid, 0);
-                if (file.isPresent()) {
+                if (!file.isPresent()) {
                     // FIRST make the node visible
                     ensureNodeIsVisible(node);
                     // only now calculate the list position
