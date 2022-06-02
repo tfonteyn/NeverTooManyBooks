@@ -393,13 +393,13 @@ public class SearchCoordinator
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             Log.d(TAG, "prepareSearch"
-                       + "|mExternalIdSearchText=" + externalIdSearchText
-                       + "|mIsbnSearchText=" + isbnSearchText
-                       + "|mIsbn=" + isbn
-                       + "|mStrictIsbn=" + strictIsbn
-                       + "|mAuthor=" + authorSearchText
-                       + "|mTitle=" + titleSearchText
-                       + "|mPublisher=" + publisherSearchText);
+                       + "|externalIdSearchText=" + externalIdSearchText
+                       + "|isbnSearchText=" + isbnSearchText
+                       + "|isbn=" + isbn
+                       + "|strictIsbn=" + strictIsbn
+                       + "|authorSearchText=" + authorSearchText
+                       + "|titleSearchText=" + titleSearchText
+                       + "|publisherSearchText=" + publisherSearchText);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
@@ -642,7 +642,7 @@ public class SearchCoordinator
             task.setSearchBy(SearchTask.By.ExternalId);
             task.setExternalId(externalId);
 
-        } else if (isbn.isValid(true)
+        } else if (isbn.isValid(true) // URGENT: make 'strict' a pref setting for each engine.
                    && (searchEngine instanceof SearchEngine.ByIsbn)) {
             task.setSearchBy(SearchTask.By.Isbn);
             if (searchEngine.getConfig().isSearchPrefersIsbn10() && isbn.isIsbn10Compat()) {
@@ -725,6 +725,11 @@ public class SearchCoordinator
         return isbnSearchText;
     }
 
+    /**
+     * Search criteria.
+     *
+     * @param isbnSearchText to search for
+     */
     public void setIsbnSearchText(@NonNull final String isbnSearchText) {
         this.isbnSearchText = isbnSearchText;
     }
@@ -733,20 +738,13 @@ public class SearchCoordinator
         return strictIsbn;
     }
 
-    public void setStrictIsbn(final boolean strictIsbn) {
-        this.strictIsbn = strictIsbn;
-    }
-
     /**
      * Search criteria.
      *
-     * @param isbnSearchText to search for
-     * @param strictIsbn     Flag: set to {@link false} to allow invalid isbn numbers
-     *                       to be passed to the searches
+     * @param strictIsbn Flag: set to {@link false} to allow invalid isbn numbers
+     *                   to be passed to the searches
      */
-    public void setIsbnSearchText(@NonNull final String isbnSearchText,
-                                  final boolean strictIsbn) {
-        this.isbnSearchText = isbnSearchText;
+    public void setStrictIsbn(final boolean strictIsbn) {
         this.strictIsbn = strictIsbn;
     }
 
@@ -1150,13 +1148,13 @@ public class SearchCoordinator
                             final String isbnFound = siteData.getString(DBKey.BOOK_ISBN);
                             // do they match?
                             if (isbnFound != null && !isbnFound.isEmpty()
-                                && isbn.equals(ISBN.createISBN(isbnFound))) {
+                                && isbn.equals(new ISBN(isbnFound, true))) {
                                 sites.add(site);
                             }
 
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                                 Log.d(TAG, "accumulateResults"
-                                           + "|mIsbn=" + isbn
+                                           + "|isbn=" + isbn
                                            + "|isbnFound=" + isbnFound);
                             }
                         } else {
