@@ -1141,8 +1141,9 @@ public class BookDaoImpl
     @NonNull
     public ArrayList<Pair<Long, String>> getBookIdAndTitleByIsbn(@NonNull final ISBN isbn) {
         final ArrayList<Pair<Long, String>> list = new ArrayList<>();
-        // if the string is ISBN-10 compatible, i.e. an actual ISBN-10,
-        // or an ISBN-13 in the 978 range, we search on both formats
+        // if the string is ISBN-10 compatible,
+        // i.e. an actual ISBN-10, or an ISBN-13 in the 978 range,
+        // we search on both formats
         if (isbn.isIsbn10Compat()) {
             try (Cursor cursor = mDb.rawQuery(Sql.Select.BY_VALID_ISBN,
                                               new String[]{isbn.asText(ISBN.Type.Isbn10),
@@ -1177,8 +1178,7 @@ public class BookDaoImpl
 
     @Override
     public boolean bookExistsByIsbn(@NonNull final String isbnStr) {
-        //TODO: optimize this call
-        final ISBN isbn = ISBN.createISBN(isbnStr);
+        final ISBN isbn = new ISBN(isbnStr, false);
         return !getBookIdAndTitleByIsbn(isbn).isEmpty();
     }
 
