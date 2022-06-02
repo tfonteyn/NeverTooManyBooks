@@ -209,7 +209,7 @@ public class AmazonSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         // Convert an ISBN13 to ISBN10 (i.e. the ASIN)
-        final ISBN tmp = new ISBN(validIsbn);
+        final ISBN tmp = new ISBN(validIsbn, true);
         final String asin = tmp.isIsbn10Compat() ? tmp.asText(ISBN.Type.Isbn10) : validIsbn;
 
         return genericSearch(context,
