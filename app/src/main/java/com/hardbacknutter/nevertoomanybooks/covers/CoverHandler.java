@@ -372,7 +372,7 @@ public class CoverHandler {
         }
 
         if (!isbnStr.isEmpty()) {
-            final ISBN isbn = ISBN.createISBN(isbnStr);
+            final ISBN isbn = new ISBN(isbnStr, true);
             if (isbn.isValid(true)) {
                 final String bookTitle;
                 if (coverBrowserTitleSupplier != null) {
