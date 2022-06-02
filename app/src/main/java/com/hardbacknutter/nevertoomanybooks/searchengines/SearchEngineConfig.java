@@ -73,9 +73,7 @@ public final class SearchEngineConfig {
     @IdRes
     private final int domainMenuId;
 
-    /** The DEFAULT for the engine. */
     private final int connectTimeoutMs;
-    /** The DEFAULT for the engine. */
     private final int readTimeoutMs;
     /**
      * This is a reference to the <strong>static</strong> object created in the SearchEngine
@@ -84,7 +82,6 @@ public final class SearchEngineConfig {
     @Nullable
     private final Throttler throttler;
 
-    /** The DEFAULT for the engine. */
     private final boolean searchPrefersIsbn10;
 
     /** {@link SearchEngine.CoverByIsbn} only. */
@@ -344,7 +341,9 @@ public final class SearchEngineConfig {
         @IdRes
         private int domainMenuId;
 
+        /** The DEFAULT for the engine. */
         private int connectTimeoutMs = FIVE_SECONDS;
+        /** The DEFAULT for the engine. */
         private int readTimeoutMs = TEN_SECONDS;
 
         @Nullable
@@ -357,6 +356,7 @@ public final class SearchEngineConfig {
         @Nullable
         private String filenameSuffix;
 
+        /** The DEFAULT for the engine: {@code false} */
         private boolean searchPrefersIsbn10;
 
 
