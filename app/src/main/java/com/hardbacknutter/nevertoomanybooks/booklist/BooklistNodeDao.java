@@ -615,8 +615,8 @@ public class BooklistNodeDao {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
             Log.d(TAG, "restoreSavedState"
-                       + "|mBookshelfId=" + bookshelfId
-                       + "|mStyle.getId()=" + style.getId()
+                       + "|bookshelfId=" + bookshelfId
+                       + "|style.getId()=" + style.getId()
                        + "|columnName=" + columnName
                        + "|rowsUpdated=" + rowsUpdated
                        + "|sql=" + sql);

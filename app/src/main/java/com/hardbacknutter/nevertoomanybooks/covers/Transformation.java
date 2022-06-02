@@ -164,7 +164,7 @@ class Transformation {
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                     Log.d(TAG, "exif=" + exifAngle
-                               + "|mSurfaceRotation=" + surfaceRotation
+                               + "|surfaceRotation=" + surfaceRotation
                                + "|angle=" + angle
                                + "|(angle % 360)=" + angle % 360);
                 }

@@ -381,7 +381,7 @@ public abstract class BaseField<T, V extends View>
                     if (afterFieldChangeListener != null) {
                         // The REFERENT being dead is however not fine, so log this in debug.
                         // flw: this message should never be seen!
-                        Log.w(TAG, "onChanged|mAfterFieldChangeListener was dead");
+                        Log.w(TAG, "onChanged|afterFieldChangeListener was dead");
                     }
                 }
             }

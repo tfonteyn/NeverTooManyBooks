@@ -65,7 +65,7 @@ public class SearchSitesSingleListContract
                                        @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent
-                                         + "|mListKey=" + listKey);
+                                         + "|listKey=" + listKey);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {

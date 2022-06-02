@@ -193,7 +193,7 @@ public class JsoupLoader {
                         final Document document = Jsoup.parse(is, mCharSetName, locationHeader);
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                             Logger.d(TAG, "loadDocument",
-                                     "AFTER parsing|mDoc.location()=" + document.location());
+                                     "AFTER parsing|document.location()=" + document.location());
                         }
 
                         return document;

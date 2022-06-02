@@ -617,7 +617,7 @@ public class Booklist
     @Override
     public void close() {
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "|close|mInstanceId=" + instanceId);
+            Log.d(TAG, "|close|instanceId=" + instanceId);
         }
 
         if (listCursor != null) {

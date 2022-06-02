@@ -170,7 +170,7 @@ public class CsvRecordReader
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-            Log.d(TAG, "read|mResults=" + results);
+            Log.d(TAG, "read|results=" + results);
         }
         return results;
     }
