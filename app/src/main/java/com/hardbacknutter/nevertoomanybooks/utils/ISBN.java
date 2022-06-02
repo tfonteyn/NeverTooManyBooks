@@ -154,23 +154,39 @@ public class ISBN {
     private final List<Integer> codeDigits;
 
     /**
-     * Constructor for a strict ISBN.
-     * Accepts {@code null}.
-     * Accepts (and removes) ' ' and '-' characters.
-     *
-     * @param text string to digest
-     */
-    public ISBN(@Nullable final String text) {
-        this(text, true);
-    }
-
-    /**
      * Constructor.
-     * Accepts {@code null}.
+     * <p>
+     * With strictIsbn==false: accepts as valid:
+     * <ul>
+     *      <li>ISBN-10</li>
+     *      <li>ISBN-13</li>
+     *      <li>EAN-13</li>
+     *      <li>generic UPC_A</li>
+     * </ul>
+     * </p>
+     *
+     * <p>
+     * With strictIsbn==true: accepts as valid:
+     * <ul>
+     *      <li>ISBN-10</li>
+     *      <li>ISBN-13</li>
+     *      <li>UPC_A <strong>if convertible to ISBN-10</strong></li>
+     * </ul>
+     * Rejects as invalid:
+     * <ul>
+     *      <li>EAN-13</li>
+     *      <li>generic UPC_A</li>
+     * </ul>
+     * </p>
+     * <p>
+     * <p>
+     * Accepts {@code null} which results in an invalid ISBN.
+     * <p>
      * Accepts (and removes) ' ' and '-' characters.
      *
      * @param text       string to digest
      * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
+     *                   {@code false} to also accept any EAN-13 and any generic UPC_A codes.
      */
     public ISBN(@Nullable final String text,
                 final boolean strictIsbn) {
@@ -220,54 +236,6 @@ public class ISBN {
             codeText = concat(codeDigits);
             codeType = type;
         }
-    }
-
-    /**
-     * Constructor.
-     * <p>
-     * Accepts as valid:
-     * <ul>
-     *      <li>ISBN-10</li>
-     *      <li>ISBN-13</li>
-     *      <li>EAN-13</li>
-     *      <li>generic UPC_A</li>
-     * </ul>
-     * <p>
-     * Accepts (and removes) ' ' and '-' characters.
-     *
-     * @param text the string to digest
-     *
-     * @return instance
-     */
-    @NonNull
-    public static ISBN create(@NonNull final String text) {
-        return new ISBN(text, false);
-    }
-
-    /**
-     * Constructor.
-     * <p>
-     * Accepts as valid:
-     * <ul>
-     *      <li>ISBN-10</li>
-     *      <li>ISBN-13</li>
-     *      <li>UPC_A <strong>if convertible to ISBN-10</strong></li>
-     * </ul>
-     * Rejects as invalid:
-     * <ul>
-     *      <li>EAN-13</li>
-     *      <li>generic UPC_A</li>
-     * </ul>
-     * <p>
-     * Accepts (and removes) ' ' and '-' characters.
-     *
-     * @param text the string to digest
-     *
-     * @return instance
-     */
-    @NonNull
-    public static ISBN createISBN(@NonNull final String text) {
-        return new ISBN(text, true);
     }
 
     /**
