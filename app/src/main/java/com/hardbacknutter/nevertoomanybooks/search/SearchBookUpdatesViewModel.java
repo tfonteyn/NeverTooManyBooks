@@ -349,7 +349,7 @@ public class SearchBookUpdatesViewModel
 
                     final String isbnStr = currentBook.getString(DBKey.BOOK_ISBN);
                     if (!isbnStr.isEmpty()) {
-                        setIsbnSearchText(isbnStr, true);
+                        setIsbnSearchText(isbnStr);
                         canSearch = true;
                     }
 
