@@ -113,8 +113,8 @@ class ISBNTest
     @Test
     void isbn_isValid() {
         for (final String[] isbnPair : createValidIsbnList()) {
-            final ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
-            final ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
+            final ISBN isbn0 = new ISBN(isbnPair[0], true);
+            final ISBN isbn1 = new ISBN(isbnPair[1], true);
 
             assertTrue(isbn0.isValid(true));
             assertTrue(isbn1.isValid(true));
@@ -124,8 +124,8 @@ class ISBNTest
     @Test
     void isbn_isInvalid() {
         for (final String[] isbnPair : createInvalidIsbnList()) {
-            final ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
-            final ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
+            final ISBN isbn0 = new ISBN(isbnPair[0], true);
+            final ISBN isbn1 = new ISBN(isbnPair[1], true);
 
             assertFalse(isbn0.isValid(true));
             assertFalse(isbn1.isValid(true));
@@ -135,15 +135,15 @@ class ISBNTest
     @Test
     void isbn_is10() {
         for (final String[] isbnPair : createValidIsbnList()) {
-            final ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
-            final ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
+            final ISBN isbn0 = new ISBN(isbnPair[0], true);
+            final ISBN isbn1 = new ISBN(isbnPair[1], true);
 
             assertTrue(isbn0.isType(ISBN.Type.Isbn10));
             assertFalse(isbn1.isType(ISBN.Type.Isbn10));
         }
         for (final String[] isbnPair : createInvalidIsbnList()) {
-            final ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
-            final ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
+            final ISBN isbn0 = new ISBN(isbnPair[0], true);
+            final ISBN isbn1 = new ISBN(isbnPair[1], true);
 
             assertFalse(isbn0.isType(ISBN.Type.Isbn10));
             assertFalse(isbn1.isType(ISBN.Type.Isbn10));
@@ -153,15 +153,15 @@ class ISBNTest
     @Test
     void isbn_is13() {
         for (final String[] isbnPair : createValidIsbnList()) {
-            final ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
-            final ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
+            final ISBN isbn0 = new ISBN(isbnPair[0], true);
+            final ISBN isbn1 = new ISBN(isbnPair[1], true);
 
             assertFalse(isbn0.isType(ISBN.Type.Isbn13));
             assertTrue(isbn1.isType(ISBN.Type.Isbn13));
         }
         for (final String[] isbnPair : createInvalidIsbnList()) {
-            final ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
-            final ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
+            final ISBN isbn0 = new ISBN(isbnPair[0], true);
+            final ISBN isbn1 = new ISBN(isbnPair[1], true);
 
             assertFalse(isbn0.isType(ISBN.Type.Isbn13));
             assertFalse(isbn1.isType(ISBN.Type.Isbn13));
@@ -171,8 +171,8 @@ class ISBNTest
     @Test
     void isbn_swap1013() {
         for (final String[] isbnPair : createValidIsbnList()) {
-            final ISBN isbn10 = ISBN.createISBN(isbnPair[0]);
-            final ISBN isbn13 = ISBN.createISBN(isbnPair[1]);
+            final ISBN isbn10 = new ISBN(isbnPair[0], true);
+            final ISBN isbn13 = new ISBN(isbnPair[1], true);
 
             try {
                 assertEquals(isbn10.asText(ISBN.Type.Isbn13), isbn13.asText(ISBN.Type.Isbn13));
@@ -213,8 +213,8 @@ class ISBNTest
         final String[][] valid = Arrays.stream(validFinals).map(String[]::clone)
                                        .toArray(String[][]::new);
         for (final String[] isbnPair : valid) {
-            final ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
-            final ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
+            final ISBN isbn0 = new ISBN(isbnPair[0], true);
+            final ISBN isbn1 = new ISBN(isbnPair[1], true);
             assertEquals(isbn0, isbn1);
         }
     }
@@ -222,8 +222,8 @@ class ISBNTest
     @Test
     void isbn_equalsInvalidInvalid() {
         for (final String[] isbnPair : createInvalidIsbnList()) {
-            final ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
-            final ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
+            final ISBN isbn0 = new ISBN(isbnPair[0], true);
+            final ISBN isbn1 = new ISBN(isbnPair[1], true);
             assertNotEquals(isbn0, isbn1);
         }
     }
@@ -234,8 +234,8 @@ class ISBNTest
         final String[][] invalid = createInvalidIsbnList();
 
         for (int i = 0; i < invalid.length; i++) {
-            final ISBN isbn0 = ISBN.createISBN(valid[i][0]);
-            final ISBN isbn1 = ISBN.createISBN(invalid[i][1]);
+            final ISBN isbn0 = new ISBN(valid[i][0], true);
+            final ISBN isbn1 = new ISBN(invalid[i][1], true);
             assertNotEquals(isbn0, isbn1);
         }
     }
@@ -244,7 +244,7 @@ class ISBNTest
     @Test
     void upc2isbn() {
         for (final String[] upcPair : createIsbnUpcList()) {
-            final ISBN isbn = ISBN.create(upcPair[0]);
+            final ISBN isbn = new ISBN(upcPair[0], false);
             assertNotNull(isbn);
             assertTrue(isbn.isType(ISBN.Type.Isbn10));
             assertTrue(isbn.isValid(false));
@@ -255,7 +255,7 @@ class ISBNTest
     @Test
     void upcA_isValid() {
         for (final String[] upcPair : createUpcAList()) {
-            final ISBN upc = ISBN.create(upcPair[0]);
+            final ISBN upc = new ISBN(upcPair[0], false);
             assertNotNull(upc);
             assertTrue(upc.isType(ISBN.Type.UpcA));
             assertTrue(upc.isValid(false));
@@ -266,7 +266,7 @@ class ISBNTest
     @Test
     void ean13_isValid() {
         for (final String[] eanPair : createEanList()) {
-            final ISBN ean = ISBN.create(eanPair[0]);
+            final ISBN ean = new ISBN(eanPair[0], false);
             assertNotNull(ean);
             assertTrue(ean.isType(ISBN.Type.Ean13));
             assertTrue(ean.isValid(false));
