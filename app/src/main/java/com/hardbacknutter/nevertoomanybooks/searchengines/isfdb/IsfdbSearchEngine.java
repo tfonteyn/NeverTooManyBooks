@@ -774,7 +774,7 @@ public class IsfdbSearchEngine
         // sanity check
         if (allContentBoxes.isEmpty()) {
             if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "parseDoc|no contentbox found|mDoc.location()="
+                Log.d(TAG, "parseDoc|no contentbox found|document.location()="
                            + document.location());
             }
             return;
@@ -1234,7 +1234,7 @@ public class IsfdbSearchEngine
                             // 4th column: the ISBN/Catalog ID.
                             final String catNr = tr.child(4).text();
                             if (catNr.length() > 9) {
-                                final ISBN isbn = ISBN.createISBN(catNr);
+                                final ISBN isbn = new ISBN(catNr, true);
                                 if (isbn.isValid(true)) {
                                     isbnStr = isbn.asText();
                                 }
