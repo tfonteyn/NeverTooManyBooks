@@ -755,7 +755,7 @@ public class EditBookTocFragment
 
                 final String isbnStr = book.getString(DBKey.BOOK_ISBN);
                 if (!isbnStr.isEmpty()) {
-                    final ISBN isbn = ISBN.createISBN(isbnStr);
+                    final ISBN isbn = new ISBN(isbnStr, true);
                     if (isbn.isValid(true)) {
                         Snackbar.make(vb.getRoot(), R.string.progress_msg_connecting,
                                       Snackbar.LENGTH_LONG).show();
