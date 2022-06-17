@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,10 +41,10 @@ buildscript {
         // 1.6.0 requires Android 13 Developer Preview 2 SDK
         androidx_activity_version = '1.5.0-rc01'
 
-        androidx_annotation_version = '1.4.0-beta01'
+        androidx_annotation_version = '1.4.0-rc01'
 
         // 1.6.0 requires Android 13 Developer Preview 2 SDK
-        androidx_appcompat_version = '1.4.1'
+        androidx_appcompat_version = '1.4.2'
 
         androidx_cardview_version = '1.0.0'
 
@@ -55,7 +55,7 @@ buildscript {
         androidx_coordinatorlayout_version = '1.2.0'
 
         // 1.9.0 requires Android 13 Developer Preview 2 SDK
-        androidx_core_version = '1.8.0-rc02'
+        androidx_core_version = '1.8.0'
 
         androidx_customview_version = '1.1.0'
 
@@ -78,7 +78,7 @@ buildscript {
         androidx_viewpager2_version = '1.1.0-beta01'
 
         // https://github.com/material-components/material-components-android/releases
-        google_material_version = '1.7.0-alpha01'
+        google_material_version = '1.7.0-alpha02'
 
         // https://jsoup.org/
         jsoup_version = '1.15.1'
@@ -96,7 +96,7 @@ buildscript {
         acra_version = '5.9.3'
 
         // https://github.com/mockito/mockito
-        mockito_version = '4.5.1'
+        mockito_version = '4.6.1'
 
         // https://junit.org/junit5/docs/current/user-guide/#overview
         jupiter_version = '5.8.2'
