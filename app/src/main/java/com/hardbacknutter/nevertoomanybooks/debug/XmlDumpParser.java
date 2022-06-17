@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,7 +54,7 @@ public class XmlDumpParser
 
     @CallSuper
     public void startDocument() {
-        Log.d(TAG, "<?xml version=\"1.0\"?>");
+        Logger.d(TAG, "startDocument", "<?xml version=\"1.0\"?>");
     }
 
     @CallSuper
@@ -91,14 +91,14 @@ public class XmlDumpParser
               .append(attributes.getValue(i)).append("\"");
         }
         sb.append(">");
-        Log.d(TAG, sb.toString());
+        Logger.d(TAG, "startElement", sb.toString());
     }
 
     @CallSuper
     public void endElement(final String namespaceURI,
                            final String localName,
                            final String qName) {
-        Log.d(TAG, "</" + qName + ">");
+        Logger.d(TAG, "endElement", "</" + qName + ">");
     }
 
     @CallSuper
@@ -109,7 +109,7 @@ public class XmlDumpParser
         for (int i = start; i < start + length; i++) {
             sb.append(ch[i]);
         }
-        Log.d(TAG, sb.toString());
+        Logger.d(TAG, "characters", sb.toString());
     }
 
     @CallSuper
@@ -120,13 +120,13 @@ public class XmlDumpParser
         for (int i = start; i < start + length; i++) {
             sb.append(ch[i]);
         }
-        Log.d(TAG, sb.toString());
+        Logger.d(TAG, "ignorableWhitespace", sb.toString());
     }
 
     @CallSuper
     public void processingInstruction(final String target,
                                       final String data) {
-        Log.d(TAG, "<?" + target + " " + data + "?>");
+        Logger.d(TAG, "processingInstruction", "<?" + target + " " + data + "?>");
     }
 
     @CallSuper
