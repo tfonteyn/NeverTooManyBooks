@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -367,7 +367,7 @@ public class ISBN {
     }
 
     @VisibleForTesting
-    boolean isType(@NonNull final Type type) {
+    public boolean isType(@NonNull final Type type) {
         if (type == Type.Ean13) {
             // ISBN 13 is a sub-type of EAN13
             return codeType == Type.Ean13 || codeType == Type.Isbn13;
