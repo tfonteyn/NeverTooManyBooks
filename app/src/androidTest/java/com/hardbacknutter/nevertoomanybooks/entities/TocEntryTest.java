@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,9 +45,9 @@ public class TocEntryTest
 
     @Test
     public void pruneTocEntries01() {
-        final Context context = mSl.getLocalizedAppContext();
-        final AuthorDao authorDao = mSl.getAuthorDao();
-        final TocEntryDao tocEntryDao = mSl.getTocEntryDao();
+        final Context context = serviceLocator.getLocalizedAppContext();
+        final AuthorDao authorDao = serviceLocator.getAuthorDao();
+        final TocEntryDao tocEntryDao = serviceLocator.getTocEntryDao();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
         long authorId0 = authorDao.fixId(context, author0, false, Locale.getDefault());
@@ -97,9 +97,9 @@ public class TocEntryTest
 
     @Test
     public void pruneTocEntries02() {
-        final Context context = mSl.getLocalizedAppContext();
-        final AuthorDao authorDao = mSl.getAuthorDao();
-        final TocEntryDao tocEntryDao = mSl.getTocEntryDao();
+        final Context context = serviceLocator.getLocalizedAppContext();
+        final AuthorDao authorDao = serviceLocator.getAuthorDao();
+        final TocEntryDao tocEntryDao = serviceLocator.getTocEntryDao();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
         long authorId0 = authorDao.fixId(context, author0, false, Locale.getDefault());
@@ -124,6 +124,7 @@ public class TocEntryTest
         tocEntry = new TocEntry(2, author0, "title 2", null, 0);
         list.add(tocEntry);
 
+        // pruning will reset the id's to 0 as the entries don't exist in the db
         final boolean modified = tocEntryDao.pruneList(context, list, false,
                                                        Locale.getDefault());
 
@@ -132,13 +133,13 @@ public class TocEntryTest
 
         // first element is the first "title 1" but with the data from the second entry
         tocEntry = list.get(0);
-        assertEquals(1, tocEntry.getId());
+        assertEquals(0, tocEntry.getId());
         assertEquals("title 1", tocEntry.getTitle());
         assertEquals(1978, tocEntry.getFirstPublicationDate().getYearValue());
 
         // second element is the first "title 2"
         tocEntry = list.get(1);
-        assertEquals(2, tocEntry.getId());
+        assertEquals(0, tocEntry.getId());
         assertEquals("title 2", tocEntry.getTitle());
         assertEquals(2019, tocEntry.getFirstPublicationDate().getYearValue());
     }
@@ -146,9 +147,9 @@ public class TocEntryTest
 
     @Test
     public void pruneTocEntries03() {
-        final Context context = mSl.getLocalizedAppContext();
-        final AuthorDao authorDao = mSl.getAuthorDao();
-        final TocEntryDao tocEntryDao = mSl.getTocEntryDao();
+        final Context context = serviceLocator.getLocalizedAppContext();
+        final AuthorDao authorDao = serviceLocator.getAuthorDao();
+        final TocEntryDao tocEntryDao = serviceLocator.getTocEntryDao();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
         long authorId0 = authorDao.fixId(context, author0, false, Locale.getDefault());
@@ -201,13 +202,13 @@ public class TocEntryTest
 
         // first element is the first "title 1" but with the data from the second entry
         tocEntry = list.get(0);
-        assertEquals(1, tocEntry.getId());
+        assertEquals(0, tocEntry.getId());
         assertEquals("title 1", tocEntry.getTitle());
         assertEquals(1978, tocEntry.getFirstPublicationDate().getYearValue());
 
         // second element is the first "title 2"
         tocEntry = list.get(1);
-        assertEquals(2, tocEntry.getId());
+        assertEquals(0, tocEntry.getId());
         assertEquals("title 2", tocEntry.getTitle());
         assertEquals(2019, tocEntry.getFirstPublicationDate().getYearValue());
 
