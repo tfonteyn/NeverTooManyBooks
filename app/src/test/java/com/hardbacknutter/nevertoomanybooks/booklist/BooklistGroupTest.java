@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,7 +45,7 @@ class BooklistGroupTest
         assertEquals(0, BooklistGroup.BOOK);
 
         final Style style =
-                new BuiltinStyle(BuiltinStyle.ALL.get(BuiltinStyle.DEFAULT_ID),
+                new BuiltinStyle(BuiltinStyle.ALL.get(-BuiltinStyle.DEFAULT_ID),
                                  true, 1);
 
         final Collection<String> prefixes = new HashSet<>();
