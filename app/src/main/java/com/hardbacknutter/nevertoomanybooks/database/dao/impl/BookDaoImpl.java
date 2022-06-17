@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -1184,17 +1184,14 @@ public class BookDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<String> getCurrencyCodes(@NonNull final String domainName) {
-        final String column;
-        if (DBKey.PRICE_LISTED_CURRENCY.equals(domainName)) {
-            column = DBKey.PRICE_LISTED_CURRENCY;
-//        } else if (KEY_PRICE_PAID_CURRENCY.equals(type)) {
-        } else {
-            column = DBKey.PRICE_PAID_CURRENCY;
+    public ArrayList<String> getCurrencyCodes(@NonNull final String key) {
+        if (!DBKey.MONEY_KEYS.contains(key)) {
+            throw new IllegalArgumentException(key);
         }
 
-        final String sql = "SELECT DISTINCT upper(" + column + ") FROM " + TBL_BOOKS.getName()
-                           + _ORDER_BY_ + column + _COLLATION;
+        final String sql = "SELECT DISTINCT UPPER(" + key + DBKey.SUFFIX_KEY_CURRENCY
+                           + ") FROM " + TBL_BOOKS.getName()
+                           + _ORDER_BY_ + key + DBKey.SUFFIX_KEY_CURRENCY + _COLLATION;
 
         final ArrayList<String> list = getColumnAsStringArrayList(sql);
         if (list.isEmpty()) {
@@ -1305,7 +1302,8 @@ public class BookDaoImpl
                         PERSONAL_NOTES, BOOK_CONDITION, BOOK_CONDITION_COVER,
                         LOCATION, SIGNED__BOOL, RATING,
                         READ__BOOL, READ_START__DATE, READ_END__DATE,
-                        DATE_ACQUIRED, PRICE_PAID, PRICE_PAID_CURRENCY,
+                        DATE_ACQUIRED,
+                        PRICE_PAID, PRICE_PAID_CURRENCY,
                         // added/updated
                         DATE_ADDED__UTC, DATE_LAST_UPDATED__UTC
                         //NEWTHINGS: adding a new search engine: optional: add engine specific keys

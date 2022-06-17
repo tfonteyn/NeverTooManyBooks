@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -555,7 +555,7 @@ public class EditBookViewModel
     private List<String> getAllListPriceCurrencyCodes() {
         if (listPriceCurrencies == null) {
             listPriceCurrencies = ServiceLocator
-                    .getInstance().getBookDao().getCurrencyCodes(DBKey.PRICE_LISTED_CURRENCY);
+                    .getInstance().getBookDao().getCurrencyCodes(DBKey.PRICE_LISTED);
         }
         return listPriceCurrencies;
     }
@@ -786,7 +786,7 @@ public class EditBookViewModel
     private List<String> getAllPricePaidCurrencyCodes() {
         if (pricePaidCurrencies == null) {
             pricePaidCurrencies = ServiceLocator
-                    .getInstance().getBookDao().getCurrencyCodes(DBKey.PRICE_PAID_CURRENCY);
+                    .getInstance().getBookDao().getCurrencyCodes(DBKey.PRICE_PAID);
         }
         return pricePaidCurrencies;
     }

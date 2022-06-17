@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -113,8 +113,7 @@ public class BookDaoHelper {
         }
 
         // cleanup/build all price related fields
-        processPrice(DBKey.PRICE_LISTED);
-        processPrice(DBKey.PRICE_PAID);
+        DBKey.MONEY_KEYS.forEach(this::processPrice);
 
         // replace 'T' by ' ' and truncate pure date fields if needed
         processDates();

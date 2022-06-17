@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -448,13 +448,12 @@ public interface BookDao {
     /**
      * Get a unique list of all currencies for the specified domain (from the Books table).
      *
-     * @param domainName for which to collect the used currency codes
-     *                   If a non-currency domain name is passed, you'll get garbage but no error.
+     * @param key for which to collect the used currency codes
      *
      * @return The list; values are always in uppercase.
      */
     @NonNull
-    ArrayList<String> getCurrencyCodes(@NonNull String domainName);
+    ArrayList<String> getCurrencyCodes(@NonNull String key);
 
 
     @Nullable

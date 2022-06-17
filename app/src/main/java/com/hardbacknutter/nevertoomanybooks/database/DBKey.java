@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,7 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
-import androidx.annotation.NonNull;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 
@@ -284,8 +284,13 @@ public final class DBKey {
      * All money keys.
      * Used with {@code MONEY_KEYS.contains(key)} to check if a key is about money.
      */
-    private static final String MONEY_KEYS = PRICE_LISTED + ',' + PRICE_PAID;
+    public static final Set<String> MONEY_KEYS = Set.of(
+            PRICE_LISTED,
+            PRICE_PAID);
 
+    public static final Set<String> DATE_KEYS = Set.of(
+            BOOK_PUBLICATION__DATE,
+            FIRST_PUBLICATION__DATE);
 
     /** Suffix added to a column name to create a specific 'order by' copy of that column. */
     private static final String SUFFIX_KEY_ORDER_BY = "_ob";
@@ -300,7 +305,4 @@ public final class DBKey {
     private DBKey() {
     }
 
-    public static boolean isMoneyKey(@NonNull final CharSequence key) {
-        return MONEY_KEYS.contains(key);
-    }
 }
