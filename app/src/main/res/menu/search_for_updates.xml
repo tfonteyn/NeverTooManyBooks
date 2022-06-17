@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@id/MENU_PREFS_SEARCH_SITES"
+        android:icon="@drawable/ic_baseline_find_in_page_24"
+        android:orderInCategory="@integer/MENU_ORDER_SEARCH_SITES"
+        android:title="@string/lbl_websites"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
+        android:id="@id/MENU_ISBN_VALIDITY_STRICT"
+        android:checkable="true"
+        android:orderInCategory="@integer/MENU_ORDER_SEARCH_STRICT_ISBN"
+        android:title="@string/lbl_strict_isbn"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@id/MENU_UPDATE_FROM_INTERNET_SKIP_ALL"
+        android:icon="@drawable/ic_baseline_check_box_outline_blank_24"
+        android:title="@string/action_select_none"
+        />
+
+    <item
+        android:id="@id/MENU_RESET"
+        android:icon="@drawable/ic_baseline_undo_24"
+        android:title="@string/action_reset_to_default"
+        />
+</menu>

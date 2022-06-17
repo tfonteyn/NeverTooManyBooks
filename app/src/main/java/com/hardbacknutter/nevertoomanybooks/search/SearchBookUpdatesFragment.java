@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.search;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -386,19 +385,15 @@ public class SearchBookUpdatesFragment
         @Override
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
-            final Resources r = getResources();
-            menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
-                     r.getInteger(R.integer.MENU_ORDER_SEARCH_SITES),
-                     R.string.lbl_websites)
-                .setIcon(R.drawable.ic_baseline_find_in_page_24)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            menuInflater.inflate(R.menu.search_for_updates, menu);
 
-            menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET_SKIP_ALL,
-                     0, R.string.action_select_none)
-                .setIcon(R.drawable.ic_baseline_check_box_outline_blank_24);
+            onPrepareMenu(menu);
+        }
 
-            menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_reset_to_default)
-                .setIcon(R.drawable.ic_baseline_undo_24);
+        @Override
+        public void onPrepareMenu(@NonNull final Menu menu) {
+            menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT)
+                .setChecked(vm.isStrictIsbn());
         }
 
         @Override
@@ -408,6 +403,11 @@ public class SearchBookUpdatesFragment
             if (itemId == R.id.MENU_PREFS_SEARCH_SITES) {
                 editSitesLauncher.launch(vm.getSiteList());
                 return true;
+
+            } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
+                final boolean checked = !menuItem.isChecked();
+                vm.setStrictIsbn(checked);
+                onPrepareMenu(getToolbar().getMenu());
 
             } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_SKIP_ALL) {
                 vm.setAll(SyncAction.Skip);
