@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -441,7 +442,6 @@ class StripInfoTest
             throws SearchException, CredentialsException, StorageException {
         setLocale(Locale.FRANCE);
         final String locationHeader = "https://stripinfo.be/zoek/zoek?zoekstring=pluvi";
-        // this is a multi-result, so use mSearchEngine.parseMultiResult
         final String filename = "/stripinfo/multi-result-pluvi.html";
 
         Document document = null;
@@ -457,7 +457,8 @@ class StripInfoTest
         assertTrue(document.hasText());
 
         // we've set the doc, but will redirect.. so an internet download WILL be done.
-        mSearchEngine.parseMultiResult(mContext, document, new boolean[]{false, false}, mRawData);
+        mSearchEngine.processDocument(mContext, "9782756010830",
+                                      document, new boolean[]{false, false}, mRawData);
 
         assertFalse(mRawData.isEmpty());
         System.out.println(mRawData);
@@ -509,5 +510,27 @@ class StripInfoTest
         assertEquals("Surcouf", author.getFamilyName());
         assertEquals("Erwann", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST | Author.TYPE_COLORIST, author.getType());
+    }
+
+    // Geheime Driehoek nr 3, "As en Goud"
+    // ISBN	9069692736 <-- incorrect
+    // Barcode	9789069692739 <-- correct
+    @Test
+    void asEnGoud() {
+        final ISBN barcode = new ISBN("9789069692739", true);
+        assertTrue(barcode.isValid(true));
+
+        final ISBN isbn = new ISBN("9069692736", true);
+        assertFalse(isbn.isValid(true));
+        assertFalse(isbn.isValid(false));
+        assertTrue(isbn.isType(ISBN.Type.Invalid));
+
+        mRawData.clear();
+        mRawData.putString(DBKey.BOOK_ISBN, "9069692736");
+        mRawData.putString(StripInfoSearchEngine.SiteField.BARCODE, "9789069692739");
+        mSearchEngine.processBarcode("9789069692739", mRawData);
+
+        assertEquals(mRawData.getString(DBKey.BOOK_ISBN, "foo"), "9789069692739");
+        assertFalse(mRawData.containsKey(StripInfoSearchEngine.SiteField.BARCODE));
     }
 }

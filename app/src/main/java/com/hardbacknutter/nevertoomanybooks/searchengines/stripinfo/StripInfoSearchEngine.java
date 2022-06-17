@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -70,6 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.BookshelfMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.CollectionFormParser;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -250,13 +251,27 @@ public class StripInfoSearchEngine
         final String url = getSiteUrl() + String.format(BY_ISBN, validIsbn);
         final Document document = loadDocument(context, url);
         if (!isCancelled()) {
-            if (isMultiResult(document)) {
-                parseMultiResult(context, document, fetchCovers, bookData);
-            } else {
-                parse(context, document, fetchCovers, bookData);
-            }
+            processDocument(context, validIsbn, document, fetchCovers, bookData);
         }
         return bookData;
+    }
+
+    @VisibleForTesting
+    public void processDocument(@NonNull final Context context,
+                                @NonNull final String validIsbn,
+                                @NonNull final Document document,
+                                @NonNull final boolean[] fetchCovers,
+                                @NonNull final Bundle bookData)
+            throws StorageException, SearchException, CredentialsException {
+        if (isMultiResult(document)) {
+            parseMultiResult(context, document, fetchCovers, bookData);
+        } else {
+            parse(context, document, fetchCovers, bookData);
+        }
+
+        // Finally, try and replace potential invalid ISBN numbers
+        // with the barcode as  found on the site
+        processBarcode(validIsbn, bookData);
     }
 
     @NonNull
@@ -284,11 +299,10 @@ public class StripInfoSearchEngine
      * @param bookData    Bundle to update
      */
     @WorkerThread
-    @VisibleForTesting
-    void parseMultiResult(@NonNull final Context context,
-                          @NonNull final Document document,
-                          @NonNull final boolean[] fetchCovers,
-                          @NonNull final Bundle bookData)
+    private void parseMultiResult(@NonNull final Context context,
+                                  @NonNull final Document document,
+                                  @NonNull final boolean[] fetchCovers,
+                                  @NonNull final Bundle bookData)
             throws StorageException, SearchException, CredentialsException {
 
         for (final Element section : document.select("section.c6")) {
@@ -527,6 +541,25 @@ public class StripInfoSearchEngine
         // back cover
         if (fetchCovers.length > 1 && fetchCovers[1]) {
             processCover(document, 1, bookData);
+        }
+    }
+
+    @VisibleForTesting
+    public void processBarcode(@NonNull final String searchIsbnText,
+                               @NonNull final Bundle bookData) {
+
+        final String barcode = bookData.getString(SiteField.BARCODE);
+        if (barcode != null && !barcode.isEmpty()) {
+            final ISBN isbnFromBarcode = new ISBN(barcode, true);
+            // We found a valid barcode
+            if (isbnFromBarcode.isValid(true)
+                // or, it was invalid, but it *IS* the one we were searching for
+                || isbnFromBarcode.asText().equals(searchIsbnText)) {
+
+                // Then the barcode always replaces the ISBN from the site!
+                bookData.putString(DBKey.BOOK_ISBN, isbnFromBarcode.asText());
+                bookData.remove(SiteField.BARCODE);
+            }
         }
     }
 
