@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -182,7 +182,7 @@ public class StripInfoReader
 
         builder.addRelatedField(FieldVisibility.COVER[0], Book.BKEY_TMP_FILE_SPEC[0])
                .addRelatedField(FieldVisibility.COVER[1], Book.BKEY_TMP_FILE_SPEC[1])
-               .addRelatedField(DBKey.PRICE_PAID_CURRENCY, DBKey.PRICE_PAID);
+               .addRelatedField(DBKey.PRICE_PAID, DBKey.PRICE_PAID_CURRENCY);
 
         return builder.build();
     }
