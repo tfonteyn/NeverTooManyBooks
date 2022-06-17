@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -258,12 +258,12 @@ public class BookCoder {
     }
 
     @NonNull
-    private String escapeLong(final long cell) {
+    private CharSequence escapeLong(final long cell) {
         return escape(String.valueOf(cell));
     }
 
     @NonNull
-    private String escapeDouble(final double cell) {
+    private CharSequence escapeDouble(final double cell) {
         return escape(String.valueOf(cell));
     }
 
@@ -275,8 +275,7 @@ public class BookCoder {
      * @return The encoded cell enclosed in escaped quotes
      */
     @NonNull
-    private String escape(@Nullable final String source) {
-
+    private CharSequence escape(@Nullable final String source) {
         if (source == null || "null".equalsIgnoreCase(source) || source.trim().isEmpty()) {
             return EMPTY_QUOTED_STRING;
         }
