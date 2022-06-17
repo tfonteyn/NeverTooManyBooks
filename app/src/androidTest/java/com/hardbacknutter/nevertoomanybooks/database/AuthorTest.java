@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -55,8 +55,8 @@ public class AuthorTest
     public void crud() {
         boolean updateOk;
 
-        final Context context = mSl.getLocalizedAppContext();
-        final AuthorDao authorDao = mSl.getAuthorDao();
+        final Context context = serviceLocator.getLocalizedAppContext();
+        final AuthorDao authorDao = serviceLocator.getAuthorDao();
 
         author[0] = Author.from(AuthorFullName(0));
         authorId[0] = authorDao.insert(context, author[0]);
@@ -99,8 +99,8 @@ public class AuthorTest
         long existingId;
         final Author tmpAuthor;
 
-        final Context context = mSl.getLocalizedAppContext();
-        final AuthorDao authorDao = mSl.getAuthorDao();
+        final Context context = serviceLocator.getLocalizedAppContext();
+        final AuthorDao authorDao = serviceLocator.getAuthorDao();
 
         // rename an author
         // UPDATE in the database
@@ -162,8 +162,8 @@ public class AuthorTest
         final long idBefore;
         long existingId;
 
-        final Context context = mSl.getLocalizedAppContext();
-        final AuthorDao authorDao = mSl.getAuthorDao();
+        final Context context = serviceLocator.getLocalizedAppContext();
+        final AuthorDao authorDao = serviceLocator.getAuthorDao();
 
         // rename an author
         // UPDATE in the database

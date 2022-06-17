@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -60,8 +60,8 @@ public class SeriesTest
 
     @Test
     public void pruneSeries01List() {
-        final Context context = mSl.getLocalizedAppContext();
-        final SeriesDao seriesDao = mSl.getSeriesDao();
+        final Context context = serviceLocator.getLocalizedAppContext();
+        final SeriesDao seriesDao = serviceLocator.getSeriesDao();
 
         final List<Series> list = new ArrayList<>();
         Series series;

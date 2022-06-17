@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,7 +45,7 @@ public class BaseSetupTest
         ArrayList<Long> bookIdList;
         ArrayList<AuthorWork> works;
 
-        assertFalse(mSl.isCollationCaseSensitive());
+        assertFalse(serviceLocator.isCollationCaseSensitive());
 
         // The objects should have been updated with their id
         assertTrue(author[0].getId() > 0);
@@ -67,8 +67,8 @@ public class BaseSetupTest
         assertTrue(tocEntry[2].getId() > 0);
         assertTrue(tocEntry[3].getId() > 0);
 
-        final AuthorDao authorDao = mSl.getAuthorDao();
-        final PublisherDao publisherDao = mSl.getPublisherDao();
+        final AuthorDao authorDao = serviceLocator.getAuthorDao();
+        final PublisherDao publisherDao = serviceLocator.getPublisherDao();
 
         // a0 is present in b0, b3
         bookIdList = authorDao.getBookIds(author[0].getId());

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -90,15 +90,15 @@ public abstract class BaseSetup
             throws DaoWriteException, StorageException {
         super.setup();
 
-        final Context context = mSl.getLocalizedAppContext();
+        final Context context = serviceLocator.getLocalizedAppContext();
 
-        final SynchronizedDb db = mSl.getDb();
+        final SynchronizedDb db = serviceLocator.getDb();
         Constants.deleteTocs(db);
         Constants.deleteBooks(db);
         Constants.deleteAuthors(db);
         Constants.deletePublishers(db);
 
-        final BookDao bookDao = mSl.getBookDao();
+        final BookDao bookDao = serviceLocator.getBookDao();
         // all books will sit on the same shelf for now
         //Constants.deleteBookshelves(db);
         bookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT);

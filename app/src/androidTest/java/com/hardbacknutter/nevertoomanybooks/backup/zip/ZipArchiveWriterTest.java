@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -66,19 +66,19 @@ public class ZipArchiveWriterTest
     public void setup()
             throws DaoWriteException, StorageException {
         super.setup();
-        final Context context = mSl.getLocalizedAppContext();
-        mBookInDb = mSl.getBookDao().count();
+        final Context context = serviceLocator.getLocalizedAppContext();
+        mBookInDb = serviceLocator.getBookDao().count();
         if (mBookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
         }
-        mNrOfStyles = mSl.getStyles().getStyles(context, true).size();
+        mNrOfStyles = serviceLocator.getStyles().getStyles(context, true).size();
     }
 
     @Test
     public void write()
             throws DataReaderException, DataWriterException,
                    IOException, StorageException, CredentialsException, CertificateException {
-        final Context context = mSl.getLocalizedAppContext();
+        final Context context = serviceLocator.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + ".zip");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
@@ -115,7 +115,7 @@ public class ZipArchiveWriterTest
             throws DataReaderException, IOException,
                    StorageException, CredentialsException, CertificateException {
 
-        final Context context = mSl.getLocalizedAppContext();
+        final Context context = serviceLocator.getLocalizedAppContext();
 
         final ImportHelper importHelper = new ImportHelper(context, uri);
         // The default, fail if the default was changed without changing this test!

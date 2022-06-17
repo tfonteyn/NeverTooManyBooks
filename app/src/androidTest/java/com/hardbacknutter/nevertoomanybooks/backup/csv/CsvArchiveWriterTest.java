@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -74,7 +74,7 @@ public class CsvArchiveWriterTest
     public void setup()
             throws DaoWriteException, StorageException {
         super.setup();
-        mBookInDb = mSl.getBookDao().count();
+        mBookInDb = serviceLocator.getBookDao().count();
         if (mBookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
         }
@@ -85,7 +85,7 @@ public class CsvArchiveWriterTest
             throws DataReaderException, DaoWriteException, DataWriterException,
                    IOException, StorageException, CredentialsException, CertificateException {
 
-        final Context context = mSl.getLocalizedAppContext();
+        final Context context = serviceLocator.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + ".csv");
         //noinspection ResultOfMethodCallIgnored
         file.delete();

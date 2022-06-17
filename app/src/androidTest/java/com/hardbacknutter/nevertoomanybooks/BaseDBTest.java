@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public abstract class BaseDBTest {
 
-    protected ServiceLocator mSl;
+    protected ServiceLocator serviceLocator;
 
     @Before
     @CallSuper
@@ -46,15 +46,15 @@ public abstract class BaseDBTest {
                                        .penaltyLog()
                                        .build());
 
-        mSl = ServiceLocator.getInstance();
+        serviceLocator = ServiceLocator.getInstance();
 
         CoverDir.initVolume(ServiceLocator.getAppContext(), 0);
-        mSl.getDb();
+        serviceLocator.getDb();
     }
 
     @After
     @CallSuper
     public void closeDb() {
-        mSl.recreate();
+        serviceLocator.recreate();
     }
 }

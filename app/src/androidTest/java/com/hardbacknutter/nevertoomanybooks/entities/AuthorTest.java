@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -78,8 +78,8 @@ public class AuthorTest
 
     @Test
     public void pruneAuthorList01() {
-        final Context context = mSl.getLocalizedAppContext();
-        final AuthorDao authorDao = mSl.getAuthorDao();
+        final Context context = serviceLocator.getLocalizedAppContext();
+        final AuthorDao authorDao = serviceLocator.getAuthorDao();
 
         final List<Author> list = new ArrayList<>();
         Author author;
@@ -178,8 +178,8 @@ public class AuthorTest
 
     @Test
     public void pruneAuthorList02() {
-        final Context context = mSl.getLocalizedAppContext();
-        final AuthorDao authorDao = mSl.getAuthorDao();
+        final Context context = serviceLocator.getLocalizedAppContext();
+        final AuthorDao authorDao = serviceLocator.getAuthorDao();
 
         final List<Author> authorList = new ArrayList<>();
         Author author;

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,8 +38,8 @@ public class UserStyleTest
 
     @Test
     public void clone01() {
-        final Context context = mSl.getLocalizedAppContext();
-        final StylesHelper stylesHelper = mSl.getStyles();
+        final Context context = serviceLocator.getLocalizedAppContext();
+        final StylesHelper stylesHelper = serviceLocator.getStyles();
         final Style s1 = stylesHelper.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
 
         assertNotNull(s1);
