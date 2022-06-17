@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -254,7 +254,7 @@ public class DataManager
      */
     @Nullable
     public Object get(@NonNull final String key) {
-        if (DBKey.isMoneyKey(key)) {
+        if (DBKey.MONEY_KEYS.contains(key)) {
             try {
                 return getMoney(key);
             } catch (@NonNull final NumberFormatException ignore) {
