@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,8 +35,11 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
  */
 public class BooklistNode {
 
+    // See constructor
+    public static final int NEXT_COL = 6;
+
     /** The row "_id" in the list-table. */
-    private long rowId;
+    private final long rowId;
 
     /**
      * The String based node key;
@@ -44,13 +47,13 @@ public class BooklistNode {
      * <p>
      * Completed by {@link #bookId} for actual Book nodes.
      */
-    private String key;
+    private final String key;
 
     @IntRange(from = 1)
-    private int level;
+    private final int level;
 
     @IntRange(from = 0)
-    private long bookId;
+    private final long bookId;
 
     private boolean expanded;
 
@@ -61,9 +64,17 @@ public class BooklistNode {
 
     /**
      * Constructor.
-     * Use {@link #from(Cursor)} to populate the current values.
+     *
+     * @param cursor to read from
      */
-    BooklistNode() {
+    BooklistNode(@NonNull final Cursor cursor) {
+        rowId = cursor.getInt(0);
+        level = cursor.getInt(1);
+        key = cursor.getString(2);
+        bookId = cursor.isNull(3) ? 0 : cursor.getInt(3);
+
+        expanded = cursor.getInt(4) != 0;
+        visible = cursor.getInt(5) != 0;
     }
 
     /**
@@ -82,24 +93,6 @@ public class BooklistNode {
 
                + ',' + table.dot(DBKey.KEY_BL_NODE_EXPANDED)
                + ',' + table.dot(DBKey.KEY_BL_NODE_VISIBLE);
-    }
-
-    /**
-     * Set the node based on the given cursor row.
-     *
-     * @param cursor to read from
-     *
-     * @return the number of columns read; i.e. what is the next column in an extended query.
-     */
-    int from(@NonNull final Cursor cursor) {
-        rowId = cursor.getInt(0);
-        level = cursor.getInt(1);
-        key = cursor.getString(2);
-        bookId = cursor.isNull(3) ? 0 : cursor.getInt(3);
-
-        expanded = cursor.getInt(4) != 0;
-        visible = cursor.getInt(5) != 0;
-        return 6;
     }
 
     public boolean isExpanded() {

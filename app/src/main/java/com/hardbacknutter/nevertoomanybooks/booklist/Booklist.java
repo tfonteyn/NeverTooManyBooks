@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -344,8 +344,7 @@ public class Booklist
                 String.valueOf(rowId)})) {
 
             if (cursor.moveToFirst()) {
-                final BooklistNode node = new BooklistNode();
-                node.from(cursor);
+                final BooklistNode node = new BooklistNode(cursor);
                 node.updateAdapterPosition(db, listTable);
                 return node;
             } else {
@@ -420,9 +419,8 @@ public class Booklist
         try (Cursor cursor = db.rawQuery(sqlGetBookNodes, new String[]{
                 String.valueOf(bookId)})) {
 
-            final BooklistNode node = new BooklistNode();
             while (cursor.moveToNext()) {
-                node.from(cursor);
+                final BooklistNode node = new BooklistNode(cursor);
                 node.updateAdapterPosition(db, listTable);
                 nodeList.add(node);
             }
@@ -589,10 +587,10 @@ public class Booklist
                 String.valueOf(BooklistGroup.BOOK),
                 String.valueOf(rowId)})) {
 
-            final BooklistNode node = new BooklistNode();
+
             while (cursor.moveToNext()) {
-                final int nextCol = node.from(cursor);
-                final String uuid = cursor.getString(nextCol);
+                final BooklistNode node = new BooklistNode(cursor);
+                final String uuid = cursor.getString(BooklistNode.NEXT_COL);
                 final Optional<File> file = Book.getPersistedCoverFile(uuid, 0);
                 if (!file.isPresent()) {
                     // FIRST make the node visible

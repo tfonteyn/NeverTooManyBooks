@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
@@ -379,59 +378,6 @@ public class BooksOnBookshelf
                     onBookUpdated(vm.getBook(bookId), DBKey.LOANEE_NAME);
                 }
             };
-
-    private final BooklistAdapter.OnRowClickedListener onRowClickedListener =
-            new BooklistAdapter.OnRowClickedListener() {
-
-                /**
-                 * User clicked a row.
-                 * <ul>
-                 *      <li>Book: open the details page.</li>
-                 *      <li>Not a book: expand/collapse the section as appropriate.</li>
-                 * </ul>
-                 */
-                @Override
-                public void onItemClick(final int position) {
-                    final Cursor cursor = adapter.getCursor();
-                    // Move the cursor, so we can read the data for this row.
-                    // Paranoia: if the user can click it, then this move should be fine.
-                    if (!cursor.moveToPosition(position)) {
-                        return;
-                    }
-
-                    final DataHolder rowData = new CursorRow(cursor);
-
-                    if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-                        // It's a book, open the details page.
-                        final long bookId = rowData.getLong(DBKey.FK_BOOK);
-                        // store the id as the current 'central' book for repositioning
-                        vm.setCurrentCenteredBookId(bookId);
-
-                        if (hasEmbeddedDetailsFrame()) {
-                            //  On larger screens, opens the book details fragment embedded.
-                            openEmbeddedBookDetails(bookId);
-                        } else {
-                            //  On small screens, opens a ViewPager with the book details
-                            //  and swipe prev/next functionality.
-                            displayBookLauncher.launch(new ShowBookPagerContract.Input(
-                                    bookId,
-                                    vm.getStyle(BooksOnBookshelf.this).getUuid(),
-                                    vm.getBookNavigationTableName(),
-                                    rowData.getLong(DBKey.PK_ID)));
-                        }
-                    } else {
-                        // it's a level, expand/collapse.
-                        setNodeState(rowData, BooklistNode.NextState.Toggle, 1);
-                    }
-                }
-
-                @Override
-                public boolean onItemLongClick(@NonNull final View v,
-                                               final int position) {
-                    return onCreateContextMenu(v, position);
-                }
-            };
-
     /**
      * The adapter used to fill the Bookshelf selector.
      */
@@ -509,6 +455,334 @@ public class BooksOnBookshelf
             vb.toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24);
         }
     }
+
+    /**
+     * Using {@link ExtPopupMenu} for context menus.
+     *
+     * @param menuItem that was selected
+     * @param position in the list
+     *
+     * @return {@code true} if handled.
+     */
+    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
+                                       final int position) {
+        final int itemId = menuItem.getItemId();
+
+        // Move the cursor, so we can read the data for this row.
+        // The majority of the time this is not needed, but a fringe case (toggle node)
+        // showed it should indeed be done.
+        // Paranoia: if the user can click it, then this should be fine.
+        Objects.requireNonNull(adapter, "adapter");
+        final Cursor cursor = adapter.getCursor();
+        if (!cursor.moveToPosition(position)) {
+            return false;
+        }
+
+        final DataHolder rowData = new CursorRow(cursor);
+
+        // Check for row-group independent options first.
+
+        if (itemId == R.id.MENU_NEXT_MISSING_COVER) {
+            final long nodeRowId = rowData.getLong(DBKey.KEY_BL_LIST_VIEW_NODE_ROW_ID);
+            vm.getNextBookWithoutCover(nodeRowId).ifPresent(node -> {
+                final List<BooklistNode> list = new ArrayList<>();
+                list.add(node);
+                displayList(list);
+            });
+            return true;
+
+        } else if (itemId == R.id.MENU_LEVEL_EXPAND) {
+            saveListPosition();
+
+            final long nodeRowId = rowData.getLong(DBKey.KEY_BL_LIST_VIEW_NODE_ROW_ID);
+            vm.setNode(nodeRowId, BooklistNode.NextState.Expand,
+                       vm.getStyle(this).getGroupCount());
+            // don't pass the node, we want the list to scroll back to
+            // the exact same (saved) position.
+            displayList(null);
+            return true;
+
+        } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
+            final Intent intent = FragmentHostActivity
+                    .createIntent(this, CalibrePreferencesFragment.class);
+            startActivity(intent);
+            return true;
+        }
+
+        // Specific row-group options
+
+        final int rowGroupId = rowData.getInt(DBKey.KEY_BL_NODE_GROUP);
+        //noinspection SwitchStatementWithoutDefaultBranch
+        switch (rowGroupId) {
+            case BooklistGroup.BOOK: {
+                if (itemId == R.id.MENU_BOOK_SET_READ
+                    || itemId == R.id.MENU_BOOK_SET_UNREAD) {
+                    final long bookId = rowData.getLong(DBKey.FK_BOOK);
+                    // toggle the read status
+                    final boolean status = !rowData.getBoolean(DBKey.READ__BOOL);
+                    if (vm.setBookRead(bookId, status)) {
+                        onBookUpdated(vm.getBook(bookId), DBKey.READ__BOOL);
+                    }
+                    return true;
+
+                } else if (itemId == R.id.MENU_BOOK_EDIT) {
+                    final long bookId = rowData.getLong(DBKey.FK_BOOK);
+                    editByIdLauncher.launch(bookId);
+                    return true;
+
+                } else if (itemId == R.id.MENU_BOOK_DUPLICATE) {
+                    final Book book = DataHolderUtils.requireBook(rowData);
+                    duplicateLauncher.launch(book.duplicate());
+                    return true;
+
+                } else if (itemId == R.id.MENU_BOOK_DELETE) {
+                    final long bookId = rowData.getLong(DBKey.FK_BOOK);
+                    final String title = rowData.getString(DBKey.TITLE);
+                    final List<Author> authors = vm.getAuthorsByBookId(bookId);
+                    StandardDialogs.deleteBook(this, title, authors, () -> {
+                        if (vm.deleteBook(bookId)) {
+                            onBookDeleted(bookId);
+                        }
+                    });
+                    return true;
+
+                } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+                    final Book book = DataHolderUtils.requireBook(rowData);
+                    updateBookLauncher.launch(book);
+                    return true;
+
+                } else if (itemId == R.id.MENU_BOOK_LOAN_ADD) {
+                    final long bookId = rowData.getLong(DBKey.FK_BOOK);
+                    editLenderLauncher.launch(bookId, rowData.getString(DBKey.TITLE));
+                    return true;
+
+                } else if (itemId == R.id.MENU_BOOK_LOAN_DELETE) {
+                    final long bookId = rowData.getLong(DBKey.FK_BOOK);
+                    vm.lendBook(bookId, null);
+                    onBookUpdated(vm.getBook(bookId), DBKey.LOANEE_NAME);
+                    return true;
+
+                } else if (itemId == R.id.MENU_SHARE) {
+                    final Book book = DataHolderUtils.requireBook(rowData);
+                    startActivity(book.getShareIntent(this));
+                    return true;
+                }
+                break;
+            }
+            case BooklistGroup.AUTHOR: {
+                if (itemId == R.id.MENU_AUTHOR_WORKS) {
+                    authorWorksLauncher.launch(new AuthorWorksContract.Input(
+                            rowData.getLong(DBKey.FK_AUTHOR),
+                            vm.getCurrentBookshelf().getId(),
+                            vm.getStyle(this).getUuid()));
+                    return true;
+
+                } else if (itemId == R.id.MENU_AUTHOR_SET_COMPLETE
+                           || itemId == R.id.MENU_AUTHOR_SET_INCOMPLETE) {
+                    final long authorId = rowData.getLong(DBKey.FK_AUTHOR);
+                    // toggle the complete status
+                    final boolean status = !rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE);
+                    if (vm.setAuthorComplete(authorId, status)) {
+                        onRowChanged(DBKey.FK_AUTHOR, authorId);
+                    }
+                    return true;
+
+                } else if (itemId == R.id.MENU_AUTHOR_EDIT) {
+                    final Author author = DataHolderUtils.requireAuthor(rowData);
+                    // results come back in mRowChangedListener
+                    EditAuthorDialogFragment.launch(getSupportFragmentManager(), author);
+                    return true;
+
+                } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+                    final String message = rowData.getString(DBKey.KEY_AUTHOR_FORMATTED);
+                    updateBooksFromInternetData(position, rowData, message);
+                    return true;
+                }
+                break;
+            }
+            case BooklistGroup.SERIES: {
+                if (itemId == R.id.MENU_SERIES_SET_COMPLETE
+                    || itemId == R.id.MENU_SERIES_SET_INCOMPLETE) {
+                    final long seriesId = rowData.getLong(DBKey.FK_SERIES);
+                    // toggle the complete status
+                    final boolean status = !rowData.getBoolean(DBKey.SERIES_IS_COMPLETE);
+                    if (vm.setSeriesComplete(seriesId, status)) {
+                        onRowChanged(DBKey.FK_SERIES, seriesId);
+                    }
+                    return true;
+
+                } else if (itemId == R.id.MENU_SERIES_EDIT) {
+                    final Series series = DataHolderUtils.requireSeries(rowData);
+                    // results come back in mRowChangedListener
+                    EditSeriesDialogFragment.launch(getSupportFragmentManager(), series);
+                    return true;
+
+                } else if (itemId == R.id.MENU_SERIES_DELETE) {
+                    final Series series = DataHolderUtils.requireSeries(rowData);
+                    StandardDialogs.deleteSeries(this, series, () -> {
+                        vm.delete(this, series);
+                        onRowChanged(DBKey.FK_SERIES, series.getId());
+                    });
+                    return true;
+
+                } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+                    final String message = rowData.getString(DBKey.SERIES_TITLE);
+                    updateBooksFromInternetData(position, rowData, message);
+                    return true;
+                }
+                break;
+            }
+            case BooklistGroup.PUBLISHER: {
+                if (itemId == R.id.MENU_PUBLISHER_EDIT) {
+                    final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
+                    // results come back in mRowChangedListener
+                    EditPublisherDialogFragment.launch(getSupportFragmentManager(), publisher);
+                    return true;
+
+                } else if (itemId == R.id.MENU_PUBLISHER_DELETE) {
+                    final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
+                    StandardDialogs.deletePublisher(this, publisher, () -> {
+                        vm.delete(this, publisher);
+                        onRowChanged(DBKey.FK_PUBLISHER, publisher.getId());
+                    });
+                    return true;
+
+                } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+                    final String message = rowData.getString(DBKey.PUBLISHER_NAME);
+                    updateBooksFromInternetData(position, rowData, message);
+                    return true;
+                }
+                break;
+            }
+            case BooklistGroup.BOOKSHELF: {
+                if (itemId == R.id.MENU_BOOKSHELF_EDIT) {
+                    final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
+                    editBookshelfLauncher.launch(bookshelf);
+                    return true;
+
+                } else if (itemId == R.id.MENU_BOOKSHELF_DELETE) {
+                    final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
+                    StandardDialogs.deleteBookshelf(this, bookshelf, () -> {
+                        vm.delete(bookshelf);
+                        onRowChanged(DBKey.FK_BOOKSHELF, bookshelf.getId());
+                    });
+                    return true;
+                }
+                break;
+            }
+            case BooklistGroup.LANGUAGE: {
+                if (itemId == R.id.MENU_LANGUAGE_EDIT) {
+                    EditLanguageDialogFragment.launch(getSupportFragmentManager(),
+                                                      this, rowData.getString(DBKey.LANGUAGE));
+                    return true;
+                }
+                break;
+            }
+            case BooklistGroup.LOCATION: {
+                if (itemId == R.id.MENU_LOCATION_EDIT) {
+                    EditLocationDialogFragment.launch(getSupportFragmentManager(),
+                                                      rowData.getString(DBKey.LOCATION));
+                    return true;
+                }
+                break;
+            }
+            case BooklistGroup.GENRE: {
+                if (itemId == R.id.MENU_GENRE_EDIT) {
+                    EditGenreDialogFragment.launch(getSupportFragmentManager(),
+                                                   rowData.getString(DBKey.GENRE));
+                    return true;
+                }
+                break;
+            }
+            case BooklistGroup.FORMAT: {
+                if (itemId == R.id.MENU_FORMAT_EDIT) {
+                    EditFormatDialogFragment.launch(getSupportFragmentManager(),
+                                                    rowData.getString(DBKey.FORMAT));
+                    return true;
+                }
+                break;
+            }
+            case BooklistGroup.COLOR: {
+                if (itemId == R.id.MENU_COLOR_EDIT) {
+                    EditColorDialogFragment.launch(getSupportFragmentManager(),
+                                                   rowData.getString(DBKey.COLOR));
+                    return true;
+                }
+                break;
+            }
+        }
+
+        // other handlers.
+        if (calibreHandler != null
+            && calibreHandler.onMenuItemSelected(this, menuItem, rowData)) {
+            return true;
+        }
+        if (vm.getAmazonHandler().onMenuItemSelected(this, menuItem, rowData)) {
+            return true;
+        }
+        if (vm.getViewBookHandler().onMenuItemSelected(this, menuItem, rowData)) {
+            return true;
+        }
+        return false;
+    }
+
+    private final BooklistAdapter.OnRowClickedListener onRowClickedListener =
+            new BooklistAdapter.OnRowClickedListener() {
+
+                /**
+                 * User clicked a row.
+                 * <ul>
+                 *      <li>Book: open the details page.</li>
+                 *      <li>Not a book: expand/collapse the section as appropriate.</li>
+                 * </ul>
+                 */
+                @Override
+                public void onItemClick(final int position) {
+                    final Cursor cursor = adapter.getCursor();
+                    // Move the cursor, so we can read the data for this row.
+                    // Paranoia: if the user can click it, then this move should be fine.
+                    if (!cursor.moveToPosition(position)) {
+                        return;
+                    }
+
+                    final DataHolder rowData = new CursorRow(cursor);
+
+                    if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+                        // It's a book, open the details page.
+                        final long bookId = rowData.getLong(DBKey.FK_BOOK);
+                        // store the id as the current 'central' book for repositioning
+                        vm.setCurrentCenteredBookId(bookId);
+
+                        if (hasEmbeddedDetailsFrame()) {
+                            //  On larger screens, opens the book details fragment embedded.
+                            openEmbeddedBookDetails(bookId);
+                        } else {
+                            //  On small screens, opens a ViewPager with the book details
+                            //  and swipe prev/next functionality.
+                            displayBookLauncher.launch(new ShowBookPagerContract.Input(
+                                    bookId,
+                                    vm.getStyle(BooksOnBookshelf.this).getUuid(),
+                                    vm.getBookNavigationTableName(),
+                                    rowData.getLong(DBKey.PK_ID)));
+                        }
+                    } else {
+                        // it's a level, expand/collapse.
+                        saveListPosition();
+
+                        final long nodeRowId = rowData.getLong(DBKey.KEY_BL_LIST_VIEW_NODE_ROW_ID);
+                        vm.setNode(nodeRowId, BooklistNode.NextState.Toggle, 1);
+                        // don't pass the node, we want the list to scroll back to
+                        // the exact same (saved) position.
+                        displayList(null);
+                    }
+                }
+
+                @Override
+                public boolean onItemLongClick(@NonNull final View v,
+                                               final int position) {
+                    return onCreateContextMenu(v, position);
+                }
+            };
 
     private boolean isRootActivity() {
         return isTaskRoot() && vm.getSearchCriteria().isEmpty();
@@ -1039,264 +1313,11 @@ public class BooksOnBookshelf
         return false;
     }
 
-    /**
-     * Using {@link ExtPopupMenu} for context menus.
-     *
-     * @param menuItem that was selected
-     * @param position in the list
-     *
-     * @return {@code true} if handled.
-     */
-    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
-                                       final int position) {
-        final int itemId = menuItem.getItemId();
-
-        // Move the cursor, so we can read the data for this row.
-        // The majority of the time this is not needed, but a fringe case (toggle node)
-        // showed it should indeed be done.
-        // Paranoia: if the user can click it, then this should be fine.
-        Objects.requireNonNull(adapter, "adapter");
-        final Cursor cursor = adapter.getCursor();
-        if (!cursor.moveToPosition(position)) {
-            return false;
-        }
-
-        final DataHolder rowData = new CursorRow(cursor);
-
-        // Check for row-group independent options first.
-
-        if (itemId == R.id.MENU_NEXT_MISSING_COVER) {
-            final long nodeRowId = rowData.getLong(DBKey.KEY_BL_LIST_VIEW_NODE_ROW_ID);
-            vm.getNextBookWithoutCover(nodeRowId).ifPresent(this::displayList);
-            return true;
-
-        } else if (itemId == R.id.MENU_LEVEL_EXPAND) {
-            setNodeState(rowData, BooklistNode.NextState.Expand,
-                         vm.getStyle(this).getGroupCount());
-            return true;
-
-        } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
-            final Intent intent = FragmentHostActivity
-                    .createIntent(this, CalibrePreferencesFragment.class);
-            startActivity(intent);
-            return true;
-        }
-
-        // Specific row-group options
-
-        final int rowGroupId = rowData.getInt(DBKey.KEY_BL_NODE_GROUP);
-        //noinspection SwitchStatementWithoutDefaultBranch
-        switch (rowGroupId) {
-            case BooklistGroup.BOOK: {
-                if (itemId == R.id.MENU_BOOK_SET_READ
-                    || itemId == R.id.MENU_BOOK_SET_UNREAD) {
-                    final long bookId = rowData.getLong(DBKey.FK_BOOK);
-                    // toggle the read status
-                    final boolean status = !rowData.getBoolean(DBKey.READ__BOOL);
-                    if (vm.setBookRead(bookId, status)) {
-                        onBookUpdated(vm.getBook(bookId), DBKey.READ__BOOL);
-                    }
-                    return true;
-
-                } else if (itemId == R.id.MENU_BOOK_EDIT) {
-                    final long bookId = rowData.getLong(DBKey.FK_BOOK);
-                    editByIdLauncher.launch(bookId);
-                    return true;
-
-                } else if (itemId == R.id.MENU_BOOK_DUPLICATE) {
-                    final Book book = DataHolderUtils.requireBook(rowData);
-                    duplicateLauncher.launch(book.duplicate());
-                    return true;
-
-                } else if (itemId == R.id.MENU_BOOK_DELETE) {
-                    final long bookId = rowData.getLong(DBKey.FK_BOOK);
-                    final String title = rowData.getString(DBKey.TITLE);
-                    final List<Author> authors = vm.getAuthorsByBookId(bookId);
-                    StandardDialogs.deleteBook(this, title, authors, () -> {
-                        if (vm.deleteBook(bookId)) {
-                            onBookDeleted(bookId);
-                        }
-                    });
-                    return true;
-
-                } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    final Book book = DataHolderUtils.requireBook(rowData);
-                    updateBookLauncher.launch(book);
-                    return true;
-
-                } else if (itemId == R.id.MENU_BOOK_LOAN_ADD) {
-                    final long bookId = rowData.getLong(DBKey.FK_BOOK);
-                    editLenderLauncher.launch(bookId, rowData.getString(DBKey.TITLE));
-                    return true;
-
-                } else if (itemId == R.id.MENU_BOOK_LOAN_DELETE) {
-                    final long bookId = rowData.getLong(DBKey.FK_BOOK);
-                    vm.lendBook(bookId, null);
-                    onBookUpdated(vm.getBook(bookId), DBKey.LOANEE_NAME);
-                    return true;
-
-                } else if (itemId == R.id.MENU_SHARE) {
-                    final Book book = DataHolderUtils.requireBook(rowData);
-                    startActivity(book.getShareIntent(this));
-                    return true;
-                }
-                break;
-            }
-            case BooklistGroup.AUTHOR: {
-                if (itemId == R.id.MENU_AUTHOR_WORKS) {
-                    authorWorksLauncher.launch(new AuthorWorksContract.Input(
-                            rowData.getLong(DBKey.FK_AUTHOR),
-                            vm.getCurrentBookshelf().getId(),
-                            vm.getStyle(this).getUuid()));
-                    return true;
-
-                } else if (itemId == R.id.MENU_AUTHOR_SET_COMPLETE
-                           || itemId == R.id.MENU_AUTHOR_SET_INCOMPLETE) {
-                    final long authorId = rowData.getLong(DBKey.FK_AUTHOR);
-                    // toggle the complete status
-                    final boolean status = !rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE);
-                    if (vm.setAuthorComplete(authorId, status)) {
-                        onRowChanged(DBKey.FK_AUTHOR, authorId);
-                    }
-                    return true;
-
-                } else if (itemId == R.id.MENU_AUTHOR_EDIT) {
-                    final Author author = DataHolderUtils.requireAuthor(rowData);
-                    // results come back in mRowChangedListener
-                    EditAuthorDialogFragment.launch(getSupportFragmentManager(), author);
-                    return true;
-
-                } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    final String message = rowData.getString(DBKey.KEY_AUTHOR_FORMATTED);
-                    updateBooksFromInternetData(position, rowData, message);
-                    return true;
-                }
-                break;
-            }
-            case BooklistGroup.SERIES: {
-                if (itemId == R.id.MENU_SERIES_SET_COMPLETE
-                    || itemId == R.id.MENU_SERIES_SET_INCOMPLETE) {
-                    final long seriesId = rowData.getLong(DBKey.FK_SERIES);
-                    // toggle the complete status
-                    final boolean status = !rowData.getBoolean(DBKey.SERIES_IS_COMPLETE);
-                    if (vm.setSeriesComplete(seriesId, status)) {
-                        onRowChanged(DBKey.FK_SERIES, seriesId);
-                    }
-                    return true;
-
-                } else if (itemId == R.id.MENU_SERIES_EDIT) {
-                    final Series series = DataHolderUtils.requireSeries(rowData);
-                    // results come back in mRowChangedListener
-                    EditSeriesDialogFragment.launch(getSupportFragmentManager(), series);
-                    return true;
-
-                } else if (itemId == R.id.MENU_SERIES_DELETE) {
-                    final Series series = DataHolderUtils.requireSeries(rowData);
-                    StandardDialogs.deleteSeries(this, series, () -> {
-                        vm.delete(this, series);
-                        onRowChanged(DBKey.FK_SERIES, series.getId());
-                    });
-                    return true;
-
-                } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    final String message = rowData.getString(DBKey.SERIES_TITLE);
-                    updateBooksFromInternetData(position, rowData, message);
-                    return true;
-                }
-                break;
-            }
-            case BooklistGroup.PUBLISHER: {
-                if (itemId == R.id.MENU_PUBLISHER_EDIT) {
-                    final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
-                    // results come back in mRowChangedListener
-                    EditPublisherDialogFragment.launch(getSupportFragmentManager(), publisher);
-                    return true;
-
-                } else if (itemId == R.id.MENU_PUBLISHER_DELETE) {
-                    final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
-                    StandardDialogs.deletePublisher(this, publisher, () -> {
-                        vm.delete(this, publisher);
-                        onRowChanged(DBKey.FK_PUBLISHER, publisher.getId());
-                    });
-                    return true;
-
-                } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    final String message = rowData.getString(DBKey.PUBLISHER_NAME);
-                    updateBooksFromInternetData(position, rowData, message);
-                    return true;
-                }
-                break;
-            }
-            case BooklistGroup.BOOKSHELF: {
-                if (itemId == R.id.MENU_BOOKSHELF_EDIT) {
-                    final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
-                    editBookshelfLauncher.launch(bookshelf);
-                    return true;
-
-                } else if (itemId == R.id.MENU_BOOKSHELF_DELETE) {
-                    final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
-                    StandardDialogs.deleteBookshelf(this, bookshelf, () -> {
-                        vm.delete(bookshelf);
-                        onRowChanged(DBKey.FK_BOOKSHELF, bookshelf.getId());
-                    });
-                    return true;
-                }
-                break;
-            }
-            case BooklistGroup.LANGUAGE: {
-                if (itemId == R.id.MENU_LANGUAGE_EDIT) {
-                    EditLanguageDialogFragment.launch(getSupportFragmentManager(),
-                                                      this, rowData.getString(DBKey.LANGUAGE));
-                    return true;
-                }
-                break;
-            }
-            case BooklistGroup.LOCATION: {
-                if (itemId == R.id.MENU_LOCATION_EDIT) {
-                    EditLocationDialogFragment.launch(getSupportFragmentManager(),
-                                                      rowData.getString(DBKey.LOCATION));
-                    return true;
-                }
-                break;
-            }
-            case BooklistGroup.GENRE: {
-                if (itemId == R.id.MENU_GENRE_EDIT) {
-                    EditGenreDialogFragment.launch(getSupportFragmentManager(),
-                                                   rowData.getString(DBKey.GENRE));
-                    return true;
-                }
-                break;
-            }
-            case BooklistGroup.FORMAT: {
-                if (itemId == R.id.MENU_FORMAT_EDIT) {
-                    EditFormatDialogFragment.launch(getSupportFragmentManager(),
-                                                    rowData.getString(DBKey.FORMAT));
-                    return true;
-                }
-                break;
-            }
-            case BooklistGroup.COLOR: {
-                if (itemId == R.id.MENU_COLOR_EDIT) {
-                    EditColorDialogFragment.launch(getSupportFragmentManager(),
-                                                   rowData.getString(DBKey.COLOR));
-                    return true;
-                }
-                break;
-            }
-        }
-
-        // other handlers.
-        if (calibreHandler != null
-            && calibreHandler.onMenuItemSelected(this, menuItem, rowData)) {
-            return true;
-        }
-        if (vm.getAmazonHandler().onMenuItemSelected(this, menuItem, rowData)) {
-            return true;
-        }
-        if (vm.getViewBookHandler().onMenuItemSelected(this, menuItem, rowData)) {
-            return true;
-        }
-        return false;
+    @Override
+    public void onSyncBook(final long bookId) {
+        final BooklistNode node = findBestNode(vm.getVisibleBookNodes(bookId));
+        // the row will be seen as the 2nd row on screen (i.e. screen list position 1)
+        layoutManager.scrollToPosition(node.getAdapterPosition());
     }
 
     private void onFabMenuItemSelected(@IdRes final int itemId) {
@@ -1458,10 +1479,64 @@ public class BooksOnBookshelf
         buildBookList();
     }
 
-    @Override
-    public void onSyncBook(final long bookId) {
-        final List<BooklistNode> all = vm.getVisibleBookNodes(bookId);
-        scrollTo(findBestNode(all));
+    /**
+     * Display the list based on the given cursor, and either scroll to the desired
+     * target node(s) or, if none, to the last saved position.
+     *
+     * @param targetNodes (optional) to re-position to
+     */
+    private void displayList(@Nullable final List<BooklistNode> targetNodes) {
+        if (createListAdapter(true) > 0) {
+
+            // we can get here after a style change (or as initial build obviously)
+            // so make sure the menu reflects the style
+            toolbarMenuProvider.onPrepareMenu(vb.toolbar.getMenu());
+
+            // Notice the "post()" usage. This is needed because the list
+            // will potentially have moved after each step.
+            vb.content.list.post(() -> {
+                // scroll to the saved position - this should get us close to where we need to be
+                scrollToSavedPosition();
+
+                if (targetNodes == null || targetNodes.isEmpty()) {
+                    vb.content.list.post(() -> {
+                        // We're on the precise position
+                        // Now show the book details if we can.
+                        final long bookId = vm.getCurrentCenteredBookId();
+                        if (bookId != 0 && hasEmbeddedDetailsFrame()) {
+                            // We know exactly where we want to be,
+                            // do NOT reset the stored book id positioning
+                            openEmbeddedBookDetails(bookId);
+                        } else {
+                            // We didn't have visible embedded book detail;
+                            // Make sure to disable the current stored book id positioning
+                            vm.setCurrentCenteredBookId(0);
+                        }
+                    });
+                } else {
+                    // We have target nodes;
+                    // Make sure to disable the current stored book id positioning
+                    vm.setCurrentCenteredBookId(0);
+
+                    // find the closest node showing the book, and scroll to it
+                    final BooklistNode node = findBestNode(targetNodes);
+                    vb.content.list.post(() -> {
+                        // the row will be seen as the 2nd row on screen
+                        // (i.e. screen list position 1)
+                        layoutManager.scrollToPosition(node.getAdapterPosition());
+                        // after layout, save the final position
+                        vb.content.list.post(() -> {
+                            saveListPosition();
+                            // and lastly, show the book details if we can.
+                            final long bookId = node.getBookId();
+                            if (bookId != 0 && hasEmbeddedDetailsFrame()) {
+                                openEmbeddedBookDetails(bookId);
+                            }
+                        });
+                    });
+                }
+            });
+        }
     }
 
     /**
@@ -1692,24 +1767,6 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Expand/Collapse the given position.
-     *
-     * @param rowData            for the book/level at the given position
-     * @param nextState          the required next state of this node
-     * @param relativeChildLevel how many child levels below the node should be modified likewise
-     */
-    private void setNodeState(@NonNull final DataHolder rowData,
-                              @NonNull final BooklistNode.NextState nextState,
-                              final int relativeChildLevel) {
-        saveListPosition();
-
-        final long nodeRowId = rowData.getLong(DBKey.KEY_BL_LIST_VIEW_NODE_ROW_ID);
-        final BooklistNode node = vm.setNode(nodeRowId, nextState, relativeChildLevel);
-
-        displayList(node);
-    }
-
-    /**
      * Display the list based on the given cursor, and scroll to the last saved position.
      */
     private void displayList() {
@@ -1721,75 +1778,7 @@ public class BooksOnBookshelf
         }
     }
 
-    /**
-     * Display the list based on the given cursor, and scroll to the desired node.
-     *
-     * @param node to show
-     */
-    private void displayList(@NonNull final BooklistNode node) {
-        final List<BooklistNode> list = new ArrayList<>();
-        list.add(node);
-        displayList(list);
-    }
 
-    /**
-     * Display the list based on the given cursor, and either scroll to the desired
-     * target node(s) or, if none, to the last saved position.
-     *
-     * @param targetNodes (optional) to re-position to
-     */
-    private void displayList(@NonNull final List<BooklistNode> targetNodes) {
-        if (createListAdapter(true) > 0) {
-
-            // we can get here after a style change (or as initial build obviously)
-            // so make sure the menu reflects the style
-            toolbarMenuProvider.onPrepareMenu(vb.toolbar.getMenu());
-
-            // Notice the "post()" usage. This is needed because the list
-            // will potentially have moved after each step.
-            vb.content.list.post(() -> {
-                // scroll to the saved position - this should get us close to where we need to be
-                scrollToSavedPosition();
-
-                if (targetNodes.isEmpty()) {
-                    vb.content.list.post(() -> {
-                        // We're on the precise position
-                        saveListPosition();
-                        // Now show the book details if we can.
-                        final long bookId = vm.getCurrentCenteredBookId();
-                        if (bookId != 0 && hasEmbeddedDetailsFrame()) {
-                            // We know exactly where we want to be,
-                            // do NOT reset the stored book id positioning
-                            openEmbeddedBookDetails(bookId);
-                        } else {
-                            // We didn't have visible embedded book detail;
-                            // Make sure to disable the current stored book id positioning
-                            vm.setCurrentCenteredBookId(0);
-                        }
-                    });
-                } else {
-                    // We have target nodes;
-                    // Make sure to disable the current stored book id positioning
-                    vm.setCurrentCenteredBookId(0);
-
-                    // find the closest node showing the book, and scroll to it
-                    final BooklistNode node = findBestNode(targetNodes);
-                    vb.content.list.post(() -> {
-                        scrollTo(node);
-                        // after layout, save the final position
-                        vb.content.list.post(() -> {
-                            saveListPosition();
-                            // and lastly, show the book details if we can.
-                            final long bookId = node.getBookId();
-                            if (bookId != 0 && hasEmbeddedDetailsFrame()) {
-                                openEmbeddedBookDetails(bookId);
-                            }
-                        });
-                    });
-                }
-            });
-        }
-    }
 
     @Nullable
     private Fragment getEmbeddedDetailsFrame() {
@@ -1895,72 +1884,6 @@ public class BooksOnBookshelf
         }
     }
 
-    /**
-     * Scroll the given node into user view.
-     *
-     * @param node to scroll to
-     */
-    private void scrollTo(@NonNull final BooklistNode node) {
-        Objects.requireNonNull(adapter, "adapter");
-
-        final int firstVisiblePos = layoutManager.findFirstVisibleItemPosition();
-        // sanity check, we should never get here
-        if (firstVisiblePos == RecyclerView.NO_POSITION) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "scrollTo: empty list");
-            }
-            return;
-        }
-
-        // The mLayoutManager has the header at position 0, and the booklist rows starting at 1
-        final int position = 1 + node.getAdapterPosition();
-
-        // Dev notes...
-        //
-        // The recycler list will in fact extent at the top/bottom beyond the screen edge
-        // It does this due to the CoordinatorLayout with the AppBar behaviour config.
-        //
-        // We can't simply add some padding to the RV (i.e. ?attr/actionBarSize)
-        // as that would initially show a good result, but as soon as we scroll
-        // would show up as a blank bit at the bottom.
-        // Other people have the same issue:
-        // https://stackoverflow.com/questions/38073272
-        //
-        // findLastVisibleItemPosition will find the CORRECT position...
-        // ... except that it will be outside/below the screen by some 2-4 lines
-        // and hence in practice NOT visible. Same to a lesser extent for the top.
-        //
-        // The logic/math here for the top of the screen works well.
-        //
-        // Handling the bottom is harder. It works good enough, but not perfect.
-        // It depends on the fact if you just scrolled the page up or down, and then
-        // expanded or collapsed the last row. There are more combinations... to many.
-        final int lastVisiblePos = layoutManager.findLastVisibleItemPosition();
-
-        // it should be on screen between the first and last visible rows.
-        final boolean onScreen = (firstVisiblePos < position) && (position <= lastVisiblePos);
-        final boolean isBook = node.getBookId() > 0;
-        final boolean isExpanded = node.isExpanded();
-
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG + ":scrollTo", "position=" + position
-                                     + ", onScreen= " + onScreen
-                                     + ", isExpanded= " + isExpanded
-                                     + ", isBook= " + isBook
-                 );
-        }
-        //FIXME: more fine-tuning needed
-        if (onScreen && (isBook || isExpanded)) {
-            layoutManager.scrollToPosition(position + 1);
-        } else {
-            // mLayoutManager.scrollToPosition(position);
-            // 2022-03-13: trying this alternative, just show it at the top,
-            // with an small offset(TODO: change according to sw)
-            layoutManager.scrollToPositionWithOffset(position, 150);
-            //FIXME: the show-at-top is to aggressive e.g. collapse a sub-section and it jumps top
-        }
-    }
-
     private void openEmbeddedBookDetails(final long bookId) {
         final FragmentManager fm = getSupportFragmentManager();
 
@@ -1974,19 +1897,6 @@ public class BooksOnBookshelf
         } else {
             ((ShowBookDetailsFragment) fragment).reloadBook(bookId);
         }
-    }
-
-    @SuppressLint("LogConditional")
-    private void dbgDumpPositions(@NonNull final String method,
-                                  final int pos) {
-        Log.d(method, String.format(" |savedPosition= %4d"
-                                    + " |firstVisiblePos= %4d"
-                                    + " |lastVisiblePos= %4d"
-                                    + " |pos= %4d",
-                                    vm.getCurrentBookshelf().getFirstVisibleItemPosition(),
-                                    layoutManager.findFirstVisibleItemPosition(),
-                                    layoutManager.findLastVisibleItemPosition(),
-                                    pos));
     }
 
     private static class HeaderViewHolder
