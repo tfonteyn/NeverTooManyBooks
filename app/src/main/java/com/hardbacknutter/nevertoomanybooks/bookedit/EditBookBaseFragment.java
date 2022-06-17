@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -261,8 +261,8 @@ public abstract class EditBookBaseFragment
                 vm.getField(R.id.price_paid).ifPresent(paidField -> {
                     if (!field.isEmpty() && paidField.isEmpty()) {
                         // Normally its always a double; but technically it might not be.
-                        final Double value = ParseUtils.toDouble(field.getValue(), null);
-                        vm.getBook().put(DBKey.PRICE_PAID, value);
+                        final double value = ParseUtils.toDouble(field.getValue(), null);
+                        vm.getBook().putDouble(DBKey.PRICE_PAID, value);
                         //noinspection unchecked
                         ((Field<Double, ? extends View>) paidField).setValue(value);
                     }
