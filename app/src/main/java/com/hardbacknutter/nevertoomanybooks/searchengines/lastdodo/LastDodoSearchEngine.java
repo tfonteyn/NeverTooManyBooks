@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -223,7 +223,7 @@ public class LastDodoSearchEngine
                         break;
 
                     case "Reeks":
-                        processText(td.child(0), SiteField.KEY_REEKS, bookData);
+                        processText(td.child(0), SiteField.REEKS, bookData);
                         break;
 
                     case "Nummer in reeks":
@@ -259,7 +259,7 @@ public class LastDodoSearchEngine
                         break;
 
                     case "Druk":
-                        processText(td, SiteField.KEY_PRINTING, bookData);
+                        processText(td, SiteField.PRINTING, bookData);
                         break;
 
                     case "Inkleuring":
@@ -286,7 +286,7 @@ public class LastDodoSearchEngine
 
                     case "Afmetingen":
                         if (!"? x ? cm".equals(td.text())) {
-                            processText(td, SiteField.KEY_SIZE, bookData);
+                            processText(td, SiteField.SIZE, bookData);
                         }
                         break;
 
@@ -527,7 +527,7 @@ public class LastDodoSearchEngine
                              @NonNull final Bundle bookData) {
         // there might be more than one; we only grab the first one here
         final Element a = td.child(0);
-        bookData.putString(SiteField.KEY_TYPE, a.text());
+        bookData.putString(SiteField.TYPE, a.text());
     }
 
     /**
@@ -553,11 +553,10 @@ public class LastDodoSearchEngine
      */
     public static final class SiteField {
 
-        /** The barcode (e.g. the EAN code) is not always an ISBN. */
-        static final String KEY_PRINTING = "__printing";
-        static final String KEY_SIZE = "__size";
-        static final String KEY_TYPE = "__type";
-        static final String KEY_REEKS = "__reeks";
+        static final String PRINTING = "__printing";
+        static final String SIZE = "__size";
+        static final String TYPE = "__type";
+        static final String REEKS = "__reeks";
 
         private SiteField() {
         }
