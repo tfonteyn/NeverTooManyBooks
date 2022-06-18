@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,12 +21,14 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Debug;
 import android.os.StrictMode;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -43,6 +45,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
 public class App
         extends Application {
+
+    private static final String TAG = "App";
 
     private static final int ACRA_LOGFILE_LINES = 1_000;
     private static final String EMAIL_ACRA_ATTACHMENTS = "NeverTooManyBooks-acra-report.txt";
@@ -91,6 +95,16 @@ public class App
 
         // https://www.acra.ch/docs/Troubleshooting-Guide#applicationoncreate
         if (!ACRA.isACRASenderServiceProcess()) {
+
+            Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> {
+                try {
+                    final File file = new File(ServiceLocator.getLogDir(), "ntmb.hprof");
+                    Debug.dumpHprofData(file.getAbsolutePath());
+                } catch (@NonNull final IOException e) {
+                    Logger.error(TAG, e);
+                }
+            });
+
             ServiceLocator.create(getApplicationContext());
             SearchEngineRegistry.create(getApplicationContext());
 
@@ -165,4 +179,5 @@ public class App
         ACRA.getErrorReporter().putCustomData("Signed-By", PackageInfoWrapper
                 .createWithSignatures(this).getSignedBy());
     }
+
 }
