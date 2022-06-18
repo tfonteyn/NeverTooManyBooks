@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -308,7 +308,7 @@ public class ShowBookDetailsFragment
     }
 
     public void reloadBook(final long bookId) {
-        vm.loadBook(bookId);
+        vm.reloadBook(bookId);
     }
 
     @Override

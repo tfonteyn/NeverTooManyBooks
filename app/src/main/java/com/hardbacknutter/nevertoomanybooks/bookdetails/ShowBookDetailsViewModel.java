@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,8 +51,9 @@ public class ShowBookDetailsViewModel
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void init(@NonNull final Bundle args) {
         if (book == null) {
-            loadBook(args.getLong(DBKey.FK_BOOK, 0));
+            book = Book.from(args.getLong(DBKey.FK_BOOK, 0));
         }
+        onBookLoaded.setValue(new LiveDataEvent<>(book));
     }
 
     @NonNull
@@ -60,14 +61,14 @@ public class ShowBookDetailsViewModel
         return onBookLoaded;
     }
 
-    void loadBook(final long bookId) {
+    void reloadBook(final long bookId) {
         book = Book.from(bookId);
         onBookLoaded.setValue(new LiveDataEvent<>(book));
     }
 
     void reloadBook() {
         Objects.requireNonNull(book, "Book not loaded yet");
-        loadBook(book.getId());
+        reloadBook(book.getId());
     }
 
     @NonNull
