@@ -47,7 +47,7 @@ public class SearchSuggestionProvider
 
     /** Standard Local-search. */
     private static final String SEARCH_SUGGESTIONS =
-            // KEY_FTS_BOOKS_PK is the _id into the books table.
+            // FTS_BOOK_ID is the _id into the books table.
             "SELECT " + DBKey.FTS_BOOK_ID + " AS " + DBKey.PK_ID
             + ',' + (TBL_FTS_BOOKS.dot(DBKey.TITLE)
                      + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1)

@@ -459,7 +459,7 @@ public class BooklistGroup {
                         new Domain.Builder("blg_tit_let", ColumnInfo.TYPE_TEXT)
                                 .notNull()
                                 .build(),
-                        "UPPER(SUBSTR(" + TBL_BOOKS.dot(DBKey.KEY_TITLE_OB) + ",1,1))",
+                        "UPPER(SUBSTR(" + TBL_BOOKS.dot(DBKey.TITLE_OB) + ",1,1))",
                         DomainExpression.SORT_ASC);
                 return new GroupKey(R.string.style_builtin_first_letter_book_title, "t",
                                     keyDomain);
@@ -471,7 +471,7 @@ public class BooklistGroup {
                         new Domain.Builder("blg_ser_tit_let", ColumnInfo.TYPE_TEXT)
                                 .notNull()
                                 .build(),
-                        "UPPER(SUBSTR(" + TBL_SERIES.dot(DBKey.KEY_SERIES_TITLE_OB) + ",1,1))",
+                        "UPPER(SUBSTR(" + TBL_SERIES.dot(DBKey.SERIES_TITLE_OB) + ",1,1))",
                         DomainExpression.SORT_ASC);
                 return new GroupKey(R.string.style_builtin_first_letter_series_title, "st",
                                     keyDomain);

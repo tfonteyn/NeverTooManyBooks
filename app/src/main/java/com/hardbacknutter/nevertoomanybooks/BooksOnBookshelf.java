@@ -483,7 +483,7 @@ public class BooksOnBookshelf
         // Check for row-group independent options first.
 
         if (itemId == R.id.MENU_NEXT_MISSING_COVER) {
-            final long nodeRowId = rowData.getLong(DBKey.KEY_BL_LIST_VIEW_NODE_ROW_ID);
+            final long nodeRowId = rowData.getLong(DBKey.BL_LIST_VIEW_NODE_ROW_ID);
             vm.getNextBookWithoutCover(nodeRowId).ifPresent(node -> {
                 final List<BooklistNode> list = new ArrayList<>();
                 list.add(node);
@@ -494,7 +494,7 @@ public class BooksOnBookshelf
         } else if (itemId == R.id.MENU_LEVEL_EXPAND) {
             saveListPosition();
 
-            final long nodeRowId = rowData.getLong(DBKey.KEY_BL_LIST_VIEW_NODE_ROW_ID);
+            final long nodeRowId = rowData.getLong(DBKey.BL_LIST_VIEW_NODE_ROW_ID);
             vm.setNode(nodeRowId, BooklistNode.NextState.Expand,
                        vm.getStyle(this).getGroupCount());
             // don't pass the node, we want the list to scroll back to
@@ -511,7 +511,7 @@ public class BooksOnBookshelf
 
         // Specific row-group options
 
-        final int rowGroupId = rowData.getInt(DBKey.KEY_BL_NODE_GROUP);
+        final int rowGroupId = rowData.getInt(DBKey.BL_NODE_GROUP);
         //noinspection SwitchStatementWithoutDefaultBranch
         switch (rowGroupId) {
             case BooklistGroup.BOOK: {
@@ -594,7 +594,7 @@ public class BooksOnBookshelf
                     return true;
 
                 } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    final String message = rowData.getString(DBKey.KEY_AUTHOR_FORMATTED);
+                    final String message = rowData.getString(DBKey.AUTHOR_FORMATTED);
                     updateBooksFromInternetData(position, rowData, message);
                     return true;
                 }
@@ -747,7 +747,7 @@ public class BooksOnBookshelf
 
                     final DataHolder rowData = new CursorRow(cursor);
 
-                    if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+                    if (rowData.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
                         // It's a book, open the details page.
                         final long bookId = rowData.getLong(DBKey.FK_BOOK);
                         // store the id as the current 'central' book for repositioning
@@ -769,7 +769,7 @@ public class BooksOnBookshelf
                         // it's a level, expand/collapse.
                         saveListPosition();
 
-                        final long nodeRowId = rowData.getLong(DBKey.KEY_BL_LIST_VIEW_NODE_ROW_ID);
+                        final long nodeRowId = rowData.getLong(DBKey.BL_LIST_VIEW_NODE_ROW_ID);
                         vm.setNode(nodeRowId, BooklistNode.NextState.Toggle, 1);
                         // don't pass the node, we want the list to scroll back to
                         // the exact same (saved) position.
@@ -1140,7 +1140,7 @@ public class BooksOnBookshelf
                 .setGroupDividerEnabled();
         final Menu menu = contextMenu.getMenu();
 
-        final int rowGroupId = rowData.getInt(DBKey.KEY_BL_NODE_GROUP);
+        final int rowGroupId = rowData.getInt(DBKey.BL_NODE_GROUP);
         switch (rowGroupId) {
             case BooklistGroup.BOOK: {
                 final MenuInflater inflater = getMenuInflater();
@@ -1283,7 +1283,7 @@ public class BooksOnBookshelf
             .setIcon(R.drawable.ic_baseline_broken_image_24);
 
         // if it's a level, add the expand option
-        if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) != BooklistGroup.BOOK) {
+        if (rowData.getInt(DBKey.BL_NODE_GROUP) != BooklistGroup.BOOK) {
             //noinspection UnusedAssignment
             menu.add(R.id.MENU_GROUP_BOB_EXPANSION, R.id.MENU_LEVEL_EXPAND, menuOrder++,
                      R.string.lbl_level_expand)
@@ -1293,7 +1293,7 @@ public class BooksOnBookshelf
         // If we actually have a menu, show it.
         if (menu.size() > 0) {
             // we have a menu to show, set the title according to the level.
-            final int level = rowData.getInt(DBKey.KEY_BL_NODE_LEVEL);
+            final int level = rowData.getInt(DBKey.BL_NODE_LEVEL);
             contextMenu.setTitle(adapter.getLevelText(position, level));
 
             if (menu.size() < 5) {
@@ -1400,14 +1400,14 @@ public class BooksOnBookshelf
     private void updateBooksFromInternetData(@NonNull final DataHolder rowData,
                                              final boolean onlyThisShelf) {
 
-        final int groupId = rowData.getInt(DBKey.KEY_BL_NODE_GROUP);
-        final String nodeKey = rowData.getString(DBKey.KEY_BL_NODE_KEY);
+        final int groupId = rowData.getInt(DBKey.BL_NODE_GROUP);
+        final String nodeKey = rowData.getString(DBKey.BL_NODE_KEY);
 
         switch (groupId) {
             case BooklistGroup.AUTHOR: {
                 final long id = rowData.getLong(DBKey.FK_AUTHOR);
                 final ArrayList<Long> books = vm.getBookIdsByAuthor(nodeKey, onlyThisShelf, id);
-                final String name = id != 0 ? rowData.getString(DBKey.KEY_AUTHOR_FORMATTED)
+                final String name = id != 0 ? rowData.getString(DBKey.AUTHOR_FORMATTED)
                                             : getString(R.string.bob_empty_author);
 
                 updateBookListLauncher.launch(new UpdateBooklistContract.Input(

@@ -76,7 +76,7 @@ public class TocEntryDaoImpl
                                       DBKey.LANGUAGE)
             + _FROM_ + TBL_BOOK_TOC_ENTRIES.startJoin(TBL_BOOKS)
             + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_TOC_ENTRY) + "=?"
-            + _ORDER_BY_ + TBL_BOOKS.dot(DBKey.KEY_TITLE_OB);
+            + _ORDER_BY_ + TBL_BOOKS.dot(DBKey.TITLE_OB);
 
     /** {@link TocEntry}, all columns. */
     private static final String SELECT_ALL = "SELECT * FROM " + TBL_TOC_ENTRIES.getName();
@@ -97,24 +97,24 @@ public class TocEntryDaoImpl
             // use the full table name on the left as we need a full table scan
             + _WHERE_ + TBL_BOOK_TOC_ENTRIES.getName() + '.' + DBKey.FK_TOC_ENTRY
             // but filtered on the results from the main query (i.e. alias on the right).
-            + "=" + TBL_TOC_ENTRIES.dot(DBKey.PK_ID) + ") AS " + DBKey.KEY_BOOK_COUNT
+            + "=" + TBL_TOC_ENTRIES.dot(DBKey.PK_ID) + ") AS " + DBKey.BOOK_COUNT
 
             + _FROM_
             + TBL_TOC_ENTRIES.startJoin(TBL_BOOK_TOC_ENTRIES)
             + TBL_TOC_ENTRIES.join(TBL_AUTHORS)
             + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_BOOK) + "=?"
-            + _ORDER_BY_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.KEY_BOOK_TOC_ENTRY_POSITION);
+            + _ORDER_BY_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.BOOK_TOC_ENTRY_POSITION);
 
     /**
      * Get the id of a {@link TocEntry} by Title.
      * The lookup is by EQUALITY and CASE-SENSITIVE.
-     * Search KEY_TITLE_OB on both "The Title" and "Title, The"
+     * Search TITLE_OB on both "The Title" and "Title, The"
      */
     private static final String FIND_ID =
             SELECT_ + DBKey.PK_ID + _FROM_ + TBL_TOC_ENTRIES.getName()
             + _WHERE_ + DBKey.FK_AUTHOR + "=?"
-            + " AND (" + DBKey.KEY_TITLE_OB + "=? " + _COLLATION
-            + _OR_ + DBKey.KEY_TITLE_OB + "=?" + _COLLATION + ')';
+            + " AND (" + DBKey.TITLE_OB + "=? " + _COLLATION
+            + _OR_ + DBKey.TITLE_OB + "=?" + _COLLATION + ')';
 
     /** Delete a {@link TocEntry}. */
     private static final String DELETE_BY_ID =
@@ -228,7 +228,7 @@ public class TocEntryDaoImpl
                                       new Author(rowData.getLong(DBKey.FK_AUTHOR), rowData),
                                       rowData.getString(DBKey.TITLE),
                                       rowData.getString(DBKey.FIRST_PUBLICATION__DATE),
-                                      rowData.getInt(DBKey.KEY_BOOK_COUNT)));
+                                      rowData.getInt(DBKey.BOOK_COUNT)));
             }
         }
         return list;
@@ -269,7 +269,7 @@ public class TocEntryDaoImpl
         final String sql =
                 "SELECT " + DBKey.FK_BOOK + " FROM "
                 + "(SELECT " + DBKey.FK_BOOK
-                + ", MIN(" + DBKey.KEY_BOOK_TOC_ENTRY_POSITION + ") AS mp"
+                + ", MIN(" + DBKey.BOOK_TOC_ENTRY_POSITION + ") AS mp"
                 + " FROM " + TBL_BOOK_TOC_ENTRIES.getName()
                 + " GROUP BY " + DBKey.FK_BOOK
                 + ") WHERE mp > 1";

@@ -76,13 +76,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FT
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_ISBN;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DATE_LAST_UPDATED__UTC;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_AUTHOR;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FTS_BOOK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PK_ID;
 
 /**
  * {@link SQLiteOpenHelper} for the main database.
@@ -330,8 +323,8 @@ public class DBHelper
         body = " AFTER DELETE ON " + TBL_BOOK_BOOKSHELF.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + DATE_LAST_UPDATED__UTC + "=current_timestamp"
-               + " WHERE " + PK_ID + "=OLD." + FK_BOOK + ";\n"
+               + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+               + " WHERE " + DBKey.PK_ID + "=OLD." + DBKey.FK_BOOK + ";\n"
                + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -346,8 +339,8 @@ public class DBHelper
 //        body = " AFTER DELETE ON " + TBL_BOOK_AUTHOR.getName() + " FOR EACH ROW\n"
 //                + " BEGIN\n"
 //                + "  UPDATE " + TBL_BOOKS.getName()
-//                + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
-//                + " WHERE " + KEY_PK_ID + "=Old." + KEY_FK_BOOK + ";\n"
+//                + "  SET " + DATE_LAST_UPDATED + "=current_timestamp"
+//                + " WHERE " + PK_ID + "=Old." + FK_BOOK + ";\n"
 //                + " END";
 //
 //        db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -366,18 +359,18 @@ public class DBHelper
         body = " AFTER UPDATE ON " + TBL_AUTHORS.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + DATE_LAST_UPDATED__UTC + "=current_timestamp"
+               + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
 
-               + " WHERE " + PK_ID + " IN \n"
+               + " WHERE " + DBKey.PK_ID + " IN \n"
                // actual books by this Author
-               + "(SELECT " + FK_BOOK + " FROM " + TBL_BOOK_AUTHOR.getName()
-               + " WHERE " + FK_AUTHOR + "=OLD." + PK_ID + ")\n"
+               + "(SELECT " + DBKey.FK_BOOK + " FROM " + TBL_BOOK_AUTHOR.getName()
+               + " WHERE " + DBKey.FK_AUTHOR + "=OLD." + DBKey.PK_ID + ")\n"
 
-               + " OR " + PK_ID + " IN \n"
+               + " OR " + DBKey.PK_ID + " IN \n"
                // books with entries in anthologies by this Author
-               + "(SELECT " + FK_BOOK
+               + "(SELECT " + DBKey.FK_BOOK
                + " FROM " + TBL_BOOK_TOC_ENTRIES.startJoin(TBL_TOC_ENTRIES)
-               + " WHERE " + FK_AUTHOR + "=OLD." + PK_ID + ");\n"
+               + " WHERE " + DBKey.FK_AUTHOR + "=OLD." + DBKey.PK_ID + ");\n"
                + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -392,8 +385,8 @@ public class DBHelper
         body = " AFTER DELETE ON " + TBL_BOOK_SERIES.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + DATE_LAST_UPDATED__UTC + "=current_timestamp"
-               + " WHERE " + PK_ID + "=OLD." + FK_BOOK + ";\n"
+               + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+               + " WHERE " + DBKey.PK_ID + "=OLD." + DBKey.FK_BOOK + ";\n"
                + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -408,10 +401,10 @@ public class DBHelper
         body = " AFTER UPDATE ON " + TBL_SERIES.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + DATE_LAST_UPDATED__UTC + "=current_timestamp"
-               + " WHERE " + PK_ID + " IN \n"
-               + "(SELECT " + FK_BOOK + " FROM " + TBL_BOOK_SERIES.getName()
-               + " WHERE " + FK_SERIES + "=OLD." + PK_ID + ");\n"
+               + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+               + " WHERE " + DBKey.PK_ID + " IN \n"
+               + "(SELECT " + DBKey.FK_BOOK + " FROM " + TBL_BOOK_SERIES.getName()
+               + " WHERE " + DBKey.FK_SERIES + "=OLD." + DBKey.PK_ID + ");\n"
                + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -426,8 +419,8 @@ public class DBHelper
         body = " AFTER DELETE ON " + TBL_BOOK_LOANEE.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + DATE_LAST_UPDATED__UTC + "=current_timestamp"
-               + " WHERE " + PK_ID + "=OLD." + FK_BOOK + ";\n"
+               + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+               + " WHERE " + DBKey.PK_ID + "=OLD." + DBKey.FK_BOOK + ";\n"
                + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -442,8 +435,8 @@ public class DBHelper
         body = " AFTER UPDATE ON " + TBL_BOOK_LOANEE.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + DATE_LAST_UPDATED__UTC + "=current_timestamp"
-               + " WHERE " + PK_ID + "=NEW." + FK_BOOK + ";\n"
+               + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+               + " WHERE " + DBKey.PK_ID + "=NEW." + DBKey.FK_BOOK + ";\n"
                + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -458,8 +451,8 @@ public class DBHelper
         body = " AFTER INSERT ON " + TBL_BOOK_LOANEE.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + DATE_LAST_UPDATED__UTC + "=current_timestamp"
-               + " WHERE " + PK_ID + "=NEW." + FK_BOOK + ";\n"
+               + "  SET " + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+               + " WHERE " + DBKey.PK_ID + "=NEW." + DBKey.FK_BOOK + ";\n"
                + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -475,7 +468,7 @@ public class DBHelper
         body = " AFTER DELETE ON " + TBL_BOOKS.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  DELETE FROM " + TBL_FTS_BOOKS.getName()
-               + " WHERE " + FTS_BOOK_ID + "=OLD." + PK_ID + ";\n"
+               + " WHERE " + DBKey.FTS_BOOK_ID + "=OLD." + DBKey.PK_ID + ";\n"
                + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -485,9 +478,10 @@ public class DBHelper
         /*
          * If the ISBN of a {@link Book) is changed, reset external ID's and sync dates.
          */
-        name = "after_update_of_" + BOOK_ISBN + "_on_" + TBL_BOOKS.getName();
-        body = " AFTER UPDATE OF " + BOOK_ISBN + " ON " + TBL_BOOKS.getName() + " FOR EACH ROW\n"
-               + " WHEN NEW." + BOOK_ISBN + " <> OLD." + BOOK_ISBN + '\n'
+        name = "after_update_of_" + DBKey.BOOK_ISBN + "_on_" + TBL_BOOKS.getName();
+        body = " AFTER UPDATE OF " + DBKey.BOOK_ISBN + " ON " + TBL_BOOKS.getName()
+               + " FOR EACH ROW\n"
+               + " WHEN NEW." + DBKey.BOOK_ISBN + " <> OLD." + DBKey.BOOK_ISBN + '\n'
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName() + " SET ";
 
@@ -499,7 +493,7 @@ public class DBHelper
 
         //NEWTHINGS: adding a new search engine: optional: add engine specific keys
 
-        body += " WHERE " + PK_ID + "=NEW." + PK_ID + ";\n"
+        body += " WHERE " + DBKey.PK_ID + "=NEW." + DBKey.PK_ID + ";\n"
                 + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -747,7 +741,7 @@ public class DBHelper
                             | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_BOOKSHELVES, true)
                                ? FieldVisibility.getBitValue(DBKey.FK_BOOKSHELF) : 0)
                             | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_ISBN, true)
-                               ? FieldVisibility.getBitValue(BOOK_ISBN) : 0);
+                               ? FieldVisibility.getBitValue(DBKey.BOOK_ISBN) : 0);
 
                     stmt.bindLong(++c, listFields);
 

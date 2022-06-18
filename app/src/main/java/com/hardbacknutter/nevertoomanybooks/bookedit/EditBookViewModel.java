@@ -403,7 +403,7 @@ public class EditBookViewModel
     List<String> getAllAuthorNames() {
         if (authorNamesFormatted == null) {
             authorNamesFormatted = ServiceLocator.getInstance().getAuthorDao()
-                                                 .getNames(DBKey.KEY_AUTHOR_FORMATTED);
+                                                 .getNames(DBKey.AUTHOR_FORMATTED);
         }
         return authorNamesFormatted;
     }

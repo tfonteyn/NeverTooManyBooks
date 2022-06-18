@@ -438,13 +438,13 @@ class BooklistBuilder {
             // {@link BooklistGroup#GroupKey}.
             // The actual value is set on a by-group/book basis.
             addDomain(DOM_BL_NODE_KEY);
-            addIndex(DBKey.KEY_BL_NODE_KEY, false, DOM_BL_NODE_KEY);
+            addIndex(DBKey.BL_NODE_KEY, false, DOM_BL_NODE_KEY);
 
             // flags used by {@link BooklistNodeDao}.
             addDomain(DOM_BL_NODE_EXPANDED);
-            addIndex(DBKey.KEY_BL_NODE_EXPANDED, false, DOM_BL_NODE_EXPANDED);
+            addIndex(DBKey.BL_NODE_EXPANDED, false, DOM_BL_NODE_EXPANDED);
             addDomain(DOM_BL_NODE_VISIBLE);
-            addIndex(DBKey.KEY_BL_NODE_VISIBLE, false, DOM_BL_NODE_VISIBLE);
+            addIndex(DBKey.BL_NODE_VISIBLE, false, DOM_BL_NODE_VISIBLE);
 
             // Always sort by level first; no expression, as this does not represent a value.
             addDomain(new DomainExpression(DOM_BL_NODE_LEVEL, null, DomainExpression.SORT_ASC));
@@ -455,7 +455,7 @@ class BooklistBuilder {
 
             // The BooklistGroup for a book is always BooklistGroup.BOOK (duh)
             addDomain(new DomainExpression(DOM_BL_NODE_GROUP, String.valueOf(BooklistGroup.BOOK)));
-            addIndex(DBKey.KEY_BL_NODE_GROUP, false, DOM_BL_NODE_GROUP);
+            addIndex(DBKey.BL_NODE_GROUP, false, DOM_BL_NODE_GROUP);
 
             // The book id itself
             addDomain(new DomainExpression(DOM_FK_BOOK, TBL_BOOKS.dot(DBKey.PK_ID)));
@@ -489,7 +489,7 @@ class BooklistBuilder {
             }
 
             // add the node key column
-            destColumns.append(',').append(DBKey.KEY_BL_NODE_KEY);
+            destColumns.append(',').append(DBKey.BL_NODE_KEY);
             sourceColumns.append(',').append(buildNodeKey()).append(_AS_).append(DOM_BL_NODE_KEY);
 
             // and the node state columns
@@ -588,7 +588,7 @@ class BooklistBuilder {
                        + " (" + DBKey.FK_BOOK + ',' + DBKey.FK_BL_ROW_ID + ") "
                        + SELECT_ + DBKey.FK_BOOK + ',' + DBKey.PK_ID
                        + _FROM_ + listTable.getName()
-                       + _WHERE_ + DBKey.KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK
+                       + _WHERE_ + DBKey.BL_NODE_GROUP + "=" + BooklistGroup.BOOK
                        + _ORDER_BY_ + DBKey.PK_ID
                       );
 
@@ -654,11 +654,11 @@ class BooklistBuilder {
 
                 // Create the INSERT columns clause for the next level up
                 final StringBuilder listColumns = new StringBuilder()
-                        .append(DBKey.KEY_BL_NODE_LEVEL)
-                        .append(',').append(DBKey.KEY_BL_NODE_GROUP)
-                        .append(',').append(DBKey.KEY_BL_NODE_KEY)
-                        .append(',').append(DBKey.KEY_BL_NODE_EXPANDED)
-                        .append(',').append(DBKey.KEY_BL_NODE_VISIBLE);
+                        .append(DBKey.BL_NODE_LEVEL)
+                        .append(',').append(DBKey.BL_NODE_GROUP)
+                        .append(',').append(DBKey.BL_NODE_KEY)
+                        .append(',').append(DBKey.BL_NODE_EXPANDED)
+                        .append(',').append(DBKey.BL_NODE_VISIBLE);
 
                 // PREF_REBUILD_EXPANDED must explicitly be set to 1/1
                 // All others must be set to 0/0. The actual state will be set afterwards.
@@ -668,7 +668,7 @@ class BooklistBuilder {
                 final StringBuilder listValues = new StringBuilder()
                         .append(level)
                         .append(',').append(group.getId())
-                        .append(",NEW.").append(DBKey.KEY_BL_NODE_KEY)
+                        .append(",NEW.").append(DBKey.BL_NODE_KEY)
                         .append(",").append(expVis)
                         // level 1 is always visible. THIS IS CRITICAL!
                         .append(",").append(level == 1 ? 1 : expVis);
@@ -703,7 +703,7 @@ class BooklistBuilder {
                 final String levelTgSql =
                         "\nCREATE TEMPORARY TRIGGER " + triggerHelperLevelTriggerName[index]
                         + " BEFORE INSERT ON " + listTable.getName() + " FOR EACH ROW"
-                        + "\n WHEN NEW." + DBKey.KEY_BL_NODE_LEVEL + '=' + (level + 1)
+                        + "\n WHEN NEW." + DBKey.BL_NODE_LEVEL + '=' + (level + 1)
                         + " AND NOT EXISTS("
                         + /* */ "SELECT 1 FROM " + triggerHelperTable.ref() + _WHERE_ + whereClause
                         + /* */ ')'
@@ -758,7 +758,7 @@ class BooklistBuilder {
             final String currentValueTgSql =
                     "\nCREATE TEMPORARY TRIGGER " + triggerHelperCurrentValueTriggerName
                     + " AFTER INSERT ON " + listTable.getName() + " FOR EACH ROW"
-                    + "\n WHEN NEW." + DBKey.KEY_BL_NODE_LEVEL + '=' + groupCount
+                    + "\n WHEN NEW." + DBKey.BL_NODE_LEVEL + '=' + groupCount
                     + "\n BEGIN"
                     + "\n  DELETE FROM " + triggerHelperTable.getName() + ';'
                     + "\n  INSERT INTO " + triggerHelperTable.getName()

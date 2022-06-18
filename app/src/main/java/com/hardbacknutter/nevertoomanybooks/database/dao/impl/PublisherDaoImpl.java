@@ -76,9 +76,9 @@ public class PublisherDaoImpl
     /** name only. */
     private static final String SELECT_ALL_NAMES =
             SELECT_DISTINCT_ + DBKey.PUBLISHER_NAME
-            + ',' + DBKey.KEY_PUBLISHER_NAME_OB
+            + ',' + DBKey.PUBLISHER_NAME_OB
             + _FROM_ + TBL_PUBLISHERS.getName()
-            + _ORDER_BY_ + DBKey.KEY_PUBLISHER_NAME_OB + _COLLATION;
+            + _ORDER_BY_ + DBKey.PUBLISHER_NAME_OB + _COLLATION;
 
     /** {@link Publisher}, all columns. */
     private static final String SELECT_ALL = "SELECT * FROM " + TBL_PUBLISHERS.getName();
@@ -87,13 +87,13 @@ public class PublisherDaoImpl
     private static final String PUBLISHER_BY_BOOK_ID =
             SELECT_DISTINCT_ + TBL_PUBLISHERS.dotAs(DBKey.PK_ID,
                                                     DBKey.PUBLISHER_NAME,
-                                                    DBKey.KEY_PUBLISHER_NAME_OB)
+                                                    DBKey.PUBLISHER_NAME_OB)
             + ',' + TBL_BOOK_PUBLISHER.dotAs(DBKey.BOOK_PUBLISHER_POSITION)
 
             + _FROM_ + TBL_BOOK_PUBLISHER.startJoin(TBL_PUBLISHERS)
             + _WHERE_ + TBL_BOOK_PUBLISHER.dot(DBKey.FK_BOOK) + "=?"
             + _ORDER_BY_ + TBL_BOOK_PUBLISHER.dot(DBKey.BOOK_PUBLISHER_POSITION)
-            + ',' + TBL_PUBLISHERS.dot(DBKey.KEY_PUBLISHER_NAME_OB) + _COLLATION;
+            + ',' + TBL_PUBLISHERS.dot(DBKey.PUBLISHER_NAME_OB) + _COLLATION;
 
     /** Get a {@link Publisher} by the Publisher id. */
     private static final String SELECT_BY_ID = SELECT_ALL + _WHERE_ + DBKey.PK_ID + "=?";
@@ -101,12 +101,12 @@ public class PublisherDaoImpl
     /**
      * Get the id of a {@link Publisher} by name.
      * The lookup is by EQUALITY and CASE-SENSITIVE.
-     * Searches KEY_PUBLISHER_NAME_OB on both "The Publisher" and "Publisher, The"
+     * Searches PUBLISHER_NAME_OB on both "The Publisher" and "Publisher, The"
      */
     private static final String FIND_ID =
             SELECT_ + DBKey.PK_ID + _FROM_ + TBL_PUBLISHERS.getName()
-            + _WHERE_ + DBKey.KEY_PUBLISHER_NAME_OB + "=?" + _COLLATION
-            + _OR_ + DBKey.KEY_PUBLISHER_NAME_OB + "=?" + _COLLATION;
+            + _WHERE_ + DBKey.PUBLISHER_NAME_OB + "=?" + _COLLATION
+            + _OR_ + DBKey.PUBLISHER_NAME_OB + "=?" + _COLLATION;
 
     private static final String COUNT_ALL =
             SELECT_COUNT_FROM_ + TBL_PUBLISHERS.getName();
@@ -119,7 +119,7 @@ public class PublisherDaoImpl
     private static final String INSERT =
             INSERT_INTO_ + TBL_PUBLISHERS.getName()
             + '(' + DBKey.PUBLISHER_NAME
-            + ',' + DBKey.KEY_PUBLISHER_NAME_OB
+            + ',' + DBKey.PUBLISHER_NAME_OB
             + ") VALUES (?,?)";
 
     /** Delete a {@link Publisher}. */
@@ -332,7 +332,7 @@ public class PublisherDaoImpl
 
         final ContentValues cv = new ContentValues();
         cv.put(DBKey.PUBLISHER_NAME, publisher.getName());
-        cv.put(DBKey.KEY_PUBLISHER_NAME_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
+        cv.put(DBKey.PUBLISHER_NAME_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
 
         return 0 < mDb.update(TBL_PUBLISHERS.getName(), cv, DBKey.PK_ID + "=?",
                               new String[]{String.valueOf(publisher.getId())});

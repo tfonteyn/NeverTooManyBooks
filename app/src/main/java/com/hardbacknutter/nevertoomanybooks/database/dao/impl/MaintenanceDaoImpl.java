@@ -51,39 +51,39 @@ public class MaintenanceDaoImpl
     /** Log tag. */
     private static final String TAG = "MaintenanceDaoImpl";
 
-    /** All Series for a rebuild of the {@link DBKey#KEY_SERIES_TITLE_OB} column. */
+    /** All Series for a rebuild of the {@link DBKey#SERIES_TITLE_OB} column. */
     private static final String SELECT_SERIES_FOR_ORDER_BY_REBUILD =
-            // The index of KEY_PK_ID, KEY_SERIES_TITLE, KEY_SERIES_TITLE_OB is hardcoded
+            // The index of PK_ID, SERIES_TITLE, SERIES_TITLE_OB is hardcoded
             // Don't change!
             SELECT_ + DBKey.PK_ID
             + ',' + DBKey.SERIES_TITLE
-            + ',' + DBKey.KEY_SERIES_TITLE_OB
+            + ',' + DBKey.SERIES_TITLE_OB
             + _FROM_ + TBL_SERIES.getName();
 
-    /** All Publishers for a rebuild of the {@link DBKey#KEY_PUBLISHER_NAME_OB} column. */
+    /** All Publishers for a rebuild of the {@link DBKey#PUBLISHER_NAME_OB} column. */
     private static final String SELECT_PUBLISHERS_FOR_ORDER_BY_REBUILD =
-            // The index of KEY_PK_ID, KEY_PUBLISHER_NAME, KEY_PUBLISHER_NAME_OB is hardcoded
+            // The index of PK_ID, PUBLISHER_NAME, PUBLISHER_NAME_OB is hardcoded
             // Don't change!
             SELECT_ + DBKey.PK_ID
             + ',' + DBKey.PUBLISHER_NAME
-            + ',' + DBKey.KEY_PUBLISHER_NAME_OB
+            + ',' + DBKey.PUBLISHER_NAME_OB
             + _FROM_ + TBL_PUBLISHERS.getName();
 
-    /** All Book titles for a rebuild of the {@link DBKey#KEY_TITLE_OB} column. */
+    /** All Book titles for a rebuild of the {@link DBKey#TITLE_OB} column. */
     private static final String BOOK_TITLES =
-            // The index of KEY_PK_ID, KEY_TITLE, KEY_TITLE_OB is hardcoded - don't change!
+            // The index of PK_ID, TITLE, TITLE_OB is hardcoded - don't change!
             SELECT_ + DBKey.PK_ID
             + ',' + DBKey.TITLE
-            + ',' + DBKey.KEY_TITLE_OB
+            + ',' + DBKey.TITLE_OB
             + ',' + DBKey.LANGUAGE
             + _FROM_ + TBL_BOOKS.getName();
 
-    /** All TocEntry titles for a rebuild of the {@link DBKey#KEY_TITLE_OB} column. */
+    /** All TocEntry titles for a rebuild of the {@link DBKey#TITLE_OB} column. */
     private static final String TOC_ENTRY_TITLES =
-            // The index of KEY_PK_ID, KEY_TITLE, KEY_TITLE_OB is hardcoded - don't change!
+            // The index of PK_ID, TITLE, TITLE_OB is hardcoded - don't change!
             SELECT_ + DBKey.PK_ID
             + ',' + DBKey.TITLE
-            + ',' + DBKey.KEY_TITLE_OB
+            + ',' + DBKey.TITLE_OB
             + _FROM_ + TBL_TOC_ENTRIES.getName();
 
 
@@ -141,7 +141,7 @@ public class MaintenanceDaoImpl
                         bookLocale = userLocale;
                     }
                     rebuildOrderByTitleColumns(context, bookLocale, reorder, cursor,
-                                               TBL_BOOKS, DBKey.KEY_TITLE_OB);
+                                               TBL_BOOKS, DBKey.TITLE_OB);
                 }
             }
 
@@ -152,14 +152,14 @@ public class MaintenanceDaoImpl
             try (Cursor cursor = mDb.rawQuery(SELECT_SERIES_FOR_ORDER_BY_REBUILD, null)) {
                 while (cursor.moveToNext()) {
                     rebuildOrderByTitleColumns(context, userLocale, reorder, cursor,
-                                               TBL_SERIES, DBKey.KEY_SERIES_TITLE_OB);
+                                               TBL_SERIES, DBKey.SERIES_TITLE_OB);
                 }
             }
 
             try (Cursor cursor = mDb.rawQuery(SELECT_PUBLISHERS_FOR_ORDER_BY_REBUILD, null)) {
                 while (cursor.moveToNext()) {
                     rebuildOrderByTitleColumns(context, userLocale, reorder, cursor,
-                                               TBL_PUBLISHERS, DBKey.KEY_PUBLISHER_NAME_OB);
+                                               TBL_PUBLISHERS, DBKey.PUBLISHER_NAME_OB);
                 }
             }
 
@@ -167,7 +167,7 @@ public class MaintenanceDaoImpl
             try (Cursor cursor = mDb.rawQuery(TOC_ENTRY_TITLES, null)) {
                 while (cursor.moveToNext()) {
                     rebuildOrderByTitleColumns(context, userLocale, reorder, cursor,
-                                               TBL_TOC_ENTRIES, DBKey.KEY_TITLE_OB);
+                                               TBL_TOC_ENTRIES, DBKey.TITLE_OB);
                 }
             }
 

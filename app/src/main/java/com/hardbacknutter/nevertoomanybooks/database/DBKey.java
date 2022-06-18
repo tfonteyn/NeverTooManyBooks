@@ -123,7 +123,7 @@ public final class DBKey {
     public static final String BOOKSHELF_BL_TOP_POS = "bl_top_pos";
     public static final String BOOKSHELF_BL_TOP_OFFSET = "bl_top_offset";
     /** Alias. */
-    public static final String KEY_BOOKSHELF_NAME_CSV = "bs_name_csv";
+    public static final String BOOKSHELF_NAME_CSV = "bs_name_csv";
 
     /** {@link DBDefinitions#TBL_BOOKSHELF_FILTERS}. */
     public static final String FILTER_DBKEY = "filter_name";
@@ -135,8 +135,8 @@ public final class DBKey {
     public static final String AUTHOR_GIVEN_NAMES = "given_names";
     public static final String AUTHOR_IS_COMPLETE = "author_complete";
     /** Aliases for CASE expressions. */
-    public static final String KEY_AUTHOR_FORMATTED = "author_formatted";
-    public static final String KEY_AUTHOR_FORMATTED_GIVEN_FIRST = "author_formatted_given_first";
+    public static final String AUTHOR_FORMATTED = "author_formatted";
+    public static final String AUTHOR_FORMATTED_GIVEN_FIRST = "author_formatted_given_first";
 
     /** {@link DBDefinitions#TBL_BOOK_AUTHOR} */
     public static final String AUTHOR_TYPE__BITMASK = "author_type";
@@ -154,11 +154,11 @@ public final class DBKey {
     public static final String PUBLISHER_NAME = "publisher_name";
     public static final String BOOK_PUBLISHER_POSITION = "publisher_position";
     /** Alias. */
-    public static final String KEY_PUBLISHER_NAME_CSV = "pub_name_csv";
+    public static final String PUBLISHER_NAME_CSV = "pub_name_csv";
 
 
     /** {@link DBDefinitions#TBL_TOC_ENTRIES}. */
-    public static final String KEY_BOOK_TOC_ENTRY_POSITION = "toc_entry_position";
+    public static final String BOOK_TOC_ENTRY_POSITION = "toc_entry_position";
 
 
     /** Suffix added to a price column name to create a joined currency column. */
@@ -237,40 +237,40 @@ public final class DBKey {
 
 
     /** Alias. */
-    public static final String KEY_BOOK_COUNT = "book_count";
+    public static final String BOOK_COUNT = "book_count";
     /** Booklist. Virtual domains. */
-    public static final String KEY_BL_AUTHOR_SORT = "bl_aut_sort";
-    public static final String KEY_BL_SERIES_SORT = "bl_ser_sort";
-    public static final String KEY_BL_PUBLISHER_SORT = "bl_pub_sort";
-    public static final String KEY_BL_BOOKSHELF_SORT = "bl_shelf_sort";
-    public static final String KEY_BL_SERIES_NUM_FLOAT = "bl_ser_num_float";
-    public static final String KEY_BL_PRIMARY_SERIES_COUNT = "bl_prim_ser_cnt";
+    public static final String BL_AUTHOR_SORT = "bl_aut_sort";
+    public static final String BL_SERIES_SORT = "bl_ser_sort";
+    public static final String BL_PUBLISHER_SORT = "bl_pub_sort";
+    public static final String BL_BOOKSHELF_SORT = "bl_shelf_sort";
+    public static final String BL_SERIES_NUM_FLOAT = "bl_ser_num_float";
+    public static final String BL_PRIMARY_SERIES_COUNT = "bl_prim_ser_cnt";
 
 
     /** {@link DBDefinitions#TBL_BOOK_LIST_NODE_STATE}. */
-    public static final String KEY_BL_NODE_KEY = "node_key";
+    public static final String BL_NODE_KEY = "node_key";
     /** {@link DBDefinitions#TBL_BOOK_LIST_NODE_STATE}. */
-    public static final String KEY_BL_NODE_LEVEL = "node_level";
-    public static final String KEY_BL_NODE_GROUP = "node_group";
-    public static final String KEY_BL_NODE_VISIBLE = "node_visible";
-    public static final String KEY_BL_NODE_EXPANDED = "node_expanded";
+    public static final String BL_NODE_LEVEL = "node_level";
+    public static final String BL_NODE_GROUP = "node_group";
+    public static final String BL_NODE_VISIBLE = "node_visible";
+    public static final String BL_NODE_EXPANDED = "node_expanded";
 
 
     /**
      * Column alias.
      * <p>
      * Booklist: an alias for the rowId
-     * listViewRowPosition = KEY_BL_LIST_VIEW_ROW_ID - 1.
+     * listViewRowPosition = BL_LIST_VIEW_ROW_ID - 1.
      * <p>
      * DOM_BL_LIST_VIEW_ROW_ID =
-     * new Domain.Builder(KEY_BL_LIST_VIEW_ROW_ID, ColumnInfo.TYPE_INTEGER)
+     * new Domain.Builder(BL_LIST_VIEW_ROW_ID, ColumnInfo.TYPE_INTEGER)
      * .notNull().build();
      */
-    public static final String KEY_BL_LIST_VIEW_NODE_ROW_ID = "lv_node_row_id";
+    public static final String BL_LIST_VIEW_NODE_ROW_ID = "lv_node_row_id";
 
 
     /** Column alias for {@link AuthorWork.Type} */
-    public static final String KEY_TOC_TYPE = "type";
+    public static final String AUTHOR_WORK_TYPE = "work_type";
 
     /** FTS Primary key. */
     public static final String FTS_BOOK_ID = "docid";
@@ -293,14 +293,12 @@ public final class DBKey {
             FIRST_PUBLICATION__DATE);
 
     /** Suffix added to a column name to create a specific 'order by' copy of that column. */
-    private static final String SUFFIX_KEY_ORDER_BY = "_ob";
-    public static final String KEY_AUTHOR_FAMILY_NAME_OB =
-            AUTHOR_FAMILY_NAME + SUFFIX_KEY_ORDER_BY;
-    public static final String KEY_AUTHOR_GIVEN_NAMES_OB =
-            AUTHOR_GIVEN_NAMES + SUFFIX_KEY_ORDER_BY;
-    public static final String KEY_SERIES_TITLE_OB = SERIES_TITLE + SUFFIX_KEY_ORDER_BY;
-    public static final String KEY_PUBLISHER_NAME_OB = PUBLISHER_NAME + SUFFIX_KEY_ORDER_BY;
-    public static final String KEY_TITLE_OB = TITLE + SUFFIX_KEY_ORDER_BY;
+    private static final String ORDER_BY_SUFFIX = "_ob";
+    public static final String AUTHOR_FAMILY_NAME_OB = AUTHOR_FAMILY_NAME + ORDER_BY_SUFFIX;
+    public static final String AUTHOR_GIVEN_NAMES_OB = AUTHOR_GIVEN_NAMES + ORDER_BY_SUFFIX;
+    public static final String SERIES_TITLE_OB = SERIES_TITLE + ORDER_BY_SUFFIX;
+    public static final String PUBLISHER_NAME_OB = PUBLISHER_NAME + ORDER_BY_SUFFIX;
+    public static final String TITLE_OB = TITLE + ORDER_BY_SUFFIX;
 
     private DBKey() {
     }

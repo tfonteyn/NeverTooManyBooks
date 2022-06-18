@@ -90,7 +90,7 @@ public final class DataHolderUtils {
             final List<Author> list = rowData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
             return list.isEmpty() ? null : list.get(0);
 
-        } else if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+        } else if (rowData.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
             // The rowData is flagged as containing book data without being a full Book object.
             final long bookId = rowData.getLong(DBKey.FK_BOOK);
             // sanity check
@@ -128,7 +128,7 @@ public final class DataHolderUtils {
             final List<Series> list = rowData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
             return list.isEmpty() ? null : list.get(0);
 
-        } else if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+        } else if (rowData.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
             // The rowData is flagged as containing book data without being a full Book object.
             final long bookId = rowData.getLong(DBKey.FK_BOOK);
             // sanity check
@@ -166,7 +166,7 @@ public final class DataHolderUtils {
             final List<Publisher> list = rowData.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
             return list.isEmpty() ? null : list.get(0);
 
-        } else if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+        } else if (rowData.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
             // The rowData is flagged as containing book data without being a full Book object.
             final long bookId = rowData.getLong(DBKey.FK_BOOK);
             // sanity check
@@ -204,7 +204,7 @@ public final class DataHolderUtils {
             final List<Bookshelf> list = rowData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
             return list.isEmpty() ? null : list.get(0);
 
-        } else if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+        } else if (rowData.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
             // The rowData is flagged as containing book data without being a full Book object.
             final long bookId = rowData.getLong(DBKey.FK_BOOK);
             // sanity check

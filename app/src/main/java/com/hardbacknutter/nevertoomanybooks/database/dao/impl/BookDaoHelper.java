@@ -99,7 +99,7 @@ public class BookDaoHelper {
         if (book.contains(DBKey.TITLE)) {
             final OrderByHelper.OrderByData obd = OrderByHelper
                     .createOrderByData(context, book.getTitle(), bookLocale, null);
-            book.putString(DBKey.KEY_TITLE_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
+            book.putString(DBKey.TITLE_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
         }
 
         // store only valid bits. The 'get' will normalise any incorrect 'long' value

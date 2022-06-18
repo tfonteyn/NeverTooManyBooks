@@ -109,7 +109,7 @@ public class EditTocEntryDialogFragment
             //noinspection ConstantConditions
             firstPublicationDate = savedInstanceState.getParcelable(DBKey.FIRST_PUBLICATION__DATE);
             //noinspection ConstantConditions
-            authorName = savedInstanceState.getString(DBKey.KEY_AUTHOR_FORMATTED);
+            authorName = savedInstanceState.getString(DBKey.AUTHOR_FORMATTED);
         }
     }
 
@@ -133,7 +133,7 @@ public class EditTocEntryDialogFragment
                     getContext(), R.layout.popup_dropdown_menu_item,
                     ExtArrayAdapter.FilterType.Diacritic,
                     ServiceLocator.getInstance().getAuthorDao()
-                                  .getNames(DBKey.KEY_AUTHOR_FORMATTED));
+                                  .getNames(DBKey.AUTHOR_FORMATTED));
             vb.author.setAdapter(authorAdapter);
             vb.author.setText(authorName);
             vb.author.selectAll();
@@ -204,7 +204,7 @@ public class EditTocEntryDialogFragment
         super.onSaveInstanceState(outState);
         outState.putString(DBKey.TITLE, title);
         outState.putParcelable(DBKey.FIRST_PUBLICATION__DATE, firstPublicationDate);
-        outState.putString(DBKey.KEY_AUTHOR_FORMATTED, authorName);
+        outState.putString(DBKey.AUTHOR_FORMATTED, authorName);
     }
 
     @Override

@@ -563,7 +563,7 @@ public final class DBDefinitions {
                         .build();
 
         DOM_TITLE_OB =
-                new Domain.Builder(DBKey.KEY_TITLE_OB, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.TITLE_OB, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .prePreparedOrderBy()
@@ -591,7 +591,7 @@ public final class DBDefinitions {
                         .build();
 
         DOM_BOOKSHELF_NAME_CSV =
-                new Domain.Builder(DBKey.KEY_BOOKSHELF_NAME_CSV, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.BOOKSHELF_NAME_CSV, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .build();
 
@@ -627,7 +627,7 @@ public final class DBDefinitions {
                         .build();
 
         DOM_AUTHOR_FAMILY_NAME_OB =
-                new Domain.Builder(DBKey.KEY_AUTHOR_FAMILY_NAME_OB, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.AUTHOR_FAMILY_NAME_OB, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .prePreparedOrderBy()
@@ -641,7 +641,7 @@ public final class DBDefinitions {
                         .build();
 
         DOM_AUTHOR_GIVEN_NAMES_OB =
-                new Domain.Builder(DBKey.KEY_AUTHOR_GIVEN_NAMES_OB, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.AUTHOR_GIVEN_NAMES_OB, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .prePreparedOrderBy()
@@ -664,7 +664,7 @@ public final class DBDefinitions {
                         .build();
 
         DOM_SERIES_TITLE_OB =
-                new Domain.Builder(DBKey.KEY_SERIES_TITLE_OB, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.SERIES_TITLE_OB, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .prePreparedOrderBy()
@@ -686,14 +686,14 @@ public final class DBDefinitions {
                         .build();
 
         DOM_PUBLISHER_NAME_OB =
-                new Domain.Builder(DBKey.KEY_PUBLISHER_NAME_OB, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.PUBLISHER_NAME_OB, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .prePreparedOrderBy()
                         .build();
 
         DOM_PUBLISHER_NAME_CSV =
-                new Domain.Builder(DBKey.KEY_PUBLISHER_NAME_CSV, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.PUBLISHER_NAME_CSV, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .build();
         /* ======================================================================================
@@ -1036,7 +1036,7 @@ public final class DBDefinitions {
                         .build();
 
         DOM_BOOK_TOC_ENTRY_POSITION =
-                new Domain.Builder(DBKey.KEY_BOOK_TOC_ENTRY_POSITION, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.BOOK_TOC_ENTRY_POSITION, ColumnInfo.TYPE_INTEGER)
                         .notNull()
                         .build();
 
@@ -1170,34 +1170,34 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT =
-                new Domain.Builder(DBKey.KEY_BL_SERIES_NUM_FLOAT, ColumnInfo.TYPE_REAL)
+                new Domain.Builder(DBKey.BL_SERIES_NUM_FLOAT, ColumnInfo.TYPE_REAL)
                         .build();
 
         DOM_BL_PRIMARY_SERIES_COUNT =
-                new Domain.Builder(DBKey.KEY_BL_PRIMARY_SERIES_COUNT, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.BL_PRIMARY_SERIES_COUNT, ColumnInfo.TYPE_INTEGER)
                         .build();
 
         DOM_BL_NODE_KEY =
-                new Domain.Builder(DBKey.KEY_BL_NODE_KEY, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.BL_NODE_KEY, ColumnInfo.TYPE_TEXT)
                         .build();
 
         DOM_BL_NODE_GROUP =
-                new Domain.Builder(DBKey.KEY_BL_NODE_GROUP, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.BL_NODE_GROUP, ColumnInfo.TYPE_INTEGER)
                         .notNull()
                         .build();
 
         DOM_BL_NODE_LEVEL =
-                new Domain.Builder(DBKey.KEY_BL_NODE_LEVEL, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.BL_NODE_LEVEL, ColumnInfo.TYPE_INTEGER)
                         .notNull()
                         .build();
 
         DOM_BL_NODE_VISIBLE =
-                new Domain.Builder(DBKey.KEY_BL_NODE_VISIBLE, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.BL_NODE_VISIBLE, ColumnInfo.TYPE_INTEGER)
                         .withDefault(0)
                         .build();
 
         DOM_BL_NODE_EXPANDED =
-                new Domain.Builder(DBKey.KEY_BL_NODE_EXPANDED, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.BL_NODE_EXPANDED, ColumnInfo.TYPE_INTEGER)
                         .withDefault(0)
                         .build();
 
@@ -1272,9 +1272,9 @@ public final class DBDefinitions {
                             DOM_AUTHOR_GIVEN_NAMES_OB,
                             DOM_AUTHOR_IS_COMPLETE)
                 .setPrimaryKey(DOM_PK_ID)
-                .addIndex(DBKey.KEY_AUTHOR_FAMILY_NAME_OB, false, DOM_AUTHOR_FAMILY_NAME_OB)
+                .addIndex(DBKey.AUTHOR_FAMILY_NAME_OB, false, DOM_AUTHOR_FAMILY_NAME_OB)
                 .addIndex(DBKey.AUTHOR_FAMILY_NAME, false, DOM_AUTHOR_FAMILY_NAME)
-                .addIndex(DBKey.KEY_AUTHOR_GIVEN_NAMES_OB, false, DOM_AUTHOR_GIVEN_NAMES_OB)
+                .addIndex(DBKey.AUTHOR_GIVEN_NAMES_OB, false, DOM_AUTHOR_GIVEN_NAMES_OB)
                 .addIndex(DBKey.AUTHOR_GIVEN_NAMES, false, DOM_AUTHOR_GIVEN_NAMES);
         ALL_TABLES.put(TBL_AUTHORS.getName(), TBL_AUTHORS);
 
@@ -1285,7 +1285,7 @@ public final class DBDefinitions {
                             DOM_SERIES_IS_COMPLETE)
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex("id", true, DOM_PK_ID)
-                .addIndex(DBKey.KEY_SERIES_TITLE_OB, false, DOM_SERIES_TITLE_OB)
+                .addIndex(DBKey.SERIES_TITLE_OB, false, DOM_SERIES_TITLE_OB)
                 .addIndex(DBKey.SERIES_TITLE, false, DOM_SERIES_TITLE);
         ALL_TABLES.put(TBL_SERIES.getName(), TBL_SERIES);
 
@@ -1295,7 +1295,7 @@ public final class DBDefinitions {
                             DOM_PUBLISHER_NAME_OB)
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex("id", true, DOM_PK_ID)
-                .addIndex(DBKey.KEY_PUBLISHER_NAME_OB, false, DOM_PUBLISHER_NAME_OB)
+                .addIndex(DBKey.PUBLISHER_NAME_OB, false, DOM_PUBLISHER_NAME_OB)
                 .addIndex(DBKey.PUBLISHER_NAME, false, DOM_PUBLISHER_NAME);
         ALL_TABLES.put(TBL_PUBLISHERS.getName(), TBL_PUBLISHERS);
 
@@ -1355,7 +1355,7 @@ public final class DBDefinitions {
                             DOM_LAST_UPDATED__UTC)
 
                 .setPrimaryKey(DOM_PK_ID)
-                .addIndex(DBKey.KEY_TITLE_OB, false, DOM_TITLE_OB)
+                .addIndex(DBKey.TITLE_OB, false, DOM_TITLE_OB)
                 .addIndex(DBKey.TITLE, false, DOM_TITLE)
                 .addIndex(DBKey.BOOK_ISBN, false, DOM_BOOK_ISBN)
                 .addIndex(DBKey.BOOK_UUID, true, DOM_BOOK_UUID)
@@ -1366,7 +1366,7 @@ public final class DBDefinitions {
                 .addIndex(DBKey.SID_OPEN_LIBRARY, false, DOM_ESID_OPEN_LIBRARY)
                 .addIndex(DBKey.SID_STRIP_INFO, false, DOM_ESID_STRIP_INFO_BE)
         // we probably do not need this one (and have not created it)
-        //.addIndex(KEY_ESID_LIBRARY_THING, false, DOM_ESID_LIBRARY_THING)
+        //.addIndex(DBKey.SID_LIBRARY_THING, false, DOM_ESID_LIBRARY_THING)
         ;
         ALL_TABLES.put(TBL_BOOKS.getName(), TBL_BOOKS);
 
@@ -1380,7 +1380,7 @@ public final class DBDefinitions {
                 .setPrimaryKey(DOM_PK_ID)
                 .addReference(TBL_AUTHORS, DOM_FK_AUTHOR)
                 .addIndex(DBKey.FK_AUTHOR, false, DOM_FK_AUTHOR)
-                .addIndex(DBKey.KEY_TITLE_OB, false, DOM_TITLE_OB)
+                .addIndex(DBKey.TITLE_OB, false, DOM_TITLE_OB)
                 .addIndex("pk", true,
                           DOM_FK_AUTHOR,
                           DOM_TITLE_OB);

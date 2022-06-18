@@ -59,13 +59,13 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_AUTHOR_PO
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_PUBLISHER_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_SERIES_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_TOC_ENTRY_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DESCRIPTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FTS_AUTHOR_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FTS_BOOK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FTS_TOC_ENTRY_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.GENRE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_TOC_ENTRY_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.LOCATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PERSONAL_NOTES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PK_ID;
@@ -157,7 +157,7 @@ public class FtsDaoImpl
             SELECT_ + TBL_TOC_ENTRIES.dotAs(TITLE)
             + _FROM_ + TBL_TOC_ENTRIES.startJoin(TBL_BOOK_TOC_ENTRIES)
             + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(FK_BOOK) + "=?"
-            + _ORDER_BY_ + TBL_BOOK_TOC_ENTRIES.dot(KEY_BOOK_TOC_ENTRY_POSITION);
+            + _ORDER_BY_ + TBL_BOOK_TOC_ENTRIES.dot(BOOK_TOC_ENTRY_POSITION);
 
     /** Used during insert of a book. Minimal column list. Ordered by position. */
     private static final String GET_SERIES_BY_BOOK_ID =
@@ -170,7 +170,7 @@ public class FtsDaoImpl
 
     /** Advanced Local-search. */
     private static final String SEARCH =
-            // KEY_FTS_BOOKS_PK is the _id into the books table.
+            // FTS_BOOK_ID is the _id into the books table.
             SELECT_ + DBKey.FTS_BOOK_ID
             + _FROM_ + TBL_FTS_BOOKS.getName()
             + _WHERE_ + TBL_FTS_BOOKS.getName()
@@ -432,9 +432,9 @@ public class FtsDaoImpl
 
             try (final SynchronizedStatement stmt = mDb.compileStatement(sql)) {
                 bindStringOrNull(stmt, 1, rowData.getString(TITLE));
-                // KEY_FTS_AUTHOR_NAME
+                // FTS_AUTHOR_NAME
                 bindStringOrNull(stmt, 2, authorText.toString());
-                // KEY_SERIES_TITLE
+                // SERIES_TITLE
                 bindStringOrNull(stmt, 3, seriesText.toString());
                 bindStringOrNull(stmt, 4, rowData.getString(DESCRIPTION));
                 bindStringOrNull(stmt, 5, rowData.getString(PERSONAL_NOTES));
@@ -442,10 +442,10 @@ public class FtsDaoImpl
                 bindStringOrNull(stmt, 7, rowData.getString(GENRE));
                 bindStringOrNull(stmt, 8, rowData.getString(LOCATION));
                 bindStringOrNull(stmt, 9, rowData.getString(BOOK_ISBN));
-                // KEY_FTS_TOC_ENTRY_TITLE
+                // FTS_TOC_ENTRY_TITLE
                 bindStringOrNull(stmt, 10, tocTitles.toString());
 
-                // KEY_FTS_BOOK_ID : in a where clause, or as insert parameter
+                // FTS_BOOK_ID : in a where clause, or as insert parameter
                 stmt.bindLong(11, bookId);
 
                 stmt.execute();

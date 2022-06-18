@@ -67,7 +67,7 @@ class BookTest
         book.putMoney(DBKey.PRICE_LISTED, new Money(0d, ""));
 
         book.putDouble(DBKey.PRICE_PAID, 456.789d);
-        // no KEY_PRICE_PAID_CURRENCY
+        // no PRICE_PAID_CURRENCY
 
         final BookDaoHelper bdh = new BookDaoHelper(mContext, book, true);
         bdh.processPrice(DBKey.PRICE_LISTED);
@@ -92,7 +92,7 @@ class BookTest
         book.putString(DBKey.PRICE_LISTED_CURRENCY, Money.EUR);
         // as an invalid string
         book.putString(DBKey.PRICE_PAID, "test");
-        // no KEY_PRICE_PAID_CURRENCY
+        // no PRICE_PAID_CURRENCY
 
         final BookDaoHelper bdh = new BookDaoHelper(mContext, book, true);
         bdh.processPrice(DBKey.PRICE_LISTED);

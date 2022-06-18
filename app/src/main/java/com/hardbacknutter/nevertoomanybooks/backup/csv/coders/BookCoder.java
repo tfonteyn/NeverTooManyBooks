@@ -436,12 +436,12 @@ public class BookCoder {
         if (encodedList.isEmpty()) {
             // check for individual author (full/family/given) fields in the input
             list = new ArrayList<>();
-            if (book.contains(DBKey.KEY_AUTHOR_FORMATTED)) {
-                final String name = book.getString(DBKey.KEY_AUTHOR_FORMATTED);
+            if (book.contains(DBKey.AUTHOR_FORMATTED)) {
+                final String name = book.getString(DBKey.AUTHOR_FORMATTED);
                 if (!name.isEmpty()) {
                     list.add(Author.from(name));
                 }
-                book.remove(DBKey.KEY_AUTHOR_FORMATTED);
+                book.remove(DBKey.AUTHOR_FORMATTED);
 
             } else if (book.contains(DBKey.AUTHOR_FAMILY_NAME)) {
                 final String family = book.getString(DBKey.AUTHOR_FAMILY_NAME);

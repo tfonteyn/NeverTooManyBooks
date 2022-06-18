@@ -97,7 +97,7 @@ public class SearchBookByTextViewModel
         // search sites can copy with the formatted version.
         final ArrayList<String> authors =
                 ServiceLocator.getInstance().getAuthorDao()
-                              .getNames(DBKey.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+                              .getNames(DBKey.AUTHOR_FORMATTED_GIVEN_FIRST);
 
         final Collection<String> uniqueNames = new HashSet<>(authors.size());
         for (final String s : authors) {

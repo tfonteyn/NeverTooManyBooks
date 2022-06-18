@@ -57,7 +57,7 @@ public class BookshelfBooklistGroup
     private static final Domain DOM_SORTING;
 
     static {
-        DOM_SORTING = new Domain.Builder(DBKey.KEY_BL_BOOKSHELF_SORT, ColumnInfo.TYPE_TEXT)
+        DOM_SORTING = new Domain.Builder(DBKey.BL_BOOKSHELF_SORT, ColumnInfo.TYPE_TEXT)
                 .build();
     }
 

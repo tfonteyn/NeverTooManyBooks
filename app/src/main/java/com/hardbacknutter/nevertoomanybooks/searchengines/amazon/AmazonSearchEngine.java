@@ -173,7 +173,7 @@ public class AmazonSearchEngine
                 .setFilenameSuffix("AMZ")
 
                 // ENHANCE: support ASIN
-//                .setDomainKey(DBDefinitions.KEY_ESID_ASIN)
+//                .setDomainKey(DBKey.SID_ASIN)
 //                .setDomainViewId(R.id.site_amazon)
 //                .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_AMAZON)
                 .build();

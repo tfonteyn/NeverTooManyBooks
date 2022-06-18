@@ -76,9 +76,9 @@ public class SeriesDaoImpl
     /** name only. */
     private static final String SELECT_ALL_NAMES =
             SELECT_DISTINCT_ + DBKey.SERIES_TITLE
-            + ',' + DBKey.KEY_SERIES_TITLE_OB
+            + ',' + DBKey.SERIES_TITLE_OB
             + _FROM_ + TBL_SERIES.getName()
-            + _ORDER_BY_ + DBKey.KEY_SERIES_TITLE_OB + _COLLATION;
+            + _ORDER_BY_ + DBKey.SERIES_TITLE_OB + _COLLATION;
 
     /** {@link Series}, all columns. */
     private static final String SELECT_ALL = "SELECT * FROM " + TBL_SERIES.getName();
@@ -87,7 +87,7 @@ public class SeriesDaoImpl
     private static final String SERIES_BY_BOOK_ID =
             SELECT_DISTINCT_ + TBL_SERIES.dotAs(DBKey.PK_ID,
                                                 DBKey.SERIES_TITLE,
-                                                DBKey.KEY_SERIES_TITLE_OB,
+                                                DBKey.SERIES_TITLE_OB,
                                                 DBKey.SERIES_IS_COMPLETE)
             + ',' + TBL_BOOK_SERIES.dotAs(DBKey.SERIES_BOOK_NUMBER,
                                           DBKey.BOOK_SERIES_POSITION)
@@ -95,7 +95,7 @@ public class SeriesDaoImpl
             + _FROM_ + TBL_BOOK_SERIES.startJoin(TBL_SERIES)
             + _WHERE_ + TBL_BOOK_SERIES.dot(DBKey.FK_BOOK) + "=?"
             + _ORDER_BY_ + TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_POSITION)
-            + ',' + TBL_SERIES.dot(DBKey.KEY_SERIES_TITLE_OB) + _COLLATION;
+            + ',' + TBL_SERIES.dot(DBKey.SERIES_TITLE_OB) + _COLLATION;
 
     /** Get a {@link Series} by the Series id. */
     private static final String GET_BY_ID = SELECT_ALL + _WHERE_ + DBKey.PK_ID + "=?";
@@ -103,12 +103,12 @@ public class SeriesDaoImpl
     /**
      * Get the id of a {@link Series} by Title.
      * The lookup is by EQUALITY and CASE-SENSITIVE.
-     * Searches KEY_SERIES_TITLE_OB on both "The Title" and "Title, The"
+     * Searches SERIES_TITLE_OB on both "The Title" and "Title, The"
      */
     private static final String FIND_ID =
             SELECT_ + DBKey.PK_ID + _FROM_ + TBL_SERIES.getName()
-            + _WHERE_ + DBKey.KEY_SERIES_TITLE_OB + "=?" + _COLLATION
-            + " OR " + DBKey.KEY_SERIES_TITLE_OB + "=?" + _COLLATION;
+            + _WHERE_ + DBKey.SERIES_TITLE_OB + "=?" + _COLLATION
+            + " OR " + DBKey.SERIES_TITLE_OB + "=?" + _COLLATION;
 
     /**
      * Get the language (ISO3) code for a Series.
@@ -132,7 +132,7 @@ public class SeriesDaoImpl
     private static final String INSERT =
             INSERT_INTO_ + TBL_SERIES.getName()
             + '(' + DBKey.SERIES_TITLE
-            + ',' + DBKey.KEY_SERIES_TITLE_OB
+            + ',' + DBKey.SERIES_TITLE_OB
             + ',' + DBKey.SERIES_IS_COMPLETE
             + ") VALUES (?,?,?)";
 
@@ -372,7 +372,7 @@ public class SeriesDaoImpl
 
         final ContentValues cv = new ContentValues();
         cv.put(DBKey.SERIES_TITLE, series.getTitle());
-        cv.put(DBKey.KEY_SERIES_TITLE_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
+        cv.put(DBKey.SERIES_TITLE_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
         cv.put(DBKey.SERIES_IS_COMPLETE, series.isComplete());
 
         return 0 < mDb.update(TBL_SERIES.getName(), cv, DBKey.PK_ID + "=?",

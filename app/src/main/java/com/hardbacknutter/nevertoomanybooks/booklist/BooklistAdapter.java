@@ -271,7 +271,7 @@ public class BooklistAdapter
     public int getItemViewType(final int position) {
         if (cursor != null && cursor.moveToPosition(position)) {
             //noinspection ConstantConditions
-            return nodeData.getInt(DBKey.KEY_BL_NODE_GROUP);
+            return nodeData.getInt(DBKey.BL_NODE_GROUP);
         } else {
             // bogus, should not happen
             return BooklistGroup.BOOK;
@@ -341,7 +341,7 @@ public class BooklistAdapter
     private View createView(@NonNull final ViewGroup parent,
                             @BooklistGroup.Id final int groupKeyId) {
         //noinspection ConstantConditions
-        final int level = nodeData.getInt(DBKey.KEY_BL_NODE_LEVEL);
+        final int level = nodeData.getInt(DBKey.BL_NODE_LEVEL);
 
         @LayoutRes
         final int layoutId;
@@ -591,7 +591,7 @@ public class BooklistAdapter
     int getLevel(final int position) {
         if (cursor != null && cursor.moveToPosition(position)) {
             //noinspection ConstantConditions
-            return nodeData.getInt(DBKey.KEY_BL_NODE_LEVEL);
+            return nodeData.getInt(DBKey.BL_NODE_LEVEL);
         } else {
             return 0;
         }
@@ -840,8 +840,8 @@ public class BooklistAdapter
             series = series && rowData.contains(DBKey.SERIES_BOOK_NUMBER);
             signed = signed && rowData.contains(DBKey.SIGNED__BOOL);
 
-            author = author && rowData.contains(DBKey.KEY_AUTHOR_FORMATTED);
-            bookshelf = bookshelf && rowData.contains(DBKey.KEY_BOOKSHELF_NAME_CSV);
+            author = author && rowData.contains(DBKey.AUTHOR_FORMATTED);
+            bookshelf = bookshelf && rowData.contains(DBKey.BOOKSHELF_NAME_CSV);
             cover = cover && rowData.contains(DBKey.BOOK_UUID);
             format = format && rowData.contains(DBKey.FORMAT);
             condition = condition && rowData.contains(DBKey.BOOK_CONDITION);
@@ -1124,7 +1124,7 @@ public class BooklistAdapter
                 }
             }
             if (inUse.author) {
-                showOrHide(authorView, rowData.getString(DBKey.KEY_AUTHOR_FORMATTED));
+                showOrHide(authorView, rowData.getString(DBKey.AUTHOR_FORMATTED));
             }
             if (inUse.publisher || inUse.pubDate) {
                 showOrHide(publisherView, getPublisherAndPubDateText(rowData));
@@ -1142,13 +1142,13 @@ public class BooklistAdapter
                 showOrHide(locationView, rowData.getString(DBKey.LOCATION));
             }
             if (inUse.bookshelf) {
-                showOrHide(bookshelvesView, rowData.getString(DBKey.KEY_BOOKSHELF_NAME_CSV));
+                showOrHide(bookshelvesView, rowData.getString(DBKey.BOOKSHELF_NAME_CSV));
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
                 if (dbgRowIdView != null) {
                     final String txt = String.valueOf(position) + '/'
-                                       + rowData.getLong(DBKey.KEY_BL_LIST_VIEW_NODE_ROW_ID);
+                                       + rowData.getLong(DBKey.BL_LIST_VIEW_NODE_ROW_ID);
                     dbgRowIdView.setText(txt);
                 }
             }
@@ -1360,7 +1360,7 @@ public class BooklistAdapter
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
                 final String dbgText = " " + position + '/'
-                                       + rowData.getLong(DBKey.KEY_BL_LIST_VIEW_NODE_ROW_ID);
+                                       + rowData.getLong(DBKey.BL_LIST_VIEW_NODE_ROW_ID);
 
                 final CharSequence text = textView.getText();
                 final SpannableString dbg = new SpannableString(text + dbgText);

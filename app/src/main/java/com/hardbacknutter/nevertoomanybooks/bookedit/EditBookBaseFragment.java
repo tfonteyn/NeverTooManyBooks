@@ -248,6 +248,7 @@ public abstract class EditBookBaseFragment
         if (book.isNew()) {
             if (field.getFieldViewId() == R.id.price_listed_currency) {
                 vm.getField(R.id.price_paid_currency).ifPresent(paidField -> {
+                    //URGENT: this only copies the first character (unless the dropdown is used)
                     if (!field.isEmpty() && paidField.isEmpty()) {
                         final String value = (String) field.getValue();
                         //noinspection ConstantConditions
@@ -259,6 +260,7 @@ public abstract class EditBookBaseFragment
 
             } else if (field.getFieldViewId() == R.id.price_listed) {
                 vm.getField(R.id.price_paid).ifPresent(paidField -> {
+                    //URGENT: this only copies the first character.
                     if (!field.isEmpty() && paidField.isEmpty()) {
                         // Normally its always a double; but technically it might not be.
                         final double value = ParseUtils.toDouble(field.getValue(), null);

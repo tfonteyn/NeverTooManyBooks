@@ -112,7 +112,7 @@ public class BoBTask
                 // updates ALL rows in the database with the newly formatted title.
                 new DomainExpression(
                         DBDefinitions.DOM_TITLE_OB,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_TITLE_OB),
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.TITLE_OB),
                         DomainExpression.SORT_ASC));
 
         fixedDomainList.add(

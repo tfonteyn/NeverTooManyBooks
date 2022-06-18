@@ -50,9 +50,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF_FILTERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOKSHELF_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_STYLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PK_ID;
 
 public class BookshelfDaoImpl
         extends BaseDaoImpl
@@ -157,9 +154,9 @@ public class BookshelfDaoImpl
                                     @NonNull final SQLiteDatabase db) {
         // inserts a 'All Books' bookshelf with _id==-1, see {@link Bookshelf}.
         db.execSQL("INSERT INTO " + TBL_BOOKSHELF
-                   + '(' + PK_ID
-                   + ',' + BOOKSHELF_NAME
-                   + ',' + FK_STYLE
+                   + '(' + DBKey.PK_ID
+                   + ',' + DBKey.BOOKSHELF_NAME
+                   + ',' + DBKey.FK_STYLE
                    + ") VALUES ("
                    + Bookshelf.ALL_BOOKS
                    + ",'" + context.getString(R.string.bookshelf_all_books)
@@ -168,9 +165,9 @@ public class BookshelfDaoImpl
 
         // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
         db.execSQL("INSERT INTO " + TBL_BOOKSHELF
-                   + '(' + PK_ID
-                   + ',' + BOOKSHELF_NAME
-                   + ',' + FK_STYLE
+                   + '(' + DBKey.PK_ID
+                   + ',' + DBKey.BOOKSHELF_NAME
+                   + ',' + DBKey.FK_STYLE
                    + ") VALUES ("
                    + Bookshelf.DEFAULT
                    + ",'" + context.getString(R.string.bookshelf_my_books)

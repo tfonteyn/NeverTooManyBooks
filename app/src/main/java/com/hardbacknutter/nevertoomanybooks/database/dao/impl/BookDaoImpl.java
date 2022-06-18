@@ -93,6 +93,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_PUBLICATION__DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_PUBLISHER_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_SERIES_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_TOC_ENTRY_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_BOOK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.CALIBRE_BOOK_MAIN_FORMAT;
@@ -113,8 +114,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_TOC_ENTRY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.GENRE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_TOC_ENTRY_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_TITLE_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.LANGUAGE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.LOANEE_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.LOCATION;
@@ -139,6 +138,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.STRIP_INFO_LAS
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.STRIP_INFO_OWNED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.STRIP_INFO_WANTED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.TITLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.TITLE_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.TOC_TYPE__BITMASK;
 
 /**
@@ -304,7 +304,7 @@ public class BookDaoImpl
                 cv.remove(BOOK_UUID);
             }
 
-            // set the KEY_DATE_LAST_UPDATED to 'now' if we're allowed,
+            // set the DATE_LAST_UPDATED__UTC to 'now' if we're allowed,
             // or if it's not already present.
             if ((flags & BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT) == 0
                 || !cv.containsKey(DATE_LAST_UPDATED__UTC)) {
@@ -1351,14 +1351,14 @@ public class BookDaoImpl
                     INSERT_INTO_ + TBL_TOC_ENTRIES.getName()
                     + '(' + FK_AUTHOR
                     + ',' + TITLE
-                    + ',' + KEY_TITLE_OB
+                    + ',' + TITLE_OB
                     + ',' + FIRST_PUBLICATION__DATE
                     + ") VALUES (?,?,?,?)";
             static final String BOOK_TOC_ENTRY =
                     INSERT_INTO_ + TBL_BOOK_TOC_ENTRIES.getName()
                     + '(' + FK_TOC_ENTRY
                     + ',' + FK_BOOK
-                    + ',' + KEY_BOOK_TOC_ENTRY_POSITION
+                    + ',' + BOOK_TOC_ENTRY_POSITION
                     + ") VALUES (?,?,?)";
             static final String BOOK_BOOKSHELF =
                     INSERT_INTO_ + TBL_BOOK_BOOKSHELF.getName()
@@ -1396,7 +1396,7 @@ public class BookDaoImpl
             static final String TOCENTRY =
                     UPDATE_ + TBL_TOC_ENTRIES.getName()
                     + _SET_ + TITLE + "=?"
-                    + ',' + KEY_TITLE_OB + "=?"
+                    + ',' + TITLE_OB + "=?"
                     + ',' + FIRST_PUBLICATION__DATE + "=?"
                     + _WHERE_ + PK_ID + "=?";
 

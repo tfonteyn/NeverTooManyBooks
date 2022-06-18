@@ -87,12 +87,12 @@ public class BooklistNode {
     @NonNull
     static String getColumns(@NonNull final TableDefinition table) {
         return table.dot(DBKey.PK_ID)
-               + ',' + table.dot(DBKey.KEY_BL_NODE_LEVEL)
-               + ',' + table.dot(DBKey.KEY_BL_NODE_KEY)
+               + ',' + table.dot(DBKey.BL_NODE_LEVEL)
+               + ',' + table.dot(DBKey.BL_NODE_KEY)
                + ',' + table.dot(DBKey.FK_BOOK)
 
-               + ',' + table.dot(DBKey.KEY_BL_NODE_EXPANDED)
-               + ',' + table.dot(DBKey.KEY_BL_NODE_VISIBLE);
+               + ',' + table.dot(DBKey.BL_NODE_EXPANDED)
+               + ',' + table.dot(DBKey.BL_NODE_VISIBLE);
     }
 
     public boolean isExpanded() {
@@ -183,7 +183,7 @@ public class BooklistNode {
         final int count;
         try (SynchronizedStatement stmt = db.compileStatement(
                 "SELECT COUNT(*) FROM " + listTable.getName()
-                + " WHERE " + DBKey.KEY_BL_NODE_VISIBLE + "=1"
+                + " WHERE " + DBKey.BL_NODE_VISIBLE + "=1"
                 + " AND " + DBKey.PK_ID + "<?")) {
 
             stmt.bindLong(1, getRowId());

@@ -697,7 +697,7 @@ public class ShowBookDetailsFragment
         }
 
         private void updateMenuLendingOptions(@NonNull final Menu menu) {
-            // Always check KEY_LOANEE usage independent from the style in use.
+            // Always check LOANEE_NAME usage independent from the style in use.
             if (aVm.getStyle().isShowField(Style.Screen.List, DBKey.LOANEE_NAME)) {
                 final boolean isLendOut = vm.getBook().getLoanee().isPresent();
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(!isLendOut);

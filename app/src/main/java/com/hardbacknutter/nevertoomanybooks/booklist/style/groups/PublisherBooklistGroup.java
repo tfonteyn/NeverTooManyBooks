@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_PUBLISHER_NAME_OB;
 
 /**
  * Specialized BooklistGroup representing a {@link Publisher} group.
@@ -54,7 +53,7 @@ public class PublisherBooklistGroup
     private static final Domain DOM_SORTING;
 
     static {
-        DOM_SORTING = new Domain.Builder(DBKey.KEY_BL_PUBLISHER_SORT, ColumnInfo.TYPE_TEXT)
+        DOM_SORTING = new Domain.Builder(DBKey.BL_PUBLISHER_SORT, ColumnInfo.TYPE_TEXT)
                 .build();
     }
 
@@ -91,7 +90,7 @@ public class PublisherBooklistGroup
                 .addGroupDomain(
                         // We do not sort on the key domain but add the OB column instead
                         new DomainExpression(DOM_SORTING,
-                                             TBL_PUBLISHERS.dot(KEY_PUBLISHER_NAME_OB),
+                                             TBL_PUBLISHERS.dot(DBKey.PUBLISHER_NAME_OB),
                                              DomainExpression.SORT_ASC))
                 .addGroupDomain(
                         // Group by id (we want the id available and there is

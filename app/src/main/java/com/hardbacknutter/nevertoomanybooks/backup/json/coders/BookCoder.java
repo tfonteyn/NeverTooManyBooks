@@ -88,7 +88,7 @@ public class BookCoder
 
         // Special keys first.
 
-        // The presence of KEY_FK_CALIBRE_LIBRARY (a row id) indicates there IS a calibre
+        // The presence of FK_CALIBRE_LIBRARY (a row id) indicates there IS a calibre
         // library for this book but there is no other/more library data on the book itself.
         // We need to explicitly load the library and encode a reference for it.
         if (DBKey.FK_CALIBRE_LIBRARY.equals(key)) {

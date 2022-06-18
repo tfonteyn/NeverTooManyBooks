@@ -73,7 +73,7 @@ abstract class BaseDaoImpl {
     static final String _NOT_IN_ = " NOT IN ";
 
     /**
-     * Update a single Book's KEY_UTC_LAST_UPDATED to 'now'
+     * Update a single Book's DATE_LAST_UPDATED__UTC to 'now'
      */
     private static final String TOUCH =
             UPDATE_ + DBDefinitions.TBL_BOOKS.getName()

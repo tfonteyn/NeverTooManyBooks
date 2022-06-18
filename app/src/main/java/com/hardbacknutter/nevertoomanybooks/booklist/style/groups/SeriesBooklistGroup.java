@@ -39,7 +39,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_SERIES_TITLE_OB;
 
 
 /**
@@ -58,7 +57,7 @@ public class SeriesBooklistGroup
     private static final Domain DOM_SORTING;
 
     static {
-        DOM_SORTING = new Domain.Builder(DBKey.KEY_BL_SERIES_SORT, ColumnInfo.TYPE_TEXT)
+        DOM_SORTING = new Domain.Builder(DBKey.BL_SERIES_SORT, ColumnInfo.TYPE_TEXT)
                 .build();
     }
 
@@ -95,7 +94,7 @@ public class SeriesBooklistGroup
                 .addGroupDomain(
                         // We do not sort on the key domain but add the OB column instead
                         new DomainExpression(DOM_SORTING,
-                                             TBL_SERIES.dot(KEY_SERIES_TITLE_OB),
+                                             TBL_SERIES.dot(DBKey.SERIES_TITLE_OB),
                                              DomainExpression.SORT_ASC))
                 .addGroupDomain(
                         // Group by id (we want the id available and there is

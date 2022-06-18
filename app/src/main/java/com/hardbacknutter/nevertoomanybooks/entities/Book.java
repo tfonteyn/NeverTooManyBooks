@@ -339,17 +339,17 @@ public class Book
         // but lets play this safe.
 
         // Do not copy any identifiers.
-        // KEY_PK_ID
-        // KEY_BOOK_UUID
-        // KEY_ESID_LIBRARY_THING
-        // KEY_ESID_ISFDB
-        // KEY_ESID_GOODREADS
+        // PK_ID
+        // BOOK_UUID
+        // SID_LIBRARY_THING
+        // SID_ISFDB
+        // SID_GOODREADS
         // ...
         // Do not copy the Bookshelves list
         // ...
         // Do not copy these specific dates.
-        // KEY_BOOK_DATE_ADDED
-        // KEY_DATE_LAST_UPDATED
+        // BOOK_DATE_ADDED
+        // DATE_LAST_UPDATED
 
         bookData.putString(DBKey.TITLE, getString(DBKey.TITLE));
         bookData.putString(DBKey.BOOK_ISBN, getString(DBKey.BOOK_ISBN));

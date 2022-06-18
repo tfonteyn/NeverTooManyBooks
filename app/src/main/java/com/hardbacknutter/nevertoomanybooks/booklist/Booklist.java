@@ -175,7 +175,7 @@ public class Booklist
         if (totalBooks == -1) {
             try (SynchronizedStatement stmt = db.compileStatement(
                     SELECT_COUNT_FROM_ + listTable.getName()
-                    + _WHERE_ + DBKey.KEY_BL_NODE_GROUP + "=?")) {
+                    + _WHERE_ + DBKey.BL_NODE_GROUP + "=?")) {
                 stmt.bindLong(1, BooklistGroup.BOOK);
                 totalBooks = (int) stmt.simpleQueryForLongOrZero();
             }
@@ -193,7 +193,7 @@ public class Booklist
             try (SynchronizedStatement stmt = db.compileStatement(
                     "SELECT COUNT(DISTINCT " + DBKey.FK_BOOK + ")"
                     + _FROM_ + listTable.getName()
-                    + _WHERE_ + DBKey.KEY_BL_NODE_GROUP + "=?")) {
+                    + _WHERE_ + DBKey.BL_NODE_GROUP + "=?")) {
 
                 stmt.bindLong(1, BooklistGroup.BOOK);
                 distinctBooks = (int) stmt.simpleQueryForLongOrZero();
@@ -210,7 +210,7 @@ public class Booklist
     int countVisibleRows() {
         try (SynchronizedStatement stmt = db.compileStatement(
                 SELECT_COUNT_FROM_ + listTable.getName()
-                + _WHERE_ + DBKey.KEY_BL_NODE_VISIBLE + "=1")) {
+                + _WHERE_ + DBKey.BL_NODE_VISIBLE + "=1")) {
             return (int) stmt.simpleQueryForLongOrZero();
         }
     }
@@ -251,9 +251,9 @@ public class Booklist
                                        .map(listTable::dot)
                                        .collect(Collectors.joining(","))
                     + ',' + (listTable.dot(DBKey.PK_ID)
-                             + _AS_ + DBKey.KEY_BL_LIST_VIEW_NODE_ROW_ID)
+                             + _AS_ + DBKey.BL_LIST_VIEW_NODE_ROW_ID)
                     + _FROM_ + listTable.ref()
-                    + _WHERE_ + listTable.dot(DBKey.KEY_BL_NODE_VISIBLE) + "=1"
+                    + _WHERE_ + listTable.dot(DBKey.BL_NODE_VISIBLE) + "=1"
                     + _ORDER_BY_ + listTable.dot(DBKey.PK_ID)
                     + " LIMIT ? OFFSET ?";
         }
@@ -272,13 +272,13 @@ public class Booklist
     String[] getListColumnNames() {
         // Get the domains
         final List<Domain> domains = listTable.getDomains();
-        // Make the array +1 so we can add KEY_BL_LIST_VIEW_ROW_ID
+        // Make the array +1 so we can add BL_LIST_VIEW_ROW_ID
         final String[] names = new String[domains.size() + 1];
         for (int i = 0; i < domains.size(); i++) {
             names[i] = domains.get(i).getName();
         }
 
-        names[domains.size()] = DBKey.KEY_BL_LIST_VIEW_NODE_ROW_ID;
+        names[domains.size()] = DBKey.BL_LIST_VIEW_NODE_ROW_ID;
         return names;
     }
 
@@ -439,9 +439,9 @@ public class Booklist
             sqlEnsureNodeIsVisible =
                     SELECT_ + DBKey.PK_ID + _FROM_ + listTable.getName()
                     // follow the node hierarchy
-                    + _WHERE_ + DBKey.KEY_BL_NODE_KEY + " LIKE ?"
+                    + _WHERE_ + DBKey.BL_NODE_KEY + " LIKE ?"
                     // we'll loop for all levels
-                    + _AND_ + DBKey.KEY_BL_NODE_LEVEL + "=?";
+                    + _AND_ + DBKey.BL_NODE_LEVEL + "=?";
         }
 
         node.setFullyVisible();
@@ -494,7 +494,7 @@ public class Booklist
                 sqlUpdateBookRead = UPDATE_ + listTable.getName()
                                     + _SET_ + DBKey.READ__BOOL + "=?"
                                     + _WHERE_ + DBKey.FK_BOOK + "=?"
-                                    + _AND_ + DBKey.KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK;
+                                    + _AND_ + DBKey.BL_NODE_GROUP + "=" + BooklistGroup.BOOK;
             }
 
             try (SynchronizedStatement stmt = db.compileStatement(sqlUpdateBookRead)) {
@@ -527,7 +527,7 @@ public class Booklist
                 sqlUpdateBookLoanee = UPDATE_ + listTable.getName()
                                       + _SET_ + DBKey.LOANEE_NAME + "=?"
                                       + _WHERE_ + DBKey.FK_BOOK + "=?"
-                                      + _AND_ + DBKey.KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK;
+                                      + _AND_ + DBKey.BL_NODE_GROUP + "=" + BooklistGroup.BOOK;
             }
 
             try (SynchronizedStatement stmt = db.compileStatement(sqlUpdateBookLoanee)) {
@@ -552,8 +552,8 @@ public class Booklist
             sqlGetBookIdListForNodeKey =
                     SELECT_ + DBKey.FK_BOOK
                     + _FROM_ + listTable.getName()
-                    + _WHERE_ + DBKey.KEY_BL_NODE_KEY + "=?"
-                    + _AND_ + DBKey.KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK
+                    + _WHERE_ + DBKey.BL_NODE_KEY + "=?"
+                    + _AND_ + DBKey.BL_NODE_GROUP + "=" + BooklistGroup.BOOK
                     + _ORDER_BY_ + DBKey.FK_BOOK;
         }
 
@@ -579,7 +579,7 @@ public class Booklist
                     SELECT_ + BooklistNode.getColumns(listTable)
                     + ',' + listTable.dot(DBKey.BOOK_UUID)
                     + _FROM_ + listTable.ref()
-                    + _WHERE_ + listTable.dot(DBKey.KEY_BL_NODE_GROUP) + "=?"
+                    + _WHERE_ + listTable.dot(DBKey.BL_NODE_GROUP) + "=?"
                     + _AND_ + listTable.dot(DBKey.PK_ID) + ">?";
         }
 

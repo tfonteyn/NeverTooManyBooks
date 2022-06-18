@@ -19,6 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -57,11 +60,25 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
  * For now, migrating to using BigDecimal and storing in the db as int?
  */
 public class Money
-        extends Number {
+        extends Number
+        implements Parcelable {
 
     public static final String EUR = "EUR";
     public static final String GBP = "GBP";
     public static final String USD = "USD";
+
+    public static final Creator<Money> CREATOR = new Creator<>() {
+        @Override
+        public Money createFromParcel(@NonNull final Parcel in) {
+            return new Money(in);
+        }
+
+        @Override
+        @NonNull
+        public Money[] newArray(final int size) {
+            return new Money[size];
+        }
+    };
 
     /** For prefixed currencies, split on first digit, but leave it in the second part. */
     private static final Pattern CURRENCY_AS_PREFIX_PATTERN = Pattern.compile("(?=\\d)");
@@ -133,6 +150,18 @@ public class Money
         parse(locale, priceWithCurrency);
     }
 
+    protected Money(@NonNull final Parcel in) {
+        boolean present;
+        present = in.readByte() != 0;
+        if (present) {
+            mCurrency = Currency.getInstance(in.readString());
+        }
+        present = in.readByte() != 0;
+        if (present) {
+            mValue = (BigDecimal) in.readSerializable();
+        }
+    }
+
     /**
      * Populate CURRENCY_MAP. This is used during parsing of price/currency strings.
      * <p>
@@ -146,7 +175,7 @@ public class Money
      * Others can/will be added as needed.
      *
      * @see <a href="https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language">
-     *     English as an official language</a>
+     *         English as an official language</a>
      */
     private static void createCurrencyMap() {
         // allow re-creating
@@ -204,6 +233,29 @@ public class Money
         }
         final String key = symbol.trim().toLowerCase(ServiceLocator.getSystemLocale());
         return CURRENCY_MAP.get(key);
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        if (mCurrency != null) {
+            dest.writeByte((byte) 1);
+            dest.writeString(mCurrency.getCurrencyCode());
+        } else {
+            dest.writeByte((byte) 0);
+        }
+
+        if (mValue != null) {
+            dest.writeByte((byte) 1);
+            dest.writeSerializable(mValue);
+        } else {
+            dest.writeByte((byte) 0);
+        }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public boolean parse(@NonNull final Locale locale,
