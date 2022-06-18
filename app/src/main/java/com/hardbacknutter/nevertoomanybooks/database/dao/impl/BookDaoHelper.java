@@ -135,7 +135,7 @@ public class BookDaoHelper {
     @VisibleForTesting
     public void processPrice(@NonNull final String key) {
 
-        final String currencyKey = key + DBKey.SUFFIX_KEY_CURRENCY;
+        final String currencyKey = key + DBKey.CURRENCY_SUFFIX;
         // handle a price without a currency.
         if (book.contains(key) && !book.contains(currencyKey)) {
             // we presume the user bought the book in their own currency.

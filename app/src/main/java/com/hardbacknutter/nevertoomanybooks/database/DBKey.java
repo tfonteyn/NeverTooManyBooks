@@ -162,7 +162,7 @@ public final class DBKey {
 
 
     /** Suffix added to a price column name to create a joined currency column. */
-    public static final String SUFFIX_KEY_CURRENCY = "_currency";
+    public static final String CURRENCY_SUFFIX = "_currency";
 
 
     /** {@link DBDefinitions#TBL_BOOKS}. */
@@ -176,7 +176,7 @@ public final class DBKey {
     public static final String BOOK_PUBLICATION__DATE = "date_published";
     public static final String PRINT_RUN = "print_run";
     public static final String PRICE_LISTED = "list_price";
-    public static final String PRICE_LISTED_CURRENCY = PRICE_LISTED + SUFFIX_KEY_CURRENCY;
+    public static final String PRICE_LISTED_CURRENCY = PRICE_LISTED + CURRENCY_SUFFIX;
     public static final String PAGE_COUNT = "pages";
     public static final String FORMAT = "format";
     public static final String COLOR = "color";
@@ -190,7 +190,7 @@ public final class DBKey {
 
     /** {@link DBDefinitions#TBL_BOOKS} Personal data. */
     public static final String PRICE_PAID = "price_paid";
-    public static final String PRICE_PAID_CURRENCY = PRICE_PAID + SUFFIX_KEY_CURRENCY;
+    public static final String PRICE_PAID_CURRENCY = PRICE_PAID + CURRENCY_SUFFIX;
     public static final String DATE_ACQUIRED = "date_acquired";
     public static final String LOCATION = "location";
     public static final String READ__BOOL = "read";

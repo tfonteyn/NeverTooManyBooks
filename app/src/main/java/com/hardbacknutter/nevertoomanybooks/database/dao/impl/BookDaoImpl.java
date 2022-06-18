@@ -1189,9 +1189,9 @@ public class BookDaoImpl
             throw new IllegalArgumentException(key);
         }
 
-        final String sql = "SELECT DISTINCT UPPER(" + key + DBKey.SUFFIX_KEY_CURRENCY
+        final String sql = "SELECT DISTINCT UPPER(" + key + DBKey.CURRENCY_SUFFIX
                            + ") FROM " + TBL_BOOKS.getName()
-                           + _ORDER_BY_ + key + DBKey.SUFFIX_KEY_CURRENCY + _COLLATION;
+                           + _ORDER_BY_ + key + DBKey.CURRENCY_SUFFIX + _COLLATION;
 
         final ArrayList<String> list = getColumnAsStringArrayList(sql);
         if (list.isEmpty()) {

@@ -434,7 +434,7 @@ public class DataManager
     public Money getMoney(@NonNull final String key)
             throws NumberFormatException {
         if (rawData.containsKey(key)) {
-            return new Money(getDouble(key), getString(key + DBKey.SUFFIX_KEY_CURRENCY));
+            return new Money(getDouble(key), getString(key + DBKey.CURRENCY_SUFFIX));
         } else {
             return null;
         }
@@ -450,7 +450,7 @@ public class DataManager
                          @NonNull final Money money) {
         rawData.putDouble(key, money.doubleValue());
         if (money.getCurrency() != null) {
-            rawData.putString(key + DBKey.SUFFIX_KEY_CURRENCY, money.getCurrencyCode());
+            rawData.putString(key + DBKey.CURRENCY_SUFFIX, money.getCurrencyCode());
         }
     }
 
