@@ -39,6 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 public class ShowBookDetailsViewModel
         extends ViewModel {
 
+    private static final String BOOK_NOT_LOADED_YET = "Book not loaded yet";
+
     private final MutableLiveData<LiveDataEvent<Book>> onBookLoaded = new MutableLiveData<>();
 
     private Book book;
@@ -67,14 +69,14 @@ public class ShowBookDetailsViewModel
     }
 
     void reloadBook() {
-        Objects.requireNonNull(book, "Book not loaded yet");
+        Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
         reloadBook(book.getId());
     }
 
     @NonNull
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public Book getBook() {
-        Objects.requireNonNull(book, "Book not loaded yet");
+        Objects.requireNonNull(book, BOOK_NOT_LOADED_YET);
         return book;
     }
 
