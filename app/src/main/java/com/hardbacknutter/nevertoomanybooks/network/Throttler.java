@@ -66,13 +66,13 @@ public class Throttler {
         synchronized (this) {
             final long now = System.currentTimeMillis();
             wait = delayInMillis - (now - lastRequestTime);
-            // mLastRequestTime must be updated while synchronized. As soon as this
+            // lastRequestTime must be updated while synchronized. As soon as this
             // block is left, another block may perform another update.
             if (wait < 0) {
                 wait = 0;
             }
             lastRequestTime = now + wait;
-            //Log.d(TAG, "mLastRequestTime=" + mLastRequestTime);
+            //Log.d(TAG, "lastRequestTime=" + lastRequestTime);
         }
 
         if (wait > 0) {
@@ -88,8 +88,8 @@ public class Throttler {
     @Override
     public String toString() {
         return "Throttler{"
-               + "mDelayInMillis=" + delayInMillis
-               + ", mLastRequestTime=" + lastRequestTime
+               + "delayInMillis=" + delayInMillis
+               + ", lastRequestTime=" + lastRequestTime
                + '}';
     }
 }

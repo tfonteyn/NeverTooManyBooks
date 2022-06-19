@@ -106,10 +106,10 @@ public class HttpStatusException
     @NonNull
     public String toString() {
         return "HttpStatusException{"
-               + "mStatusCode=" + statusCode
-               + ", mStatusMessage=" + statusMessage
-               + ", mUrl=" + url
-               + ", mSiteResId=" + ServiceLocator.getAppContext().getString(siteResId)
+               + "statusCode=" + statusCode
+               + ", statusMessage=" + statusMessage
+               + ", url=" + url
+               + ", siteResId=" + ServiceLocator.getAppContext().getString(siteResId)
                + ", " + super.toString()
                + '}';
     }
