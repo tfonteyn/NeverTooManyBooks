@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -452,7 +452,6 @@ public class SearchBookByIsbnFragment
         }
 
         mVm.getScanQueue().forEach(code -> {
-            //noinspection ConstantConditions
             final Chip chip = new Chip(getContext(), null, R.attr.appChipInputStyle);
             // RTL-friendly Chip Layout
             chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);

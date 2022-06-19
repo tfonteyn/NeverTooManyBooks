@@ -325,6 +325,7 @@ public class SearchBookUpdatesFragment
     private static class SyncFieldAdapter
             extends RecyclerView.Adapter<Holder> {
 
+        static final SyncField[] Z_ARRAY_SYNC_FIELD = new SyncField[0];
         /** Cached inflater. */
         @NonNull
         private final LayoutInflater layoutInflater;
@@ -340,8 +341,7 @@ public class SearchBookUpdatesFragment
         SyncFieldAdapter(@NonNull final Context context,
                          @NonNull final Collection<SyncField> syncFields) {
             layoutInflater = LayoutInflater.from(context);
-            //noinspection ZeroLengthArrayAllocation
-            this.syncFields = syncFields.toArray(new SyncField[0]);
+            this.syncFields = syncFields.toArray(Z_ARRAY_SYNC_FIELD);
         }
 
         @NonNull
