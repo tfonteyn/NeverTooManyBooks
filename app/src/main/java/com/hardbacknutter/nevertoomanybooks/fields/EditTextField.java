@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,9 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.fields.endicon.ExtEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
@@ -42,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
  */
 public class EditTextField<T, V extends EditText>
         extends BaseTextField<T, V>
-        implements ExtTextWatcher {
+        implements ExtTextWatcher, MultiOnFocusChangeListener<T, V> {
 
     private static final String TAG = "EditTextField";
 
@@ -54,6 +57,9 @@ public class EditTextField<T, V extends EditText>
 
     /** Timer for the text watcher. */
     private long lastChange;
+
+    @Nullable
+    private ArrayList<View.OnFocusChangeListener> focusChangeListeners;
 
     /**
      * Constructor.
@@ -93,16 +99,44 @@ public class EditTextField<T, V extends EditText>
     }
 
     @NonNull
+    public EditTextField<T, V> addOnFocusChangeListener(
+            @NonNull final View.OnFocusChangeListener listener) {
+        if (focusChangeListeners == null) {
+            focusChangeListeners = new ArrayList<>();
+        }
+        if (!focusChangeListeners.contains(listener)) {
+            focusChangeListeners.add(listener);
+        }
+        return this;
+    }
+
+    public boolean removeOnFocusChangeListener(
+            @NonNull final View.OnFocusChangeListener listener) {
+        if (focusChangeListeners != null) {
+            return focusChangeListeners.remove(listener);
+        }
+        return false;
+    }
+
+    @NonNull
     public EditTextField<T, V> setEndIconMode(
             @ExtEndIconDelegate.EndIconMode final int endIconMode) {
         this.endIconMode = endIconMode;
         return this;
     }
 
+    @Nullable
+    public List<View.OnFocusChangeListener> getOnFocusChangeListeners() {
+        return focusChangeListeners;
+    }
+
     @Override
     public void setParentView(@NonNull final View parent) {
         super.setParentView(parent);
-        requireView().addTextChangedListener(this);
+
+        final V view = requireView();
+        view.addTextChangedListener(this);
+        view.setOnFocusChangeListener(this);
     }
 
     @Override
@@ -192,4 +226,5 @@ public class EditTextField<T, V extends EditText>
 
         notifyIfChanged(previous);
     }
+
 }

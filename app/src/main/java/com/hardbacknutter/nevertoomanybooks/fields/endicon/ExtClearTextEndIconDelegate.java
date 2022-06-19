@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,6 +43,7 @@ import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
+import com.hardbacknutter.nevertoomanybooks.fields.MultiOnFocusChangeListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 
 /**
@@ -51,17 +53,26 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
  * Most of the code in this class was copied from material 1.5 library
  * com.google.android.material.textfield.ClearTextEndIconDelegate
  */
-public class ExtClearTextEndIconDelegate
+public class ExtClearTextEndIconDelegate<V extends TextView, T>
         implements ExtEndIconDelegate {
 
     private static final TimeInterpolator LINEAR_INTERPOLATOR = new LinearInterpolator();
     private static final TimeInterpolator LINEAR_OUT_SLOW_IN_INTERPOLATOR =
             new LinearOutSlowInInterpolator();
+
     private static final int ANIMATION_FADE_DURATION = 100;
     private static final int ANIMATION_SCALE_DURATION = 150;
     private static final float ANIMATION_SCALE_FROM_VALUE = 0.8f;
 
+    @NonNull
+    private final Field<T, V> field;
+
     private TextInputLayout textInputLayout;
+
+    private AnimatorSet iconInAnim;
+
+    private ValueAnimator iconOutAnim;
+
     private final TextWatcher clearTextEndIconTextWatcher = new ExtTextWatcher() {
         @Override
         public void afterTextChanged(@NonNull final Editable s) {
@@ -71,22 +82,27 @@ public class ExtClearTextEndIconDelegate
             animateIcon(shouldBeVisible());
         }
     };
-    private AnimatorSet iconInAnim;
-    private ValueAnimator iconOutAnim;
-    private CheckableImageButton endIconView;
 
-    private final View.OnFocusChangeListener onFocusChangeListener =
+    private final View.OnFocusChangeListener focusChangeListener =
             (v, hasFocus) -> animateIcon(shouldBeVisible());
+
+    private CheckableImageButton endIconView;
 
     private final TextInputLayout.OnEditTextAttachedListener clearTextOnEditTextAttachedListener =
             new TextInputLayout.OnEditTextAttachedListener() {
                 @Override
                 public void onEditTextAttached(@NonNull final TextInputLayout textInputLayout) {
-                    final EditText editText = textInputLayout.getEditText();
+                    final EditText editText = Objects.requireNonNull(textInputLayout.getEditText());
                     textInputLayout.setEndIconVisible(shouldBeVisible());
-                    //noinspection ConstantConditions
-                    editText.setOnFocusChangeListener(onFocusChangeListener);
-                    endIconView.setOnFocusChangeListener(onFocusChangeListener);
+                    if (field instanceof MultiOnFocusChangeListener) {
+                        //noinspection unchecked
+                        ((MultiOnFocusChangeListener<T, V>) field)
+                                .addOnFocusChangeListener(focusChangeListener);
+                    } else {
+                        editText.setOnFocusChangeListener(focusChangeListener);
+                    }
+
+                    endIconView.setOnFocusChangeListener(focusChangeListener);
                     // Make sure there's always only one clear text text watcher added
                     editText.removeTextChangedListener(clearTextEndIconTextWatcher);
                     editText.addTextChangedListener(clearTextEndIconTextWatcher);
@@ -102,22 +118,33 @@ public class ExtClearTextEndIconDelegate
                     if (editText != null && previousIcon == TextInputLayout.END_ICON_CLEAR_TEXT) {
                         // Remove any listeners set on the edit text.
                         editText.post(() -> {
-                            editText.removeTextChangedListener(
-                                    clearTextEndIconTextWatcher);
+                            editText.removeTextChangedListener(clearTextEndIconTextWatcher);
                             // Make sure icon view is visible.
-                            animateIcon(/* show= */ true);
+                            animateIcon(true);
                         });
-                        if (editText.getOnFocusChangeListener() == onFocusChangeListener) {
-                            editText.setOnFocusChangeListener(null);
+
+                        if (field instanceof MultiOnFocusChangeListener) {
+                            //noinspection unchecked
+                            ((MultiOnFocusChangeListener<T, V>) field)
+                                    .removeOnFocusChangeListener(focusChangeListener);
+                        } else {
+                            if (editText.getOnFocusChangeListener() == focusChangeListener) {
+                                editText.setOnFocusChangeListener(null);
+                            }
                         }
-                        if (endIconView.getOnFocusChangeListener() == onFocusChangeListener) {
+                        if (endIconView.getOnFocusChangeListener() == focusChangeListener) {
                             endIconView.setOnFocusChangeListener(null);
                         }
                     }
                 }
             };
+
     @Nullable
     private Consumer<View> endIconOnClickConsumer;
+
+    public ExtClearTextEndIconDelegate(@NonNull final Field<T, V> field) {
+        this.field = field;
+    }
 
     @Override
     public void setOnClickConsumer(@Nullable final Consumer<View> endIconOnClickConsumer) {
@@ -232,5 +259,4 @@ public class ExtClearTextEndIconDelegate
         // removed the checks on "hasFocus()" from the original code.
         return editText != null && editText.getText().length() > 0;
     }
-
 }

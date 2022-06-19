@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -93,7 +93,7 @@ public abstract class BaseTextField<T, V extends TextView>
 
             // On of our own end-icon delegates?
             if (endIconMode == TextInputLayout.END_ICON_CLEAR_TEXT) {
-                endIconDelegate = new ExtClearTextEndIconDelegate();
+                endIconDelegate = new ExtClearTextEndIconDelegate<>(this);
                 endIconDelegate.setOnClickConsumer(v -> {
                     final T previous = getValue();
                     setValue(null);
