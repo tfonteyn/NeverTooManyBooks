@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -495,8 +495,8 @@ public class AuthorDaoImpl
         try (Cursor cursor = mDb.rawQuery(sql, paramList.toArray(Z_ARRAY_STRING))) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                final AuthorWork.Type type =
-                        AuthorWork.Type.getType(rowData.getString(DBKey.AUTHOR_WORK_TYPE).charAt(0));
+                final AuthorWork.Type type = AuthorWork.Type.getType(
+                        rowData.getString(DBKey.AUTHOR_WORK_TYPE).charAt(0));
 
                 switch (type) {
                     case TocEntry:
