@@ -80,6 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.ListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LongNumberFormatter;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public class EditBookViewModel
@@ -244,7 +245,7 @@ public class EditBookViewModel
      * @return Optional with the Field
      */
     @NonNull
-    Optional<Field<?, ? extends View>> getField(@IdRes final int id) {
+    private Optional<Field<?, ? extends View>> getField(@IdRes final int id) {
         return fields.stream()
                      .filter(field -> field.getFieldViewId() == id)
                      .findFirst();
@@ -920,13 +921,49 @@ public class EditBookViewModel
         fields.add(new DecimalEditTextField(fragmentId, R.id.price_listed, DBKey.PRICE_LISTED,
                                             doubleNumberFormatter)
                            .setTextInputLayoutId(R.id.lbl_price_listed)
-                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+                           .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT)
+                           // Copy to price_paid field if applicable
+                           .addOnFocusChangeListener((view, hasFocus) -> {
+                               if (!hasFocus) {
+                                   getField(R.id.price_paid).ifPresent(destField -> {
+                                       if (destField.isEmpty()) {
+                                           // Paranoia... parse it to a double.
+                                           final double value = ParseUtils.toDouble(
+                                                   requireField(R.id.price_listed)
+                                                           .getValue(), null);
+                                           getBook().putDouble(DBKey.PRICE_PAID, value);
+                                           //noinspection unchecked
+                                           ((Field<Double, ? extends View>) destField)
+                                                   .setValue(value);
+                                       }
+                                   });
+                               }
+                           }));
 
         fields.add(new AutoCompleteTextField(fragmentId, R.id.price_listed_currency,
                                              DBKey.PRICE_LISTED_CURRENCY,
                                              this::getAllListPriceCurrencyCodes)
                            .setTextInputLayoutId(R.id.lbl_price_listed_currency)
-                           .addRelatedViews(R.id.lbl_price_listed, R.id.price_listed_currency));
+                           // Copy to price_paid_currency field if applicable
+                           .addOnFocusChangeListener((v, hasFocus) -> {
+                               if (!hasFocus) {
+                                   getField(R.id.price_paid_currency).ifPresent(destField -> {
+                                       if (destField.isEmpty()) {
+                                           final String value = (String)
+                                                   requireField(R.id.price_listed_currency)
+                                                           .getValue();
+                                           if (value != null) {
+                                               getBook().putString(DBKey.PRICE_PAID_CURRENCY,
+                                                                   value);
+                                               //noinspection unchecked
+                                               ((Field<String, ? extends View>) destField)
+                                                       .setValue(value);
+                                           }
+                                       }
+                                   });
+                               }
+                           })
+                           .addRelatedViews(R.id.lbl_price_listed, R.id.price_listed));
 
         fields.add(new EditTextField<>(fragmentId, R.id.print_run, DBKey.PRINT_RUN)
                            .setTextInputLayoutId(R.id.lbl_print_run)
@@ -959,7 +996,7 @@ public class EditBookViewModel
                                              DBKey.PRICE_PAID_CURRENCY,
                                              this::getAllPricePaidCurrencyCodes)
                            .setTextInputLayoutId(R.id.lbl_price_paid_currency)
-                           .addRelatedViews(R.id.lbl_price_paid, R.id.price_paid_currency));
+                           .addRelatedViews(R.id.lbl_price_paid, R.id.price_paid));
 
         fields.add(new StringArrayDropDownMenuField(fragmentId, R.id.condition,
                                                     DBKey.BOOK_CONDITION,

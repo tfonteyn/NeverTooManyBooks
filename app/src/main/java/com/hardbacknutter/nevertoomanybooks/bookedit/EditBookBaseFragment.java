@@ -57,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
@@ -91,8 +90,7 @@ public abstract class EditBookBaseFragment
     private DateParser dateParser;
     private MenuHandlersMenuProvider menuHandlersMenuProvider;
     /** Listener for all field changes. MUST keep strong reference. */
-    private final Field.AfterChangedListener afterChangedListener =
-            this::onAfterFieldChange;
+    private final Field.AfterChangedListener afterChangedListener = this::onAfterFieldChange;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -171,6 +169,7 @@ public abstract class EditBookBaseFragment
                 title = "[" + book.getId() + "] " + title;
             }
             toolbar.setTitle(title);
+            //noinspection ConstantConditions
             toolbar.setSubtitle(Author.getCondensedNames(getContext(), book.getAuthors()));
         }
 
@@ -239,39 +238,7 @@ public abstract class EditBookBaseFragment
     /** Listener for all field changes. */
     @CallSuper
     public void onAfterFieldChange(@NonNull final Field<?, ? extends View> field) {
-        final Book book = vm.getBook();
-
-        book.setStage(EntityStage.Stage.Dirty);
-
-        // For new books, we copy a number of fields as appropriate by default.
-        // These fields might not be initialized, so use the 'Optional' returning method.
-        if (book.isNew()) {
-            if (field.getFieldViewId() == R.id.price_listed_currency) {
-                vm.getField(R.id.price_paid_currency).ifPresent(paidField -> {
-                    //URGENT: this only copies the first character (unless the dropdown is used)
-                    if (!field.isEmpty() && paidField.isEmpty()) {
-                        final String value = (String) field.getValue();
-                        //noinspection ConstantConditions
-                        vm.getBook().putString(DBKey.PRICE_PAID_CURRENCY, value);
-                        //noinspection unchecked
-                        ((Field<String, ? extends View>) paidField).setValue(value);
-                    }
-                });
-
-            } else if (field.getFieldViewId() == R.id.price_listed) {
-                vm.getField(R.id.price_paid).ifPresent(paidField -> {
-                    //URGENT: this only copies the first character.
-                    if (!field.isEmpty() && paidField.isEmpty()) {
-                        // Normally its always a double; but technically it might not be.
-                        final double value = ParseUtils.toDouble(field.getValue(), null);
-                        vm.getBook().putDouble(DBKey.PRICE_PAID, value);
-                        //noinspection unchecked
-                        ((Field<Double, ? extends View>) paidField).setValue(value);
-                    }
-                });
-            }
-        }
-
+        vm.getBook().setStage(EntityStage.Stage.Dirty);
         menuHandlersMenuProvider.onPrepareMenu(getToolbar().getMenu());
     }
 
