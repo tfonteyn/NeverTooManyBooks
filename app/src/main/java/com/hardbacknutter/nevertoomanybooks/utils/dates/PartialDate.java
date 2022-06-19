@@ -316,10 +316,10 @@ public class PartialDate
     @NonNull
     public String toString() {
         return "PartialDate{"
-               + "mLocalDate=" + localDate
-               + ", mYearSet=" + yearSet
-               + ", mMonthSet=" + monthSet
-               + ", mDaySet=" + daySet
+               + "localDate=" + localDate
+               + ", yearSet=" + yearSet
+               + ", monthSet=" + monthSet
+               + ", daySet=" + daySet
                + '}';
     }
 }
