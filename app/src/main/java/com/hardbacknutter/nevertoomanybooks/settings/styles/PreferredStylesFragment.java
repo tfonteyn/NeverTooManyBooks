@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -314,7 +314,7 @@ public class PreferredStylesFragment
 
             // click the checkbox -> toggle the 'preferred' status
             //noinspection ConstantConditions
-            holder.mCheckableButton.setOnClickListener(v -> togglePreferredStatus(holder));
+            holder.checkableButton.setOnClickListener(v -> togglePreferredStatus(holder));
 
             // click -> set the row as 'selected'.
             // Do NOT modify the 'preferred' state of the row here.
@@ -357,7 +357,7 @@ public class PreferredStylesFragment
 
             // set the 'preferred' state of the current row
             //noinspection ConstantConditions
-            holder.mCheckableButton.setChecked(style.isPreferred());
+            holder.checkableButton.setChecked(style.isPreferred());
 
             // set the 'selected' state of the current row
             holder.itemView.setSelected(position == vm.getSelectedPosition());
@@ -385,7 +385,7 @@ public class PreferredStylesFragment
             final boolean checked = !style.isPreferred();
             style.setPreferred(checked);
             //noinspection ConstantConditions
-            holder.mCheckableButton.setChecked(checked);
+            holder.checkableButton.setChecked(checked);
 
             // if the current position/style is no longer 'preferred' but was 'selected' ...
             if (!checked && vm.getSelectedPosition() == position) {

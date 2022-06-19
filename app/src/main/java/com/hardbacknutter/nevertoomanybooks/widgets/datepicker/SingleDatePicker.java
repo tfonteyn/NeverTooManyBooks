@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -18,8 +18,6 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.hardbacknutter.nevertoomanybooks.widgets.datepicker;
-
-import android.util.Log;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -41,18 +39,16 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 public class SingleDatePicker
         extends DatePickerBase<Long> {
 
-    private static final String TAG = "SingleDatePicker";
-
     /**
      * Constructor.
      *
-     * @param titleId for the dialog screen
-     * @param fieldId field this dialog is bound to
+     * @param titleResId for the dialog screen
+     * @param fieldId    field this dialog is bound to
      */
     public SingleDatePicker(@NonNull final FragmentManager fm,
-                            @StringRes final int titleId,
+                            @StringRes final int titleResId,
                             @IdRes final int fieldId) {
-        super(fm, titleId, fieldId);
+        super(fm, titleResId, fieldId);
     }
 
     /**
@@ -62,7 +58,7 @@ public class SingleDatePicker
      */
     public void launch(@Nullable final String value,
                        @NonNull final DatePickerListener listener) {
-        launch(parseDate(value, mTodayIfNone), listener);
+        launch(parseDate(value, todayIfNone), listener);
     }
 
     /**
@@ -77,18 +73,18 @@ public class SingleDatePicker
 
     private void launch(@Nullable final Long selection,
                         @NonNull final DatePickerListener listener) {
-        mListener = new WeakReference<>(listener);
+        this.listener = new WeakReference<>(listener);
 
         //noinspection unchecked
         MaterialDatePicker<Long> picker = (MaterialDatePicker<Long>)
-                mFragmentManager.findFragmentByTag(mFragmentTag);
+                fragmentManager.findFragmentByTag(fragmentTag);
         if (picker == null) {
             picker = MaterialDatePicker.Builder
                     .datePicker()
-                    .setTitleText(mTitleId)
+                    .setTitleText(titleResId)
                     .setSelection(selection)
                     .build();
-            picker.show(mFragmentManager, mFragmentTag);
+            picker.show(fragmentManager, fragmentTag);
         }
 
         // remove any dead listener, then set the current one
@@ -98,17 +94,17 @@ public class SingleDatePicker
 
     @Override
     public void onPositiveButtonClick(@Nullable final Long selection) {
-        if (mListener != null && mListener.get() != null) {
-            mListener.get().onResult(mFieldIds, new long[]{
-                    selection == null ? DatePickerListener.NO_SELECTION : selection});
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                if (mListener == null) {
-                    Log.w(TAG, "onPositiveButtonClick|mListener was NULL");
-                } else if (mListener.get() == null) {
-                    Log.w(TAG, "onPositiveButtonClick|mListener was dead");
-                }
+        if (BuildConfig.DEBUG /* always */) {
+            if (listener == null) {
+                throw new NullPointerException("onPositiveButtonClick|listener was NULL");
+            } else if (listener.get() == null) {
+                throw new NullPointerException("onPositiveButtonClick|listener was dead");
             }
+        }
+
+        if (listener != null && listener.get() != null) {
+            listener.get().onResult(fieldIds, new long[]{
+                    selection == null ? DatePickerListener.NO_SELECTION : selection});
         }
     }
 }

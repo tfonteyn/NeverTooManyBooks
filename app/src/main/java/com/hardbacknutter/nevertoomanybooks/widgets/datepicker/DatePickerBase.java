@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,59 +41,59 @@ abstract class DatePickerBase<S>
 
     private static final String TAG = "DatePicker";
     @NonNull
-    final FragmentManager mFragmentManager;
+    final FragmentManager fragmentManager;
     @NonNull
-    final String mFragmentTag;
+    final String fragmentTag;
 
     @StringRes
-    final int mTitleId;
+    final int titleResId;
 
     @IdRes
     @NonNull
-    final int[] mFieldIds;
+    final int[] fieldIds;
 
-    boolean mTodayIfNone;
+    boolean todayIfNone;
 
     @Nullable
-    WeakReference<DatePickerListener> mListener;
+    WeakReference<DatePickerListener> listener;
 
-    private DateParser mDateParser;
+    private DateParser dateParser;
 
     /**
      * Constructor.
      *
-     * @param titleId  for the dialog screen
-     * @param fieldIds field this dialog is bound to
+     * @param titleResId for the dialog screen
+     * @param fieldIds   field this dialog is bound to
      */
     DatePickerBase(@NonNull final FragmentManager fragmentManager,
-                   @StringRes final int titleId,
+                   @StringRes final int titleResId,
                    @IdRes @NonNull final int... fieldIds) {
-        mFragmentManager = fragmentManager;
-        mTitleId = titleId;
-        mFieldIds = fieldIds;
+        this.fragmentManager = fragmentManager;
+        this.titleResId = titleResId;
+        this.fieldIds = fieldIds;
 
-        mFragmentTag = TAG + String.join("_", Arrays.toString(fieldIds));
+        fragmentTag = TAG + String.join("_", Arrays.toString(fieldIds));
     }
 
     public void setDateParser(@NonNull final DateParser dateParser,
                               final boolean todayIfNone) {
-        mDateParser = dateParser;
-        mTodayIfNone = todayIfNone;
+        this.dateParser = dateParser;
+        this.todayIfNone = todayIfNone;
     }
 
     /**
      * This <strong>MUST</strong> be called from {@link Fragment#onResume()}.
      * <p>
-     * Developer note: yes, BOTH the {@link #mListener} and the underlying
+     * Developer note: yes, BOTH the {@link #listener} and the underlying
      * {@link MaterialDatePicker} listener must be set here AND at launch
      * time to ensure their validity after a screen rotation.
      */
     public void onResume(@NonNull final DatePickerListener listener) {
-        mListener = new WeakReference<>(listener);
+        this.listener = new WeakReference<>(listener);
 
         //noinspection unchecked
         final MaterialDatePicker<S> picker = (MaterialDatePicker<S>)
-                mFragmentManager.findFragmentByTag(mFragmentTag);
+                fragmentManager.findFragmentByTag(fragmentTag);
         if (picker != null) {
             // remove any dead listener, then set the current one
             picker.clearOnPositiveButtonClickListeners();
@@ -104,9 +104,9 @@ abstract class DatePickerBase<S>
     @Nullable
     Long parseDate(@Nullable final String value,
                    final boolean todayIfNone) {
-        Objects.requireNonNull(mDateParser, "mDateParser was NULL, call setDateParser() first");
+        Objects.requireNonNull(dateParser, "mDateParser was NULL, call setDateParser() first");
 
-        final Instant date = mDateParser.parseToInstant(value, todayIfNone);
+        final Instant date = dateParser.parseToInstant(value, todayIfNone);
         if (date != null) {
             return date.toEpochMilli();
         }

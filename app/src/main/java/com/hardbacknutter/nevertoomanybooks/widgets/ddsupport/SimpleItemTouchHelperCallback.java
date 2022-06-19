@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,13 +57,13 @@ public class SimpleItemTouchHelperCallback
     private static final float ALPHA_FULL = 1.0f;
 
     @NonNull
-    private final ItemTouchHelperAdapter mAdapter;
+    private final ItemTouchHelperAdapter adapter;
 
-    private boolean mIsLongPressDragEnabled;
-    private boolean mIsItemViewSwipeEnabled;
+    private boolean longPressDragEnabled;
+    private boolean itemViewSwipeEnabled;
 
     public SimpleItemTouchHelperCallback(@NonNull final ItemTouchHelperAdapter adapter) {
-        mAdapter = adapter;
+        this.adapter = adapter;
     }
 
     @Override
@@ -94,36 +94,36 @@ public class SimpleItemTouchHelperCallback
         }
 
         // Notify the adapter of the move
-        mAdapter.onItemMove(viewHolder.getBindingAdapterPosition(),
-                            target.getBindingAdapterPosition());
+        adapter.onItemMove(viewHolder.getBindingAdapterPosition(),
+                           target.getBindingAdapterPosition());
         return true;
     }
 
     @Override
     public boolean isLongPressDragEnabled() {
-        return mIsLongPressDragEnabled;
+        return longPressDragEnabled;
     }
 
     @SuppressWarnings("unused")
     public void setLongPressDragEnabled(final boolean longPressDragEnabled) {
-        mIsLongPressDragEnabled = longPressDragEnabled;
+        this.longPressDragEnabled = longPressDragEnabled;
     }
 
     @Override
     public boolean isItemViewSwipeEnabled() {
-        return mIsItemViewSwipeEnabled;
+        return itemViewSwipeEnabled;
     }
 
     @SuppressWarnings("unused")
     public void setItemViewSwipeEnabled(final boolean itemViewSwipeEnabled) {
-        mIsItemViewSwipeEnabled = itemViewSwipeEnabled;
+        this.itemViewSwipeEnabled = itemViewSwipeEnabled;
     }
 
     @Override
     public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder,
                          final int direction) {
         // Notify the adapter of the dismissal
-        mAdapter.onItemSwiped(viewHolder.getBindingAdapterPosition());
+        adapter.onItemSwiped(viewHolder.getBindingAdapterPosition());
     }
 
     @Override

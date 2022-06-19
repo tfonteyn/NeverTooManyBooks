@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,15 +49,15 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperV
         implements ItemTouchHelperAdapter {
 
     @NonNull
-    private final List<Item> mItems;
+    private final List<Item> items;
     /** Optional. */
     @Nullable
-    private final StartDragListener mDragStartListener;
+    private final StartDragListener dragStartListener;
     /** Cached inflater. */
     @NonNull
-    private final LayoutInflater mInflater;
+    private final LayoutInflater inflater;
     @NonNull
-    private final Context mContext;
+    private final Context context;
 
     /**
      * Constructor.
@@ -69,20 +69,20 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperV
     protected RecyclerViewAdapterBase(@NonNull final Context context,
                                       @NonNull final List<Item> items,
                                       @Nullable final StartDragListener dragStartListener) {
-        mContext = context;
-        mInflater = LayoutInflater.from(context);
-        mDragStartListener = dragStartListener;
-        mItems = items;
+        this.context = context;
+        inflater = LayoutInflater.from(context);
+        this.dragStartListener = dragStartListener;
+        this.items = items;
     }
 
     @NonNull
     protected LayoutInflater getLayoutInflater() {
-        return mInflater;
+        return inflater;
     }
 
     @NonNull
     protected Context getContext() {
-        return mContext;
+        return context;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -91,8 +91,8 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperV
     public void onBindViewHolder(@NonNull final VHT holder,
                                  final int position) {
 
-        if (holder.mDeleteButton != null) {
-            holder.mDeleteButton.setOnClickListener(v -> {
+        if (holder.deleteButton != null) {
+            holder.deleteButton.setOnClickListener(v -> {
                 final int adapterPosition = holder.getBindingAdapterPosition();
                 // 2019-09-25: yes, we CAN (and did) get a NO_POSITION value here. So check it!
                 if (adapterPosition == RecyclerView.NO_POSITION) {
@@ -106,11 +106,11 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperV
         }
 
         // If we support drag drop re-ordering,
-        if (mDragStartListener != null && holder.mDragHandleView != null) {
+        if (dragStartListener != null && holder.dragHandleView != null) {
             // Start a drag whenever the handle view is touched
-            holder.mDragHandleView.setOnTouchListener((v, event) -> {
+            holder.dragHandleView.setOnTouchListener((v, event) -> {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    mDragStartListener.onStartDrag(holder);
+                    dragStartListener.onStartDrag(holder);
                 }
                 return false;
             });
@@ -119,18 +119,18 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperV
 
     protected void onDelete(final int adapterPosition,
                             @NonNull final Item item) {
-        mItems.remove(item);
+        items.remove(item);
         notifyItemRemoved(adapterPosition);
     }
 
     @Override
     public int getItemCount() {
-        return mItems.size();
+        return items.size();
     }
 
     @NonNull
     public Item getItem(final int position) {
-        return mItems.get(position);
+        return items.get(position);
     }
 
     /**
@@ -146,7 +146,7 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperV
     @CallSuper
     public boolean onItemMove(final int fromPosition,
                               final int toPosition) {
-        Collections.swap(mItems, fromPosition, toPosition);
+        Collections.swap(items, fromPosition, toPosition);
         notifyItemMoved(fromPosition, toPosition);
         return true;
     }
@@ -159,6 +159,6 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperV
     @Override
     @CallSuper
     public void onItemSwiped(final int position) {
-        onDelete(position, mItems.get(position));
+        onDelete(position, items.get(position));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,17 +48,17 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
 
     /** Cached inflater. */
     @NonNull
-    private final LayoutInflater mInflater;
+    private final LayoutInflater inflater;
     @NonNull
-    private final List<ID> mItemIds;
+    private final List<ID> itemIds;
     @NonNull
-    private final List<CS> mItemLabels;
+    private final List<CS> itemLabels;
 
     /** The (pre-)selected items. */
     @NonNull
-    private final Set<ID> mSelection;
+    private final Set<ID> selection;
     @Nullable
-    private final SelectionListener<ID> mOnSelectionListener;
+    private final SelectionListener<ID> selectionListener;
 
 
     /**
@@ -76,18 +76,18 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
                                     @NonNull final List<CS> labels,
                                     @Nullable final Set<ID> selection,
                                     @Nullable final SelectionListener<ID> listener) {
-        mInflater = LayoutInflater.from(context);
-        mItemIds = ids;
-        mItemLabels = labels;
-        mSelection = selection != null ? selection : new HashSet<>();
-        mOnSelectionListener = listener;
+        inflater = LayoutInflater.from(context);
+        itemIds = ids;
+        itemLabels = labels;
+        this.selection = selection != null ? selection : new HashSet<>();
+        selectionListener = listener;
     }
 
     @Override
     @NonNull
     public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                      final int viewType) {
-        final View view = mInflater.inflate(R.layout.row_choice_multi, parent, false);
+        final View view = inflater.inflate(R.layout.row_choice_multi, parent, false);
         final Holder holder = new Holder(view);
         holder.btnOption.setOnClickListener(v -> onItemCheckChanged(holder));
         return holder;
@@ -96,9 +96,9 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
     @Override
     public void onBindViewHolder(@NonNull final Holder holder,
                                  final int position) {
-        final boolean checked = mSelection.contains(mItemIds.get(position));
+        final boolean checked = selection.contains(itemIds.get(position));
         holder.btnOption.setChecked(checked);
-        holder.btnOption.setText(mItemLabels.get(position));
+        holder.btnOption.setText(itemLabels.get(position));
     }
 
     private void onItemCheckChanged(@NonNull final Holder holder) {
@@ -106,16 +106,16 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
 
         final boolean selected = holder.btnOption.isChecked();
 
-        final ID itemId = mItemIds.get(position);
+        final ID itemId = itemIds.get(position);
         if (selected) {
-            mSelection.add(itemId);
+            selection.add(itemId);
         } else {
-            mSelection.remove(itemId);
+            selection.remove(itemId);
         }
 
-        if (mOnSelectionListener != null) {
+        if (selectionListener != null) {
             // use a post allowing the UI to update view first
-            holder.btnOption.post(() -> mOnSelectionListener.onSelected(itemId, selected));
+            holder.btnOption.post(() -> selectionListener.onSelected(itemId, selected));
         }
     }
 
@@ -126,12 +126,12 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
      */
     @NonNull
     public Set<ID> getSelection() {
-        return mSelection;
+        return selection;
     }
 
     @Override
     public int getItemCount() {
-        return mItemIds.size();
+        return itemIds.size();
     }
 
     @FunctionalInterface

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,22 +35,25 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class FabMenu {
 
     /** The normal FAB button; opens or closes the FAB menu. */
-    private final FloatingActionButton mFab;
+    private final FloatingActionButton fabButton;
+
     /** Overlay enabled while the FAB menu is shown to intercept clicks and close the FAB menu. */
     @NonNull
-    private final View mFabOverlay;
+    private final View fabOverlay;
+
     /** Array with the submenu FAB buttons. Element 0 shows at the bottom. */
-    private ExtendedFloatingActionButton[] mFabMenuItems;
+    private ExtendedFloatingActionButton[] fabMenuItems;
+
     /** Define a scroller to show, or collapse/hide the FAB. */
-    private final RecyclerView.OnScrollListener mUpdateFABVisibility =
+    private final RecyclerView.OnScrollListener updateFabVisibility =
             new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(@NonNull final RecyclerView recyclerView,
                                        final int dx,
                                        final int dy) {
-                    if (dy > 0 || dy < 0 && mFab.isShown()) {
+                    if (dy > 0 || dy < 0 && fabButton.isShown()) {
                         hideMenu();
-                        mFab.hide();
+                        fabButton.hide();
                     }
                 }
 
@@ -62,7 +65,7 @@ public class FabMenu {
                     if (newState == RecyclerView.SCROLL_STATE_IDLE
                         || newState == RecyclerView.SCROLL_STATE_SETTLING) {
                         hideMenu();
-                        mFab.show();
+                        fabButton.show();
                     }
                     super.onScrollStateChanged(recyclerView, newState);
                 }
@@ -71,40 +74,40 @@ public class FabMenu {
     /**
      * Constructor.
      *
-     * @param fab        the standard FAB button
+     * @param fabButton  the standard FAB button
      * @param fabOverlay the overlay view
      * @param items      the fab menu items
      */
-    public FabMenu(@NonNull final FloatingActionButton fab,
+    public FabMenu(@NonNull final FloatingActionButton fabButton,
                    @NonNull final View fabOverlay,
                    @Nullable final ExtendedFloatingActionButton... items) {
-        mFab = fab;
-        mFab.setOnClickListener(v -> show(!mFabMenuItems[0].isShown()));
-        mFabOverlay = fabOverlay;
+        this.fabButton = fabButton;
+        this.fabButton.setOnClickListener(v -> show(!fabMenuItems[0].isShown()));
+        this.fabOverlay = fabOverlay;
 
         if (items != null && items.length > 0) {
-            mFabMenuItems = new ExtendedFloatingActionButton[items.length];
-            System.arraycopy(items, 0, mFabMenuItems, 0, items.length);
+            fabMenuItems = new ExtendedFloatingActionButton[items.length];
+            System.arraycopy(items, 0, fabMenuItems, 0, items.length);
         }
     }
 
     public void setOnClickListener(@NonNull final View.OnClickListener listener) {
-        for (final ExtendedFloatingActionButton fabMenuItem : mFabMenuItems) {
+        for (final ExtendedFloatingActionButton fabMenuItem : fabMenuItems) {
             fabMenuItem.setOnClickListener(listener);
         }
     }
 
     @NonNull
     public ExtendedFloatingActionButton getItem(final int index) {
-        return mFabMenuItems[index];
+        return fabMenuItems[index];
     }
 
     public void attach(@NonNull final RecyclerView recyclerView) {
-        recyclerView.addOnScrollListener(mUpdateFABVisibility);
+        recyclerView.addOnScrollListener(updateFabVisibility);
     }
 
     public boolean isShown() {
-        return mFabMenuItems[0].isShown();
+        return fabMenuItems[0].isShown();
     }
 
     /**
@@ -113,7 +116,7 @@ public class FabMenu {
      * @return {@code true} if it was visible before. {@code false} if this was a no-operation.
      */
     public boolean hideMenu() {
-        if (mFabMenuItems[0].isShown()) {
+        if (fabMenuItems[0].isShown()) {
             show(false);
             return true;
         }
@@ -127,24 +130,24 @@ public class FabMenu {
      */
     public void show(final boolean show) {
         if (show) {
-            mFab.setImageResource(R.drawable.ic_baseline_close_24);
+            fabButton.setImageResource(R.drawable.ic_baseline_close_24);
             // mFabOverlay overlaps the whole screen and intercepts clicks.
             // This does not include the ToolBar.
-            mFabOverlay.setVisibility(View.VISIBLE);
-            mFabOverlay.setOnClickListener(v -> hideMenu());
+            fabOverlay.setVisibility(View.VISIBLE);
+            fabOverlay.setOnClickListener(v -> hideMenu());
         } else {
-            mFab.setImageResource(R.drawable.ic_baseline_add_24);
-            mFabOverlay.setVisibility(View.GONE);
-            mFabOverlay.setOnClickListener(null);
+            fabButton.setImageResource(R.drawable.ic_baseline_add_24);
+            fabOverlay.setVisibility(View.GONE);
+            fabOverlay.setOnClickListener(null);
         }
 
-        final Resources res = mFab.getResources();
+        final Resources res = fabButton.getResources();
 
         final TypedArray baseX = res.obtainTypedArray(R.array.fab_menu_translationX_all);
         final TypedArray baseY = res.obtainTypedArray(R.array.fab_menu_translationY_all);
 
-        for (int i = 0; i < mFabMenuItems.length; i++) {
-            final ExtendedFloatingActionButton fab = mFabMenuItems[i];
+        for (int i = 0; i < fabMenuItems.length; i++) {
+            final ExtendedFloatingActionButton fab = fabMenuItems[i];
             // allow for null items
             if (fab != null && fab.isEnabled()) {
                 if (show) {

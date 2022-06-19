@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,18 +51,18 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 public class ExtPopupMenu {
 
     @NonNull
-    private final VBLite mVb;
+    private final VBLite vb;
 
-    private final int mXOffset;
-    private final int mPaddingBottom;
-
-    @NonNull
-    private final PopupWindow mPopupWindow;
+    private final int xOffset;
+    private final int paddingBottom;
 
     @NonNull
-    private Menu mMenu;
-    private boolean mGroupDividerEnabled;
-    private MenuItemListAdapter mAdapter;
+    private final PopupWindow popupWindow;
+
+    @NonNull
+    private Menu menu;
+    private boolean groupDividerEnabled;
+    private MenuItemListAdapter adapter;
 
     /**
      * Constructor.
@@ -76,34 +76,34 @@ public class ExtPopupMenu {
     public ExtPopupMenu(@NonNull final Context context) {
         // legal trick to get an instance of Menu.
         // We leave the anchor 'null' as we're not actually going to display this object.
-        mMenu = new PopupMenu(context, null).getMenu();
+        menu = new PopupMenu(context, null).getMenu();
 
         final Resources res = context.getResources();
-        mPaddingBottom = res.getDimensionPixelSize(R.dimen.dialogPreferredPaddingBottom);
-        mXOffset = res.getDimensionPixelSize(R.dimen.popup_menu_x_offset);
+        paddingBottom = res.getDimensionPixelSize(R.dimen.dialogPreferredPaddingBottom);
+        xOffset = res.getDimensionPixelSize(R.dimen.popup_menu_x_offset);
 
-        mVb = new VBLite(LayoutInflater.from(context).inflate(R.layout.popup_menu, null, false));
+        vb = new VBLite(LayoutInflater.from(context).inflate(R.layout.popup_menu, null, false));
 
-        mPopupWindow = new PopupWindow(context);
-        mPopupWindow.setFocusable(true);
-        mPopupWindow.setContentView(mVb.rootView);
+        popupWindow = new PopupWindow(context);
+        popupWindow.setFocusable(true);
+        popupWindow.setContentView(vb.rootView);
 
-        mPopupWindow.setBackgroundDrawable(
+        popupWindow.setBackgroundDrawable(
                 AttrUtils.getDrawable(context, R.attr.popupMenuBackground));
-        mPopupWindow.setElevation(res.getDimensionPixelSize(R.dimen.popup_menu_elevation));
+        popupWindow.setElevation(res.getDimensionPixelSize(R.dimen.popup_menu_elevation));
     }
 
     /**
      * Inflate a menu resource into this PopupMenu. This is equivalent to
      * calling {@code popupMenu.getMenuInflater().inflate(menuRes, popupMenu.getMenu())}.
      *
-     * @param menuRes Menu resource to inflate
+     * @param menuResId Menu resource to inflate
      *
      * @return {@code this} (for chaining)
      */
     @NonNull
-    public ExtPopupMenu inflate(@MenuRes final int menuRes) {
-        getMenuInflater().inflate(menuRes, mMenu);
+    public ExtPopupMenu inflate(@MenuRes final int menuResId) {
+        getMenuInflater().inflate(menuResId, menu);
         return this;
     }
 
@@ -117,7 +117,7 @@ public class ExtPopupMenu {
      */
     @NonNull
     public ExtPopupMenu setGroupDividerEnabled() {
-        mGroupDividerEnabled = true;
+        groupDividerEnabled = true;
         return this;
     }
 
@@ -131,10 +131,10 @@ public class ExtPopupMenu {
     @NonNull
     public ExtPopupMenu setTitle(@Nullable final CharSequence title) {
         if (title != null && title.length() > 0) {
-            mVb.title.setVisibility(View.VISIBLE);
-            mVb.title.setText(title);
+            vb.title.setVisibility(View.VISIBLE);
+            vb.title.setText(title);
         } else {
-            mVb.title.setVisibility(View.GONE);
+            vb.title.setVisibility(View.GONE);
         }
         return this;
     }
@@ -149,10 +149,10 @@ public class ExtPopupMenu {
     @NonNull
     public ExtPopupMenu setMessage(@Nullable final CharSequence message) {
         if (message != null && message.length() > 0) {
-            mVb.message.setVisibility(View.VISIBLE);
-            mVb.message.setText(message);
+            vb.message.setVisibility(View.VISIBLE);
+            vb.message.setText(message);
         } else {
-            mVb.message.setVisibility(View.GONE);
+            vb.message.setVisibility(View.GONE);
         }
         return this;
     }
@@ -164,7 +164,7 @@ public class ExtPopupMenu {
      * @see #getMenu()
      */
     public MenuInflater getMenuInflater() {
-        return new MenuInflater(mPopupWindow.getContentView().getContext());
+        return new MenuInflater(popupWindow.getContentView().getContext());
     }
 
     /**
@@ -179,7 +179,7 @@ public class ExtPopupMenu {
      */
     @NonNull
     public Menu getMenu() {
-        return mMenu;
+        return menu;
     }
 
     /**
@@ -190,10 +190,10 @@ public class ExtPopupMenu {
      */
     @SuppressLint("NotifyDataSetChanged")
     public void setMenu(@NonNull final Menu menu) {
-        mMenu = menu;
-        if (mAdapter != null) {
-            mAdapter.setMenu(mMenu);
-            mAdapter.notifyDataSetChanged();
+        this.menu = menu;
+        if (adapter != null) {
+            adapter.setMenu(this.menu);
+            adapter.notifyDataSetChanged();
         }
     }
 
@@ -209,10 +209,10 @@ public class ExtPopupMenu {
         initAdapter(anchor.getContext(), listener);
 
         final int[] wh = calculatePopupWindowWidthAndHeight();
-        mPopupWindow.setWidth(wh[0]);
-        mPopupWindow.setHeight(wh[1]);
+        popupWindow.setWidth(wh[0]);
+        popupWindow.setHeight(wh[1]);
         // preferred location: halfway on top of the anchor, and indented by mXOffset
-        mPopupWindow.showAsDropDown(anchor, mXOffset, -anchor.getHeight() / 2);
+        popupWindow.showAsDropDown(anchor, xOffset, -anchor.getHeight() / 2);
     }
 
     /**
@@ -247,10 +247,10 @@ public class ExtPopupMenu {
      * @return int[0] width, int[1] height
      */
     private int[] calculatePopupWindowWidthAndHeight() {
-        final View contentView = mPopupWindow.getContentView();
+        final View contentView = popupWindow.getContentView();
         contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         return new int[]{contentView.getMeasuredWidth(),
-                         contentView.getMeasuredHeight() + mPaddingBottom};
+                         contentView.getMeasuredHeight() + paddingBottom};
     }
 
     /**
@@ -271,9 +271,9 @@ public class ExtPopupMenu {
         initAdapter(view.getContext(), listener);
 
         if (gravity == Gravity.START || gravity == Gravity.END) {
-            mPopupWindow.showAtLocation(view, gravity, mXOffset, 0);
+            popupWindow.showAtLocation(view, gravity, xOffset, 0);
         } else if (gravity == Gravity.CENTER) {
-            mPopupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+            popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
         } else {
             throw new IllegalArgumentException(String.valueOf(gravity));
         }
@@ -281,8 +281,8 @@ public class ExtPopupMenu {
 
     private void initAdapter(@NonNull final Context context,
                              @NonNull final OnMenuItemClickListener listener) {
-        mAdapter = new MenuItemListAdapter(context, mMenu, listener);
-        mVb.itemList.setAdapter(mAdapter);
+        adapter = new MenuItemListAdapter(context, menu, listener);
+        vb.itemList.setAdapter(adapter);
     }
 
     /**
@@ -394,7 +394,7 @@ public class ExtPopupMenu {
                 final MenuItem item = menu.getItem(i);
                 final int groupId = item.getGroupId();
                 if (item.isVisible()) {
-                    if (mGroupDividerEnabled && groupId != previousGroupId) {
+                    if (groupDividerEnabled && groupId != previousGroupId) {
                         previousGroupId = groupId;
                         // this is silly... but the only way we can create a MenuItem directly
                         final MenuItem divider = new PopupMenu(mInflater.getContext(), null)
@@ -435,16 +435,16 @@ public class ExtPopupMenu {
             final MenuItem item = mList.get(holder.getBindingAdapterPosition());
             if (item.isEnabled()) {
                 if (item.hasSubMenu()) {
-                    mVb.title.setText(item.getTitle());
-                    mVb.title.setVisibility(View.VISIBLE);
+                    vb.title.setText(item.getTitle());
+                    vb.title.setVisibility(View.VISIBLE);
                     setMenu(item.getSubMenu());
                     notifyDataSetChanged();
 
                     final int[] wh = calculatePopupWindowWidthAndHeight();
-                    mPopupWindow.update(wh[0], wh[1]);
+                    popupWindow.update(wh[0], wh[1]);
 
                 } else {
-                    mPopupWindow.dismiss();
+                    popupWindow.dismiss();
                     mListener.onMenuItemClick(item);
                 }
             }

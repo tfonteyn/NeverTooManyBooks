@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -55,11 +55,11 @@ public final class WrappedMaterialDatePicker<S>
     public static final long NO_SELECTION = -1L;
 
     /** The wrapped picker. */
-    private final MaterialDatePicker<S> mPicker;
+    private final MaterialDatePicker<S> picker;
     @IdRes
-    private final int[] mFieldIds;
+    private final int[] fieldIds;
     /** key to use for the FragmentResultListener. */
-    private final String mRequestKey;
+    private final String requestKey;
 
     /**
      * Constructor.
@@ -73,9 +73,9 @@ public final class WrappedMaterialDatePicker<S>
     private WrappedMaterialDatePicker(@NonNull final String requestKey,
                                       @NonNull final MaterialDatePicker<S> picker,
                                       @NonNull @IdRes final int... fieldIds) {
-        mRequestKey = requestKey;
-        mPicker = picker;
-        mFieldIds = fieldIds;
+        this.requestKey = requestKey;
+        this.picker = picker;
+        this.fieldIds = fieldIds;
     }
 
     /**
@@ -84,25 +84,25 @@ public final class WrappedMaterialDatePicker<S>
      * @param fm The FragmentManager this fragment will be added to.
      */
     public void show(@NonNull final FragmentManager fm) {
-        mPicker.addOnPositiveButtonClickListener(this);
-        mPicker.show(fm, mRequestKey);
+        picker.addOnPositiveButtonClickListener(this);
+        picker.show(fm, requestKey);
     }
 
     @Override
     public void onPositiveButtonClick(@Nullable final S selection) {
         if (selection == null) {
-            Launcher.setResult(mPicker, mRequestKey, mFieldIds, NO_SELECTION);
+            Launcher.setResult(picker, requestKey, fieldIds, NO_SELECTION);
 
         } else if (selection instanceof Long) {
             final long date = (Long) selection;
-            Launcher.setResult(mPicker, mRequestKey, mFieldIds, date);
+            Launcher.setResult(picker, requestKey, fieldIds, date);
 
         } else if (selection instanceof Pair) {
             //noinspection unchecked
             final Pair<Long, Long> range = (Pair<Long, Long>) selection;
             final long start = range.first != null ? range.first : NO_SELECTION;
             final long end = range.second != null ? range.second : NO_SELECTION;
-            Launcher.setResult(mPicker, mRequestKey, mFieldIds, start, end);
+            Launcher.setResult(picker, requestKey, fieldIds, start, end);
 
         } else {
             throw new IllegalArgumentException(selection.toString());
@@ -114,13 +114,13 @@ public final class WrappedMaterialDatePicker<S>
 
         private static final String FIELD_ID = "fieldId";
         private static final String SELECTIONS = "selections";
-        private final String mRequestKey;
-        private FragmentManager mFragmentManager;
+        private final String requestKey;
+        private FragmentManager fragmentManager;
 
-        private DateParser mDateParser;
+        private DateParser dateParser;
 
         public Launcher(@NonNull final String requestKey) {
-            mRequestKey = requestKey;
+            this.requestKey = requestKey;
         }
 
         static void setResult(@NonNull final Fragment fragment,
@@ -134,13 +134,13 @@ public final class WrappedMaterialDatePicker<S>
         }
 
         public void setDateParser(@NonNull final DateParser dateParser) {
-            mDateParser = dateParser;
+            this.dateParser = dateParser;
         }
 
         @Nullable
         private Long getInstant(@Nullable final String value,
                                 final boolean todayIfNone) {
-            final Instant date = mDateParser.parseToInstant(value, todayIfNone);
+            final Instant date = dateParser.parseToInstant(value, todayIfNone);
             if (date != null) {
                 return date.toEpochMilli();
             }
@@ -150,64 +150,64 @@ public final class WrappedMaterialDatePicker<S>
         /**
          * Launch the dialog to select a single date.
          *
-         * @param titleId     for the dialog screen
+         * @param titleResId  for the dialog screen
          * @param fieldId     field this dialog is bound to
          * @param value       current selection (a parsable date string),
          *                    or {@code null} for none
          * @param todayIfNone if {@code true}, and if the field value empty,
          *                    default to today's date.
          */
-        public void launch(@StringRes final int titleId,
+        public void launch(@StringRes final int titleResId,
                            @IdRes final int fieldId,
                            @Nullable final String value,
                            final boolean todayIfNone) {
 
             final Long selection = getInstant(value, todayIfNone);
 
-            new WrappedMaterialDatePicker<>(mRequestKey,
+            new WrappedMaterialDatePicker<>(requestKey,
                                             MaterialDatePicker.Builder
                                                     .datePicker()
-                                                    .setTitleText(titleId)
+                                                    .setTitleText(titleResId)
                                                     .setSelection(selection)
                                                     .build(),
                                             fieldId)
-                    .show(mFragmentManager);
+                    .show(fragmentManager);
         }
 
         /**
          * Launch the dialog to select a single date.
          *
-         * @param titleId for the dialog screen
-         * @param fieldId field this dialog is bound to
-         * @param time    current selection, or {@code null} for none
+         * @param titleResId for the dialog screen
+         * @param fieldId    field this dialog is bound to
+         * @param time       current selection, or {@code null} for none
          */
-        public void launch(@StringRes final int titleId,
+        public void launch(@StringRes final int titleResId,
                            @IdRes final int fieldId,
                            @Nullable final LocalDateTime time) {
 
             final Long selection =
                     time != null ? time.toInstant(ZoneOffset.UTC).toEpochMilli() : null;
 
-            new WrappedMaterialDatePicker<>(mRequestKey,
+            new WrappedMaterialDatePicker<>(requestKey,
                                             MaterialDatePicker.Builder
                                                     .datePicker()
-                                                    .setTitleText(titleId)
+                                                    .setTitleText(titleResId)
                                                     .setSelection(selection)
                                                     .build(),
                                             fieldId)
-                    .show(mFragmentManager);
+                    .show(fragmentManager);
         }
 
         /**
          * Launch the dialog to select a date span.
          *
-         * @param titleId      for the dialog screen
+         * @param titleResId   for the dialog screen
          * @param startFieldId field for the start-date this dialog is bound to
          * @param timeStart    current start-selection, or {@code null} for none
          * @param endFieldId   field for the end-date this dialog is bound to
          * @param timeEnd      current end-selection, or {@code null} for none
          */
-        public void launch(@StringRes final int titleId,
+        public void launch(@StringRes final int titleResId,
                            @IdRes final int startFieldId,
                            @Nullable final String timeStart,
                            @IdRes final int endFieldId,
@@ -224,15 +224,15 @@ public final class WrappedMaterialDatePicker<S>
                 endSelection = tmp;
             }
 
-            new WrappedMaterialDatePicker<>(mRequestKey,
+            new WrappedMaterialDatePicker<>(requestKey,
                                             MaterialDatePicker.Builder
                                                     .dateRangePicker()
-                                                    .setTitleText(titleId)
+                                                    .setTitleText(titleResId)
                                                     .setSelection(new Pair<>(startSelection,
                                                                              endSelection))
                                                     .build(),
                                             startFieldId, endFieldId)
-                    .show(mFragmentManager);
+                    .show(fragmentManager);
         }
 
         @Override
@@ -264,8 +264,8 @@ public final class WrappedMaterialDatePicker<S>
 
         public void register(@NonNull final FragmentManager fragmentManager,
                              @NonNull final LifecycleOwner lifecycleOwner) {
-            mFragmentManager = fragmentManager;
-            mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
+            this.fragmentManager = fragmentManager;
+            this.fragmentManager.setFragmentResultListener(requestKey, lifecycleOwner, this);
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -191,7 +191,7 @@ public class SearchOrderFragment
                     .inflate(R.layout.row_edit_searchsite, parent, false);
             final Holder holder = new Holder(view);
             //noinspection ConstantConditions
-            holder.mCheckableButton.setOnClickListener(v -> onItemCheckChanged(holder));
+            holder.checkableButton.setOnClickListener(v -> onItemCheckChanged(holder));
             return holder;
         }
 
@@ -199,7 +199,7 @@ public class SearchOrderFragment
             final Site site = getItem(holder.getBindingAdapterPosition());
             site.setEnabled(!site.isEnabled());
             //noinspection ConstantConditions
-            holder.mCheckableButton.setChecked(site.isEnabled());
+            holder.checkableButton.setChecked(site.isEnabled());
         }
 
         @Override
@@ -216,7 +216,7 @@ public class SearchOrderFragment
             holder.nameView.setText(searchEngine.getName(context));
 
             //noinspection ConstantConditions
-            holder.mCheckableButton.setChecked(site.isEnabled());
+            holder.checkableButton.setChecked(site.isEnabled());
 
             // only show the info for Data lists. Irrelevant for others.
             if (site.getType() == Site.Type.Data) {

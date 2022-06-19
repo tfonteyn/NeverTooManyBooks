@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -186,7 +186,7 @@ public class StyleGroupsFragment
                     .inflate(R.layout.row_edit_style_groups, parent, false);
             final Holder holder = new Holder(view);
             //noinspection ConstantConditions
-            holder.mCheckableButton.setOnClickListener(v -> onItemCheckChanged(holder));
+            holder.checkableButton.setOnClickListener(v -> onItemCheckChanged(holder));
             return holder;
         }
 
@@ -196,7 +196,7 @@ public class StyleGroupsFragment
             final boolean newStatus = !wrappedGroup.isPresent();
             wrappedGroup.setPresent(newStatus);
             //noinspection ConstantConditions
-            holder.mCheckableButton.setChecked(newStatus);
+            holder.checkableButton.setChecked(newStatus);
             notifyItemChanged(position);
         }
 
@@ -209,7 +209,7 @@ public class StyleGroupsFragment
 
             holder.nameView.setText(wrappedGroup.getGroup().getLabel(getContext()));
             //noinspection ConstantConditions
-            holder.mCheckableButton.setChecked(wrappedGroup.isPresent());
+            holder.checkableButton.setChecked(wrappedGroup.isPresent());
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -55,22 +55,22 @@ public abstract class ItemTouchHelperViewHolderBase
 
     /** optional row checkable button. */
     @Nullable
-    public final CompoundButton mCheckableButton;
+    public final CompoundButton checkableButton;
     /** The details part of the row (or the row itself). */
     @NonNull
     public final View rowDetailsView;
     /** optional drag handle button for drag/drop support. */
     @Nullable
-    final ImageView mDragHandleView;
+    final ImageView dragHandleView;
     /** optional row delete button. */
     @Nullable
-    final View mDeleteButton;
+    final View deleteButton;
 
     /** used while dragging. */
     @ColorInt
-    private final int mItemDraggedBackgroundColor;
+    private final int itemDraggedBackgroundColor;
     /** preserves the original background while dragging. */
-    private Drawable mOriginalItemSelectedBackground;
+    private Drawable originalItemSelectedBackground;
 
     protected ItemTouchHelperViewHolderBase(@NonNull final View itemView) {
         super(itemView);
@@ -82,18 +82,18 @@ public abstract class ItemTouchHelperViewHolderBase
         rowDetailsView.setFocusable(false);
 
         // optional
-        mDeleteButton = itemView.findViewById(R.id.ROW_DELETE_BTN);
-        mCheckableButton = itemView.findViewById(R.id.ROW_CHECKABLE_BTN);
-        mDragHandleView = itemView.findViewById(R.id.ROW_GRABBER_ICON);
+        deleteButton = itemView.findViewById(R.id.ROW_DELETE_BTN);
+        checkableButton = itemView.findViewById(R.id.ROW_CHECKABLE_BTN);
+        dragHandleView = itemView.findViewById(R.id.ROW_GRABBER_ICON);
 
-        mItemDraggedBackgroundColor = AttrUtils.getColorInt(itemView.getContext(),
-                                                            R.attr.colorPrimary);
+        itemDraggedBackgroundColor = AttrUtils.getColorInt(itemView.getContext(),
+                                                           R.attr.colorPrimary);
     }
 
     @Override
     public void onItemDragStarted() {
-        mOriginalItemSelectedBackground = itemView.getBackground();
-        itemView.setBackgroundColor(mItemDraggedBackgroundColor);
+        originalItemSelectedBackground = itemView.getBackground();
+        itemView.setBackgroundColor(itemDraggedBackgroundColor);
     }
 
     @Override
@@ -101,6 +101,6 @@ public abstract class ItemTouchHelperViewHolderBase
         //2022-03-28: this used to work by just calling 'setBackground'
         // It seems we now ALSO need to call 'setBackgroundColor' ??
         itemView.setBackgroundColor(Color.TRANSPARENT);
-        itemView.setBackground(mOriginalItemSelectedBackground);
+        itemView.setBackground(originalItemSelectedBackground);
     }
 }

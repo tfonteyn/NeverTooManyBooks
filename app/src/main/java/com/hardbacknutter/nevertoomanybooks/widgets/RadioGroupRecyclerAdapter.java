@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,17 +47,16 @@ public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
 
     /** Cached inflater. */
     @NonNull
-    private final LayoutInflater mInflater;
+    private final LayoutInflater inflater;
     @NonNull
-    private final List<ID> mItemIds;
+    private final List<ID> itemIds;
     @NonNull
-    private final List<CS> mItemLabels;
-
+    private final List<CS> itemLabels;
+    @Nullable
+    private final SelectionListener<ID> selectionListener;
     /** The (pre-)selected item. */
     @Nullable
-    private ID mSelection;
-    @Nullable
-    private final SelectionListener<ID> mOnSelectionListener;
+    private ID selection;
 
     /**
      * Constructor.
@@ -75,18 +74,18 @@ public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
                                      @Nullable final ID selection,
                                      @Nullable final SelectionListener<ID> listener) {
 
-        mInflater = LayoutInflater.from(context);
-        mItemIds = ids;
-        mItemLabels = labels;
-        mSelection = selection;
-        mOnSelectionListener = listener;
+        inflater = LayoutInflater.from(context);
+        itemIds = ids;
+        itemLabels = labels;
+        this.selection = selection;
+        selectionListener = listener;
     }
 
     @Override
     @NonNull
     public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                      final int viewType) {
-        final View view = mInflater.inflate(R.layout.row_choice_single, parent, false);
+        final View view = inflater.inflate(R.layout.row_choice_single, parent, false);
         final Holder holder = new Holder(view);
         holder.btnOption.setOnClickListener(v -> onItemCheckChanged(holder));
         return holder;
@@ -95,22 +94,22 @@ public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
     @Override
     public void onBindViewHolder(@NonNull final Holder holder,
                                  final int position) {
-        final boolean checked = mSelection != null && mSelection == mItemIds.get(position);
+        final boolean checked = selection != null && selection == itemIds.get(position);
         holder.btnOption.setChecked(checked);
-        holder.btnOption.setText(mItemLabels.get(position));
+        holder.btnOption.setText(itemLabels.get(position));
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private void onItemCheckChanged(@NonNull final Holder holder) {
         final int position = holder.getAbsoluteAdapterPosition();
 
-        mSelection = mItemIds.get(position);
+        selection = itemIds.get(position);
         // this triggers a bind call for all rows, which in turn (un)sets the checked row.
         notifyDataSetChanged();
 
-        if (mOnSelectionListener != null) {
+        if (selectionListener != null) {
             // use a post allowing the UI to update the view first
-            holder.btnOption.post(() -> mOnSelectionListener.onSelected(mSelection));
+            holder.btnOption.post(() -> selectionListener.onSelected(selection));
         }
     }
 
@@ -121,12 +120,12 @@ public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
      */
     @Nullable
     public ID getSelection() {
-        return mSelection;
+        return selection;
     }
 
     @Override
     public int getItemCount() {
-        return mItemIds.size();
+        return itemIds.size();
     }
 
     @FunctionalInterface
