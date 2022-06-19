@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -26,6 +26,15 @@
     tools:showIn="@layout/fragment_book_details"
     tools:viewBindingIgnore="true"
     >
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/col1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="end"
+        app:barrierMargin="@dimen/field_margin_inline"
+        app:constraint_referenced_ids="lbl_bookshelves,lbl_notes,lbl_date_acquired,lbl_price_paid,lbl_condition,lbl_condition_cover,lbl_read_start,lbl_read_end,lbl_location_long"
+        />
 
     <TextView
         android:id="@+id/lbl_bookshelves"
@@ -80,12 +89,11 @@
         app:layout_constraintTop_toBottomOf="@id/notes"
         />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/personal_middle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5"
+    <Space
+        android:id="@+id/spacer"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/section_margin_top"
+        app:layout_constraintTop_toBottomOf="@id/signed"
         />
 
     <TextView
@@ -99,8 +107,8 @@
     <TextView
         android:id="@+id/date_acquired"
         style="@style/Field.Generic"
-        app:layout_constraintStart_toEndOf="@id/personal_middle"
-        app:layout_constraintTop_toBottomOf="@id/signed"
+        app:layout_constraintStart_toEndOf="@id/col1"
+        app:layout_constraintTop_toBottomOf="@id/spacer"
         tools:ignore="SelectableText"
         tools:text="@sample/data.json/date/long"
         />
@@ -116,7 +124,7 @@
     <TextView
         android:id="@+id/price_paid"
         style="@style/Field.Generic"
-        app:layout_constraintStart_toEndOf="@id/personal_middle"
+        app:layout_constraintStart_toEndOf="@id/col1"
         app:layout_constraintTop_toBottomOf="@id/date_acquired"
         tools:ignore="SelectableText"
         tools:text="$45"
@@ -133,7 +141,7 @@
     <TextView
         android:id="@+id/condition"
         style="@style/Field.Generic"
-        app:layout_constraintStart_toEndOf="@id/personal_middle"
+        app:layout_constraintStart_toEndOf="@id/col1"
         app:layout_constraintTop_toBottomOf="@id/price_paid"
         tools:ignore="SelectableText"
         tools:text="Very good"
@@ -150,7 +158,7 @@
     <TextView
         android:id="@+id/condition_cover"
         style="@style/Field.Generic"
-        app:layout_constraintStart_toEndOf="@id/personal_middle"
+        app:layout_constraintStart_toEndOf="@id/col1"
         app:layout_constraintTop_toBottomOf="@id/condition"
         tools:ignore="SelectableText"
         tools:text="Very good"
@@ -167,7 +175,7 @@
     <TextView
         android:id="@+id/read_start"
         style="@style/Field.Generic"
-        app:layout_constraintStart_toEndOf="@id/personal_middle"
+        app:layout_constraintStart_toEndOf="@id/col1"
         app:layout_constraintTop_toBottomOf="@id/condition_cover"
         tools:ignore="SelectableText"
         tools:text="@sample/data.json/date/long"
@@ -184,7 +192,7 @@
     <TextView
         android:id="@+id/read_end"
         style="@style/Field.Generic"
-        app:layout_constraintStart_toEndOf="@id/personal_middle"
+        app:layout_constraintStart_toEndOf="@id/col1"
         app:layout_constraintTop_toBottomOf="@id/read_start"
         tools:ignore="SelectableText"
         tools:text="@sample/data.json/date/long"
@@ -201,7 +209,7 @@
     <TextView
         android:id="@+id/location"
         style="@style/Field.Generic"
-        app:layout_constraintStart_toEndOf="@id/personal_middle"
+        app:layout_constraintStart_toEndOf="@id/col1"
         app:layout_constraintTop_toBottomOf="@id/read_end"
         tools:ignore="SelectableText"
         tools:text="@sample/data.json/location/name"
