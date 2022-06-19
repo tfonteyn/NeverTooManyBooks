@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,7 +37,7 @@ public class CredentialsException
 
     /** The site. */
     @StringRes
-    private final int mSiteResId;
+    private final int siteResId;
 
     /**
      * Constructor.
@@ -48,13 +48,13 @@ public class CredentialsException
     public CredentialsException(@StringRes final int siteResId,
                                 @NonNull final String message) {
         super(message);
-        mSiteResId = siteResId;
+        this.siteResId = siteResId;
     }
 
     @NonNull
     @Override
     public String getUserMessage(@NonNull final Context context) {
         return context.getString(R.string.error_site_authentication_failed,
-                                 context.getString(mSiteResId));
+                                 context.getString(siteResId));
     }
 }

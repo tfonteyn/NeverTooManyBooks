@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,12 +43,12 @@ public class UriInfo {
     private static final String ERROR_UNKNOWN_SCHEME_FOR_URI = "Unknown scheme for uri: ";
 
     @NonNull
-    private final Uri mUri;
+    private final Uri uri;
     @Nullable
-    private String mDisplayName;
-    private long mSize;
+    private String displayName;
+    private long size;
 
-    private boolean mResolved;
+    private boolean resolved;
 
     /**
      * Constructor.
@@ -56,40 +56,40 @@ public class UriInfo {
      * @param uri to inspect
      */
     public UriInfo(@NonNull final Uri uri) {
-        mUri = uri;
+        this.uri = uri;
     }
 
     @NonNull
     public Uri getUri() {
-        return mUri;
+        return uri;
     }
 
     @NonNull
     public String getDisplayName(@NonNull final Context context) {
-        if (!mResolved) {
+        if (!resolved) {
             resolve(context);
         }
-        return Objects.requireNonNull(mDisplayName, "mDisplayName");
+        return Objects.requireNonNull(displayName, "mDisplayName");
     }
 
     public long getSize(@NonNull final Context context) {
-        if (!mResolved) {
+        if (!resolved) {
             resolve(context);
         }
-        return mSize;
+        return size;
     }
 
     private void resolve(@NonNull final Context context) {
-        final String scheme = mUri.getScheme();
+        final String scheme = uri.getScheme();
         if (scheme == null) {
-            throw new IllegalStateException(ERROR_UNKNOWN_SCHEME_FOR_URI + mUri);
+            throw new IllegalStateException(ERROR_UNKNOWN_SCHEME_FOR_URI + uri);
         }
 
         if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
             final ContentResolver contentResolver = context.getContentResolver();
             final String[] columns = {OpenableColumns.DISPLAY_NAME,
                                       OpenableColumns.SIZE};
-            try (Cursor cursor = contentResolver.query(mUri, columns, null, null, null)) {
+            try (Cursor cursor = contentResolver.query(uri, columns, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
 
                     // display name
@@ -100,43 +100,43 @@ public class UriInfo {
                     // sanity check, according to the android.provider.OpenableColumns
                     // documentation, the name and size MUST be present.
                     if (name != null && !name.isEmpty()) {
-                        mDisplayName = name;
-                        mSize = size;
-                        mResolved = true;
+                        displayName = name;
+                        this.size = size;
+                        resolved = true;
                         return;
                     }
                 }
             }
         } else if (ContentResolver.SCHEME_FILE.equals(scheme)) {
-            final String path = mUri.getPath();
+            final String path = uri.getPath();
             if (path != null) {
                 final File file = new File(path);
                 // sanity check
                 if (file.exists()) {
-                    mDisplayName = file.getName();
-                    mSize = file.length();
-                    mResolved = true;
+                    displayName = file.getName();
+                    size = file.length();
+                    resolved = true;
                     return;
                 }
             }
         } else if (scheme.startsWith("http")) {
-            mDisplayName = mUri.toString();
-            mSize = 0;
-            mResolved = true;
+            displayName = uri.toString();
+            size = 0;
+            resolved = true;
             return;
         }
 
-        throw new IllegalStateException(ERROR_UNKNOWN_SCHEME_FOR_URI + mUri);
+        throw new IllegalStateException(ERROR_UNKNOWN_SCHEME_FOR_URI + uri);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "UriInfo{"
-               + "mUri=" + mUri
-               + ", mDisplayName='" + mDisplayName + '\''
-               + ", mSize=" + mSize
-               + ", mResolved=" + mResolved
+               + "uri=" + uri
+               + ", displayName='" + displayName + '\''
+               + ", size=" + size
+               + ", resolved=" + resolved
                + '}';
     }
 }

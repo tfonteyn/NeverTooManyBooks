@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -100,14 +100,14 @@ public class Money
 
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
-    private Currency mCurrency;
+    private Currency currency;
     @Nullable
-    private BigDecimal mValue;
+    private BigDecimal value;
 
     public Money(@NonNull final BigDecimal value,
                  @NonNull final Currency currency) {
-        mValue = value;
-        mCurrency = currency;
+        this.value = value;
+        this.currency = currency;
     }
 
     public Money(final double value,
@@ -117,11 +117,11 @@ public class Money
 
     public Money(@NonNull final BigDecimal value,
                  @Nullable final String currency) {
-        mValue = value;
+        this.value = value;
 
         if (currency != null) {
             try {
-                mCurrency = Currency.getInstance(currency);
+                this.currency = Currency.getInstance(currency);
             } catch (@NonNull final IllegalArgumentException e) {
                 // ignore
             }
@@ -154,11 +154,11 @@ public class Money
         boolean present;
         present = in.readByte() != 0;
         if (present) {
-            mCurrency = Currency.getInstance(in.readString());
+            currency = Currency.getInstance(in.readString());
         }
         present = in.readByte() != 0;
         if (present) {
-            mValue = (BigDecimal) in.readSerializable();
+            value = (BigDecimal) in.readSerializable();
         }
     }
 
@@ -238,16 +238,16 @@ public class Money
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        if (mCurrency != null) {
+        if (currency != null) {
             dest.writeByte((byte) 1);
-            dest.writeString(mCurrency.getCurrencyCode());
+            dest.writeString(currency.getCurrencyCode());
         } else {
             dest.writeByte((byte) 0);
         }
 
-        if (mValue != null) {
+        if (value != null) {
             dest.writeByte((byte) 1);
-            dest.writeSerializable(mValue);
+            dest.writeSerializable(value);
         } else {
             dest.writeByte((byte) 0);
         }
@@ -296,8 +296,8 @@ public class Money
                 // the British pound was made up of 20 shillings, each of which was
                 // made up of 12 pence, a total of 240 pence. Madness...
                 final double d = ((shillings * 12) + pence) / 240d;
-                mValue = BigDecimal.valueOf(d);
-                mCurrency = Currency.getInstance(GBP);
+                value = BigDecimal.valueOf(d);
+                currency = Currency.getInstance(GBP);
                 return true;
 
             } catch (@NonNull final NumberFormatException ignore) {
@@ -327,8 +327,8 @@ public class Money
                     // buffer just in case the getInstance() throws.
                     final double tmpValue = ParseUtils.parseDouble(valueStr, locale);
                     // re-get the code just in case it used a recognised but non-standard string
-                    mCurrency = Currency.getInstance(currencyCode);
-                    mValue = BigDecimal.valueOf(tmpValue);
+                    currency = Currency.getInstance(currencyCode);
+                    value = BigDecimal.valueOf(tmpValue);
                     return true;
 
                 } catch (@NonNull final IllegalArgumentException ignore) {
@@ -342,12 +342,12 @@ public class Money
 
     @Nullable
     public BigDecimal getValue() {
-        return mValue;
+        return value;
     }
 
     @Nullable
     public Currency getCurrency() {
-        return mCurrency;
+        return currency;
     }
 
     /**
@@ -359,31 +359,31 @@ public class Money
      */
     @Nullable
     public String getCurrencyCode() {
-        return mCurrency != null ? mCurrency.getCurrencyCode() : null;
+        return currency != null ? currency.getCurrencyCode() : null;
     }
 
     public boolean isZero() {
-        return Objects.requireNonNull(mValue).compareTo(BigDecimal.ZERO) == 0;
+        return Objects.requireNonNull(value).compareTo(BigDecimal.ZERO) == 0;
     }
 
     @Override
     public double doubleValue() {
-        return Objects.requireNonNull(mValue).doubleValue();
+        return Objects.requireNonNull(value).doubleValue();
     }
 
     @Override
     public int intValue() {
-        return Objects.requireNonNull(mValue).round(MathContext.UNLIMITED).intValue();
+        return Objects.requireNonNull(value).round(MathContext.UNLIMITED).intValue();
     }
 
     @Override
     public long longValue() {
-        return Objects.requireNonNull(mValue).round(MathContext.UNLIMITED).longValue();
+        return Objects.requireNonNull(value).round(MathContext.UNLIMITED).longValue();
     }
 
     @Override
     public float floatValue() {
-        return Objects.requireNonNull(mValue).floatValue();
+        return Objects.requireNonNull(value).floatValue();
     }
 
     /**
@@ -396,7 +396,7 @@ public class Money
     @Override
     @NonNull
     public String toString() {
-        return Objects.requireNonNull(mValue).toString();
+        return Objects.requireNonNull(value).toString();
     }
 
     /**
@@ -410,100 +410,100 @@ public class Money
      * @return EURO value as a new Money object.
      */
     public Money toEuro() {
-        Objects.requireNonNull(mValue);
+        Objects.requireNonNull(value);
 
-        if (mCurrency == null) {
-            return new Money(mValue, EUR);
+        if (currency == null) {
+            return new Money(value, EUR);
         }
 
-        switch (mCurrency.getCurrencyCode()) {
+        switch (currency.getCurrencyCode()) {
             case "EUR":
-                return new Money(mValue, EUR);
+                return new Money(value, EUR);
 
             case "BEF":
             case "LUF":
-                return new Money(mValue.divide(BigDecimal.valueOf(40.3399d),
-                                               RoundingMode.HALF_UP), EUR);
+                return new Money(value.divide(BigDecimal.valueOf(40.3399d),
+                                              RoundingMode.HALF_UP), EUR);
 
             case "NLD":
-                return new Money(mValue.divide(BigDecimal.valueOf(2.20371d),
-                                               RoundingMode.HALF_UP), EUR);
+                return new Money(value.divide(BigDecimal.valueOf(2.20371d),
+                                              RoundingMode.HALF_UP), EUR);
 
             case "FRF":
             case "MCF":
-                return new Money(mValue.divide(BigDecimal.valueOf(6.55957d),
-                                               RoundingMode.HALF_UP), EUR);
+                return new Money(value.divide(BigDecimal.valueOf(6.55957d),
+                                              RoundingMode.HALF_UP), EUR);
 
             case "DEM":
-                return new Money(mValue.divide(BigDecimal.valueOf(1.95583d),
-                                               RoundingMode.HALF_UP), EUR);
+                return new Money(value.divide(BigDecimal.valueOf(1.95583d),
+                                              RoundingMode.HALF_UP), EUR);
 
             case "IEP":
-                return new Money(mValue.divide(BigDecimal.valueOf(0.787564d),
-                                               RoundingMode.HALF_UP), EUR);
+                return new Money(value.divide(BigDecimal.valueOf(0.787564d),
+                                              RoundingMode.HALF_UP), EUR);
 
             case "ITL":
-                return new Money(mValue.divide(BigDecimal.valueOf(1.93627d),
-                                               RoundingMode.HALF_UP), EUR);
+                return new Money(value.divide(BigDecimal.valueOf(1.93627d),
+                                              RoundingMode.HALF_UP), EUR);
 
             case "GRD":
-                return new Money(mValue.divide(BigDecimal.valueOf(340.75d),
-                                               RoundingMode.HALF_UP), EUR);
+                return new Money(value.divide(BigDecimal.valueOf(340.75d),
+                                              RoundingMode.HALF_UP), EUR);
 
             case "ESP":
-                return new Money(mValue.divide(BigDecimal.valueOf(166.386d),
-                                               RoundingMode.HALF_UP), EUR);
+                return new Money(value.divide(BigDecimal.valueOf(166.386d),
+                                              RoundingMode.HALF_UP), EUR);
 
             case "PTE":
-                return new Money(mValue.divide(BigDecimal.valueOf(200.482d),
-                                               RoundingMode.HALF_UP), EUR);
+                return new Money(value.divide(BigDecimal.valueOf(200.482d),
+                                              RoundingMode.HALF_UP), EUR);
 
             case "ATS":
-                return new Money(mValue.divide(BigDecimal.valueOf(13.7603d),
-                                               RoundingMode.HALF_UP), EUR);
+                return new Money(value.divide(BigDecimal.valueOf(13.7603d),
+                                              RoundingMode.HALF_UP), EUR);
 
             case "CYP":
-                return new Money(mValue.divide(BigDecimal.valueOf(0.585274d),
-                                               RoundingMode.HALF_UP), EUR);
+                return new Money(value.divide(BigDecimal.valueOf(0.585274d),
+                                              RoundingMode.HALF_UP), EUR);
 
             case "EEK":
-                return new Money(mValue.divide(BigDecimal.valueOf(15.6466d),
-                                               RoundingMode.HALF_UP), EUR);
+                return new Money(value.divide(BigDecimal.valueOf(15.6466d),
+                                              RoundingMode.HALF_UP), EUR);
 
             case "FIM":
-                return new Money(mValue.divide(BigDecimal.valueOf(5.94573d),
-                                               RoundingMode.HALF_UP), EUR);
+                return new Money(value.divide(BigDecimal.valueOf(5.94573d),
+                                              RoundingMode.HALF_UP), EUR);
 
             case "LVL":
-                return new Money(mValue.divide(BigDecimal.valueOf(0.702804d),
-                                               RoundingMode.HALF_UP), EUR);
+                return new Money(value.divide(BigDecimal.valueOf(0.702804d),
+                                              RoundingMode.HALF_UP), EUR);
 
             case "LTL":
-                return new Money(mValue.divide(BigDecimal.valueOf(3.45280d),
-                                               RoundingMode.HALF_UP), EUR);
+                return new Money(value.divide(BigDecimal.valueOf(3.45280d),
+                                              RoundingMode.HALF_UP), EUR);
 
             case "MTL":
-                return new Money(mValue.divide(BigDecimal.valueOf(0.429300d),
-                                               RoundingMode.HALF_UP), EUR);
+                return new Money(value.divide(BigDecimal.valueOf(0.429300d),
+                                              RoundingMode.HALF_UP), EUR);
 
             case "SML":
-                return new Money(mValue.divide(BigDecimal.valueOf(1936.27d),
-                                               RoundingMode.HALF_UP), EUR);
+                return new Money(value.divide(BigDecimal.valueOf(1936.27d),
+                                              RoundingMode.HALF_UP), EUR);
 
             case "SKK":
-                return new Money(mValue.divide(BigDecimal.valueOf(30.1260d),
-                                               RoundingMode.HALF_UP), EUR);
+                return new Money(value.divide(BigDecimal.valueOf(30.1260d),
+                                              RoundingMode.HALF_UP), EUR);
 
             case "SIT":
-                return new Money(mValue.divide(BigDecimal.valueOf(239.640d),
-                                               RoundingMode.HALF_UP), EUR);
+                return new Money(value.divide(BigDecimal.valueOf(239.640d),
+                                              RoundingMode.HALF_UP), EUR);
 
             case "VAL":
-                return new Money(mValue.divide(BigDecimal.valueOf(1936.27d),
-                                               RoundingMode.HALF_UP), EUR);
+                return new Money(value.divide(BigDecimal.valueOf(1936.27d),
+                                              RoundingMode.HALF_UP), EUR);
 
             default:
-                return new Money(mValue, mCurrency);
+                return new Money(value, currency);
         }
     }
 
@@ -516,12 +516,12 @@ public class Money
             return false;
         }
         final Money money = (Money) o;
-        return Objects.equals(mCurrency, money.mCurrency)
-               && Objects.equals(mValue, money.mValue);
+        return Objects.equals(currency, money.currency)
+               && Objects.equals(value, money.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mCurrency, mValue);
+        return Objects.hash(currency, value);
     }
 }

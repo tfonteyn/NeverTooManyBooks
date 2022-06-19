@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -91,14 +91,14 @@ public class FullDateParser
             };
 
     @NonNull
-    private final Locale[] mLocales;
+    private final Locale[] locales;
     @NonNull
-    private final DateParser mISODateParser;
+    private final DateParser isoDateParser;
     /** List of patterns we'll use to parse dates. */
     @Nullable
-    private Collection<DateTimeFormatter> mTextParsers;
+    private Collection<DateTimeFormatter> textParsers;
     @Nullable
-    private Collection<DateTimeFormatter> mNumericalParsers;
+    private Collection<DateTimeFormatter> numericalParsers;
 
     /**
      * Constructor.
@@ -106,9 +106,9 @@ public class FullDateParser
      * @param context Current context; not stored, only used to get the locale.
      */
     public FullDateParser(@NonNull final Context context) {
-        mLocales = new Locale[]{context.getResources().getConfiguration().getLocales().get(0),
-                                ServiceLocator.getSystemLocale()};
-        mISODateParser = new ISODateParser();
+        locales = new Locale[]{context.getResources().getConfiguration().getLocales().get(0),
+                               ServiceLocator.getSystemLocale()};
+        isoDateParser = new ISODateParser();
     }
 
     /**
@@ -116,8 +116,8 @@ public class FullDateParser
      */
     @VisibleForTesting
     public FullDateParser(@NonNull final Locale... locales) {
-        mLocales = locales;
-        mISODateParser = new ISODateParser();
+        this.locales = locales;
+        isoDateParser = new ISODateParser();
     }
 
     /**
@@ -151,23 +151,23 @@ public class FullDateParser
         }
 
         // Try ISO first, then numerical, and lastly the extensive text based.
-        LocalDateTime result = mISODateParser.parse(dateStr);
+        LocalDateTime result = isoDateParser.parse(dateStr);
 
         if (result == null) {
-            if (mNumericalParsers == null) {
-                mNumericalParsers = new ArrayList<>();
-                addPatterns(mNumericalParsers, NUMERICAL_PATTERNS,
+            if (numericalParsers == null) {
+                numericalParsers = new ArrayList<>();
+                addPatterns(numericalParsers, NUMERICAL_PATTERNS,
                             ServiceLocator.getSystemLocale());
             }
-            result = parse(mNumericalParsers, dateStr, locale);
+            result = parse(numericalParsers, dateStr, locale);
 
             if (result == null) {
-                if (mTextParsers == null) {
-                    mTextParsers = new ArrayList<>();
-                    addPatterns(mTextParsers, TEXT_PATTERNS, mLocales);
-                    addEnglish(mTextParsers, TEXT_PATTERNS, mLocales);
+                if (textParsers == null) {
+                    textParsers = new ArrayList<>();
+                    addPatterns(textParsers, TEXT_PATTERNS, locales);
+                    addEnglish(textParsers, TEXT_PATTERNS, locales);
                 }
-                result = parse(mTextParsers, dateStr, locale);
+                result = parse(textParsers, dateStr, locale);
             }
         }
 

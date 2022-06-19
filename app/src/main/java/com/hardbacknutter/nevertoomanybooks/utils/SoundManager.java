@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,7 @@ import androidx.annotation.RawRes;
 
 public final class SoundManager {
 
-    private static final AudioAttributes mAA = new AudioAttributes.Builder()
+    private static final AudioAttributes AUDIO_ATTRIBUTES = new AudioAttributes.Builder()
             .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
             .build();
@@ -43,7 +43,7 @@ public final class SoundManager {
         try {
             final AssetFileDescriptor file = context.getResources().openRawResourceFd(resId);
             final MediaPlayer player = new MediaPlayer();
-            player.setAudioAttributes(mAA);
+            player.setAudioAttributes(AUDIO_ATTRIBUTES);
             // When the beep has finished playing, rewind to queue up another one.
             player.setOnCompletionListener(MediaPlayer::release);
             player.setDataSource(file.getFileDescriptor(), file.getStartOffset(), file.getLength());

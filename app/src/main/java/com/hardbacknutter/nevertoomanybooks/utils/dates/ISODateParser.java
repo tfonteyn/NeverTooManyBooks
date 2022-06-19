@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,7 +45,7 @@ public class ISODateParser
         implements DateParser {
 
     /** List of patterns we'll use to parse ISO datetime stamps.. */
-    private Collection<DateTimeFormatter> mParsers;
+    private Collection<DateTimeFormatter> parsers;
 
     /**
      * Attempt to parse a date string using ISO parsers.
@@ -91,10 +91,10 @@ public class ISODateParser
             // ignore
         }
 
-        if (mParsers == null) {
+        if (parsers == null) {
             create();
         }
-        for (final DateTimeFormatter dtf : mParsers) {
+        for (final DateTimeFormatter dtf : parsers) {
             try {
                 return LocalDateTime.parse(dateStr, dtf);
             } catch (@NonNull final DateTimeParseException ignore) {
@@ -109,14 +109,14 @@ public class ISODateParser
      * Create the parser list.
      */
     private void create() {
-        mParsers = new ArrayList<>();
+        parsers = new ArrayList<>();
 
         // '2011-12-03T10:15:30',
         // '2011-12-03T10:15:30+01:00'
         // '2011-12-03T10:15:30+01:00[Europe/Paris]'
         // Uses ResolverStyle.STRICT / IsoChronology.INSTANCE
         // This parser includes ISO_LOCAL_DATE_TIME
-        mParsers.add(DateTimeFormatter.ISO_DATE_TIME);
+        parsers.add(DateTimeFormatter.ISO_DATE_TIME);
 
         /*
          * Variant of DateTimeFormatter.ISO_DATE_TIME using a space instead of the normal 'T'
@@ -140,6 +140,6 @@ public class ISODateParser
                 // Uses ResolverStyle.SMART and 'null' Chronology
                 .toFormatter(ServiceLocator.getSystemLocale());
 
-        mParsers.add(SQLITE_ISO_DATE_TIME);
+        parsers.add(SQLITE_ISO_DATE_TIME);
     }
 }

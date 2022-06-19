@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -65,10 +65,10 @@ public class PartialDate
     /** Log tag. */
     private static final String TAG = "PartialDate";
     /** NonNull - the partial date; using '1' for not-set day,month,year fields. */
-    private LocalDate mLocalDate;
-    private boolean mYearSet;
-    private boolean mMonthSet;
-    private boolean mDaySet;
+    private LocalDate localDate;
+    private boolean yearSet;
+    private boolean monthSet;
+    private boolean daySet;
 
     /**
      * Constructor.
@@ -97,20 +97,20 @@ public class PartialDate
         } else {
             try {
                 if (month < 1) {
-                    mLocalDate = LocalDate.of(year, 1, 1);
-                    mYearSet = true;
-                    mMonthSet = false;
-                    mDaySet = false;
+                    localDate = LocalDate.of(year, 1, 1);
+                    yearSet = true;
+                    monthSet = false;
+                    daySet = false;
                 } else if (day < 1) {
-                    mLocalDate = LocalDate.of(year, month, 1);
-                    mYearSet = true;
-                    mMonthSet = true;
-                    mDaySet = false;
+                    localDate = LocalDate.of(year, month, 1);
+                    yearSet = true;
+                    monthSet = true;
+                    daySet = false;
                 } else {
-                    mLocalDate = LocalDate.of(year, month, day);
-                    mYearSet = true;
-                    mMonthSet = true;
-                    mDaySet = true;
+                    localDate = LocalDate.of(year, month, day);
+                    yearSet = true;
+                    monthSet = true;
+                    daySet = true;
                 }
             } catch (@NonNull final DateTimeException e) {
                 unset();
@@ -124,17 +124,17 @@ public class PartialDate
      * @param in Parcel to construct the object from
      */
     private PartialDate(@NonNull final Parcel in) {
-        mYearSet = in.readByte() != 0;
+        yearSet = in.readByte() != 0;
         final int year = in.readInt();
 
-        mMonthSet = in.readByte() != 0;
+        monthSet = in.readByte() != 0;
         final int month = in.readInt();
 
-        mDaySet = in.readByte() != 0;
+        daySet = in.readByte() != 0;
         final int dayOfMonth = in.readInt();
 
         try {
-            mLocalDate = LocalDate.of(year, month, dayOfMonth);
+            localDate = LocalDate.of(year, month, dayOfMonth);
         } catch (@NonNull final DateTimeException e) {
             // we should never get here... flw
             unset();
@@ -142,23 +142,23 @@ public class PartialDate
     }
 
     private void unset() {
-        mLocalDate = LocalDate.of(1, 1, 1);
-        mYearSet = false;
-        mMonthSet = false;
-        mDaySet = false;
+        localDate = LocalDate.of(1, 1, 1);
+        yearSet = false;
+        monthSet = false;
+        daySet = false;
     }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeByte((byte) (mYearSet ? 1 : 0));
-        dest.writeInt(mLocalDate.getYear());
+        dest.writeByte((byte) (yearSet ? 1 : 0));
+        dest.writeInt(localDate.getYear());
 
-        dest.writeByte((byte) (mMonthSet ? 1 : 0));
-        dest.writeInt(mLocalDate.getMonthValue());
+        dest.writeByte((byte) (monthSet ? 1 : 0));
+        dest.writeInt(localDate.getMonthValue());
 
-        dest.writeByte((byte) (mDaySet ? 1 : 0));
-        dest.writeInt(mLocalDate.getDayOfMonth());
+        dest.writeByte((byte) (daySet ? 1 : 0));
+        dest.writeInt(localDate.getDayOfMonth());
     }
 
     @Override
@@ -172,24 +172,24 @@ public class PartialDate
             try {
                 if (len == 4) {
                     // yyyy
-                    mLocalDate = Year.parse(dateStr).atDay(1);
-                    mYearSet = true;
-                    mMonthSet = false;
-                    mDaySet = false;
+                    localDate = Year.parse(dateStr).atDay(1);
+                    yearSet = true;
+                    monthSet = false;
+                    daySet = false;
                     return;
                 } else if (len == 7) {
                     // yyyy-MM
-                    mLocalDate = YearMonth.parse(dateStr).atDay(1);
-                    mYearSet = true;
-                    mMonthSet = true;
-                    mDaySet = false;
+                    localDate = YearMonth.parse(dateStr).atDay(1);
+                    yearSet = true;
+                    monthSet = true;
+                    daySet = false;
                     return;
                 } else if (len >= 10) {
                     // yyyy-MM-dd[...]
-                    mLocalDate = LocalDate.parse(dateStr.substring(0, 10));
-                    mYearSet = true;
-                    mMonthSet = true;
-                    mDaySet = true;
+                    localDate = LocalDate.parse(dateStr.substring(0, 10));
+                    yearSet = true;
+                    monthSet = true;
+                    daySet = true;
                     return;
                 }
             } catch (@NonNull final DateTimeParseException e) {
@@ -204,7 +204,7 @@ public class PartialDate
 
     @NonNull
     public LocalDate getDate() {
-        return mLocalDate;
+        return localDate;
     }
 
     public void setDate(@Nullable final String dateStr) {
@@ -218,7 +218,7 @@ public class PartialDate
      * @return {@code true} if the date is present.
      */
     public boolean isPresent() {
-        return mYearSet;
+        return yearSet;
     }
 
     /**
@@ -228,7 +228,7 @@ public class PartialDate
      * @param consumer block to be executed if a value is present
      */
     public void ifPresent(@NonNull final Consumer<PartialDate> consumer) {
-        if (mYearSet) {
+        if (yearSet) {
             consumer.accept(this);
         }
     }
@@ -243,12 +243,12 @@ public class PartialDate
     @NonNull
     public String getIsoString() {
         final StringJoiner sj = new StringJoiner("-");
-        if (mYearSet) {
-            sj.add(String.format("%04d", mLocalDate.getYear()));
-            if (mMonthSet) {
-                sj.add(String.format("%02d", mLocalDate.getMonthValue()));
-                if (mDaySet) {
-                    sj.add(String.format("%02d", mLocalDate.getDayOfMonth()));
+        if (yearSet) {
+            sj.add(String.format("%04d", localDate.getYear()));
+            if (monthSet) {
+                sj.add(String.format("%02d", localDate.getMonthValue()));
+                if (daySet) {
+                    sj.add(String.format("%02d", localDate.getDayOfMonth()));
                 }
             }
         }
@@ -266,16 +266,16 @@ public class PartialDate
     @NonNull
     public String toDisplay(@NonNull final Locale locale,
                             @Nullable final String defValue) {
-        if (mYearSet && mMonthSet && mDaySet) {
-            return mLocalDate.format(
+        if (yearSet && monthSet && daySet) {
+            return localDate.format(
                     DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale));
 
-        } else if (mYearSet && mMonthSet) {
-            return mLocalDate.getMonth().getDisplayName(TextStyle.SHORT, locale)
-                   + ' ' + String.format(locale, "%04d", mLocalDate.getYear());
+        } else if (yearSet && monthSet) {
+            return localDate.getMonth().getDisplayName(TextStyle.SHORT, locale)
+                   + ' ' + String.format(locale, "%04d", localDate.getYear());
 
-        } else if (mYearSet) {
-            return String.format(locale, "%04d", mLocalDate.getYear());
+        } else if (yearSet) {
+            return String.format(locale, "%04d", localDate.getYear());
 
         } else {
             return defValue != null ? defValue : "";
@@ -289,7 +289,7 @@ public class PartialDate
      * @return year value
      */
     public int getYearValue() {
-        return mLocalDate.getYear();
+        return localDate.getYear();
     }
 
     @Override
@@ -301,25 +301,25 @@ public class PartialDate
             return false;
         }
         final PartialDate that = (PartialDate) o;
-        return mYearSet == that.mYearSet
-               && mMonthSet == that.mMonthSet
-               && mDaySet == that.mDaySet
-               && mLocalDate.equals(that.mLocalDate);
+        return yearSet == that.yearSet
+               && monthSet == that.monthSet
+               && daySet == that.daySet
+               && localDate.equals(that.localDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mLocalDate, mYearSet, mMonthSet, mDaySet);
+        return Objects.hash(localDate, yearSet, monthSet, daySet);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "PartialDate{"
-               + "mLocalDate=" + mLocalDate
-               + ", mYearSet=" + mYearSet
-               + ", mMonthSet=" + mMonthSet
-               + ", mDaySet=" + mDaySet
+               + "mLocalDate=" + localDate
+               + ", mYearSet=" + yearSet
+               + ", mMonthSet=" + monthSet
+               + ", mDaySet=" + daySet
                + '}';
     }
 }

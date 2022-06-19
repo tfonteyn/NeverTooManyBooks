@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 public final class NotifierImpl
         implements Notifier {
 
-    private boolean mChannelsCreated;
+    private boolean channelsCreated;
 
     @Override
     public void send(@NonNull final Context context,
@@ -73,9 +73,9 @@ public final class NotifierImpl
         final NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        if (!mChannelsCreated) {
+        if (!channelsCreated) {
             createChannels(context, notificationManager);
-            mChannelsCreated = true;
+            channelsCreated = true;
         }
 
         final Notification notification = new NotificationCompat.Builder(context, channel.id)

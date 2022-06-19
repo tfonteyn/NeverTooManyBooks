@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,7 +37,7 @@ import java.security.NoSuchAlgorithmException;
 public final class PackageInfoWrapper {
 
     @NonNull
-    private final PackageInfo mInfo;
+    private final PackageInfo info;
 
     /**
      * Private constructor. Use the factory methods instead.
@@ -48,7 +48,7 @@ public final class PackageInfoWrapper {
     private PackageInfoWrapper(@NonNull final Context context,
                                final int flags) {
         try {
-            mInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), flags);
+            info = context.getPackageManager().getPackageInfo(context.getPackageName(), flags);
         } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
             throw new IllegalStateException("no PackageManager?");
         }
@@ -89,7 +89,7 @@ public final class PackageInfoWrapper {
      */
     @NonNull
     public String getPackageName() {
-        return mInfo.packageName;
+        return info.packageName;
     }
 
     /**
@@ -99,10 +99,10 @@ public final class PackageInfoWrapper {
      */
     public long getVersionCode() {
         if (Build.VERSION.SDK_INT >= 28) {
-            return mInfo.getLongVersionCode();
+            return info.getLongVersionCode();
         } else {
             //noinspection deprecation
-            return mInfo.versionCode;
+            return info.versionCode;
         }
     }
 
@@ -113,7 +113,7 @@ public final class PackageInfoWrapper {
      */
     @NonNull
     public String getVersionName() {
-        return mInfo.versionName;
+        return info.versionName;
     }
 
     /**
@@ -132,14 +132,14 @@ public final class PackageInfoWrapper {
      */
     @NonNull
     public String getSignedBy() {
-        if (mInfo.signatures == null) {
+        if (info.signatures == null) {
             return "Not signed, likely development version";
         }
 
         final StringBuilder signedBy = new StringBuilder();
         try {
             // concat the signature chain.
-            for (final Signature sig : mInfo.signatures) {
+            for (final Signature sig : info.signatures) {
                 if (sig != null) {
                     final MessageDigest md = MessageDigest.getInstance("SHA256");
                     final byte[] publicKey = md.digest(sig.toByteArray());

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -55,17 +55,17 @@ public class Languages {
     private static final String LANG_CREATED_PREFIX = "___";
 
     @NonNull
-    private final Map<String, String> mLang3ToLang2Map;
+    private final Map<String, String> lang3ToLang2Map;
 
     /**
      * Constructor.
      */
     public Languages() {
         final String[] languages = Locale.getISOLanguages();
-        mLang3ToLang2Map = new HashMap<>(languages.length);
+        lang3ToLang2Map = new HashMap<>(languages.length);
         for (final String language : languages) {
             final Locale locale = new Locale(language);
-            mLang3ToLang2Map.put(locale.getISO3Language(), language);
+            lang3ToLang2Map.put(locale.getISO3Language(), language);
         }
     }
 
@@ -189,7 +189,7 @@ public class Languages {
     String getLocaleIsoFromISO3(@NonNull final Context context,
                                 @NonNull final String iso3) {
 
-        String iso2 = mLang3ToLang2Map.get(iso3);
+        String iso2 = lang3ToLang2Map.get(iso3);
         if (iso2 != null) {
             return iso2;
         }
@@ -198,14 +198,14 @@ public class Languages {
 
         // try again ('terminology' seems to be preferred/standard on Android (ICU?)
         String lang = toTerminology(userLocale, iso3);
-        iso2 = mLang3ToLang2Map.get(lang);
+        iso2 = lang3ToLang2Map.get(lang);
         if (iso2 != null) {
             return iso2;
         }
 
         // desperate and last attempt using 'bibliographic'.
         lang = toBibliographic(userLocale, iso3);
-        iso2 = mLang3ToLang2Map.get(lang);
+        iso2 = lang3ToLang2Map.get(lang);
         if (iso2 != null) {
             return iso2;
         }

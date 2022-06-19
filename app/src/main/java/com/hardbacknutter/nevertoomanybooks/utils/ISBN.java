@@ -850,9 +850,9 @@ public class ISBN {
             implements ExtTextWatcher {
 
         @NonNull
-        private final TextInputEditText mEditText;
+        private final TextInputEditText editText;
         @NonNull
-        private Validity mIsbnValidityCheck;
+        private Validity isbnValidityCheck;
 
         /**
          * Constructor.
@@ -862,28 +862,28 @@ public class ISBN {
          */
         public CleanupTextWatcher(@NonNull final TextInputEditText editText,
                                   @NonNull final Validity isbnValidityCheck) {
-            mEditText = editText;
-            mIsbnValidityCheck = isbnValidityCheck;
+            this.editText = editText;
+            this.isbnValidityCheck = isbnValidityCheck;
         }
 
         public void setValidityLevel(@NonNull final Validity isbnValidityCheck) {
-            mIsbnValidityCheck = isbnValidityCheck;
-            clean(mEditText.getEditableText());
+            this.isbnValidityCheck = isbnValidityCheck;
+            clean(editText.getEditableText());
         }
 
         @Override
         public void afterTextChanged(@NonNull final Editable editable) {
-            clean(mEditText.getEditableText());
+            clean(editText.getEditableText());
         }
 
         private void clean(@Nullable final Editable editable) {
-            if (mIsbnValidityCheck != Validity.None && editable != null && editable.length() > 0) {
+            if (isbnValidityCheck != Validity.None && editable != null && editable.length() > 0) {
                 final String text = editable.toString().trim();
                 if (text.isEmpty()) {
                     return;
                 }
 
-                if (mIsbnValidityCheck == Validity.Loose) {
+                if (isbnValidityCheck == Validity.Loose) {
                     // Text representation of ISBN-13/10 string is often
                     // split in groups of digits with '-' in between.
                     // This is, as observed, usually 10 + 3 '-' (or 10 + 2 '-' + 'x'),
@@ -927,9 +927,9 @@ public class ISBN {
 
                 // case sensitive, so 'x' can be replaced with 'X'
                 if (!sb.toString().equals(text)) {
-                    mEditText.removeTextChangedListener(this);
+                    editText.removeTextChangedListener(this);
                     editable.replace(0, editable.length(), sb.toString());
-                    mEditText.addTextChangedListener(this);
+                    editText.addTextChangedListener(this);
                 }
             }
         }
