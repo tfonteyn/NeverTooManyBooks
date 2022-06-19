@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,22 +50,22 @@ public class JsoupLoader {
     /** Log tag. */
     private static final String TAG = "JsoupLoader";
     @NonNull
-    private final FutureHttpGet<Document> mFutureHttpGet;
+    private final FutureHttpGet<Document> futureHttpGet;
     /** The downloaded and parsed web page. */
     @Nullable
-    private Document mDoc;
+    private Document document;
     /** The <strong>request</strong> url for the web page. */
     @Nullable
-    private String mDocRequestUrl;
+    private String docRequestUrl;
     /** The user agent to send. Call {@link #setUserAgent(String)} to override. */
     @Nullable
-    private String mUserAgent = HttpUtils.USER_AGENT_VALUE;
+    private String userAgent = HttpUtils.USER_AGENT_VALUE;
     /** {@code null} by default: for Jsoup to figure it out. */
     @Nullable
-    private String mCharSetName;
+    private String charSetName;
 
     public JsoupLoader(@NonNull final FutureHttpGet<Document> futureHttpGet) {
-        mFutureHttpGet = futureHttpGet;
+        this.futureHttpGet = futureHttpGet;
     }
 
     /**
@@ -75,7 +75,7 @@ public class JsoupLoader {
      */
     @SuppressWarnings("unused")
     public void setUserAgent(@Nullable final String userAgent) {
-        mUserAgent = userAgent;
+        this.userAgent = userAgent;
     }
 
     /**
@@ -86,18 +86,18 @@ public class JsoupLoader {
      */
     public void setCharSetName(@SuppressWarnings("SameParameterValue")
                                @NonNull final String charSetName) {
-        mCharSetName = charSetName;
+        this.charSetName = charSetName;
     }
 
     /**
      * Reset the loader.
      */
     public void reset() {
-        mDoc = null;
+        document = null;
     }
 
     /**
-     * Fetch the URL and parse it into {@link #mDoc}.
+     * Fetch the URL and parse it into {@link #document}.
      * Will silently return if it has downloaded the document before.
      * Call {@link #reset()} before to force a clean/new download.
      * <p>
@@ -117,14 +117,14 @@ public class JsoupLoader {
             throws IOException {
 
         // are we requesting the same url again ?
-        if (mDoc != null && url.equals(mDocRequestUrl)) {
+        if (document != null && url.equals(docRequestUrl)) {
             // return the previously parsed doc
-            return mDoc;
+            return document;
         }
 
         // new download
-        mDoc = null;
-        mDocRequestUrl = url;
+        document = null;
+        docRequestUrl = url;
 
         // If the site drops connection, we retry once
         // Note this is NOT the same as the retry mechanism of TerminatorConnection.
@@ -136,21 +136,21 @@ public class JsoupLoader {
         while (attemptsLeft > 0) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                 Logger.d(TAG, "loadDocument",
-                         "REQUESTED|mDocRequestUrl=\"" + mDocRequestUrl + '\"');
+                         "REQUESTED|mDocRequestUrl=\"" + docRequestUrl + '\"');
             }
 
             try {
                 // Don't retry if the initial connection fails...
-                mFutureHttpGet.setRetryCount(0);
+                futureHttpGet.setRetryCount(0);
                 // added due to https://github.com/square/okhttp/issues/1517
                 // it's a server issue, this is a workaround.
-                mFutureHttpGet.setRequestProperty(HttpUtils.CONNECTION, HttpUtils.CONNECTION_CLOSE);
+                futureHttpGet.setRequestProperty(HttpUtils.CONNECTION, HttpUtils.CONNECTION_CLOSE);
                 // some sites refuse to return content if they don't like the user-agent
-                if (mUserAgent != null) {
-                    mFutureHttpGet.setRequestProperty(HttpUtils.USER_AGENT, mUserAgent);
+                if (userAgent != null) {
+                    futureHttpGet.setRequestProperty(HttpUtils.USER_AGENT, userAgent);
                 }
 
-                mDoc = mFutureHttpGet.get(mDocRequestUrl, request -> {
+                document = futureHttpGet.get(docRequestUrl, request -> {
                     try (BufferedInputStream is = new BufferedInputStream(
                             request.getInputStream())) {
 
@@ -190,7 +190,7 @@ public class JsoupLoader {
                         However that is WRONG (org.jsoup:jsoup:1.11.3)
                         It will NOT resolve the redirect itself and 'location' == 'baseUri'
                         */
-                        final Document document = Jsoup.parse(is, mCharSetName, locationHeader);
+                        final Document document = Jsoup.parse(is, charSetName, locationHeader);
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                             Logger.d(TAG, "loadDocument",
                                      "AFTER parsing|document.location()=" + document.location());
@@ -202,10 +202,10 @@ public class JsoupLoader {
                         throw new UncheckedIOException(e);
                     }
                 });
-                return mDoc;
+                return document;
 
             } catch (@NonNull final SSLProtocolException | EOFException e) {
-                mDoc = null;
+                document = null;
 
                 // EOFException: happens often with ISFDB...
                 // This is after a successful connection was made.
@@ -225,7 +225,7 @@ public class JsoupLoader {
                 // Log it as WARN, so at least we can get to know the frequency of these issues.
                 Logger.warn(TAG, "loadDocument"
                                  + "|e=" + e.getMessage()
-                                 + "|mDocRequestUrl=\"" + mDocRequestUrl + '\"');
+                                 + "|mDocRequestUrl=\"" + docRequestUrl + '\"');
                 // we'll retry.
                 attemptsLeft--;
                 if (attemptsLeft == 0) {
@@ -246,22 +246,22 @@ public class JsoupLoader {
                 throw new IOException(e);
 
             } catch (@NonNull final IOException e) {
-                mDoc = null;
+                document = null;
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                    Logger.e(TAG, e, "mDocRequestUrl=" + mDocRequestUrl);
+                    Logger.e(TAG, e, "mDocRequestUrl=" + docRequestUrl);
                 }
                 throw e;
             }
         }
 
         // Shouldn't get here ... flw
-        throw new IOException("Failed to get: " + mDocRequestUrl);
+        throw new IOException("Failed to get: " + docRequestUrl);
     }
 
     public void cancel() {
-        synchronized (mFutureHttpGet) {
-            mFutureHttpGet.cancel();
+        synchronized (futureHttpGet) {
+            futureHttpGet.cancel();
         }
     }
 }

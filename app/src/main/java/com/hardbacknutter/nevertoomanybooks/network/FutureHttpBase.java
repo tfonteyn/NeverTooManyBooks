@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -76,29 +76,29 @@ public abstract class FutureHttpBase<T> {
     private static final int READ_TIMEOUT_MS = 10_000;
 
     @StringRes
-    private final int mSiteResId;
+    private final int siteResId;
 
-    private final Map<String, String> mRequestProperties = new HashMap<>();
+    private final Map<String, String> requestProperties = new HashMap<>();
 
     /** see {@link #setRetryCount(int)}. */
-    int mNrOfTries = NR_OF_TRIES;
+    int nrOfTries = NR_OF_TRIES;
 
     @Nullable
-    Throttler mThrottler;
+    Throttler throttler;
 
     @Nullable
-    private Future<T> mFuture;
+    private Future<T> futureHttp;
     @Nullable
-    private SSLContext mSslContext;
+    private SSLContext sslContext;
     @Nullable
-    private Boolean mFollowRedirects;
+    private Boolean followRedirects;
     /** -1: use the static default. */
-    private int mConnectTimeoutInMs = -1;
+    private int connectTimeoutInMs = -1;
     /** -1: use the static default. */
-    private int mReadTimeoutInMs = -1;
+    private int readTimeoutInMs = -1;
 
     FutureHttpBase(@StringRes final int siteResId) {
-        mSiteResId = siteResId;
+        this.siteResId = siteResId;
     }
 
     public static void dumpSSLException(@NonNull final HttpsURLConnection request,
@@ -145,12 +145,12 @@ public abstract class FutureHttpBase<T> {
 
         switch (responseCode) {
             case HttpURLConnection.HTTP_UNAUTHORIZED:
-                throw new HttpUnauthorizedException(mSiteResId,
+                throw new HttpUnauthorizedException(siteResId,
                                                     request.getResponseMessage(),
                                                     request.getURL());
 
             case HttpURLConnection.HTTP_NOT_FOUND:
-                throw new HttpNotFoundException(mSiteResId,
+                throw new HttpNotFoundException(siteResId,
                                                 request.getResponseMessage(),
                                                 request.getURL());
 
@@ -159,7 +159,7 @@ public abstract class FutureHttpBase<T> {
                 throw new SocketTimeoutException("408 " + request.getResponseMessage());
 
             default:
-                throw new HttpStatusException(mSiteResId,
+                throw new HttpStatusException(siteResId,
                                               responseCode,
                                               request.getResponseMessage(),
                                               request.getURL());
@@ -173,7 +173,7 @@ public abstract class FutureHttpBase<T> {
      */
     @NonNull
     public FutureHttpBase<T> setConnectTimeout(@IntRange(from = 0) final int timeoutInMs) {
-        mConnectTimeoutInMs = timeoutInMs;
+        connectTimeoutInMs = timeoutInMs;
         return this;
     }
 
@@ -184,7 +184,7 @@ public abstract class FutureHttpBase<T> {
      */
     @NonNull
     public FutureHttpBase<T> setReadTimeout(@IntRange(from = 0) final int timeoutInMs) {
-        mReadTimeoutInMs = timeoutInMs;
+        readTimeoutInMs = timeoutInMs;
         return this;
     }
 
@@ -195,13 +195,13 @@ public abstract class FutureHttpBase<T> {
      */
     @NonNull
     public FutureHttpBase<T> setThrottler(@Nullable final Throttler throttler) {
-        mThrottler = throttler;
+        this.throttler = throttler;
         return this;
     }
 
     @NonNull
     public FutureHttpBase<T> setInstanceFollowRedirects(final boolean followRedirects) {
-        mFollowRedirects = followRedirects;
+        this.followRedirects = followRedirects;
         return this;
     }
 
@@ -212,7 +212,7 @@ public abstract class FutureHttpBase<T> {
      */
     @NonNull
     public FutureHttpBase<T> setRetryCount(@IntRange(from = 0) final int retryCount) {
-        mNrOfTries = retryCount + 1;
+        nrOfTries = retryCount + 1;
         return this;
     }
 
@@ -223,7 +223,7 @@ public abstract class FutureHttpBase<T> {
      */
     @NonNull
     public FutureHttpBase<T> setSSLContext(@Nullable final SSLContext sslContext) {
-        mSslContext = sslContext;
+        this.sslContext = sslContext;
         return this;
     }
 
@@ -231,15 +231,15 @@ public abstract class FutureHttpBase<T> {
     public FutureHttpBase<T> setRequestProperty(@NonNull final String key,
                                                 @Nullable final String value) {
         if (value != null) {
-            mRequestProperties.put(key, value);
+            requestProperties.put(key, value);
         } else {
-            mRequestProperties.remove(key);
+            requestProperties.remove(key);
         }
         return this;
     }
 
     private int getFutureTimeout() {
-        return mConnectTimeoutInMs + mReadTimeoutInMs + 10;
+        return connectTimeoutInMs + readTimeoutInMs + 10;
     }
 
     @Nullable
@@ -252,7 +252,7 @@ public abstract class FutureHttpBase<T> {
                    SocketTimeoutException,
                    IOException {
         try {
-            mFuture = ASyncExecutor.SERVICE.submit(() -> {
+            futureHttp = ASyncExecutor.SERVICE.submit(() -> {
                 HttpURLConnection request = null;
                 try {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
@@ -266,29 +266,29 @@ public abstract class FutureHttpBase<T> {
                     // Don't trust the caches; they have proven to be cumbersome.
                     request.setUseCaches(false);
 
-                    if (mFollowRedirects != null) {
-                        request.setInstanceFollowRedirects(mFollowRedirects);
+                    if (followRedirects != null) {
+                        request.setInstanceFollowRedirects(followRedirects);
                     }
 
-                    for (final Map.Entry<String, String> entry : mRequestProperties.entrySet()) {
+                    for (final Map.Entry<String, String> entry : requestProperties.entrySet()) {
                         request.setRequestProperty(entry.getKey(), entry.getValue());
                     }
 
-                    if (mConnectTimeoutInMs >= 0) {
-                        request.setConnectTimeout(mConnectTimeoutInMs);
+                    if (connectTimeoutInMs >= 0) {
+                        request.setConnectTimeout(connectTimeoutInMs);
                     } else {
                         request.setConnectTimeout(CONNECT_TIMEOUT_MS);
                     }
 
-                    if (mReadTimeoutInMs >= 0) {
-                        request.setReadTimeout(mReadTimeoutInMs);
+                    if (readTimeoutInMs >= 0) {
+                        request.setReadTimeout(readTimeoutInMs);
                     } else {
                         request.setReadTimeout(READ_TIMEOUT_MS);
                     }
 
-                    if (mSslContext != null) {
+                    if (sslContext != null) {
                         ((HttpsURLConnection) request).setSSLSocketFactory(
-                                mSslContext.getSocketFactory());
+                                sslContext.getSocketFactory());
                     }
 
                     // The request is now ready to be connected/used,
@@ -301,7 +301,7 @@ public abstract class FutureHttpBase<T> {
                     }
                 }
             });
-            return mFuture.get(getFutureTimeout(), TimeUnit.MILLISECONDS);
+            return futureHttp.get(getFutureTimeout(), TimeUnit.MILLISECONDS);
 
         } catch (@NonNull final ExecutionException e) {
             final Throwable cause = e.getCause();
@@ -339,14 +339,14 @@ public abstract class FutureHttpBase<T> {
             throw new SocketTimeoutException(e.getMessage());
 
         } finally {
-            mFuture = null;
+            futureHttp = null;
         }
     }
 
     public void cancel() {
         synchronized (this) {
-            if (mFuture != null) {
-                mFuture.cancel(true);
+            if (futureHttp != null) {
+                futureHttp.cancel(true);
             }
         }
     }

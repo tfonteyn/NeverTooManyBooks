@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,10 +34,10 @@ import androidx.annotation.NonNull;
 public class Throttler {
 
     /** Thread delay time. */
-    private final int mDelayInMillis;
+    private final int delayInMillis;
 
     /** Stores the last time a request was made to avoid breaking site usage rules. */
-    private long mLastRequestTime;
+    private long lastRequestTime;
 
     /**
      * Constructor.
@@ -47,14 +47,14 @@ public class Throttler {
      * @param delayInMillis the delay time between requests.
      */
     public Throttler(final int delayInMillis) {
-        mDelayInMillis = delayInMillis;
+        this.delayInMillis = delayInMillis;
     }
 
     /**
-     * Uses mLastRequestTime to determine how long until the next request is allowed;
-     * and update mLastRequestTime this needs to be synchronized across threads.
+     * Uses {@link #lastRequestTime} to determine how long until the next request is allowed;
+     * and update {@link #lastRequestTime}; this needs to be synchronized across threads.
      * <p>
-     * Note that as a result of this approach mLastRequestTime may in fact be
+     * Note that as a result of this approach {@link #lastRequestTime} may in fact be
      * in the future; callers to this routine effectively allocate time slots.
      * <p>
      * This method will sleep() until it can make a request; if 10 threads call this
@@ -65,13 +65,13 @@ public class Throttler {
         long wait;
         synchronized (this) {
             final long now = System.currentTimeMillis();
-            wait = mDelayInMillis - (now - mLastRequestTime);
+            wait = delayInMillis - (now - lastRequestTime);
             // mLastRequestTime must be updated while synchronized. As soon as this
             // block is left, another block may perform another update.
             if (wait < 0) {
                 wait = 0;
             }
-            mLastRequestTime = now + wait;
+            lastRequestTime = now + wait;
             //Log.d(TAG, "mLastRequestTime=" + mLastRequestTime);
         }
 
@@ -88,8 +88,8 @@ public class Throttler {
     @Override
     public String toString() {
         return "Throttler{"
-               + "mDelayInMillis=" + mDelayInMillis
-               + ", mLastRequestTime=" + mLastRequestTime
+               + "mDelayInMillis=" + delayInMillis
+               + ", mLastRequestTime=" + lastRequestTime
                + '}';
     }
 }

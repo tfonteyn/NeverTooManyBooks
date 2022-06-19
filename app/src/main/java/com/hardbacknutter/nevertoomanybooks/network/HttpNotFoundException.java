@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,7 +38,7 @@ public class HttpNotFoundException
 
     private static final long serialVersionUID = 6461290696382042369L;
     @Nullable
-    private String mMessage;
+    private String message;
 
     /**
      * Constructor.
@@ -59,14 +59,14 @@ public class HttpNotFoundException
      * @param message to use
      */
     void setUserMessage(@NonNull final String message) {
-        mMessage = message;
+        this.message = message;
     }
 
     @NonNull
     @Override
     public String getUserMessage(@NonNull final Context context) {
-        if (mMessage != null) {
-            return mMessage;
+        if (message != null) {
+            return message;
 
         } else if (getSiteResId() != 0) {
             return context.getString(R.string.error_network_site_access_failed,

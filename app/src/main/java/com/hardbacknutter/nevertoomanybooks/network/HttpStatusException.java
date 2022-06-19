@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,17 +41,16 @@ public class HttpStatusException
 
     private static final long serialVersionUID = 7064030911654231924L;
 
-    private final int mStatusCode;
+    private final int statusCode;
     @NonNull
-    private final String mStatusMessage;
-
+    private final String statusMessage;
 
     @Nullable
-    private final URL mUrl;
+    private final URL url;
 
     /** The site that caused the issue. */
     @StringRes
-    private final int mSiteResId;
+    private final int siteResId;
 
     /**
      * @param siteResId     the site string res; which will be embedded in a default user message
@@ -64,29 +63,29 @@ public class HttpStatusException
                         @NonNull final String statusMessage,
                         @Nullable final URL url) {
         super(statusMessage);
-        mSiteResId = siteResId;
-        mStatusCode = statusCode;
-        mStatusMessage = statusMessage;
-        mUrl = url;
+        this.siteResId = siteResId;
+        this.statusCode = statusCode;
+        this.statusMessage = statusMessage;
+        this.url = url;
     }
 
     @StringRes
     int getSiteResId() {
-        return mSiteResId;
+        return siteResId;
     }
 
     public int getStatusCode() {
-        return mStatusCode;
+        return statusCode;
     }
 
     @NonNull
     public String getStatusMessage() {
-        return mStatusMessage;
+        return statusMessage;
     }
 
     @Nullable
     public URL getUrl() {
-        return mUrl;
+        return url;
     }
 
     @NonNull
@@ -100,17 +99,17 @@ public class HttpStatusException
             msg = context.getString(R.string.httpError);
         }
 
-        return msg + " (" + mStatusCode + ")";
+        return msg + " (" + statusCode + ")";
     }
 
     @Override
     @NonNull
     public String toString() {
         return "HttpStatusException{"
-               + "mStatusCode=" + mStatusCode
-               + ", mStatusMessage=" + mStatusMessage
-               + ", mUrl=" + mUrl
-               + ", mSiteResId=" + ServiceLocator.getAppContext().getString(mSiteResId)
+               + "mStatusCode=" + statusCode
+               + ", mStatusMessage=" + statusMessage
+               + ", mUrl=" + url
+               + ", mSiteResId=" + ServiceLocator.getAppContext().getString(siteResId)
                + ", " + super.toString()
                + '}';
     }

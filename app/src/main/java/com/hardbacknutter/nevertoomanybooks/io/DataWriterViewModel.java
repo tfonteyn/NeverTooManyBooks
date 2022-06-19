@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,32 +46,32 @@ public abstract class DataWriterViewModel<RESULTS>
         extends ViewModel {
 
     @NonNull
-    private final DataWriterTask<RESULTS> mWriterTask = new DataWriterTask<>();
+    private final DataWriterTask<RESULTS> writerTask = new DataWriterTask<>();
 
     @Override
     protected void onCleared() {
-        mWriterTask.cancel();
+        writerTask.cancel();
         super.onCleared();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
-        return mWriterTask.onProgress();
+        return writerTask.onProgress();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Exception>>> onWriteDataFailure() {
-        return mWriterTask.onFailure();
+        return writerTask.onFailure();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<RESULTS>>> onWriteDataCancelled() {
-        return mWriterTask.onCancelled();
+        return writerTask.onCancelled();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<RESULTS>>> onWriteDataFinished() {
-        return mWriterTask.onFinished();
+        return writerTask.onFinished();
     }
 
     /**
@@ -83,16 +83,16 @@ public abstract class DataWriterViewModel<RESULTS>
 
     @UiThread
     protected void startWritingData(@NonNull final DataWriterHelperBase<RESULTS> helper) {
-        mWriterTask.start(helper);
+        writerTask.start(helper);
     }
 
     public boolean isRunning() {
-        return mWriterTask.isRunning();
+        return writerTask.isRunning();
     }
 
     public void cancelTask(@IdRes final int taskId) {
-        if (taskId == mWriterTask.getTaskId()) {
-            mWriterTask.cancel();
+        if (taskId == writerTask.getTaskId()) {
+            writerTask.cancel();
         } else {
             throw new IllegalArgumentException("taskId=" + taskId);
         }
@@ -104,7 +104,7 @@ public abstract class DataWriterViewModel<RESULTS>
         private static final String TAG = "DataWriterTask";
 
         @Nullable
-        private DataWriterHelperBase<RESULTS> mHelper;
+        private DataWriterHelperBase<RESULTS> helper;
 
         DataWriterTask() {
             super(R.id.TASK_ID_EXPORT, TAG);
@@ -117,7 +117,7 @@ public abstract class DataWriterViewModel<RESULTS>
          */
         @UiThread
         void start(@NonNull final DataWriterHelperBase<RESULTS> exportHelper) {
-            mHelper = exportHelper;
+            helper = exportHelper;
             execute();
         }
 
@@ -125,8 +125,8 @@ public abstract class DataWriterViewModel<RESULTS>
         public void cancel() {
             synchronized (this) {
                 super.cancel();
-                if (mHelper != null) {
-                    mHelper.cancel();
+                if (helper != null) {
+                    helper.cancel();
                 }
             }
         }
@@ -143,7 +143,7 @@ public abstract class DataWriterViewModel<RESULTS>
                        IOException {
 
             //noinspection ConstantConditions
-            return mHelper.write(context, this);
+            return helper.write(context, this);
         }
     }
 }

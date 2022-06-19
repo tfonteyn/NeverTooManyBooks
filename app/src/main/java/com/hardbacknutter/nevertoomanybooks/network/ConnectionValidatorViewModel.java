@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,47 +32,47 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 public class ConnectionValidatorViewModel
         extends ViewModel {
 
-    private ConnectionValidatorTask mValidatorTask;
+    private ConnectionValidatorTask validatorTask;
 
     @Override
     protected void onCleared() {
-        mValidatorTask.cancel();
+        validatorTask.cancel();
         super.onCleared();
     }
 
     public void init(@StringRes final int siteResId) {
-        mValidatorTask = new ConnectionValidatorTask(siteResId);
+        validatorTask = new ConnectionValidatorTask(siteResId);
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Boolean>>> onConnectionSuccessful() {
-        return mValidatorTask.onFinished();
+        return validatorTask.onFinished();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Boolean>>> onConnectionCancelled() {
-        return mValidatorTask.onCancelled();
+        return validatorTask.onCancelled();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Exception>>> onConnectionFailed() {
-        return mValidatorTask.onFailure();
+        return validatorTask.onFailure();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
-        return mValidatorTask.onProgress();
+        return validatorTask.onProgress();
     }
 
     public void cancelTask(@IdRes final int taskId) {
-        if (taskId == mValidatorTask.getTaskId()) {
-            mValidatorTask.cancel();
+        if (taskId == validatorTask.getTaskId()) {
+            validatorTask.cancel();
         } else {
             throw new IllegalArgumentException("taskId=" + taskId);
         }
     }
 
     public void validateConnection() {
-        mValidatorTask.connect();
+        validatorTask.connect();
     }
 }

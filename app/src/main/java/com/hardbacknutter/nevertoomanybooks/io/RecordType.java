@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -138,12 +138,12 @@ public enum RecordType {
     /** Used to detect the archive entry name when <strong>READING</strong>. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
-    private final String mPrefix;
+    private final String prefix;
 
     RecordType(@NonNull final String name) {
         // for now the same, but keeping this open to change
         this.name = name;
-        mPrefix = name;
+        prefix = name;
     }
 
     /**
@@ -158,7 +158,7 @@ public enum RecordType {
         final String name = entryName.toLowerCase(ServiceLocator.getSystemLocale());
 
         for (final RecordType type : values()) {
-            if (name.startsWith(type.mPrefix)) {
+            if (name.startsWith(type.prefix)) {
                 return Optional.of(type);
             }
         }

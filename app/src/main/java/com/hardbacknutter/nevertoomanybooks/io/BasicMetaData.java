@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,13 +32,13 @@ public class BasicMetaData {
 
     /** Bundle retrieved from the archive for this instance. */
     @NonNull
-    private final Bundle mData;
+    private final Bundle data;
 
     /**
      * Constructor.
      */
     public BasicMetaData(@NonNull final Bundle args) {
-        mData = args;
+        data = args;
     }
 
     /**
@@ -48,7 +48,7 @@ public class BasicMetaData {
      */
     @NonNull
     public Bundle getData() {
-        return mData;
+        return data;
     }
 
     /**
@@ -58,8 +58,8 @@ public class BasicMetaData {
      */
     @NonNull
     public Optional<Integer> getBookCount() {
-        if (mData.containsKey(INFO_NUMBER_OF_BOOKS)) {
-            final int count = mData.getInt(INFO_NUMBER_OF_BOOKS);
+        if (data.containsKey(INFO_NUMBER_OF_BOOKS)) {
+            final int count = data.getInt(INFO_NUMBER_OF_BOOKS);
             if (count > 0) {
                 return Optional.of(count);
             }
@@ -68,7 +68,7 @@ public class BasicMetaData {
     }
 
     public void setBookCount(final int count) {
-        mData.putInt(INFO_NUMBER_OF_BOOKS, count);
+        data.putInt(INFO_NUMBER_OF_BOOKS, count);
     }
 
     /**
@@ -78,8 +78,8 @@ public class BasicMetaData {
      */
     @NonNull
     public Optional<Integer> getCoverCount() {
-        if (mData.containsKey(INFO_NUMBER_OF_COVERS)) {
-            final int count = mData.getInt(INFO_NUMBER_OF_COVERS);
+        if (data.containsKey(INFO_NUMBER_OF_COVERS)) {
+            final int count = data.getInt(INFO_NUMBER_OF_COVERS);
             if (count > 0) {
                 return Optional.of(count);
             }
@@ -91,7 +91,7 @@ public class BasicMetaData {
     @NonNull
     public String toString() {
         return "SyncReaderMetaData{"
-               + "mData=" + mData
+               + "mData=" + data
                + '}';
     }
 }

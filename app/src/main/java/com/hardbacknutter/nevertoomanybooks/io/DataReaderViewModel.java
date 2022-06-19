@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,51 +44,51 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 public abstract class DataReaderViewModel<METADATA, RESULTS>
         extends ViewModel {
 
-    private final MetaDataReaderTask<METADATA, RESULTS> mMetaDataTask =
+    private final MetaDataReaderTask<METADATA, RESULTS> metaDataTask =
             new MetaDataReaderTask<>();
-    private final DataReaderTask<METADATA, RESULTS> mReaderTask =
+    private final DataReaderTask<METADATA, RESULTS> readerTask =
             new DataReaderTask<>();
 
     @Override
     protected void onCleared() {
-        mMetaDataTask.cancel();
-        mReaderTask.cancel();
+        metaDataTask.cancel();
+        readerTask.cancel();
         super.onCleared();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Exception>>> onReadMetaDataFailure() {
-        return mMetaDataTask.onFailure();
+        return metaDataTask.onFailure();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Optional<METADATA>>>> onReadMetaDataCancelled() {
-        return mMetaDataTask.onCancelled();
+        return metaDataTask.onCancelled();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Optional<METADATA>>>> onReadMetaDataFinished() {
-        return mMetaDataTask.onFinished();
+        return metaDataTask.onFinished();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
-        return mReaderTask.onProgress();
+        return readerTask.onProgress();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Exception>>> onReadDataFailure() {
-        return mReaderTask.onFailure();
+        return readerTask.onFailure();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<RESULTS>>> onReadDataCancelled() {
-        return mReaderTask.onCancelled();
+        return readerTask.onCancelled();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<RESULTS>>> onReadDataFinished() {
-        return mReaderTask.onFinished();
+        return readerTask.onFinished();
     }
 
     /**
@@ -103,24 +103,24 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
 
     @UiThread
     public void readMetaData() {
-        mMetaDataTask.start(getDataReaderHelper());
+        metaDataTask.start(getDataReaderHelper());
     }
 
     @UiThread
     public void readData() {
-        mReaderTask.start(getDataReaderHelper());
+        readerTask.start(getDataReaderHelper());
     }
 
     public boolean isRunning() {
-        return mReaderTask.isRunning();
+        return readerTask.isRunning();
     }
 
     public void cancelTask(@IdRes final int taskId) {
-        if (taskId == mMetaDataTask.getTaskId()) {
-            mMetaDataTask.cancel();
+        if (taskId == metaDataTask.getTaskId()) {
+            metaDataTask.cancel();
 
-        } else if (taskId == mReaderTask.getTaskId()) {
-            mReaderTask.cancel();
+        } else if (taskId == readerTask.getTaskId()) {
+            readerTask.cancel();
         } else {
             throw new IllegalArgumentException("taskId=" + taskId);
         }
@@ -132,7 +132,7 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
         private static final String TAG = "MetaDataReaderTask";
 
         @Nullable
-        private DataReaderHelperBase<METADATA, RESULTS> mHelper;
+        private DataReaderHelperBase<METADATA, RESULTS> helper;
 
         MetaDataReaderTask() {
             super(R.id.TASK_ID_READ_META_DATA, TAG);
@@ -145,7 +145,7 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
          */
         @UiThread
         public void start(@NonNull final DataReaderHelperBase<METADATA, RESULTS> helper) {
-            mHelper = helper;
+            this.helper = helper;
             execute();
         }
 
@@ -153,8 +153,8 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
         public void cancel() {
             synchronized (this) {
                 super.cancel();
-                if (mHelper != null) {
-                    mHelper.cancel();
+                if (helper != null) {
+                    helper.cancel();
                 }
             }
         }
@@ -170,7 +170,7 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
                        IOException {
 
             //noinspection ConstantConditions
-            return mHelper.readMetaData(context);
+            return helper.readMetaData(context);
         }
     }
 
@@ -180,7 +180,7 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
         private static final String TAG = "DataReaderTask";
 
         @Nullable
-        private DataReaderHelperBase<METADATA, RESULTS> mHelper;
+        private DataReaderHelperBase<METADATA, RESULTS> helper;
 
         DataReaderTask() {
             super(R.id.TASK_ID_IMPORT, TAG);
@@ -193,7 +193,7 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
          */
         @UiThread
         void start(@NonNull final DataReaderHelperBase<METADATA, RESULTS> helper) {
-            mHelper = helper;
+            this.helper = helper;
             execute();
         }
 
@@ -201,8 +201,8 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
         public void cancel() {
             synchronized (this) {
                 super.cancel();
-                if (mHelper != null) {
-                    mHelper.cancel();
+                if (helper != null) {
+                    helper.cancel();
                 }
             }
         }
@@ -218,7 +218,7 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
                        IOException {
 
             //noinspection ConstantConditions
-            return mHelper.read(context, this);
+            return helper.read(context, this);
         }
     }
 }

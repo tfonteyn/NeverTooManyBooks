@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -60,16 +60,16 @@ public class FutureHttpGet<T>
         // If the site fails to connect, we retry.
         int retry;
         // sanity check
-        if (mNrOfTries > 0) {
-            retry = mNrOfTries;
+        if (nrOfTries > 0) {
+            retry = nrOfTries;
         } else {
             retry = NR_OF_TRIES;
         }
 
         while (retry > 0) {
             try {
-                if (mThrottler != null) {
-                    mThrottler.waitUntilRequestAllowed();
+                if (throttler != null) {
+                    throttler.waitUntilRequestAllowed();
                 }
 
                 request.connect();
