@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,7 +35,7 @@ public class EntityMerger<T extends Mergeable>
     private final Map<Integer, T> hashCodes = new HashMap<>();
 
     @NonNull
-    private final Iterator<T> mIt;
+    private final Iterator<T> iterator;
 
     /** Result of the operation. */
     private boolean listModified;
@@ -46,18 +46,18 @@ public class EntityMerger<T extends Mergeable>
      * @param list with entities to merge/prune
      */
     public EntityMerger(@NonNull final Collection<T> list) {
-        mIt = list.iterator();
+        iterator = list.iterator();
     }
 
     @Override
     public boolean hasNext() {
-        return mIt.hasNext();
+        return iterator.hasNext();
     }
 
     @Override
     @NonNull
     public T next() {
-        return mIt.next();
+        return iterator.next();
     }
 
     /**
@@ -100,7 +100,7 @@ public class EntityMerger<T extends Mergeable>
             // try merging
             if (previous.merge(incoming)) {
                 // merged successfully, drop current
-                mIt.remove();
+                iterator.remove();
 
             } else {
                 // Merge conflict, keep and track as appropriate

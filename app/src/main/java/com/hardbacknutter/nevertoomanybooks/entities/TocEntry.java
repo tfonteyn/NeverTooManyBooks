@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -66,16 +66,16 @@ public class TocEntry
     };
 
     /** Row ID. */
-    private long mId;
+    private long id;
     @NonNull
-    private Author mAuthor;
+    private Author author;
     @NonNull
-    private String mTitle;
+    private String title;
     @NonNull
-    private PartialDate mFirstPublicationDate;
+    private PartialDate firstPublicationDate;
 
     /** in-memory use only. Number of books this TocEntry appears in. */
-    private int mBookCount;
+    private int bookCount;
 
     /**
      * Constructor.
@@ -111,10 +111,10 @@ public class TocEntry
     public TocEntry(@NonNull final Author author,
                     @NonNull final String title,
                     @NonNull final PartialDate firstPublicationDate) {
-        mAuthor = author;
-        mTitle = title.trim();
-        mFirstPublicationDate = firstPublicationDate;
-        mBookCount = 1;
+        this.author = author;
+        this.title = title.trim();
+        this.firstPublicationDate = firstPublicationDate;
+        bookCount = 1;
     }
 
     /**
@@ -131,11 +131,11 @@ public class TocEntry
                     @NonNull final String title,
                     @Nullable final String firstPublicationDate,
                     final int bookCount) {
-        mId = id;
-        mAuthor = author;
-        mTitle = title.trim();
-        mFirstPublicationDate = new PartialDate(firstPublicationDate);
-        mBookCount = bookCount;
+        this.id = id;
+        this.author = author;
+        this.title = title.trim();
+        this.firstPublicationDate = new PartialDate(firstPublicationDate);
+        this.bookCount = bookCount;
     }
 
     /**
@@ -144,15 +144,15 @@ public class TocEntry
      * @param in Parcel to construct the object from
      */
     private TocEntry(@NonNull final Parcel in) {
-        mId = in.readLong();
+        id = in.readLong();
         //noinspection ConstantConditions
-        mAuthor = in.readParcelable(Author.class.getClassLoader());
+        author = in.readParcelable(Author.class.getClassLoader());
         //noinspection ConstantConditions
-        mTitle = in.readString();
+        title = in.readString();
         //noinspection ConstantConditions
-        mFirstPublicationDate = in.readParcelable(PartialDate.class.getClassLoader());
+        firstPublicationDate = in.readParcelable(PartialDate.class.getClassLoader());
 
-        mBookCount = in.readInt();
+        bookCount = in.readInt();
     }
 
     /**
@@ -182,7 +182,7 @@ public class TocEntry
      * @return #books
      */
     public int getBookCount() {
-        return mBookCount;
+        return bookCount;
     }
 
     /**
@@ -191,10 +191,10 @@ public class TocEntry
      * @param source TocEntry to copy from
      */
     public void copyFrom(@NonNull final TocEntry source) {
-        mAuthor = source.mAuthor;
-        mTitle = source.mTitle;
-        mFirstPublicationDate = source.mFirstPublicationDate;
-        mBookCount = source.mBookCount;
+        author = source.author;
+        title = source.title;
+        firstPublicationDate = source.firstPublicationDate;
+        bookCount = source.bookCount;
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -206,21 +206,21 @@ public class TocEntry
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeLong(mId);
-        dest.writeParcelable(mAuthor, flags);
-        dest.writeString(mTitle);
-        dest.writeParcelable(mFirstPublicationDate, flags);
-        dest.writeInt(mBookCount);
+        dest.writeLong(id);
+        dest.writeParcelable(author, flags);
+        dest.writeString(title);
+        dest.writeParcelable(firstPublicationDate, flags);
+        dest.writeInt(bookCount);
     }
 
     @Override
     public long getId() {
-        return mId;
+        return id;
     }
 
     @Override
     public void setId(final long id) {
-        mId = id;
+        this.id = id;
     }
 
     @Override
@@ -236,43 +236,43 @@ public class TocEntry
      */
     @NonNull
     public String getTitle() {
-        return mTitle;
+        return title;
     }
 
     public void setTitle(@NonNull final String title) {
-        mTitle = title;
+        this.title = title;
     }
 
     @NonNull
     @Override
     public String getLabel(@NonNull final Context context) {
         // Using the locale here is overkill;  see #getLocale(..)
-        return getLabel(context, mTitle, () -> null);
+        return getLabel(context, title, () -> null);
     }
 
     @NonNull
     public Author getPrimaryAuthor() {
-        return mAuthor;
+        return author;
     }
 
     public void setPrimaryAuthor(@NonNull final Author author) {
-        mAuthor = author;
+        this.author = author;
     }
 
     @Override
     @NonNull
     public List<BookLight> getBookTitles(@NonNull final Context context) {
-        return ServiceLocator.getInstance().getTocEntryDao().getBookTitles(mId, mAuthor);
+        return ServiceLocator.getInstance().getTocEntryDao().getBookTitles(id, author);
     }
 
     @Override
     @NonNull
     public PartialDate getFirstPublicationDate() {
-        return mFirstPublicationDate;
+        return firstPublicationDate;
     }
 
     public void setFirstPublicationDate(@NonNull final PartialDate firstPublicationDate) {
-        mFirstPublicationDate = firstPublicationDate;
+        this.firstPublicationDate = firstPublicationDate;
     }
 
     /**
@@ -300,26 +300,26 @@ public class TocEntry
 
         // If the incoming TocEntry has no date set, we're done
         if (!incoming.getFirstPublicationDate().isPresent()) {
-            if (mId == 0 && incoming.getId() > 0) {
-                mId = incoming.getId();
+            if (id == 0 && incoming.getId() > 0) {
+                id = incoming.getId();
             }
             return true;
         }
 
         // If this TocEntry has no date set, copy the incoming data
-        if (!mFirstPublicationDate.isPresent()) {
-            mFirstPublicationDate = incoming.getFirstPublicationDate();
-            if (mId == 0 && incoming.getId() > 0) {
-                mId = incoming.getId();
+        if (!firstPublicationDate.isPresent()) {
+            firstPublicationDate = incoming.getFirstPublicationDate();
+            if (id == 0 && incoming.getId() > 0) {
+                id = incoming.getId();
             }
             return true;
         }
 
         // Both have a date set.
         // If they are the same, we're done
-        if (mFirstPublicationDate.equals(incoming.getFirstPublicationDate())) {
-            if (mId == 0 && incoming.getId() > 0) {
-                mId = incoming.getId();
+        if (firstPublicationDate.equals(incoming.getFirstPublicationDate())) {
+            if (id == 0 && incoming.getId() > 0) {
+                id = incoming.getId();
             }
             return true;
         }
@@ -334,12 +334,12 @@ public class TocEntry
 
     @Override
     public int asciiHashCodeNoId() {
-        return Objects.hash(ParseUtils.toAscii(mTitle), mAuthor.asciiHashCodeNoId());
+        return Objects.hash(ParseUtils.toAscii(title), author.asciiHashCodeNoId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mId, mTitle, mAuthor);
+        return Objects.hash(id, title, author);
     }
 
     /**
@@ -362,22 +362,22 @@ public class TocEntry
         }
         final TocEntry that = (TocEntry) obj;
         // if both 'exist' but have different ID's -> different.
-        if (mId != 0 && that.mId != 0 && mId != that.mId) {
+        if (id != 0 && that.id != 0 && id != that.id) {
             return false;
         }
-        return Objects.equals(mAuthor, that.mAuthor)
-               && Objects.equals(mTitle, that.mTitle);
+        return Objects.equals(author, that.author)
+               && Objects.equals(title, that.title);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "TocEntry{"
-               + "mId=" + mId
-               + ", mAuthor=" + mAuthor
-               + ", mTitle=`" + mTitle + '`'
-               + ", mFirstPublicationDate=`" + mFirstPublicationDate + '`'
-               + ", mBookCount=`" + mBookCount + '`'
+               + "mId=" + id
+               + ", mAuthor=" + author
+               + ", mTitle=`" + title + '`'
+               + ", mFirstPublicationDate=`" + firstPublicationDate + '`'
+               + ", mBookCount=`" + bookCount + '`'
                + '}';
     }
 }

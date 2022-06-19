@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -154,15 +154,15 @@ public class Series
     /** Remove any leading zeros from Series number. */
     private static final Pattern PURE_NUMERICAL_PATTERN = Pattern.compile("^[0-9]+$");
     /** Row ID. */
-    private long mId;
+    private long id;
     /** Series title. */
     @NonNull
-    private String mTitle;
+    private String title;
     /** whether we have all we want from this Series / if the Series is finished. */
-    private boolean mIsComplete;
+    private boolean complete;
     /** number (alphanumeric) of a book in this Series. */
     @NonNull
-    private String mNumber;
+    private String number;
 
     /**
      * Constructor.
@@ -170,22 +170,22 @@ public class Series
      * @param title of the Series
      */
     public Series(@NonNull final String title) {
-        mTitle = title;
-        mNumber = "";
+        this.title = title;
+        number = "";
     }
 
     /**
      * Constructor.
      *
-     * @param title      of the Series
-     * @param isComplete whether a Series is completed, i.e if the user has all
-     *                   they want from this Series.
+     * @param title    of the Series
+     * @param complete whether a Series is completed, i.e if the user has all
+     *                 they want from this Series.
      */
     public Series(@NonNull final String title,
-                  final boolean isComplete) {
-        mTitle = title;
-        mIsComplete = isComplete;
-        mNumber = "";
+                  final boolean complete) {
+        this.title = title;
+        this.complete = complete;
+        number = "";
     }
 
     /**
@@ -196,14 +196,14 @@ public class Series
      */
     public Series(final long id,
                   @NonNull final DataHolder rowData) {
-        mId = id;
-        mTitle = rowData.getString(DBKey.SERIES_TITLE);
-        mIsComplete = rowData.getBoolean(DBKey.SERIES_IS_COMPLETE);
+        this.id = id;
+        title = rowData.getString(DBKey.SERIES_TITLE);
+        complete = rowData.getBoolean(DBKey.SERIES_IS_COMPLETE);
         // optional domain, not always used.
         if (rowData.contains(DBKey.SERIES_BOOK_NUMBER)) {
-            mNumber = rowData.getString(DBKey.SERIES_BOOK_NUMBER);
+            number = rowData.getString(DBKey.SERIES_BOOK_NUMBER);
         } else {
-            mNumber = "";
+            number = "";
         }
     }
 
@@ -213,12 +213,12 @@ public class Series
      * @param in Parcel to construct the object from
      */
     private Series(@NonNull final Parcel in) {
-        mId = in.readLong();
+        id = in.readLong();
         //noinspection ConstantConditions
-        mTitle = in.readString();
-        mIsComplete = in.readByte() != 0;
+        title = in.readString();
+        complete = in.readByte() != 0;
         //noinspection ConstantConditions
-        mNumber = in.readString();
+        number = in.readString();
     }
 
     /**
@@ -367,10 +367,10 @@ public class Series
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeLong(mId);
-        dest.writeString(mTitle);
-        dest.writeByte((byte) (mIsComplete ? 1 : 0));
-        dest.writeString(mNumber);
+        dest.writeLong(id);
+        dest.writeString(title);
+        dest.writeByte((byte) (complete ? 1 : 0));
+        dest.writeString(number);
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -385,7 +385,7 @@ public class Series
      * @return {@code true} if the Series is complete
      */
     public boolean isComplete() {
-        return mIsComplete;
+        return complete;
     }
 
     /**
@@ -394,17 +394,17 @@ public class Series
      * @param isComplete Flag indicating the user considers this Series to be 'complete'
      */
     public void setComplete(final boolean isComplete) {
-        mIsComplete = isComplete;
+        complete = isComplete;
     }
 
     @Override
     public long getId() {
-        return mId;
+        return id;
     }
 
     @Override
     public void setId(final long id) {
-        mId = id;
+        this.id = id;
     }
 
     /**
@@ -418,12 +418,12 @@ public class Series
     @NonNull
     public String getLabel(@NonNull final Context context) {
         // Using the locale here is overkill;  see #getLocale(..)
-        final String title = getLabel(context, mTitle, () -> null);
+        final String title = getLabel(context, this.title, () -> null);
 
-        if (mNumber.isEmpty()) {
+        if (number.isEmpty()) {
             return title;
         } else {
-            return title + " (" + mNumber + ')';
+            return title + " (" + number + ')';
         }
     }
 
@@ -434,7 +434,7 @@ public class Series
      */
     @NonNull
     public String getTitle() {
-        return mTitle;
+        return title;
     }
 
     /**
@@ -443,7 +443,7 @@ public class Series
      * @param title to use
      */
     public void setTitle(@NonNull final String title) {
-        mTitle = title;
+        this.title = title;
     }
 
     /**
@@ -453,7 +453,7 @@ public class Series
      */
     @NonNull
     public String getNumber() {
-        return mNumber;
+        return number;
     }
 
     /**
@@ -462,7 +462,7 @@ public class Series
      * @param number to use, a {@code null} is replaced by "".
      */
     public void setNumber(@Nullable final String number) {
-        mNumber = Objects.requireNonNullElse(number, "");
+        this.number = Objects.requireNonNullElse(number, "");
     }
 
     /**
@@ -473,10 +473,10 @@ public class Series
      */
     public void copyFrom(@NonNull final Series source,
                          final boolean includeBookFields) {
-        mTitle = source.mTitle;
-        mIsComplete = source.mIsComplete;
+        title = source.title;
+        complete = source.complete;
         if (includeBookFields) {
-            mNumber = source.mNumber;
+            number = source.number;
         }
     }
 
@@ -498,7 +498,7 @@ public class Series
         // were we use batch mode. Also: a french book belonging to a dutch series...
         // the series title OB is wrong. For now this is partially mitigated by making
         // entering the book language mandatory.
-        final String lang = ServiceLocator.getInstance().getSeriesDao().getLanguage(mId);
+        final String lang = ServiceLocator.getInstance().getSeriesDao().getLanguage(id);
         if (!lang.isEmpty()) {
             final Locale seriesLocale = ServiceLocator.getInstance().getAppLocale()
                                                       .getLocale(context, lang);
@@ -515,26 +515,26 @@ public class Series
 
         // If the incoming Series has no number set, we're done
         if (incoming.getNumber().isEmpty()) {
-            if (mId == 0 && incoming.getId() > 0) {
-                mId = incoming.getId();
+            if (id == 0 && incoming.getId() > 0) {
+                id = incoming.getId();
             }
             return true;
         }
 
         // If this Series has no number set, copy the incoming data
-        if (mNumber.isEmpty()) {
-            mNumber = incoming.getNumber();
-            if (mId == 0 && incoming.getId() > 0) {
-                mId = incoming.getId();
+        if (number.isEmpty()) {
+            number = incoming.getNumber();
+            if (id == 0 && incoming.getId() > 0) {
+                id = incoming.getId();
             }
             return true;
         }
 
         // Both have a number set.
         // If they are the same, we're done
-        if (mNumber.equals(incoming.getNumber())) {
-            if (mId == 0 && incoming.getId() > 0) {
-                mId = incoming.getId();
+        if (number.equals(incoming.getNumber())) {
+            if (id == 0 && incoming.getId() > 0) {
+                id = incoming.getId();
             }
             return true;
         }
@@ -544,20 +544,20 @@ public class Series
         // The user can clean up manually if needed.
         // While we cannot merge the actual objects,
         // we CAN copy the id if appropriate, as Series are distinguished by id AND number
-        if (mId == 0 && incoming.getId() > 0) {
-            mId = incoming.getId();
+        if (id == 0 && incoming.getId() > 0) {
+            id = incoming.getId();
         }
         return false;
     }
 
     @Override
     public int asciiHashCodeNoId() {
-        return Objects.hash(ParseUtils.toAscii(mTitle));
+        return Objects.hash(ParseUtils.toAscii(title));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mId, mTitle);
+        return Objects.hash(id, title);
     }
 
     /**
@@ -580,20 +580,20 @@ public class Series
         }
         final Series that = (Series) obj;
         // if both 'exist' but have different ID's -> different.
-        if (mId != 0 && that.mId != 0 && mId != that.mId) {
+        if (id != 0 && that.id != 0 && id != that.id) {
             return false;
         }
-        return Objects.equals(mTitle, that.mTitle);
+        return Objects.equals(title, that.title);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "Series{"
-               + "mId=" + mId
-               + ", mTitle=`" + mTitle + '`'
-               + ", mIsComplete=" + mIsComplete
-               + ", mNumber=`" + mNumber + '`'
+               + "mId=" + id
+               + ", mTitle=`" + title + '`'
+               + ", mIsComplete=" + complete
+               + ", mNumber=`" + number + '`'
                + '}';
     }
 }

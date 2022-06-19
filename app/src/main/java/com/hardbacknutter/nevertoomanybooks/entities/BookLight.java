@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,14 +39,14 @@ public class BookLight
         implements AuthorWork, Entity {
 
     @NonNull
-    private final String mTitle;
+    private final String title;
     @NonNull
-    private final String mLanguage;
+    private final String language;
     @Nullable
-    private final Author mPrimaryAuthor;
+    private final Author primaryAuthor;
     @NonNull
-    private final PartialDate mFirstPublicationDate;
-    private long mId;
+    private final PartialDate firstPublicationDate;
+    private long id;
 
     /**
      * Constructor.
@@ -62,11 +62,11 @@ public class BookLight
                      @NonNull final String language,
                      @Nullable final Author primaryAuthor,
                      @Nullable final String firstPublicationDate) {
-        mId = id;
-        mTitle = title;
-        mLanguage = language;
-        mPrimaryAuthor = primaryAuthor;
-        mFirstPublicationDate = new PartialDate(firstPublicationDate);
+        this.id = id;
+        this.title = title;
+        this.language = language;
+        this.primaryAuthor = primaryAuthor;
+        this.firstPublicationDate = new PartialDate(firstPublicationDate);
     }
 
     @Override
@@ -77,11 +77,11 @@ public class BookLight
 
     @Override
     public long getId() {
-        return mId;
+        return id;
     }
 
     public void setId(final long id) {
-        mId = id;
+        this.id = id;
     }
 
     /**
@@ -93,7 +93,7 @@ public class BookLight
      */
     @NonNull
     public String getTitle() {
-        return mTitle;
+        return title;
     }
 
     @NonNull
@@ -106,11 +106,11 @@ public class BookLight
     @NonNull
     public Locale getLocale(@NonNull final Context context,
                             @NonNull final Locale defValue) {
-        if (mLanguage.isEmpty()) {
+        if (language.isEmpty()) {
             return defValue;
         } else {
             final Locale locale = ServiceLocator.getInstance().getAppLocale()
-                                                .getLocale(context, mLanguage);
+                                                .getLocale(context, language);
             return Objects.requireNonNullElse(locale, defValue);
         }
     }
@@ -118,18 +118,18 @@ public class BookLight
     @Override
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        return getLabel(context, mTitle, () -> null);
+        return getLabel(context, title, () -> null);
     }
 
     @Override
     @Nullable
     public Author getPrimaryAuthor() {
-        return mPrimaryAuthor;
+        return primaryAuthor;
     }
 
     @Override
     @NonNull
     public PartialDate getFirstPublicationDate() {
-        return mFirstPublicationDate;
+        return firstPublicationDate;
     }
 }

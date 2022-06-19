@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,21 +27,21 @@ import androidx.annotation.NonNull;
 public class EntityStage {
 
     @NonNull
-    private Stage mStage = Stage.Clean;
+    private Stage stage = Stage.Clean;
 
-    private boolean mLocked;
+    private boolean locked;
 
     void lock() {
-        if (!mLocked) {
-            mLocked = true;
+        if (!locked) {
+            locked = true;
         } else {
             throw new IllegalStateException("Already locked");
         }
     }
 
     void unlock() {
-        if (mLocked) {
-            mLocked = false;
+        if (locked) {
+            locked = false;
         } else {
             throw new IllegalStateException("Already unlocked");
         }
@@ -49,14 +49,14 @@ public class EntityStage {
 
     @NonNull
     public Stage getStage() {
-        return mStage;
+        return stage;
     }
 
     public void setStage(@NonNull final Stage stage) {
-        if (mLocked) {
+        if (locked) {
             return;
         }
-        mStage = stage;
+        this.stage = stage;
     }
 
     public enum Stage {
