@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,16 +58,16 @@ public class EditAuthorDialogFragment
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /** FragmentResultListener request key to use for our response. */
-    private String mRequestKey;
+    private String requestKey;
 
     /** View Binding. */
-    private DialogEditAuthorBinding mVb;
+    private DialogEditAuthorBinding vb;
 
     /** The Author we're editing. */
-    private Author mAuthor;
+    private Author author;
 
     /** Current edit. */
-    private Author mCurrentEdit;
+    private Author currentEdit;
 
     /**
      * No-arg constructor for OS use.
@@ -98,16 +98,16 @@ public class EditAuthorDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
-        mAuthor = Objects.requireNonNull(args.getParcelable(DBKey.FK_AUTHOR), DBKey.FK_AUTHOR);
+        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        author = Objects.requireNonNull(args.getParcelable(DBKey.FK_AUTHOR), DBKey.FK_AUTHOR);
 
         if (savedInstanceState == null) {
-            mCurrentEdit = new Author(mAuthor.getFamilyName(),
-                                      mAuthor.getGivenNames(),
-                                      mAuthor.isComplete());
+            currentEdit = new Author(author.getFamilyName(),
+                                     author.getGivenNames(),
+                                     author.isComplete());
         } else {
             //noinspection ConstantConditions
-            mCurrentEdit = savedInstanceState.getParcelable(DBKey.FK_AUTHOR);
+            currentEdit = savedInstanceState.getParcelable(DBKey.FK_AUTHOR);
         }
     }
 
@@ -115,7 +115,7 @@ public class EditAuthorDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mVb = DialogEditAuthorBinding.bind(view);
+        vb = DialogEditAuthorBinding.bind(view);
 
         final Context context = getContext();
 
@@ -132,11 +132,11 @@ public class EditAuthorDialogFragment
                 ExtArrayAdapter.FilterType.Diacritic,
                 authorDao.getNames(DBKey.AUTHOR_GIVEN_NAMES));
 
-        mVb.familyName.setText(mCurrentEdit.getFamilyName());
-        mVb.familyName.setAdapter(familyNameAdapter);
-        mVb.givenNames.setText(mCurrentEdit.getGivenNames());
-        mVb.givenNames.setAdapter(givenNameAdapter);
-        mVb.cbxIsComplete.setChecked(mCurrentEdit.isComplete());
+        vb.familyName.setText(currentEdit.getFamilyName());
+        vb.familyName.setAdapter(familyNameAdapter);
+        vb.givenNames.setText(currentEdit.getGivenNames());
+        vb.givenNames.setAdapter(givenNameAdapter);
+        vb.cbxIsComplete.setChecked(currentEdit.isComplete());
 
         // don't requestFocus() as we have multiple fields.
     }
@@ -154,20 +154,20 @@ public class EditAuthorDialogFragment
 
     private boolean saveChanges() {
         viewToModel();
-        if (mCurrentEdit.getFamilyName().isEmpty()) {
-            showError(mVb.lblFamilyName, R.string.vldt_non_blank_required);
+        if (currentEdit.getFamilyName().isEmpty()) {
+            showError(vb.lblFamilyName, R.string.vldt_non_blank_required);
             return false;
         }
 
         // anything actually changed ?
-        if (mAuthor.getFamilyName().equals(mCurrentEdit.getFamilyName())
-            && mAuthor.getGivenNames().equals(mCurrentEdit.getGivenNames())
-            && mAuthor.isComplete() == mCurrentEdit.isComplete()) {
+        if (author.getFamilyName().equals(currentEdit.getFamilyName())
+            && author.getGivenNames().equals(currentEdit.getGivenNames())
+            && author.isComplete() == currentEdit.isComplete()) {
             return true;
         }
 
         // store changes
-        mAuthor.copyFrom(mCurrentEdit, false);
+        author.copyFrom(currentEdit, false);
 
         final Context context = getContext();
 
@@ -178,36 +178,36 @@ public class EditAuthorDialogFragment
 
         // check if it already exists (will be 0 if not)
         //noinspection ConstantConditions
-        final long existingId = authorDao.find(context, mAuthor, true, bookLocale);
+        final long existingId = authorDao.find(context, author, true, bookLocale);
 
         if (existingId == 0) {
             final boolean success;
-            if (mAuthor.getId() == 0) {
-                success = authorDao.insert(context, mAuthor) > 0;
+            if (author.getId() == 0) {
+                success = authorDao.insert(context, author) > 0;
             } else {
-                success = authorDao.update(context, mAuthor);
+                success = authorDao.update(context, author);
             }
             if (success) {
-                RowChangedListener.setResult(this, mRequestKey,
-                                             DBKey.FK_AUTHOR, mAuthor.getId());
+                RowChangedListener.setResult(this, requestKey,
+                                             DBKey.FK_AUTHOR, author.getId());
                 return true;
             }
         } else {
             // Merge the 2
             new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(mAuthor.getLabel(context))
+                    .setTitle(author.getLabel(context))
                     .setMessage(R.string.confirm_merge_authors)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(R.string.action_merge, (d, w) -> {
                         dismiss();
                         // move all books from the one being edited to the existing one
                         try {
-                            authorDao.merge(context, mAuthor, existingId);
+                            authorDao.merge(context, author, existingId);
                             RowChangedListener.setResult(
-                                    this, mRequestKey,
+                                    this, requestKey,
                                     // return the author who 'lost' their books
-                                    DBKey.FK_AUTHOR, mAuthor.getId());
+                                    DBKey.FK_AUTHOR, author.getId());
                         } catch (@NonNull final DaoWriteException e) {
                             Logger.error(TAG, e);
                             StandardDialogs.showError(context, R.string.error_storage_not_writable);
@@ -220,15 +220,15 @@ public class EditAuthorDialogFragment
     }
 
     private void viewToModel() {
-        mCurrentEdit.setName(mVb.familyName.getText().toString().trim(),
-                             mVb.givenNames.getText().toString().trim());
-        mCurrentEdit.setComplete(mVb.cbxIsComplete.isChecked());
+        currentEdit.setName(vb.familyName.getText().toString().trim(),
+                            vb.givenNames.getText().toString().trim());
+        currentEdit.setComplete(vb.cbxIsComplete.isChecked());
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(DBKey.FK_AUTHOR, mCurrentEdit);
+        outState.putParcelable(DBKey.FK_AUTHOR, currentEdit);
     }
 
     @Override

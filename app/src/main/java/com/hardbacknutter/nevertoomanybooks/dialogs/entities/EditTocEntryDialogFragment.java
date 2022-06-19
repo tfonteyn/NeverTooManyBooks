@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -216,8 +216,8 @@ public class EditTocEntryDialogFragment
     public abstract static class Launcher
             implements FragmentResultListener {
 
-        private String mRequestKey;
-        private FragmentManager mFragmentManager;
+        private String requestKey;
+        private FragmentManager fragmentManager;
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
@@ -233,9 +233,9 @@ public class EditTocEntryDialogFragment
         public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
                                               @NonNull final String requestKey,
                                               @NonNull final LifecycleOwner lifecycleOwner) {
-            mFragmentManager = fragmentManager;
-            mRequestKey = requestKey;
-            mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
+            this.fragmentManager = fragmentManager;
+            this.requestKey = requestKey;
+            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
         }
 
         /**
@@ -252,7 +252,7 @@ public class EditTocEntryDialogFragment
                            final boolean hasMultipleAuthors) {
 
             final Bundle args = new Bundle(5);
-            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+            args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putString(DBKey.TITLE, book.getTitle());
             args.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, hasMultipleAuthors);
             args.putInt(BKEY_POSITION, position);
@@ -260,7 +260,7 @@ public class EditTocEntryDialogFragment
 
             final DialogFragment frag = new EditTocEntryDialogFragment();
             frag.setArguments(args);
-            frag.show(mFragmentManager, TAG);
+            frag.show(fragmentManager, TAG);
         }
 
         @Override

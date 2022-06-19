@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -74,13 +74,13 @@ public class EditLenderDialogFragment
     /** savedInstanceState key for the newly entered loanee name. */
     private static final String SIS_NEW_LOANEE = TAG + ':' + DBKey.LOANEE_NAME;
     /** FragmentResultListener request key to use for our response. */
-    private String mRequestKey;
+    private String requestKey;
     /** View Binding. */
-    private DialogEditLoanBinding mVb;
+    private DialogEditLoanBinding vb;
     /** The book we're lending. */
-    private long mBookId;
+    private long bookId;
     /** Displayed for info. */
-    private String mBookTitle;
+    private String bookTitle;
 
     /**
      * The person who currently has the book.
@@ -89,7 +89,7 @@ public class EditLenderDialogFragment
      * {@link DBKey#LOANEE_NAME} in savedInstanceState.
      */
     @Nullable
-    private String mLoanee;
+    private String loanee;
 
     /**
      * The loanee being edited.
@@ -97,17 +97,17 @@ public class EditLenderDialogFragment
      * {@link #SIS_NEW_LOANEE} in savedInstanceState.
      */
     @Nullable
-    private String mCurrentEdit;
+    private String currentEdit;
 
-    private ArrayList<String> mPeople;
-    private ExtArrayAdapter<String> mAdapter;
+    private ArrayList<String> people;
+    private ExtArrayAdapter<String> adapter;
 
     /**
      * See <a href="https://developer.android.com/training/permissions/requesting">
      * developer.android.com</a>
      */
     @SuppressLint("MissingPermission")
-    private final ActivityResultLauncher<String> mRequestPermissionLauncher =
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(
                     new ActivityResultContracts.RequestPermission(), isGranted -> {
                         if (isGranted) {
@@ -128,19 +128,19 @@ public class EditLenderDialogFragment
 
         final LoaneeDao loaneeDao = ServiceLocator.getInstance().getLoaneeDao();
         // get previously used lender names
-        mPeople = loaneeDao.getList();
+        people = loaneeDao.getList();
 
         final Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
-        mBookId = args.getLong(DBKey.FK_BOOK);
-        mBookTitle = Objects.requireNonNull(args.getString(DBKey.TITLE), DBKey.TITLE);
+        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        bookId = args.getLong(DBKey.FK_BOOK);
+        bookTitle = Objects.requireNonNull(args.getString(DBKey.TITLE), DBKey.TITLE);
 
         if (savedInstanceState == null) {
-            mLoanee = loaneeDao.getLoaneeByBookId(mBookId);
-            mCurrentEdit = mLoanee;
+            loanee = loaneeDao.getLoaneeByBookId(bookId);
+            currentEdit = loanee;
         } else {
-            mLoanee = savedInstanceState.getString(DBKey.LOANEE_NAME);
-            mCurrentEdit = savedInstanceState.getString(SIS_NEW_LOANEE);
+            loanee = savedInstanceState.getString(DBKey.LOANEE_NAME);
+            currentEdit = savedInstanceState.getString(SIS_NEW_LOANEE);
         }
     }
 
@@ -149,15 +149,15 @@ public class EditLenderDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mVb = DialogEditLoanBinding.bind(view);
+        vb = DialogEditLoanBinding.bind(view);
 
-        mVb.toolbar.setSubtitle(mBookTitle);
+        vb.toolbar.setSubtitle(bookTitle);
 
         //noinspection ConstantConditions
-        mAdapter = new ExtArrayAdapter<>(getContext(), R.layout.popup_dropdown_menu_item,
-                                         ExtArrayAdapter.FilterType.Diacritic, mPeople);
-        mVb.lendTo.setAdapter(mAdapter);
-        mVb.lendTo.setText(mCurrentEdit);
+        adapter = new ExtArrayAdapter<>(getContext(), R.layout.popup_dropdown_menu_item,
+                                        ExtArrayAdapter.FilterType.Diacritic, people);
+        vb.lendTo.setAdapter(adapter);
+        vb.lendTo.setText(currentEdit);
 
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS)
             == PackageManager.PERMISSION_GRANTED) {
@@ -166,17 +166,17 @@ public class EditLenderDialogFragment
             // FIXME: implement shouldShowRequestPermissionRationale
             //  but without using a dialog box inside a dialog box
         } else {
-            mRequestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS);
+            requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS);
         }
 
-        mVb.lendTo.requestFocus();
+        vb.lendTo.requestFocus();
     }
 
     // TODO: store the Contacts.LOOKUP_KEY for later.
     @RequiresPermission(Manifest.permission.READ_CONTACTS)
     private void addContacts() {
         // LinkedHashSet to remove duplicates
-        final Set<String> contacts = new LinkedHashSet<>(mPeople);
+        final Set<String> contacts = new LinkedHashSet<>(people);
         //noinspection ConstantConditions
         final ContentResolver cr = getContext().getContentResolver();
         try (Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI,
@@ -194,8 +194,8 @@ public class EditLenderDialogFragment
 
         final List<String> sorted = new ArrayList<>(contacts);
         Collections.sort(sorted);
-        mAdapter.clear();
-        mAdapter.addAll(sorted);
+        adapter.clear();
+        adapter.addAll(sorted);
     }
 
     @Override
@@ -214,36 +214,36 @@ public class EditLenderDialogFragment
 
         // anything actually changed ?
         //noinspection ConstantConditions
-        if (mCurrentEdit.equalsIgnoreCase(mLoanee)) {
+        if (currentEdit.equalsIgnoreCase(loanee)) {
             return true;
         }
 
         final boolean success;
-        if (mCurrentEdit.isEmpty()) {
+        if (currentEdit.isEmpty()) {
             // return the book
-            success = ServiceLocator.getInstance().getLoaneeDao().setLoanee(mBookId, null);
+            success = ServiceLocator.getInstance().getLoaneeDao().setLoanee(bookId, null);
         } else {
             // lend book, reluctantly...
-            success = ServiceLocator.getInstance().getLoaneeDao().setLoanee(mBookId, mCurrentEdit);
+            success = ServiceLocator.getInstance().getLoaneeDao().setLoanee(bookId, currentEdit);
         }
 
         if (success) {
-            Launcher.setResult(this, mRequestKey, mBookId, mCurrentEdit);
+            Launcher.setResult(this, requestKey, bookId, currentEdit);
             return true;
         }
         return false;
     }
 
     private void viewToModel() {
-        mCurrentEdit = mVb.lendTo.getText().toString().trim();
+        currentEdit = vb.lendTo.getText().toString().trim();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         // store the original loanee to avoid a trip to the database
-        outState.putString(DBKey.LOANEE_NAME, mLoanee);
-        outState.putString(SIS_NEW_LOANEE, mCurrentEdit);
+        outState.putString(DBKey.LOANEE_NAME, loanee);
+        outState.putString(SIS_NEW_LOANEE, currentEdit);
     }
 
     @Override
@@ -255,8 +255,8 @@ public class EditLenderDialogFragment
     public abstract static class Launcher
             implements FragmentResultListener {
 
-        private String mRequestKey;
-        private FragmentManager mFragmentManager;
+        private String requestKey;
+        private FragmentManager fragmentManager;
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
@@ -271,9 +271,9 @@ public class EditLenderDialogFragment
         public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
                                               @NonNull final String requestKey,
                                               @NonNull final LifecycleOwner lifecycleOwner) {
-            mFragmentManager = fragmentManager;
-            mRequestKey = requestKey;
-            mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
+            this.fragmentManager = fragmentManager;
+            this.requestKey = requestKey;
+            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
         }
 
         /**
@@ -284,13 +284,13 @@ public class EditLenderDialogFragment
         public void launch(@NonNull final Book book) {
 
             final Bundle args = new Bundle(3);
-            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+            args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putLong(DBKey.FK_BOOK, book.getId());
             args.putString(DBKey.TITLE, book.getString(DBKey.TITLE));
 
             final DialogFragment frag = new EditLenderDialogFragment();
             frag.setArguments(args);
-            frag.show(mFragmentManager, TAG);
+            frag.show(fragmentManager, TAG);
         }
 
         /**
@@ -303,13 +303,13 @@ public class EditLenderDialogFragment
                            @NonNull final String bookTitle) {
 
             final Bundle args = new Bundle(3);
-            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+            args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putLong(DBKey.FK_BOOK, bookId);
             args.putString(DBKey.TITLE, bookTitle);
 
             final DialogFragment frag = new EditLenderDialogFragment();
             frag.setArguments(args);
-            frag.show(mFragmentManager, TAG);
+            frag.show(fragmentManager, TAG);
         }
 
         @Override

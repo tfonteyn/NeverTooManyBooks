@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,16 +57,16 @@ public class EditBookshelfDialogFragment
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /** FragmentResultListener request key to use for our response. */
-    private String mRequestKey;
+    private String requestKey;
 
     /** View Binding. */
-    private DialogEditBookshelfBinding mVb;
+    private DialogEditBookshelfBinding vb;
 
     /** The Bookshelf we're editing. */
-    private Bookshelf mBookshelf;
+    private Bookshelf bookshelf;
 
     /** Current edit. */
-    private String mName;
+    private String name;
 
     /**
      * No-arg constructor for OS use.
@@ -80,15 +80,15 @@ public class EditBookshelfDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
-        mBookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
-                                            DBKey.FK_BOOKSHELF);
+        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        bookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
+                                           DBKey.FK_BOOKSHELF);
 
         if (savedInstanceState == null) {
-            mName = mBookshelf.getName();
+            name = bookshelf.getName();
         } else {
             //noinspection ConstantConditions
-            mName = savedInstanceState.getString(DBKey.BOOKSHELF_NAME);
+            name = savedInstanceState.getString(DBKey.BOOKSHELF_NAME);
         }
     }
 
@@ -97,10 +97,10 @@ public class EditBookshelfDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mVb = DialogEditBookshelfBinding.bind(view);
+        vb = DialogEditBookshelfBinding.bind(view);
 
-        mVb.bookshelf.setText(mName);
-        mVb.bookshelf.requestFocus();
+        vb.bookshelf.setText(name);
+        vb.bookshelf.requestFocus();
     }
 
     @Override
@@ -116,46 +116,46 @@ public class EditBookshelfDialogFragment
 
     private boolean saveChanges() {
         viewToModel();
-        if (mName.isEmpty()) {
-            showError(mVb.lblBookshelf, R.string.vldt_non_blank_required);
+        if (name.isEmpty()) {
+            showError(vb.lblBookshelf, R.string.vldt_non_blank_required);
             return false;
         }
 
         // anything actually changed ?
-        if (mBookshelf.getName().equals(mName)) {
+        if (bookshelf.getName().equals(name)) {
             return true;
         }
 
         // store changes
-        mBookshelf.setName(mName);
+        bookshelf.setName(name);
 
         final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
         // check if it already exists (will be 0 if not)
-        final long existingId = bookshelfDao.find(mBookshelf);
+        final long existingId = bookshelfDao.find(bookshelf);
 
         // are we adding a new one but trying to use an existing name?
-        if ((mBookshelf.getId() == 0) && (existingId != 0)) {
+        if ((bookshelf.getId() == 0) && (existingId != 0)) {
             final Context context = getContext();
 
             //noinspection ConstantConditions
             final String msg = context.getString(R.string.warning_x_already_exists,
                                                  context.getString(R.string.lbl_bookshelf));
-            showError(mVb.lblBookshelf, msg);
+            showError(vb.lblBookshelf, msg);
             return false;
         }
 
         if (existingId == 0) {
             final boolean success;
-            if (mBookshelf.getId() == 0) {
+            if (bookshelf.getId() == 0) {
                 //noinspection ConstantConditions
-                success = bookshelfDao.insert(getContext(), mBookshelf) > 0;
+                success = bookshelfDao.insert(getContext(), bookshelf) > 0;
             } else {
                 //noinspection ConstantConditions
-                success = bookshelfDao.update(getContext(), mBookshelf);
+                success = bookshelfDao.update(getContext(), bookshelf);
             }
             if (success) {
-                Launcher.setResult(this, mRequestKey, mBookshelf.getId());
+                Launcher.setResult(this, requestKey, bookshelf.getId());
                 return true;
             }
         } else {
@@ -163,14 +163,14 @@ public class EditBookshelfDialogFragment
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(mBookshelf.getLabel(getContext()))
+                    .setTitle(bookshelf.getLabel(getContext()))
                     .setMessage(R.string.confirm_merge_bookshelves)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(R.string.action_merge, (d, w) -> {
                         // move all books from the one being edited to the existing one
-                        bookshelfDao.merge(mBookshelf, existingId);
+                        bookshelfDao.merge(bookshelf, existingId);
 
-                        Launcher.setResult(this, mRequestKey, existingId);
+                        Launcher.setResult(this, requestKey, existingId);
                         dismiss();
                     })
                     .create()
@@ -182,13 +182,13 @@ public class EditBookshelfDialogFragment
 
     private void viewToModel() {
         //noinspection ConstantConditions
-        mName = mVb.bookshelf.getText().toString().trim();
+        name = vb.bookshelf.getText().toString().trim();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBKey.BOOKSHELF_NAME, mName);
+        outState.putString(DBKey.BOOKSHELF_NAME, name);
     }
 
     @Override
@@ -200,8 +200,8 @@ public class EditBookshelfDialogFragment
     public abstract static class Launcher
             implements FragmentResultListener {
 
-        private String mRequestKey;
-        private FragmentManager mFragmentManager;
+        private String requestKey;
+        private FragmentManager fragmentManager;
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
@@ -214,9 +214,9 @@ public class EditBookshelfDialogFragment
         public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
                                               @NonNull final String requestKey,
                                               @NonNull final LifecycleOwner lifecycleOwner) {
-            mFragmentManager = fragmentManager;
-            mRequestKey = requestKey;
-            mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
+            this.fragmentManager = fragmentManager;
+            this.requestKey = requestKey;
+            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
         }
 
         /**
@@ -227,12 +227,12 @@ public class EditBookshelfDialogFragment
         public void launch(@NonNull final Bookshelf bookshelf) {
 
             final Bundle args = new Bundle(2);
-            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+            args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putParcelable(DBKey.FK_BOOKSHELF, bookshelf);
 
             final DialogFragment frag = new EditBookshelfDialogFragment();
             frag.setArguments(args);
-            frag.show(mFragmentManager, TAG);
+            frag.show(fragmentManager, TAG);
         }
 
         @Override

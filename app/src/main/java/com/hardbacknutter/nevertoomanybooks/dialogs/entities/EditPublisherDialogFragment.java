@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,16 +58,16 @@ public class EditPublisherDialogFragment
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /** FragmentResultListener request key to use for our response. */
-    private String mRequestKey;
+    private String requestKey;
 
     /** View Binding. */
-    private DialogEditPublisherBinding mVb;
+    private DialogEditPublisherBinding vb;
 
     /** The Publisher we're editing. */
-    private Publisher mPublisher;
+    private Publisher publisher;
 
     /** Current edit. */
-    private Publisher mCurrentEdit;
+    private Publisher currentEdit;
 
     /**
      * No-arg constructor for OS use.
@@ -98,16 +98,16 @@ public class EditPublisherDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                             BKEY_REQUEST_KEY);
-        mPublisher = Objects.requireNonNull(args.getParcelable(DBKey.FK_PUBLISHER),
-                                            DBKey.FK_PUBLISHER);
+        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
+                                            BKEY_REQUEST_KEY);
+        publisher = Objects.requireNonNull(args.getParcelable(DBKey.FK_PUBLISHER),
+                                           DBKey.FK_PUBLISHER);
 
         if (savedInstanceState == null) {
-            mCurrentEdit = new Publisher(mPublisher.getName());
+            currentEdit = new Publisher(publisher.getName());
         } else {
             //noinspection ConstantConditions
-            mCurrentEdit = savedInstanceState.getParcelable(DBKey.FK_PUBLISHER);
+            currentEdit = savedInstanceState.getParcelable(DBKey.FK_PUBLISHER);
         }
     }
 
@@ -116,7 +116,7 @@ public class EditPublisherDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mVb = DialogEditPublisherBinding.bind(view);
+        vb = DialogEditPublisherBinding.bind(view);
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
@@ -124,10 +124,10 @@ public class EditPublisherDialogFragment
                 ExtArrayAdapter.FilterType.Diacritic,
                 ServiceLocator.getInstance().getPublisherDao().getNames());
 
-        mVb.publisher.setText(mCurrentEdit.getName());
-        mVb.publisher.setAdapter(nameAdapter);
+        vb.publisher.setText(currentEdit.getName());
+        vb.publisher.setAdapter(nameAdapter);
 
-        mVb.publisher.requestFocus();
+        vb.publisher.requestFocus();
     }
 
     @Override
@@ -145,18 +145,18 @@ public class EditPublisherDialogFragment
         viewToModel();
 
         // basic check only, we're doing more extensive checks later on.
-        if (mCurrentEdit.getName().isEmpty()) {
-            showError(mVb.lblPublisher, R.string.vldt_non_blank_required);
+        if (currentEdit.getName().isEmpty()) {
+            showError(vb.lblPublisher, R.string.vldt_non_blank_required);
             return false;
         }
 
         // anything actually changed ?
-        if (mPublisher.getName().equals(mCurrentEdit.getName())) {
+        if (publisher.getName().equals(currentEdit.getName())) {
             return true;
         }
 
         // store changes
-        mPublisher.copyFrom(mCurrentEdit);
+        publisher.copyFrom(currentEdit);
 
         final Context context = getContext();
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
@@ -167,37 +167,37 @@ public class EditPublisherDialogFragment
         final PublisherDao publisherDao = serviceLocator.getPublisherDao();
         // check if it already exists (will be 0 if not)
         //noinspection ConstantConditions
-        final long existingId = publisherDao.find(context, mPublisher, true, bookLocale);
+        final long existingId = publisherDao.find(context, publisher, true, bookLocale);
 
         if (existingId == 0) {
             final boolean success;
-            if (mPublisher.getId() == 0) {
-                success = publisherDao.insert(context, mPublisher, bookLocale) > 0;
+            if (publisher.getId() == 0) {
+                success = publisherDao.insert(context, publisher, bookLocale) > 0;
             } else {
-                success = publisherDao.update(context, mPublisher, bookLocale);
+                success = publisherDao.update(context, publisher, bookLocale);
             }
             if (success) {
-                RowChangedListener.setResult(this, mRequestKey,
-                                             DBKey.FK_PUBLISHER, mPublisher.getId());
+                RowChangedListener.setResult(this, requestKey,
+                                             DBKey.FK_PUBLISHER, publisher.getId());
                 return true;
             }
         } else {
             // Merge the 2
             new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(mPublisher.getLabel(context))
+                    .setTitle(publisher.getLabel(context))
                     .setMessage(R.string.confirm_merge_publishers)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(R.string.action_merge, (d, w) -> {
                         dismiss();
                         // move all books from the one being edited to the existing one
                         try {
-                            publisherDao.merge(context, mPublisher, existingId);
+                            publisherDao.merge(context, publisher, existingId);
                             RowChangedListener.setResult(
-                                    this, mRequestKey,
+                                    this, requestKey,
                                     // return the publisher who 'lost' it's books
                                     DBKey.FK_PUBLISHER,
-                                    mPublisher.getId());
+                                    publisher.getId());
                         } catch (@NonNull final DaoWriteException e) {
                             Logger.error(TAG, e);
                             StandardDialogs.showError(context, R.string.error_storage_not_writable);
@@ -211,13 +211,13 @@ public class EditPublisherDialogFragment
     }
 
     private void viewToModel() {
-        mCurrentEdit.setName(mVb.publisher.getText().toString().trim());
+        currentEdit.setName(vb.publisher.getText().toString().trim());
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(DBKey.FK_PUBLISHER, mCurrentEdit);
+        outState.putParcelable(DBKey.FK_PUBLISHER, currentEdit);
     }
 
     @Override
