@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -97,7 +97,7 @@ public class CoversDbHelper
 
     /** DO NOT USE INSIDE THIS CLASS! ONLY FOR USE BY CLIENTS VIA {@link #getDb()}. */
     @Nullable
-    private SynchronizedDb mSynchronizedDb;
+    private SynchronizedDb synchronizedDb;
 
     /**
      * Constructor.
@@ -116,19 +116,19 @@ public class CoversDbHelper
     @NonNull
     public SynchronizedDb getDb() {
         synchronized (this) {
-            if (mSynchronizedDb == null) {
+            if (synchronizedDb == null) {
                 // Dev note: don't move this to the constructor, "this" must
                 // be fully constructed before we can pass it to the SynchronizedDb constructor
-                mSynchronizedDb = new SynchronizedDb(sSynchronizer, this);
+                synchronizedDb = new SynchronizedDb(sSynchronizer, this);
             }
-            return mSynchronizedDb;
+            return synchronizedDb;
         }
     }
 
     @Override
     public void close() {
-        if (mSynchronizedDb != null) {
-            mSynchronizedDb.close();
+        if (synchronizedDb != null) {
+            synchronizedDb.close();
         }
         super.close();
     }
