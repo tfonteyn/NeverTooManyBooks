@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -37,8 +37,6 @@
     <integer name="MENU_ORDER_LEVEL_PREFERRED_COLLAPSE">210</integer>
     <integer name="MENU_ORDER_LEVEL_EXPAND">211</integer>
     <integer name="MENU_ORDER_LEVEL_COLLAPSE">212</integer>
-
-    <integer name="MENU_ORDER_DIVIDER_BOOK_DETAILS">399</integer>
 
     <integer name="MENU_ORDER_SYNC_LIST_WITH_DETAILS">400</integer>
 
