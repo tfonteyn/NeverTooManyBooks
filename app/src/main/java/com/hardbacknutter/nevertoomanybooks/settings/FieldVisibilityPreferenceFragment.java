@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,7 +42,7 @@ public class FieldVisibilityPreferenceFragment
 
     @NonNull
     private final SwitchPreference[] pCovers = new SwitchPreference[2];
-    private SettingsViewModel mVm;
+    private SettingsViewModel vm;
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -50,7 +50,7 @@ public class FieldVisibilityPreferenceFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
 
         //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
+        vm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
 
         setPreferencesFromResource(R.xml.preferences_field_visibility, rootKey);
 
@@ -87,6 +87,6 @@ public class FieldVisibilityPreferenceFragment
                                           @NonNull final String key) {
         // Changing ANY field visibility will usually require recreating the activity
         // TODO: make this fine-grained
-        mVm.setOnBackRequiresActivityRecreation();
+        vm.setOnBackRequiresActivityRecreation();
     }
 }

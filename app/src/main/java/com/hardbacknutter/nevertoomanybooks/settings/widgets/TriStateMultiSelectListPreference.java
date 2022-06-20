@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -70,17 +70,17 @@ public class TriStateMultiSelectListPreference
 
     /** The text to use for the neutral button, which allows the user to choose "don't use". */
     @Nullable
-    private String mNeutralButtonText;
+    private String neutralButtonText;
 
     /**
      * The summary text to display if the preference is set to "don't use".
-     * If not set, then the text from {@link #mNeutralButtonText} will be used.
+     * If not set, then the text from {@link #neutralButtonText} will be used.
      */
     @Nullable
-    private String mNeutralButtonSummaryText;
+    private String nNeutralButtonSummaryText;
 
     @Nullable
-    private Boolean mActive;
+    private Boolean active;
 
     public TriStateMultiSelectListPreference(@NonNull final Context context,
                                              @Nullable final AttributeSet attrs,
@@ -113,9 +113,9 @@ public class TriStateMultiSelectListPreference
             final TypedArray ta = context.getTheme().obtainStyledAttributes(
                     attrs, R.styleable.TriStateMultiSelectListPreference, 0, 0);
             try {
-                mNeutralButtonText = ta.getString(
+                neutralButtonText = ta.getString(
                         R.styleable.TriStateMultiSelectListPreference_neutralButtonText);
-                mNeutralButtonSummaryText = ta.getString(
+                nNeutralButtonSummaryText = ta.getString(
                         R.styleable.TriStateMultiSelectListPreference_neutralButtonSummaryText);
             } finally {
                 ta.recycle();
@@ -131,10 +131,10 @@ public class TriStateMultiSelectListPreference
      */
     @Nullable
     private String getNeutralButtonSummaryText() {
-        if (mNeutralButtonSummaryText != null) {
-            return mNeutralButtonSummaryText;
-        } else if (mNeutralButtonText != null) {
-            return mNeutralButtonText;
+        if (nNeutralButtonSummaryText != null) {
+            return nNeutralButtonSummaryText;
+        } else if (neutralButtonText != null) {
+            return neutralButtonText;
         } else {
             return null;
         }
@@ -147,23 +147,23 @@ public class TriStateMultiSelectListPreference
      */
     @Nullable
     private String getNeutralButtonText() {
-        if (mNeutralButtonText != null) {
-            return mNeutralButtonText;
+        if (neutralButtonText != null) {
+            return neutralButtonText;
         } else {
             return null;
         }
     }
 
     public boolean isActive() {
-        if (mActive == null) {
+        if (active == null) {
             //noinspection ConstantConditions
-            mActive = getSharedPreferences().getBoolean(getKey() + ACTIVE, false);
+            active = getSharedPreferences().getBoolean(getKey() + ACTIVE, false);
         }
-        return mActive;
+        return active;
     }
 
     public void setActive(final boolean active) {
-        mActive = active;
+        this.active = active;
     }
 
     @Override
@@ -205,17 +205,17 @@ public class TriStateMultiSelectListPreference
         private static final String SAVE_STATE_ENTRIES = TAG + ":entries";
         private static final String SAVE_STATE_ENTRY_VALUES = TAG + ":entryValues";
 
-        private final Set<String> mSelectedItems = new HashSet<>();
-        private boolean mPreferenceChanged;
+        private final Set<String> selectedItems = new HashSet<>();
+        private boolean preferenceChanged;
 
-        private ArrayList<String> mEntryValues;
-        private ArrayList<String> mEntries;
+        private ArrayList<String> entryValues;
+        private ArrayList<String> entries;
 
         /**
          * Set to {@code true} when the user clicks the NeutralButton.
          * Passed to the actual preference in {@link #onDialogClosed(boolean)}.
          */
-        private boolean mUnused;
+        private boolean unused;
 
         /**
          * Constructor.
@@ -255,36 +255,36 @@ public class TriStateMultiSelectListPreference
                             + "an entryValues array.");
                 }
 
-                mEntries = Arrays.stream(preference.getEntries())
-                                 .map(CharSequence::toString)
-                                 .collect(Collectors.toCollection(ArrayList::new));
+                entries = Arrays.stream(preference.getEntries())
+                                .map(CharSequence::toString)
+                                .collect(Collectors.toCollection(ArrayList::new));
 
-                mEntryValues = Arrays.stream(preference.getEntryValues())
-                                     .map(CharSequence::toString)
-                                     .collect(Collectors.toCollection(ArrayList::new));
+                entryValues = Arrays.stream(preference.getEntryValues())
+                                    .map(CharSequence::toString)
+                                    .collect(Collectors.toCollection(ArrayList::new));
 
-                mPreferenceChanged = false;
-                mSelectedItems.clear();
-                mSelectedItems.addAll(preference.getValues());
+                preferenceChanged = false;
+                selectedItems.clear();
+                selectedItems.addAll(preference.getValues());
             } else {
                 //noinspection ConstantConditions
-                mEntries = savedInstanceState.getStringArrayList(SAVE_STATE_ENTRIES);
+                entries = savedInstanceState.getStringArrayList(SAVE_STATE_ENTRIES);
                 //noinspection ConstantConditions
-                mEntryValues = savedInstanceState.getStringArrayList(SAVE_STATE_ENTRY_VALUES);
-                mPreferenceChanged = savedInstanceState.getBoolean(SAVE_STATE_CHANGED, false);
-                mSelectedItems.clear();
+                entryValues = savedInstanceState.getStringArrayList(SAVE_STATE_ENTRY_VALUES);
+                preferenceChanged = savedInstanceState.getBoolean(SAVE_STATE_CHANGED, false);
+                selectedItems.clear();
                 //noinspection ConstantConditions
-                mSelectedItems.addAll(savedInstanceState.getStringArrayList(SAVE_STATE_VALUES));
+                selectedItems.addAll(savedInstanceState.getStringArrayList(SAVE_STATE_VALUES));
             }
         }
 
         @Override
         public void onSaveInstanceState(@NonNull final Bundle outState) {
             super.onSaveInstanceState(outState);
-            outState.putStringArrayList(SAVE_STATE_ENTRIES, mEntries);
-            outState.putStringArrayList(SAVE_STATE_ENTRY_VALUES, mEntryValues);
-            outState.putBoolean(SAVE_STATE_CHANGED, mPreferenceChanged);
-            outState.putStringArrayList(SAVE_STATE_VALUES, new ArrayList<>(mSelectedItems));
+            outState.putStringArrayList(SAVE_STATE_ENTRIES, entries);
+            outState.putStringArrayList(SAVE_STATE_ENTRY_VALUES, entryValues);
+            outState.putBoolean(SAVE_STATE_CHANGED, preferenceChanged);
+            outState.putStringArrayList(SAVE_STATE_VALUES, new ArrayList<>(selectedItems));
         }
 
         @SuppressLint("InflateParams")
@@ -308,8 +308,8 @@ public class TriStateMultiSelectListPreference
 
             final ChecklistRecyclerAdapter<String, String> adapter =
                     new ChecklistRecyclerAdapter<>(view.getContext(),
-                                                   mEntryValues, mEntries, mSelectedItems,
-                                                   (id, checked) -> mPreferenceChanged = true);
+                                                   entryValues, entries, selectedItems,
+                                                   (id, checked) -> preferenceChanged = true);
 
             final RecyclerView listView = view.findViewById(R.id.item_list);
             listView.setAdapter(adapter);
@@ -322,7 +322,7 @@ public class TriStateMultiSelectListPreference
             final String neutralText = ((TriStateMultiSelectListPreference) getPreference())
                     .getNeutralButtonText();
             if (neutralText != null) {
-                builder.setNeutralButton(neutralText, (d, w) -> mUnused = true);
+                builder.setNeutralButton(neutralText, (d, w) -> unused = true);
             }
         }
 
@@ -332,24 +332,24 @@ public class TriStateMultiSelectListPreference
                     (TriStateMultiSelectListPreference) getPreference();
 
             // a tat annoying... we only get whether the user clicked the BUTTON_POSITIVE
-            // or not; which is why we need to use the mUnused variable.
+            // or not; which is why we need to use the 'unused' variable.
             if (positiveResult) {
                 // BUTTON_POSITIVE
                 preference.setActive(true);
 
-            } else if (mUnused) {
+            } else if (unused) {
                 // BUTTON_NEUTRAL
                 preference.setActive(false);
                 preference.getValues().clear();
             }
 
-            if (positiveResult || mUnused) {
-                if (preference.callChangeListener(mSelectedItems)) {
-                    preference.setValues(mSelectedItems);
+            if (positiveResult || unused) {
+                if (preference.callChangeListener(selectedItems)) {
+                    preference.setValues(selectedItems);
                 }
             }
 
-            mPreferenceChanged = false;
+            preferenceChanged = false;
         }
     }
 

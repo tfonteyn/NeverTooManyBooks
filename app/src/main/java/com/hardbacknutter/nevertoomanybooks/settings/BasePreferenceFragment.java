@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,30 +54,30 @@ public abstract class BasePreferenceFragment
     /** Allows auto-scrolling on opening the preference screen to the desired key. */
     public static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";
 
-    private View mProgressFrame;
-    private Toolbar mToolbar;
+    private View progressFrame;
+    private Toolbar toolbar;
 
     @Nullable
-    private String mAutoScrollToKey;
+    private String autoScrollToKey;
 
     @NonNull
     protected View getProgressFrame() {
-        if (mProgressFrame == null) {
+        if (progressFrame == null) {
             //noinspection ConstantConditions
-            mProgressFrame = Objects.requireNonNull(getActivity().findViewById(R.id.progress_frame),
-                                                    "R.id.progress_frame");
+            progressFrame = Objects.requireNonNull(getActivity().findViewById(R.id.progress_frame),
+                                                   "R.id.progress_frame");
         }
-        return mProgressFrame;
+        return progressFrame;
     }
 
     @NonNull
     protected Toolbar getToolbar() {
-        if (mToolbar == null) {
+        if (toolbar == null) {
             //noinspection ConstantConditions
-            mToolbar = Objects.requireNonNull(getActivity().findViewById(R.id.toolbar),
-                                              "R.id.toolbar");
+            toolbar = Objects.requireNonNull(getActivity().findViewById(R.id.toolbar),
+                                             "R.id.toolbar");
         }
-        return mToolbar;
+        return toolbar;
     }
 
     @Override
@@ -86,7 +86,7 @@ public abstract class BasePreferenceFragment
                                     @Nullable final String rootKey) {
         final Bundle args = getArguments();
         if (args != null) {
-            mAutoScrollToKey = args.getString(BKEY_AUTO_SCROLL_TO_KEY);
+            autoScrollToKey = args.getString(BKEY_AUTO_SCROLL_TO_KEY);
         }
     }
 
@@ -119,9 +119,9 @@ public abstract class BasePreferenceFragment
     public void onResume() {
         super.onResume();
 
-        if (mAutoScrollToKey != null) {
-            scrollToPreference(mAutoScrollToKey);
-            mAutoScrollToKey = null;
+        if (autoScrollToKey != null) {
+            scrollToPreference(autoScrollToKey);
+            autoScrollToKey = null;
         }
     }
 

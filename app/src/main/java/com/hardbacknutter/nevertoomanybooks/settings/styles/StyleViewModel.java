@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,19 +44,15 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 public class StyleViewModel
         extends ViewModel {
 
+    private final MutableLiveData<Void> onModified = new MutableLiveData<>();
     private String templateUuid;
-
     /** The style we're editing. */
     private UserStyle style;
-
     /** The list of groups with a boolean flag for when the user is editing the groups. */
     @Nullable
     private ArrayList<WrappedGroup> wrappedGroupList;
-
     @Nullable
     private StyleDataStore styleDataStore;
-
-    private final MutableLiveData<Void> onModified = new MutableLiveData<>();
 
     /**
      * Pseudo constructor.
@@ -174,34 +170,34 @@ public class StyleViewModel
 
         /** The actual group. */
         @NonNull
-        private final BooklistGroup mBooklistGroup;
+        private final BooklistGroup booklistGroup;
 
         /** Whether this group is present in the style. */
-        private boolean mIsPresent;
+        private boolean present;
 
         /**
          * Constructor.
          *
-         * @param group     to wrap
-         * @param isPresent flag
+         * @param group   to wrap
+         * @param present flag
          */
         WrappedGroup(@NonNull final BooklistGroup group,
-                     final boolean isPresent) {
-            mBooklistGroup = group;
-            mIsPresent = isPresent;
+                     final boolean present) {
+            booklistGroup = group;
+            this.present = present;
         }
 
         @NonNull
         public BooklistGroup getGroup() {
-            return mBooklistGroup;
+            return booklistGroup;
         }
 
         public boolean isPresent() {
-            return mIsPresent;
+            return present;
         }
 
         public void setPresent(final boolean present) {
-            mIsPresent = present;
+            this.present = present;
         }
     }
 }

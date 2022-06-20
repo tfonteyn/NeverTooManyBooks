@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,11 +54,11 @@ public class CalibrePreferencesFragment
     private static final String PSK_PICK_FOLDER = "psk_pick_folder";
 
     /** Let the user pick the 'root' folder for storing Calibre downloads. */
-    private ActivityResultLauncher<Uri> mPickFolderLauncher;
+    private ActivityResultLauncher<Uri> pickFolderLauncher;
 
-    private Preference mFolderPref;
-    private Preference mCaPref;
-    private final ActivityResultLauncher<String> mOpenCaUriLauncher =
+    private Preference folderPref;
+    private Preference caPref;
+    private final ActivityResultLauncher<String> openCaUriLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), this::onOpenCaUri);
 
     @Override
@@ -107,22 +107,22 @@ public class CalibrePreferencesFragment
 
 
         //noinspection ConstantConditions
-        mCaPref = findPreference(PSK_CA_FROM_FILE);
+        caPref = findPreference(PSK_CA_FROM_FILE);
         //noinspection ConstantConditions
-        mCaPref.setSummary(createCaSummary());
-        mCaPref.setOnPreferenceClickListener(preference -> {
-            mOpenCaUriLauncher.launch("*/*");
+        caPref.setSummary(createCaSummary());
+        caPref.setOnPreferenceClickListener(preference -> {
+            openCaUriLauncher.launch("*/*");
             return true;
         });
 
         //noinspection ConstantConditions
-        mFolderPref = findPreference(PSK_PICK_FOLDER);
+        folderPref = findPreference(PSK_PICK_FOLDER);
         //noinspection ConstantConditions
-        setFolderSummary(mFolderPref);
-        mFolderPref.setOnPreferenceClickListener(preference -> {
+        setFolderSummary(folderPref);
+        folderPref.setOnPreferenceClickListener(preference -> {
             //noinspection ConstantConditions
-            mPickFolderLauncher.launch(CalibreContentServer.getFolderUri(getContext())
-                                                           .orElse(null));
+            pickFolderLauncher.launch(CalibreContentServer.getFolderUri(getContext())
+                                                          .orElse(null));
             return true;
         });
     }
@@ -132,13 +132,13 @@ public class CalibrePreferencesFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mPickFolderLauncher = registerForActivityResult(
+        pickFolderLauncher = registerForActivityResult(
                 new ActivityResultContracts.OpenDocumentTree(), uri -> {
                     if (uri != null) {
                         //noinspection ConstantConditions
                         CalibreContentServer.setFolderUri(getContext(), uri);
                     }
-                    setFolderSummary(mFolderPref);
+                    setFolderSummary(folderPref);
                 });
     }
 
@@ -184,11 +184,11 @@ public class CalibrePreferencesFragment
                     CalibreContentServer.setCertificate(getContext(), ca);
                 }
             } catch (@NonNull final IOException | CertificateException e) {
-                mCaPref.setSummary(R.string.error_certificate_invalid);
+                caPref.setSummary(R.string.error_certificate_invalid);
                 return;
             }
 
-            mCaPref.setSummary(createCaSummary());
+            caPref.setSummary(createCaSummary());
         }
     }
 

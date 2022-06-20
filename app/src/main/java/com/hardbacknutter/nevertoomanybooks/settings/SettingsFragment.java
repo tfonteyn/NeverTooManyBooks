@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -245,8 +245,7 @@ public class SettingsFragment
 
     private boolean onTitleOrderByChange(@NonNull final Preference pref,
                                          @NonNull final Object newValue) {
-        // pref == mTitleOrderByPref
-        final boolean isChecked = (Boolean) newValue;
+        final boolean checked = (Boolean) newValue;
 
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
@@ -263,7 +262,7 @@ public class SettingsFragment
                 })
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
                     // Persist the new value
-                    titleOrderByPref.setChecked(isChecked);
+                    titleOrderByPref.setChecked(checked);
                     StartupViewModel.schedule(getContext(),
                                               StartupViewModel.PK_REBUILD_TITLE_OB, true);
                     setVisualIndicator(titleOrderByPref, StartupViewModel.PK_REBUILD_TITLE_OB);
@@ -276,7 +275,6 @@ public class SettingsFragment
 
     private boolean onStorageVolumeChange(@NonNull final Preference pref,
                                           @NonNull final Object newValue) {
-        // pref == mStorageVolumePref
         final int newVolumeIndex = storageVolumePref.findIndexOfValue((String) newValue);
         final CharSequence newVolumeDesc = storageVolumePref.getEntries()[newVolumeIndex];
 

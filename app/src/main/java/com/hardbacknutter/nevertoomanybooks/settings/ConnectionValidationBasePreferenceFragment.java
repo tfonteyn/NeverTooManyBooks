@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -70,7 +70,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         vm = new ViewModelProvider(this).get(ConnectionValidatorViewModel.class);
-        // mVm.init is done in child classes
+        // init is done in child classes
     }
 
     protected void init(@StringRes final int siteResId,

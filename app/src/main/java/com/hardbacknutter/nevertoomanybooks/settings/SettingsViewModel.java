@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,25 +40,25 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 public class SettingsViewModel
         extends ViewModel {
 
-    private final StorageMoverTask mStorageMoverTask = new StorageMoverTask();
-    private boolean mRequiresActivityRecreation;
+    private final StorageMoverTask storageMoverTask = new StorageMoverTask();
+    private boolean requiresActivityRecreation;
 
     boolean getRequiresActivityRecreation() {
-        return mRequiresActivityRecreation;
+        return requiresActivityRecreation;
     }
 
     void setOnBackRequiresActivityRecreation() {
-        mRequiresActivityRecreation = true;
+        requiresActivityRecreation = true;
     }
 
     boolean moveData(@NonNull final Context context,
                      final int sourceIndex,
                      final int destIndex) {
 
-        mStorageMoverTask.setDirs(context, sourceIndex, destIndex);
+        storageMoverTask.setDirs(context, sourceIndex, destIndex);
         try {
-            if (mStorageMoverTask.checkSpace()) {
-                mStorageMoverTask.start();
+            if (storageMoverTask.checkSpace()) {
+                storageMoverTask.start();
                 return true;
             }
         } catch (@NonNull final IOException ignore) {
@@ -69,27 +69,27 @@ public class SettingsViewModel
 
     @NonNull
     LiveData<LiveDataEvent<TaskProgress>> onProgress() {
-        return mStorageMoverTask.onProgress();
+        return storageMoverTask.onProgress();
     }
 
     @NonNull
     LiveData<LiveDataEvent<TaskResult<Integer>>> onMoveCancelled() {
-        return mStorageMoverTask.onCancelled();
+        return storageMoverTask.onCancelled();
     }
 
     @NonNull
     LiveData<LiveDataEvent<TaskResult<Exception>>> onMoveFailure() {
-        return mStorageMoverTask.onFailure();
+        return storageMoverTask.onFailure();
     }
 
     @NonNull
     LiveData<LiveDataEvent<TaskResult<Integer>>> onMoveFinished() {
-        return mStorageMoverTask.onFinished();
+        return storageMoverTask.onFinished();
     }
 
     void cancelTask(@IdRes final int taskId) {
-        if (taskId == mStorageMoverTask.getTaskId()) {
-            mStorageMoverTask.cancel();
+        if (taskId == storageMoverTask.getTaskId()) {
+            storageMoverTask.cancel();
         } else {
             throw new IllegalArgumentException("taskId=" + taskId);
         }
