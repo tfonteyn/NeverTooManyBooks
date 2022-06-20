@@ -69,7 +69,7 @@ public class UriInfo {
         if (!resolved) {
             resolve(context);
         }
-        return Objects.requireNonNull(displayName, "mDisplayName");
+        return Objects.requireNonNull(displayName, "displayName");
     }
 
     public long getSize(@NonNull final Context context) {

@@ -104,7 +104,7 @@ abstract class DatePickerBase<S>
     @Nullable
     Long parseDate(@Nullable final String value,
                    final boolean todayIfNone) {
-        Objects.requireNonNull(dateParser, "mDateParser was NULL, call setDateParser() first");
+        Objects.requireNonNull(dateParser, "dateParser was NULL, call setDateParser() first");
 
         final Instant date = dateParser.parseToInstant(value, todayIfNone);
         if (date != null) {

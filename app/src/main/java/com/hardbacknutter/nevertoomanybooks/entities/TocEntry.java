@@ -373,11 +373,11 @@ public class TocEntry
     @NonNull
     public String toString() {
         return "TocEntry{"
-               + "mId=" + id
-               + ", mAuthor=" + author
-               + ", mTitle=`" + title + '`'
-               + ", mFirstPublicationDate=`" + firstPublicationDate + '`'
-               + ", mBookCount=`" + bookCount + '`'
+               + "id=" + id
+               + ", author=" + author
+               + ", title=`" + title + '`'
+               + ", firstPublicationDate=`" + firstPublicationDate + '`'
+               + ", bookCount=`" + bookCount + '`'
                + '}';
     }
 }

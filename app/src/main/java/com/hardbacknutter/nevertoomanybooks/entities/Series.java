@@ -590,10 +590,10 @@ public class Series
     @NonNull
     public String toString() {
         return "Series{"
-               + "mId=" + id
-               + ", mTitle=`" + title + '`'
-               + ", mIsComplete=" + complete
-               + ", mNumber=`" + number + '`'
+               + "id=" + id
+               + ", title=`" + title + '`'
+               + ", complete=" + complete
+               + ", number=`" + number + '`'
                + '}';
     }
 }

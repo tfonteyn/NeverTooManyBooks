@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -204,7 +204,7 @@ public abstract class BaseActivity
         //noinspection ConstantConditions
         final View anchor = navigationView.findViewById(itemId);
         // Not 100% we are using a legal way of getting the View...
-        Objects.requireNonNull(anchor, "mNavigationView.findViewById(" + itemId + ")");
+        Objects.requireNonNull(anchor, "navigationView.findViewById(" + itemId + ")");
         return anchor;
     }
 

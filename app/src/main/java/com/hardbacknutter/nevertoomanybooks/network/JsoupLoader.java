@@ -249,7 +249,7 @@ public class JsoupLoader {
                 document = null;
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                    Logger.e(TAG, e, "mDocRequestUrl=" + docRequestUrl);
+                    Logger.e(TAG, e, "docRequestUrl=" + docRequestUrl);
                 }
                 throw e;
             }
