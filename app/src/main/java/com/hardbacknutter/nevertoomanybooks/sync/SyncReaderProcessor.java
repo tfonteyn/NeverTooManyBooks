@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -566,7 +566,7 @@ public final class SyncReaderProcessor
          */
         public Builder addRelatedField(@NonNull final String key,
                                        @NonNull final String relatedKey) {
-            // Don't check on key being present in mFields here. We'll do that at usage time.
+            // Don't check on key being present in the fields list. We'll do that at usage time.
             //This allows out-of-order adding.
             relatedFields.put(key, relatedKey);
             return this;

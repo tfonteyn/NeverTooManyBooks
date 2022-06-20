@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -116,7 +116,7 @@ public class CalibreHandler {
      * Initializer for use from within an Activity.
      *
      * @param activity the hosting Activity
-     * @param view     the root view of the Activity (e.g. mVb.getRoot())
+     * @param view     the root view of the Activity
      */
     public void onViewCreated(@NonNull final FragmentActivity activity,
                               @NonNull final View view) {

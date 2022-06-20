@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,8 +47,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
- * Note on mHasLastUpdateDateField / mSyncDateUserEditable:
- * It's debatable that we could just use mHasLastUpdateDateField for both meanings.
+ * Note: {@link #hasLastUpdateDateField} / {@link #syncDateIsUserEditable}:
+ * It's debatable that we could just use {@link #hasLastUpdateDateField} for both meanings.
  */
 public enum SyncServer
         implements Parcelable {

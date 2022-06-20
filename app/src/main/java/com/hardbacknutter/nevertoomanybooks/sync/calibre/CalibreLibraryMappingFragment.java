@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -226,7 +226,7 @@ public class CalibreLibraryMappingFragment
         bookshelfAdapter.add(bookshelf);
         view.setText(bookshelf.getName(), false);
         // ESSENTIAL STEP: force the internal filtered list to ALSO add the new object
-        // See internal code for ArrayAdapter#add and the use of mObjects/mOriginalValues
+        // See internal code for ArrayAdapter#add
         bookshelfAdapter.getFilter().filter(bookshelf.getName());
     }
 
@@ -271,11 +271,11 @@ public class CalibreLibraryMappingFragment
             extends RecyclerView.ViewHolder {
 
         @NonNull
-        private final RowEditCalibreLibraryBinding mVb;
+        private final RowEditCalibreLibraryBinding vb;
 
         Holder(@NonNull final View itemView) {
             super(itemView);
-            mVb = RowEditCalibreLibraryBinding.bind(itemView);
+            vb = RowEditCalibreLibraryBinding.bind(itemView);
         }
     }
 
@@ -283,7 +283,7 @@ public class CalibreLibraryMappingFragment
             extends RecyclerView.Adapter<Holder> {
 
         /** Cached inflater. */
-        private final LayoutInflater mInflater;
+        private final LayoutInflater inflater;
 
         /**
          * Constructor.
@@ -291,32 +291,32 @@ public class CalibreLibraryMappingFragment
          * @param context Current context
          */
         VirtualLibraryMapperAdapter(@NonNull final Context context) {
-            mInflater = LayoutInflater.from(context);
+            inflater = LayoutInflater.from(context);
         }
 
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final View itemView = mInflater
+            final View itemView = inflater
                     .inflate(R.layout.row_edit_calibre_library, parent, false);
             final Holder holder = new Holder(itemView);
 
-            holder.mVb.bookshelf.setAdapter(bookshelfAdapter);
-            holder.mVb.bookshelf.setOnItemClickListener((av, v, position, id) -> {
+            holder.vb.bookshelf.setAdapter(bookshelfAdapter);
+            holder.vb.bookshelf.setOnItemClickListener((av, v, position, id) -> {
                 final Bookshelf bookshelf = bookshelfAdapter.getItem(position);
                 //noinspection ConstantConditions
                 vm.mapBookshelfToVirtualLibrary(bookshelf, holder.getBindingAdapterPosition());
-                holder.mVb.bookshelf.setText(bookshelf.getName());
+                holder.vb.bookshelf.setText(bookshelf.getName());
             });
 
-            holder.mVb.btnCreate.setOnClickListener(btn -> {
+            holder.vb.btnCreate.setOnClickListener(btn -> {
                 try {
                     btn.setEnabled(false);
                     //noinspection ConstantConditions
                     final Bookshelf bookshelf = vm.createVirtualLibraryAsBookshelf(
                             getContext(), holder.getBindingAdapterPosition());
-                    addBookshelf(bookshelf, holder.mVb.bookshelf);
+                    addBookshelf(bookshelf, holder.vb.bookshelf);
 
                 } catch (@NonNull final DaoWriteException e) {
                     Snackbar.make(holder.itemView, e.getUserMessage(getContext()),
@@ -331,15 +331,15 @@ public class CalibreLibraryMappingFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
             final CalibreVirtualLibrary vlib = vm.getVirtualLibrary(position);
-            holder.mVb.libraryName.setText(vlib.getName());
+            holder.vb.libraryName.setText(vlib.getName());
 
             bookshelfList.stream()
                          .filter(bookshelf -> bookshelf.getId() == vlib.getMappedBookshelfId())
                          .map(Bookshelf::getName)
                          .findFirst()
-                         .ifPresent(holder.mVb.bookshelf::setText);
+                         .ifPresent(holder.vb.bookshelf::setText);
 
-            holder.mVb.btnCreate.setEnabled(
+            holder.vb.btnCreate.setEnabled(
                     bookshelfList.stream()
                                  .map(Bookshelf::getName)
                                  .noneMatch(name -> name.equals(vlib.getName())));
