@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -733,7 +733,7 @@ public class TableDefinition {
 //                                  @Nullable final Map<String, String> toRename,
 //                                  @Nullable final Collection<String> toRemove) {
 //
-//        final String dstTableName = "copyOf" + mName;
+//        final String dstTableName = "copyOf" + name;
 //        // With constraints... sqlite does not allow to add constraints later.
 //        // Without indexes.
 //        db.execSQL(def(dstTableName, true));
@@ -741,8 +741,8 @@ public class TableDefinition {
 //        // This handles re-ordered fields etc.
 //        copyTableSafely(db, dstTableName, toRemove, toRename);
 //
-//        db.execSQL("DROP TABLE " + mName);
-//        db.execSQL("ALTER TABLE " + dstTableName + " RENAME TO " + mName);
+//        db.execSQL("DROP TABLE " + name);
+//        db.execSQL("ALTER TABLE " + dstTableName + " RENAME TO " + name);
 //    }
 
     /**
@@ -768,7 +768,7 @@ public class TableDefinition {
                                  @Nullable final Collection<String> toRemove,
                                  @Nullable final Map<String, String> toRename) {
 
-        // Note: don't use the mDomains to check for columns no longer there,
+        // Note: don't use the 'domains' to check for columns no longer there,
         // we'd be removing columns that need to be renamed as well.
         // Build the source column list, removing columns we no longer want.
         final Collection<String> removals = toRemove != null ? toRemove : new ArrayList<>();

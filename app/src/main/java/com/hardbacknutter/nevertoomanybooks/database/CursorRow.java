@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,7 +43,7 @@ public class CursorRow
         implements DataHolder {
 
     /** the mapped cursor. */
-    private final Cursor mCursor;
+    private final Cursor cursor;
 
     /**
      * Constructor.
@@ -51,13 +51,13 @@ public class CursorRow
      * @param cursor to read from
      */
     public CursorRow(@NonNull final Cursor cursor) {
-        mCursor = cursor;
+        this.cursor = cursor;
     }
 
     @Override
     @NonNull
     public Set<String> keySet() {
-        return Set.copyOf(Arrays.asList(mCursor.getColumnNames()));
+        return Set.copyOf(Arrays.asList(cursor.getColumnNames()));
     }
 
     /**
@@ -67,7 +67,7 @@ public class CursorRow
      */
     @Override
     public boolean contains(@NonNull final String key) {
-        return mCursor.getColumnIndex(key) > -1;
+        return cursor.getColumnIndex(key) > -1;
     }
 
     @Override
@@ -76,14 +76,14 @@ public class CursorRow
                             @Nullable final String defValue)
             throws ColumnNotPresentException {
 
-        final int col = mCursor.getColumnIndex(key);
+        final int col = cursor.getColumnIndex(key);
         if (col == -1) {
             throw new ColumnNotPresentException(key);
         }
-        if (mCursor.isNull(col)) {
+        if (cursor.isNull(col)) {
             return defValue;
         }
-        return mCursor.getString(col);
+        return cursor.getString(col);
     }
 
     /**
@@ -110,14 +110,14 @@ public class CursorRow
     public int getInt(@NonNull final String key)
             throws ColumnNotPresentException {
 
-        final int col = mCursor.getColumnIndex(key);
+        final int col = cursor.getColumnIndex(key);
         if (col == -1) {
             throw new ColumnNotPresentException(key);
         }
-        // if (mCursor.isNull(col)) {
+        // if (cursor.isNull(col)) {
         //     return 0;
         // }
-        return mCursor.getInt(col);
+        return cursor.getInt(col);
     }
 
     /**
@@ -131,14 +131,14 @@ public class CursorRow
     public long getLong(@NonNull final String key)
             throws ColumnNotPresentException {
 
-        final int col = mCursor.getColumnIndex(key);
+        final int col = cursor.getColumnIndex(key);
         if (col == -1) {
             throw new ColumnNotPresentException(key);
         }
-        // if (mCursor.isNull(col)) {
+        // if (cursor.isNull(col)) {
         //     return 0;
         // }
-        return mCursor.getLong(col);
+        return cursor.getLong(col);
     }
 
     /**
@@ -152,14 +152,14 @@ public class CursorRow
     public double getDouble(@NonNull final String key)
             throws ColumnNotPresentException {
 
-        final int col = mCursor.getColumnIndex(key);
+        final int col = cursor.getColumnIndex(key);
         if (col == -1) {
             throw new ColumnNotPresentException(key);
         }
-        // if (mCursor.isNull(col)) {
+        // if (cursor.isNull(col)) {
         //     return 0;
         // }
-        return mCursor.getDouble(col);
+        return cursor.getDouble(col);
     }
 
     /**
@@ -173,14 +173,14 @@ public class CursorRow
     public float getFloat(@NonNull final String key)
             throws ColumnNotPresentException {
 
-        final int col = mCursor.getColumnIndex(key);
+        final int col = cursor.getColumnIndex(key);
         if (col == -1) {
             throw new ColumnNotPresentException(key);
         }
-        // if (mCursor.isNull(col)) {
+        // if (cursor.isNull(col)) {
         //     return 0;
         // }
-        return mCursor.getFloat(col);
+        return cursor.getFloat(col);
     }
 
 //    /**
@@ -193,14 +193,14 @@ public class CursorRow
 //    public byte[] getBlob(@NonNull final String key)
 //            throws ColumnNotPresentException {
 //
-//        final int col = mCursor.getColumnIndex(key);
+//        final int col = cursor.getColumnIndex(key);
 //        if (col == -1) {
 //            throw new ColumnNotPresentException(key);
 //        }
-//        // if (mCursor.isNull(col)) {
+//        // if (cursor.isNull(col)) {
 //        //     return null;
 //        // }
-//        return mCursor.getBlob(col);
+//        return cursor.getBlob(col);
 //    }
 
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,16 +63,16 @@ public class DBCleaner {
 
     /** Database Access. */
     @NonNull
-    private final SynchronizedDb mDb;
+    private final SynchronizedDb db;
     @NonNull
-    private final ServiceLocator mSl;
+    private final ServiceLocator serviceLocator;
 
     /**
      * Constructor.
      */
     public DBCleaner() {
-        mSl = ServiceLocator.getInstance();
-        mDb = mSl.getDb();
+        serviceLocator = ServiceLocator.getInstance();
+        db = serviceLocator.getDb();
     }
 
     public int clean(@NonNull final Context context) {
@@ -98,10 +98,10 @@ public class DBCleaner {
 
         // re-sort positional links - theoretically this should never be needed... flw.
         int modified;
-        modified = mSl.getAuthorDao().repositionAuthor(context);
-        modified += mSl.getSeriesDao().repositionSeries(context);
-        modified += mSl.getPublisherDao().repositionPublishers(context);
-        modified += mSl.getTocEntryDao().repositionTocEntries(context);
+        modified = serviceLocator.getAuthorDao().repositionAuthor(context);
+        modified += serviceLocator.getSeriesDao().repositionSeries(context);
+        modified += serviceLocator.getPublisherDao().repositionPublishers(context);
+        modified += serviceLocator.getTocEntryDao().repositionTocEntries(context);
 
         return modified;
     }
@@ -115,8 +115,8 @@ public class DBCleaner {
     public void languages(@NonNull final Context context,
                           @NonNull final Locale userLocale) {
 
-        final LanguageDao languageDao = mSl.getLanguageDao();
-        final Languages langHelper = mSl.getLanguages();
+        final LanguageDao languageDao = serviceLocator.getLanguageDao();
+        final Languages langHelper = serviceLocator.getLanguages();
 
         for (final String lang : languageDao.getList()) {
             if (lang != null && !lang.isEmpty()) {
@@ -158,7 +158,7 @@ public class DBCleaner {
         final Collection<Pair<Long, String>> rows = new ArrayList<>();
 
         for (final String key : columns) {
-            try (Cursor cursor = mDb.rawQuery(
+            try (Cursor cursor = db.rawQuery(
                     "SELECT " + DBKey.PK_ID + ',' + key + " FROM " + TBL_BOOKS.getName()
                     + " WHERE " + key + " LIKE '%T%'", null)) {
                 while (cursor.moveToNext()) {
@@ -171,7 +171,7 @@ public class DBCleaner {
                          "key=" + key
                          + "|rows.size()=" + rows.size());
             }
-            try (SynchronizedStatement stmt = mDb.compileStatement(
+            try (SynchronizedStatement stmt = db.compileStatement(
                     "UPDATE " + TBL_BOOKS.getName()
                     + " SET " + key + "=? WHERE " + DBKey.PK_ID + "=?")) {
 
@@ -192,8 +192,8 @@ public class DBCleaner {
      * @param context Current context
      */
     public void bookshelves(@NonNull final Context context) {
-        mSl.getBookshelfDao().getAll()
-           .forEach(bookshelf -> bookshelf.validateStyle(context));
+        serviceLocator.getBookshelfDao().getAll()
+                      .forEach(bookshelf -> bookshelf.validateStyle(context));
     }
 
     /**
@@ -230,7 +230,7 @@ public class DBCleaner {
                               + " WHERE lower(" + column + ") IN ";
         String sql;
         sql = update + "('true','t','yes')";
-        try (SynchronizedStatement stmt = mDb.compileStatement(sql)) {
+        try (SynchronizedStatement stmt = db.compileStatement(sql)) {
             stmt.bindLong(1, 1);
             final int count = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG /* always */) {
@@ -241,7 +241,7 @@ public class DBCleaner {
         }
 
         sql = update + "('false','f','no')";
-        try (SynchronizedStatement stmt = mDb.compileStatement(sql)) {
+        try (SynchronizedStatement stmt = db.compileStatement(sql)) {
             stmt.bindLong(1, 0);
             final int count = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG /* always */) {
@@ -268,7 +268,7 @@ public class DBCleaner {
         if (!dryRun) {
             final String sql = "DELETE " + TBL_BOOK_BOOKSHELF
                                + " WHERE " + DBKey.FK_BOOKSHELF + " IS NULL";
-            try (SynchronizedStatement stmt = mDb.compileStatement(sql)) {
+            try (SynchronizedStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
             toLog("bookBookshelf|EXIT", select);
@@ -293,7 +293,7 @@ public class DBCleaner {
         if (!dryRun) {
             final String sql =
                     "UPDATE " + table + " SET " + column + "=''" + " WHERE " + column + " IS NULL";
-            try (SynchronizedStatement stmt = mDb.compileStatement(sql)) {
+            try (SynchronizedStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
             toLog("nullString2empty|EXIT", select);
@@ -310,7 +310,7 @@ public class DBCleaner {
     private void toLog(@NonNull final String state,
                        @NonNull final String query) {
         if (BuildConfig.DEBUG /* always */) {
-            try (SynchronizedCursor cursor = mDb.rawQuery(query, null)) {
+            try (SynchronizedCursor cursor = db.rawQuery(query, null)) {
                 Log.d(TAG, state + "|row count=" + cursor.getCount());
                 while (cursor.moveToNext()) {
                     final String field = cursor.getColumnName(0);
