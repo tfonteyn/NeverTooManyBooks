@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,7 +63,7 @@ public class CalibreDaoImpl
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mDb.inTransaction()) {
+            if (!db.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -78,7 +78,7 @@ public class CalibreDaoImpl
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mDb.inTransaction()) {
+            if (!db.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -119,7 +119,7 @@ public class CalibreDaoImpl
             return false;
         }
 
-        try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
+        try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
             stmt.bindLong(1, book.getId());
             stmt.bindLong(2, book.getInt(DBKey.CALIBRE_BOOK_ID));
             stmt.bindString(3, book.getString(DBKey.CALIBRE_BOOK_UUID));
@@ -136,7 +136,7 @@ public class CalibreDaoImpl
 
     @Override
     public void delete(@NonNull final Book book) {
-        mDb.delete(TBL_CALIBRE_BOOKS.getName(), DBKey.FK_BOOK + "=?",
-                   new String[]{String.valueOf(book.getId())});
+        db.delete(TBL_CALIBRE_BOOKS.getName(), DBKey.FK_BOOK + "=?",
+                  new String[]{String.valueOf(book.getId())});
     }
 }

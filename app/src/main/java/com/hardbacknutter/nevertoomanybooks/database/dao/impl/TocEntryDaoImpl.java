@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -183,7 +183,7 @@ public class TocEntryDaoImpl
                                                   bookLocale, null);
         }
 
-        try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(FIND_ID)) {
             stmt.bindLong(1, tocEntry.getPrimaryAuthor().getId());
             stmt.bindString(2, SqlEncode.orderByColumn(tocEntry.getTitle(), obd.locale));
             stmt.bindString(3, SqlEncode.orderByColumn(obd.title, obd.locale));
@@ -194,7 +194,7 @@ public class TocEntryDaoImpl
     @Override
     @NonNull
     public Cursor fetchAll() {
-        return mDb.rawQuery(SELECT_ALL, null);
+        return db.rawQuery(SELECT_ALL, null);
     }
 
     @Override
@@ -202,8 +202,8 @@ public class TocEntryDaoImpl
     public List<BookLight> getBookTitles(@IntRange(from = 1) final long id,
                                          @NonNull final Author author) {
         final List<BookLight> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(SELECT_BOOK_TITLES_BY_TOC_ENTRY_ID,
-                                          new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = db.rawQuery(SELECT_BOOK_TITLES_BY_TOC_ENTRY_ID,
+                                         new String[]{String.valueOf(id)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new BookLight(rowData.getLong(DBKey.PK_ID),
@@ -220,8 +220,8 @@ public class TocEntryDaoImpl
     @NonNull
     public ArrayList<TocEntry> getTocEntryByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<TocEntry> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(TOC_ENTRIES_BY_BOOK_ID,
-                                          new String[]{String.valueOf(bookId)})) {
+        try (Cursor cursor = db.rawQuery(TOC_ENTRIES_BY_BOOK_ID,
+                                         new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new TocEntry(rowData.getLong(DBKey.PK_ID),
@@ -238,8 +238,8 @@ public class TocEntryDaoImpl
     @NonNull
     public ArrayList<Long> getBookIds(final long tocId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(SELECT_BOOK_IDS_BY_TOC_ENTRY_ID,
-                                          new String[]{String.valueOf(tocId)})) {
+        try (Cursor cursor = db.rawQuery(SELECT_BOOK_IDS_BY_TOC_ENTRY_ID,
+                                         new String[]{String.valueOf(tocId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }
@@ -252,7 +252,7 @@ public class TocEntryDaoImpl
                           @NonNull final TocEntry tocEntry) {
 
         final int rowsAffected;
-        try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_BY_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(DELETE_BY_ID)) {
             stmt.bindLong(1, tocEntry.getId());
             rowsAffected = stmt.executeUpdateDelete();
         }
@@ -286,8 +286,8 @@ public class TocEntryDaoImpl
 
             Synchronizer.SyncLock txLock = null;
             try {
-                if (!mDb.inTransaction()) {
-                    txLock = mDb.beginTransaction(true);
+                if (!db.inTransaction()) {
+                    txLock = db.beginTransaction(true);
                 }
 
                 for (final long bookId : bookIds) {
@@ -295,14 +295,14 @@ public class TocEntryDaoImpl
                     bookDao.insertOrUpdateToc(context, bookId, list, false, bookLocale);
                 }
                 if (txLock != null) {
-                    mDb.setTransactionSuccessful();
+                    db.setTransactionSuccessful();
                 }
             } catch (@NonNull final RuntimeException | DaoWriteException e) {
                 Logger.error(TAG, e);
 
             } finally {
                 if (txLock != null) {
-                    mDb.endTransaction(txLock);
+                    db.endTransaction(txLock);
                 }
                 if (BuildConfig.DEBUG /* always */) {
                     Log.w(TAG, "repositionTocEntries|done");

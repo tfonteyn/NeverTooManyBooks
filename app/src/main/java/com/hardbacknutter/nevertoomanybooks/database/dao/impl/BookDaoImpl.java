@@ -191,14 +191,14 @@ public class BookDaoImpl
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mDb.inTransaction()) {
-                txLock = mDb.beginTransaction(true);
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
             }
 
             final BookDaoHelper bookDaoHelper = new BookDaoHelper(context, book, true);
             final ContentValues cv = bookDaoHelper
                     .process(context)
-                    .filterValues(mDb.getTableInfo(TBL_BOOKS));
+                    .filterValues(db.getTableInfo(TBL_BOOKS));
 
             // Make sure we have at least one author
             final List<Author> authors = book.getAuthors();
@@ -226,7 +226,7 @@ public class BookDaoImpl
             }
 
             // go!
-            final long newBookId = mDb.insert(TBL_BOOKS.getName(), cv);
+            final long newBookId = db.insert(TBL_BOOKS.getName(), cv);
             if (newBookId <= 0) {
                 Logger.error(TAG, new Throwable(), "Insert failed"
                                                    + "|table=" + TBL_BOOKS.getName()
@@ -267,7 +267,7 @@ public class BookDaoImpl
             }
 
             if (txLock != null) {
-                mDb.setTransactionSuccessful();
+                db.setTransactionSuccessful();
             }
             return newBookId;
 
@@ -276,7 +276,7 @@ public class BookDaoImpl
 
         } finally {
             if (txLock != null) {
-                mDb.endTransaction(txLock);
+                db.endTransaction(txLock);
             }
         }
     }
@@ -290,14 +290,14 @@ public class BookDaoImpl
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mDb.inTransaction()) {
-                txLock = mDb.beginTransaction(true);
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
             }
 
             final BookDaoHelper bookDaoHelper = new BookDaoHelper(context, book, false);
             final ContentValues cv = bookDaoHelper
                     .process(context)
-                    .filterValues(mDb.getTableInfo(TBL_BOOKS));
+                    .filterValues(db.getTableInfo(TBL_BOOKS));
 
             // Disallow UUID updates
             if (cv.containsKey(BOOK_UUID)) {
@@ -316,8 +316,8 @@ public class BookDaoImpl
             // Other fields in the database row are not affected.
             // go !
             final boolean success =
-                    0 < mDb.update(TBL_BOOKS.getName(), cv, PK_ID + "=?",
-                                   new String[]{String.valueOf(book.getId())});
+                    0 < db.update(TBL_BOOKS.getName(), cv, PK_ID + "=?",
+                                  new String[]{String.valueOf(book.getId())});
 
             if (success) {
                 // always lookup the UUID
@@ -337,7 +337,7 @@ public class BookDaoImpl
                 }
 
                 if (txLock != null) {
-                    mDb.setTransactionSuccessful();
+                    db.setTransactionSuccessful();
                 }
             } else {
                 throw new DaoWriteException(ERROR_UPDATING_BOOK_FROM + book);
@@ -347,7 +347,7 @@ public class BookDaoImpl
 
         } finally {
             if (txLock != null) {
-                mDb.endTransaction(txLock);
+                db.endTransaction(txLock);
             }
         }
     }
@@ -383,11 +383,11 @@ public class BookDaoImpl
         int rowsAffected = 0;
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mDb.inTransaction()) {
-                txLock = mDb.beginTransaction(true);
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
             }
 
-            try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Delete.BOOK_BY_ID)) {
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.Delete.BOOK_BY_ID)) {
                 stmt.bindLong(1, id);
                 rowsAffected = stmt.executeUpdateDelete();
             }
@@ -407,14 +407,14 @@ public class BookDaoImpl
                 }
             }
             if (txLock != null) {
-                mDb.setTransactionSuccessful();
+                db.setTransactionSuccessful();
             }
         } catch (@NonNull final RuntimeException e) {
             Logger.error(TAG, e, "Failed to delete book");
 
         } finally {
             if (txLock != null) {
-                mDb.endTransaction(txLock);
+                db.endTransaction(txLock);
             }
         }
 
@@ -523,7 +523,7 @@ public class BookDaoImpl
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mDb.inTransaction()) {
+            if (!db.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -542,7 +542,7 @@ public class BookDaoImpl
         }
 
 
-        try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Insert.BOOK_BOOKSHELF)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.Insert.BOOK_BOOKSHELF)) {
             for (final Bookshelf bookshelf : list) {
                 // create if needed - do NOT do updates here
                 if (bookshelf.getId() == 0) {
@@ -567,7 +567,7 @@ public class BookDaoImpl
      * @param bookId id of the book
      */
     private void deleteBookBookshelfByBookId(@IntRange(from = 1) final long bookId) {
-        try (SynchronizedStatement stmt = mDb
+        try (SynchronizedStatement stmt = db
                 .compileStatement(Sql.Delete.BOOK_BOOKSHELF_BY_BOOK_ID)) {
             stmt.bindLong(1, bookId);
             stmt.executeUpdateDelete();
@@ -583,7 +583,7 @@ public class BookDaoImpl
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mDb.inTransaction()) {
+            if (!db.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -602,7 +602,7 @@ public class BookDaoImpl
         }
 
         int position = 0;
-        try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Insert.BOOK_AUTHOR)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.Insert.BOOK_AUTHOR)) {
             for (final Author author : list) {
                 // create if needed - do NOT do updates here
                 if (author.getId() == 0) {
@@ -631,7 +631,7 @@ public class BookDaoImpl
      * @param bookId id of the book
      */
     private void deleteBookAuthorByBookId(@IntRange(from = 1) final long bookId) {
-        try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Delete.BOOK_AUTHOR_BY_BOOK_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.Delete.BOOK_AUTHOR_BY_BOOK_ID)) {
             stmt.bindLong(1, bookId);
             stmt.executeUpdateDelete();
         }
@@ -646,7 +646,7 @@ public class BookDaoImpl
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mDb.inTransaction()) {
+            if (!db.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -666,7 +666,7 @@ public class BookDaoImpl
 
 
         int position = 0;
-        try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Insert.BOOK_SERIES)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.Insert.BOOK_SERIES)) {
             for (final Series series : list) {
                 // create if needed - do NOT do updates here
                 if (series.getId() == 0) {
@@ -695,7 +695,7 @@ public class BookDaoImpl
      * @param bookId id of the book
      */
     private void deleteBookSeriesByBookId(@IntRange(from = 1) final long bookId) {
-        try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Delete.BOOK_SERIES_BY_BOOK_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.Delete.BOOK_SERIES_BY_BOOK_ID)) {
             stmt.bindLong(1, bookId);
             stmt.executeUpdateDelete();
         }
@@ -710,7 +710,7 @@ public class BookDaoImpl
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mDb.inTransaction()) {
+            if (!db.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -730,7 +730,7 @@ public class BookDaoImpl
 
 
         int position = 0;
-        try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Insert.BOOK_PUBLISHER)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.Insert.BOOK_PUBLISHER)) {
             for (final Publisher publisher : list) {
                 // create if needed - do NOT do updates here
                 if (publisher.getId() == 0) {
@@ -758,7 +758,7 @@ public class BookDaoImpl
      * @param bookId id of the book
      */
     private void deleteBookPublishersByBookId(@IntRange(from = 1) final long bookId) {
-        try (SynchronizedStatement stmt = mDb
+        try (SynchronizedStatement stmt = db
                 .compileStatement(Sql.Delete.BOOK_PUBLISHER_BY_BOOK_ID)) {
             stmt.bindLong(1, bookId);
             stmt.executeUpdateDelete();
@@ -774,7 +774,7 @@ public class BookDaoImpl
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mDb.inTransaction()) {
+            if (!db.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -793,9 +793,9 @@ public class BookDaoImpl
 
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
-        try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Insert.BOOK_TOC_ENTRY);
-             SynchronizedStatement stmtInsToc = mDb.compileStatement(Sql.Insert.TOC_ENTRY);
-             SynchronizedStatement stmtUpdToc = mDb.compileStatement(Sql.Update.TOCENTRY)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.Insert.BOOK_TOC_ENTRY);
+             SynchronizedStatement stmtInsToc = db.compileStatement(Sql.Insert.TOC_ENTRY);
+             SynchronizedStatement stmtUpdToc = db.compileStatement(Sql.Update.TOCENTRY)) {
 
             long position = 0;
             for (final TocEntry tocEntry : list) {
@@ -893,7 +893,7 @@ public class BookDaoImpl
      * @param bookId id of the book
      */
     private void deleteBookTocEntryByBookId(@IntRange(from = 1) final long bookId) {
-        try (SynchronizedStatement stmt = mDb
+        try (SynchronizedStatement stmt = db
                 .compileStatement(Sql.Delete.BOOK_TOC_ENTRIES_BY_BOOK_ID)) {
             stmt.bindLong(1, bookId);
             stmt.executeUpdateDelete();
@@ -905,7 +905,7 @@ public class BookDaoImpl
                            final boolean isRead) {
         final String now = isRead ? SqlEncode.date(LocalDateTime.now()) : "";
 
-        try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Update.READ)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.Update.READ)) {
             stmt.bindBoolean(1, isRead);
             stmt.bindString(2, now);
             stmt.bindLong(3, id);
@@ -920,7 +920,7 @@ public class BookDaoImpl
 
         final boolean success;
         // don't call standalone method, we want to use the same 'now' to update the book
-        try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Update.READ)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.Update.READ)) {
             stmt.bindBoolean(1, isRead);
             stmt.bindString(2, now);
             stmt.bindLong(3, book.getId());
@@ -938,7 +938,7 @@ public class BookDaoImpl
 
     @Override
     public long count() {
-        try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Count.BOOKS)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.Count.BOOKS)) {
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -966,9 +966,9 @@ public class BookDaoImpl
 
                            + _COLLATION;
 
-        final TypedCursor cursor = mDb.rawQueryWithTypedCursor(sql, selectionArgs, null);
+        final TypedCursor cursor = db.rawQueryWithTypedCursor(sql, selectionArgs, null);
         // force the TypedCursor to retrieve the real column types.
-        cursor.setDb(mDb, TBL_BOOKS);
+        cursor.setDb(db, TBL_BOOKS);
         return cursor;
     }
 
@@ -1018,11 +1018,11 @@ public class BookDaoImpl
     @Override
     public int countBooksForExport(@Nullable final LocalDateTime since) {
         if (since == null) {
-            try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Count.BOOKS)) {
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.Count.BOOKS)) {
                 return (int) stmt.simpleQueryForLongOrZero();
             }
         } else {
-            try (SynchronizedStatement stmt = mDb.compileStatement(
+            try (SynchronizedStatement stmt = db.compileStatement(
                     Sql.Count.BOOKS + _WHERE_ + DATE_LAST_UPDATED__UTC + ">=?")) {
                 stmt.bindString(1, SqlEncode.date(since));
                 return (int) stmt.simpleQueryForLongOrZero();
@@ -1108,7 +1108,7 @@ public class BookDaoImpl
      */
     @Nullable
     private String getBookUuid(@IntRange(from = 1) final long bookId) {
-        try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Get.BOOK_UUID_BY_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.Get.BOOK_UUID_BY_ID)) {
             stmt.bindLong(1, bookId);
             return stmt.simpleQueryForStringOrNull();
         }
@@ -1117,7 +1117,7 @@ public class BookDaoImpl
     @Override
     @IntRange(from = 0)
     public long getBookIdByUuid(@NonNull final String uuid) {
-        try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Get.BOOK_ID_BY_UUID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.Get.BOOK_ID_BY_UUID)) {
             stmt.bindString(1, uuid);
             return stmt.simpleQueryForLongOrZero();
         }
@@ -1126,8 +1126,8 @@ public class BookDaoImpl
     @Override
     @NonNull
     public Pair<String, String> getBookTitleAndIsbnById(@IntRange(from = 1) final long id) {
-        try (Cursor cursor = mDb.rawQuery(Sql.Get.BOOK_TITLE_AND_ISBN_BY_BOOK_ID,
-                                          new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = db.rawQuery(Sql.Get.BOOK_TITLE_AND_ISBN_BY_BOOK_ID,
+                                         new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return new Pair<>(cursor.getString(0),
                                   cursor.getString(1));
@@ -1145,9 +1145,9 @@ public class BookDaoImpl
         // i.e. an actual ISBN-10, or an ISBN-13 in the 978 range,
         // we search on both formats
         if (isbn.isIsbn10Compat()) {
-            try (Cursor cursor = mDb.rawQuery(Sql.Select.BY_VALID_ISBN,
-                                              new String[]{isbn.asText(ISBN.Type.Isbn10),
-                                                           isbn.asText(ISBN.Type.Isbn13)})) {
+            try (Cursor cursor = db.rawQuery(Sql.Select.BY_VALID_ISBN,
+                                             new String[]{isbn.asText(ISBN.Type.Isbn10),
+                                                          isbn.asText(ISBN.Type.Isbn13)})) {
                 while (cursor.moveToNext()) {
                     list.add(new Pair<>(cursor.getLong(0),
                                         cursor.getString(1)));
@@ -1156,7 +1156,7 @@ public class BookDaoImpl
         } else {
             // otherwise just search on the string as-is; regardless of validity
             // (this would actually include valid ISBN-13 in the 979 range).
-            try (Cursor cursor = mDb.rawQuery(Sql.Select.BY_ISBN, new String[]{isbn.asText()})) {
+            try (Cursor cursor = db.rawQuery(Sql.Select.BY_ISBN, new String[]{isbn.asText()})) {
                 while (cursor.moveToNext()) {
                     list.add(new Pair<>(cursor.getLong(0),
                                         cursor.getString(1)));
@@ -1170,7 +1170,7 @@ public class BookDaoImpl
     @Override
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean bookExistsById(@IntRange(from = 1) final long id) {
-        try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Count.BOOK_EXISTS)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.Count.BOOK_EXISTS)) {
             stmt.bindLong(1, id);
             return stmt.simpleQueryForLongOrZero() == 1;
         }
@@ -1207,7 +1207,7 @@ public class BookDaoImpl
     @Nullable
     public LocalDateTime getLastUpdateDate(@IntRange(from = 1) final long id) {
         try (SynchronizedStatement stmt =
-                     mDb.compileStatement(Sql.Get.LAST_UPDATE_DATE_BY_BOOK_ID)) {
+                     db.compileStatement(Sql.Get.LAST_UPDATE_DATE_BY_BOOK_ID)) {
             stmt.bindLong(1, id);
             return dateParser.parse(stmt.simpleQueryForStringOrNull());
         }

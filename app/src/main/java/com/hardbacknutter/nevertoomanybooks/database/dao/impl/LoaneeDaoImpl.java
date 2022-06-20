@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -106,7 +106,7 @@ public class LoaneeDaoImpl
         boolean success = false;
 
         if (loanee == null || loanee.isEmpty()) {
-            try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_BY_BOOK_ID)) {
+            try (SynchronizedStatement stmt = db.compileStatement(DELETE_BY_BOOK_ID)) {
                 stmt.bindLong(1, bookId);
                 success = stmt.executeUpdateDelete() == 1;
             }
@@ -114,7 +114,7 @@ public class LoaneeDaoImpl
 
             final String current = getLoaneeByBookId(bookId);
             if (current == null || current.isEmpty()) {
-                try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
+                try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
                     stmt.bindLong(1, bookId);
                     stmt.bindString(2, loanee);
                     success = stmt.executeInsert() > 0;
@@ -123,9 +123,9 @@ public class LoaneeDaoImpl
             } else if (!loanee.equals(current)) {
                 final ContentValues cv = new ContentValues();
                 cv.put(DBKey.LOANEE_NAME, loanee);
-                success = 0 < mDb.update(DBDefinitions.TBL_BOOK_LOANEE.getName(), cv,
-                                         DBKey.FK_BOOK + "=?",
-                                         new String[]{String.valueOf(bookId)});
+                success = 0 < db.update(DBDefinitions.TBL_BOOK_LOANEE.getName(), cv,
+                                        DBKey.FK_BOOK + "=?",
+                                        new String[]{String.valueOf(bookId)});
             }
         }
         return success;
@@ -135,7 +135,7 @@ public class LoaneeDaoImpl
     @Nullable
     public String getLoaneeByBookId(@IntRange(from = 1) final long bookId) {
 
-        try (SynchronizedStatement stmt = mDb.compileStatement(SELECT_BY_BOOK_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(SELECT_BY_BOOK_ID)) {
             stmt.bindLong(1, bookId);
             return stmt.simpleQueryForStringOrNull();
         }

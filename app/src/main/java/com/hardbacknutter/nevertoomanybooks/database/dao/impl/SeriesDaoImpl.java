@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -156,7 +156,7 @@ public class SeriesDaoImpl
     @Override
     @Nullable
     public Series getById(final long id) {
-        try (Cursor cursor = mDb.rawQuery(GET_BY_ID, new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = db.rawQuery(GET_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return new Series(id, new CursorRow(cursor));
             } else {
@@ -180,7 +180,7 @@ public class SeriesDaoImpl
                                                   bookLocale, null);
         }
 
-        try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(FIND_ID)) {
             stmt.bindString(1, SqlEncode.orderByColumn(series.getTitle(), obd.locale));
             stmt.bindString(2, SqlEncode.orderByColumn(obd.title, obd.locale));
             return stmt.simpleQueryForLongOrZero();
@@ -197,8 +197,8 @@ public class SeriesDaoImpl
     @NonNull
     public ArrayList<Series> getSeriesByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<Series> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(SERIES_BY_BOOK_ID,
-                                          new String[]{String.valueOf(bookId)})) {
+        try (Cursor cursor = db.rawQuery(SERIES_BY_BOOK_ID,
+                                         new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Series(rowData.getLong(DBKey.PK_ID), rowData));
@@ -210,7 +210,7 @@ public class SeriesDaoImpl
     @Override
     @NonNull
     public String getLanguage(final long id) {
-        try (SynchronizedStatement stmt = mDb.compileStatement(GET_LANGUAGE)) {
+        try (SynchronizedStatement stmt = db.compileStatement(GET_LANGUAGE)) {
             stmt.bindLong(1, id);
             final String code = stmt.simpleQueryForStringOrNull();
             return code != null ? code : "";
@@ -221,8 +221,8 @@ public class SeriesDaoImpl
     @NonNull
     public ArrayList<Long> getBookIds(final long seriesId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(SELECT_BOOK_IDS_BY_SERIES_ID,
-                                          new String[]{String.valueOf(seriesId)})) {
+        try (Cursor cursor = db.rawQuery(SELECT_BOOK_IDS_BY_SERIES_ID,
+                                         new String[]{String.valueOf(seriesId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }
@@ -235,7 +235,7 @@ public class SeriesDaoImpl
     public ArrayList<Long> getBookIds(final long seriesId,
                                       final long bookshelfId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(
+        try (Cursor cursor = db.rawQuery(
                 SELECT_BOOK_IDS_BY_SERIES_ID_AND_BOOKSHELF_ID,
                 new String[]{String.valueOf(seriesId), String.valueOf(bookshelfId)})) {
             while (cursor.moveToNext()) {
@@ -248,12 +248,12 @@ public class SeriesDaoImpl
     @Override
     @NonNull
     public Cursor fetchAll() {
-        return mDb.rawQuery(SELECT_ALL, null);
+        return db.rawQuery(SELECT_ALL, null);
     }
 
     @Override
     public long count() {
-        try (SynchronizedStatement stmt = mDb.compileStatement(COUNT_ALL)) {
+        try (SynchronizedStatement stmt = db.compileStatement(COUNT_ALL)) {
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -266,7 +266,7 @@ public class SeriesDaoImpl
             return 0;
         }
 
-        try (SynchronizedStatement stmt = mDb.compileStatement(COUNT_BOOKS)) {
+        try (SynchronizedStatement stmt = db.compileStatement(COUNT_BOOKS)) {
             stmt.bindLong(1, series.getId());
             return stmt.simpleQueryForLongOrZero();
         }
@@ -278,8 +278,8 @@ public class SeriesDaoImpl
         final ContentValues cv = new ContentValues();
         cv.put(DBKey.SERIES_IS_COMPLETE, isComplete);
 
-        return 0 < mDb.update(TBL_SERIES.getName(), cv, DBKey.PK_ID + "=?",
-                              new String[]{String.valueOf(seriesId)});
+        return 0 < db.update(TBL_SERIES.getName(), cv, DBKey.PK_ID + "=?",
+                             new String[]{String.valueOf(seriesId)});
     }
 
     @Override
@@ -350,7 +350,7 @@ public class SeriesDaoImpl
         final OrderByHelper.OrderByData obd = OrderByHelper.createOrderByData(
                 context, series.getTitle(), bookLocale, series::getLocale);
 
-        try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
+        try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
             stmt.bindString(1, series.getTitle());
             stmt.bindString(2, SqlEncode.orderByColumn(obd.title, obd.locale));
             stmt.bindBoolean(3, series.isComplete());
@@ -375,8 +375,8 @@ public class SeriesDaoImpl
         cv.put(DBKey.SERIES_TITLE_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
         cv.put(DBKey.SERIES_IS_COMPLETE, series.isComplete());
 
-        return 0 < mDb.update(TBL_SERIES.getName(), cv, DBKey.PK_ID + "=?",
-                              new String[]{String.valueOf(series.getId())});
+        return 0 < db.update(TBL_SERIES.getName(), cv, DBKey.PK_ID + "=?",
+                             new String[]{String.valueOf(series.getId())});
     }
 
     @Override
@@ -385,7 +385,7 @@ public class SeriesDaoImpl
                           @NonNull final Series series) {
 
         final int rowsAffected;
-        try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_BY_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(DELETE_BY_ID)) {
             stmt.bindLong(1, series.getId());
             rowsAffected = stmt.executeUpdateDelete();
         }
@@ -408,8 +408,8 @@ public class SeriesDaoImpl
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mDb.inTransaction()) {
-                txLock = mDb.beginTransaction(true);
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
             }
 
             final Series destination = getById(destId);
@@ -436,18 +436,18 @@ public class SeriesDaoImpl
             delete(context, source);
 
             if (txLock != null) {
-                mDb.setTransactionSuccessful();
+                db.setTransactionSuccessful();
             }
         } finally {
             if (txLock != null) {
-                mDb.endTransaction(txLock);
+                db.endTransaction(txLock);
             }
         }
     }
 
     @Override
     public void purge() {
-        try (SynchronizedStatement stmt = mDb.compileStatement(PURGE)) {
+        try (SynchronizedStatement stmt = db.compileStatement(PURGE)) {
             stmt.executeUpdateDelete();
         }
     }
@@ -473,8 +473,8 @@ public class SeriesDaoImpl
 
             Synchronizer.SyncLock txLock = null;
             try {
-                if (!mDb.inTransaction()) {
-                    txLock = mDb.beginTransaction(true);
+                if (!db.inTransaction()) {
+                    txLock = db.beginTransaction(true);
                 }
 
                 for (final long bookId : bookIds) {
@@ -482,13 +482,13 @@ public class SeriesDaoImpl
                     bookDao.insertSeries(context, bookId, list, false, bookLocale);
                 }
                 if (txLock != null) {
-                    mDb.setTransactionSuccessful();
+                    db.setTransactionSuccessful();
                 }
             } catch (@NonNull final RuntimeException | DaoWriteException e) {
                 Logger.error(TAG, e);
             } finally {
                 if (txLock != null) {
-                    mDb.endTransaction(txLock);
+                    db.endTransaction(txLock);
                 }
                 if (BuildConfig.DEBUG /* always */) {
                     Log.w(TAG, "repositionSeries|done");

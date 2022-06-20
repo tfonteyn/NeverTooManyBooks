@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -147,8 +147,8 @@ public class CalibreLibraryDaoImpl
     @Override
     @Nullable
     public CalibreLibrary getLibraryById(final long id) {
-        try (Cursor cursor = mDb.rawQuery(SELECT_LIBRARY_BY_ID,
-                                          new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = db.rawQuery(SELECT_LIBRARY_BY_ID,
+                                         new String[]{String.valueOf(id)})) {
             return loadLibrary(cursor);
         }
     }
@@ -156,7 +156,7 @@ public class CalibreLibraryDaoImpl
     @Override
     @Nullable
     public CalibreLibrary findLibraryByUuid(@NonNull final String uuid) {
-        try (Cursor cursor = mDb.rawQuery(SELECT_LIBRARY_BY_UUID, new String[]{uuid})) {
+        try (Cursor cursor = db.rawQuery(SELECT_LIBRARY_BY_UUID, new String[]{uuid})) {
             return loadLibrary(cursor);
         }
     }
@@ -164,8 +164,8 @@ public class CalibreLibraryDaoImpl
     @Override
     @Nullable
     public CalibreLibrary findLibraryByStringId(@NonNull final String libraryStringId) {
-        try (Cursor cursor = mDb.rawQuery(SELECT_LIBRARY_BY_STRING_ID,
-                                          new String[]{libraryStringId})) {
+        try (Cursor cursor = db.rawQuery(SELECT_LIBRARY_BY_STRING_ID,
+                                         new String[]{libraryStringId})) {
             return loadLibrary(cursor);
         }
     }
@@ -184,7 +184,7 @@ public class CalibreLibraryDaoImpl
 
 
     private long find(@NonNull final CalibreLibrary library) {
-        try (SynchronizedStatement stmt = mDb.compileStatement(SELECT_LIBRARY_ID_BY_STRING_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(SELECT_LIBRARY_ID_BY_STRING_ID)) {
             stmt.bindString(1, library.getLibraryStringId());
             return stmt.simpleQueryForLongOrZero();
         }
@@ -195,7 +195,7 @@ public class CalibreLibraryDaoImpl
     public ArrayList<CalibreLibrary> getAllLibraries() {
 
         final ArrayList<CalibreLibrary> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(SELECT_LIBRARIES, null)) {
+        try (Cursor cursor = db.rawQuery(SELECT_LIBRARIES, null)) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final CalibreLibrary library = new CalibreLibrary(rowData.getLong(DBKey.PK_ID),
@@ -217,7 +217,7 @@ public class CalibreLibraryDaoImpl
     @Override
     public long insert(@NonNull final CalibreLibrary library) {
 
-        try (SynchronizedStatement stmt = mDb.compileStatement(INSERT_LIBRARY)) {
+        try (SynchronizedStatement stmt = db.compileStatement(INSERT_LIBRARY)) {
             stmt.bindString(1, library.getUuid());
             stmt.bindString(2, library.getLibraryStringId());
             stmt.bindString(3, library.getName());
@@ -242,9 +242,9 @@ public class CalibreLibraryDaoImpl
         cv.put(DBKey.CALIBRE_LIBRARY_LAST_SYNC_DATE__UTC, library.getLastSyncDateAsString());
         cv.put(DBKey.FK_BOOKSHELF, library.getMappedBookshelfId());
 
-        final int rowsAffected = mDb.update(TBL_CALIBRE_LIBRARIES.getName(), cv,
-                                            DBKey.PK_ID + "=?",
-                                            new String[]{String.valueOf(library.getId())});
+        final int rowsAffected = db.update(TBL_CALIBRE_LIBRARIES.getName(), cv,
+                                           DBKey.PK_ID + "=?",
+                                           new String[]{String.valueOf(library.getId())});
         if (0 < rowsAffected) {
             // just delete and recreate...
             deleteVirtualLibraries(library.getId());
@@ -260,7 +260,7 @@ public class CalibreLibraryDaoImpl
 
         final int rowsAffected;
 
-        try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_LIBRARY_BY_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(DELETE_LIBRARY_BY_ID)) {
             stmt.bindLong(1, library.getId());
             rowsAffected = stmt.executeUpdateDelete();
         }
@@ -283,8 +283,8 @@ public class CalibreLibraryDaoImpl
     private ArrayList<CalibreVirtualLibrary> getVirtualLibraries(final long libraryId) {
 
         final ArrayList<CalibreVirtualLibrary> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(SELECT_VLIBS_BY_LIBRARY_ID,
-                                          new String[]{String.valueOf(libraryId)})) {
+        try (Cursor cursor = db.rawQuery(SELECT_VLIBS_BY_LIBRARY_ID,
+                                         new String[]{String.valueOf(libraryId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new CalibreVirtualLibrary(rowData.getLong(DBKey.PK_ID), rowData));
@@ -298,8 +298,8 @@ public class CalibreLibraryDaoImpl
     public CalibreVirtualLibrary getVirtualLibrary(final long libraryId,
                                                    @NonNull final String name) {
 
-        try (Cursor cursor = mDb.rawQuery(SELECT_VLIB_BY_LIBRARY_ID_AND_NAME,
-                                          new String[]{String.valueOf(libraryId), name})) {
+        try (Cursor cursor = db.rawQuery(SELECT_VLIB_BY_LIBRARY_ID_AND_NAME,
+                                         new String[]{String.valueOf(libraryId), name})) {
 
             final DataHolder rowData = new CursorRow(cursor);
             if (cursor.moveToFirst()) {
@@ -318,15 +318,15 @@ public class CalibreLibraryDaoImpl
         cv.put(DBKey.CALIBRE_VIRT_LIB_EXPR, library.getExpr());
         cv.put(DBKey.FK_BOOKSHELF, library.getMappedBookshelfId());
 
-        return 0 < mDb.update(TBL_CALIBRE_VIRTUAL_LIBRARIES.getName(), cv,
-                              DBKey.PK_ID + "=?",
-                              new String[]{String.valueOf(library.getId())});
+        return 0 < db.update(TBL_CALIBRE_VIRTUAL_LIBRARIES.getName(), cv,
+                             DBKey.PK_ID + "=?",
+                             new String[]{String.valueOf(library.getId())});
     }
 
     private void insertVirtualLibraries(@NonNull final CalibreLibrary library) {
         final ArrayList<CalibreVirtualLibrary> vlibs = library.getVirtualLibraries();
         if (!vlibs.isEmpty()) {
-            try (SynchronizedStatement stmt = mDb.compileStatement(INSERT_VIRTUAL_LIBRARY)) {
+            try (SynchronizedStatement stmt = db.compileStatement(INSERT_VIRTUAL_LIBRARY)) {
                 for (final CalibreVirtualLibrary vlib : vlibs) {
                     // always update the foreign key
                     vlib.setLibraryId(library.getId());
@@ -345,7 +345,7 @@ public class CalibreLibraryDaoImpl
     }
 
     private void deleteVirtualLibraries(final long libraryId) {
-        try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_VLIBS_BY_LIBRARY_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(DELETE_VLIBS_BY_LIBRARY_ID)) {
             stmt.bindLong(1, libraryId);
             stmt.executeUpdateDelete();
         }
@@ -355,7 +355,7 @@ public class CalibreLibraryDaoImpl
     @Override
     @IntRange(from = 0)
     public long getBookIdFromCalibreUuid(@NonNull final String uuid) {
-        try (SynchronizedStatement stmt = mDb.compileStatement(BY_CALIBRE_UUID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(BY_CALIBRE_UUID)) {
             stmt.bindString(1, uuid);
             return stmt.simpleQueryForLongOrZero();
         }

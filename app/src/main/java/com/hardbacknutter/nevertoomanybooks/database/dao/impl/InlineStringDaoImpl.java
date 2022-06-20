@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,10 +34,10 @@ public abstract class InlineStringDaoImpl
         implements InlineStringDao {
 
     /** name only. */
-    private final String mSqlSelectAll;
+    private final String sqlSelectAll;
 
     /** Global rename. */
-    private final String mSqlUpdate;
+    private final String sqlUpdate;
 
     /**
      * Constructor.
@@ -48,21 +48,21 @@ public abstract class InlineStringDaoImpl
                         @NonNull final String key) {
         super(logTag);
 
-        mSqlSelectAll = SELECT_DISTINCT_ + key
-                        + _FROM_ + DBDefinitions.TBL_BOOKS.getName()
-                        + _WHERE_ + key + "<> ''"
-                        + _ORDER_BY_ + key + _COLLATION;
+        sqlSelectAll = SELECT_DISTINCT_ + key
+                       + _FROM_ + DBDefinitions.TBL_BOOKS.getName()
+                       + _WHERE_ + key + "<> ''"
+                       + _ORDER_BY_ + key + _COLLATION;
 
-        mSqlUpdate = UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
-                     + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
-                     + ',' + key + "=?"
-                     + _WHERE_ + key + "=?";
+        sqlUpdate = UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
+                    + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
+                    + ',' + key + "=?"
+                    + _WHERE_ + key + "=?";
     }
 
     @Override
     @NonNull
     public ArrayList<String> getList() {
-        return getColumnAsStringArrayList(mSqlSelectAll);
+        return getColumnAsStringArrayList(sqlSelectAll);
     }
 
     @Override
@@ -71,7 +71,7 @@ public abstract class InlineStringDaoImpl
         if (Objects.equals(from, to)) {
             return;
         }
-        try (SynchronizedStatement stmt = mDb.compileStatement(mSqlUpdate)) {
+        try (SynchronizedStatement stmt = db.compileStatement(sqlUpdate)) {
             stmt.bindString(1, to);
             stmt.bindString(2, from);
             stmt.executeUpdateDelete();

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -216,7 +216,7 @@ public class FtsDaoImpl
 
         FtsDao.createMatchString(title, seriesTitle, author, publisherName, keywords)
               .ifPresent(query -> {
-                  try (Cursor cursor = mDb.rawQuery(SEARCH, new String[]
+                  try (Cursor cursor = db.rawQuery(SEARCH, new String[]
                           {query, String.valueOf(limit)})) {
                       while (cursor.moveToNext()) {
                           result.add(cursor.getLong(0));
@@ -241,28 +241,28 @@ public class FtsDaoImpl
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mDb.inTransaction()) {
-                txLock = mDb.beginTransaction(true);
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
             }
 
             //IMPORTANT: withDomainConstraints MUST BE false
-            mDb.recreate(ftsTemp, false);
+            db.recreate(ftsTemp, false);
 
-            try (Cursor cursor = mDb.rawQuery(ALL_BOOKS, null)) {
+            try (Cursor cursor = db.rawQuery(ALL_BOOKS, null)) {
                 processBooks(cursor, INSERT_INTO_ + tmpTableName + INSERT_BODY);
             }
             if (txLock != null) {
-                mDb.setTransactionSuccessful();
+                db.setTransactionSuccessful();
             }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
             Logger.error(TAG, e);
             gotError = true;
-            mDb.drop(tmpTableName);
+            db.drop(tmpTableName);
 
         } finally {
             if (txLock != null) {
-                mDb.endTransaction(txLock);
+                db.endTransaction(txLock);
             }
 
             /*
@@ -272,9 +272,9 @@ public class FtsDaoImpl
             //  Delete old table and rename the new table
             if (!gotError) {
                 // Drop old table, ready for rename
-                mDb.drop(TBL_FTS_BOOKS.getName());
-                mDb.execSQL("ALTER TABLE " + tmpTableName
-                            + " RENAME TO " + TBL_FTS_BOOKS.getName());
+                db.drop(TBL_FTS_BOOKS.getName());
+                db.execSQL("ALTER TABLE " + tmpTableName
+                           + " RENAME TO " + TBL_FTS_BOOKS.getName());
             }
         }
 
@@ -289,12 +289,12 @@ public class FtsDaoImpl
             throws TransactionException {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mDb.inTransaction()) {
+            if (!db.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
 
-        try (Cursor cursor = mDb.rawQuery(BOOK_BY_ID, new String[]{String.valueOf(bookId)})) {
+        try (Cursor cursor = db.rawQuery(BOOK_BY_ID, new String[]{String.valueOf(bookId)})) {
             processBooks(cursor, INSERT);
 
         } catch (@NonNull final RuntimeException e) {
@@ -308,12 +308,12 @@ public class FtsDaoImpl
             throws TransactionException {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mDb.inTransaction()) {
+            if (!db.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
 
-        try (Cursor cursor = mDb.rawQuery(BOOK_BY_ID, new String[]{String.valueOf(bookId)})) {
+        try (Cursor cursor = db.rawQuery(BOOK_BY_ID, new String[]{String.valueOf(bookId)})) {
             processBooks(cursor, UPDATE);
 
         } catch (@NonNull final RuntimeException e) {
@@ -342,7 +342,7 @@ public class FtsDaoImpl
             throws TransactionException {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mDb.inTransaction()) {
+            if (!db.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -376,7 +376,7 @@ public class FtsDaoImpl
             final String[] qpBookId = {String.valueOf(bookId)};
 
             // Get list of authors
-            try (Cursor authors = mDb.rawQuery(GET_AUTHORS_BY_BOOK_ID, qpBookId)) {
+            try (Cursor authors = db.rawQuery(GET_AUTHORS_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colGivenNames < 0) {
                     colGivenNames = authors.getColumnIndexOrThrow(AUTHOR_GIVEN_NAMES);
@@ -394,7 +394,7 @@ public class FtsDaoImpl
             }
 
             // Get list of series
-            try (Cursor series = mDb.rawQuery(GET_SERIES_BY_BOOK_ID, qpBookId)) {
+            try (Cursor series = db.rawQuery(GET_SERIES_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colSeriesTitle < 0) {
                     colSeriesTitle = series.getColumnIndexOrThrow(SERIES_TITLE);
@@ -406,7 +406,7 @@ public class FtsDaoImpl
             }
 
             // Get list of publishers
-            try (Cursor publishers = mDb
+            try (Cursor publishers = db
                     .rawQuery(GET_PUBLISHERS_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colPublisherName < 0) {
@@ -419,7 +419,7 @@ public class FtsDaoImpl
             }
 
             // Get list of TOC titles
-            try (Cursor toc = mDb.rawQuery(GET_TOC_TITLES_BY_BOOK_ID, qpBookId)) {
+            try (Cursor toc = db.rawQuery(GET_TOC_TITLES_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colTOCEntryTitle < 0) {
                     colTOCEntryTitle = toc.getColumnIndexOrThrow(TITLE);
@@ -430,7 +430,7 @@ public class FtsDaoImpl
                 }
             }
 
-            try (final SynchronizedStatement stmt = mDb.compileStatement(sql)) {
+            try (final SynchronizedStatement stmt = db.compileStatement(sql)) {
                 bindStringOrNull(stmt, 1, rowData.getString(TITLE));
                 // FTS_AUTHOR_NAME
                 bindStringOrNull(stmt, 2, authorText.toString());

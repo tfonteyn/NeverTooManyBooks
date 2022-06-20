@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -145,7 +145,7 @@ public class PublisherDaoImpl
     @Override
     @Nullable
     public Publisher getById(final long id) {
-        try (Cursor cursor = mDb.rawQuery(SELECT_BY_ID, new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = db.rawQuery(SELECT_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return new Publisher(id, new CursorRow(cursor));
             } else {
@@ -169,7 +169,7 @@ public class PublisherDaoImpl
                                                   bookLocale, null);
         }
 
-        try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(FIND_ID)) {
             stmt.bindString(1, SqlEncode.orderByColumn(publisher.getName(), obd.locale));
             stmt.bindString(2, SqlEncode.orderByColumn(obd.title, obd.locale));
             return stmt.simpleQueryForLongOrZero();
@@ -186,8 +186,8 @@ public class PublisherDaoImpl
     @NonNull
     public ArrayList<Publisher> getPublishersByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<Publisher> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(PUBLISHER_BY_BOOK_ID,
-                                          new String[]{String.valueOf(bookId)})) {
+        try (Cursor cursor = db.rawQuery(PUBLISHER_BY_BOOK_ID,
+                                         new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Publisher(rowData.getLong(DBKey.PK_ID), rowData));
@@ -200,8 +200,8 @@ public class PublisherDaoImpl
     @NonNull
     public ArrayList<Long> getBookIds(final long publisherId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(SELECT_BOOK_IDS_BY_PUBLISHER_ID,
-                                          new String[]{String.valueOf(publisherId)})) {
+        try (Cursor cursor = db.rawQuery(SELECT_BOOK_IDS_BY_PUBLISHER_ID,
+                                         new String[]{String.valueOf(publisherId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }
@@ -214,7 +214,7 @@ public class PublisherDaoImpl
     public ArrayList<Long> getBookIds(final long publisherId,
                                       final long bookshelfId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(
+        try (Cursor cursor = db.rawQuery(
                 SELECT_BOOK_IDS_BY_PUBLISHER_ID_AND_BOOKSHELF_ID,
                 new String[]{String.valueOf(publisherId), String.valueOf(bookshelfId)})) {
             while (cursor.moveToNext()) {
@@ -227,12 +227,12 @@ public class PublisherDaoImpl
     @Override
     @NonNull
     public Cursor fetchAll() {
-        return mDb.rawQuery(SELECT_ALL, null);
+        return db.rawQuery(SELECT_ALL, null);
     }
 
     @Override
     public long count() {
-        try (SynchronizedStatement stmt = mDb.compileStatement(COUNT_ALL)) {
+        try (SynchronizedStatement stmt = db.compileStatement(COUNT_ALL)) {
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -245,7 +245,7 @@ public class PublisherDaoImpl
             return 0;
         }
 
-        try (SynchronizedStatement stmt = mDb
+        try (SynchronizedStatement stmt = db
                 .compileStatement(COUNT_BOOKS)) {
             stmt.bindLong(1, publisher.getId());
             return stmt.simpleQueryForLongOrZero();
@@ -311,7 +311,7 @@ public class PublisherDaoImpl
         final OrderByHelper.OrderByData obd = OrderByHelper.createOrderByData(
                 context, publisher.getName(), bookLocale, publisher::getLocale);
 
-        try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
+        try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
             stmt.bindString(1, publisher.getName());
             stmt.bindString(2, SqlEncode.orderByColumn(obd.title, obd.locale));
             final long iId = stmt.executeInsert();
@@ -334,8 +334,8 @@ public class PublisherDaoImpl
         cv.put(DBKey.PUBLISHER_NAME, publisher.getName());
         cv.put(DBKey.PUBLISHER_NAME_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
 
-        return 0 < mDb.update(TBL_PUBLISHERS.getName(), cv, DBKey.PK_ID + "=?",
-                              new String[]{String.valueOf(publisher.getId())});
+        return 0 < db.update(TBL_PUBLISHERS.getName(), cv, DBKey.PK_ID + "=?",
+                             new String[]{String.valueOf(publisher.getId())});
     }
 
     @Override
@@ -344,7 +344,7 @@ public class PublisherDaoImpl
                           @NonNull final Publisher publisher) {
 
         final int rowsAffected;
-        try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_BY_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(DELETE_BY_ID)) {
             stmt.bindLong(1, publisher.getId());
             rowsAffected = stmt.executeUpdateDelete();
         }
@@ -367,8 +367,8 @@ public class PublisherDaoImpl
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mDb.inTransaction()) {
-                txLock = mDb.beginTransaction(true);
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
             }
 
             final Publisher destination = getById(destId);
@@ -394,18 +394,18 @@ public class PublisherDaoImpl
             delete(context, source);
 
             if (txLock != null) {
-                mDb.setTransactionSuccessful();
+                db.setTransactionSuccessful();
             }
         } finally {
             if (txLock != null) {
-                mDb.endTransaction(txLock);
+                db.endTransaction(txLock);
             }
         }
     }
 
     @Override
     public void purge() {
-        try (SynchronizedStatement stmt = mDb.compileStatement(PURGE)) {
+        try (SynchronizedStatement stmt = db.compileStatement(PURGE)) {
             stmt.executeUpdateDelete();
         }
     }
@@ -432,8 +432,8 @@ public class PublisherDaoImpl
 
             Synchronizer.SyncLock txLock = null;
             try {
-                if (!mDb.inTransaction()) {
-                    txLock = mDb.beginTransaction(true);
+                if (!db.inTransaction()) {
+                    txLock = db.beginTransaction(true);
                 }
 
                 for (final long bookId : bookIds) {
@@ -441,14 +441,14 @@ public class PublisherDaoImpl
                     bookDao.insertPublishers(context, bookId, list, false, bookLocale);
                 }
                 if (txLock != null) {
-                    mDb.setTransactionSuccessful();
+                    db.setTransactionSuccessful();
                 }
             } catch (@NonNull final RuntimeException | DaoWriteException e) {
                 Logger.error(TAG, e);
 
             } finally {
                 if (txLock != null) {
-                    mDb.endTransaction(txLock);
+                    db.endTransaction(txLock);
                 }
                 if (BuildConfig.DEBUG /* always */) {
                     Log.w(TAG, "repositionPublishers|done");

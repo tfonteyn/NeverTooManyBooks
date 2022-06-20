@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -107,7 +107,7 @@ public class MaintenanceDaoImpl
             serviceLocator.getAuthorDao().purge();
             serviceLocator.getPublisherDao().purge();
 
-            mDb.analyze();
+            db.analyze();
 
         } catch (@NonNull final RuntimeException e) {
             // log to file, this is bad.
@@ -128,11 +128,11 @@ public class MaintenanceDaoImpl
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mDb.inTransaction()) {
-                txLock = mDb.beginTransaction(true);
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
             }
 
-            try (Cursor cursor = mDb.rawQuery(BOOK_TITLES, null)) {
+            try (Cursor cursor = db.rawQuery(BOOK_TITLES, null)) {
                 final int langIdx = cursor.getColumnIndex(DBKey.LANGUAGE);
                 while (cursor.moveToNext()) {
                     language = cursor.getString(langIdx);
@@ -149,14 +149,14 @@ public class MaintenanceDaoImpl
 
             // We should use the locale from the 1st book in the series...
             // but that is a huge overhead.
-            try (Cursor cursor = mDb.rawQuery(SELECT_SERIES_FOR_ORDER_BY_REBUILD, null)) {
+            try (Cursor cursor = db.rawQuery(SELECT_SERIES_FOR_ORDER_BY_REBUILD, null)) {
                 while (cursor.moveToNext()) {
                     rebuildOrderByTitleColumns(context, userLocale, reorder, cursor,
                                                TBL_SERIES, DBKey.SERIES_TITLE_OB);
                 }
             }
 
-            try (Cursor cursor = mDb.rawQuery(SELECT_PUBLISHERS_FOR_ORDER_BY_REBUILD, null)) {
+            try (Cursor cursor = db.rawQuery(SELECT_PUBLISHERS_FOR_ORDER_BY_REBUILD, null)) {
                 while (cursor.moveToNext()) {
                     rebuildOrderByTitleColumns(context, userLocale, reorder, cursor,
                                                TBL_PUBLISHERS, DBKey.PUBLISHER_NAME_OB);
@@ -164,7 +164,7 @@ public class MaintenanceDaoImpl
             }
 
             // We should use primary book or Author Locale... but that is a huge overhead.
-            try (Cursor cursor = mDb.rawQuery(TOC_ENTRY_TITLES, null)) {
+            try (Cursor cursor = db.rawQuery(TOC_ENTRY_TITLES, null)) {
                 while (cursor.moveToNext()) {
                     rebuildOrderByTitleColumns(context, userLocale, reorder, cursor,
                                                TBL_TOC_ENTRIES, DBKey.TITLE_OB);
@@ -172,11 +172,11 @@ public class MaintenanceDaoImpl
             }
 
             if (txLock != null) {
-                mDb.setTransactionSuccessful();
+                db.setTransactionSuccessful();
             }
         } finally {
             if (txLock != null) {
-                mDb.endTransaction(txLock);
+                db.endTransaction(txLock);
             }
         }
     }
@@ -202,7 +202,7 @@ public class MaintenanceDaoImpl
                                                @NonNull final String domainName) {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mDb.inTransaction()) {
+            if (!db.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -223,8 +223,8 @@ public class MaintenanceDaoImpl
         if (!currentObTitle.equals(rebuildObTitle)) {
             final ContentValues cv = new ContentValues();
             cv.put(domainName, SqlEncode.orderByColumn(rebuildObTitle, locale));
-            return 0 < mDb.update(table.getName(), cv, DBKey.PK_ID + "=?",
-                                  new String[]{String.valueOf(id)});
+            return 0 < db.update(table.getName(), cv, DBKey.PK_ID + "=?",
+                                 new String[]{String.valueOf(id)});
         }
 
         return true;

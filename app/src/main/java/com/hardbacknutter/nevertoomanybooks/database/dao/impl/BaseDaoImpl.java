@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -85,7 +85,7 @@ abstract class BaseDaoImpl {
 
     /** Reference to the <strong>singleton</strong> which makes it safe to store/share here. */
     @NonNull
-    final SynchronizedDb mDb;
+    final SynchronizedDb db;
 
     /**
      * Constructor.
@@ -97,7 +97,7 @@ abstract class BaseDaoImpl {
             Logger.d(TAG, "Constructor", logTag);
         }
 
-        mDb = ServiceLocator.getInstance().getDb();
+        db = ServiceLocator.getInstance().getDb();
     }
 
     /**
@@ -111,7 +111,7 @@ abstract class BaseDaoImpl {
      * @return {@code true} on success
      */
     boolean touchBook(@IntRange(from = 1) final long bookId) {
-        try (SynchronizedStatement stmt = mDb.compileStatement(TOUCH)) {
+        try (SynchronizedStatement stmt = db.compileStatement(TOUCH)) {
             stmt.bindLong(1, bookId);
             return 0 < stmt.executeUpdateDelete();
         }
@@ -149,7 +149,7 @@ abstract class BaseDaoImpl {
     @NonNull
     ArrayList<String> getColumnAsStringArrayList(@NonNull final String sql) {
         final ArrayList<String> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(sql, null)) {
+        try (Cursor cursor = db.rawQuery(sql, null)) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getString(0));
             }
@@ -167,7 +167,7 @@ abstract class BaseDaoImpl {
     @NonNull
     ArrayList<Long> getColumnAsLongArrayList(@NonNull final String sql) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(sql, null)) {
+        try (Cursor cursor = db.rawQuery(sql, null)) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }

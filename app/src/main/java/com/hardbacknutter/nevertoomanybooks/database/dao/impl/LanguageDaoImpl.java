@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -70,7 +70,7 @@ public class LanguageDaoImpl
     @Override
     @NonNull
     public ArrayList<String> getNameList(@NonNull final Context context) {
-        try (Cursor cursor = mDb.rawQuery(SELECT_ALL, null)) {
+        try (Cursor cursor = db.rawQuery(SELECT_ALL, null)) {
             // Using a Set to avoid duplicates
             // The cursor is distinct, but we need to make sure code->name does not create
             // duplicates (very unlikely, but not impossible)

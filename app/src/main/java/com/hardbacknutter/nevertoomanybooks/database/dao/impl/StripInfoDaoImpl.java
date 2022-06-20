@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,7 +59,7 @@ public class StripInfoDaoImpl
     public void updateOrInsert(@NonNull final Book book)
             throws DaoWriteException {
         if (BuildConfig.DEBUG /* always */) {
-            if (!mDb.inTransaction()) {
+            if (!db.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -79,7 +79,7 @@ public class StripInfoDaoImpl
             }
         }
 
-        try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
+        try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
             stmt.bindLong(1, book.getId());
             stmt.bindLong(2, book.getInt(DBKey.SID_STRIP_INFO));
             stmt.bindLong(3, book.getInt(DBKey.STRIP_INFO_COLL_ID));
@@ -96,7 +96,7 @@ public class StripInfoDaoImpl
 
     @Override
     public void delete(@NonNull final Book book) {
-        mDb.delete(TBL_STRIPINFO_COLLECTION.getName(), DBKey.FK_BOOK + "=?",
-                   new String[]{String.valueOf(book.getId())});
+        db.delete(TBL_STRIPINFO_COLLECTION.getName(), DBKey.FK_BOOK + "=?",
+                  new String[]{String.valueOf(book.getId())});
     }
 }

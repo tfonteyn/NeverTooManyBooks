@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -178,7 +178,7 @@ public class BookshelfDaoImpl
     @Override
     @Nullable
     public Bookshelf getById(final long id) {
-        try (Cursor cursor = mDb.rawQuery(SELECT_BY_ID, new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = db.rawQuery(SELECT_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return new Bookshelf(id, new CursorRow(cursor));
             } else {
@@ -191,7 +191,7 @@ public class BookshelfDaoImpl
     @Nullable
     public Bookshelf findByName(@NonNull final String name) {
 
-        try (Cursor cursor = mDb.rawQuery(FIND, new String[]{name})) {
+        try (Cursor cursor = db.rawQuery(FIND, new String[]{name})) {
             if (cursor.moveToFirst()) {
                 final DataHolder rowData = new CursorRow(cursor);
                 return new Bookshelf(rowData.getLong(DBKey.PK_ID), rowData);
@@ -204,7 +204,7 @@ public class BookshelfDaoImpl
     @Override
     public long find(@NonNull final Bookshelf bookshelf) {
 
-        try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(FIND_ID)) {
             stmt.bindString(1, bookshelf.getName());
             return stmt.simpleQueryForLongOrZero();
         }
@@ -226,15 +226,15 @@ public class BookshelfDaoImpl
     @Override
     @NonNull
     public Cursor fetchAllUserShelves() {
-        return mDb.rawQuery(SELECT_ALL_USER_SHELVES, null);
+        return db.rawQuery(SELECT_ALL_USER_SHELVES, null);
     }
 
     @NonNull
     @Override
     public List<PFilter<?>> getFilters(final long bookshelfId) {
         final List<PFilter<?>> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(SELECT_FILTERS,
-                                          new String[]{String.valueOf(bookshelfId)})) {
+        try (Cursor cursor = db.rawQuery(SELECT_FILTERS,
+                                         new String[]{String.valueOf(bookshelfId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final String dbKey = rowData.getString(DBKey.FILTER_DBKEY);
@@ -267,10 +267,10 @@ public class BookshelfDaoImpl
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mDb.inTransaction()) {
-                txLock = mDb.beginTransaction(true);
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
             }
-            try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_FILTERS)) {
+            try (SynchronizedStatement stmt = db.compileStatement(DELETE_FILTERS)) {
                 stmt.bindLong(1, bookshelfId);
                 stmt.executeUpdateDelete();
             }
@@ -279,7 +279,7 @@ public class BookshelfDaoImpl
                 return;
             }
 
-            try (SynchronizedStatement stmt = mDb.compileStatement(INSERT_FILTER)) {
+            try (SynchronizedStatement stmt = db.compileStatement(INSERT_FILTER)) {
                 list.forEach(filter -> {
                     stmt.bindLong(1, bookshelfId);
                     stmt.bindString(2, filter.getDBKey());
@@ -289,11 +289,11 @@ public class BookshelfDaoImpl
             }
 
             if (txLock != null) {
-                mDb.setTransactionSuccessful();
+                db.setTransactionSuccessful();
             }
         } finally {
             if (txLock != null) {
-                mDb.endTransaction(txLock);
+                db.endTransaction(txLock);
             }
         }
     }
@@ -332,10 +332,10 @@ public class BookshelfDaoImpl
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mDb.inTransaction()) {
-                txLock = mDb.beginTransaction(true);
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
             }
-            try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
+            try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
                 stmt.bindString(1, bookshelf.getName());
                 stmt.bindLong(2, styleId);
                 stmt.bindLong(3, bookshelf.getFirstVisibleItemPosition());
@@ -346,11 +346,11 @@ public class BookshelfDaoImpl
                 }
             }
             if (txLock != null) {
-                mDb.setTransactionSuccessful();
+                db.setTransactionSuccessful();
             }
         } finally {
             if (txLock != null) {
-                mDb.endTransaction(txLock);
+                db.endTransaction(txLock);
             }
         }
 
@@ -371,8 +371,8 @@ public class BookshelfDaoImpl
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mDb.inTransaction()) {
-                txLock = mDb.beginTransaction(true);
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
             }
 
             final ContentValues cv = new ContentValues();
@@ -382,17 +382,17 @@ public class BookshelfDaoImpl
 
             cv.put(DBKey.FK_STYLE, styleId);
 
-            rowsAffected = mDb.update(TBL_BOOKSHELF.getName(), cv, DBKey.PK_ID + "=?",
-                                      new String[]{String.valueOf(bookshelf.getId())});
+            rowsAffected = db.update(TBL_BOOKSHELF.getName(), cv, DBKey.PK_ID + "=?",
+                                     new String[]{String.valueOf(bookshelf.getId())});
 
             storeFilters(context, bookshelf.getId(), bookshelf);
 
             if (txLock != null) {
-                mDb.setTransactionSuccessful();
+                db.setTransactionSuccessful();
             }
         } finally {
             if (txLock != null) {
-                mDb.endTransaction(txLock);
+                db.endTransaction(txLock);
             }
         }
         return 0 < rowsAffected;
@@ -406,22 +406,22 @@ public class BookshelfDaoImpl
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mDb.inTransaction()) {
-                txLock = mDb.beginTransaction(true);
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
             }
 
             purgeNodeStates(bookshelf.getId());
 
-            try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_BY_ID)) {
+            try (SynchronizedStatement stmt = db.compileStatement(DELETE_BY_ID)) {
                 stmt.bindLong(1, bookshelf.getId());
                 rowsAffected = stmt.executeUpdateDelete();
             }
             if (txLock != null) {
-                mDb.setTransactionSuccessful();
+                db.setTransactionSuccessful();
             }
         } finally {
             if (txLock != null) {
-                mDb.endTransaction(txLock);
+                db.endTransaction(txLock);
             }
         }
 
@@ -443,24 +443,24 @@ public class BookshelfDaoImpl
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mDb.inTransaction()) {
-                txLock = mDb.beginTransaction(true);
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
             }
 
             // we don't hold 'position' for shelves... so just do a mass update
-            rowsAffected = mDb.update(TBL_BOOK_BOOKSHELF.getName(), cv,
-                                      DBKey.FK_BOOKSHELF + "=?",
-                                      new String[]{String.valueOf(source.getId())});
+            rowsAffected = db.update(TBL_BOOK_BOOKSHELF.getName(), cv,
+                                     DBKey.FK_BOOKSHELF + "=?",
+                                     new String[]{String.valueOf(source.getId())});
 
             // delete the obsolete source.
             delete(source);
 
             if (txLock != null) {
-                mDb.setTransactionSuccessful();
+                db.setTransactionSuccessful();
             }
         } finally {
             if (txLock != null) {
-                mDb.endTransaction(txLock);
+                db.endTransaction(txLock);
             }
         }
 
@@ -469,7 +469,7 @@ public class BookshelfDaoImpl
 
     @Override
     public void purgeNodeStates(final long bookshelfId) {
-        try (SynchronizedStatement stmt = mDb
+        try (SynchronizedStatement stmt = db
                 .compileStatement(BOOK_LIST_NODE_STATE_BY_BOOKSHELF)) {
             stmt.bindLong(1, bookshelfId);
             stmt.executeUpdateDelete();
@@ -480,8 +480,8 @@ public class BookshelfDaoImpl
     @NonNull
     public ArrayList<Bookshelf> getBookshelvesByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<Bookshelf> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(BOOKSHELVES_BY_BOOK_ID,
-                                          new String[]{String.valueOf(bookId)})) {
+        try (Cursor cursor = db.rawQuery(BOOKSHELVES_BY_BOOK_ID,
+                                         new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Bookshelf(rowData.getLong(DBKey.PK_ID), rowData));

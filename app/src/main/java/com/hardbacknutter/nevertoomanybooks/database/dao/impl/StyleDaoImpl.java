@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -156,7 +156,7 @@ public class StyleDaoImpl
 
     @Override
     public long getStyleIdByUuid(@NonNull final String uuid) {
-        try (SynchronizedStatement stmt = mDb.compileStatement(SELECT_STYLE_ID_BY_UUID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(SELECT_STYLE_ID_BY_UUID)) {
             stmt.bindString(1, uuid);
             return stmt.simpleQueryForLongOrZero();
         }
@@ -167,8 +167,8 @@ public class StyleDaoImpl
     public Map<String, UserStyle> getUserStyles(@NonNull final Context context) {
         final Map<String, UserStyle> map = new LinkedHashMap<>();
 
-        try (Cursor cursor = mDb.rawQuery(SELECT_STYLES_BY_TYPE,
-                                          new String[]{String.valueOf(0)})) {
+        try (Cursor cursor = db.rawQuery(SELECT_STYLES_BY_TYPE,
+                                         new String[]{String.valueOf(0)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final UserStyle style = UserStyle.createFromDatabase(rowData);
@@ -184,8 +184,8 @@ public class StyleDaoImpl
     public Map<String, BuiltinStyle> getBuiltinStyles(@NonNull final Context context) {
         final Map<String, BuiltinStyle> map = new LinkedHashMap<>();
 
-        try (Cursor cursor = mDb.rawQuery(SELECT_STYLES_BY_TYPE,
-                                          new String[]{String.valueOf(1)})) {
+        try (Cursor cursor = db.rawQuery(SELECT_STYLES_BY_TYPE,
+                                         new String[]{String.valueOf(1)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final BuiltinStyle style = BuiltinStyle.createFromDatabase(rowData);
@@ -208,7 +208,7 @@ public class StyleDaoImpl
     @Override
     public long insert(@NonNull final UserStyle style) {
 
-        try (SynchronizedStatement stmt = mDb.compileStatement(INSERT_STYLE)) {
+        try (SynchronizedStatement stmt = db.compileStatement(INSERT_STYLE)) {
             int c = 0;
             stmt.bindString(++c, style.getUuid());
             stmt.bindBoolean(++c, !style.isUserDefined());
@@ -280,8 +280,8 @@ public class StyleDaoImpl
             cv.put(DBKey.STYLE_LIST_SHOW_FIELDS, style.getFieldVisibility(Style.Screen.List));
         }
 
-        return 0 < mDb.update(TBL_BOOKLIST_STYLES.getName(), cv, DBKey.PK_ID + "=?",
-                              new String[]{String.valueOf(style.getId())});
+        return 0 < db.update(TBL_BOOKLIST_STYLES.getName(), cv, DBKey.PK_ID + "=?",
+                             new String[]{String.valueOf(style.getId())});
     }
 
 
@@ -293,22 +293,22 @@ public class StyleDaoImpl
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mDb.inTransaction()) {
-                txLock = mDb.beginTransaction(true);
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
             }
 
             purgeNodeStatesByStyle(style.getId());
 
-            try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_STYLE_BY_ID)) {
+            try (SynchronizedStatement stmt = db.compileStatement(DELETE_STYLE_BY_ID)) {
                 stmt.bindLong(1, style.getId());
                 rowsAffected = stmt.executeUpdateDelete();
             }
             if (txLock != null) {
-                mDb.setTransactionSuccessful();
+                db.setTransactionSuccessful();
             }
         } finally {
             if (txLock != null) {
-                mDb.endTransaction(txLock);
+                db.endTransaction(txLock);
             }
         }
 
@@ -320,7 +320,7 @@ public class StyleDaoImpl
 
     @Override
     public void purgeNodeStatesByStyle(final long styleId) {
-        try (SynchronizedStatement stmt = mDb
+        try (SynchronizedStatement stmt = db
                 .compileStatement(DELETE_BOOK_LIST_NODE_STATE_BY_STYLE)) {
             stmt.bindLong(1, styleId);
             stmt.executeUpdateDelete();

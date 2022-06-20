@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -111,7 +111,7 @@ public class CalibreCustomFieldDaoImpl
 
     @Override
     public long insert(@NonNull final CalibreCustomField calibreCustomField) {
-        try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
+        try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
             stmt.bindString(1, calibreCustomField.calibreKey);
             stmt.bindString(2, calibreCustomField.type);
             stmt.bindString(3, calibreCustomField.dbKey);
@@ -131,10 +131,10 @@ public class CalibreCustomFieldDaoImpl
         cv.put(DBKey.CALIBRE_CUSTOM_FIELD_TYPE, calibreCustomField.type);
         cv.put(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING, calibreCustomField.dbKey);
 
-        final int rowsAffected = mDb.update(TBL_CALIBRE_CUSTOM_FIELDS.getName(), cv,
-                                            DBKey.PK_ID + "=?",
-                                            new String[]{String.valueOf(
-                                                    calibreCustomField.getId())});
+        final int rowsAffected = db.update(TBL_CALIBRE_CUSTOM_FIELDS.getName(), cv,
+                                           DBKey.PK_ID + "=?",
+                                           new String[]{String.valueOf(
+                                                   calibreCustomField.getId())});
         return 0 < rowsAffected;
     }
 
@@ -142,7 +142,7 @@ public class CalibreCustomFieldDaoImpl
     public boolean delete(@NonNull final CalibreCustomField calibreCustomField) {
         final int rowsAffected;
 
-        try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_BY_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(DELETE_BY_ID)) {
             stmt.bindLong(1, calibreCustomField.getId());
             rowsAffected = stmt.executeUpdateDelete();
         }
@@ -157,7 +157,7 @@ public class CalibreCustomFieldDaoImpl
     @Override
     public ArrayList<CalibreCustomField> getCustomFields() {
         final ArrayList<CalibreCustomField> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(SELECT_ALL, null)) {
+        try (Cursor cursor = db.rawQuery(SELECT_ALL, null)) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final CalibreCustomField field = new CalibreCustomField(
@@ -170,7 +170,7 @@ public class CalibreCustomFieldDaoImpl
     }
 
     private long find(@NonNull final CalibreCustomField calibreCustomField) {
-        try (SynchronizedStatement stmt = mDb.compileStatement(SELECT_BY_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(SELECT_BY_ID)) {
             stmt.bindLong(1, calibreCustomField.getId());
             return stmt.simpleQueryForLongOrZero();
         }
