@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,8 +49,8 @@ class KbNlBookHandlerTest
     private static final String bookFilename = "/kbnl/kbnl-book-1.xml";
     private static final String comicFilename = "/kbnl/kbnl-comic-1.xml";
 
-    private KbNlBookHandler mHandler;
-    private SAXParser mParser;
+    private KbNlBookHandler bookHandler;
+    private SAXParser saxParser;
 
     @BeforeEach
     public void setup()
@@ -58,8 +58,8 @@ class KbNlBookHandlerTest
         super.setup();
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
-        mHandler = new KbNlBookHandler(mRawData);
-        mParser = factory.newSAXParser();
+        bookHandler = new KbNlBookHandler(rawData);
+        saxParser = factory.newSAXParser();
     }
 
     @Test
@@ -67,18 +67,18 @@ class KbNlBookHandlerTest
             throws IOException, SAXException {
 
         try (InputStream in = this.getClass().getResourceAsStream(comicFilename)) {
-            mParser.parse(in, mHandler);
+            saxParser.parse(in, bookHandler);
         }
 
-        assertEquals("De buitengewone reis", mRawData.getString(DBKey.TITLE));
+        assertEquals("De buitengewone reis", rawData.getString(DBKey.TITLE));
 
-        assertEquals("2019", mRawData.getString(DBKey.BOOK_PUBLICATION__DATE));
-        assertEquals("9789463731454", mRawData.getString(DBKey.BOOK_ISBN));
-        assertEquals("paperback", mRawData.getString(DBKey.FORMAT));
-        assertEquals("48", mRawData.getString(DBKey.PAGE_COUNT));
-        assertEquals("nld", mRawData.getString(DBKey.LANGUAGE));
+        assertEquals("2019", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("9789463731454", rawData.getString(DBKey.BOOK_ISBN));
+        assertEquals("paperback", rawData.getString(DBKey.FORMAT));
+        assertEquals("48", rawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("nld", rawData.getString(DBKey.LANGUAGE));
 
-        final ArrayList<Publisher> allPublishers = mRawData
+        final ArrayList<Publisher> allPublishers = rawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
@@ -86,7 +86,7 @@ class KbNlBookHandlerTest
         assertEquals("Dark Dragon Books", allPublishers.get(0).getName());
 
 
-        final List<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        final List<Author> authors = rawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         assertNotNull(authors);
         assertFalse(authors.isEmpty());
         Author expectedAuthor;
@@ -99,7 +99,7 @@ class KbNlBookHandlerTest
         expectedAuthor = Author.from("Mariella Manfré");
         assertEquals(expectedAuthor, authors.get(3));
 
-        final List<Series> series = mRawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+        final List<Series> series = rawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
         assertNotNull(series);
         assertFalse(series.isEmpty());
         final Series expectedSeries;
@@ -114,25 +114,25 @@ class KbNlBookHandlerTest
             throws IOException, SAXException {
 
         try (InputStream in = this.getClass().getResourceAsStream(bookFilename)) {
-            mParser.parse(in, mHandler);
+            saxParser.parse(in, bookHandler);
         }
 
-        assertEquals("De Foundation", mRawData.getString(DBKey.TITLE));
+        assertEquals("De Foundation", rawData.getString(DBKey.TITLE));
 
-        assertEquals("1983", mRawData.getString(DBKey.BOOK_PUBLICATION__DATE));
-        assertEquals("9022953351", mRawData.getString(DBKey.BOOK_ISBN));
-        assertEquals("geb.", mRawData.getString(DBKey.FORMAT));
-        assertEquals("156", mRawData.getString(DBKey.PAGE_COUNT));
-        assertEquals("nld", mRawData.getString(DBKey.LANGUAGE));
+        assertEquals("1983", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("9022953351", rawData.getString(DBKey.BOOK_ISBN));
+        assertEquals("geb.", rawData.getString(DBKey.FORMAT));
+        assertEquals("156", rawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("nld", rawData.getString(DBKey.LANGUAGE));
 
-        final ArrayList<Publisher> allPublishers = mRawData
+        final ArrayList<Publisher> allPublishers = rawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Bruna", allPublishers.get(0).getName());
 
-        final List<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        final List<Author> authors = rawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         assertNotNull(authors);
         assertFalse(authors.isEmpty());
         Author expectedAuthor;
@@ -141,7 +141,7 @@ class KbNlBookHandlerTest
         expectedAuthor = Author.from("Jack Kröner");
         assertEquals(expectedAuthor, authors.get(1));
 
-        final List<Series> series = mRawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+        final List<Series> series = rawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
         assertNotNull(series);
         assertFalse(series.isEmpty());
         final Series expectedSeries;

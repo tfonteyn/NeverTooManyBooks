@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -56,15 +56,15 @@ class IsfdbEditionsHandlerTest
 
     private static final String sBaseUrl = "http://www.isfdb.org";
 
-    private IsfdbSearchEngine mSearchEngine;
+    private IsfdbSearchEngine searchEngine;
 
     @BeforeEach
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
-        mSearchEngine = (IsfdbSearchEngine) Site.Type.Data
+        searchEngine = (IsfdbSearchEngine) Site.Type.Data
                 .getSite(SearchSites.ISFDB).getSearchEngine();
-        mSearchEngine.setCaller(new MockCancellable());
+        searchEngine.setCaller(new MockCancellable());
     }
 
     @Test
@@ -84,7 +84,7 @@ class IsfdbEditionsHandlerTest
         assertTrue(document.hasText());
 
         // we've set the doc, so no internet download will be done.
-        final List<Edition> editions = mSearchEngine.parseEditions(mContext, document);
+        final List<Edition> editions = searchEngine.parseEditions(context, document);
 
         assertEquals(24, editions.size());
         assertEquals("eng", editions.get(0).getLangIso3());
@@ -109,7 +109,7 @@ class IsfdbEditionsHandlerTest
         assertTrue(document.hasText());
 
         // we've set the doc, so no internet download will be done.
-        final List<Edition> editions = mSearchEngine.parseEditions(mContext, document);
+        final List<Edition> editions = searchEngine.parseEditions(context, document);
 
         assertEquals(4, editions.size());
         assertEquals("nld", editions.get(0).getLangIso3());
@@ -132,7 +132,7 @@ class IsfdbEditionsHandlerTest
         final String path = sBaseUrl + "/cgi-bin/se.cgi?arg=0887331602&type=ISBN";
         Document document = null;
         try {
-            document = mSearchEngine.loadDocument(mContext, path);
+            document = searchEngine.loadDocument(context, path);
         } catch (@NonNull final SearchException | CredentialsException e) {
             fail(e);
         }
@@ -155,7 +155,7 @@ class IsfdbEditionsHandlerTest
         final String path = sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN";
         Document document = null;
         try {
-            document = mSearchEngine.loadDocument(mContext, path);
+            document = searchEngine.loadDocument(context, path);
         } catch (@NonNull final SearchException | CredentialsException e) {
             fail(e);
         }

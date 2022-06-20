@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,29 +41,29 @@ class MoneyFormatterTestJDK
     void formatUS() {
         setLocale(Locale.US);
         //noinspection ConstantConditions
-        final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
-        assertEquals("$1,234.50", f.format(mContext, new Money(1234.50d, Money.USD)));
-        assertEquals("£1,234.50", f.format(mContext, new Money(1234.50d, Money.GBP)));
-        assertEquals("€1,234.50", f.format(mContext, new Money(1234.50d, Money.EUR)));
+        final FieldFormatter<Money> f = new MoneyFormatter(locale0);
+        assertEquals("$1,234.50", f.format(context, new Money(1234.50d, Money.USD)));
+        assertEquals("£1,234.50", f.format(context, new Money(1234.50d, Money.GBP)));
+        assertEquals("€1,234.50", f.format(context, new Money(1234.50d, Money.EUR)));
     }
 
     @Test
     void formatUK() {
         setLocale(Locale.UK);
         //noinspection ConstantConditions
-        final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
-        assertEquals("US$1,234.50", f.format(mContext, new Money(1234.50d, Money.USD)));
-        assertEquals("£1,234.50", f.format(mContext, new Money(1234.50d, Money.GBP)));
-        assertEquals("€1,234.50", f.format(mContext, new Money(1234.50d, Money.EUR)));
+        final FieldFormatter<Money> f = new MoneyFormatter(locale0);
+        assertEquals("US$1,234.50", f.format(context, new Money(1234.50d, Money.USD)));
+        assertEquals("£1,234.50", f.format(context, new Money(1234.50d, Money.GBP)));
+        assertEquals("€1,234.50", f.format(context, new Money(1234.50d, Money.EUR)));
     }
 
     @Test
     void formatGERMANY() {
         setLocale(Locale.GERMANY);
         //noinspection ConstantConditions
-        final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
-        assertEquals("1.234,50 $", f.format(mContext, new Money(1234.50d, Money.USD)));
-        assertEquals("1.234,50 £", f.format(mContext, new Money(1234.50d, Money.GBP)));
-        assertEquals("1.234,50 €", f.format(mContext, new Money(1234.50d, Money.EUR)));
+        final FieldFormatter<Money> f = new MoneyFormatter(locale0);
+        assertEquals("1.234,50 $", f.format(context, new Money(1234.50d, Money.USD)));
+        assertEquals("1.234,50 £", f.format(context, new Money(1234.50d, Money.GBP)));
+        assertEquals("1.234,50 €", f.format(context, new Money(1234.50d, Money.EUR)));
     }
 }

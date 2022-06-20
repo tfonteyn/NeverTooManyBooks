@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,20 +46,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class IsfdbXmlPublicationTest
         extends Base {
 
-    private IsfdbSearchEngine mSearchEngine;
+    private IsfdbSearchEngine searchEngine;
 
     @BeforeEach
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
-        mSearchEngine = (IsfdbSearchEngine) Site.Type.Data
+        searchEngine = (IsfdbSearchEngine) Site.Type.Data
                 .getSite(SearchSites.ISFDB).getSearchEngine();
-        mSearchEngine.setCaller(new MockCancellable());
+        searchEngine.setCaller(new MockCancellable());
 
         // Override the default 'false'
-        mMockPreferences.edit().putBoolean(PK_SERIES_FROM_TOC, true).apply();
+        mockPreferences.edit().putBoolean(PK_SERIES_FROM_TOC, true).apply();
 
-        final boolean b = PreferenceManager.getDefaultSharedPreferences(mContext)
+        final boolean b = PreferenceManager.getDefaultSharedPreferences(context)
                                            .getBoolean(PK_SERIES_FROM_TOC, false);
         assertTrue(b);
     }
@@ -71,10 +71,10 @@ class IsfdbXmlPublicationTest
         final String filename = "/isfdb/425189.xml";
 
         final IsfdbPublicationListHandler listHandler =
-                new IsfdbPublicationListHandler(mSearchEngine,
+                new IsfdbPublicationListHandler(searchEngine,
                                                 new boolean[]{false, false},
                                                 1,
-                                                mSearchEngine.getLocale(mContext));
+                                                searchEngine.getLocale(context));
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final SAXParser parser = factory.newSAXParser();

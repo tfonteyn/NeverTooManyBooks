@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class JSoupBase
         extends Base {
 
-    /** Helper: Load the data from the given file, and populate {@link #mRawData} */
+    /** Helper: Load the data from the given file, and populate {@link #rawData} */
     protected void loadData(@NonNull final Context context,
                             @NonNull final JsoupSearchEngineBase searchEngine,
                             @NonNull final String charsetName,
@@ -56,11 +56,11 @@ public class JSoupBase
             assertNotNull(document);
             assertTrue(document.hasText());
 
-            searchEngine.parse(context, document, fetchCovers, mRawData);
+            searchEngine.parse(context, document, fetchCovers, rawData);
 
-            assertFalse(mRawData.isEmpty());
+            assertFalse(rawData.isEmpty());
 
-            System.out.println(mRawData);
+            System.out.println(rawData);
 
         } catch (@NonNull final IOException | StorageException | SearchException e) {
             fail(e);

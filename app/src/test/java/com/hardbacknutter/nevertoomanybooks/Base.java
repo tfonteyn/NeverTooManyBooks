@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -77,23 +77,23 @@ public class Base {
     private static final String PACKAGE_NAME = "com.hardbacknutter.nevertoomanybooks";
 
     @Mock
-    protected App mApp;
+    protected App app;
     @Mock
-    protected Resources mResources;
+    protected Resources resources;
     @Mock
-    protected Configuration mConfiguration;
+    protected Configuration configuration;
     @Mock
-    protected LocaleList mLocaleList;
+    protected LocaleList localeList;
 
-    protected Bundle mRawData;
-    protected Context mContext;
-    protected SharedPreferences mMockPreferences;
+    protected Bundle rawData;
+    protected Context context;
+    protected SharedPreferences mockPreferences;
 
     /** set during setup() call. */
     @Nullable
-    protected Locale mLocale0;
+    protected Locale locale0;
 
-    private Locale mJdkLocale;
+    private Locale jdkLocale;
 
     @BeforeAll
     static void startUp() {
@@ -106,14 +106,14 @@ public class Base {
      *                context.getResources().getConfiguration().getLocales().get(0)
      */
     public void setLocale(@NonNull final Locale locale0) {
-        mLocale0 = locale0;
-        Locale.setDefault(mLocale0);
+        this.locale0 = locale0;
+        Locale.setDefault(this.locale0);
     }
 
     @AfterEach
     void tearDown() {
-        mLocale0 = null;
-        Locale.setDefault(mJdkLocale);
+        locale0 = null;
+        Locale.setDefault(jdkLocale);
     }
 
     /**
@@ -125,21 +125,21 @@ public class Base {
     public void setup()
             throws ParserConfigurationException, SAXException {
         // save the JDK locale first
-        mJdkLocale = Locale.getDefault();
+        jdkLocale = Locale.getDefault();
         // set as default
         setLocale(Locale.US);
 
-        mContext = ContextMock.create(PACKAGE_NAME);
+        context = ContextMock.create(PACKAGE_NAME);
 
-        mMockPreferences = SharedPreferencesMock.create();
+        mockPreferences = SharedPreferencesMock.create();
 
-        mRawData = BundleMock.create();
+        rawData = BundleMock.create();
 
-        when(mApp.getApplicationContext()).thenReturn(mContext);
+        when(app.getApplicationContext()).thenReturn(context);
 
-        when(mContext.getResources()).thenReturn(mResources);
+        when(context.getResources()).thenReturn(resources);
 
-        when(mContext.getExternalFilesDirs(eq(Environment.DIRECTORY_PICTURES))).thenAnswer(
+        when(context.getExternalFilesDirs(eq(Environment.DIRECTORY_PICTURES))).thenAnswer(
                 (Answer<File[]>) invocation -> {
                     final String tmpDir = System.getProperty("java.io.tmpdir");
                     final File[] dirs = new File[1];
@@ -150,30 +150,30 @@ public class Base {
                 });
 
         // Global prefs
-        when(mContext.getSharedPreferences(eq(PACKAGE_NAME + "_preferences"), anyInt()))
-                .thenReturn(mMockPreferences);
+        when(context.getSharedPreferences(eq(PACKAGE_NAME + "_preferences"), anyInt()))
+                .thenReturn(mockPreferences);
 
         // Styles
-        when(mContext.getSharedPreferences(anyString(), anyInt()))
-                .thenReturn(mMockPreferences);
+        when(context.getSharedPreferences(anyString(), anyInt()))
+                .thenReturn(mockPreferences);
 
 
-        doAnswer(invocation -> mResources.getString(invocation.getArgument(0)))
-                .when(mContext).getString(anyInt());
+        doAnswer(invocation -> resources.getString(invocation.getArgument(0)))
+                .when(context).getString(anyInt());
 
-        when(mResources.getConfiguration()).thenReturn(mConfiguration);
-        when(mConfiguration.getLocales()).thenReturn(mLocaleList);
-        doNothing().when(mConfiguration).setLocale(any(Locale.class));
+        when(resources.getConfiguration()).thenReturn(configuration);
+        when(configuration.getLocales()).thenReturn(localeList);
+        doNothing().when(configuration).setLocale(any(Locale.class));
 
-        when(mLocaleList.get(0)).thenAnswer((Answer<Locale>) invocation -> mLocale0);
+        when(localeList.get(0)).thenAnswer((Answer<Locale>) invocation -> locale0);
 
 
-        ServiceLocator.create(mContext, BundleMock::create);
+        ServiceLocator.create(context, BundleMock::create);
 
-        SearchEngineRegistry.create(mContext);
+        SearchEngineRegistry.create(context);
 
-        setupStringResources(mResources);
-        setupLanguageMap(mContext);
+        setupStringResources(resources);
+        setupLanguageMap(context);
         setupSearchEnginePreferences();
     }
 
@@ -181,17 +181,17 @@ public class Base {
         /*
          * SharedPreferences for the language map.
          */
-        final SharedPreferences mLanguageMap = SharedPreferencesMock.create();
-        mLanguageMap.edit()
-                    .putString("english", "eng")
-                    .putString("engels", "eng")
-                    .putString("anglais", "eng")
-                    .putString("englisch", "eng")
+        final SharedPreferences languageMap = SharedPreferencesMock.create();
+        languageMap.edit()
+                   .putString("english", "eng")
+                   .putString("engels", "eng")
+                   .putString("anglais", "eng")
+                   .putString("englisch", "eng")
 
-                    .putString("french", "fra")
-                    .putString("français", "fra")
-                    .putString("französisch", "fra")
-                    .putString("frans", "fra")
+                   .putString("french", "fra")
+                   .putString("français", "fra")
+                   .putString("französisch", "fra")
+                   .putString("frans", "fra")
 
                     .putString("german", "ger")
                     .putString("allemand", "ger")
@@ -206,36 +206,36 @@ public class Base {
                     .apply();
 
         when(context.getSharedPreferences(eq(Languages.LANGUAGE_MAP), anyInt()))
-                .thenReturn(mLanguageMap);
+                .thenReturn(languageMap);
     }
 
     private void setupSearchEnginePreferences() {
-        mMockPreferences.edit()
-                        .putString(Prefs.pk_ui_locale, AppLocale.SYSTEM_LANGUAGE)
-                        // random some at true, some at false.
-                        .putBoolean("search.site.amazon.data.enabled", true)
-                        .putBoolean("search.site.googlebooks.data.enabled", false)
-                        .putBoolean("search.site.isfdb.data.enabled", true)
-                        .putBoolean("search.site.kbnl.data.enabled", false)
-                        .putBoolean("search.site.lastdodo.data.enabled", true)
-                        .putBoolean("search.site.librarything.data.enabled", false)
-                        .putBoolean("search.site.openlibrary.data.enabled", true)
-                        .putBoolean("search.site.stripinfo.data.enabled", false)
+        mockPreferences.edit()
+                       .putString(Prefs.pk_ui_locale, AppLocale.SYSTEM_LANGUAGE)
+                       // random some at true, some at false.
+                       .putBoolean("search.site.amazon.data.enabled", true)
+                       .putBoolean("search.site.googlebooks.data.enabled", false)
+                       .putBoolean("search.site.isfdb.data.enabled", true)
+                       .putBoolean("search.site.kbnl.data.enabled", false)
+                       .putBoolean("search.site.lastdodo.data.enabled", true)
+                       .putBoolean("search.site.librarything.data.enabled", false)
+                       .putBoolean("search.site.openlibrary.data.enabled", true)
+                       .putBoolean("search.site.stripinfo.data.enabled", false)
 
-                        // deliberate added 4 (LibraryThing) and omitted 128/256
-                        .putString("search.siteOrder.data", "64,32,16,8,4,2,1")
-                        .putString("search.siteOrder.covers", "16,2,8,64,32")
-                        .putString("search.siteOrder.alted", "16,4")
+                       // deliberate added 4 (LibraryThing) and omitted 128/256
+                       .putString("search.siteOrder.data", "64,32,16,8,4,2,1")
+                       .putString("search.siteOrder.covers", "16,2,8,64,32")
+                       .putString("search.siteOrder.alted", "16,4")
 
-                        .apply();
+                       .apply();
 
-        when(mMockPreferences.getString(eq(AmazonSearchEngine.PK_HOST_URL),
-                                        nullable(String.class)))
+        when(mockPreferences.getString(eq(AmazonSearchEngine.PK_HOST_URL),
+                                       nullable(String.class)))
                 .thenAnswer((Answer<String>) invocation ->
                         getLocalizedSiteUrl("amazon", true));
 
-        when(mMockPreferences.getString(eq(LibraryThingSearchEngine.PK_HOST_URL),
-                                        nullable(String.class)))
+        when(mockPreferences.getString(eq(LibraryThingSearchEngine.PK_HOST_URL),
+                                       nullable(String.class)))
                 .thenAnswer((Answer<String>) invocation ->
                         getLocalizedSiteUrl("librarything", false));
     }
@@ -243,8 +243,8 @@ public class Base {
     @NonNull
     private String getLocalizedSiteUrl(@NonNull final String site,
                                        final boolean hasUkSite) {
-        if (mLocale0 != null) {
-            final String iso3 = mLocale0.getISO3Language();
+        if (locale0 != null) {
+            final String iso3 = locale0.getISO3Language();
             if (Locale.US.getISO3Language().equals(iso3)) {
                 return "https://www." + site + ".com";
             } else if (Locale.FRANCE.getISO3Language().equals(iso3)) {

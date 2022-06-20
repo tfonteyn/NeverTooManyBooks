@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,9 +73,9 @@ class AuthorStringListTest {
             + "|"
             + "\\(\\\\*3\\), Don";
 
-    private List<Author> mAuthor;
+    private List<Author> author;
 
-    private StringList<Author> mCoder;
+    private StringList<Author> coder;
 
     @BeforeAll
     static void startUp() {
@@ -84,25 +84,25 @@ class AuthorStringListTest {
 
     @BeforeEach
     void setUp() {
-        mAuthor = new ArrayList<>();
+        author = new ArrayList<>();
         for (final String s : AUTHORS) {
-            mAuthor.add(Author.from(s));
+            author.add(Author.from(s));
         }
-        mAuthor.get(5).setType(Author.TYPE_ARTIST | Author.TYPE_COLORIST);
-        mAuthor.get(6).setType(Author.TYPE_TRANSLATOR);
+        author.get(5).setType(Author.TYPE_ARTIST | Author.TYPE_COLORIST);
+        author.get(6).setType(Author.TYPE_TRANSLATOR);
 
-        mCoder = new StringList<>(new AuthorCoder());
+        coder = new StringList<>(new AuthorCoder());
     }
 
     @Test
     void encode() {
-        final String encoded = mCoder.encodeList(mAuthor);
+        final String encoded = coder.encodeList(author);
         assertEquals(ENCODED, encoded);
     }
 
     @Test
     void decode() {
-        final List<Author> decoded = mCoder.decodeList(ENCODED);
+        final List<Author> decoded = coder.decodeList(ENCODED);
         assertEquals(AUTHORS.length, decoded.size());
         Author author;
 

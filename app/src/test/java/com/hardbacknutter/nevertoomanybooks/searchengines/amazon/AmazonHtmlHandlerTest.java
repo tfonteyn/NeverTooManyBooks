@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,15 +46,15 @@ class AmazonHtmlHandlerTest
 
     private static final String UTF_8 = "UTF-8";
 
-    private AmazonSearchEngine mSearchEngine;
+    private AmazonSearchEngine searchEngine;
 
     @BeforeEach
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
-        mSearchEngine = (AmazonSearchEngine) Site.Type.Data
+        searchEngine = (AmazonSearchEngine) Site.Type.Data
                 .getSite(SearchSites.AMAZON).getSearchEngine();
-        mSearchEngine.setCaller(new MockCancellable());
+        searchEngine.setCaller(new MockCancellable());
     }
 
     @Test
@@ -64,26 +64,26 @@ class AmazonHtmlHandlerTest
         final String locationHeader = "https://www.amazon.co.uk/gp/product/0575090677";
         final String filename = "/amazon/0575090677.html";
 
-        loadData(mContext, mSearchEngine, UTF_8, locationHeader, filename,
+        loadData(context, searchEngine, UTF_8, locationHeader, filename,
                  new boolean[]{false, false});
 
-        assertEquals("Bone Silence", mRawData.getString(DBKey.TITLE));
-        assertEquals("978-0575090675", mRawData.getString(DBKey.BOOK_ISBN));
-        assertEquals("30 Jan. 2020", mRawData.getString(DBKey.BOOK_PUBLICATION__DATE));
-        assertEquals("608", mRawData.getString(DBKey.PAGE_COUNT));
-        assertEquals("Hardcover", mRawData.getString(DBKey.FORMAT));
-        assertEquals("eng", mRawData.getString(DBKey.LANGUAGE));
-        assertEquals(14.49d, mRawData.getDouble(DBKey.PRICE_LISTED));
-        assertEquals(Money.GBP, mRawData.getString(DBKey.PRICE_LISTED_CURRENCY));
+        assertEquals("Bone Silence", rawData.getString(DBKey.TITLE));
+        assertEquals("978-0575090675", rawData.getString(DBKey.BOOK_ISBN));
+        assertEquals("30 Jan. 2020", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("608", rawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("Hardcover", rawData.getString(DBKey.FORMAT));
+        assertEquals("eng", rawData.getString(DBKey.LANGUAGE));
+        assertEquals(14.49d, rawData.getDouble(DBKey.PRICE_LISTED));
+        assertEquals(Money.GBP, rawData.getString(DBKey.PRICE_LISTED_CURRENCY));
 
-        final ArrayList<Publisher> allPublishers = mRawData
+        final ArrayList<Publisher> allPublishers = rawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Gollancz", allPublishers.get(0).getName());
 
-        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        final ArrayList<Author> authors = rawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         assertNotNull(authors);
         assertEquals(1, authors.size());
         assertEquals("Reynolds", authors.get(0).getFamilyName());
@@ -97,25 +97,25 @@ class AmazonHtmlHandlerTest
         final String locationHeader = "https://www.amazon.co.uk/gp/product/1473210208";
         final String filename = "/amazon/1473210208.html";
 
-        loadData(mContext, mSearchEngine, UTF_8, locationHeader, filename,
+        loadData(context, searchEngine, UTF_8, locationHeader, filename,
                  new boolean[]{false, false});
 
-        assertEquals("The Medusa Chronicles", mRawData.getString(DBKey.TITLE));
-        assertEquals("978-1473210202", mRawData.getString(DBKey.BOOK_ISBN));
-        assertEquals("12 Jan. 2017", mRawData.getString(DBKey.BOOK_PUBLICATION__DATE));
-        assertEquals("336", mRawData.getString(DBKey.PAGE_COUNT));
-        assertEquals("Paperback", mRawData.getString(DBKey.FORMAT));
-        assertEquals("eng", mRawData.getString(DBKey.LANGUAGE));
-        assertEquals(5.84d, mRawData.getDouble(DBKey.PRICE_LISTED));
-        assertEquals(Money.GBP, mRawData.getString(DBKey.PRICE_LISTED_CURRENCY));
+        assertEquals("The Medusa Chronicles", rawData.getString(DBKey.TITLE));
+        assertEquals("978-1473210202", rawData.getString(DBKey.BOOK_ISBN));
+        assertEquals("12 Jan. 2017", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("336", rawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("Paperback", rawData.getString(DBKey.FORMAT));
+        assertEquals("eng", rawData.getString(DBKey.LANGUAGE));
+        assertEquals(5.84d, rawData.getDouble(DBKey.PRICE_LISTED));
+        assertEquals(Money.GBP, rawData.getString(DBKey.PRICE_LISTED_CURRENCY));
 
-        final ArrayList<Publisher> allPublishers = mRawData
+        final ArrayList<Publisher> allPublishers = rawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Gollancz", allPublishers.get(0).getName());
 
-        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        final ArrayList<Author> authors = rawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Reynolds", authors.get(0).getFamilyName());
@@ -132,22 +132,22 @@ class AmazonHtmlHandlerTest
         final String locationHeader = "https://www.amazon.fr/gp/product/2205057332";
         final String filename = "/amazon/2205057332.html";
 
-        loadData(mContext, mSearchEngine, UTF_8, locationHeader, filename,
+        loadData(context, searchEngine, UTF_8, locationHeader, filename,
                  new boolean[]{false, false});
 
         assertEquals("Le retour à la terre, 1 : La vraie vie",
-                     mRawData.getString(DBKey.TITLE));
-        assertEquals("978-2205057331", mRawData.getString(DBKey.BOOK_ISBN));
-        assertEquals(12d, mRawData.getDouble(DBKey.PRICE_LISTED));
-        assertEquals(Money.EUR, mRawData.getString(DBKey.PRICE_LISTED_CURRENCY));
+                     rawData.getString(DBKey.TITLE));
+        assertEquals("978-2205057331", rawData.getString(DBKey.BOOK_ISBN));
+        assertEquals(12d, rawData.getDouble(DBKey.PRICE_LISTED));
+        assertEquals(Money.EUR, rawData.getString(DBKey.PRICE_LISTED_CURRENCY));
 
-        final ArrayList<Publisher> allPublishers = mRawData
+        final ArrayList<Publisher> allPublishers = rawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Dargaud", allPublishers.get(0).getName());
 
-        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        final ArrayList<Author> authors = rawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Jean-Yves", authors.get(0).getFamilyName());

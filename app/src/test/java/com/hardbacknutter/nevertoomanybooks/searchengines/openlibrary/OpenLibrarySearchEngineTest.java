@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,15 +49,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class OpenLibrarySearchEngineTest
         extends Base {
 
-    private OpenLibrarySearchEngine mSearchEngine;
+    private OpenLibrarySearchEngine searchEngine;
 
     @BeforeEach
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
-        mSearchEngine = (OpenLibrarySearchEngine) Site.Type.Data
+        searchEngine = (OpenLibrarySearchEngine) Site.Type.Data
                 .getSite(SearchSites.OPEN_LIBRARY).getSearchEngine();
-        mSearchEngine.setCaller(new MockCancellable());
+        searchEngine.setCaller(new MockCancellable());
     }
 
     @Test
@@ -71,43 +71,43 @@ class OpenLibrarySearchEngineTest
 
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
-            final String response = mSearchEngine.readResponseStream(is);
-            mSearchEngine.handleResponse(mContext, response, new boolean[]{false, false}, mRawData);
+            final String response = searchEngine.readResponseStream(is);
+            searchEngine.handleResponse(context, response, new boolean[]{false, false}, rawData);
         }
 
-        assertNotNull(mRawData);
-        assertFalse(mRawData.isEmpty());
+        assertNotNull(rawData);
+        assertFalse(rawData.isEmpty());
 
-        assertEquals("Slow reading", mRawData.getString(DBKey.TITLE));
-        assertEquals("9780980200447", mRawData.getString(DBKey.BOOK_ISBN));
-        assertEquals("OL22853304M", mRawData.getString(DBKey.SID_OPEN_LIBRARY));
-        assertEquals("2008054742", mRawData.getString(DBKey.SID_LCCN));
-        assertEquals(8071257L, mRawData.getLong(DBKey.SID_LIBRARY_THING));
-        assertEquals(6383507L, mRawData.getLong(DBKey.SID_GOODREADS_BOOK));
-        assertEquals("098020044X", mRawData.getString(DBKey.SID_ASIN));
-        assertEquals("297222669", mRawData.getString(DBKey.SID_OCLC));
+        assertEquals("Slow reading", rawData.getString(DBKey.TITLE));
+        assertEquals("9780980200447", rawData.getString(DBKey.BOOK_ISBN));
+        assertEquals("OL22853304M", rawData.getString(DBKey.SID_OPEN_LIBRARY));
+        assertEquals("2008054742", rawData.getString(DBKey.SID_LCCN));
+        assertEquals(8071257L, rawData.getLong(DBKey.SID_LIBRARY_THING));
+        assertEquals(6383507L, rawData.getLong(DBKey.SID_GOODREADS_BOOK));
+        assertEquals("098020044X", rawData.getString(DBKey.SID_ASIN));
+        assertEquals("297222669", rawData.getString(DBKey.SID_OCLC));
 
         assertEquals("Includes bibliographical references and index.",
-                     mRawData.getString(DBKey.DESCRIPTION));
-        assertEquals("92", mRawData.getString(DBKey.PAGE_COUNT));
-        assertEquals("2009-03-01", mRawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+                     rawData.getString(DBKey.DESCRIPTION));
+        assertEquals("92", rawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("2009-03-01", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
 
 
-        final ArrayList<Publisher> allPublishers = mRawData
+        final ArrayList<Publisher> allPublishers = rawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Litwin Books", allPublishers.get(0).getName());
 
-        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        final ArrayList<Author> authors = rawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         assertNotNull(authors);
         assertEquals(1, authors.size());
         assertEquals("Miedema", authors.get(0).getFamilyName());
         assertEquals("John", authors.get(0).getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
 
-        final ArrayList<TocEntry> tocs = mRawData.getParcelableArrayList(Book.BKEY_TOC_LIST);
+        final ArrayList<TocEntry> tocs = rawData.getParcelableArrayList(Book.BKEY_TOC_LIST);
         assertNotNull(tocs);
         assertEquals(5, tocs.size());
 

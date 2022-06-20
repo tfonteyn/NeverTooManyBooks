@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,12 +37,12 @@ class FormatMapperTest
         setLocale(Locale.UK);
         final Mapper mapper = new FormatMapper();
         final String key = mapper.getKey();
-        mRawData.putString(key, "pb");
-        mapper.map(mContext, mRawData);
-        assertEquals("Paperback", mRawData.getString(key));
+        rawData.putString(key, "pb");
+        mapper.map(context, rawData);
+        assertEquals("Paperback", rawData.getString(key));
 
-        mRawData.putString(key, "Dimensions 5x4");
-        mapper.map(mContext, mRawData);
-        assertEquals("Dim 5x4", mRawData.getString(key));
+        rawData.putString(key, "Dimensions 5x4");
+        mapper.map(context, rawData);
+        assertEquals("Dim 5x4", rawData.getString(key));
     }
 }

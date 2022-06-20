@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,11 +45,11 @@ class BookTest
     void preprocessPrices01() {
         setLocale(Locale.US);
 
-        final Book book = new Book(mRawData);
+        final Book book = new Book(rawData);
         book.putString(DBKey.LANGUAGE, "eng");
         book.putMoney(DBKey.PRICE_LISTED, new Money(1.23d, "USD"));
 
-        final BookDaoHelper bdh = new BookDaoHelper(mContext, book, true);
+        final BookDaoHelper bdh = new BookDaoHelper(context, book, true);
         bdh.processPrice(DBKey.PRICE_LISTED);
         // dump(book);
 
@@ -62,14 +62,14 @@ class BookTest
     void preprocessPrices02() {
         setLocale(Locale.US);
 
-        final Book book = new Book(mRawData);
+        final Book book = new Book(rawData);
         book.putString(DBKey.LANGUAGE, "eng");
         book.putMoney(DBKey.PRICE_LISTED, new Money(0d, ""));
 
         book.putDouble(DBKey.PRICE_PAID, 456.789d);
         // no PRICE_PAID_CURRENCY
 
-        final BookDaoHelper bdh = new BookDaoHelper(mContext, book, true);
+        final BookDaoHelper bdh = new BookDaoHelper(context, book, true);
         bdh.processPrice(DBKey.PRICE_LISTED);
         bdh.processPrice(DBKey.PRICE_PAID);
         //dump(book);
@@ -85,7 +85,7 @@ class BookTest
     void preprocessPrices03() {
         setLocale(Locale.FRANCE);
 
-        final Book book = new Book(mRawData);
+        final Book book = new Book(rawData);
         book.putString(DBKey.LANGUAGE, "fra");
         // as a valid string
         book.putString(DBKey.PRICE_LISTED, "");
@@ -94,7 +94,7 @@ class BookTest
         book.putString(DBKey.PRICE_PAID, "test");
         // no PRICE_PAID_CURRENCY
 
-        final BookDaoHelper bdh = new BookDaoHelper(mContext, book, true);
+        final BookDaoHelper bdh = new BookDaoHelper(context, book, true);
         bdh.processPrice(DBKey.PRICE_LISTED);
         bdh.processPrice(DBKey.PRICE_PAID);
         //dump(book);
@@ -111,11 +111,11 @@ class BookTest
     void preprocessPrices04() {
         setLocale(Locale.FRANCE);
 
-        final Book book = new Book(mRawData);
+        final Book book = new Book(rawData);
         book.putString(DBKey.LANGUAGE, "eng");
         book.putMoney(DBKey.PRICE_LISTED, new Money(Locale.ENGLISH, "EUR 45"));
 
-        final BookDaoHelper bdh = new BookDaoHelper(mContext, book, true);
+        final BookDaoHelper bdh = new BookDaoHelper(context, book, true);
         bdh.processPrice(DBKey.PRICE_LISTED);
         //dump(book);
 
@@ -126,7 +126,7 @@ class BookTest
     @Test
     void preprocessExternalIdsForInsert() {
 
-        final Book book = new Book(mRawData);
+        final Book book = new Book(rawData);
 
         // Long: valid number
         book.put(DBKey.SID_GOODREADS_BOOK, 2L);
@@ -148,7 +148,7 @@ class BookTest
 
         // Not tested: null string for a string field..
 
-        final BookDaoHelper bdh = new BookDaoHelper(mContext, book, true);
+        final BookDaoHelper bdh = new BookDaoHelper(context, book, true);
         bdh.processExternalIds();
         dump(book);
 
@@ -171,7 +171,7 @@ class BookTest
     @Test
     void preprocessExternalIdsForUpdate() {
 
-        final Book book = new Book(mRawData);
+        final Book book = new Book(rawData);
 
         // Long: valid number
         book.put(DBKey.SID_GOODREADS_BOOK, 2L);
@@ -195,7 +195,7 @@ class BookTest
         // Not tested: null string for a string field..
 
 
-        final BookDaoHelper bdh = new BookDaoHelper(mContext, book, false);
+        final BookDaoHelper bdh = new BookDaoHelper(context, book, false);
         bdh.processExternalIds();
         dump(book);
 
@@ -238,7 +238,7 @@ class BookTest
     /** Domain: text, default "". */
     @Test
     void preprocessNullsAndBlanksForInsert() {
-        final Book book = new Book(mRawData);
+        final Book book = new Book(rawData);
         book.put(DBKey.DATE_ACQUIRED, "2020-01-14");
         book.put(DBKey.READ_START__DATE, "");
         book.put(DBKey.READ_END__DATE, null);
@@ -246,7 +246,7 @@ class BookTest
         book.putDouble(DBKey.PRICE_LISTED, 12.34);
         book.putDouble(DBKey.PRICE_PAID, 0);
 
-        final BookDaoHelper bdh = new BookDaoHelper(mContext, book, true);
+        final BookDaoHelper bdh = new BookDaoHelper(context, book, true);
         bdh.processNullsAndBlanks();
 
         assertEquals("2020-01-14", book.getString(DBKey.DATE_ACQUIRED));
@@ -263,7 +263,7 @@ class BookTest
 
     @Test
     void preprocessNullsAndBlanksForUpdate() {
-        final Book book = new Book(mRawData);
+        final Book book = new Book(rawData);
         book.put(DBKey.DATE_ACQUIRED, "2020-01-14");
         book.put(DBKey.READ_START__DATE, "");
         book.put(DBKey.READ_END__DATE, null);
@@ -271,7 +271,7 @@ class BookTest
         book.putDouble(DBKey.PRICE_LISTED, 12.34);
         book.putDouble(DBKey.PRICE_PAID, 0);
 
-        final BookDaoHelper bdh = new BookDaoHelper(mContext, book, false);
+        final BookDaoHelper bdh = new BookDaoHelper(context, book, false);
         bdh.processNullsAndBlanks();
 
         assertEquals("2020-01-14", book.getString(DBKey.DATE_ACQUIRED));
@@ -287,7 +287,7 @@ class BookTest
     }
 
     private void dump(@NonNull final Book book) {
-        for (final String key : mRawData.keySet()) {
+        for (final String key : rawData.keySet()) {
             final Object value = book.get(key);
             System.out.println(key + "=" + value);
         }

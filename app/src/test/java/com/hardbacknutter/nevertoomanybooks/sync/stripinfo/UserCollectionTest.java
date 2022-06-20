@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -67,15 +67,15 @@ class UserCollectionTest
      */
     private static final String userId = "666";
 
-    private final ProgressListener mLogger =
+    private final ProgressListener logger =
             new TestProgressListener("UserCollectionTest");
 
-    private final Bookshelf mOwnedBookshelf = new Bookshelf(
+    private final Bookshelf ownedBookshelf = new Bookshelf(
             "owned", BuiltinStyle.DEFAULT_UUID);
-    private final Bookshelf mWishlistBookshelf = new Bookshelf(
+    private final Bookshelf wishlistBookshelf = new Bookshelf(
             "wishlist", BuiltinStyle.UUID_FOR_TESTING_ONLY);
     @Mock
-    BookshelfMapper mBookshelfMapper;
+    BookshelfMapper bookshelfMapper;
 
     @Override
     @BeforeEach
@@ -83,8 +83,8 @@ class UserCollectionTest
             throws ParserConfigurationException, SAXException {
         super.setup();
 
-        when(mBookshelfMapper.getOwnedBooksBookshelf(any())).thenReturn(mOwnedBookshelf);
-        when(mBookshelfMapper.getWishListBookshelf(any())).thenReturn(mWishlistBookshelf);
+        when(bookshelfMapper.getOwnedBooksBookshelf(any())).thenReturn(ownedBookshelf);
+        when(bookshelfMapper.getWishListBookshelf(any())).thenReturn(wishlistBookshelf);
     }
 
     @Test
@@ -98,8 +98,8 @@ class UserCollectionTest
         final StripInfoSearchEngine searchEngine = (StripInfoSearchEngine) SearchEngineRegistry
                 .getInstance().createSearchEngine(SearchSites.STRIP_INFO_BE);
 
-        final UserCollection uc = new UserCollection(mContext, searchEngine, userId,
-                                                     mBookshelfMapper);
+        final UserCollection uc = new UserCollection(context, searchEngine, userId,
+                                                     bookshelfMapper);
 
         final Document document;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -110,7 +110,7 @@ class UserCollectionTest
             Assertions.assertTrue(document.hasText());
 
             final Optional<List<Bundle>> oCollection =
-                    uc.parseDocument(mContext, document, 1, mLogger);
+                    uc.parseDocument(context, document, 1, logger);
             assertTrue(oCollection.isPresent());
 
             final List<Bundle> collection = oCollection.get();
@@ -152,8 +152,8 @@ class UserCollectionTest
         final StripInfoSearchEngine searchEngine = (StripInfoSearchEngine) SearchEngineRegistry
                 .getInstance().createSearchEngine(SearchSites.STRIP_INFO_BE);
 
-        final UserCollection uc = new UserCollection(mContext, searchEngine, userId,
-                                                     mBookshelfMapper);
+        final UserCollection uc = new UserCollection(context, searchEngine, userId,
+                                                     bookshelfMapper);
 
         final Document document;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -164,7 +164,7 @@ class UserCollectionTest
             assertTrue(document.hasText());
 
             final Optional<List<Bundle>> oCollection =
-                    uc.parseDocument(mContext, document, 3, mLogger);
+                    uc.parseDocument(context, document, 3, logger);
             assertTrue(oCollection.isPresent());
 
             final List<Bundle> collection = oCollection.get();

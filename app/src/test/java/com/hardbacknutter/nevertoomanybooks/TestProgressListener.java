@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,22 +30,22 @@ public class TestProgressListener
         implements ProgressListener {
 
     @NonNull
-    private final String mTag;
-    private int mProgressCurrentPos;
-    private int mMaxPos;
+    private final String tag;
+    private int progressCurrentPos;
+    private int maxPos;
 
     public TestProgressListener(@NonNull final String tag) {
-        mTag = tag;
+        this.tag = tag;
     }
 
     @Override
     public void publishProgress(final int delta,
                                 @Nullable final String message) {
-        mProgressCurrentPos += delta;
+        progressCurrentPos += delta;
         // eat all message when in debug; it's to much of a slow down otherwise.
         if (BuildConfig.DEBUG  /* always */) {
-            Logger.d(mTag, "publishProgressStep",
-                     "mProgressCurrentPos=" + mProgressCurrentPos
+            Logger.d(tag, "publishProgressStep",
+                     "progressCurrentPos=" + progressCurrentPos
                      + "|delta=" + delta
                      + "|message=" + message);
         }
@@ -56,7 +56,7 @@ public class TestProgressListener
     public void publishProgress(@NonNull final TaskProgress message) {
         // eat all message when in debug; it's to much of a slow down otherwise.
         if (BuildConfig.DEBUG  /* always */) {
-            Logger.d(mTag, "publishProgress", "message=" + message);
+            Logger.d(tag, "publishProgress", "message=" + message);
         }
     }
 
@@ -71,17 +71,17 @@ public class TestProgressListener
 
     @Override
     public void setIndeterminate(@Nullable final Boolean indeterminate) {
-        Logger.d(mTag, "setIndeterminate", String.valueOf(indeterminate));
+        Logger.d(tag, "setIndeterminate", String.valueOf(indeterminate));
     }
 
     @Override
     public int getMaxPos() {
-        return mMaxPos;
+        return maxPos;
     }
 
     @Override
     public void setMaxPos(final int maxPos) {
-        Logger.d(mTag, "setMaxPos", String.valueOf(maxPos));
-        mMaxPos = maxPos;
+        Logger.d(tag, "setMaxPos", String.valueOf(maxPos));
+        this.maxPos = maxPos;
     }
 }

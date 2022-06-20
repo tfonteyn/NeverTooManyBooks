@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,16 +44,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class LastDodoTest
         extends JSoupBase {
 
-    public static final String UTF_8 = "UTF-8";
-    private LastDodoSearchEngine mSearchEngine;
+    private static final String UTF_8 = "UTF-8";
+    private LastDodoSearchEngine searchEngine;
 
     @BeforeEach
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
-        mSearchEngine = (LastDodoSearchEngine) Site.Type.Data
+        searchEngine = (LastDodoSearchEngine) Site.Type.Data
                 .getSite(SearchSites.LAST_DODO).getSearchEngine();
-        mSearchEngine.setCaller(new MockCancellable());
+        searchEngine.setCaller(new MockCancellable());
     }
 
     @Test
@@ -62,24 +62,24 @@ class LastDodoTest
         final String locationHeader = "https://www.lastdodo.nl/nl/items/7323911-de-37ste-parallel";
         final String filename = "/lastdodo/7323911-de-37ste-parallel.html";
 
-        loadData(mContext, mSearchEngine, UTF_8, locationHeader, filename,
+        loadData(context, searchEngine, UTF_8, locationHeader, filename,
                  new boolean[]{false, false});
 
-        assertEquals("De 37ste parallel", mRawData.getString(DBKey.TITLE));
-        assertEquals("9789463064385", mRawData.getString(DBKey.BOOK_ISBN));
-        assertEquals("2018", mRawData.getString(DBKey.BOOK_PUBLICATION__DATE));
-        assertEquals("48", mRawData.getString(DBKey.PAGE_COUNT));
-        assertEquals("Hardcover", mRawData.getString(DBKey.FORMAT));
-        assertEquals("nld", mRawData.getString(DBKey.LANGUAGE));
-        assertEquals("Gekleurd", mRawData.getString(DBKey.COLOR));
+        assertEquals("De 37ste parallel", rawData.getString(DBKey.TITLE));
+        assertEquals("9789463064385", rawData.getString(DBKey.BOOK_ISBN));
+        assertEquals("2018", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("48", rawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("Hardcover", rawData.getString(DBKey.FORMAT));
+        assertEquals("nld", rawData.getString(DBKey.LANGUAGE));
+        assertEquals("Gekleurd", rawData.getString(DBKey.COLOR));
 
-        final ArrayList<Publisher> allPublishers = mRawData
+        final ArrayList<Publisher> allPublishers = rawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Silvester", allPublishers.get(0).getName());
 
-        final ArrayList<Series> allSeries = mRawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+        final ArrayList<Series> allSeries = rawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -87,7 +87,7 @@ class LastDodoTest
         assertEquals("Hauteville House", series.getTitle());
         assertEquals("14", series.getNumber());
 
-        final ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        final ArrayList<Author> authors = rawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         assertNotNull(authors);
         assertEquals(2, authors.size());
 

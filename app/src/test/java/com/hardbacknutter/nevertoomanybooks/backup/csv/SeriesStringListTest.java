@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -64,9 +64,9 @@ class SeriesStringListTest {
             + "Eternal Champion, The (984\\|Jerry Cornelius Calendar 4 as includes"
             + " The Alchemist's \\\\* Question)";
 
-    private List<Series> mSeries;
+    private List<Series> series;
 
-    private StringList<Series> mCoder;
+    private StringList<Series> coder;
 
     @BeforeAll
     static void startUp() {
@@ -75,25 +75,25 @@ class SeriesStringListTest {
 
     @BeforeEach
     void setUp() {
-        mSeries = new ArrayList<>();
+        series = new ArrayList<>();
         for (final String s : SERIES) {
-            mSeries.add(Series.from(s));
+            series.add(Series.from(s));
         }
-        mSeries.get(1).setComplete(true);
-        mSeries.get(2).setComplete(true);
+        series.get(1).setComplete(true);
+        series.get(2).setComplete(true);
 
-        mCoder = new StringList<>(new SeriesCoder());
+        coder = new StringList<>(new SeriesCoder());
     }
 
     @Test
     void encode() {
-        final String encoded = mCoder.encodeList(mSeries);
+        final String encoded = coder.encodeList(series);
         assertEquals(ENCODED, encoded);
     }
 
     @Test
     void decode() {
-        final List<Series> decoded = mCoder.decodeList(ENCODED);
+        final List<Series> decoded = coder.decodeList(ENCODED);
         assertEquals(SERIES.length, decoded.size());
 
         Series series;
