@@ -65,19 +65,19 @@ public class JsonArchiveWriterTest
 
     private static final String TAG = "JsonArchiveWriterTest";
 
-    private long mBookInDb;
-    private int mNrOfStyles;
+    private long bookInDb;
+    private int nrOfStyles;
 
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
         super.setup();
         final Context context = serviceLocator.getLocalizedAppContext();
-        mBookInDb = serviceLocator.getBookDao().count();
-        if (mBookInDb < 10) {
+        bookInDb = serviceLocator.getBookDao().count();
+        if (bookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
         }
-        mNrOfStyles = serviceLocator.getStyles().getStyles(context, true).size();
+        nrOfStyles = serviceLocator.getStyles().getStyles(context, true).size();
     }
 
     @Test
@@ -103,7 +103,7 @@ public class JsonArchiveWriterTest
         assertEquals(0, exportResults.getBookCount());
         assertEquals(0, exportResults.getCoverCount());
         assertEquals(0, exportResults.preferences);
-        assertEquals(mNrOfStyles, exportResults.styles);
+        assertEquals(nrOfStyles, exportResults.styles);
         assertFalse(exportResults.database);
 
         final ImportHelper importHelper = new ImportHelper(context, Uri.fromFile(file));
@@ -142,10 +142,10 @@ public class JsonArchiveWriterTest
 
         exportResults = exportHelper.write(context, new TestProgressListener(TAG + ":export"));
 
-        assertEquals(mBookInDb, exportResults.getBookCount());
+        assertEquals(bookInDb, exportResults.getBookCount());
         assertEquals(0, exportResults.getCoverCount());
         assertEquals(1, exportResults.preferences);
-        assertEquals(mNrOfStyles, exportResults.styles);
+        assertEquals(nrOfStyles, exportResults.styles);
         assertFalse(exportResults.database);
 
         // Now modify/delete some books. We have at least 10 books to play with
@@ -173,7 +173,7 @@ public class JsonArchiveWriterTest
         assertTrue(optMetaData.isPresent());
         final ArchiveMetaData metaData = optMetaData.get();
         assertTrue(metaData.getBookCount().isPresent());
-        assertEquals(mBookInDb, (long) metaData.getBookCount().get());
+        assertEquals(bookInDb, (long) metaData.getBookCount().get());
 
 
         ImportResults importResults = importHelper
@@ -199,7 +199,7 @@ public class JsonArchiveWriterTest
 
         assertEquals(0, importResults.booksCreated);
         // we did an overwrite of ALL books
-        assertEquals(mBookInDb, importResults.booksUpdated);
+        assertEquals(bookInDb, importResults.booksUpdated);
         // so we skipped none
         assertEquals(0, importResults.booksSkipped);
         assertEquals(0, importResults.booksFailed);

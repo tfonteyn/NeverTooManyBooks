@@ -51,14 +51,14 @@ public class XmlArchiveWriterTest
 
     private static final String TAG = "XmlArchiveWriterTest";
 
-    private long mBookInDb;
+    private long bookInDb;
 
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
         super.setup();
-        mBookInDb = serviceLocator.getBookDao().count();
-        if (mBookInDb < 10) {
+        bookInDb = serviceLocator.getBookDao().count();
+        if (bookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
         }
     }
@@ -83,7 +83,7 @@ public class XmlArchiveWriterTest
 
         exportResults = exportHelper.write(context, new TestProgressListener(TAG + ":export"));
 
-        assertEquals(mBookInDb, exportResults.getBookCount());
+        assertEquals(bookInDb, exportResults.getBookCount());
         assertEquals(0, exportResults.getCoverCount());
         assertEquals(0, exportResults.preferences);
         assertEquals(0, exportResults.styles);

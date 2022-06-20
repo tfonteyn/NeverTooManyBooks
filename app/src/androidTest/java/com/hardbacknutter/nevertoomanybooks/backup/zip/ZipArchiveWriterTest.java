@@ -59,19 +59,19 @@ public class ZipArchiveWriterTest
 
     private static final String TAG = "ZipArchiveWriterTest";
 
-    private long mBookInDb;
-    private int mNrOfStyles;
+    private long bookInDb;
+    private int nrOfStyles;
 
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
         super.setup();
         final Context context = serviceLocator.getLocalizedAppContext();
-        mBookInDb = serviceLocator.getBookDao().count();
-        if (mBookInDb < 10) {
+        bookInDb = serviceLocator.getBookDao().count();
+        if (bookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
         }
-        mNrOfStyles = serviceLocator.getStyles().getStyles(context, true).size();
+        nrOfStyles = serviceLocator.getStyles().getStyles(context, true).size();
     }
 
     @Test
@@ -99,10 +99,10 @@ public class ZipArchiveWriterTest
 
         exportResults = exportHelper.write(context, new TestProgressListener(TAG + ":export"));
 
-        assertEquals(mBookInDb, exportResults.getBookCount());
+        assertEquals(bookInDb, exportResults.getBookCount());
         assertEquals(0, exportResults.getCoverCount());
         assertEquals(1, exportResults.preferences);
-        assertEquals(mNrOfStyles, exportResults.styles);
+        assertEquals(nrOfStyles, exportResults.styles);
         assertFalse(exportResults.database);
 
         final long exportCount = exportResults.getBookCount();
@@ -125,7 +125,7 @@ public class ZipArchiveWriterTest
 
         final ArchiveMetaData archiveMetaData = importHelper.readMetaData(context).orElse(null);
         assertNotNull(archiveMetaData);
-        assertEquals(mBookInDb, (long) archiveMetaData.getBookCount().orElse(-1));
+        assertEquals(bookInDb, (long) archiveMetaData.getBookCount().orElse(-1));
         assertEquals(-1, (long) archiveMetaData.getCoverCount().orElse(-1));
 
         final ImportResults importResults = importHelper.read(context, new TestProgressListener(

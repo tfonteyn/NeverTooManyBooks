@@ -68,14 +68,14 @@ public class CsvArchiveWriterTest
 
     private static final String TAG = "CsvArchiveWriterTest";
 
-    private long mBookInDb;
+    private long bookInDb;
 
     @Before
     public void setup()
             throws DaoWriteException, StorageException {
         super.setup();
-        mBookInDb = serviceLocator.getBookDao().count();
-        if (mBookInDb < 10) {
+        bookInDb = serviceLocator.getBookDao().count();
+        if (bookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
         }
     }
@@ -98,7 +98,7 @@ public class CsvArchiveWriterTest
 
         exportResults = exportHelper.write(context, new TestProgressListener(TAG + ":export"));
 
-        assertEquals(mBookInDb, exportResults.getBookCount());
+        assertEquals(bookInDb, exportResults.getBookCount());
         assertEquals(0, exportResults.getCoverCount());
         assertEquals(0, exportResults.preferences);
         assertEquals(0, exportResults.styles);
@@ -116,7 +116,7 @@ public class CsvArchiveWriterTest
             //noinspection ConstantConditions
             throw e.getCause();
         }
-        assertEquals(mBookInDb, exportCount);
+        assertEquals(bookInDb, exportCount);
 
 
         // Now modify/delete some books. We have at least 10 books to play with
@@ -167,7 +167,7 @@ public class CsvArchiveWriterTest
 
         assertEquals(0, importResults.booksCreated);
         // we did an overwrite of ALL books
-        assertEquals(mBookInDb, importResults.booksUpdated);
+        assertEquals(bookInDb, importResults.booksUpdated);
         // so we skipped none
         assertEquals(0, importResults.booksSkipped);
         assertEquals(0, importResults.booksFailed);

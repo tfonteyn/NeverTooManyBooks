@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -69,28 +69,28 @@ public class BookTest {
     private static final String NEED_A_TEMP_DIRECTORY = "Need a temp directory";
     private static final String EXT_JPG = ".jpg";
 
-    private final Bookshelf[] mBookshelf = new Bookshelf[5];
-    private final long[] mBookshelfId = new long[5];
-    private final ArrayList<Bookshelf> mBookshelfList = new ArrayList<>();
+    private final Bookshelf[] bookshelf = new Bookshelf[5];
+    private final long[] bookshelfId = new long[5];
+    private final ArrayList<Bookshelf> bookshelfList = new ArrayList<>();
 
-    private final Author[] mAuthor = new Author[5];
-    private final long[] mAuthorId = new long[5];
-    private final ArrayList<Author> mAuthorList = new ArrayList<>();
+    private final Author[] author = new Author[5];
+    private final long[] authorId = new long[5];
+    private final ArrayList<Author> authorList = new ArrayList<>();
 
-    private final Publisher[] mPublisher = new Publisher[5];
-    private final long[] mPublisherId = new long[5];
-    private final ArrayList<Publisher> mPublisherList = new ArrayList<>();
+    private final Publisher[] publisher = new Publisher[5];
+    private final long[] publisherId = new long[5];
+    private final ArrayList<Publisher> publisherList = new ArrayList<>();
 
-    private final TocEntry[] mTocEntry = new TocEntry[5];
-    private final long[] mTocEntryId = new long[5];
-    private final ArrayList<TocEntry> mTocEntryList = new ArrayList<>();
+    private final TocEntry[] tocEntry = new TocEntry[5];
+    private final long[] tocEntryId = new long[5];
+    private final ArrayList<TocEntry> tocEntryList = new ArrayList<>();
 
-    private final Book[] mBook = new Book[5];
-    private final long[] mBookId = new long[5];
+    private final Book[] book = new Book[5];
+    private final long[] bookId = new long[5];
 
-    private final String[] mOriginalImageFileName = new String[2];
-    private final long[] mOriginalImageSize = new long[2];
-    private final FileFilter mJpgFilter = pathname -> pathname.getPath().endsWith(EXT_JPG);
+    private final String[] originalImageFileName = new String[2];
+    private final long[] originalImageSize = new long[2];
+    private final FileFilter jpgFilter = pathname -> pathname.getPath().endsWith(EXT_JPG);
 
     /**
      * Clean the database.
@@ -101,10 +101,10 @@ public class BookTest {
     public void setup()
             throws IOException, StorageException {
 
-        mBookshelfList.clear();
-        mAuthorList.clear();
-        mPublisherList.clear();
-        mTocEntryList.clear();
+        bookshelfList.clear();
+        authorList.clear();
+        publisherList.clear();
+        tocEntryList.clear();
 
         final ServiceLocator sl = ServiceLocator.getInstance();
         final SynchronizedDb db = sl.getDb();
@@ -127,42 +127,42 @@ public class BookTest {
 
         // empty the temp dir
         //noinspection ResultOfMethodCallIgnored
-        FileUtils.collectFiles(tempDir, mJpgFilter).forEach(File::delete);
+        FileUtils.collectFiles(tempDir, jpgFilter).forEach(File::delete);
 
 
-        mBookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT);
-        mBookshelfList.clear();
-        mBookshelfList.add(mBookshelf[0]);
+        bookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT);
+        bookshelfList.clear();
+        bookshelfList.add(bookshelf[0]);
 
-        mAuthor[0] = Author.from(AuthorFullName(0));
-        mAuthor[1] = Author.from(AuthorFullName(1));
+        author[0] = Author.from(AuthorFullName(0));
+        author[1] = Author.from(AuthorFullName(1));
 
         // insert author[0] but do NOT insert author[1]
-        mAuthorId[0] = sl.getAuthorDao().insert(context, mAuthor[0]);
-        mAuthorList.clear();
-        mAuthorList.add(mAuthor[0]);
+        authorId[0] = sl.getAuthorDao().insert(context, author[0]);
+        authorList.clear();
+        authorList.add(author[0]);
 
-        mPublisher[0] = Publisher.from(Constants.PUBLISHER + "0");
-        mPublisher[1] = Publisher.from(Constants.PUBLISHER + "1");
+        publisher[0] = Publisher.from(Constants.PUBLISHER + "0");
+        publisher[1] = Publisher.from(Constants.PUBLISHER + "1");
 
         // insert publisher[0] but do NOT publisher author[1]
 
-        mPublisherId[0] = sl.getPublisherDao()
-                            .insert(context, mPublisher[0], Locale.getDefault());
-        mPublisherList.clear();
-        mPublisherList.add(mPublisher[0]);
+        publisherId[0] = sl.getPublisherDao()
+                           .insert(context, publisher[0], Locale.getDefault());
+        publisherList.clear();
+        publisherList.add(publisher[0]);
 
 
 
-        final List<File> files = FileUtils.collectFiles(coverDir, mJpgFilter, 10);
+        final List<File> files = FileUtils.collectFiles(coverDir, jpgFilter, 10);
         assertTrue(NEED_TWO_FILE, files.size() > 1);
 
         prepareTempCover(context, files, 0);
         prepareTempCover(context, files, 1);
 
-        assertTrue(mBookshelf[0].getId() > 0);
-        assertTrue(mAuthor[0].getId() > 0);
-        assertTrue(mPublisher[0].getId() > 0);
+        assertTrue(bookshelf[0].getId() > 0);
+        assertTrue(author[0].getId() > 0);
+        assertTrue(publisher[0].getId() > 0);
     }
 
     /**
@@ -178,9 +178,9 @@ public class BookTest {
                                   final int cIdx)
             throws IOException, StorageException {
 
-        mOriginalImageFileName[cIdx] = files.get(cIdx).getAbsolutePath();
-        final File srcFile = new File(mOriginalImageFileName[cIdx]);
-        mOriginalImageSize[cIdx] = srcFile.length();
+        originalImageFileName[cIdx] = files.get(cIdx).getAbsolutePath();
+        final File srcFile = new File(originalImageFileName[cIdx]);
+        originalImageSize[cIdx] = srcFile.length();
 
         FileUtils.copy(srcFile, new File(CoverDir.getTemp(context), Constants.COVER[cIdx]));
     }
@@ -210,14 +210,14 @@ public class BookTest {
         final File tempDir = CoverDir.getTemp(context);
         assertNotNull(NEED_A_TEMP_DIRECTORY, tempDir);
 
-        mBook[0] = prepareAndInsertBook(context, bookDao);
-        mBookId[0] = mBook[0].getId();
+        book[0] = prepareAndInsertBook(context, bookDao);
+        bookId[0] = book[0].getId();
 
         /*
          * test the inserted book
          */
-        Book book = Book.from(mBookId[0]);
-        assertEquals(mBookId[0], book.getId());
+        Book book = Book.from(bookId[0]);
+        assertEquals(bookId[0], book.getId());
         checkBookAfterInitialInsert(book);
 
         List<Author> authors;
@@ -235,7 +235,7 @@ public class BookTest {
         book.setStage(EntityStage.Stage.Dirty);
 
         authors = book.getAuthors();
-        authors.add(mAuthor[1]);
+        authors.add(author[1]);
 
         book.setCover(1, new File(tempDir, Constants.COVER[1]));
 
@@ -250,22 +250,22 @@ public class BookTest {
         /*
          * test the updated book
          */
-        book = Book.from(mBookId[0]);
-        assertEquals(mBookId[0], book.getId());
+        book = Book.from(bookId[0]);
+        assertEquals(bookId[0], book.getId());
 
         uuid = book.getString(DBKey.BOOK_UUID);
 
         assertEquals(BOOK_TITLE + "0_upd", book.getTitle());
         bookshelves = book.getBookshelves();
         assertEquals(1, bookshelves.size());
-        assertEquals(mBookshelf[0], bookshelves.get(0));
+        assertEquals(bookshelf[0], bookshelves.get(0));
         authors = book.getAuthors();
         assertEquals(2, authors.size());
-        assertEquals(mAuthor[0], authors.get(0));
-        assertEquals(mAuthor[1], authors.get(1));
+        assertEquals(author[0], authors.get(0));
+        assertEquals(author[1], authors.get(1));
         publishers = book.getPublishers();
         assertEquals(1, publishers.size());
-        assertEquals(mPublisher[0], publishers.get(0));
+        assertEquals(publisher[0], publishers.get(0));
 
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
@@ -274,17 +274,17 @@ public class BookTest {
         assertTrue(coverFile.isPresent());
         cover = coverFile.get();
         assertNotNull(cover);
-        assertEquals(mOriginalImageSize[0], cover.length());
+        assertEquals(originalImageSize[0], cover.length());
         assertEquals(uuid + EXT_JPG, cover.getName());
 
         coverFile = book.getCoverFile(1);
         assertTrue(coverFile.isPresent());
         cover = coverFile.get();
         assertNotNull(cover);
-        assertEquals(mOriginalImageSize[1], cover.length());
+        assertEquals(originalImageSize[1], cover.length());
         assertEquals(uuid + "_1" + EXT_JPG, cover.getName());
 
-        tempFiles = tempDir.listFiles(mJpgFilter);
+        tempFiles = tempDir.listFiles(jpgFilter);
         assertNotNull(tempFiles);
         // both files should be gone now
         assertEquals(0, tempFiles.length);
@@ -293,8 +293,8 @@ public class BookTest {
         /*
          * Delete the second cover of the read-only book
          */
-        book = Book.from(mBookId[0]);
-        assertEquals(mBookId[0], book.getId());
+        book = Book.from(bookId[0]);
+        assertEquals(bookId[0], book.getId());
 
         uuid = book.getString(DBKey.BOOK_UUID);
 
@@ -320,7 +320,7 @@ public class BookTest {
         /*
          * Add the second cover of the read-only book
          */
-        final List<File> files = FileUtils.collectFiles(coverDir, mJpgFilter, 10);
+        final List<File> files = FileUtils.collectFiles(coverDir, jpgFilter, 10);
         prepareTempCover(context, files, 1);
 
         book.setCover(1, new File(tempDir, Constants.COVER[1]));
@@ -345,16 +345,16 @@ public class BookTest {
         final ServiceLocator sl = ServiceLocator.getInstance();
         final Context context = sl.getLocalizedAppContext();
         final BookDao bookDao = sl.getBookDao();
-        mBook[0] = prepareAndInsertBook(context, bookDao);
-        mBookId[0] = mBook[0].getId();
+        book[0] = prepareAndInsertBook(context, bookDao);
+        bookId[0] = book[0].getId();
 
         final ShowBookDetailsViewModel vm = new ShowBookDetailsViewModel();
         final Bundle args = ServiceLocator.newBundle();
-        args.putLong(DBKey.FK_BOOK, mBookId[0]);
+        args.putLong(DBKey.FK_BOOK, bookId[0]);
 
         vm.init(args);
         final Book retrieved = vm.getBook();
-        assertEquals(mBookId[0], retrieved.getId());
+        assertEquals(bookId[0], retrieved.getId());
         checkBookAfterInitialInsert(retrieved);
     }
 
@@ -373,9 +373,9 @@ public class BookTest {
         book.putLong(DBKey.SID_ISFDB, Constants.BOOK_ISFDB_123);
         book.putString(DBKey.SID_LCCN, Constants.BOOK_LCCN_0);
 
-        book.setBookshelves(mBookshelfList);
-        book.setAuthors(mAuthorList);
-        book.setPublishers(mPublisherList);
+        book.setBookshelves(bookshelfList);
+        book.setAuthors(authorList);
+        book.setPublishers(publisherList);
 
         book.setCover(0, new File(CoverDir.getTemp(context), Constants.COVER[0]));
 
@@ -411,15 +411,15 @@ public class BookTest {
 
         final List<Bookshelf> bookshelves = book.getBookshelves();
         assertEquals(1, bookshelves.size());
-        assertEquals(mBookshelf[0], bookshelves.get(0));
+        assertEquals(bookshelf[0], bookshelves.get(0));
 
         final List<Author> authors = book.getAuthors();
         assertEquals(1, authors.size());
-        assertEquals(mAuthor[0], authors.get(0));
+        assertEquals(author[0], authors.get(0));
 
         final List<Publisher> publishers = book.getPublishers();
         assertEquals(1, publishers.size());
-        assertEquals(mPublisher[0], publishers.get(0));
+        assertEquals(publisher[0], publishers.get(0));
 
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
@@ -428,11 +428,11 @@ public class BookTest {
         assertTrue(coverFile.isPresent());
         final File cover = coverFile.get();
         assertNotNull(cover);
-        assertEquals(mOriginalImageSize[0], cover.length());
+        assertEquals(originalImageSize[0], cover.length());
         assertEquals(uuid + EXT_JPG, cover.getName());
 
         final List<File> tempFiles =
-                FileUtils.collectFiles(CoverDir.getTemp(context), mJpgFilter, 10);
+                FileUtils.collectFiles(CoverDir.getTemp(context), jpgFilter, 10);
         // expected: 1: because "0.jpg" should be gone, but "1.jpg" will still be there
         assertEquals(1, tempFiles.size());
         assertEquals(COVER[1], tempFiles.get(0).getName());
