@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,23 +33,23 @@ public class TaskResult<Result> {
 
     private static final String MISSING_TASK_RESULTS = "message.result";
 
-    private final int mTaskId;
+    private final int taskId;
 
     /**
      * The result object from the task.
      * It can be {@code null} regardless of the task implementation.
      */
     @Nullable
-    private final Result mResult;
+    private final Result result;
 
     public TaskResult(final int taskId,
                       @Nullable final Result result) {
-        mTaskId = taskId;
-        mResult = result;
+        this.taskId = taskId;
+        this.result = result;
     }
 
     public int getTaskId() {
-        return mTaskId;
+        return taskId;
     }
 
     /**
@@ -59,7 +59,7 @@ public class TaskResult<Result> {
      */
     @Nullable
     public Result getResult() {
-        return mResult;
+        return result;
     }
 
     /**
@@ -69,15 +69,15 @@ public class TaskResult<Result> {
      */
     @NonNull
     public Result requireResult() {
-        return Objects.requireNonNull(mResult, MISSING_TASK_RESULTS);
+        return Objects.requireNonNull(result, MISSING_TASK_RESULTS);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "TaskResult{"
-               + "taskId=" + mTaskId
-               + ", result=" + mResult
+               + "taskId=" + taskId
+               + ", result=" + result
                + '}';
     }
 }

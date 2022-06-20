@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -71,10 +71,10 @@ public final class ASyncExecutor {
 
     private static final int BACKUP_POOL_SIZE = 5;
     private static final ThreadFactory sThreadFactory = new ThreadFactory() {
-        private final AtomicInteger mCount = new AtomicInteger(1);
+        private final AtomicInteger threadIdCounter = new AtomicInteger(1);
 
         public Thread newThread(@NonNull final Runnable r) {
-            return new Thread(r, "CustomTask #" + mCount.getAndIncrement());
+            return new Thread(r, "CustomTask #" + threadIdCounter.getAndIncrement());
         }
     };
 
@@ -131,10 +131,10 @@ public final class ASyncExecutor {
                 CORE_POOL_SIZE, MAXIMUM_POOL_SIZE,
                 KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>(), new ThreadFactory() {
-            private final AtomicInteger mCount = new AtomicInteger(1);
+            private final AtomicInteger threadIdCounter = new AtomicInteger(1);
 
             public Thread newThread(@NonNull final Runnable r) {
-                return new Thread(r, threadName + '#' + mCount.getAndIncrement());
+                return new Thread(r, threadName + '#' + threadIdCounter.getAndIncrement());
             }
         });
         executor.allowCoreThreadTimeOut(true);
@@ -144,27 +144,27 @@ public final class ASyncExecutor {
     static class SerialExecutor
             implements Executor {
 
-        private final ArrayDeque<Runnable> mTasks = new ArrayDeque<>();
+        private final ArrayDeque<Runnable> tasks = new ArrayDeque<>();
         @Nullable
-        private Runnable mActive;
+        private Runnable active;
 
         public synchronized void execute(@NonNull final Runnable r) {
-            mTasks.offer(() -> {
+            tasks.offer(() -> {
                 try {
                     r.run();
                 } finally {
                     scheduleNext();
                 }
             });
-            if (mActive == null) {
+            if (active == null) {
                 scheduleNext();
             }
         }
 
         synchronized void scheduleNext() {
-            mActive = mTasks.poll();
-            if (mActive != null) {
-                MAIN.execute(mActive);
+            active = tasks.poll();
+            if (active != null) {
+                MAIN.execute(active);
             }
         }
     }

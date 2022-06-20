@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,31 +46,31 @@ abstract class TaskBase<Result>
         implements ProgressListener {
 
     /** Identifies the task. Passed back in all messages. */
-    private final int mTaskId;
+    private final int taskId;
     /** Identifies the task. */
     @NonNull
-    private final String mTaskName;
+    private final String taskName;
 
     /**
      * Set by a client or from within the task.
      * It's a <strong>request</strong> to cancel while running.
      */
-    private final AtomicBoolean mCancelled = new AtomicBoolean();
+    private final AtomicBoolean cancelled = new AtomicBoolean();
 
     /** State of this task. */
     @NonNull
-    private Status mStatus = Status.Created;
+    private Status status = Status.Created;
     /** Use {@link #setExecutor(Executor)} to override. */
     @NonNull
-    private Executor mExecutor = ASyncExecutor.SERIAL;
+    private Executor executor = ASyncExecutor.SERIAL;
 
     /** If progress is not indeterminate, the current position. */
-    private int mProgressCurrentPos;
+    private int progressCurrentPos;
     /** If progress is not indeterminate, the maximum position. */
-    private int mProgressMaxPos;
+    private int progressMaxPos;
     /** Flag. */
     @Nullable
-    private Boolean mIndeterminate;
+    private Boolean indeterminate;
 
     /**
      * Constructor.
@@ -80,13 +80,13 @@ abstract class TaskBase<Result>
      */
     TaskBase(final int taskId,
              @NonNull final String taskName) {
-        mTaskId = taskId;
-        mTaskName = taskName;
+        this.taskId = taskId;
+        this.taskName = taskName;
     }
 
     @UiThread
     public void setExecutor(@NonNull final Executor executor) {
-        mExecutor = executor;
+        this.executor = executor;
     }
 
     /**
@@ -96,12 +96,12 @@ abstract class TaskBase<Result>
      */
     @AnyThread
     public int getTaskId() {
-        return mTaskId;
+        return taskId;
     }
 
     @NonNull
     String getTaskName() {
-        return mTaskName;
+        return taskName;
     }
 
     /**
@@ -113,15 +113,15 @@ abstract class TaskBase<Result>
     @UiThread
     protected void execute() {
         synchronized (this) {
-            if (mStatus != Status.Created && mStatus != Status.Finished) {
+            if (status != Status.Created && status != Status.Finished) {
                 throw new IllegalStateException("task already running");
             }
 
-            mStatus = Status.Pending;
+            status = Status.Pending;
         }
-        mExecutor.execute(() -> {
-            mStatus = Status.Running;
-            Thread.currentThread().setName(mTaskName);
+        executor.execute(() -> {
+            status = Status.Running;
+            Thread.currentThread().setName(taskName);
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
 
             final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
@@ -147,7 +147,7 @@ abstract class TaskBase<Result>
                 setTaskFailure(e);
             }
 
-            mStatus = Status.Finished;
+            status = Status.Finished;
         });
     }
 
@@ -186,7 +186,7 @@ abstract class TaskBase<Result>
     @CallSuper
     @AnyThread
     public void cancel() {
-        mCancelled.set(true);
+        cancelled.set(true);
     }
 
     /**
@@ -197,12 +197,12 @@ abstract class TaskBase<Result>
     @Override
     @AnyThread
     public boolean isCancelled() {
-        return mCancelled.get();
+        return cancelled.get();
     }
 
     @AnyThread
     public boolean isRunning() {
-        return mStatus == Status.Running;
+        return status == Status.Running;
     }
 
     /**
@@ -219,10 +219,10 @@ abstract class TaskBase<Result>
     @Override
     public void publishProgress(final int delta,
                                 @Nullable final String text) {
-        mProgressCurrentPos += delta;
-        publishProgress(new TaskProgress(mTaskId, text,
-                                         mProgressCurrentPos, mProgressMaxPos,
-                                         mIndeterminate));
+        progressCurrentPos += delta;
+        publishProgress(new TaskProgress(taskId, text,
+                                         progressCurrentPos, progressMaxPos,
+                                         indeterminate));
     }
 
     /**
@@ -234,13 +234,13 @@ abstract class TaskBase<Result>
     @AnyThread
     @Override
     public void setIndeterminate(@Nullable final Boolean indeterminate) {
-        mIndeterminate = indeterminate;
+        this.indeterminate = indeterminate;
     }
 
     @AnyThread
     @Override
     public int getMaxPos() {
-        return mProgressMaxPos;
+        return progressMaxPos;
     }
 
     /**
@@ -251,7 +251,7 @@ abstract class TaskBase<Result>
     @AnyThread
     @Override
     public void setMaxPos(final int maxPosition) {
-        mProgressMaxPos = maxPosition;
+        progressMaxPos = maxPosition;
     }
 
     /**

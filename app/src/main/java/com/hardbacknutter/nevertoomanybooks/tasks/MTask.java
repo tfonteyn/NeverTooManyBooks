@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,13 +34,13 @@ import androidx.lifecycle.MutableLiveData;
 public abstract class MTask<Result>
         extends TaskBase<Result> {
 
-    private final MutableLiveData<LiveDataEvent<TaskResult<Result>>> mFinishedObservable =
+    private final MutableLiveData<LiveDataEvent<TaskResult<Result>>> onFinished =
             new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskResult<Result>>> mCancelObservable =
+    private final MutableLiveData<LiveDataEvent<TaskResult<Result>>> onCanceled =
             new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> mFailureObservable =
+    private final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> onFailure =
             new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskProgress>> mProgressObservable =
+    private final MutableLiveData<LiveDataEvent<TaskProgress>> onProgress =
             new MutableLiveData<>();
 
     /**
@@ -62,13 +62,13 @@ public abstract class MTask<Result>
      */
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Result>>> onFinished() {
-        return mFinishedObservable;
+        return onFinished;
     }
 
     @Override
     @WorkerThread
     protected void setTaskFinished(@Nullable final Result result) {
-        mFinishedObservable.postValue(new LiveDataEvent<>(new TaskResult<>(getTaskId(), result)));
+        onFinished.postValue(new LiveDataEvent<>(new TaskResult<>(getTaskId(), result)));
     }
 
     /**
@@ -79,14 +79,14 @@ public abstract class MTask<Result>
      */
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Result>>> onCancelled() {
-        return mCancelObservable;
+        return onCanceled;
     }
 
 
     @Override
     @WorkerThread
     protected void setTaskCancelled(@Nullable final Result result) {
-        mCancelObservable.postValue(new LiveDataEvent<>(new TaskResult<>(getTaskId(), result)));
+        onCanceled.postValue(new LiveDataEvent<>(new TaskResult<>(getTaskId(), result)));
     }
 
     /**
@@ -96,13 +96,13 @@ public abstract class MTask<Result>
      */
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Exception>>> onFailure() {
-        return mFailureObservable;
+        return onFailure;
     }
 
     @Override
     @WorkerThread
     protected void setTaskFailure(@NonNull final Exception e) {
-        mFailureObservable.postValue(new LiveDataEvent<>(new TaskResult<>(getTaskId(), e)));
+        onFailure.postValue(new LiveDataEvent<>(new TaskResult<>(getTaskId(), e)));
     }
 
     /**
@@ -112,12 +112,12 @@ public abstract class MTask<Result>
      */
     @NonNull
     public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
-        return mProgressObservable;
+        return onProgress;
     }
 
     @Override
     @WorkerThread
     public void publishProgress(@NonNull final TaskProgress message) {
-        mProgressObservable.postValue(new LiveDataEvent<>(message));
+        onProgress.postValue(new LiveDataEvent<>(message));
     }
 }

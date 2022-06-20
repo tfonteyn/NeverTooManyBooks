@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,10 +44,10 @@ public abstract class LTask<Result>
 
     /** The client listener where to send our results to. */
     @NonNull
-    private final WeakReference<TaskListener<Result>> mTaskListener;
+    private final WeakReference<TaskListener<Result>> taskListener;
 
     @NonNull
-    private final Handler mHandler;
+    private final Handler handler;
 
     /**
      * Constructor.
@@ -61,16 +61,16 @@ public abstract class LTask<Result>
                     @NonNull final String taskName,
                     @NonNull final TaskListener<Result> taskListener) {
         super(taskId, taskName);
-        mTaskListener = new WeakReference<>(taskListener);
-        mHandler = new Handler(Looper.getMainLooper());
+        this.taskListener = new WeakReference<>(taskListener);
+        handler = new Handler(Looper.getMainLooper());
     }
 
     @Override
     @WorkerThread
     public void publishProgress(@NonNull final TaskProgress message) {
-        mHandler.post(() -> {
-            if (mTaskListener.get() != null) {
-                mTaskListener.get().onProgress(message);
+        handler.post(() -> {
+            if (taskListener.get() != null) {
+                taskListener.get().onProgress(message);
             } else {
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(getTaskName(), "publishProgress|" + LISTENER_WAS_DEAD);
@@ -82,9 +82,9 @@ public abstract class LTask<Result>
     @Override
     @WorkerThread
     protected void setTaskFinished(@Nullable final Result result) {
-        mHandler.post(() -> {
-            if (mTaskListener.get() != null) {
-                mTaskListener.get().onFinished(getTaskId(), result);
+        handler.post(() -> {
+            if (taskListener.get() != null) {
+                taskListener.get().onFinished(getTaskId(), result);
             } else {
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(getTaskName(), "onFinished|" + LISTENER_WAS_DEAD);
@@ -97,9 +97,9 @@ public abstract class LTask<Result>
     @Override
     @WorkerThread
     protected void setTaskCancelled(@Nullable final Result result) {
-        mHandler.post(() -> {
-            if (mTaskListener.get() != null) {
-                mTaskListener.get().onCancelled(getTaskId(), result);
+        handler.post(() -> {
+            if (taskListener.get() != null) {
+                taskListener.get().onCancelled(getTaskId(), result);
             } else {
                 if (BuildConfig.DEBUG /* always */) {
                     // Will be shown on genuine bug,
@@ -114,9 +114,9 @@ public abstract class LTask<Result>
     @Override
     @WorkerThread
     protected void setTaskFailure(@NonNull final Exception e) {
-        mHandler.post(() -> {
-            if (mTaskListener.get() != null) {
-                mTaskListener.get().onFailure(getTaskId(), e);
+        handler.post(() -> {
+            if (taskListener.get() != null) {
+                taskListener.get().onFailure(getTaskId(), e);
             } else {
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(getTaskName(), "onFailure|" + LISTENER_WAS_DEAD);

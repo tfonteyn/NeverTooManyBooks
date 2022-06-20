@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,9 +40,9 @@ public class StorageMoverTask
     /** Add 10% overhead when checking required space. */
     private static final float OVERHEAD = 1.1f;
 
-    private int mDestIndex;
-    private File mSourceDir;
-    private File mDestDir;
+    private int destIndex;
+    private File sourceDir;
+    private File destDir;
 
     /**
      * Constructor.
@@ -54,29 +54,29 @@ public class StorageMoverTask
     public void setDirs(@NonNull final Context context,
                         final int sourceIndex,
                         final int destIndex) {
-        mDestIndex = destIndex;
+        this.destIndex = destIndex;
 
         final File[] dirs = context.getExternalFilesDirs(null);
-        mSourceDir = dirs[sourceIndex];
-        mDestDir = dirs[destIndex];
+        sourceDir = dirs[sourceIndex];
+        destDir = dirs[destIndex];
     }
 
     public boolean checkSpace()
             throws IOException {
         if (BuildConfig.DEBUG /* always */) {
-            Objects.requireNonNull(mSourceDir);
-            Objects.requireNonNull(mDestDir);
+            Objects.requireNonNull(sourceDir);
+            Objects.requireNonNull(destDir);
         }
 
-        final long usedSpace = FileUtils.getUsedSpace(mSourceDir, null);
-        final long freeSpace = FileUtils.getFreeSpace(mDestDir);
+        final long usedSpace = FileUtils.getUsedSpace(sourceDir, null);
+        final long freeSpace = FileUtils.getFreeSpace(destDir);
         return freeSpace > (usedSpace * OVERHEAD);
     }
 
     public void start() {
         if (BuildConfig.DEBUG /* always */) {
-            Objects.requireNonNull(mSourceDir);
-            Objects.requireNonNull(mDestDir);
+            Objects.requireNonNull(sourceDir);
+            Objects.requireNonNull(destDir);
         }
 
         execute();
@@ -90,7 +90,7 @@ public class StorageMoverTask
         publishProgress(0, context.getString(R.string.progress_msg_please_wait));
 
         // two steps, so we don't delete anything if the copy fails or is cancelled
-        FileUtils.copyDirectory(mSourceDir, mDestDir, this);
+        FileUtils.copyDirectory(sourceDir, destDir, this);
         if (isCancelled()) {
             return -1;
         }
@@ -98,11 +98,11 @@ public class StorageMoverTask
         publishProgress(0, context.getString(R.string.progress_msg_cleaning_up));
 
         // Delete(File) swallows all exceptions as none are deemed critical.
-        FileUtils.deleteDirectory(mSourceDir, null, this);
+        FileUtils.deleteDirectory(sourceDir, null, this);
         if (isCancelled()) {
             return -1;
         }
 
-        return mDestIndex;
+        return destIndex;
     }
 }

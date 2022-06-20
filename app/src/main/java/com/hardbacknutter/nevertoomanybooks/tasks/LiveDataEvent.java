@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,11 +32,11 @@ import java.util.Optional;
 public class LiveDataEvent<T> {
 
     @NonNull
-    private final T mData;
-    private boolean mHasBeenHandled;
+    private final T data;
+    private boolean hasBeenHandled;
 
     public LiveDataEvent(@NonNull final T data) {
-        mData = data;
+        this.data = data;
     }
 
     /**
@@ -49,11 +49,11 @@ public class LiveDataEvent<T> {
      */
     @NonNull
     public Optional<T> getData() {
-        if (mHasBeenHandled) {
+        if (hasBeenHandled) {
             return Optional.empty();
         } else {
-            mHasBeenHandled = true;
-            return Optional.of(mData);
+            hasBeenHandled = true;
+            return Optional.of(data);
         }
     }
 
@@ -61,8 +61,8 @@ public class LiveDataEvent<T> {
     @NonNull
     public String toString() {
         return "LiveDataEvent{" +
-               "mHasBeenHandled=" + mHasBeenHandled +
-               ", mData=" + mData +
+               "hasBeenHandled=" + hasBeenHandled +
+               ", data=" + data +
                '}';
     }
 }

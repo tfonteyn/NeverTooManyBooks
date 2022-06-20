@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,11 +34,11 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogProgressBinding;
 public class ProgressDelegate {
 
     /** View Binding. */
-    private final DialogProgressBinding mVb;
+    private final DialogProgressBinding vb;
     /** Control FLAG_KEEP_SCREEN_ON. (e.g. during a backup etc...) */
-    private boolean mPreventSleep;
+    private boolean preventSleep;
     /** intermediate storage for the type of ProgressBar. */
-    private boolean mOriginalIndeterminate;
+    private boolean originalIndeterminate;
 
     /**
      * Constructor.
@@ -46,59 +46,59 @@ public class ProgressDelegate {
      * @param view the FrameLayout view of the Progress dialog
      */
     public ProgressDelegate(@NonNull final View view) {
-        mVb = DialogProgressBinding.bind(view);
+        vb = DialogProgressBinding.bind(view);
     }
 
     @NonNull
     public ProgressDelegate setTitle(@NonNull final CharSequence title) {
-        mVb.progressTitle.setText(title);
-        mVb.progressTitle.setVisibility(View.VISIBLE);
+        vb.progressTitle.setText(title);
+        vb.progressTitle.setVisibility(View.VISIBLE);
         return this;
     }
 
     @NonNull
     public ProgressDelegate setTitle(@StringRes final int title) {
-        mVb.progressTitle.setText(title);
-        mVb.progressTitle.setVisibility(View.VISIBLE);
+        vb.progressTitle.setText(title);
+        vb.progressTitle.setVisibility(View.VISIBLE);
         return this;
     }
 
     @NonNull
     public ProgressDelegate setPreventSleep(final boolean preventSleep) {
-        mPreventSleep = preventSleep;
+        this.preventSleep = preventSleep;
         return this;
     }
 
     @NonNull
     public ProgressDelegate setIndeterminate(final boolean indeterminate) {
-        mOriginalIndeterminate = indeterminate;
-        mVb.progressBar.setIndeterminate(indeterminate);
+        originalIndeterminate = indeterminate;
+        vb.progressBar.setIndeterminate(indeterminate);
         return this;
     }
 
     @NonNull
     public ProgressDelegate setOnCancelListener(@Nullable final View.OnClickListener listener) {
-        mVb.btnCancel.setOnClickListener(listener);
+        vb.btnCancel.setOnClickListener(listener);
         return this;
     }
 
     @NonNull
     public ProgressDelegate show(@NonNull final Supplier<Window> windowSupplier) {
-        if (mVb.getRoot().getVisibility() == View.VISIBLE) {
+        if (vb.getRoot().getVisibility() == View.VISIBLE) {
             return this;
         }
-        if (mPreventSleep) {
+        if (preventSleep) {
             windowSupplier.get().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
-        mVb.getRoot().setVisibility(View.VISIBLE);
+        vb.getRoot().setVisibility(View.VISIBLE);
         return this;
     }
 
     public void dismiss(@NonNull final Window window) {
-        if (mPreventSleep) {
+        if (preventSleep) {
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
-        mVb.getRoot().setVisibility(View.GONE);
+        vb.getRoot().setVisibility(View.GONE);
     }
 
     public void onProgress(@NonNull final TaskProgress message) {
@@ -106,23 +106,23 @@ public class ProgressDelegate {
         // mode change requested ?
         if (message.indeterminate == null) {
             // reset to the mode when we started.
-            updateIndeterminate(mOriginalIndeterminate);
+            updateIndeterminate(originalIndeterminate);
 
-        } else if (mVb.progressBar.isIndeterminate() != message.indeterminate) {
+        } else if (vb.progressBar.isIndeterminate() != message.indeterminate) {
             updateIndeterminate(message.indeterminate);
         }
 
-        if (!mVb.progressBar.isIndeterminate()) {
-            mVb.progressBar.setProgress(message.position);
+        if (!vb.progressBar.isIndeterminate()) {
+            vb.progressBar.setProgress(message.position);
             if (message.maxPosition > 0) {
-                mVb.progressBar.setMax(message.maxPosition);
+                vb.progressBar.setMax(message.maxPosition);
             }
         }
 
-        // if we have no new text, we leave mVb.progressMessage text untouched.
+        // if we have no new text, we leave the progress message text untouched.
         if (message.text != null
-            && !((CharSequence) message.text).equals(mVb.progressMessage.getText())) {
-            mVb.progressMessage.setText(message.text);
+            && !((CharSequence) message.text).equals(vb.progressMessage.getText())) {
+            vb.progressMessage.setText(message.text);
         }
     }
 
@@ -130,8 +130,8 @@ public class ProgressDelegate {
         // Flipping the new com.google.android.material.progressindicator.*
         // from determinate to indeterminate requires this step.
         // For simplicity, we do it the other way around as well.
-        mVb.progressBar.hide();
-        mVb.progressBar.setIndeterminate(indeterminate);
-        mVb.progressBar.show();
+        vb.progressBar.hide();
+        vb.progressBar.setIndeterminate(indeterminate);
+        vb.progressBar.show();
     }
 }
