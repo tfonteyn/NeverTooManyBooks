@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,14 +61,14 @@ public class SearchSuggestionProvider
     /** Uri and query support. Arbitrary code to indicate a match. */
     private static final int URI_MATCH_SUGGEST = 1;
     /** Uri and query support. */
-    private UriMatcher uriMatcher;
+    private UriMatcher mUriMatcher;
 
     @Override
     public boolean onCreate() {
-        uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         //noinspection ConstantConditions
-        uriMatcher.addURI(getContext().getPackageName() + AUTHORITY,
-                          SearchManager.SUGGEST_URI_PATH_QUERY, URI_MATCH_SUGGEST);
+        mUriMatcher.addURI(getContext().getPackageName() + AUTHORITY,
+                           SearchManager.SUGGEST_URI_PATH_QUERY, URI_MATCH_SUGGEST);
         return true;
     }
 
@@ -80,7 +80,7 @@ public class SearchSuggestionProvider
                         @Nullable final String[] selectionArgs,
                         @Nullable final String sortOrder) {
 
-        if (uriMatcher.match(uri) == URI_MATCH_SUGGEST) {
+        if (mUriMatcher.match(uri) == URI_MATCH_SUGGEST) {
             if (selectionArgs == null || selectionArgs[0] == null || selectionArgs[0].isEmpty()) {
                 return null;
             }
@@ -108,7 +108,7 @@ public class SearchSuggestionProvider
     @Nullable
     @Override
     public String getType(@NonNull final Uri uri) {
-        if (uriMatcher.match(uri) == URI_MATCH_SUGGEST) {
+        if (mUriMatcher.match(uri) == URI_MATCH_SUGGEST) {
             return SearchManager.SUGGEST_MIME_TYPE;
         }
 

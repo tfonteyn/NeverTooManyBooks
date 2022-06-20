@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -64,23 +64,23 @@ public class SynchronizedDb
     private static final String ERROR_TX_WRONG_LOCK = "Wrong lock";
 
     @NonNull
-    private final SQLiteOpenHelper sqLiteOpenHelper;
-    private final int preparedStmtCacheSize;
+    private final SQLiteOpenHelper mSqLiteOpenHelper;
+    private final int mPreparedStmtCacheSize;
 
     /** Underlying (and open for writing) database. */
     @NonNull
-    private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase mSqlDb;
 
     /** Sync object to use. */
     @NonNull
-    private final Synchronizer synchronizer;
+    private final Synchronizer mSynchronizer;
 
     /** Factory object to create the custom cursor. */
-    private final SQLiteDatabase.CursorFactory cursorFactory = (db, mq, et, q) ->
+    private final SQLiteDatabase.CursorFactory mCursorFactory = (db, mq, et, q) ->
             new SynchronizedCursor(mq, et, q, getSynchronizer());
 
     /** Factory object to create a {@link TypedCursor} cursor. */
-    private final SQLiteDatabase.CursorFactory typedCursorFactory =
+    private final SQLiteDatabase.CursorFactory mTypedCursorFactory =
             (db, d, et, q) -> new TypedCursor(d, et, q, getSynchronizer());
 
 
@@ -91,7 +91,7 @@ public class SynchronizedDb
      * and released in {@link #endTransaction(Synchronizer.SyncLock)}
      */
     @Nullable
-    private Synchronizer.SyncLock txLock;
+    private Synchronizer.SyncLock mTxLock;
 
     /**
      * Constructor.
@@ -124,14 +124,14 @@ public class SynchronizedDb
                           @NonNull final SQLiteOpenHelper sqLiteOpenHelper,
                           @IntRange(to = SQLiteDatabase.MAX_SQL_CACHE_SIZE)
                           final int preparedStmtCacheSize) {
-        this.synchronizer = synchronizer;
-        this.sqLiteOpenHelper = sqLiteOpenHelper;
-        this.preparedStmtCacheSize = preparedStmtCacheSize;
+        mSynchronizer = synchronizer;
+        mSqLiteOpenHelper = sqLiteOpenHelper;
+        mPreparedStmtCacheSize = preparedStmtCacheSize;
 
         // Trigger onCreate/onUpdate/... for the database
-        final Synchronizer.SyncLock syncLock = this.synchronizer.getExclusiveLock();
+        final Synchronizer.SyncLock syncLock = mSynchronizer.getExclusiveLock();
         try {
-            sqLiteDatabase = getWritableDatabase();
+            mSqlDb = getWritableDatabase();
         } finally {
             syncLock.unlock();
         }
@@ -166,10 +166,10 @@ public class SynchronizedDb
      */
     @NonNull
     private SQLiteDatabase getReadableDatabase() {
-        final SQLiteDatabase db = sqLiteOpenHelper.getReadableDatabase();
+        final SQLiteDatabase db = mSqLiteOpenHelper.getReadableDatabase();
         // only set when bigger than the default
-        if ((preparedStmtCacheSize > 25)) {
-            db.setMaxSqlCacheSize(preparedStmtCacheSize);
+        if ((mPreparedStmtCacheSize > 25)) {
+            db.setMaxSqlCacheSize(mPreparedStmtCacheSize);
         }
         return db;
     }
@@ -183,17 +183,17 @@ public class SynchronizedDb
      */
     @NonNull
     private SQLiteDatabase getWritableDatabase() {
-        final SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
+        final SQLiteDatabase db = mSqLiteOpenHelper.getWritableDatabase();
         // only set when bigger than the default
-        if ((preparedStmtCacheSize > 25)) {
-            db.setMaxSqlCacheSize(preparedStmtCacheSize);
+        if ((mPreparedStmtCacheSize > 25)) {
+            db.setMaxSqlCacheSize(mPreparedStmtCacheSize);
         }
         return db;
     }
 
     @Override
     public void close() {
-        sqLiteDatabase.close();
+        mSqlDb.close();
     }
 
     /**
@@ -215,27 +215,27 @@ public class SynchronizedDb
         // But having the logic in place because: 1) future proof + 2) developer boo-boo,
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!sqLiteDatabase.inTransaction()) {
+            if (!mSqlDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
 
         Synchronizer.SyncLock txLock = null;
-        if (this.txLock != null) {
-            if (this.txLock.getType() != Synchronizer.LockType.Exclusive) {
+        if (mTxLock != null) {
+            if (mTxLock.getType() != Synchronizer.LockType.Exclusive) {
                 throw new TransactionException(ERROR_TX_INSIDE_SHARED);
             }
         } else {
-            txLock = synchronizer.getExclusiveLock();
+            txLock = mSynchronizer.getExclusiveLock();
         }
 
         try {
             // Drop the table in case there is an orphaned instance with the same name.
-            if (table.exists(sqLiteDatabase)) {
-                sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + table.getName());
+            if (table.exists(mSqlDb)) {
+                mSqlDb.execSQL("DROP TABLE IF EXISTS " + table.getName());
             }
-            table.create(sqLiteDatabase, withDomainConstraints);
-            table.createIndices(sqLiteDatabase);
+            table.create(mSqlDb, withDomainConstraints);
+            table.createIndices(mSqlDb);
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -260,18 +260,18 @@ public class SynchronizedDb
                        @NonNull final ContentValues values) {
 
         Synchronizer.SyncLock txLock = null;
-        if (this.txLock != null) {
-            if (this.txLock.getType() != Synchronizer.LockType.Exclusive) {
+        if (mTxLock != null) {
+            if (mTxLock.getType() != Synchronizer.LockType.Exclusive) {
                 throw new TransactionException(ERROR_TX_INSIDE_SHARED);
             }
         } else {
-            txLock = synchronizer.getExclusiveLock();
+            txLock = mSynchronizer.getExclusiveLock();
         }
 
         // reminder: insert does not throw exceptions for the actual insert.
         // but it can throw other exceptions.
         try {
-            return sqLiteDatabase.insert(table, null, values);
+            return mSqlDb.insert(table, null, values);
 
         } finally {
             if (txLock != null) {
@@ -294,18 +294,18 @@ public class SynchronizedDb
                       @Nullable final String[] whereArgs) {
 
         Synchronizer.SyncLock txLock = null;
-        if (this.txLock != null) {
-            if (this.txLock.getType() != Synchronizer.LockType.Exclusive) {
+        if (mTxLock != null) {
+            if (mTxLock.getType() != Synchronizer.LockType.Exclusive) {
                 throw new TransactionException(ERROR_TX_INSIDE_SHARED);
             }
         } else {
-            txLock = synchronizer.getExclusiveLock();
+            txLock = mSynchronizer.getExclusiveLock();
         }
 
         // reminder: update does not throw exceptions for the actual update.
         // but it can throw other exceptions.
         try {
-            return sqLiteDatabase.update(table, values, whereClause, whereArgs);
+            return mSqlDb.update(table, values, whereClause, whereArgs);
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -329,18 +329,18 @@ public class SynchronizedDb
                       @Nullable final String[] whereArgs) {
 
         Synchronizer.SyncLock txLock = null;
-        if (this.txLock != null) {
-            if (this.txLock.getType() != Synchronizer.LockType.Exclusive) {
+        if (mTxLock != null) {
+            if (mTxLock.getType() != Synchronizer.LockType.Exclusive) {
                 throw new TransactionException(ERROR_TX_INSIDE_SHARED);
             }
         } else {
-            txLock = synchronizer.getExclusiveLock();
+            txLock = mSynchronizer.getExclusiveLock();
         }
 
         // reminder: delete does not throw exceptions for the actual delete.
         // but it can throw other exceptions.
         try {
-            return sqLiteDatabase.delete(table, whereClause, whereArgs);
+            return mSqlDb.delete(table, whereClause, whereArgs);
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -354,16 +354,16 @@ public class SynchronizedDb
     @NonNull
     public SynchronizedStatement compileStatement(@NonNull final String sql) {
         Synchronizer.SyncLock txLock = null;
-        if (this.txLock != null) {
-            if (this.txLock.getType() != Synchronizer.LockType.Exclusive) {
+        if (mTxLock != null) {
+            if (mTxLock.getType() != Synchronizer.LockType.Exclusive) {
                 throw new TransactionException(ERROR_TX_INSIDE_SHARED);
             }
         } else {
-            txLock = synchronizer.getExclusiveLock();
+            txLock = mSynchronizer.getExclusiveLock();
         }
 
         try {
-            return new SynchronizedStatement(synchronizer, sqLiteDatabase, sql);
+            return new SynchronizedStatement(mSynchronizer, mSqlDb, sql);
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -380,16 +380,16 @@ public class SynchronizedDb
         }
 
         Synchronizer.SyncLock txLock = null;
-        if (this.txLock != null) {
-            if (this.txLock.getType() != Synchronizer.LockType.Exclusive) {
+        if (mTxLock != null) {
+            if (mTxLock.getType() != Synchronizer.LockType.Exclusive) {
                 throw new TransactionException(ERROR_TX_INSIDE_SHARED);
             }
         } else {
-            txLock = synchronizer.getExclusiveLock();
+            txLock = mSynchronizer.getExclusiveLock();
         }
 
         try {
-            sqLiteDatabase.execSQL(sql);
+            mSqlDb.execSQL(sql);
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -407,8 +407,8 @@ public class SynchronizedDb
     public SynchronizedCursor rawQuery(@NonNull final String sql,
                                        @Nullable final String[] selectionArgs) {
         Synchronizer.SyncLock txLock = null;
-        if (this.txLock == null) {
-            txLock = synchronizer.getSharedLock();
+        if (mTxLock == null) {
+            txLock = mSynchronizer.getSharedLock();
         }
 
         try {
@@ -419,7 +419,7 @@ public class SynchronizedDb
              *  with a factory?
              */
             return (SynchronizedCursor)
-                    sqLiteDatabase.rawQueryWithFactory(cursorFactory, sql, selectionArgs, null);
+                    mSqlDb.rawQueryWithFactory(mCursorFactory, sql, selectionArgs, null);
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -448,12 +448,12 @@ public class SynchronizedDb
                                                @Nullable final String[] selectionArgs,
                                                @Nullable final String editTable) {
         Synchronizer.SyncLock txLock = null;
-        if (this.txLock == null) {
-            txLock = synchronizer.getSharedLock();
+        if (mTxLock == null) {
+            txLock = mSynchronizer.getSharedLock();
         }
         try {
-            return (TypedCursor) sqLiteDatabase
-                    .rawQueryWithFactory(typedCursorFactory, sql, selectionArgs, editTable);
+            return (TypedCursor) mSqlDb
+                    .rawQueryWithFactory(mTypedCursorFactory, sql, selectionArgs, editTable);
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -464,11 +464,11 @@ public class SynchronizedDb
 
     public TableInfo getTableInfo(@NonNull final TableDefinition tableDefinition) {
         Synchronizer.SyncLock txLock = null;
-        if (this.txLock == null) {
-            txLock = synchronizer.getSharedLock();
+        if (mTxLock == null) {
+            txLock = mSynchronizer.getSharedLock();
         }
         try {
-            return tableDefinition.getTableInfo(sqLiteDatabase);
+            return tableDefinition.getTableInfo(mSqlDb);
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -515,7 +515,7 @@ public class SynchronizedDb
      * @return {@code true} if the current thread is in a transaction.
      */
     public boolean inTransaction() {
-        return sqLiteDatabase.inTransaction();
+        return mSqlDb.inTransaction();
     }
 
     /**
@@ -529,9 +529,9 @@ public class SynchronizedDb
     public Synchronizer.SyncLock beginTransaction(final boolean isUpdate) {
         final Synchronizer.SyncLock txLock;
         if (isUpdate) {
-            txLock = synchronizer.getExclusiveLock();
+            txLock = mSynchronizer.getExclusiveLock();
         } else {
-            txLock = synchronizer.getSharedLock();
+            txLock = mSynchronizer.getSharedLock();
         }
         // We have the lock, but if the real beginTransaction() throws an exception,
         // we need to release the lock.
@@ -540,8 +540,8 @@ public class SynchronizedDb
             // Note: because we get a lock, two 'isUpdate' transactions will
             // block, this is only likely to happen with two TXs on the current thread
             // or two non-update TXs on different thread.
-            if (this.txLock == null) {
-                sqLiteDatabase.beginTransaction();
+            if (mTxLock == null) {
+                mSqlDb.beginTransaction();
             } else {
                 throw new TransactionException(ERROR_TX_ALREADY_STARTED);
             }
@@ -549,7 +549,7 @@ public class SynchronizedDb
             txLock.unlock();
             throw new TransactionException("beginTransaction failed: " + e.getMessage(), e);
         }
-        this.txLock = txLock;
+        mTxLock = txLock;
         return txLock;
     }
 
@@ -558,7 +558,7 @@ public class SynchronizedDb
      */
     public void setTransactionSuccessful() {
         // We could pass in the lock and do the same checks as we do in #endTransaction
-        sqLiteDatabase.setTransactionSuccessful();
+        mSqlDb.setTransactionSuccessful();
     }
 
     /**
@@ -572,19 +572,19 @@ public class SynchronizedDb
         if (txLock == null) {
             throw new TransactionException(ERROR_TX_LOCK_WAS_NULL);
         }
-        if (this.txLock == null) {
+        if (mTxLock == null) {
             throw new TransactionException(ERROR_TX_NOT_STARTED);
         }
-        if (!this.txLock.equals(txLock)) {
+        if (!mTxLock.equals(txLock)) {
             throw new TransactionException(ERROR_TX_WRONG_LOCK);
         }
 
         try {
-            sqLiteDatabase.endTransaction();
+            mSqlDb.endTransaction();
         } finally {
             // Clear mTxLock before unlocking so another thread does not
             // see the old lock when it gets the lock
-            this.txLock = null;
+            mTxLock = null;
             txLock.unlock();
         }
     }
@@ -596,12 +596,12 @@ public class SynchronizedDb
      */
     @NonNull
     public SQLiteDatabase getSQLiteDatabase() {
-        return sqLiteDatabase;
+        return mSqlDb;
     }
 
     @NonNull
     public String getDatabasePath() {
-        return sqLiteDatabase.getPath();
+        return mSqlDb.getPath();
     }
 
     /**
@@ -611,7 +611,7 @@ public class SynchronizedDb
      */
     @NonNull
     private Synchronizer getSynchronizer() {
-        return synchronizer;
+        return mSynchronizer;
     }
 
     /**

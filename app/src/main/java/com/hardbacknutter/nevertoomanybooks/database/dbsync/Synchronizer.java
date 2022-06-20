@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,29 +50,30 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Synchronizer {
 
     /** Main lock for synchronization. */
-    private final ReentrantLock lock = new ReentrantLock();
+    private final ReentrantLock mLock = new ReentrantLock();
     /** Condition fired when a reader releases a lock. */
-    private final Condition released = lock.newCondition();
+    private final Condition mReleased = mLock.newCondition();
     /** Collection of threads that have shared locks. */
-    private final Map<Thread, Integer> sharedOwners = Collections.synchronizedMap(new HashMap<>());
+    private final Map<Thread, Integer> mSharedOwners =
+            Collections.synchronizedMap(new HashMap<>());
 
     /** Lock used to pass back to consumers of shared locks. */
-    private final SyncLock sharedLock = new SharedLock();
+    private final SyncLock mSharedLock = new SharedLock();
     /** Lock used to pass back to consumers of exclusive locks. */
-    private final SyncLock exclusiveLock = new ExclusiveLock();
+    private final SyncLock mExclusiveLock = new ExclusiveLock();
 
     /**
      * Routine to purge shared locks held by dead threads.
      * Can only be called while mLock is held.
      */
     private void purgeOldLocks() {
-        if (!lock.isHeldByCurrentThread()) {
+        if (!mLock.isHeldByCurrentThread()) {
             throw new LockException("Can not cleanup old locks if not locked");
         }
 
-        for (final Thread thread : sharedOwners.keySet()) {
+        for (final Thread thread : mSharedOwners.keySet()) {
             if (!thread.isAlive()) {
-                sharedOwners.remove(thread);
+                mSharedOwners.remove(thread);
             }
         }
     }
@@ -85,19 +86,19 @@ public class Synchronizer {
     @NonNull
     SyncLock getSharedLock() {
         final Thread thread = Thread.currentThread();
-        lock.lock();
+        mLock.lock();
         purgeOldLocks();
         try {
-            Integer count = sharedOwners.get(thread);
+            Integer count = mSharedOwners.get(thread);
             if (count != null) {
                 count++;
             } else {
                 count = 1;
             }
-            sharedOwners.put(thread, count);
-            return sharedLock;
+            mSharedOwners.put(thread, count);
+            return mSharedLock;
         } finally {
-            lock.unlock();
+            mLock.unlock();
         }
     }
 
@@ -106,25 +107,25 @@ public class Synchronizer {
      */
     private void releaseSharedLock() {
         final Thread thread = Thread.currentThread();
-        lock.lock();
+        mLock.lock();
         try {
-            Integer count = sharedOwners.get(thread);
+            Integer count = mSharedOwners.get(thread);
             if (count != null) {
                 count--;
                 if (count < 0) {
                     throw new LockException("Releasing a lock with count already zero");
                 }
                 if (count != 0) {
-                    sharedOwners.put(thread, count);
+                    mSharedOwners.put(thread, count);
                 } else {
-                    sharedOwners.remove(thread);
-                    released.signal();
+                    mSharedOwners.remove(thread);
+                    mReleased.signal();
                 }
             } else {
                 throw new LockException("Releasing a lock when not held");
             }
         } finally {
-            lock.unlock();
+            mLock.unlock();
         }
     }
 
@@ -143,27 +144,27 @@ public class Synchronizer {
     SyncLock getExclusiveLock() {
         final Thread thread = Thread.currentThread();
         // Synchronize with other code
-        lock.lock();
+        mLock.lock();
         while (true) {
             // Cleanup any old threads that are dead.
             purgeOldLocks();
             try {
                 // Simple case -- no locks held, just return and keep the lock
-                if (sharedOwners.isEmpty()) {
-                    return exclusiveLock;
+                if (mSharedOwners.isEmpty()) {
+                    return mExclusiveLock;
                 }
                 // Check for one lock, and it being this thread.
-                if (sharedOwners.size() == 1 && sharedOwners.containsKey(thread)) {
+                if (mSharedOwners.size() == 1 && mSharedOwners.containsKey(thread)) {
                     // One locker, and it is us...so upgrade is OK.
-                    return exclusiveLock;
+                    return mExclusiveLock;
                 }
 
                 // Someone else has it. Wait.
-                released.await();
+                mReleased.await();
 
             } catch (@NonNull final InterruptedException | RuntimeException e) {
                 // Probably happens because thread was interrupted. Just die.
-                lock.unlock();
+                mLock.unlock();
                 throw new LockException("Unable to get exclusive lock", e);
             }
         }
@@ -173,10 +174,10 @@ public class Synchronizer {
      * Release the {@link ExclusiveLock} previously taken.
      */
     private void releaseExclusiveLock() {
-        if (!lock.isHeldByCurrentThread()) {
+        if (!mLock.isHeldByCurrentThread()) {
             throw new LockException("Exclusive Lock is not held by this thread");
         }
-        lock.unlock();
+        mLock.unlock();
     }
 
     enum LockType {

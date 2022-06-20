@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,24 +36,24 @@ public class SynchronizedCursor
 
     /** the database {@link Synchronizer}. */
     @NonNull
-    private final Synchronizer synchronizer;
+    private final Synchronizer mSync;
     /** cached count for the query. */
-    private int count = -1;
+    private int mCount = -1;
 
     /**
      * Constructor.
      *
-     * @param driver       SQLiteCursorDriver
-     * @param editTable    the name of the table used for this query
-     * @param query        the {@link SQLiteQuery} object associated with this cursor object.
-     * @param synchronizer the database {@link Synchronizer}
+     * @param driver    SQLiteCursorDriver
+     * @param editTable the name of the table used for this query
+     * @param query     the {@link SQLiteQuery} object associated with this cursor object.
+     * @param sync      the database {@link Synchronizer}
      */
     public SynchronizedCursor(@NonNull final SQLiteCursorDriver driver,
                               @NonNull final String editTable,
                               @NonNull final SQLiteQuery query,
-                              @NonNull final Synchronizer synchronizer) {
+                              @NonNull final Synchronizer sync) {
         super(driver, editTable, query);
-        this.synchronizer = synchronizer;
+        mSync = sync;
     }
 
     /**
@@ -62,15 +62,15 @@ public class SynchronizedCursor
     @Override
     public int getCount() {
         // Cache the count (it's what SQLiteCursor does), and we avoid locking
-        if (count == -1) {
-            final Synchronizer.SyncLock sharedLock = synchronizer.getSharedLock();
+        if (mCount == -1) {
+            final Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
             try {
-                count = super.getCount();
+                mCount = super.getCount();
             } finally {
                 sharedLock.unlock();
             }
         }
-        return count;
+        return mCount;
     }
 
     /**
@@ -79,7 +79,7 @@ public class SynchronizedCursor
     @Override
     @CallSuper
     public boolean requery() {
-        final Synchronizer.SyncLock sharedLock = synchronizer.getSharedLock();
+        final Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
             return super.requery();
         } finally {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -52,13 +52,13 @@ public class TypedCursor
 
     /** database reference so we can get table/column info. */
     @Nullable
-    private SynchronizedDb synchronizedDb;
+    private SynchronizedDb mDb;
     /** The primary table. */
     @Nullable
-    private TableDefinition tableDefinition;
+    private TableDefinition mTableDefinition;
     /** Populated on first use. */
     @Nullable
-    private TableInfo tableInfo;
+    private TableInfo mTableInfo;
 
     /**
      * Constructor.
@@ -84,8 +84,8 @@ public class TypedCursor
     public void setDb(@NonNull final SynchronizedDb db,
                       @SuppressWarnings("SameParameterValue")
                       @NonNull final TableDefinition tableDefinition) {
-        synchronizedDb = db;
-        this.tableDefinition = tableDefinition;
+        mDb = db;
+        mTableDefinition = tableDefinition;
     }
 
     /**
@@ -97,12 +97,12 @@ public class TypedCursor
     public int getType(final int columnIndex) {
 
         // initialise once.
-        if (synchronizedDb != null && tableDefinition != null && tableInfo == null) {
-            tableInfo = synchronizedDb.getTableInfo(tableDefinition);
+        if (mDb != null && mTableDefinition != null && mTableInfo == null) {
+            mTableInfo = mDb.getTableInfo(mTableDefinition);
         }
 
-        if (tableInfo != null) {
-            final ColumnInfo columnInfo = tableInfo.getColumn(getColumnName(columnIndex));
+        if (mTableInfo != null) {
+            final ColumnInfo columnInfo = mTableInfo.getColumn(getColumnName(columnIndex));
             if (columnInfo != null) {
                 return columnInfo.getType();
             }

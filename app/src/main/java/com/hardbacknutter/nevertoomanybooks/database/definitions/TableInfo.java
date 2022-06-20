@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,10 +43,10 @@ public class TableInfo {
 
     /** columns of this table. */
     @NonNull
-    private final Map<String, ColumnInfo> columns;
+    private final Map<String, ColumnInfo> mColumns;
     /** only stored for debug purposes. */
     @NonNull
-    private final String tableName;
+    private final String mTableName;
 
     /**
      * Constructor.
@@ -57,8 +57,8 @@ public class TableInfo {
     TableInfo(@NonNull final SQLiteDatabase db,
               @NonNull final String tableName) {
 
-        this.tableName = tableName;
-        columns = describeTable(db, this.tableName);
+        mTableName = tableName;
+        mColumns = describeTable(db, mTableName);
     }
 
     /**
@@ -68,7 +68,7 @@ public class TableInfo {
      */
     @NonNull
     public Collection<ColumnInfo> getColumns() {
-        return columns.values();
+        return mColumns.values();
     }
 
     /**
@@ -81,7 +81,7 @@ public class TableInfo {
     @Nullable
     public ColumnInfo getColumn(@NonNull final String name) {
         final String lcName = name.toLowerCase(ServiceLocator.getSystemLocale());
-        return columns.get(lcName);
+        return mColumns.get(lcName);
     }
 
     /**
@@ -115,8 +115,8 @@ public class TableInfo {
     @NonNull
     public String toString() {
         return "TableInfo{"
-               + "mTableName=" + tableName
-               + ", mColumns=" + columns.values()
+               + "mTableName=" + mTableName
+               + ", mColumns=" + mColumns.values()
                + '}';
     }
 }

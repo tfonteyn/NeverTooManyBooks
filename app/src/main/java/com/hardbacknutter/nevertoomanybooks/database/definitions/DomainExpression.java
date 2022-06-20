@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,12 +57,12 @@ public class DomainExpression
 
     /** Domain. */
     @NonNull
-    private final Domain domain;
+    private final Domain mDomain;
     /** Expression to use to fetch the domain value. */
     @Nullable
-    private final String expression;
+    private final String mExpression;
     @Sorting
-    private final int sorted;
+    private final int mSorted;
 
     /**
      * Constructor.
@@ -86,9 +86,9 @@ public class DomainExpression
     public DomainExpression(@NonNull final Domain domain,
                             @Nullable final String expression,
                             @Sorting final int sorted) {
-        this.domain = domain;
-        this.expression = expression;
-        this.sorted = sorted;
+        mDomain = domain;
+        mExpression = expression;
+        mSorted = sorted;
     }
 
     /**
@@ -97,7 +97,7 @@ public class DomainExpression
      * @param that to copy from
      */
     public DomainExpression(@NonNull final DomainExpression that) {
-        this(that.domain, that.expression, that.sorted);
+        this(that.mDomain, that.mExpression, that.mSorted);
     }
 
     /**
@@ -107,17 +107,17 @@ public class DomainExpression
      */
     private DomainExpression(@NonNull final Parcel in) {
         //noinspection ConstantConditions
-        domain = in.readParcelable(Domain.class.getClassLoader());
-        expression = in.readString();
-        sorted = in.readInt();
+        mDomain = in.readParcelable(Domain.class.getClassLoader());
+        mExpression = in.readString();
+        mSorted = in.readInt();
     }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeParcelable(domain, flags);
-        dest.writeString(expression);
-        dest.writeInt(sorted);
+        dest.writeParcelable(mDomain, flags);
+        dest.writeString(mExpression);
+        dest.writeInt(mSorted);
     }
 
     @Override
@@ -131,7 +131,7 @@ public class DomainExpression
      * @return {@code true} for sorted
      */
     public boolean isSorted() {
-        return sorted != SORT_UNSORTED;
+        return mSorted != SORT_UNSORTED;
     }
 
     /**
@@ -141,17 +141,17 @@ public class DomainExpression
      */
     @NonNull
     public Domain getDomain() {
-        return domain;
+        return mDomain;
     }
 
     @Nullable
     public String getExpression() {
-        return expression;
+        return mExpression;
     }
 
     @NonNull
     public String getSortedExpression() {
-        if (sorted == SORT_DESC) {
+        if (mSorted == SORT_DESC) {
             return " DESC";
         } else {
             return "";
@@ -167,23 +167,23 @@ public class DomainExpression
             return false;
         }
         final DomainExpression that = (DomainExpression) o;
-        return sorted == that.sorted
-               && domain.equals(that.domain)
-               && Objects.equals(expression, that.expression);
+        return mSorted == that.mSorted
+               && mDomain.equals(that.mDomain)
+               && Objects.equals(mExpression, that.mExpression);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(domain, expression, sorted);
+        return Objects.hash(mDomain, mExpression, mSorted);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "DomainExpression{"
-               + "mDomain=" + domain
-               + ", mExpression='" + expression + '\''
-               + ", mSorted=" + sorted
+               + "mDomain=" + mDomain
+               + ", mExpression='" + mExpression + '\''
+               + ", mSorted=" + mSorted
                + '}';
     }
 

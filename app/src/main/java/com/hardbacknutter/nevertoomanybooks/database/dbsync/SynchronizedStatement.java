@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2022 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,13 +50,13 @@ public class SynchronizedStatement
     /** Synchronizer from database. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
-    private final Synchronizer synchronizer;
+    private final Synchronizer mSynchronizer;
     /** Underlying statement. This class is final, so we cannot extend it. */
-    private final SQLiteStatement statement;
+    private final SQLiteStatement mStatement;
     /** Indicates this is a 'read-only' statement. */
-    private final boolean readOnly;
+    private final boolean mIsReadOnly;
     /** DEBUG: Indicates close() has been called. Also see {@link Closeable#close()}. */
-    private boolean closeWasCalled;
+    private boolean mCloseWasCalled;
 
     /**
      * Constructor. Do not use directly!
@@ -71,14 +71,14 @@ public class SynchronizedStatement
     public SynchronizedStatement(@NonNull final Synchronizer synchronizer,
                                  @NonNull final SQLiteDatabase db,
                                  @NonNull final String sql) {
-        this.synchronizer = synchronizer;
-        statement = db.compileStatement(sql);
+        mSynchronizer = synchronizer;
+        mStatement = db.compileStatement(sql);
 
         // mIsReadOnly is not a debug flag, but used to get a shared versus exclusive lock.
         // The toUpper was VERY slow (profiler test)... there are only "select" and "savepoint"
         // we don't use the latter... so test on 's' only, and assume trim() is not needed.
-//       readOnly = sql.trim().toUpperCase(Locale.ENGLISH).startsWith("SELECT");
-        readOnly = sql.charAt(0) == 'S' || sql.charAt(0) == 's';
+//        mIsReadOnly = sql.trim().toUpperCase(Locale.ENGLISH).startsWith("SELECT");
+        mIsReadOnly = sql.charAt(0) == 'S' || sql.charAt(0) == 's';
     }
 
     /**
@@ -96,9 +96,9 @@ public class SynchronizedStatement
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "bindString|binding NULL", new Throwable());
             }
-            statement.bindNull(index);
+            mStatement.bindNull(index);
         } else {
-            statement.bindString(index, value);
+            mStatement.bindString(index, value);
         }
     }
 
@@ -113,7 +113,7 @@ public class SynchronizedStatement
      */
     public void bindBoolean(final int index,
                             final boolean value) {
-        statement.bindLong(index, value ? 1 : 0);
+        mStatement.bindLong(index, value ? 1 : 0);
     }
 
     /**
@@ -127,7 +127,7 @@ public class SynchronizedStatement
      */
     public void bindLong(final int index,
                          final long value) {
-        statement.bindLong(index, value);
+        mStatement.bindLong(index, value);
     }
 
     /**
@@ -142,7 +142,7 @@ public class SynchronizedStatement
     @SuppressWarnings("unused")
     public void bindDouble(final int index,
                            final double value) {
-        statement.bindDouble(index, value);
+        mStatement.bindDouble(index, value);
     }
 
     /**
@@ -157,9 +157,9 @@ public class SynchronizedStatement
     public void bindBlob(final int index,
                          @Nullable final byte[] value) {
         if (value == null) {
-            statement.bindNull(index);
+            mStatement.bindNull(index);
         } else {
-            statement.bindBlob(index, value);
+            mStatement.bindBlob(index, value);
         }
     }
 
@@ -172,7 +172,7 @@ public class SynchronizedStatement
      * @param index The 1-based index to the parameter to bind null to
      */
     public void bindNull(final int index) {
-        statement.bindNull(index);
+        mStatement.bindNull(index);
     }
 
     /**
@@ -182,7 +182,7 @@ public class SynchronizedStatement
      */
     @SuppressWarnings({"unused", "WeakerAccess"})
     public void clearBindings() {
-        statement.clearBindings();
+        mStatement.clearBindings();
     }
 
     /**
@@ -190,8 +190,8 @@ public class SynchronizedStatement
      */
     @Override
     public void close() {
-        closeWasCalled = true;
-        statement.close();
+        mCloseWasCalled = true;
+        mStatement.close();
     }
 
     /**
@@ -206,11 +206,11 @@ public class SynchronizedStatement
      */
     public long simpleQueryForLong()
             throws SQLiteDoneException {
-        final Synchronizer.SyncLock sharedLock = synchronizer.getSharedLock();
+        final Synchronizer.SyncLock sharedLock = mSynchronizer.getSharedLock();
         try {
-            final long result = statement.simpleQueryForLong();
+            final long result = mStatement.simpleQueryForLong();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
-                Log.d(TAG, "simpleQueryForLong|" + statement + "|result=" + result);
+                Log.d(TAG, "simpleQueryForLong|" + mStatement + "|result=" + result);
             }
             return result;
         } finally {
@@ -228,11 +228,11 @@ public class SynchronizedStatement
      * @return The result of the query, or 0 when no rows found
      */
     public long simpleQueryForLongOrZero() {
-        final Synchronizer.SyncLock sharedLock = synchronizer.getSharedLock();
+        final Synchronizer.SyncLock sharedLock = mSynchronizer.getSharedLock();
         try {
-            final long result = statement.simpleQueryForLong();
+            final long result = mStatement.simpleQueryForLong();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
-                Log.d(TAG, "simpleQueryForLongOrZero|" + statement + "|result=" + result);
+                Log.d(TAG, "simpleQueryForLongOrZero|" + mStatement + "|result=" + result);
             }
             return result;
         } catch (@NonNull final SQLiteDoneException ignore) {
@@ -255,12 +255,12 @@ public class SynchronizedStatement
     @NonNull
     public String simpleQueryForString()
             throws SQLiteDoneException {
-        final Synchronizer.SyncLock sharedLock = synchronizer.getSharedLock();
+        final Synchronizer.SyncLock sharedLock = mSynchronizer.getSharedLock();
         try {
-            final String result = statement.simpleQueryForString();
+            final String result = mStatement.simpleQueryForString();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
-                Log.d(TAG, "simpleQueryForString|" + statement + "|result=" + result);
+                Log.d(TAG, "simpleQueryForString|" + mStatement + "|result=" + result);
             }
             return result;
 
@@ -280,13 +280,13 @@ public class SynchronizedStatement
      */
     @Nullable
     public String simpleQueryForStringOrNull() {
-        final Synchronizer.SyncLock sharedLock = synchronizer.getSharedLock();
+        final Synchronizer.SyncLock sharedLock = mSynchronizer.getSharedLock();
         try {
-            return statement.simpleQueryForString();
+            return mStatement.simpleQueryForString();
 
         } catch (@NonNull final SQLiteDoneException e) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
-                Log.d(TAG, "simpleQueryForStringOrNull|" + statement + "|NULL");
+                Log.d(TAG, "simpleQueryForStringOrNull|" + mStatement + "|NULL");
             }
             return null;
         } finally {
@@ -302,16 +302,16 @@ public class SynchronizedStatement
      */
     public void execute() {
         final Synchronizer.SyncLock txLock;
-        if (readOnly) {
-            txLock = synchronizer.getSharedLock();
+        if (mIsReadOnly) {
+            txLock = mSynchronizer.getSharedLock();
         } else {
-            txLock = synchronizer.getExclusiveLock();
+            txLock = mSynchronizer.getExclusiveLock();
         }
         try {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
-                Log.d(TAG, "execute|" + statement);
+                Log.d(TAG, "execute|" + mStatement);
             }
-            statement.execute();
+            mStatement.execute();
         } finally {
             txLock.unlock();
         }
@@ -326,11 +326,11 @@ public class SynchronizedStatement
      * @return the number of rows affected by this SQL statement execution.
      */
     public int executeUpdateDelete() {
-        final Synchronizer.SyncLock exclusiveLock = synchronizer.getExclusiveLock();
+        final Synchronizer.SyncLock exclusiveLock = mSynchronizer.getExclusiveLock();
         try {
-            final int rowsAffected = statement.executeUpdateDelete();
+            final int rowsAffected = mStatement.executeUpdateDelete();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
-                Log.d(TAG, "executeUpdateDelete|" + statement + "|rowsAffected=" + rowsAffected);
+                Log.d(TAG, "executeUpdateDelete|" + mStatement + "|rowsAffected=" + rowsAffected);
             }
             return rowsAffected;
         } finally {
@@ -347,15 +347,15 @@ public class SynchronizedStatement
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      */
     public long executeInsert() {
-        final Synchronizer.SyncLock exclusiveLock = synchronizer.getExclusiveLock();
+        final Synchronizer.SyncLock exclusiveLock = mSynchronizer.getExclusiveLock();
         try {
-            final long id = statement.executeInsert();
+            final long id = mStatement.executeInsert();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
-                Log.d(TAG, "executeInsert|" + statement + "|id=" + id);
+                Log.d(TAG, "executeInsert|" + mStatement + "|id=" + id);
 
                 if (id == -1) {
-                    Logger.e(TAG, new Throwable(), "Insert failed|mStatement=" + statement);
+                    Logger.e(TAG, new Throwable(), "Insert failed|mStatement=" + mStatement);
                 }
             }
             return id;
@@ -368,9 +368,9 @@ public class SynchronizedStatement
     @NonNull
     public String toString() {
         return "SynchronizedStatement{"
-               + ", mIsReadOnly=" + readOnly
-               + ", mCloseWasCalled=" + closeWasCalled
-               + ", mStatement=" + statement.toString()
+               + ", mIsReadOnly=" + mIsReadOnly
+               + ", mCloseWasCalled=" + mCloseWasCalled
+               + ", mStatement=" + mStatement.toString()
                + '}';
     }
 
@@ -382,11 +382,11 @@ public class SynchronizedStatement
     @CallSuper
     protected void finalize()
             throws Throwable {
-        if (!closeWasCalled && statement != null) {
+        if (!mCloseWasCalled && mStatement != null) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.w(TAG, "finalize|mStatement=" + statement);
+                Logger.w(TAG, "finalize|mStatement=" + mStatement);
             }
-            statement.close();
+            mStatement.close();
         }
         super.finalize();
     }
