@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -55,21 +55,21 @@ public class EditBookPublisherDialogFragment
     public static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /** FragmentResultListener request key to use for our response. */
-    private String mRequestKey;
+    private String requestKey;
 
-    private EditBookViewModel mVm;
+    private EditBookViewModel vm;
 
     /** Displayed for info only. */
     @Nullable
-    private String mBookTitle;
+    private String bookTitle;
     /** View Binding. */
-    private DialogEditBookPublisherBinding mVb;
+    private DialogEditBookPublisherBinding vb;
 
     /** The Publisher we're editing. */
-    private Publisher mPublisher;
+    private Publisher publisher;
 
     /** Current edit. */
-    private Publisher mCurrentEdit;
+    private Publisher currentEdit;
 
     /**
      * No-arg constructor for OS use.
@@ -83,20 +83,20 @@ public class EditBookPublisherDialogFragment
         super.onCreate(savedInstanceState);
 
         //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
+        vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         final Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                             BKEY_REQUEST_KEY);
-        mPublisher = Objects.requireNonNull(args.getParcelable(DBKey.FK_PUBLISHER),
-                                            DBKey.FK_PUBLISHER);
-        mBookTitle = args.getString(DBKey.TITLE);
+        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
+                                            BKEY_REQUEST_KEY);
+        publisher = Objects.requireNonNull(args.getParcelable(DBKey.FK_PUBLISHER),
+                                           DBKey.FK_PUBLISHER);
+        bookTitle = args.getString(DBKey.TITLE);
 
         if (savedInstanceState == null) {
-            mCurrentEdit = new Publisher(mPublisher.getName());
+            currentEdit = new Publisher(publisher.getName());
         } else {
             //noinspection ConstantConditions
-            mCurrentEdit = savedInstanceState.getParcelable(DBKey.FK_PUBLISHER);
+            currentEdit = savedInstanceState.getParcelable(DBKey.FK_PUBLISHER);
         }
     }
 
@@ -104,16 +104,16 @@ public class EditBookPublisherDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mVb = DialogEditBookPublisherBinding.bind(view);
-        mVb.toolbar.setSubtitle(mBookTitle);
+        vb = DialogEditBookPublisherBinding.bind(view);
+        vb.toolbar.setSubtitle(bookTitle);
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Diacritic, mVm.getAllPublisherNames());
+                ExtArrayAdapter.FilterType.Diacritic, vm.getAllPublisherNames());
 
-        mVb.name.setText(mCurrentEdit.getName());
-        mVb.name.setAdapter(nameAdapter);
+        vb.name.setText(currentEdit.getName());
+        vb.name.setAdapter(nameAdapter);
     }
 
     @Override
@@ -131,23 +131,23 @@ public class EditBookPublisherDialogFragment
         viewToModel();
 
         // basic check only, we're doing more extensive checks later on.
-        if (mCurrentEdit.getName().isEmpty()) {
-            showError(mVb.lblName, R.string.vldt_non_blank_required);
+        if (currentEdit.getName().isEmpty()) {
+            showError(vb.lblName, R.string.vldt_non_blank_required);
             return false;
         }
 
-        Launcher.setResult(this, mRequestKey, mPublisher, mCurrentEdit);
+        Launcher.setResult(this, requestKey, publisher, currentEdit);
         return true;
     }
 
     private void viewToModel() {
-        mCurrentEdit.setName(mVb.name.getText().toString().trim());
+        currentEdit.setName(vb.name.getText().toString().trim());
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(DBKey.FK_PUBLISHER, mCurrentEdit);
+        outState.putParcelable(DBKey.FK_PUBLISHER, currentEdit);
     }
 
     @Override
@@ -161,8 +161,8 @@ public class EditBookPublisherDialogFragment
 
         private static final String ORIGINAL = "original";
         private static final String MODIFIED = "modified";
-        private String mRequestKey;
-        private FragmentManager mFragmentManager;
+        private String requestKey;
+        private FragmentManager fragmentManager;
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
@@ -177,9 +177,9 @@ public class EditBookPublisherDialogFragment
         public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
                                               @NonNull final String requestKey,
                                               @NonNull final LifecycleOwner lifecycleOwner) {
-            mFragmentManager = fragmentManager;
-            mRequestKey = requestKey;
-            mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
+            this.fragmentManager = fragmentManager;
+            this.requestKey = requestKey;
+            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
         }
 
         /**
@@ -191,13 +191,13 @@ public class EditBookPublisherDialogFragment
         void launch(@NonNull final String bookTitle,
                     @NonNull final Publisher publisher) {
             final Bundle args = new Bundle(3);
-            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+            args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putString(DBKey.TITLE, bookTitle);
             args.putParcelable(DBKey.FK_PUBLISHER, publisher);
 
             final DialogFragment frag = new EditBookPublisherDialogFragment();
             frag.setArguments(args);
-            frag.show(mFragmentManager, TAG);
+            frag.show(fragmentManager, TAG);
         }
 
         @Override

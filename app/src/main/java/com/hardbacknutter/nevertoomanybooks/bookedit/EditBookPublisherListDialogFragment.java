@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -62,22 +62,22 @@ public class EditBookPublisherListDialogFragment
             TAG + ":rk:" + EditBookPublisherDialogFragment.TAG;
 
     /** The book. Must be in the Activity scope. */
-    private EditBookViewModel mVm;
+    private EditBookViewModel vm;
     /** If the list changes, the book is dirty. */
-    private final SimpleAdapterDataObserver mAdapterDataObserver =
+    private final SimpleAdapterDataObserver adapterDataObserver =
             new SimpleAdapterDataObserver() {
                 @Override
                 public void onChanged() {
-                    mVm.getBook().setStage(EntityStage.Stage.Dirty);
+                    vm.getBook().setStage(EntityStage.Stage.Dirty);
                 }
             };
     /** View Binding. */
-    private DialogEditBookPublisherListBinding mVb;
+    private DialogEditBookPublisherListBinding vb;
     /** the rows. */
-    private List<Publisher> mList;
+    private List<Publisher> publisherList;
     /** The adapter for the list itself. */
-    private PublisherListAdapter mListAdapter;
-    private final EditBookPublisherDialogFragment.Launcher mOnEditPublisherLauncher =
+    private PublisherListAdapter adapter;
+    private final EditBookPublisherDialogFragment.Launcher editPublisherLauncher =
             new EditBookPublisherDialogFragment.Launcher() {
                 @Override
                 public void onResult(@NonNull final Publisher original,
@@ -87,7 +87,7 @@ public class EditBookPublisherListDialogFragment
             };
 
     /** Drag and drop support for the list view. */
-    private ItemTouchHelper mItemTouchHelper;
+    private ItemTouchHelper itemTouchHelper;
 
     /**
      * No-arg constructor for OS use.
@@ -112,10 +112,10 @@ public class EditBookPublisherListDialogFragment
         super.onCreate(savedInstanceState);
 
         //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
+        vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
-        mOnEditPublisherLauncher.registerForFragmentResult(getChildFragmentManager(),
-                                                           RK_EDIT_PUBLISHER, this);
+        editPublisherLauncher.registerForFragmentResult(getChildFragmentManager(),
+                                                        RK_EDIT_PUBLISHER, this);
     }
 
     @Override
@@ -123,23 +123,23 @@ public class EditBookPublisherListDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mVb = DialogEditBookPublisherListBinding.bind(view);
+        vb = DialogEditBookPublisherListBinding.bind(view);
 
-        mVb.toolbar.setSubtitle(mVm.getBook().getTitle());
+        vb.toolbar.setSubtitle(vm.getBook().getTitle());
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Diacritic, mVm.getAllPublisherNames());
-        mVb.publisher.setAdapter(nameAdapter);
-        mVb.publisher.setOnFocusChangeListener((v, hasFocus) -> {
+                ExtArrayAdapter.FilterType.Diacritic, vm.getAllPublisherNames());
+        vb.publisher.setAdapter(nameAdapter);
+        vb.publisher.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
-                mVb.lblPublisher.setError(null);
+                vb.lblPublisher.setError(null);
             }
         });
 
         // soft-keyboards 'done' button act as a shortcut to add the publisher
-        mVb.publisher.setOnEditorActionListener((v, actionId, event) -> {
+        vb.publisher.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 hideKeyboard(v);
                 onAdd();
@@ -148,18 +148,18 @@ public class EditBookPublisherListDialogFragment
             return false;
         });
 
-        mVb.publisherList.setHasFixedSize(true);
+        vb.publisherList.setHasFixedSize(true);
 
-        mList = mVm.getBook().getPublishers();
-        mListAdapter = new PublisherListAdapter(getContext(), mList,
-                                                vh -> mItemTouchHelper.startDrag(vh));
-        mVb.publisherList.setAdapter(mListAdapter);
-        mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
+        publisherList = vm.getBook().getPublishers();
+        adapter = new PublisherListAdapter(getContext(), publisherList,
+                                           vh -> itemTouchHelper.startDrag(vh));
+        vb.publisherList.setAdapter(adapter);
+        adapter.registerAdapterDataObserver(adapterDataObserver);
 
         final SimpleItemTouchHelperCallback sitHelperCallback =
-                new SimpleItemTouchHelperCallback(mListAdapter);
-        mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
-        mItemTouchHelper.attachToRecyclerView(mVb.publisherList);
+                new SimpleItemTouchHelperCallback(adapter);
+        itemTouchHelper = new ItemTouchHelper(sitHelperCallback);
+        itemTouchHelper.attachToRecyclerView(vb.publisherList);
     }
 
     @Override
@@ -183,11 +183,11 @@ public class EditBookPublisherListDialogFragment
      */
     private void onAdd() {
         // clear any previous error
-        mVb.lblPublisher.setError(null);
+        vb.lblPublisher.setError(null);
 
-        final String name = mVb.publisher.getText().toString().trim();
+        final String name = vb.publisher.getText().toString().trim();
         if (name.isEmpty()) {
-            mVb.lblPublisher.setError(getString(R.string.vldt_non_blank_required));
+            vb.lblPublisher.setError(getString(R.string.vldt_non_blank_required));
             return;
         }
 
@@ -195,28 +195,28 @@ public class EditBookPublisherListDialogFragment
 
         // see if it already exists
         //noinspection ConstantConditions
-        mVm.fixId(getContext(), newPublisher);
+        vm.fixId(getContext(), newPublisher);
         // and check it's not already in the list.
-        if (mList.contains(newPublisher)) {
-            mVb.lblPublisher.setError(getString(R.string.warning_already_in_list));
+        if (publisherList.contains(newPublisher)) {
+            vb.lblPublisher.setError(getString(R.string.warning_already_in_list));
         } else {
             // add and scroll to the new item
-            mList.add(newPublisher);
-            mListAdapter.notifyItemInserted(mList.size() - 1);
-            mVb.publisherList.scrollToPosition(mListAdapter.getItemCount() - 1);
+            publisherList.add(newPublisher);
+            adapter.notifyItemInserted(publisherList.size() - 1);
+            vb.publisherList.scrollToPosition(adapter.getItemCount() - 1);
 
             // clear the form for next entry
-            mVb.publisher.setText("");
-            mVb.publisher.requestFocus();
+            vb.publisher.setText("");
+            vb.publisher.requestFocus();
         }
     }
 
     private boolean saveChanges() {
-        if (!mVb.publisher.getText().toString().isEmpty()) {
+        if (!vb.publisher.getText().toString().isEmpty()) {
             // Discarding applies to the edit field(s) only. The list itself is still saved.
             //noinspection ConstantConditions
             StandardDialogs.unsavedEdits(getContext(), null, () -> {
-                mVb.publisher.setText("");
+                vb.publisher.setText("");
                 if (saveChanges()) {
                     dismiss();
                 }
@@ -224,7 +224,7 @@ public class EditBookPublisherListDialogFragment
             return false;
         }
 
-        mVm.updatePublishers(mList);
+        vm.updatePublishers(publisherList);
         return true;
     }
 
@@ -248,13 +248,13 @@ public class EditBookPublisherListDialogFragment
 
         // The name was modified. Check if it's used by any other books.
         //noinspection ConstantConditions
-        if (mVm.isSingleUsage(context, original)) {
+        if (vm.isSingleUsage(context, original)) {
             // If it's not, we can simply modify the old object and we're done here.
             // There is no need to consult the user.
             // Copy the new data into the original object that the user was changing.
             original.copyFrom(modified);
-            mVm.getBook().prunePublishers(context, true);
-            mListAdapter.notifyDataSetChanged();
+            vm.getBook().prunePublishers(context, true);
+            adapter.notifyDataSetChanged();
             return;
         }
 
@@ -272,8 +272,8 @@ public class EditBookPublisherListDialogFragment
 
         // This change is done in the database right NOW!
         //noinspection ConstantConditions
-        if (mVm.changeForAllBooks(getContext(), original, modified)) {
-            mListAdapter.notifyDataSetChanged();
+        if (vm.changeForAllBooks(getContext(), original, modified)) {
+            adapter.notifyDataSetChanged();
         } else {
             StandardDialogs.showError(getContext(), R.string.error_storage_not_writable);
         }
@@ -287,8 +287,8 @@ public class EditBookPublisherListDialogFragment
         // we will orphan this new Publisher. That's ok, it will get
         // garbage collected from the database sooner or later.
         //noinspection ConstantConditions
-        if (mVm.changeForThisBook(getContext(), original, modified)) {
-            mListAdapter.notifyDataSetChanged();
+        if (vm.changeForThisBook(getContext(), original, modified)) {
+            adapter.notifyDataSetChanged();
         } else {
             StandardDialogs.showError(getContext(), R.string.error_storage_not_writable);
         }
@@ -334,8 +334,8 @@ public class EditBookPublisherListDialogFragment
                     .inflate(R.layout.row_edit_publisher_list, parent, false);
             final Holder holder = new Holder(view);
             // click -> edit
-            holder.rowDetailsView.setOnClickListener(v -> mOnEditPublisherLauncher.launch(
-                    mVm.getBook().getTitle(),
+            holder.rowDetailsView.setOnClickListener(v -> editPublisherLauncher.launch(
+                    vm.getBook().getTitle(),
                     getItem(holder.getBindingAdapterPosition())));
             return holder;
         }

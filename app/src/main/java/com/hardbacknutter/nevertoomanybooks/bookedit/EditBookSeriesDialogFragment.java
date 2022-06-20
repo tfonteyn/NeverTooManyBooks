@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -55,22 +55,22 @@ public class EditBookSeriesDialogFragment
     public static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /** FragmentResultListener request key to use for our response. */
-    private String mRequestKey;
+    private String requestKey;
 
-    private EditBookViewModel mVm;
+    private EditBookViewModel vm;
 
     /** Displayed for info only. */
     @Nullable
-    private String mBookTitle;
+    private String bookTitle;
 
     /** View Binding. */
-    private DialogEditBookSeriesBinding mVb;
+    private DialogEditBookSeriesBinding vb;
 
     /** The Series we're editing. */
-    private Series mSeries;
+    private Series series;
 
     /** Current edit. */
-    private Series mCurrentEdit;
+    private Series currentEdit;
 
     /**
      * No-arg constructor for OS use.
@@ -84,21 +84,21 @@ public class EditBookSeriesDialogFragment
         super.onCreate(savedInstanceState);
 
         //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
+        vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         final Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                             BKEY_REQUEST_KEY);
-        mSeries = Objects.requireNonNull(args.getParcelable(DBKey.FK_SERIES),
-                                         DBKey.FK_SERIES);
-        mBookTitle = args.getString(DBKey.TITLE);
+        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
+                                            BKEY_REQUEST_KEY);
+        series = Objects.requireNonNull(args.getParcelable(DBKey.FK_SERIES),
+                                        DBKey.FK_SERIES);
+        bookTitle = args.getString(DBKey.TITLE);
 
         if (savedInstanceState == null) {
-            mCurrentEdit = new Series(mSeries.getTitle(), mSeries.isComplete());
-            mCurrentEdit.setNumber(mSeries.getNumber());
+            currentEdit = new Series(series.getTitle(), series.isComplete());
+            currentEdit.setNumber(series.getNumber());
         } else {
             //noinspection ConstantConditions
-            mCurrentEdit = savedInstanceState.getParcelable(DBKey.FK_SERIES);
+            currentEdit = savedInstanceState.getParcelable(DBKey.FK_SERIES);
         }
     }
 
@@ -106,19 +106,19 @@ public class EditBookSeriesDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mVb = DialogEditBookSeriesBinding.bind(view);
-        mVb.toolbar.setSubtitle(mBookTitle);
+        vb = DialogEditBookSeriesBinding.bind(view);
+        vb.toolbar.setSubtitle(bookTitle);
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Diacritic, mVm.getAllSeriesTitles());
+                ExtArrayAdapter.FilterType.Diacritic, vm.getAllSeriesTitles());
 
-        mVb.seriesTitle.setText(mCurrentEdit.getTitle());
-        mVb.seriesTitle.setAdapter(titleAdapter);
-        mVb.cbxIsComplete.setChecked(mCurrentEdit.isComplete());
+        vb.seriesTitle.setText(currentEdit.getTitle());
+        vb.seriesTitle.setAdapter(titleAdapter);
+        vb.cbxIsComplete.setChecked(currentEdit.isComplete());
 
-        mVb.seriesNum.setText(mCurrentEdit.getNumber());
+        vb.seriesNum.setText(currentEdit.getNumber());
     }
 
     @Override
@@ -136,27 +136,27 @@ public class EditBookSeriesDialogFragment
         viewToModel();
 
         // basic check only, we're doing more extensive checks later on.
-        if (mCurrentEdit.getTitle().isEmpty()) {
-            showError(mVb.lblSeriesTitle, R.string.vldt_non_blank_required);
+        if (currentEdit.getTitle().isEmpty()) {
+            showError(vb.lblSeriesTitle, R.string.vldt_non_blank_required);
             return false;
         }
 
-        Launcher.setResult(this, mRequestKey, mSeries, mCurrentEdit);
+        Launcher.setResult(this, requestKey, series, currentEdit);
         return true;
     }
 
     private void viewToModel() {
-        mCurrentEdit.setTitle(mVb.seriesTitle.getText().toString().trim());
-        mCurrentEdit.setComplete(mVb.cbxIsComplete.isChecked());
+        currentEdit.setTitle(vb.seriesTitle.getText().toString().trim());
+        currentEdit.setComplete(vb.cbxIsComplete.isChecked());
 
         //noinspection ConstantConditions
-        mCurrentEdit.setNumber(mVb.seriesNum.getText().toString().trim());
+        currentEdit.setNumber(vb.seriesNum.getText().toString().trim());
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(DBKey.FK_SERIES, mCurrentEdit);
+        outState.putParcelable(DBKey.FK_SERIES, currentEdit);
     }
 
     @Override
@@ -170,8 +170,8 @@ public class EditBookSeriesDialogFragment
 
         private static final String ORIGINAL = "original";
         private static final String MODIFIED = "modified";
-        private String mRequestKey;
-        private FragmentManager mFragmentManager;
+        private String requestKey;
+        private FragmentManager fragmentManager;
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,
@@ -186,9 +186,9 @@ public class EditBookSeriesDialogFragment
         public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
                                               @NonNull final String requestKey,
                                               @NonNull final LifecycleOwner lifecycleOwner) {
-            mFragmentManager = fragmentManager;
-            mRequestKey = requestKey;
-            mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
+            this.fragmentManager = fragmentManager;
+            this.requestKey = requestKey;
+            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
         }
 
         /**
@@ -200,13 +200,13 @@ public class EditBookSeriesDialogFragment
         void launch(@NonNull final String bookTitle,
                     @NonNull final Series series) {
             final Bundle args = new Bundle(3);
-            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+            args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putString(DBKey.TITLE, bookTitle);
             args.putParcelable(DBKey.FK_SERIES, series);
 
             final DialogFragment frag = new EditBookSeriesDialogFragment();
             frag.setArguments(args);
-            frag.show(mFragmentManager, TAG);
+            frag.show(fragmentManager, TAG);
         }
 
 
