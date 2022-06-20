@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -171,7 +171,7 @@ public abstract class SearchEngineBase
 
     @Override
     public boolean isCancelled() {
-        // mCaller being null should only happen when we check if we're cancelled
+        // caller being null should only happen when we check if we're cancelled
         // before a search was started.
         return cancelled.get() || caller == null || caller.isCancelled();
     }

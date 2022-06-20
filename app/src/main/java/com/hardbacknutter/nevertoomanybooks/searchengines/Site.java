@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -114,7 +114,7 @@ public final class Site
 
         // Copy the current state
         enabled = from.enabled;
-        // don't copy the mSearchEngine, let it be recreated.
+        // don't copy the searchEngine, let it be recreated.
         searchEngine = null;
     }
 

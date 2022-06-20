@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -200,9 +200,9 @@ public class LibraryThingSearchEngine
 
         /** XML content. */
         @SuppressWarnings("StringBufferField")
-        private final StringBuilder mBuilder = new StringBuilder();
+        private final StringBuilder builder = new StringBuilder();
         /** List of ISBN numbers for all found editions. */
-        private final List<String> mIsbnList = new ArrayList<>();
+        private final List<String> isbnList = new ArrayList<>();
 
         /**
          * Get the results.
@@ -211,7 +211,7 @@ public class LibraryThingSearchEngine
          */
         @NonNull
         public List<String> getResult() {
-            return mIsbnList;
+            return isbnList;
         }
 
         @Override
@@ -221,14 +221,14 @@ public class LibraryThingSearchEngine
                                @NonNull final String qName) {
 
             if (localName.equalsIgnoreCase(XML_ISBN)) {
-                mIsbnList.add(mBuilder.toString());
+                isbnList.add(builder.toString());
             }
 
             // Always reset the length. This is not entirely the right thing to do, but works
             // because we always want strings from the lowest level (leaf) XML elements.
             // To be completely correct, we should maintain a stack of builders that are pushed and
             // popped as each startElement/endElement is called. But lets not be pedantic for now.
-            mBuilder.setLength(0);
+            builder.setLength(0);
         }
 
         @Override
@@ -236,7 +236,7 @@ public class LibraryThingSearchEngine
         public void characters(final char[] ch,
                                final int start,
                                final int length) {
-            mBuilder.append(ch, start, length);
+            builder.append(ch, start, length);
         }
     }
 }

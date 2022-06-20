@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -121,14 +121,14 @@ public class KbNlSearchEngine
     }
 
     @Nullable
-    private FutureHttpGet<Boolean> mFutureHttpGet;
+    private FutureHttpGet<Boolean> futureHttpGet;
 
     @Override
     public void cancel() {
         synchronized (this) {
             super.cancel();
-            if (mFutureHttpGet != null) {
-                mFutureHttpGet.cancel();
+            if (futureHttpGet != null) {
+                futureHttpGet.cancel();
             }
         }
     }
@@ -145,7 +145,7 @@ public class KbNlSearchEngine
 
         final Bundle bookData = ServiceLocator.newBundle();
 
-        mFutureHttpGet = createFutureGetRequest();
+        futureHttpGet = createFutureGetRequest();
 
         final String url = getSiteUrl() + String.format(BOOK_URL, validIsbn);
 
@@ -156,9 +156,9 @@ public class KbNlSearchEngine
             final SAXParser parser = factory.newSAXParser();
 
             // Don't follow redirects, so we get the XML instead of the rendered page
-            mFutureHttpGet.setInstanceFollowRedirects(false); //9020612476
+            futureHttpGet.setInstanceFollowRedirects(false); //9020612476
 
-            mFutureHttpGet.get(url, request -> {
+            futureHttpGet.get(url, request -> {
                 try (BufferedInputStream bis = new BufferedInputStream(request.getInputStream())) {
                     parser.parse(bis, handler);
                     checkForSeriesNameInTitle(bookData);
