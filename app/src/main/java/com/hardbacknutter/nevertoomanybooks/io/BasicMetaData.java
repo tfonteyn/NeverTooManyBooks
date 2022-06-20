@@ -91,7 +91,7 @@ public class BasicMetaData {
     @NonNull
     public String toString() {
         return "SyncReaderMetaData{"
-               + "mData=" + data
+               + "data=" + data
                + '}';
     }
 }
