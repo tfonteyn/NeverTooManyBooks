@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -74,13 +74,13 @@ public class SqliteShellFragment
             + " ORDER BY tbl_name";
 
     @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider mToolbarMenuProvider;
-    private boolean mAllowUpdates;
+    private MenuProvider toolbarMenuProvider;
+    private boolean allowUpdates;
     /** View Binding. */
-    private FragmentSqliteShellBinding mVb;
-    private SynchronizedDb mDb;
+    private FragmentSqliteShellBinding vb;
+    private SynchronizedDb db;
 
-    private int mMaxLines = MAX_LINES;
+    private int maxLines = MAX_LINES;
 
     @NonNull
     public static Fragment create(final boolean allowUpdates) {
@@ -97,18 +97,18 @@ public class SqliteShellFragment
 
         final Bundle args = getArguments();
         if (args != null) {
-            mAllowUpdates = args.getBoolean(BKEY_ALLOW_UPDATES);
+            allowUpdates = args.getBoolean(BKEY_ALLOW_UPDATES);
         }
 
-        mDb = ServiceLocator.getInstance().getDb();
+        db = ServiceLocator.getInstance().getDb();
     }
 
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentSqliteShellBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentSqliteShellBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @Override
@@ -118,13 +118,13 @@ public class SqliteShellFragment
 
 
         final Toolbar toolbar = getToolbar();
-        mToolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
+        toolbarMenuProvider = new ToolbarMenuProvider();
+        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
 
-        final WebSettings settings = mVb.output.getSettings();
+        final WebSettings settings = vb.output.getSettings();
         settings.setTextZoom(75);
 
-        mVb.input.setOnEditorActionListener((v, actionId, event) -> {
+        vb.input.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_GO) {
                 BaseActivity.hideKeyboard(v);
                 execute();
@@ -138,8 +138,8 @@ public class SqliteShellFragment
     public void onResume() {
         super.onResume();
         //noinspection ConstantConditions
-        mMaxLines = PreferenceManager.getDefaultSharedPreferences(getContext())
-                                     .getInt(Prefs.pk_sqlite_max_lines, MAX_LINES);
+        maxLines = PreferenceManager.getDefaultSharedPreferences(getContext())
+                                    .getInt(Prefs.pk_sqlite_max_lines, MAX_LINES);
     }
 
     //    private void textSmaller() {
@@ -153,7 +153,7 @@ public class SqliteShellFragment
 //    }
 
     private void execute() {
-        executeSql(mVb.input.getText().toString().trim());
+        executeSql(vb.input.getText().toString().trim());
     }
 
     private void executeSql(@NonNull final String sql) {
@@ -162,20 +162,20 @@ public class SqliteShellFragment
             if (lcSql.startsWith("update") || lcSql.startsWith("delete")) {
                 getToolbar().setTitle("");
 
-                if (mAllowUpdates) {
-                    try (SynchronizedStatement stmt = mDb.compileStatement(sql)) {
+                if (allowUpdates) {
+                    try (SynchronizedStatement stmt = db.compileStatement(sql)) {
                         final int rowsAffected = stmt.executeUpdateDelete();
                         final String result = STR_ROWS_AFFECTED + rowsAffected;
-                        mVb.output.loadDataWithBaseURL(null, result,
-                                                       TEXT_HTML, UTF_8, null);
+                        vb.output.loadDataWithBaseURL(null, result,
+                                                      TEXT_HTML, UTF_8, null);
                     }
                 } else {
-                    mVb.output.loadDataWithBaseURL(null, STR_UPDATES_NOT_ALLOWED,
-                                                   TEXT_HTML, UTF_8, null);
+                    vb.output.loadDataWithBaseURL(null, STR_UPDATES_NOT_ALLOWED,
+                                                  TEXT_HTML, UTF_8, null);
                 }
             } else {
                 //TODO: parse for keyword 'limit' and add default if not present
-                try (Cursor cursor = mDb.rawQuery(sql, null)) {
+                try (Cursor cursor = db.rawQuery(sql, null)) {
                     getToolbar().setTitle(STR_LAST_COUNT + cursor.getCount());
 
                     final StringBuilder sb = new StringBuilder("<table>");
@@ -186,7 +186,7 @@ public class SqliteShellFragment
                     }
                     sb.append("</tr>");
 
-                    int maxLines = mMaxLines;
+                    int maxLines = this.maxLines;
                     while (cursor.moveToNext() && maxLines > 0) {
                         final StringBuilder line = new StringBuilder();
                         for (int c = 0; c < cursor.getColumnCount(); c++) {
@@ -197,15 +197,15 @@ public class SqliteShellFragment
                     }
                     sb.append("</table>");
 
-                    mVb.output.loadDataWithBaseURL(null, sb.toString(),
-                                                   TEXT_HTML, UTF_8, null);
+                    vb.output.loadDataWithBaseURL(null, sb.toString(),
+                                                  TEXT_HTML, UTF_8, null);
                 }
             }
         } catch (@NonNull final Exception e) {
             getToolbar().setTitle("");
 
-            mVb.output.loadDataWithBaseURL(null, String.valueOf(e.getMessage()),
-                                           TEXT_HTML, UTF_8, null);
+            vb.output.loadDataWithBaseURL(null, String.valueOf(e.getMessage()),
+                                          TEXT_HTML, UTF_8, null);
         }
     }
 
@@ -216,8 +216,8 @@ public class SqliteShellFragment
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
             menu.add(Menu.NONE, R.id.MENU_DEBUG_SQ_SHELL_RUN, 0, R.string.debug_sq_shell_run)
-                .setIcon(mAllowUpdates ? R.drawable.ic_baseline_directions_run_dangerously_24
-                                       : R.drawable.ic_baseline_directions_run_24)
+                .setIcon(allowUpdates ? R.drawable.ic_baseline_directions_run_dangerously_24
+                                      : R.drawable.ic_baseline_directions_run_24)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
             menu.add(Menu.NONE, R.id.MENU_DEBUG_SQ_SHELL_LIST_TABLES, 0,

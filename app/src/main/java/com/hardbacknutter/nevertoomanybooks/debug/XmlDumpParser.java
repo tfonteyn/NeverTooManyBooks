@@ -38,18 +38,18 @@ public class XmlDumpParser
     /** Log tag. */
     private static final String TAG = "XmlDumpParser";
 
-    private boolean mNamespaceBegin;
+    private boolean namespaceBegin;
 
-    private String mCurrentNamespace;
+    private String currentNamespace;
 
-    private String mCurrentNamespaceUri;
+    private String currentNamespaceUri;
 
     @SuppressWarnings("FieldCanBeLocal")
-    private Locator mLocator;
+    private Locator locator;
 
     @CallSuper
     public void setDocumentLocator(final Locator locator) {
-        this.mLocator = locator;
+        this.locator = locator;
     }
 
     @CallSuper
@@ -64,9 +64,9 @@ public class XmlDumpParser
     @CallSuper
     public void startPrefixMapping(final String prefix,
                                    final String uri) {
-        mNamespaceBegin = true;
-        mCurrentNamespace = prefix;
-        mCurrentNamespaceUri = uri;
+        namespaceBegin = true;
+        currentNamespace = prefix;
+        currentNamespaceUri = uri;
     }
 
     @CallSuper
@@ -81,10 +81,10 @@ public class XmlDumpParser
                              final Attributes attributes) {
         final StringBuilder sb = new StringBuilder();
         sb.append("<").append(qName);
-        if (mNamespaceBegin) {
-            sb.append(" xmlns:").append(mCurrentNamespace).append("=\"")
-              .append(mCurrentNamespaceUri).append("\"");
-            mNamespaceBegin = false;
+        if (namespaceBegin) {
+            sb.append(" xmlns:").append(currentNamespace).append("=\"")
+              .append(currentNamespaceUri).append("\"");
+            namespaceBegin = false;
         }
         for (int i = 0; i < attributes.getLength(); i++) {
             sb.append(" ").append(attributes.getQName(i)).append("=\"")
