@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,10 +32,10 @@ public class SearchBookByExternalIdViewModel
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    private final Bundle mResultData = ServiceLocator.newBundle();
+    private final Bundle resultData = ServiceLocator.newBundle();
 
     @NonNull
     public Bundle getResultData() {
-        return mResultData;
+        return resultData;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -447,7 +447,7 @@ class BooklistBuilder {
             addIndex(DBKey.BL_NODE_VISIBLE, false, DOM_BL_NODE_VISIBLE);
 
             // Always sort by level first; no expression, as this does not represent a value.
-            addDomain(new DomainExpression(DOM_BL_NODE_LEVEL, null, DomainExpression.SORT_ASC));
+            addDomain(new DomainExpression(DOM_BL_NODE_LEVEL, null, DomainExpression.Sort.Asc));
 
             // The level expression; for a book this is always 1 below the #groups obviously
             addDomain(new DomainExpression(

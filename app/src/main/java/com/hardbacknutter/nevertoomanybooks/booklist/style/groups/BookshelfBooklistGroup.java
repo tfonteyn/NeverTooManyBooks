@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -95,7 +95,7 @@ public class BookshelfBooklistGroup
                         // We do not sort on the key domain but add the OB column instead
                         new DomainExpression(DOM_SORTING,
                                              TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME),
-                                             DomainExpression.SORT_ASC))
+                                             DomainExpression.Sort.Asc))
                 .addGroupDomain(
                         // Group by id (we want the id available)
                         new DomainExpression(DOM_FK_BOOKSHELF,

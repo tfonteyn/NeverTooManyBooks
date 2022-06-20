@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,28 +58,28 @@ public class SearchBookByExternalIdFragment
     private static final String SIS_USER_INPUT = TAG + ":externalId";
 
     /** The currently selected radio button used by onPause/onSaveInstanceState. */
-    private int mSisSelectedRbId = View.NO_ID;
+    private int selectedRbViewId = View.NO_ID;
     /** The current external id text used by onPause/onSaveInstanceState. */
-    private String mSisUserInput;
+    private String currentInput;
     /** View Binding. */
-    private FragmentBooksearchByExternalIdBinding mVb;
+    private FragmentBooksearchByExternalIdBinding vb;
     /** Set when the user selects a site. */
     @Nullable
-    private SearchEngine.ByExternalId mSelectedSearchEngine;
+    private SearchEngine.ByExternalId searchEngine;
 
-    private SearchBookByExternalIdViewModel mVm;
+    private SearchBookByExternalIdViewModel vm;
 
     @Override
     @NonNull
     protected Bundle getResultData() {
-        return mVm.getResultData();
+        return vm.getResultData();
     }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mVm = new ViewModelProvider(this).get(SearchBookByExternalIdViewModel.class);
+        vm = new ViewModelProvider(this).get(SearchBookByExternalIdViewModel.class);
     }
 
     @Override
@@ -87,8 +87,8 @@ public class SearchBookByExternalIdFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentBooksearchByExternalIdBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentBooksearchByExternalIdBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @Override
@@ -102,19 +102,19 @@ public class SearchBookByExternalIdFragment
         if (savedInstanceState != null) {
             final int checkedId = savedInstanceState.getInt(SIS_SELECTED_RB_ID, View.NO_ID);
             if (checkedId != View.NO_ID) {
-                final RadioButton btn = mVb.getRoot().findViewById(checkedId);
+                final RadioButton btn = vb.getRoot().findViewById(checkedId);
                 if (btn.getVisibility() == View.VISIBLE) {
                     btn.setChecked(true);
-                    mVb.externalId.setEnabled(true);
-                    mVb.externalId.setText(savedInstanceState.getString(SIS_USER_INPUT, ""));
+                    vb.externalId.setEnabled(true);
+                    vb.externalId.setText(savedInstanceState.getString(SIS_USER_INPUT, ""));
                 }
             }
         }
 
-        mVb.sitesGroup.setOnCheckedChangeListener(this::onSiteSelect);
-        mVb.btnSearch.setOnClickListener(v -> startSearch());
+        vb.sitesGroup.setOnCheckedChangeListener(this::onSiteSelect);
+        vb.btnSearch.setOnClickListener(v -> startSearch());
 
-        mVb.externalId.setOnEditorActionListener((v, actionId, event) -> {
+        vb.externalId.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 BaseActivity.hideKeyboard(v);
                 startSearch();
@@ -129,14 +129,14 @@ public class SearchBookByExternalIdFragment
 
         // on NOTHING selected
         if (viewId == View.NO_ID) {
-            mSelectedSearchEngine = null;
+            searchEngine = null;
             // disable, but don't clear it
-            mVb.externalId.setEnabled(false);
+            vb.externalId.setEnabled(false);
             return;
         }
 
         // on true->false transition
-        final RadioButton btn = mVb.getRoot().findViewById(viewId);
+        final RadioButton btn = vb.getRoot().findViewById(viewId);
         if (!btn.isChecked()) {
             return;
         }
@@ -146,18 +146,18 @@ public class SearchBookByExternalIdFragment
         //noinspection OptionalGetWithoutIsPresent
         final SearchEngineConfig config = SearchEngineRegistry
                 .getInstance().getByViewId(viewId).get();
-        mSelectedSearchEngine = (SearchEngine.ByExternalId)
+        searchEngine = (SearchEngine.ByExternalId)
                 Site.Type.Data.getSite(config.getEngineId()).getSearchEngine();
 
-        if (!mSelectedSearchEngine.isAvailable()) {
+        if (!searchEngine.isAvailable()) {
             // If the selected site needs registration, prompt the user.
             //noinspection ConstantConditions
-            mSelectedSearchEngine.promptToRegister(getContext(), true, null, action -> {
+            searchEngine.promptToRegister(getContext(), true, null, action -> {
                 if (action == SearchEngine.RegistrationAction.NotNow
                     || action == SearchEngine.RegistrationAction.Cancelled) {
                     // Clear the selection.
                     // Do not disable the button, allowing the user to change their mind.
-                    mVb.sitesGroup.clearCheck();
+                    vb.sitesGroup.clearCheck();
                 }
             });
             return;
@@ -173,11 +173,11 @@ public class SearchBookByExternalIdFragment
 
         } else {
             // if the user switched from a text input, clean the input
-            if ((mVb.externalId.getInputType() & InputType.TYPE_CLASS_NUMBER) == 0) {
+            if ((vb.externalId.getInputType() & InputType.TYPE_CLASS_NUMBER) == 0) {
                 //noinspection ConstantConditions
-                final String text = mVb.externalId.getText().toString().trim();
+                final String text = vb.externalId.getText().toString().trim();
                 if (!DIGITS_PATTERN.matcher(text).matches()) {
-                    mVb.externalId.setText("");
+                    vb.externalId.setText("");
                 }
             }
             // display a (sort of) numeric keyboard icon
@@ -185,33 +185,33 @@ public class SearchBookByExternalIdFragment
             inputType = InputType.TYPE_CLASS_NUMBER;
         }
 
-        mVb.externalId.setInputType(inputType);
-        mVb.externalId.setCompoundDrawablesRelativeWithIntrinsicBounds(keyboardIcon, 0, 0, 0);
-        mVb.externalId.setEnabled(true);
+        vb.externalId.setInputType(inputType);
+        vb.externalId.setCompoundDrawablesRelativeWithIntrinsicBounds(keyboardIcon, 0, 0, 0);
+        vb.externalId.setEnabled(true);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mSisSelectedRbId = mVb.sitesGroup.getCheckedRadioButtonId();
+        selectedRbViewId = vb.sitesGroup.getCheckedRadioButtonId();
         //noinspection ConstantConditions
-        mSisUserInput = mVb.externalId.getText().toString().trim();
+        currentInput = vb.externalId.getText().toString().trim();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(SIS_SELECTED_RB_ID, mSisSelectedRbId);
-        outState.putString(SIS_USER_INPUT, mSisUserInput);
+        outState.putInt(SIS_SELECTED_RB_ID, selectedRbViewId);
+        outState.putString(SIS_USER_INPUT, currentInput);
     }
 
     @Override
     boolean onPreSearch() {
         //sanity check
         //noinspection ConstantConditions
-        if (mVb.externalId.getText().toString().trim().isEmpty()
-            || mVb.sitesGroup.getCheckedRadioButtonId() == View.NO_ID) {
-            showError(mVb.lblExternalId, R.string.warning_requires_site_and_id);
+        if (vb.externalId.getText().toString().trim().isEmpty()
+            || vb.sitesGroup.getCheckedRadioButtonId() == View.NO_ID) {
+            showError(vb.lblExternalId, R.string.warning_requires_site_and_id);
             return false;
         }
         return true;
@@ -220,9 +220,9 @@ public class SearchBookByExternalIdFragment
     @Override
     boolean onSearch() {
         //noinspection ConstantConditions
-        final String externalId = mVb.externalId.getText().toString().trim();
+        final String externalId = vb.externalId.getText().toString().trim();
         //noinspection ConstantConditions
-        return coordinator.searchByExternalId(mSelectedSearchEngine, externalId);
+        return coordinator.searchByExternalId(searchEngine, externalId);
     }
 
     @Override
@@ -233,7 +233,7 @@ public class SearchBookByExternalIdFragment
         // So a valid result means we either need a title, or a third field.
         final String title = bookData.getString(DBKey.TITLE);
         if ((title == null || title.isEmpty()) && bookData.size() <= 2) {
-            Snackbar.make(mVb.externalId, R.string.warning_no_matching_book_found,
+            Snackbar.make(vb.externalId, R.string.warning_no_matching_book_found,
                           Snackbar.LENGTH_LONG).show();
             return;
         }
@@ -244,6 +244,6 @@ public class SearchBookByExternalIdFragment
     @Override
     void onClearSearchCriteria() {
         super.onClearSearchCriteria();
-        mVb.externalId.setText("");
+        vb.externalId.setText("");
     }
 }

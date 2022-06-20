@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -113,7 +113,7 @@ public class BoBTask
                 new DomainExpression(
                         DBDefinitions.DOM_TITLE_OB,
                         DBDefinitions.TBL_BOOKS.dot(DBKey.TITLE_OB),
-                        DomainExpression.SORT_ASC));
+                        DomainExpression.Sort.Asc));
 
         fixedDomainList.add(
                 // the book language is needed for reordering titles

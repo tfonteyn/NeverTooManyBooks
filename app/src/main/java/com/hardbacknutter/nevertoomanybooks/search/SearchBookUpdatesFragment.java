@@ -66,7 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
  * as per user choices.
  * <p>
  * TODO: re-introduce remembering the last id done, and restarting from that id onwards.
- * See {@link SearchBookUpdatesViewModel} mFromBookIdOnwards
+ * See {@link SearchBookUpdatesViewModel}
  */
 public class SearchBookUpdatesFragment
         extends BaseFragment {

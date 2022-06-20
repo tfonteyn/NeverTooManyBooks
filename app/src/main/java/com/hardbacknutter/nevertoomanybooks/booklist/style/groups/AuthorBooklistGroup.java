@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -129,7 +129,7 @@ public class AuthorBooklistGroup
         return new DomainExpression(DOM_SORTING,
                                     AuthorDaoImpl.getSortingDomainExpression(
                                             style.isSortAuthorByGivenName()),
-                                    DomainExpression.SORT_ASC);
+                                    DomainExpression.Sort.Asc);
     }
 
     @Override

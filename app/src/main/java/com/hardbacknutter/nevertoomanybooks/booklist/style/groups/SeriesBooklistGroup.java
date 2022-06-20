@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -95,7 +95,7 @@ public class SeriesBooklistGroup
                         // We do not sort on the key domain but add the OB column instead
                         new DomainExpression(DOM_SORTING,
                                              TBL_SERIES.dot(DBKey.SERIES_TITLE_OB),
-                                             DomainExpression.SORT_ASC))
+                                             DomainExpression.Sort.Asc))
                 .addGroupDomain(
                         // Group by id (we want the id available and there is
                         // a chance two Series will have the same name)
@@ -114,14 +114,14 @@ public class SeriesBooklistGroup
                                              "CAST("
                                              + TBL_BOOK_SERIES.dot(DBKey.SERIES_BOOK_NUMBER)
                                              + " AS REAL)",
-                                             DomainExpression.SORT_ASC))
+                                             DomainExpression.Sort.Asc))
                 .addBaseDomain(
                         // The series number in the base data in sorted order.
                         // This field is displayed.
                         // Covers non-numeric data (where the above float would fail)
                         new DomainExpression(DOM_BOOK_NUM_IN_SERIES,
                                              TBL_BOOK_SERIES.dot(DBKey.SERIES_BOOK_NUMBER),
-                                             DomainExpression.SORT_ASC));
+                                             DomainExpression.Sort.Asc));
     }
 
     @Override

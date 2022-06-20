@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -91,7 +91,7 @@ public class PublisherBooklistGroup
                         // We do not sort on the key domain but add the OB column instead
                         new DomainExpression(DOM_SORTING,
                                              TBL_PUBLISHERS.dot(DBKey.PUBLISHER_NAME_OB),
-                                             DomainExpression.SORT_ASC))
+                                             DomainExpression.Sort.Asc))
                 .addGroupDomain(
                         // Group by id (we want the id available and there is
                         // a chance two Publishers will have the same name)

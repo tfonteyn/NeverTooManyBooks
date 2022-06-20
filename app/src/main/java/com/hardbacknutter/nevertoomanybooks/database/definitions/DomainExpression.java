@@ -22,12 +22,9 @@ package com.hardbacknutter.nevertoomanybooks.database.definitions;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
 /**
@@ -51,18 +48,14 @@ public class DomainExpression
         }
     };
 
-    public static final int SORT_UNSORTED = 0;
-    public static final int SORT_ASC = 1;
-    public static final int SORT_DESC = 2;
-
     /** Domain. */
     @NonNull
     private final Domain domain;
     /** Expression to use to fetch the domain value. */
     @Nullable
     private final String expression;
-    @Sorting
-    private final int sorted;
+    @NonNull
+    private final Sort sorted;
 
     /**
      * Constructor.
@@ -73,7 +66,7 @@ public class DomainExpression
      */
     public DomainExpression(@NonNull final Domain domain,
                             @Nullable final String expression) {
-        this(domain, expression, SORT_UNSORTED);
+        this(domain, expression, Sort.Unsorted);
     }
 
     /**
@@ -85,7 +78,7 @@ public class DomainExpression
      */
     public DomainExpression(@NonNull final Domain domain,
                             @Nullable final String expression,
-                            @Sorting final int sorted) {
+                            @NonNull final Sort sorted) {
         this.domain = domain;
         this.expression = expression;
         this.sorted = sorted;
@@ -109,7 +102,8 @@ public class DomainExpression
         //noinspection ConstantConditions
         domain = in.readParcelable(Domain.class.getClassLoader());
         expression = in.readString();
-        sorted = in.readInt();
+        //noinspection ConstantConditions
+        sorted = in.readParcelable(Domain.class.getClassLoader());
     }
 
     @Override
@@ -117,7 +111,7 @@ public class DomainExpression
                               final int flags) {
         dest.writeParcelable(domain, flags);
         dest.writeString(expression);
-        dest.writeInt(sorted);
+        dest.writeParcelable(sorted, flags);
     }
 
     @Override
@@ -131,7 +125,7 @@ public class DomainExpression
      * @return {@code true} for sorted
      */
     public boolean isSorted() {
-        return sorted != SORT_UNSORTED;
+        return sorted != Sort.Unsorted;
     }
 
     /**
@@ -151,7 +145,7 @@ public class DomainExpression
 
     @NonNull
     public String getSortedExpression() {
-        if (sorted == SORT_DESC) {
+        if (sorted == Sort.Desc) {
             return " DESC";
         } else {
             return "";
@@ -187,9 +181,36 @@ public class DomainExpression
                + '}';
     }
 
-    @IntDef({SORT_UNSORTED, SORT_ASC, SORT_DESC})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Sorting {
+    public enum Sort
+            implements Parcelable {
+        Unsorted,
+        Asc,
+        Desc;
 
+
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
+        public static final Creator<Sort> CREATOR = new Creator<>() {
+            @Override
+            @NonNull
+            public Sort createFromParcel(@NonNull final Parcel in) {
+                return values()[in.readInt()];
+            }
+
+            @Override
+            public Sort[] newArray(final int size) {
+                return new Sort[size];
+            }
+        };
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(@NonNull final Parcel dest,
+                                  final int flags) {
+            dest.writeInt(ordinal());
+        }
     }
 }
