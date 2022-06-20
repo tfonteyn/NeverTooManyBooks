@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,13 +43,13 @@ public class CalibreLibraryCoder
 
     private static final String TAG_VL = "virtual_libraries";
     @NonNull
-    private final Context mContext;
+    private final Context context;
     @NonNull
-    private final JsonCoder<Bookshelf> mBookshelfCoder;
+    private final JsonCoder<Bookshelf> bookshelfCoder;
 
     public CalibreLibraryCoder(@NonNull final Context context) {
-        mContext = context;
-        mBookshelfCoder = new BookshelfCoder(context);
+        this.context = context;
+        bookshelfCoder = new BookshelfCoder(context);
     }
 
     @NonNull
@@ -65,9 +65,9 @@ public class CalibreLibraryCoder
         data.put(DBKey.CALIBRE_LIBRARY_LAST_SYNC_DATE__UTC, library.getLastSyncDateAsString());
 
         final Bookshelf libraryBookshelf = Bookshelf
-                .getBookshelf(mContext, library.getMappedBookshelfId(), Bookshelf.PREFERRED);
+                .getBookshelf(context, library.getMappedBookshelfId(), Bookshelf.PREFERRED);
 
-        data.put(DBKey.FK_BOOKSHELF, mBookshelfCoder.encode(libraryBookshelf));
+        data.put(DBKey.FK_BOOKSHELF, bookshelfCoder.encode(libraryBookshelf));
 
         final ArrayList<CalibreVirtualLibrary> vlibs = library.getVirtualLibraries();
         if (!vlibs.isEmpty()) {
@@ -79,10 +79,10 @@ public class CalibreLibraryCoder
                 vlData.put(DBKey.CALIBRE_VIRT_LIB_EXPR, vlib.getExpr());
 
                 final Bookshelf vlibBookshelf = Bookshelf
-                        .getBookshelf(mContext, vlib.getMappedBookshelfId(),
+                        .getBookshelf(context, vlib.getMappedBookshelfId(),
                                       library.getMappedBookshelfId());
 
-                vlData.put(DBKey.FK_BOOKSHELF, mBookshelfCoder.encode(vlibBookshelf));
+                vlData.put(DBKey.FK_BOOKSHELF, bookshelfCoder.encode(vlibBookshelf));
 
                 vlArray.put(vlData);
             }
@@ -140,7 +140,7 @@ public class CalibreLibraryCoder
             return v3decode(data);
         }
 
-        final Bookshelf libraryBookshelf = mBookshelfCoder
+        final Bookshelf libraryBookshelf = bookshelfCoder
                 .decode(data.getJSONObject(DBKey.FK_BOOKSHELF));
 
         final CalibreLibrary library = new CalibreLibrary(
@@ -158,7 +158,7 @@ public class CalibreLibraryCoder
             for (int i = 0; i < vlArray.length(); i++) {
                 final JSONObject vlData = vlArray.getJSONObject(i);
 
-                final Bookshelf vlibBookshelf = mBookshelfCoder
+                final Bookshelf vlibBookshelf = bookshelfCoder
                         .decode(data.getJSONObject(DBKey.FK_BOOKSHELF));
 
                 final CalibreVirtualLibrary vlib = new CalibreVirtualLibrary(
@@ -226,7 +226,7 @@ public class CalibreLibraryCoder
         final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
         // try original
-        Bookshelf bookshelf = Bookshelf.getBookshelf(mContext, data.getLong(DBKey.FK_BOOKSHELF));
+        Bookshelf bookshelf = Bookshelf.getBookshelf(context, data.getLong(DBKey.FK_BOOKSHELF));
         if (bookshelf == null) {
             // have we created the workaround before?
             final String name = "Calibre '" + libName + "'";
@@ -234,7 +234,7 @@ public class CalibreLibraryCoder
             if (bookshelf == null) {
                 // make a new one
                 bookshelf = new Bookshelf(name, BuiltinStyle.DEFAULT_UUID);
-                bookshelfDao.insert(mContext, bookshelf);
+                bookshelfDao.insert(context, bookshelf);
             }
         }
         return bookshelf.getId();

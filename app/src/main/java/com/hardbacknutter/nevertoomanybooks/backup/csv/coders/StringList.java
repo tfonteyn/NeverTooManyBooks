@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,7 +40,7 @@ import com.hardbacknutter.org.json.JSONException;
 public class StringList<E> {
 
     @NonNull
-    private final Coder<E> mCoder;
+    private final Coder<E> coder;
 
     /**
      * Constructor.
@@ -48,7 +48,7 @@ public class StringList<E> {
      * @param coder that can encode/decode strings to objects and vice versa.
      */
     public StringList(@NonNull final Coder<E> coder) {
-        mCoder = coder;
+        this.coder = coder;
     }
 
     /**
@@ -81,7 +81,7 @@ public class StringList<E> {
      */
     @NonNull
     public ArrayList<E> decodeList(@Nullable final CharSequence stringList) {
-        return decode(stringList, mCoder.getElementSeparator(), false);
+        return decode(stringList, coder.getElementSeparator(), false);
     }
 
     /**
@@ -93,7 +93,7 @@ public class StringList<E> {
      */
     @NonNull
     public List<E> decodeElement(@Nullable final CharSequence stringList) {
-        return decode(stringList, mCoder.getObjectSeparator(), false);
+        return decode(stringList, coder.getObjectSeparator(), false);
     }
 
     /**
@@ -152,7 +152,7 @@ public class StringList<E> {
                     final String element = sb.toString().trim();
                     if (allowBlank || !element.isEmpty()) {
                         // decode it using the objects factory and add it to the list
-                        list.add(mCoder.decode(element));
+                        list.add(coder.decode(element));
                     }
                     // reset, and start on the next element
                     sb.setLength(0);
@@ -166,7 +166,7 @@ public class StringList<E> {
         // It's important to send back even an empty item.
         final String element = sb.toString().trim();
         if (allowBlank || !element.isEmpty()) {
-            list.add(mCoder.decode(element));
+            list.add(coder.decode(element));
         }
         return list;
     }
@@ -183,8 +183,8 @@ public class StringList<E> {
             throws JSONException {
         // The factory will encode each element, and we simply concat all of them.
         return list.stream()
-                   .map(mCoder::encode)
-                   .collect(Collectors.joining(String.valueOf(mCoder.getElementSeparator())));
+                   .map(coder::encode)
+                   .collect(Collectors.joining(String.valueOf(coder.getElementSeparator())));
     }
 
     /**
@@ -197,7 +197,7 @@ public class StringList<E> {
     @NonNull
     public String encodeElement(@NonNull final E element)
             throws JSONException {
-        return mCoder.encode(element);
+        return coder.encode(element);
     }
 
     /**

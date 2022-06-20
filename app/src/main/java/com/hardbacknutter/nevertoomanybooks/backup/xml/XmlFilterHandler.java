@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,9 +33,9 @@ public class XmlFilterHandler
 
     /** Temporary storage for inter-tag text. */
     @SuppressWarnings("StringBufferField")
-    private final StringBuilder mBuilder = new StringBuilder();
+    private final StringBuilder builder = new StringBuilder();
     /** Stack of parsed tags giving context to the XML parser. */
-    private final List<ElementContext> mParents = new ArrayList<>();
+    private final List<ElementContext> parents = new ArrayList<>();
 
     /**
      * Constructor. Requires a filter tree.
@@ -45,7 +45,7 @@ public class XmlFilterHandler
     XmlFilterHandler(@NonNull final XmlFilter rootFilter) {
         // Build the root context and add to hierarchy.
         final ElementContext tag = new ElementContext(rootFilter);
-        mParents.add(tag);
+        parents.add(tag);
     }
 
     /**
@@ -59,10 +59,10 @@ public class XmlFilterHandler
                              @NonNull final Attributes attributes) {
         // Create a new context for this new tag saving the current inter-tag text for later
         final ElementContext tag = new ElementContext(localName, attributes,
-                                                      mBuilder.toString());
+                                                      builder.toString());
 
         // Get the current element
-        final ElementContext enclosingTag = mParents.get(mParents.size() - 1);
+        final ElementContext enclosingTag = parents.get(parents.size() - 1);
 
         // If there is an active filter, then see if the new tag is of any interest
         if (enclosingTag.getFilter() != null) {
@@ -76,9 +76,9 @@ public class XmlFilterHandler
             }
         }
         // Add the new tag to the context hierarchy and reset
-        mParents.add(tag);
+        parents.add(tag);
         // Reset the inter-tag text storage.
-        mBuilder.setLength(0);
+        builder.setLength(0);
     }
 
     /**
@@ -91,7 +91,7 @@ public class XmlFilterHandler
                            @NonNull final String qName) {
 
         // Get out current context from the hierarchy and pop from stack
-        final ElementContext tag = mParents.remove(mParents.size() - 1);
+        final ElementContext tag = parents.remove(parents.size() - 1);
 
         // Minor paranoia. Make sure name matches. Total waste of time, right?
         if (!localName.equals(tag.getLocalName())) {
@@ -101,7 +101,7 @@ public class XmlFilterHandler
         }
 
         // Save the text that appeared inside this tag (but not inside inner tags)
-        tag.setBody(mBuilder.toString());
+        tag.setBody(builder.toString());
 
         // If there is an active filter in this context, then tell it the tag is finished.
         if (tag.getFilter() != null) {
@@ -109,8 +109,8 @@ public class XmlFilterHandler
         }
 
         // Reset the inter-tag text and append the previously saved 'pre-text'.
-        mBuilder.setLength(0);
-        mBuilder.append(tag.getText());
+        builder.setLength(0);
+        builder.append(tag.getText());
     }
 
     /**
@@ -121,6 +121,6 @@ public class XmlFilterHandler
     public void characters(@NonNull final char[] ch,
                            final int start,
                            final int length) {
-        mBuilder.append(ch, start, length);
+        builder.append(ch, start, length);
     }
 }

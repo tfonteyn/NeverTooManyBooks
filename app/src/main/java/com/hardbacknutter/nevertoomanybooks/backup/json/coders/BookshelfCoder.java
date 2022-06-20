@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,9 +36,9 @@ public class BookshelfCoder
         implements JsonCoder<Bookshelf> {
 
     @NonNull
-    private final Style mDefaultStyle;
+    private final Style defaultStyle;
     @NonNull
-    private final Context mContext;
+    private final Context context;
 
     /**
      * Constructor.
@@ -46,8 +46,8 @@ public class BookshelfCoder
      * @param context Current context
      */
     public BookshelfCoder(@NonNull final Context context) {
-        mContext = context;
-        mDefaultStyle = ServiceLocator.getInstance().getStyles().getDefault(context);
+        this.context = context;
+        defaultStyle = ServiceLocator.getInstance().getStyles().getDefault(context);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class BookshelfCoder
             throws JSONException {
 
         final Bookshelf bookshelf = new Bookshelf(
-                data.getString(DBKey.BOOKSHELF_NAME), mDefaultStyle);
+                data.getString(DBKey.BOOKSHELF_NAME), defaultStyle);
         bookshelf.setId(data.getLong(DBKey.PK_ID));
 
         // It's quite possible that the UUID is not a style we (currently) know.
@@ -107,7 +107,7 @@ public class BookshelfCoder
             }
         }
 
-        return Optional.of(Bookshelf.getBookshelf(mContext,
+        return Optional.of(Bookshelf.getBookshelf(context,
                                                   Bookshelf.PREFERRED,
                                                   Bookshelf.DEFAULT));
     }

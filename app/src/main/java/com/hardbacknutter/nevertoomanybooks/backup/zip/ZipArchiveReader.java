@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -136,43 +136,43 @@ public class ZipArchiveReader
 
         /** The record source stream. */
         @NonNull
-        private final ZipArchiveReader mReader;
+        private final ZipArchiveReader archiveReader;
         /** Zip archive entry. */
         @NonNull
-        private final ZipEntry mEntry;
+        private final ZipEntry entry;
 
         /**
          * Constructor.
          *
-         * @param reader Parent
-         * @param entry  Corresponding archive entry
+         * @param archiveReader Parent
+         * @param entry         Corresponding archive entry
          */
-        ZipArchiveRecord(@NonNull final ZipArchiveReader reader,
+        ZipArchiveRecord(@NonNull final ZipArchiveReader archiveReader,
                          @NonNull final ZipEntry entry) {
-            mReader = reader;
-            mEntry = entry;
+            this.archiveReader = archiveReader;
+            this.entry = entry;
         }
 
         @NonNull
         public Optional<RecordType> getType() {
-            return RecordType.getType(mEntry.getName());
+            return RecordType.getType(entry.getName());
         }
 
         @NonNull
         @Override
         public Optional<RecordEncoding> getEncoding() {
-            return RecordEncoding.getEncoding(mEntry.getName());
+            return RecordEncoding.getEncoding(entry.getName());
         }
 
         @NonNull
         @Override
         public String getName() {
-            return mEntry.getName();
+            return entry.getName();
         }
 
         @Override
         public long getLastModifiedEpochMilli() {
-            final long time = mEntry.getTime();
+            final long time = entry.getTime();
             if (time == -1) {
                 // it's unlikely there won't be a 'time',
                 // but if its missing use 'now' ... i.e. pretend the incoming data is newer
@@ -187,7 +187,7 @@ public class ZipArchiveReader
         public InputStream getInputStream()
                 throws FileNotFoundException {
             // The reader can open/close the stream at will, so always ask the reader
-            return mReader.getZipInputStream();
+            return archiveReader.getZipInputStream();
         }
     }
 }

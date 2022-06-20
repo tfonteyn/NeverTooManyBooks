@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -105,22 +105,22 @@ public class CsvArchiveReader
             implements ArchiveReaderRecord {
 
         @NonNull
-        private final String mName;
+        private final String name;
 
         /** The record source stream. */
         @NonNull
-        private final InputStream mIs;
+        private final InputStream inputStream;
 
         /**
          * Constructor.
          *
-         * @param name of this record
-         * @param is   InputStream to use
+         * @param name        of this record
+         * @param inputStream InputStream to use
          */
         CsvArchiveRecord(@NonNull final String name,
-                         @NonNull final InputStream is) {
-            mName = name;
-            mIs = is;
+                         @NonNull final InputStream inputStream) {
+            this.name = name;
+            this.inputStream = inputStream;
         }
 
         @NonNull
@@ -137,7 +137,7 @@ public class CsvArchiveReader
         @NonNull
         @Override
         public String getName() {
-            return mName;
+            return name;
         }
 
         @Override
@@ -149,7 +149,7 @@ public class CsvArchiveReader
         @NonNull
         @Override
         public InputStream getInputStream() {
-            return mIs;
+            return inputStream;
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -142,7 +142,7 @@ public abstract class ArchiveReaderAbstract
     public void validate(@NonNull final Context context)
             throws DataReaderException, IOException {
         if (metaData == null) {
-            // reading it will either assign a value to mMetaData, or throw exceptions
+            // reading it will either assign a value to metaData, or throw exceptions
             readMetaData(context);
         }
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -52,20 +52,20 @@ import com.hardbacknutter.org.json.JSONObject;
 public class BookCoder
         implements JsonCoder<Book> {
 
-    private final JsonCoder<Author> mAuthorCoder = new AuthorCoder();
-    private final JsonCoder<Bookshelf> mBookshelfCoder;
-    private final JsonCoder<CalibreLibrary> mCalibreLibraryCoder;
-    private final JsonCoder<Publisher> mPublisherCoder = new PublisherCoder();
-    private final JsonCoder<Series> mSeriesCoder = new SeriesCoder();
-    private final JsonCoder<TocEntry> mTocEntryCoder = new TocEntryCoder();
+    private final JsonCoder<Author> authorCoder = new AuthorCoder();
+    private final JsonCoder<Bookshelf> bookshelfCoder;
+    private final JsonCoder<CalibreLibrary> calibreLibraryCoder;
+    private final JsonCoder<Publisher> publisherCoder = new PublisherCoder();
+    private final JsonCoder<Series> seriesCoder = new SeriesCoder();
+    private final JsonCoder<TocEntry> tocEntryCoder = new TocEntryCoder();
 
     /**
      * Constructor.
      */
     public BookCoder(@NonNull final Context context) {
 
-        mBookshelfCoder = new BookshelfCoder(context);
-        mCalibreLibraryCoder = new CalibreLibraryCoder(context);
+        bookshelfCoder = new BookshelfCoder(context);
+        calibreLibraryCoder = new CalibreLibraryCoder(context);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class BookCoder
             if (library != null) {
                 // FK as it's a reference
                 out.put(DBKey.FK_CALIBRE_LIBRARY,
-                        mCalibreLibraryCoder.encodeReference(library));
+                        calibreLibraryCoder.encodeReference(library));
             }
 
         } else if (element instanceof String) {
@@ -126,7 +126,7 @@ public class BookCoder
                 case Book.BKEY_AUTHOR_LIST: {
                     final List<Author> list = book.getAuthors();
                     if (!list.isEmpty()) {
-                        out.put(key, mAuthorCoder.encode(list));
+                        out.put(key, authorCoder.encode(list));
                     }
                     break;
                 }
@@ -134,28 +134,28 @@ public class BookCoder
                     final List<Bookshelf> list = book.getBookshelves();
                     if (!list.isEmpty()) {
                         // FK as it's a reference
-                        out.put(DBKey.FK_BOOKSHELF, mBookshelfCoder.encodeReference(list));
+                        out.put(DBKey.FK_BOOKSHELF, bookshelfCoder.encodeReference(list));
                     }
                     break;
                 }
                 case Book.BKEY_PUBLISHER_LIST: {
                     final List<Publisher> list = book.getPublishers();
                     if (!list.isEmpty()) {
-                        out.put(key, mPublisherCoder.encode(list));
+                        out.put(key, publisherCoder.encode(list));
                     }
                     break;
                 }
                 case Book.BKEY_SERIES_LIST: {
                     final List<Series> list = book.getSeries();
                     if (!list.isEmpty()) {
-                        out.put(key, mSeriesCoder.encode(list));
+                        out.put(key, seriesCoder.encode(list));
                     }
                     break;
                 }
                 case Book.BKEY_TOC_LIST: {
                     final List<TocEntry> list = book.getToc();
                     if (!list.isEmpty()) {
-                        out.put(key, mTocEntryCoder.encode(list));
+                        out.put(key, tocEntryCoder.encode(list));
                     }
                     break;
                 }
@@ -187,45 +187,45 @@ public class BookCoder
             switch (key) {
                 case Book.BKEY_BOOKSHELF_LIST:
                     // Full object
-                    book.setBookshelves(mBookshelfCoder.decode(data.getJSONArray(key)));
+                    book.setBookshelves(bookshelfCoder.decode(data.getJSONArray(key)));
                     break;
 
                 case DBKey.FK_BOOKSHELF:
                     // Reference; if the reference is not found,
                     // the book will be put on the preferred (or default) Bookshelf.
-                    book.setBookshelves(mBookshelfCoder.decodeReference(data.getJSONArray(key)));
+                    book.setBookshelves(bookshelfCoder.decodeReference(data.getJSONArray(key)));
                     break;
 
                 case Book.BKEY_CALIBRE_LIBRARY:
                     // Full object
                     book.setCalibreLibrary(
-                            mCalibreLibraryCoder.decode(data.getJSONObject(key)));
+                            calibreLibraryCoder.decode(data.getJSONObject(key)));
                     break;
 
                 case DBKey.FK_CALIBRE_LIBRARY:
                     // Reference; if the reference is not found,
                     // the Calibre data is removed from the book
                     book.setCalibreLibrary(
-                            mCalibreLibraryCoder.decodeReference(data.getJSONObject(key))
-                                                .orElse(null));
+                            calibreLibraryCoder.decodeReference(data.getJSONObject(key))
+                                               .orElse(null));
                     break;
 
 
 
                 case Book.BKEY_AUTHOR_LIST:
-                    book.setAuthors(mAuthorCoder.decode(data.getJSONArray(key)));
+                    book.setAuthors(authorCoder.decode(data.getJSONArray(key)));
                     break;
 
                 case Book.BKEY_PUBLISHER_LIST:
-                    book.setPublishers(mPublisherCoder.decode(data.getJSONArray(key)));
+                    book.setPublishers(publisherCoder.decode(data.getJSONArray(key)));
                     break;
 
                 case Book.BKEY_SERIES_LIST:
-                    book.setSeries(mSeriesCoder.decode(data.getJSONArray(key)));
+                    book.setSeries(seriesCoder.decode(data.getJSONArray(key)));
                     break;
 
                 case Book.BKEY_TOC_LIST:
-                    book.setToc(mTocEntryCoder.decode(data.getJSONArray(key)));
+                    book.setToc(tocEntryCoder.decode(data.getJSONArray(key)));
                     break;
 
 

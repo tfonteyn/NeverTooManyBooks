@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,7 +43,7 @@ public class BookshelfCoder
 
     private static final char[] ESCAPE_CHARS = {'(', ')'};
     @NonNull
-    private final Style mDefaultStyle;
+    private final Style defaultStyle;
 
     /**
      * Constructor.
@@ -51,7 +51,7 @@ public class BookshelfCoder
      * @param context Current context
      */
     BookshelfCoder(@NonNull final Context context) {
-        mDefaultStyle = ServiceLocator.getInstance().getStyles().getDefault(context);
+        defaultStyle = ServiceLocator.getInstance().getStyles().getDefault(context);
     }
 
     /**
@@ -83,7 +83,7 @@ public class BookshelfCoder
     @NonNull
     public Bookshelf decode(@NonNull final String element) {
         final List<String> parts = StringList.newInstance().decodeElement(element);
-        final Bookshelf bookshelf = new Bookshelf(parts.get(0), mDefaultStyle);
+        final Bookshelf bookshelf = new Bookshelf(parts.get(0), defaultStyle);
         if (parts.size() > 1) {
             try {
                 final JSONObject details = new JSONObject(parts.get(1));

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -542,10 +542,10 @@ public class XmlRecordReader
 
         static final String TAG_ROOT = "info-list";
         @NonNull
-        private final Bundle mBundle;
+        private final Bundle info;
 
         InfoReader(@NonNull final Bundle bundle) {
-            mBundle = bundle;
+            info = bundle;
         }
 
         @Override
@@ -563,43 +563,43 @@ public class XmlRecordReader
         @Override
         public void putString(@NonNull final String key,
                               @NonNull final String value) {
-            mBundle.putString(key, value);
+            info.putString(key, value);
         }
 
         @Override
         public void putBoolean(@NonNull final String key,
                                final boolean value) {
-            mBundle.putBoolean(key, value);
+            info.putBoolean(key, value);
         }
 
         @Override
         public void putInt(@NonNull final String key,
                            final int value) {
-            mBundle.putInt(key, value);
+            info.putInt(key, value);
         }
 
         @Override
         public void putLong(@NonNull final String key,
                             final long value) {
-            mBundle.putLong(key, value);
+            info.putLong(key, value);
         }
 
         @Override
         public void putFloat(@NonNull final String key,
                              final float value) {
-            mBundle.putFloat(key, value);
+            info.putFloat(key, value);
         }
 
         @Override
         public void putDouble(@NonNull final String key,
                               final double value) {
-            mBundle.putDouble(key, value);
+            info.putDouble(key, value);
         }
 
         @Override
         public void putSerializable(@NonNull final String key,
                                     @NonNull final Serializable value) {
-            mBundle.putSerializable(key, value);
+            info.putSerializable(key, value);
         }
     }
 

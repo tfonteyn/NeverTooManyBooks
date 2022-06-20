@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,13 +34,13 @@ public class SharedPreferencesCoder
         implements JsonCoder<SharedPreferences> {
 
     @Nullable
-    private final SharedPreferences mOut;
+    private final SharedPreferences out;
 
     /**
      * Constructor for encoding.
      */
     public SharedPreferencesCoder() {
-        mOut = null;
+        out = null;
     }
 
     /**
@@ -49,7 +49,7 @@ public class SharedPreferencesCoder
      * @param out the SharedPreferences to write to
      */
     public SharedPreferencesCoder(@NonNull final SharedPreferences out) {
-        mOut = out;
+        this.out = out;
     }
 
     @NonNull
@@ -77,7 +77,7 @@ public class SharedPreferencesCoder
     public SharedPreferences decode(@NonNull final JSONObject data)
             throws JSONException {
         //noinspection ConstantConditions
-        final SharedPreferences.Editor ed = mOut.edit();
+        final SharedPreferences.Editor ed = out.edit();
 
         final Iterator<String> keys = data.keys();
         while (keys.hasNext()) {
@@ -102,6 +102,6 @@ public class SharedPreferencesCoder
             }
         }
         ed.apply();
-        return mOut;
+        return out;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,28 +33,28 @@ import org.xml.sax.helpers.AttributesImpl;
 public class ElementContext {
 
     /** the short name of the tag. */
-    private final String mLocalName;
+    private final String localName;
     /** Attributes on this tag. */
     @NonNull
-    private final Attributes mAttributes;
+    private final Attributes attributes;
     /** the inner-tag text. */
     @NonNull
-    private final String mText;
+    private final String text;
     /** the body/text between start and end of the tag. */
-    private String mBody;
+    private String body;
     /** filter on this tag. */
     @Nullable
-    private XmlFilter mFilter;
+    private XmlFilter filter;
 
     /**
      * @param filter to use for this tag.
      */
     public ElementContext(@NonNull final XmlFilter filter) {
-        mFilter = filter;
+        this.filter = filter;
 
-        mLocalName = "";
-        mAttributes = new AttributesImpl();
-        mText = "";
+        localName = "";
+        attributes = new AttributesImpl();
+        text = "";
     }
 
     /**
@@ -63,36 +63,36 @@ public class ElementContext {
      * @param localName  The local name (without prefix), or the
      *                   empty string if Namespace processing is not being
      *                   performed.
-     * @param attributes The mAttributes attached to the element.  If
-     *                   there are no mAttributes, it shall be an empty
+     * @param attributes The Attributes attached to the element.  If
+     *                   there are no Attributes, it shall be an empty
      *                   Attributes object.
      * @param text       current inter-tag text
      */
     public ElementContext(@NonNull final String localName,
                           @NonNull final Attributes attributes,
                           @NonNull final String text) {
-        mLocalName = localName;
-        mAttributes = attributes;
-        mText = text;
+        this.localName = localName;
+        this.attributes = attributes;
+        this.text = text;
     }
 
     @Nullable
     public XmlFilter getFilter() {
-        return mFilter;
+        return filter;
     }
 
     public void setFilter(@Nullable final XmlFilter filter) {
-        mFilter = filter;
+        this.filter = filter;
     }
 
     @NonNull
     public String getLocalName() {
-        return mLocalName;
+        return localName;
     }
 
     @NonNull
     public Attributes getAttributes() {
-        return mAttributes;
+        return attributes;
     }
 
     /**
@@ -100,14 +100,14 @@ public class ElementContext {
      */
     @NonNull
     public String getBody() {
-        return mBody;
+        return body;
     }
 
     /**
      * @param body of the tag.
      */
     public void setBody(@NonNull final String body) {
-        mBody = body.trim();
+        this.body = body.trim();
     }
 
     /**
@@ -115,6 +115,6 @@ public class ElementContext {
      */
     @NonNull
     public String getText() {
-        return mText;
+        return text;
     }
 }

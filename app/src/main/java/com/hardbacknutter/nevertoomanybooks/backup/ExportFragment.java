@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -95,14 +95,14 @@ public class ExportFragment
      * <p>
      * Solution: deep sigh... keep using deprecated constructor
      */
-    private final ActivityResultLauncher<String> mCreateDocumentLauncher =
+    private final ActivityResultLauncher<String> createDocumentLauncher =
             registerForActivityResult(new ActivityResultContracts.CreateDocument(),
                                       this::exportToUri);
 
     /** View Binding. */
-    private FragmentExportBinding mVb;
+    private FragmentExportBinding vb;
     @Nullable
-    private ProgressDelegate mProgressDelegate;
+    private ProgressDelegate progressDelegate;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -118,8 +118,8 @@ public class ExportFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentExportBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        vb = FragmentExportBinding.inflate(inflater, container, false);
+        return vb.getRoot();
     }
 
     @Override
@@ -137,20 +137,20 @@ public class ExportFragment
         vm.onWriteDataFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
         vm.onWriteDataFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
 
-        mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> vm
+        vb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> vm
                 .getExportHelper().setRecordType(isChecked, RecordType.Cover));
-        mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> vm
-                .getExportHelper().setIncremental(checkedId == mVb.rbExportNewAndUpdated.getId()));
+        vb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> vm
+                .getExportHelper().setIncremental(checkedId == vb.rbExportNewAndUpdated.getId()));
 
-        mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        vb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
             vm.getExportHelper().setRecordType(isChecked, RecordType.Books);
-            mVb.rbBooksGroup.setEnabled(isChecked);
+            vb.rbBooksGroup.setEnabled(isChecked);
         });
 
-        mVb.archiveFormat.setOnItemClickListener(
+        vb.archiveFormat.setOnItemClickListener(
                 (p, v, position, id) -> updateFormatSelection(vm.getEncoding(position)));
 
-        mVb.infExportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
+        vb.infExportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
 
         if (!vm.isRunning()) {
             // The task is NOT yet running.
@@ -194,26 +194,26 @@ public class ExportFragment
         final ExportHelper helper = vm.getExportHelper();
 
         final Set<RecordType> recordTypes = helper.getRecordTypes();
-        mVb.cbxBooks.setChecked(recordTypes.contains(RecordType.Books));
-        mVb.cbxCovers.setChecked(recordTypes.contains(RecordType.Cover));
+        vb.cbxBooks.setChecked(recordTypes.contains(RecordType.Books));
+        vb.cbxCovers.setChecked(recordTypes.contains(RecordType.Cover));
 
         final boolean incremental = helper.isIncremental();
-        mVb.rbExportAll.setChecked(!incremental);
-        mVb.rbExportNewAndUpdated.setChecked(incremental);
+        vb.rbExportAll.setChecked(!incremental);
+        vb.rbExportNewAndUpdated.setChecked(incremental);
 
         //noinspection ConstantConditions
         final Pair<Integer, ArrayList<String>> fo = vm.getFormatOptions(getContext());
         final int initialPos = fo.first;
         final ArrayList<String> list = fo.second;
 
-        mVb.archiveFormat.setAdapter(new ExtArrayAdapter<>(
+        vb.archiveFormat.setAdapter(new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Passthrough, list));
 
-        mVb.archiveFormat.setText(list.get(initialPos), false);
+        vb.archiveFormat.setText(list.get(initialPos), false);
         updateFormatSelection(helper.getEncoding());
 
-        mVb.getRoot().setVisibility(View.VISIBLE);
+        vb.getRoot().setVisibility(View.VISIBLE);
     }
 
     private void updateFormatSelection(@NonNull final ArchiveEncoding encoding) {
@@ -221,78 +221,78 @@ public class ExportFragment
         final ExportHelper helper = vm.getExportHelper();
         helper.setEncoding(encoding);
 
-        mVb.archiveFormatInfo.setText(encoding.getShortDescResId());
+        vb.archiveFormatInfo.setText(encoding.getShortDescResId());
 
         switch (encoding) {
             case Zip: {
-                mVb.archiveFormatInfoLong.setText("");
+                vb.archiveFormatInfoLong.setText("");
 
                 // Don't change Books/Covers, but add:
                 helper.addRecordType(EnumSet.of(RecordType.Styles,
                                                 RecordType.Preferences,
                                                 RecordType.Certificates));
 
-                mVb.cbxBooks.setChecked(true);
-                mVb.cbxBooks.setEnabled(true);
+                vb.cbxBooks.setChecked(true);
+                vb.cbxBooks.setEnabled(true);
 
-                mVb.rbBooksGroup.setEnabled(true);
-                mVb.rbExportNewAndUpdated.setChecked(true);
+                vb.rbBooksGroup.setEnabled(true);
+                vb.rbExportNewAndUpdated.setChecked(true);
 
-                mVb.cbxCovers.setChecked(true);
-                mVb.cbxCovers.setEnabled(true);
+                vb.cbxCovers.setChecked(true);
+                vb.cbxCovers.setEnabled(true);
                 break;
             }
             case Csv: {
-                mVb.archiveFormatInfoLong.setText("");
+                vb.archiveFormatInfoLong.setText("");
 
                 helper.removeRecordType(EnumSet.of(RecordType.Styles,
                                                    RecordType.Preferences,
                                                    RecordType.Certificates));
 
-                mVb.cbxBooks.setChecked(true);
-                mVb.cbxBooks.setEnabled(false);
+                vb.cbxBooks.setChecked(true);
+                vb.cbxBooks.setEnabled(false);
 
-                mVb.rbBooksGroup.setEnabled(true);
-                mVb.rbExportNewAndUpdated.setChecked(true);
+                vb.rbBooksGroup.setEnabled(true);
+                vb.rbExportNewAndUpdated.setChecked(true);
 
-                mVb.cbxCovers.setChecked(false);
-                mVb.cbxCovers.setEnabled(false);
+                vb.cbxCovers.setChecked(false);
+                vb.cbxCovers.setEnabled(false);
                 break;
             }
             case Json: {
-                mVb.archiveFormatInfoLong.setText("");
+                vb.archiveFormatInfoLong.setText("");
 
                 helper.removeRecordType(EnumSet.of(RecordType.Styles,
                                                    RecordType.Preferences,
                                                    RecordType.Certificates));
 
-                mVb.cbxBooks.setChecked(true);
-                mVb.cbxBooks.setEnabled(false);
+                vb.cbxBooks.setChecked(true);
+                vb.cbxBooks.setEnabled(false);
 
-                mVb.rbBooksGroup.setEnabled(true);
-                mVb.rbExportAll.setChecked(true);
+                vb.rbBooksGroup.setEnabled(true);
+                vb.rbExportAll.setChecked(true);
 
-                mVb.cbxCovers.setChecked(false);
-                mVb.cbxCovers.setEnabled(false);
+                vb.cbxCovers.setChecked(false);
+                vb.cbxCovers.setEnabled(false);
                 break;
             }
             case Xml:
             case SqLiteDb: {
-                mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
+                vb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
 
                 helper.removeRecordType(EnumSet.of(RecordType.Styles,
                                                    RecordType.Preferences,
                                                    RecordType.Certificates));
 
-                mVb.cbxBooks.setChecked(true);
-                mVb.cbxBooks.setEnabled(false);
+                vb.cbxBooks.setChecked(true);
+                vb.cbxBooks.setEnabled(false);
 
                 // See class docs for XmlArchiveWriter
-                mVb.rbBooksGroup.setEnabled(false);
-                mVb.rbExportAll.setChecked(true);
+                vb.rbBooksGroup.setEnabled(false);
+                vb.rbExportAll.setChecked(true);
 
-                mVb.cbxCovers.setChecked(false);
-                mVb.cbxCovers.setEnabled(false);
+                vb.cbxCovers.setChecked(false);
+                vb.cbxCovers.setEnabled(false);
                 break;
             }
             case Tar:
@@ -309,7 +309,7 @@ public class ExportFragment
         // Create the proposed name for the archive. The user can change it.
         final String defName = "ntmb-" + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
                                + "." + vm.getExportHelper().getEncoding().getFileExt();
-        mCreateDocumentLauncher.launch(defName);
+        createDocumentLauncher.launch(defName);
     }
 
     /**
@@ -474,15 +474,15 @@ public class ExportFragment
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.getData().ifPresent(data -> {
-            if (mProgressDelegate == null) {
+            if (progressDelegate == null) {
                 //noinspection ConstantConditions
-                mProgressDelegate = new ProgressDelegate(getProgressFrame())
+                progressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.menu_backup_and_export)
                         .setPreventSleep(true)
                         .setOnCancelListener(v -> vm.cancelTask(data.taskId))
                         .show(() -> getActivity().getWindow());
             }
-            mProgressDelegate.onProgress(data);
+            progressDelegate.onProgress(data);
         });
     }
 
@@ -521,10 +521,10 @@ public class ExportFragment
     }
 
     private void closeProgressDialog() {
-        if (mProgressDelegate != null) {
+        if (progressDelegate != null) {
             //noinspection ConstantConditions
-            mProgressDelegate.dismiss(getActivity().getWindow());
-            mProgressDelegate = null;
+            progressDelegate.dismiss(getActivity().getWindow());
+            progressDelegate = null;
         }
     }
 

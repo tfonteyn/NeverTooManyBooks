@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -64,15 +64,15 @@ public class XmlArchiveWriter
 
     /** Export configuration. */
     @NonNull
-    private final ExportHelper mHelper;
+    private final ExportHelper exportHelper;
 
     /**
      * Constructor.
      *
-     * @param helper export configuration
+     * @param exportHelper export configuration
      */
-    public XmlArchiveWriter(@NonNull final ExportHelper helper) {
-        mHelper = helper;
+    public XmlArchiveWriter(@NonNull final ExportHelper exportHelper) {
+        this.exportHelper = exportHelper;
     }
 
     @NonNull
@@ -90,7 +90,7 @@ public class XmlArchiveWriter
 
             final ExportResults results;
 
-            try (OutputStream os = mHelper.createOutputStream(context);
+            try (OutputStream os = exportHelper.createOutputStream(context);
                  Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
                  Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
                  RecordWriter recordWriter = new XmlRecordWriter(null)) {

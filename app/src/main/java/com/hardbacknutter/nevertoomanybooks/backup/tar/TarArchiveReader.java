@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,7 +51,7 @@ public class TarArchiveReader
      * Do <strong>NOT</strong> use this directly, see {@link #getInputStream()}.
      */
     @Nullable
-    private TarArchiveInputStream mInputStream;
+    private TarArchiveInputStream inputStream;
 
     /**
      * Constructor.
@@ -121,18 +121,18 @@ public class TarArchiveReader
     @NonNull
     private TarArchiveInputStream getInputStream()
             throws FileNotFoundException {
-        if (mInputStream == null) {
-            mInputStream = new TarArchiveInputStream(openInputStream());
+        if (inputStream == null) {
+            inputStream = new TarArchiveInputStream(openInputStream());
         }
-        return mInputStream;
+        return inputStream;
     }
 
     @Override
     protected void closeInputStream()
             throws IOException {
-        if (mInputStream != null) {
-            mInputStream.close();
-            mInputStream = null;
+        if (inputStream != null) {
+            inputStream.close();
+            inputStream = null;
         }
     }
 
@@ -141,43 +141,43 @@ public class TarArchiveReader
 
         /** The record source stream. */
         @NonNull
-        private final TarArchiveReader mReader;
+        private final TarArchiveReader archiveReader;
         /** Tar archive entry. */
         @NonNull
-        private final TarArchiveEntry mEntry;
+        private final TarArchiveEntry entry;
 
         /**
          * Constructor.
          *
-         * @param reader Parent
-         * @param entry  Corresponding archive entry
+         * @param archiveReader Parent
+         * @param entry         Corresponding archive entry
          */
-        TarArchiveRecord(@NonNull final TarArchiveReader reader,
+        TarArchiveRecord(@NonNull final TarArchiveReader archiveReader,
                          @NonNull final TarArchiveEntry entry) {
-            mReader = reader;
-            mEntry = entry;
+            this.archiveReader = archiveReader;
+            this.entry = entry;
         }
 
         @NonNull
         public Optional<RecordType> getType() {
-            return RecordType.getType(mEntry.getName());
+            return RecordType.getType(entry.getName());
         }
 
         @NonNull
         @Override
         public Optional<RecordEncoding> getEncoding() {
-            return RecordEncoding.getEncoding(mEntry.getName());
+            return RecordEncoding.getEncoding(entry.getName());
         }
 
         @NonNull
         @Override
         public String getName() {
-            return mEntry.getName();
+            return entry.getName();
         }
 
         @Override
         public long getLastModifiedEpochMilli() {
-            return mEntry.getModTime().getTime();
+            return entry.getModTime().getTime();
         }
 
         @NonNull
@@ -185,7 +185,7 @@ public class TarArchiveReader
         public InputStream getInputStream()
                 throws FileNotFoundException {
             // The reader can open/close the stream at will, so always ask the reader
-            return mReader.getInputStream();
+            return archiveReader.getInputStream();
         }
     }
 }

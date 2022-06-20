@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,25 +40,25 @@ final class XmlFilter {
 
     /** The tag for this specific filter. */
     @NonNull
-    private final String mTagName;
+    private final String tagName;
 
     /** A HashMap to ensure that there are no more than one sub-filter per tag at a given level. */
-    private final Map<String, XmlFilter> mSubFilterHash = new HashMap<>();
+    private final Map<String, XmlFilter> subFilterHash = new HashMap<>();
 
     /** List of sub-filters for this filter. */
-    private final Collection<XmlFilter> mSubFilters = new ArrayList<>();
+    private final Collection<XmlFilter> subFilters = new ArrayList<>();
     /** Action to perform, if any, when the associated tag is started. */
     @Nullable
-    private Consumer<ElementContext> mStartAction;
+    private Consumer<ElementContext> startAction;
     /** Action to perform, if any, when the associated tag is finished. */
     @Nullable
-    private Consumer<ElementContext> mEndAction;
+    private Consumer<ElementContext> endAction;
 
     /**
      * Constructor for the root tag.
      */
     XmlFilter() {
-        mTagName = "";
+        tagName = "";
     }
 
     /**
@@ -67,7 +67,7 @@ final class XmlFilter {
      * @param pattern The tag that this filter handles
      */
     private XmlFilter(@NonNull final String pattern) {
-        mTagName = pattern;
+        tagName = pattern;
     }
 
     /**
@@ -117,7 +117,7 @@ final class XmlFilter {
      * @return Boolean indicating it matches.
      */
     private boolean matches(@Nullable final String tag) {
-        return mTagName.equalsIgnoreCase(tag);
+        return tagName.equalsIgnoreCase(tag);
     }
 
     /**
@@ -140,7 +140,7 @@ final class XmlFilter {
      */
     @Nullable
     private XmlFilter getSubFilter(@Nullable final String name) {
-        for (final XmlFilter f : mSubFilters) {
+        for (final XmlFilter f : subFilters) {
             if (f.matches(name)) {
                 return f;
             }
@@ -154,8 +154,8 @@ final class XmlFilter {
      * @param context Current ElementContext
      */
     public void processStart(@NonNull final ElementContext context) {
-        if (mStartAction != null) {
-            mStartAction.accept(context);
+        if (startAction != null) {
+            startAction.accept(context);
         }
     }
 
@@ -165,8 +165,8 @@ final class XmlFilter {
      * @param context Current ElementContext
      */
     public void processEnd(@NonNull final ElementContext context) {
-        if (mEndAction != null) {
-            mEndAction.accept(context);
+        if (endAction != null) {
+            endAction.accept(context);
         }
     }
 
@@ -177,7 +177,7 @@ final class XmlFilter {
      */
     @NonNull
     private String getTagName() {
-        return mTagName;
+        return tagName;
     }
 
     /**
@@ -189,7 +189,7 @@ final class XmlFilter {
      */
     @NonNull
     public XmlFilter setStartAction(@NonNull final Consumer<ElementContext> startAction) {
-        mStartAction = startAction;
+        this.startAction = startAction;
         return this;
     }
 
@@ -203,7 +203,7 @@ final class XmlFilter {
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public XmlFilter setEndAction(@NonNull final Consumer<ElementContext> endAction) {
-        mEndAction = endAction;
+        this.endAction = endAction;
         return this;
     }
 
@@ -214,10 +214,10 @@ final class XmlFilter {
      */
     private void addFilter(@NonNull final XmlFilter filter) {
         final String lcPat = filter.getTagName().toLowerCase(ServiceLocator.getSystemLocale());
-        if (mSubFilterHash.containsKey(lcPat)) {
+        if (subFilterHash.containsKey(lcPat)) {
             throw new RuntimeException("Filter " + filter.getTagName() + " already exists");
         }
-        mSubFilterHash.put(lcPat, filter);
-        mSubFilters.add(filter);
+        subFilterHash.put(lcPat, filter);
+        subFilters.add(filter);
     }
 }
