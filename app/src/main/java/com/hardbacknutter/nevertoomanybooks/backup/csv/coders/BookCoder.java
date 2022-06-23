@@ -33,6 +33,7 @@ import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -547,7 +548,7 @@ public class BookCoder {
      * <p>
      * Database access is strictly limited to fetching ID's.
      * <p>
-     * Ignores the actual value of the DBDefinitions.KEY_TOC_BITMASK.
+     * Ignores the actual value of the {@link DBDefinitions#DOM_BOOK_TOC_TYPE}.
      * It will be computed when storing the book data.
      *
      * @param context    Current context

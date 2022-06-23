@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -227,9 +227,9 @@ public class CsvRecordReader
 
                 final Book book = bookCoder.decode(context, csvColumnNames, csvDataRow);
 
-                // Do we have a DBDefinitions.KEY_BOOK_UUID in the import ?
+                // Do we have a UUID for the book in the import ?
                 final boolean hasUuid = handleUuid(book);
-                // Do we have a DBDefinitions.KEY_PK_ID in the import ?
+                // Do we have an ID for the book in the import ?
                 final long importNumericId = extractNumericId(book);
 
                 // ALWAYS let the UUID trump the ID; we may be importing someone else's list

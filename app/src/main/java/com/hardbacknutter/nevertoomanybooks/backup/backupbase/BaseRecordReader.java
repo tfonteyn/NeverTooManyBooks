@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -150,8 +150,8 @@ public abstract class BaseRecordReader
             }
 
             // the Book object will contain:
-            // - valid DBDefinitions.KEY_BOOK_UUID not existent in the database
-            // - NO id, OR an id which does not exist in the database yet.
+            // - a valid book UUID which does not exist in the database
+            // - no ID, or an ID which does not exist in the database yet.
             // INSERT, explicitly allowing the id to be reused if present
             bookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
                                           | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
