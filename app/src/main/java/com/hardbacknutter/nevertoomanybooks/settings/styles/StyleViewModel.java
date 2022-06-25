@@ -146,8 +146,7 @@ public class StyleViewModel
     }
 
     boolean hasGroupsSelected() {
-        Objects.requireNonNull(wrappedGroupList);
-
+        //noinspection ConstantConditions
         return wrappedGroupList.stream().anyMatch(WrappedGroup::isPresent);
     }
 
@@ -155,12 +154,13 @@ public class StyleViewModel
      * Collect the user selected groups, and update the style.
      */
     void updateStyleGroups() {
-        Objects.requireNonNull(wrappedGroupList);
-
+        //noinspection ConstantConditions
         style.setGroupList(wrappedGroupList.stream()
                                            .filter(WrappedGroup::isPresent)
                                            .map(WrappedGroup::getGroup)
                                            .collect(Collectors.toList()));
+        //noinspection ConstantConditions
+        styleDataStore.setModified();
     }
 
     /**

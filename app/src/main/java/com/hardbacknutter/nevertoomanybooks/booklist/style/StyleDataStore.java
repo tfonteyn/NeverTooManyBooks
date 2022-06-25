@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -168,7 +168,7 @@ public class StyleDataStore
         return stringSet;
     }
 
-    private void setModified() {
+    public void setModified() {
         modified = true;
         onModified.setValue(null);
     }
