@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -153,6 +153,7 @@
         <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton
             android:id="@+id/fab"
             style="@style/FAB"
+            android:contentDescription="@string/lbl_add_book"
             android:src="@drawable/ic_baseline_add_24"
             app:layout_anchor="@id/list"
             app:layout_anchorGravity="bottom|end"

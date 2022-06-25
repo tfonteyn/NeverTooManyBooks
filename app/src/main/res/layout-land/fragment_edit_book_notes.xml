@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -56,22 +56,10 @@
             tools:checked="true"
             />
 
-        <CheckBox
-            android:id="@+id/cbx_signed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/field_margin_start"
-            android:layout_marginTop="@dimen/field_margin_top"
-            android:text="@string/lbl_signed"
-            app:layout_constraintEnd_toStartOf="@id/col1"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:checked="true"
-            />
-
         <RatingBar
             android:id="@+id/rating"
             style="@style/Field.RatingBar.Editable"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="SpeakableTextPresentCheck"
             />
@@ -81,7 +69,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="cbx_read,rating,cbx_signed"
+            app:constraint_referenced_ids="cbx_read,rating"
             />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -176,7 +164,7 @@
             android:hint="@string/lbl_condition"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/barrier_read_rating_bottom"
+            app:layout_constraintTop_toTopOf="parent"
             >
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -210,13 +198,25 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <CheckBox
+            android:id="@+id/cbx_signed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginTop="@dimen/field_margin_top"
+            android:text="@string/lbl_signed"
+            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintTop_toBottomOf="@id/lbl_condition_cover"
+            tools:checked="true"
+            />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_location"
             style="@style/TIL.AutoCompleteTextView"
             android:hint="@string/lbl_location"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/lbl_condition_cover"
+            app:layout_constraintTop_toBottomOf="@id/cbx_signed"
             >
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -116,6 +116,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/first_publication"
                 style="@style/TIE.ReadOnly"
+                tools:ignore="DuplicateSpeakableTextCheck"
                 tools:text="@sample/data.json/date/long"
                 />
 
@@ -133,6 +134,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/date_published"
                 style="@style/TIE.ReadOnly"
+                tools:ignore="DuplicateSpeakableTextCheck"
                 tools:text="@sample/data.json/date/long"
                 />
 
@@ -209,47 +211,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/lbl_edition"
-            style="@style/Label"
-            android:text="@string/lbl_edition"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_print_run"
-            />
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/edition"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/field_margin_top"
-            app:layout_constraintEnd_toStartOf="@id/col1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_edition"
-            >
-            <!-- chips will be added here dynamically -->
-            <!--            <com.google.android.material.chip.Chip-->
-            <!--                style="?attr/appChipFilterStyle"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:checked="true"-->
-            <!--                android:text="@string/lbl_edition_first_edition"-->
-            <!--                />-->
-
-            <!--            <com.google.android.material.chip.Chip-->
-            <!--                style="?attr/appChipFilterStyle"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:text="@string/lbl_edition_first_impression"-->
-            <!--                />-->
-
-            <!--            <com.google.android.material.chip.Chip-->
-            <!--                style="?attr/appChipFilterStyle"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:text="@string/lbl_edition_book_club"-->
-            <!--                />-->
-        </com.google.android.material.chip.ChipGroup>
-
         <CheckBox
             android:id="@+id/cbx_read"
             android:layout_width="wrap_content"
@@ -262,16 +223,12 @@
             tools:checked="true"
             />
 
-        <CheckBox
-            android:id="@+id/cbx_signed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/field_margin_start"
-            android:layout_marginTop="@dimen/field_margin_top"
-            android:text="@string/lbl_signed"
+        <RatingBar
+            android:id="@+id/rating"
+            style="@style/Field.RatingBar.Editable"
             app:layout_constraintEnd_toStartOf="@id/col2"
             app:layout_constraintTop_toTopOf="parent"
-            tools:checked="true"
+            tools:ignore="SpeakableTextPresentCheck"
             />
 
         <androidx.constraintlayout.widget.Barrier
@@ -408,13 +365,66 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <CheckBox
+            android:id="@+id/cbx_signed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginTop="@dimen/field_margin_top"
+            android:text="@string/lbl_signed"
+            app:layout_constraintStart_toStartOf="@id/col1"
+            app:layout_constraintTop_toBottomOf="@id/lbl_condition_cover"
+            tools:checked="true"
+            />
+
+        <TextView
+            android:id="@+id/lbl_edition"
+            style="@style/Label"
+            android:text="@string/lbl_edition"
+            app:layout_constraintStart_toEndOf="@id/col2"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/edition"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_margin_top"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/col2"
+            app:layout_constraintTop_toBottomOf="@id/lbl_edition"
+            >
+            <!-- chips will be added here dynamically -->
+            <!--            <com.google.android.material.chip.Chip-->
+            <!--                style="?attr/appChipFilterStyle"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:checked="true"-->
+            <!--                android:text="@string/lbl_edition_first_edition"-->
+            <!--                />-->
+
+            <!--            <com.google.android.material.chip.Chip-->
+            <!--                style="?attr/appChipFilterStyle"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:text="@string/lbl_edition_first_impression"-->
+            <!--                />-->
+
+            <!--            <com.google.android.material.chip.Chip-->
+            <!--                style="?attr/appChipFilterStyle"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:text="@string/lbl_edition_book_club"-->
+            <!--                />-->
+        </com.google.android.material.chip.ChipGroup>
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_location"
             style="@style/TIL.AutoCompleteTextView"
             android:hint="@string/lbl_location"
-            app:layout_constraintEnd_toStartOf="@id/col2"
-            app:layout_constraintStart_toStartOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/lbl_condition_cover"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/col2"
+            app:layout_constraintTop_toBottomOf="@id/edition"
             >
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -426,21 +436,13 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <RatingBar
-            android:id="@+id/rating"
-            style="@style/Field.RatingBar.Editable"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="SpeakableTextPresentCheck"
-            />
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_notes"
             style="@style/TIL.Text.Note"
             android:hint="@string/lbl_personal_notes"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@id/rating"
+            app:layout_constraintTop_toBottomOf="@id/lbl_location"
             >
 
             <com.google.android.material.textfield.TextInputEditText
