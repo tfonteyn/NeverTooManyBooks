@@ -892,10 +892,6 @@ public class BooksOnBookshelf
      */
     @IntRange(from = 0)
     private int createListAdapter(final boolean display) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Log.d(TAG, "createListAdapter|display=" + display, new Throwable());
-        }
-
         if (display) {
             adapter = new BooklistAdapter(this);
             // install single and long-click listeners
@@ -1486,6 +1482,12 @@ public class BooksOnBookshelf
      * @param targetNodes (optional) to re-position to
      */
     private void displayList(@Nullable final List<BooklistNode> targetNodes) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+            Log.d(TAG + "|displayList-" + System.nanoTime(),
+                  targetNodes != null ? targetNodes.toString() : "null"
+                    , new Throwable());
+        }
+
         if (createListAdapter(true) > 0) {
 
             // we can get here after a style change (or as initial build obviously)
@@ -1498,43 +1500,46 @@ public class BooksOnBookshelf
                 // scroll to the saved position - this should get us close to where we need to be
                 scrollToSavedPosition();
 
-                if (targetNodes == null || targetNodes.isEmpty()) {
-                    vb.content.list.post(() -> {
-                        // We're on the precise position
-                        // Now show the book details if we can.
-                        final long bookId = vm.getCurrentCenteredBookId();
-                        if (bookId != 0 && hasEmbeddedDetailsFrame()) {
-                            // We know exactly where we want to be,
-                            // do NOT reset the stored book id positioning
-                            openEmbeddedBookDetails(bookId);
-                        } else {
-                            // We didn't have visible embedded book detail;
-                            // Make sure to disable the current stored book id positioning
-                            vm.setCurrentCenteredBookId(0);
-                        }
-                    });
-                } else {
-                    // We have target nodes;
-                    // Make sure to disable the current stored book id positioning
-                    vm.setCurrentCenteredBookId(0);
-
-                    // find the closest node showing the book, and scroll to it
-                    final BooklistNode node = findBestNode(targetNodes);
-                    vb.content.list.post(() -> {
-                        // the row will be seen as the 2nd row on screen
-                        // (i.e. screen list position 1)
-                        layoutManager.scrollToPosition(node.getAdapterPosition());
-                        // after layout, save the final position
+                vb.content.list.post(() -> {
+                    if (targetNodes == null || targetNodes.isEmpty()) {
                         vb.content.list.post(() -> {
-                            saveListPosition();
-                            // and lastly, show the book details if we can.
-                            final long bookId = node.getBookId();
+                            // We're on the precise position
+                            // Now show the book details if we can.
+                            final long bookId = vm.getCurrentCenteredBookId();
                             if (bookId != 0 && hasEmbeddedDetailsFrame()) {
+                                // We know exactly where we want to be,
+                                // do NOT reset the stored book id positioning
                                 openEmbeddedBookDetails(bookId);
+                            } else {
+                                // We didn't have visible embedded book detail;
+                                // Make sure to disable the current stored book id positioning
+                                vm.setCurrentCenteredBookId(0);
                             }
                         });
-                    });
-                }
+                    } else {
+                        // We have target nodes;
+                        // find the closest node showing the book, and scroll to it
+                        final BooklistNode node = findBestNode(targetNodes);
+                        vb.content.list.post(() -> {
+                            // the row will be seen as the 2nd row on screen
+                            // (i.e. screen list position 1)
+                            layoutManager.scrollToPosition(node.getAdapterPosition());
+                            // after layout, save the final position
+                            vb.content.list.post(() -> {
+                                saveListPosition();
+                                // and lastly, show the book details if we can.
+                                final long bookId = node.getBookId();
+                                if (bookId != 0 && hasEmbeddedDetailsFrame()) {
+                                    vm.setCurrentCenteredBookId(bookId);
+                                    openEmbeddedBookDetails(bookId);
+                                } else {
+                                    // Make sure to disable the current stored book id positioning
+                                    vm.setCurrentCenteredBookId(0);
+                                }
+                            });
+                        });
+                    }
+                });
             });
         }
     }
@@ -1778,8 +1783,6 @@ public class BooksOnBookshelf
         }
     }
 
-
-
     @Nullable
     private Fragment getEmbeddedDetailsFrame() {
         return vb.content.detailsFrame == null ? null : vb.content.detailsFrame.getFragment();
@@ -1803,21 +1806,23 @@ public class BooksOnBookshelf
         }
 
         // Position of the row in the (vertical) center of the screen
-        final int center = (layoutManager.findLastVisibleItemPosition()
-                            + layoutManager.findFirstVisibleItemPosition()) / 2;
+        final int centerAdapterPosition = (layoutManager.findLastVisibleItemPosition()
+                                           + layoutManager.findFirstVisibleItemPosition()) / 2;
 
         BooklistNode best = targetNodes.get(0);
         // distance from currently visible center row
-        int distance = Math.abs(best.getAdapterPosition() - center);
+        int distance = Math.abs(best.getAdapterPosition() - centerAdapterPosition);
 
         // Loop all other rows, looking for a nearer one
-        for (int i = 1; i < targetNodes.size(); i++) {
-            final BooklistNode node = targetNodes.get(i);
-            final int newDist = Math.abs(node.getAdapterPosition() - center);
+        int row = 1;
+        while (distance > 0 && row < targetNodes.size()) {
+            final BooklistNode node = targetNodes.get(row);
+            final int newDist = Math.abs(node.getAdapterPosition() - centerAdapterPosition);
             if (newDist < distance) {
                 distance = newDist;
                 best = node;
             }
+            row++;
         }
         return best;
     }
