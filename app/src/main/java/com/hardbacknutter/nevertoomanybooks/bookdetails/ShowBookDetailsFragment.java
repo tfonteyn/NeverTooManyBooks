@@ -294,15 +294,14 @@ public class ShowBookDetailsFragment
      */
     private void onBookEditFinished(@Nullable final EditBookOutput data) {
         if (data != null) {
-            // only override if 'true'
             if (data.modified) {
                 aVm.updateFragmentResult();
-            }
 
-            vm.reloadBook();
+                vm.reloadBook();
 
-            if (bookChangedListener != null) {
-                bookChangedListener.onBookUpdated(vm.getBook(), (String) null);
+                if (bookChangedListener != null) {
+                    bookChangedListener.onBookUpdated(vm.getBook(), (String) null);
+                }
             }
         }
     }
