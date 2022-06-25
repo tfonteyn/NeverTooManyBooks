@@ -367,7 +367,7 @@ public class Booklist
         final List<BooklistNode> nodeList = getBookNodes(bookId);
 
         if (nodeList.isEmpty()) {
-            // the book is not present
+            // the book is not present, return the empty list
             return nodeList;
         }
 
@@ -377,18 +377,18 @@ public class Booklist
                         .filter(BooklistNode::isVisible)
                         .collect(Collectors.toList());
 
-        // If we have nodes already visible, return those
-        if (!visibleNodes.isEmpty()) {
-            return visibleNodes;
-
-        } else {
-            // Make them all visible
+        // If none of the nodes are currently visible,
+        if (visibleNodes.isEmpty()) {
+            // make them all visible
             nodeList.forEach(this::ensureNodeIsVisible);
-
-            // Recalculate all positions
+            // and recalculate all positions
             nodeList.forEach(node -> node.updateAdapterPosition(db, listTable));
 
             return nodeList;
+
+        } else {
+            // If we have nodes already visible, return only those
+            return visibleNodes;
         }
     }
 
@@ -420,11 +420,13 @@ public class Booklist
                 String.valueOf(bookId)})) {
 
             while (cursor.moveToNext()) {
-                final BooklistNode node = new BooklistNode(cursor);
-                node.updateAdapterPosition(db, listTable);
-                nodeList.add(node);
+                nodeList.add(new BooklistNode(cursor));
             }
         }
+
+        // Recalculate all positions
+        nodeList.forEach(node -> node.updateAdapterPosition(db, listTable));
+
         return nodeList;
     }
 
