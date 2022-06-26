@@ -531,7 +531,7 @@ class BooklistBuilder {
          *
          * @param db Underlying database
          *
-         * @return the fully populated list table.
+         * @return a Pair with the fully populated list-table and the navigation-table
          */
         @NonNull
         Pair<TableDefinition, TableDefinition> build(@NonNull final SynchronizedDb db) {
