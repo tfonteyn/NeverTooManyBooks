@@ -160,8 +160,8 @@ public class BooklistAdapter
 
         reorderTitleForDisplaying = ReorderHelper.forDisplay(context);
 
-        // getItemId is implemented BUT a book can be listed in multiple rows
-        setHasStableIds(false);
+        // getItemId returns the rowId
+        setHasStableIds(true);
     }
 
     /**
@@ -248,6 +248,7 @@ public class BooklistAdapter
     @Override
     public long getItemId(final int position) {
         if (cursor != null && cursor.moveToPosition(position)) {
+            // return the rowId of the list-table
             //noinspection ConstantConditions
             return nodeData.getLong(DBKey.PK_ID);
         } else {
