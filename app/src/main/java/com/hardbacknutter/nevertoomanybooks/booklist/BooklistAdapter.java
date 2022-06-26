@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -138,9 +138,10 @@ public class BooklistAdapter
     /** provides read only access to the row data. */
     @Nullable
     private DataHolder nodeData;
-    /** The combined click and long-click listeners for a single row. */
     @Nullable
-    private OnRowClickedListener rowClickedListener;
+    private OnRowClickListener rowClickListener;
+    @Nullable
+    private OnRowLongClickListener rowLongClickListener;
 
     /**
      * Constructor.
@@ -159,8 +160,8 @@ public class BooklistAdapter
 
         reorderTitleForDisplaying = ReorderHelper.forDisplay(context);
 
-        // getItemId is implemented.
-        setHasStableIds(true);
+        // getItemId is implemented BUT a book can be listed in multiple rows
+        setHasStableIds(false);
     }
 
     /**
@@ -311,16 +312,16 @@ public class BooklistAdapter
                 break;
         }
 
-        // test for the OnRowClickedListener inside the lambda, this allows changing it if needed
+        // test for the listener inside the lambda, this allows changing it if needed
         holder.onClickTargetView.setOnClickListener(v -> {
-            if (rowClickedListener != null) {
-                rowClickedListener.onItemClick(holder.getBindingAdapterPosition());
+            if (rowClickListener != null) {
+                rowClickListener.onClick(holder.getBindingAdapterPosition());
             }
         });
 
         holder.onClickTargetView.setOnLongClickListener(v -> {
-            if (rowClickedListener != null) {
-                return rowClickedListener.onItemLongClick(v, holder.getBindingAdapterPosition());
+            if (rowLongClickListener != null) {
+                return rowLongClickListener.onLongClick(v, holder.getBindingAdapterPosition());
             }
             return false;
         });
@@ -727,22 +728,27 @@ public class BooklistAdapter
         return null;
     }
 
-    public void setOnRowClickedListener(@Nullable final OnRowClickedListener rowClickedListener) {
-        this.rowClickedListener = rowClickedListener;
+    public void setRowClickListener(@Nullable final OnRowClickListener listener) {
+        this.rowClickListener = listener;
     }
 
-    /**
-     * Extended {@link View.OnClickListener} / {@link View.OnLongClickListener}.
-     */
-    public interface OnRowClickedListener {
+    public void setRowLongClickListener(@Nullable final OnRowLongClickListener listener) {
+        this.rowLongClickListener = listener;
+    }
+
+    @FunctionalInterface
+    public interface OnRowClickListener {
 
         /**
          * User clicked a row.
          *
          * @param position The position of the item within the adapter's data set.
          */
-        default void onItemClick(final int position) {
-        }
+        void onClick(final int position);
+    }
+
+    @FunctionalInterface
+    public interface OnRowLongClickListener {
 
         /**
          * User long-clicked a row.
@@ -752,10 +758,8 @@ public class BooklistAdapter
          *
          * @return true if the callback consumed the long click, false otherwise.
          */
-        default boolean onItemLongClick(@NonNull final View v,
-                                        final int position) {
-            return false;
-        }
+        boolean onLongClick(@NonNull final View v,
+                            final int position);
     }
 
     /**
