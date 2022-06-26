@@ -97,11 +97,13 @@ public class App
         if (!ACRA.isACRASenderServiceProcess()) {
 
             Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> {
-                try {
-                    final File file = new File(ServiceLocator.getLogDir(), "ntmb.hprof");
-                    Debug.dumpHprofData(file.getAbsolutePath());
-                } catch (@NonNull final IOException e) {
-                    Logger.error(TAG, e);
+                if (throwable instanceof OutOfMemoryError) {
+                    try {
+                        final File file = new File(ServiceLocator.getLogDir(), "ntmb.hprof");
+                        Debug.dumpHprofData(file.getAbsolutePath());
+                    } catch (@NonNull final IOException e) {
+                        Logger.error(TAG, e);
+                    }
                 }
             });
 
