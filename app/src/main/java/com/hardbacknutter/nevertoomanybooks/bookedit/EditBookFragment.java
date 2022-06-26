@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,7 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
-import com.hardbacknutter.nevertoomanybooks.utils.WindowClass;
+import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public class EditBookFragment
@@ -307,7 +307,7 @@ public class EditBookFragment
                                     R.string.lbl_publication));
 
             // on EXPANDED screens the notes fields are incorporated in the publication fragment
-            if (WindowClass.getCurrent(container) != WindowClass.EXPANDED) {
+            if (WindowSizeClass.getWidth(container) != WindowSizeClass.EXPANDED) {
                 tabList.add(new TabInfo(EditBookNotesFragment.class,
                                         R.string.lbl_tab_notes,
                                         R.string.lbl_personal_notes));

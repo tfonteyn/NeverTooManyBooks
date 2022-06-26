@@ -273,6 +273,7 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:${androidx_recyclerview_version}")
 //    implementation("androidx.slidingpanelayout:slidingpanelayout:1.2.0-beta01")
     implementation("androidx.viewpager2:viewpager2:${androidx_viewpager2_version}")
+    implementation("androidx.window:window:${androidx_window_version}")
 
     // https://github.com/material-components/material-components-android/releases
     implementation("com.google.android.material:material:${google_material_version}")

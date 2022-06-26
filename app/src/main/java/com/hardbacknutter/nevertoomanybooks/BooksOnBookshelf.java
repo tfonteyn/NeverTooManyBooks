@@ -127,6 +127,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
@@ -1789,7 +1790,7 @@ public class BooksOnBookshelf
     }
 
     private boolean hasEmbeddedDetailsFrame() {
-        return vb.content.detailsFrame != null;
+        return WindowSizeClass.getWidth(this) == WindowSizeClass.EXPANDED;
     }
 
     /**

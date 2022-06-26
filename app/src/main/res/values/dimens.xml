@@ -1,5 +1,5 @@
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -45,16 +45,6 @@
     <!-- use a double redirect; e.g.  <dimen name="btn_open_toc_width">@dimen/wrap_content</dimen>     -->
     <item name="match_parent" format="integer" type="dimen">-1</item>
     <item name="wrap_content" format="integer" type="dimen">-2</item>
-
-    <!--
-     https://developer.android.com/guide/topics/large-screens/support-different-screen-sizes
-
-                    width         height
-      0  Compact    < 600dp      < 480dp
-      1  Medium     600dp+       480dp+     ==> sw600
-      2  Expanded   840dp+       900dp+     ==> sw800
-    -->
-    <integer name="window_class">0</integer>
 
     <!-- Navigation panel header. -->
     <dimen name="nav_header_horizontal_padding">16dp</dimen>

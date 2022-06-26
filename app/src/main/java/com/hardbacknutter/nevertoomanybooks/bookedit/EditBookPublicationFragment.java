@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
-import com.hardbacknutter.nevertoomanybooks.utils.WindowClass;
+import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 public class EditBookPublicationFragment
         extends EditBookBaseFragment {
@@ -69,7 +69,8 @@ public class EditBookPublicationFragment
         //noinspection ConstantConditions
         vm.initFields(context, FragmentId.Publication, FieldGroup.Publication);
         // on EXPANDED screens the notes fields are incorporated in the publication fragment
-        if (WindowClass.getCurrent(context) == WindowClass.EXPANDED) {
+        //noinspection ConstantConditions
+        if (WindowSizeClass.getWidth(getActivity()) == WindowSizeClass.EXPANDED) {
             vm.initFields(context, FragmentId.Publication, FieldGroup.Notes);
         }
 
