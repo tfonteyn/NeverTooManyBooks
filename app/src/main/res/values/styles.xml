@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -99,7 +99,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
         <item name="android:background">?attr/appToolbarBackground</item>
-        <item name="layout_scrollFlags">scroll|enterAlways</item>
+        <item name="layout_scrollFlags">scroll|enterAlways|snap</item>
     </style>
 
     <!-- A Dialog primary/top toolbar with a 'close' icon. -->
