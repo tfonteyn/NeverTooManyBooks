@@ -311,9 +311,9 @@ public class EditBookViewModel
             throws StorageException, DaoWriteException {
 
         if (book.isNew()) {
-            ServiceLocator.getInstance().getBookDao().insert(context, book, 0);
+            ServiceLocator.getInstance().getBookDao().insert(context, book);
         } else {
-            ServiceLocator.getInstance().getBookDao().update(context, book, 0);
+            ServiceLocator.getInstance().getBookDao().update(context, book);
         }
         changed = true;
         book.setStage(EntityStage.Stage.Clean);

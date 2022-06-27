@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -442,7 +442,7 @@ public class SearchBookUpdatesViewModel
                                                      currentFieldsWanted, bookData);
             if (delta != null) {
                 try {
-                    bookDao.update(context, delta, 0);
+                    bookDao.update(context, delta);
                 } catch (@NonNull final StorageException | DaoWriteException e) {
                     // ignore, but log it.
                     Logger.error(TAG, e);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -467,8 +468,8 @@ public class CalibreContentServerReader
         book.setStage(EntityStage.Stage.Dirty);
         copyCalibreData(context, calibreBook, book);
 
-        bookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                      | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+        bookDao.update(context, book, Set.of(BookDao.BookFlag.RunInBatch,
+                                             BookDao.BookFlag.UseUpdateDateIfPresent));
         results.booksUpdated++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
@@ -491,7 +492,7 @@ public class CalibreContentServerReader
         // sanity check, the book should always/already be on the mapped shelf.
         book.ensureBookshelf(context);
 
-        bookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);
+        bookDao.insert(context, book, Set.of(BookDao.BookFlag.RunInBatch));
         results.booksCreated++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
@@ -765,8 +766,8 @@ public class CalibreContentServerReader
                                           .map(Bookshelf::getId)
                                           .noneMatch(id -> id == vlibMappedBookshelf.getId())) {
                                bookShelves.add(vlibMappedBookshelf);
-                            }
-                        });
+                           }
+                       });
             }
 
             localBook.setBookshelves(bookShelves);

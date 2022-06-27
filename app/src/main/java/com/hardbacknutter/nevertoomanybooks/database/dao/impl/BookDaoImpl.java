@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -185,7 +186,7 @@ public class BookDaoImpl
     @IntRange(from = 1, to = Integer.MAX_VALUE)
     public long insert(@NonNull final Context context,
                        @NonNull final Book /* in/out */ book,
-                       @BookFlags final int flags)
+                       @NonNull final Set<BookFlag> flags)
             throws StorageException,
                    DaoWriteException {
 
@@ -217,8 +218,8 @@ public class BookDaoImpl
                 cv.put(DATE_LAST_UPDATED__UTC, addedOrUpdatedNow);
             }
 
-            // if allowed, and we have an id, use it.
-            if ((flags & BOOK_FLAG_USE_ID_IF_PRESENT) != 0 && book.getId() > 0) {
+            // if we have an id and we're allowed, use it as-is.
+            if (book.getId() > 0 && flags.contains(BookFlag.UseIdIfPresent)) {
                 cv.put(PK_ID, book.getId());
             } else {
                 // in all other circumstances, make absolutely sure we DO NOT pass in an id.
@@ -284,7 +285,7 @@ public class BookDaoImpl
     @Override
     public void update(@NonNull final Context context,
                        @NonNull final Book book,
-                       @BookFlags final int flags)
+                       @NonNull final Set<BookFlag> flags)
             throws StorageException,
                    DaoWriteException {
 
@@ -306,7 +307,7 @@ public class BookDaoImpl
 
             // set the DATE_LAST_UPDATED__UTC to 'now' if we're allowed,
             // or if it's not already present.
-            if ((flags & BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT) == 0
+            if (!flags.contains(BookFlag.UseUpdateDateIfPresent)
                 || !cv.containsKey(DATE_LAST_UPDATED__UTC)) {
                 cv.put(DATE_LAST_UPDATED__UTC, SqlEncode
                         .date(LocalDateTime.now(ZoneOffset.UTC)));
@@ -428,17 +429,17 @@ public class BookDaoImpl
      *
      * @param context Current context
      * @param book    A collection with the columns to be set. May contain extra data.
-     * @param flags   See {@link BookFlags} for flag definitions; {@code 0} for 'normal'.
+     * @param flags   See {@link BookFlag} for flag definitions
      *
      * @throws DaoWriteException on failure
      */
     private void insertBookLinks(@NonNull final Context context,
                                  @NonNull final Book book,
-                                 final int flags)
+                                 @NonNull final Set<BookFlag> flags)
             throws DaoWriteException {
 
         // Only lookup locales when we're NOT in batch mode (i.e. NOT doing an import)
-        final boolean lookupLocale = (flags & BOOK_FLAG_IS_BATCH_OPERATION) == 0;
+        final boolean lookupLocale = !flags.contains(BookFlag.RunInBatch);
 
         // unconditional lookup of the book locale!
         final Locale bookLocale = book.getLocale(context);

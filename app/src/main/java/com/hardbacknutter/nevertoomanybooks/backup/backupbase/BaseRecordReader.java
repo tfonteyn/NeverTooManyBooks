@@ -25,6 +25,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -100,8 +101,8 @@ public abstract class BaseRecordReader
             final DataReader.Updates updateOption = helper.getUpdateOption();
             switch (updateOption) {
                 case Overwrite: {
-                    bookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                                  | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                    bookDao.update(context, book, Set.of(BookDao.BookFlag.RunInBatch,
+                                                         BookDao.BookFlag.UseUpdateDateIfPresent));
                     results.booksUpdated++;
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                         Log.d(TAG, "UUID=" + uuid
@@ -119,8 +120,8 @@ public abstract class BaseRecordReader
                         if (importDate != null && importDate.isAfter(localDate)) {
 
                             bookDao.update(context, book,
-                                           BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                           | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                                           Set.of(BookDao.BookFlag.RunInBatch,
+                                                  BookDao.BookFlag.UseUpdateDateIfPresent));
                             results.booksUpdated++;
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                                 Log.d(TAG, "UUID=" + uuid
@@ -153,8 +154,8 @@ public abstract class BaseRecordReader
             // - a valid book UUID which does not exist in the database
             // - no ID, or an ID which does not exist in the database yet.
             // INSERT, explicitly allowing the id to be reused if present
-            bookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                          | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
+            bookDao.insert(context, book, Set.of(BookDao.BookFlag.RunInBatch,
+                                                 BookDao.BookFlag.UseIdIfPresent));
             results.booksCreated++;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                 Log.d(TAG, "UUID=" + book.getString(DBKey.BOOK_UUID)

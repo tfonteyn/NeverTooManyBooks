@@ -244,7 +244,7 @@ public class BookTest {
                      book.getString(Book.BKEY_TMP_FILE_SPEC[1]));
 
         assertEquals(EntityStage.Stage.Dirty, book.getStage());
-        bookDao.update(context, book, 0);
+        bookDao.update(context, book);
         book.setStage(EntityStage.Stage.Clean);
 
         /*
@@ -384,7 +384,7 @@ public class BookTest {
                      book.getString(Book.BKEY_TMP_FILE_SPEC[0]));
 
         assertEquals(EntityStage.Stage.Dirty, book.getStage());
-        final long bookId = bookDao.insert(context, book, 0);
+        final long bookId = bookDao.insert(context, book);
         book.setStage(EntityStage.Stage.Clean);
 
         assertTrue(bookId > 0);

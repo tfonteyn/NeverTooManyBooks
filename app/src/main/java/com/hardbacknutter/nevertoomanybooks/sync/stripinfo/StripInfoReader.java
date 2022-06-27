@@ -37,6 +37,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -364,8 +365,8 @@ public class StripInfoReader
         }
 
         if (delta != null) {
-            bookDao.update(context, delta, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                           | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+            bookDao.update(context, delta, Set.of(BookDao.BookFlag.RunInBatch,
+                                                  BookDao.BookFlag.UseUpdateDateIfPresent));
             results.booksUpdated++;
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {
@@ -390,7 +391,7 @@ public class StripInfoReader
         // sanity check, the book should always/already be on the mapped shelf.
         book.ensureBookshelf(context);
 
-        bookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);
+        bookDao.insert(context, book, Set.of(BookDao.BookFlag.RunInBatch));
         results.booksCreated++;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_STRIP_INFO_BOOKS) {

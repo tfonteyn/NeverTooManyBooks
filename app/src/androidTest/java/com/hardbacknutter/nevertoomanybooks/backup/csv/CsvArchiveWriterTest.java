@@ -131,7 +131,7 @@ public class CsvArchiveWriterTest
         final Book book = Book.from(modifiedBookId);
         book.putString(DBKey.PERSONAL_NOTES,
                        "MODIFIED" + book.getString(DBKey.PERSONAL_NOTES));
-        bookDao.update(context, book, 0);
+        bookDao.update(context, book);
 
         final ImportHelper importHelper = new ImportHelper(context, Uri.fromFile(file));
         // The default, fail if the default was changed without changing this test!

@@ -134,7 +134,7 @@ public abstract class BaseSetup
         publisherList.clear();
         publisherList.add(publisher[0]);
         book[0].setPublishers(publisherList);
-        bookId[0] = bookDao.insert(context, book[0], 0);
+        bookId[0] = bookDao.insert(context, book[0]);
         book[0].setStage(EntityStage.Stage.Clean);
 
         book[1] = new Book();
@@ -151,7 +151,7 @@ public abstract class BaseSetup
         publisherList.clear();
         publisherList.add(publisher[1]);
         book[1].setPublishers(publisherList);
-        bookId[1] = bookDao.insert(context, book[1], 0);
+        bookId[1] = bookDao.insert(context, book[1]);
         book[1].setStage(EntityStage.Stage.Clean);
 
         book[2] = new Book();
@@ -168,7 +168,7 @@ public abstract class BaseSetup
         publisherList.clear();
         publisherList.add(publisher[2]);
         book[2].setPublishers(publisherList);
-        bookId[2] = bookDao.insert(context, book[2], 0);
+        bookId[2] = bookDao.insert(context, book[2]);
         book[2].setStage(EntityStage.Stage.Clean);
 
         book[3] = new Book();
@@ -186,7 +186,7 @@ public abstract class BaseSetup
         publisherList.clear();
         publisherList.add(publisher[1]);
         book[3].setPublishers(publisherList);
-        bookId[3] = bookDao.insert(context, book[3], 0);
+        bookId[3] = bookDao.insert(context, book[3]);
         book[3].setStage(EntityStage.Stage.Clean);
 
         book[4] = new Book();
@@ -215,7 +215,7 @@ public abstract class BaseSetup
         tocEntry[3] = new TocEntry(author[2], TOC_TITLE + "3");
         tocList.add(tocEntry[3]);
         book[4].setToc(tocList);
-        bookId[4] = bookDao.insert(context, book[4], 0);
+        bookId[4] = bookDao.insert(context, book[4]);
         book[4].setStage(EntityStage.Stage.Clean);
     }
 }

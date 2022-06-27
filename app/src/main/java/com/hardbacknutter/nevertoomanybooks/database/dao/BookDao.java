@@ -21,21 +21,20 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import android.content.Context;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -50,25 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public interface BookDao {
 
-    /**
-     * Book Insert/update flag.
-     * If set, relax some rules which would affect performance otherwise.
-     * This is/should only be used during imports.
-     */
-    int BOOK_FLAG_IS_BATCH_OPERATION = 1;
-    /**
-     * Book Insert/update flag.
-     * If set, and the book bundle has an id !=0, force the id to be used.
-     * This is/should only be used during imports of new books
-     * i.e. during import of a backup archive/csv
-     */
-    int BOOK_FLAG_USE_ID_IF_PRESENT = 1 << 1;
-    /**
-     * Book Insert/update flag.
-     * If set, the UPDATE_DATE field from the bundle should be trusted.
-     * If this flag is not set, the UPDATE_DATE will be set based on the current time
-     */
-    int BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT = 1 << 2;
 
     /**
      * Update the 'last updated' of the given book.
@@ -90,18 +70,25 @@ public interface BookDao {
      * @param context Current context
      * @param book    A collection with the columns to be set. May contain extra data.
      *                The id will be updated.
-     * @param flags   See {@link BookFlags} for flag definitions; {@code 0} for 'normal'.
+     * @param flags   See {@link BookFlag} for flag definitions
      *
      * @return the row id of the newly inserted row
      *
-     * @throws StorageException The covers directory is not available
-     * @throws DaoWriteException     on failure
+     * @throws StorageException  The covers directory is not available
+     * @throws DaoWriteException on failure
      */
     @IntRange(from = 1, to = Integer.MAX_VALUE)
     long insert(@NonNull Context context,
                 @NonNull Book /* in/out */ book,
-                @BookFlags int flags)
+                @NonNull Set<BookFlag> flags)
             throws StorageException, DaoWriteException;
+
+    @IntRange(from = 1, to = Integer.MAX_VALUE)
+    default long insert(@NonNull final Context context,
+                        @NonNull final Book /* in/out */ book)
+            throws StorageException, DaoWriteException {
+        return insert(context, book, Set.of());
+    }
 
     /**
      * Update the given {@link Book}.
@@ -113,15 +100,21 @@ public interface BookDao {
      * @param context Current context
      * @param book    A collection with the columns to be set.
      *                May contain extra data which will be ignored.
-     * @param flags   See {@link BookFlags} for flag definitions; {@code 0} for 'normal'.
+     * @param flags   See {@link BookFlag} for flag definitions
      *
-     * @throws StorageException The covers directory is not available
-     * @throws DaoWriteException     on failure
+     * @throws StorageException  The covers directory is not available
+     * @throws DaoWriteException on failure
      */
     void update(@NonNull Context context,
                 @NonNull Book book,
-                @BookFlags int flags)
+                @NonNull Set<BookFlag> flags)
             throws StorageException, DaoWriteException;
+
+    default void update(@NonNull final Context context,
+                        @NonNull final Book book)
+            throws StorageException, DaoWriteException {
+        update(context, book, Set.of());
+    }
 
     /**
      * Delete the given book (and its covers).
@@ -459,11 +452,26 @@ public interface BookDao {
     @Nullable
     LocalDateTime getLastUpdateDate(@IntRange(from = 1) long id);
 
-    @IntDef(flag = true, value = {BOOK_FLAG_IS_BATCH_OPERATION,
-                                  BOOK_FLAG_USE_ID_IF_PRESENT,
-                                  BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface BookFlags {
-
+    /**
+     * Flags used during {@link #insert(Context, Book, Set)}
+     * and {@link #update(Context, Book, Set)} operations.
+     */
+    enum BookFlag {
+        /**
+         * If set, relax some rules which would affect performance otherwise.
+         * This is/should only be used during imports.
+         */
+        RunInBatch,
+        /**
+         * If set, and the book bundle has an id !=0, force the id to be used.
+         * This is/should only be used during imports of new books
+         * i.e. during import of a backup archive/csv
+         */
+        UseIdIfPresent,
+        /**
+         * If set, the {@link DBKey#DATE_LAST_UPDATED__UTC} field from the bundle should be trusted.
+         * If this flag is not set, the current date/time will be used.
+         */
+        UseUpdateDateIfPresent
     }
 }

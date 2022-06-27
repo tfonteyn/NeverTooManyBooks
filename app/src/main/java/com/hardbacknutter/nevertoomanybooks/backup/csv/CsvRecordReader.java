@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -304,8 +305,8 @@ public class CsvRecordReader
             final DataReader.Updates updateOption = helper.getUpdateOption();
             switch (updateOption) {
                 case Overwrite: {
-                    bookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                                  | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                    bookDao.update(context, book, Set.of(BookDao.BookFlag.RunInBatch,
+                                                         BookDao.BookFlag.UseUpdateDateIfPresent));
                     results.booksUpdated++;
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                         Log.d(TAG, "importNumericId=" + importNumericId
@@ -322,8 +323,8 @@ public class CsvRecordReader
                         if (importDate != null && importDate.isAfter(localDate)) {
 
                             bookDao.update(context, book,
-                                           BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                           | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                                           Set.of(BookDao.BookFlag.RunInBatch,
+                                                  BookDao.BookFlag.UseUpdateDateIfPresent));
                             results.booksUpdated++;
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                                 Log.d(TAG, "importNumericId=" + importNumericId
@@ -347,8 +348,8 @@ public class CsvRecordReader
             // The id is not in use, simply insert the book using the given importNumericId,
             // explicitly allowing the id to be reused
             final long insId = bookDao.insert(context, book,
-                                              BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                              | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
+                                              Set.of(BookDao.BookFlag.RunInBatch,
+                                                     BookDao.BookFlag.UseIdIfPresent));
             results.booksCreated++;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                 Log.d(TAG, "importNumericId=" + importNumericId
@@ -365,7 +366,7 @@ public class CsvRecordReader
                    DaoWriteException {
         // Always import books which have no UUID/ID, even if the book is a potential duplicate.
         // We don't try and search/match but leave it to the user.
-        final long insId = bookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);
+        final long insId = bookDao.insert(context, book, Set.of(BookDao.BookFlag.RunInBatch));
         results.booksCreated++;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
             Log.d(TAG, "UUID=''"
