@@ -247,7 +247,6 @@ public class BooksOnBookshelf
             registerForActivityResult(new UpdateBooklistContract(),
                                       this::onBookAutoUpdateFinished);
 
-
     /** View all works of an Author. */
     private final ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher =
             registerForActivityResult(new AuthorWorksContract(), this::onBookEditFinished);
@@ -400,13 +399,9 @@ public class BooksOnBookshelf
         initToolbar();
 
         createBookshelfSpinner();
+
         // setup the list related stuff; the actual list data is generated in onResume
         createBooklistView();
-
-        // Initialise adapter without a cursor. We'll recreate it with a cursor when
-        // we're ready to display the book-list.
-        // If we don't create it here then some Android internals cause problems.
-        createListAdapter(false);
 
         createFabMenu();
         updateSyncMenuVisibility();
@@ -457,55 +452,6 @@ public class BooksOnBookshelf
         }
     }
 
-    /**
-     * Create the adapter and (optionally) set the cursor.
-     * <p>
-     * <strong>Developer note:</strong>
-     * There seems to be no other solution but to always create the adapter
-     * in {@link #onCreate} (with null cursor) and RECREATE it when we have a valid cursor.
-     * Tested several strategies, but it seems to be impossible to RELIABLY
-     * flush the adapter cache of View/ViewHolder.
-     * i.e. {@link RecyclerView#getRecycledViewPool()} .clear() is not enough!
-     * <p>
-     * Not setting an adapter at all in {@link #onCreate} is not a solution either...
-     * crashes assured! Also see {@link #buildBookList}.
-     *
-     * @param display set to {@code false} for initial creation!
-     *
-     * @return the item count of the list adapter; can be {@code 0}.
-     */
-    @IntRange(from = 0)
-    private int createListAdapter(final boolean display) {
-        if (display) {
-            adapter = new BooklistAdapter(this);
-
-            adapter.setRowClickListener(this::onRowClicked);
-            adapter.setRowLongClickListener(this::onCreateContextMenu);
-
-            // hookup the cursor
-            adapter.setCursor(this, vm.getNewListCursor(), vm.getStyle(this));
-
-            // Combine the adapters for the list header and the actual list
-            final ConcatAdapter concatAdapter = new ConcatAdapter(
-                    new ConcatAdapter.Config.Builder()
-                            .setIsolateViewTypes(true)
-                            .setStableIdMode(ConcatAdapter.Config.StableIdMode.SHARED_STABLE_IDS)
-                            .build(),
-                    new HeaderAdapter(this), adapter);
-
-            vb.content.list.setAdapter(concatAdapter);
-
-            vb.content.list.setVisibility(View.VISIBLE);
-
-            // can return 0!
-            return adapter.getItemCount();
-
-        } else {
-            vb.content.list.setVisibility(View.GONE);
-            return 0;
-        }
-    }
-
     private boolean isRootActivity() {
         return isTaskRoot() && vm.getSearchCriteria().isEmpty();
     }
@@ -519,11 +465,6 @@ public class BooksOnBookshelf
         stylePickerLauncher.registerForFragmentResult(fm, RK_STYLE_PICKER, this);
         editLenderLauncher.registerForFragmentResult(fm, RK_EDIT_LENDER, this);
         bookshelfFiltersLauncher.registerForFragmentResult(fm, RK_FILTERS, this);
-    }
-
-    @Override
-    public void onSyncBook(final long bookId) {
-        scrollTo(vm.getVisibleBookNodes(bookId));
     }
 
     private void createViewModel() {
@@ -588,6 +529,10 @@ public class BooksOnBookshelf
     private void createBooklistView() {
         //noinspection ConstantConditions
         layoutManager = (LinearLayoutManager) vb.content.list.getLayoutManager();
+
+        // hide the view at creation time. onResume will provide the data and make it visible.
+        vb.content.list.setVisibility(View.GONE);
+
         vb.content.list.addItemDecoration(new TopLevelItemDecoration(this));
 
         // Optional overlay
@@ -600,41 +545,6 @@ public class BooksOnBookshelf
         vb.content.list.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
     }
 
-    /**
-     * Display the list based on the current cursor, and either scroll to the desired
-     * target node(s) or, if none, to the last saved position.
-     *
-     * @param targetNodes (optional) to re-position to
-     */
-    private void displayList(@Nullable final List<BooklistNode> targetNodes) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Log.d(TAG + "|displayList-" + System.nanoTime(),
-                  targetNodes != null ? targetNodes.toString() : "null"
-                    , new Throwable());
-        }
-
-        if (createListAdapter(true) > 0) {
-            // we can get here after a style change (or as initial build obviously)
-            // so make sure the menu reflects the style
-            toolbarMenuProvider.onPrepareMenu(vb.toolbar.getMenu());
-
-            // scroll to the saved position - this should get us close to where we need to be
-            scrollToSavedPosition();
-            // and wait for layout cycle
-            vb.content.list.post(() -> {
-                if (targetNodes == null || targetNodes.isEmpty()) {
-                    // We're on the precise position
-                    final long bookId = vm.getCurrentCenteredBookId();
-                    showBookDetailsIfWeCan(bookId);
-                } else {
-                    // We have target nodes;
-                    final BooklistNode node = scrollTo(targetNodes);
-                    final long bookId = node.getBookId();
-                    vb.content.list.post(() -> showBookDetailsIfWeCan(bookId));
-                }
-            });
-        }
-    }
 
     /**
      * Listener for clicks on the list.
@@ -825,6 +735,11 @@ public class BooksOnBookshelf
         fabMenu.hideMenu();
         saveListPosition();
         super.onPause();
+    }
+
+    @Override
+    public void onSyncBook(final long bookId) {
+        scrollTo(vm.getVisibleBookNodes(bookId));
     }
 
     /**
@@ -1603,7 +1518,7 @@ public class BooksOnBookshelf
             // DO NOT REMOVE THE ADAPTER FROM FROM THE VIEW;
             // i.e. do NOT call mVb.list.setAdapter(null)... crashes assured when doing so.
             if (adapter != null) {
-                adapter.clearCursor();
+                adapter.setCursor(null);
             }
             vm.buildBookList();
         }
@@ -1765,6 +1680,19 @@ public class BooksOnBookshelf
         });
     }
 
+    private void recoverAfterFailedBuild() {
+        // Something is REALLY BAD
+        // This is usually (BUT NOT ALWAYS) due to the developer making an oopsie
+        // with the Styles. i.e. the style used to build is very likely corrupt.
+        // Another reason can be during development when the database structure
+        // was changed...
+        final Style style = vm.getStyle(this);
+        // so we reset the style to recover.. and restarting the app will work.
+        vm.onStyleChanged(this, BuiltinStyle.DEFAULT_UUID);
+        // but we STILL FORCE A CRASH, SO WE CAN COLLECT DEBUG INFORMATION!
+        throw new IllegalStateException("Style=" + style);
+    }
+
     /**
      * Called when the list build succeeded.
      *
@@ -1783,22 +1711,62 @@ public class BooksOnBookshelf
         });
     }
 
+    /**
+     * Display the list based on the current cursor, and either scroll to the desired
+     * target node(s) or, if none, to the last saved position.
+     *
+     * @param targetNodes (optional) to re-position to
+     */
+    private void displayList(@Nullable final List<BooklistNode> targetNodes) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+            Log.d(TAG + "|displayList-" + System.nanoTime(),
+                  targetNodes != null ? targetNodes.toString() : "null",
+                  new Throwable());
+        }
+
+        adapter = new BooklistAdapter(this);
+        adapter.setRowClickListener(this::onRowClicked);
+        adapter.setRowLongClickListener(this::onCreateContextMenu);
+
+        adapter.setStyle(this, vm.getStyle(this));
+        adapter.setCursor(vm.getNewListCursor());
+
+        // Combine the adapters for the list header and the actual list
+        final ConcatAdapter concatAdapter = new ConcatAdapter(
+                new ConcatAdapter.Config.Builder()
+                        .setStableIdMode(ConcatAdapter.Config.StableIdMode.SHARED_STABLE_IDS)
+                        .build(),
+                new HeaderAdapter(this), adapter);
+
+        vb.content.list.setAdapter(concatAdapter);
+        vb.content.list.setVisibility(View.VISIBLE);
+
+        if (adapter.getItemCount() > 0) {
+            // we can get here after a style change (or as initial build obviously)
+            // so make sure the menu reflects the style
+            toolbarMenuProvider.onPrepareMenu(vb.toolbar.getMenu());
+
+            // scroll to the saved position - this should get us close to where we need to be
+            scrollToSavedPosition();
+            // and wait for layout cycle
+            vb.content.list.post(() -> {
+                if (targetNodes == null || targetNodes.isEmpty()) {
+                    // We're on the precise position
+                    final long bookId = vm.getCurrentCenteredBookId();
+                    showBookDetailsIfWeCan(bookId);
+                } else {
+                    // We have target nodes;
+                    final BooklistNode node = scrollTo(targetNodes);
+                    final long bookId = node.getBookId();
+                    vb.content.list.post(() -> showBookDetailsIfWeCan(bookId));
+                }
+            });
+        }
+    }
+
     @Nullable
     private Fragment getEmbeddedDetailsFragment() {
         return vb.content.detailsFrame == null ? null : vb.content.detailsFrame.getFragment();
-    }
-
-    private void recoverAfterFailedBuild() {
-        // Something is REALLY BAD
-        // This is usually (BUT NOT ALWAYS) due to the developer making an oopsie
-        // with the Styles. i.e. the style used to build is very likely corrupt.
-        // Another reason can be during development when the database structure
-        // was changed...
-        final Style style = vm.getStyle(this);
-        // so we reset the style to recover.. and restarting the app will work.
-        vm.onStyleChanged(this, BuiltinStyle.DEFAULT_UUID);
-        // but we STILL FORCE A CRASH, SO WE CAN COLLECT DEBUG INFORMATION!
-        throw new IllegalStateException("Style=" + style);
     }
 
     private boolean hasEmbeddedDetailsFrame() {
@@ -1816,30 +1784,22 @@ public class BooksOnBookshelf
     private void saveListPosition() {
         if (!isDestroyed()) {
             final int firstVisiblePos = layoutManager.findFirstVisibleItemPosition();
-            if (firstVisiblePos == RecyclerView.NO_POSITION) {
-                return;
+            if (firstVisiblePos != RecyclerView.NO_POSITION) {
+                final int viewOffset;
+                // the list.getChildAt; not the layoutManager.getChildAt (not sure why...)
+                final View topView = vb.content.list.getChildAt(0);
+                if (topView == null) {
+                    viewOffset = 0;
+
+                } else {
+                    // currently our padding is 0, but this is future-proof
+                    final int paddingTop = vb.content.list.getPaddingTop();
+                    final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
+                            topView.getLayoutParams();
+                    viewOffset = topView.getTop() - lp.topMargin - paddingTop;
+                }
+                vm.saveListPosition(this, firstVisiblePos, viewOffset);
             }
-            vm.saveListPosition(this, firstVisiblePos, getViewOffset());
-        }
-    }
-
-    /**
-     * Get the number of pixels offset for the first visible View, can be negative.
-     *
-     * @return pixels
-     */
-    private int getViewOffset() {
-        // the list.getChildAt; not the layoutManager.getChildAt (not sure why...)
-        final View topView = vb.content.list.getChildAt(0);
-        if (topView == null) {
-            return 0;
-
-        } else {
-            // currently our padding is 0, but this is future-proof
-            final int paddingTop = vb.content.list.getPaddingTop();
-            final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
-                    topView.getLayoutParams();
-            return topView.getTop() - lp.topMargin - paddingTop;
         }
     }
 

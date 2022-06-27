@@ -117,8 +117,8 @@ public class BooklistAdapter
     @NonNull
     private final LayoutInflater inflater;
     /** Whether to use the covers DAO caching. */
-    private final boolean imageCachingEnabled;
-    private final boolean reorderTitleForDisplaying;
+    private boolean imageCachingEnabled;
+    private boolean reorderTitleForDisplaying;
     /** caching the book condition strings. */
     private final String[] conditionDescriptions;
     /** A collection of 'in-use' flags for the fields we might display. */
@@ -149,39 +149,38 @@ public class BooklistAdapter
      * @param context Current context
      */
     public BooklistAdapter(@NonNull final Context context) {
-
         inflater = LayoutInflater.from(context);
-        userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        imageCachingEnabled = ImageUtils.isImageCachingEnabled();
 
-        levelIndent = context.getResources()
-                             .getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
-        conditionDescriptions = context.getResources().getStringArray(R.array.conditions_book);
-
-        reorderTitleForDisplaying = ReorderHelper.forDisplay(context);
+        final Resources resources = context.getResources();
+        userLocale = resources.getConfiguration().getLocales().get(0);
+        levelIndent = resources.getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
+        conditionDescriptions = resources.getStringArray(R.array.conditions_book);
 
         // getItemId returns the rowId
         setHasStableIds(true);
     }
 
     /**
-     * Set the Cursor and related {@link Style}.
+     * Set the style and prepare the related data.
      *
      * @param context Current context
-     * @param cursor  cursor with the 'list of items'
      * @param style   Style reference.
      */
-    public void setCursor(@NonNull final Context context,
-                          @NonNull final Cursor cursor,
-                          @NonNull final Style style) {
-        // First set the style and prepare the related data
+    public void setStyle(@NonNull final Context context,
+                         @NonNull final Style style) {
+
+        imageCachingEnabled = ImageUtils.isImageCachingEnabled();
+        reorderTitleForDisplaying = ReorderHelper.forDisplay(context);
+
         this.style = style;
         fieldsInUse = new FieldsInUse(this.style);
-
         groupRowHeight = this.style.getGroupRowHeight(context);
+
+        final Resources resources = context.getResources();
+
         if (groupRowHeight == ViewGroup.LayoutParams.WRAP_CONTENT) {
-            groupLevel1topMargin = context
-                    .getResources().getDimensionPixelSize(R.dimen.bob_group_level_1_margin_top);
+            groupLevel1topMargin = resources
+                    .getDimensionPixelSize(R.dimen.bob_group_level_1_margin_top);
         }
 
         if (this.style.isShowField(Style.Screen.List, FieldVisibility.COVER[0])) {
@@ -190,8 +189,8 @@ public class BooklistAdapter
 
             // The thumbnail scale is used to retrieve the cover dimensions
             // We use a square space for the image so both portrait/landscape images work out.
-            final TypedArray coverSizes = context
-                    .getResources().obtainTypedArray(R.array.cover_book_list_longest_side);
+            final TypedArray coverSizes = resources
+                    .obtainTypedArray(R.array.cover_book_list_longest_side);
             coverLongestSide = coverSizes.getDimensionPixelSize(frontCoverScale, 0);
             coverSizes.recycle();
 
@@ -210,27 +209,6 @@ public class BooklistAdapter
             fieldsInUse.cover = false;
             bookLayoutId = R.layout.booksonbookshelf_row_book_scale_2;
         }
-
-        // now the actual new cursor
-        this.cursor = cursor;
-        nodeData = new CursorRow(this.cursor);
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    public void clearCursor() {
-        cursor = null;
-        nodeData = null;
-        notifyDataSetChanged();
-    }
-
-    /**
-     * Check if the adapter is ready to serve data.
-     * i.e. if it has a valid Cursor.
-     *
-     * @return cursor
-     */
-    boolean hasCursor() {
-        return cursor != null;
     }
 
     /**
@@ -243,6 +221,20 @@ public class BooklistAdapter
     @NonNull
     public Cursor getCursor() {
         return Objects.requireNonNull(cursor, "cursor");
+    }
+
+    /**
+     * Set the Cursor.
+     * <p>
+     * This will trigger a {@link #notifyDataSetChanged()}.
+     *
+     * @param cursor cursor with the 'list of items' or {@code null} to clear
+     */
+    @SuppressLint("NotifyDataSetChanged")
+    public void setCursor(@Nullable final Cursor cursor) {
+        this.cursor = cursor;
+        nodeData = this.cursor != null ? new CursorRow(this.cursor) : null;
+        notifyDataSetChanged();
     }
 
     @Override

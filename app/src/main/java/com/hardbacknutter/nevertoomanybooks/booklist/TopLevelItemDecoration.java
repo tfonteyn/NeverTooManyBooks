@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -67,7 +67,7 @@ public class TopLevelItemDecoration
         }
 
         final BooklistAdapter booklistAdapter = (BooklistAdapter) adapter;
-        if (!booklistAdapter.hasCursor()) {
+        if (booklistAdapter.getItemCount() == 0) {
             return;
         }
 
