@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -31,6 +31,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         style="@style/TopCentered"
+        android:minWidth="700dp"
         >
 
         <!--suppress LongLine -->
@@ -72,8 +73,10 @@
             android:textAppearance="?attr/textAppearanceBodyLarge"
             android:textIsSelectable="true"
             app:layout_constraintStart_toStartOf="@id/archive_name"
+            app:layout_constraintEnd_toStartOf="@id/middle"
+            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintTop_toBottomOf="@id/archive_name"
-            tools:text="Books: 123\nCovers: 456"
+            tools:text="Created: May 26, 2022, 11:37 AM\nBooks: 123\nCovers: 456"
             />
 
         <androidx.constraintlayout.widget.Guideline
@@ -81,7 +84,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5"
+            app:layout_constraintGuide_percent="0.45"
             />
 
         <CheckBox
@@ -166,8 +169,8 @@
             android:layout_height="wrap_content"
             android:checked="true"
             android:text="@string/lbl_settings"
-            app:layout_constraintBottom_toTopOf="@id/cbx_styles"
-            app:layout_constraintStart_toStartOf="@id/archive_name"
+            app:layout_constraintStart_toStartOf="@id/cbx_books"
+            app:layout_constraintTop_toBottomOf="@id/cbx_covers"
             />
 
         <CheckBox
@@ -176,8 +179,8 @@
             android:layout_height="wrap_content"
             android:checked="true"
             android:text="@string/lbl_styles"
-            app:layout_constraintStart_toStartOf="@id/archive_name"
-            app:layout_constraintTop_toTopOf="@id/cbx_covers"
+            app:layout_constraintStart_toStartOf="@id/cbx_books"
+            app:layout_constraintTop_toBottomOf="@id/cbx_prefs"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
