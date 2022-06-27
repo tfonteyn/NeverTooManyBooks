@@ -176,7 +176,7 @@ public class DomainExpression
     public String toString() {
         return "DomainExpression{"
                + "domain=" + domain
-               + ", expression='" + expression + '\''
+               + ", expression=`" + expression + '`'
                + ", sorted=" + sorted
                + '}';
     }

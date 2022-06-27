@@ -197,7 +197,7 @@ public enum RecordType {
     @NonNull
     public String toString() {
         return "RecordType{"
-               + "name='" + name + '\''
+               + "name=`" + name + '`'
                + '}';
     }
 }

@@ -134,7 +134,7 @@ public class UriInfo {
     public String toString() {
         return "UriInfo{"
                + "uri=" + uri
-               + ", displayName='" + displayName + '\''
+               + ", displayName=`" + displayName + '`'
                + ", size=" + size
                + ", resolved=" + resolved
                + '}';

@@ -223,8 +223,8 @@ public class TableDefinition {
     @NonNull
     public String toDebugString() {
         return "TableDefinition{"
-               + "name='" + name + '\''
-               + ", alias='" + alias + '\''
+               + "name=`" + name + '`'
+               + ", alias=`" + alias + '`'
                + ", type=" + type
                + ", domains=" + domains
                + ", primaryKey=" + primaryKey
