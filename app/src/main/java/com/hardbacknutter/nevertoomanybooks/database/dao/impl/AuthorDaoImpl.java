@@ -43,9 +43,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
@@ -254,11 +254,11 @@ public class AuthorDaoImpl
 
     /** Virtual: "FamilyName, GivenName". */
     private static final Domain DOM_AUTHOR_FORMATTED_FAMILY_FIRST;
-    public static final String[] Z_ARRAY_STRING = new String[0];
+    private static final String[] Z_ARRAY_STRING = new String[0];
 
     static {
         DOM_AUTHOR_FORMATTED_FAMILY_FIRST =
-                new Domain.Builder(DBKey.AUTHOR_FORMATTED, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.AUTHOR_FORMATTED, SqLiteDataType.Text)
                         .notNull()
                         .build();
     }

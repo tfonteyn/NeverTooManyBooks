@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -194,11 +194,11 @@ public final class ParseUtils {
     }
 
     /**
-     * Translate the passed Object to a Long value.
+     * Translate the passed Object to a {@code long} value.
      *
      * @param source Object to convert
      *
-     * @return Resulting value ({@code null} or empty becomes 0)
+     * @return Resulting value ({@code null} or empty string becomes 0)
      *
      * @throws NumberFormatException if the source was not compatible.
      */
@@ -219,7 +219,109 @@ public final class ParseUtils {
                 try {
                     return Long.parseLong(stringValue);
                 } catch (@NonNull final NumberFormatException e) {
-                    // desperate ?
+                    // as a last resort try boolean
+                    return toBoolean(source) ? 1 : 0;
+                }
+            }
+        }
+    }
+
+    /**
+     * Translate the passed Object to an {@code int} value.
+     *
+     * @param source Object to convert
+     *
+     * @return Resulting value ({@code null} or empty string becomes 0)
+     *
+     * @throws NumberFormatException if the source was not compatible.
+     */
+    public static int toInt(@Nullable final Object source)
+            throws NumberFormatException {
+
+        if (source == null) {
+            return 0;
+
+        } else if (source instanceof Number) {
+            return ((Number) source).intValue();
+
+        } else {
+            final String stringValue = source.toString().trim();
+            if (stringValue.isEmpty()) {
+                return 0;
+            } else {
+                try {
+                    return Integer.parseInt(stringValue);
+                } catch (@NonNull final NumberFormatException e) {
+                    // as a last resort try boolean
+                    return toBoolean(source) ? 1 : 0;
+                }
+            }
+        }
+    }
+
+    /**
+     * Translate the passed Object to a {@code float} value.
+     *
+     * @param source       Object to convert
+     * @param sourceLocale (optional) Locale to use for the formatter/parser.
+     *
+     * @return Resulting value ({@code null} or empty string becomes 0)
+     *
+     * @throws NumberFormatException if the source was not compatible.
+     */
+    public static float toFloat(@Nullable final Object source,
+                                @Nullable final Locale sourceLocale)
+            throws NumberFormatException {
+
+        if (source == null) {
+            return 0f;
+
+        } else if (source instanceof Number) {
+            return ((Number) source).floatValue();
+
+        } else {
+            final String stringValue = source.toString().trim();
+            if (stringValue.isEmpty()) {
+                return 0f;
+            }
+            try {
+                return parseFloat(stringValue, sourceLocale);
+            } catch (@NonNull final NumberFormatException e) {
+                // as a last resort try boolean
+                return toBoolean(source) ? 1 : 0;
+            }
+        }
+    }
+
+    /**
+     * Translate the passed Object to a {@code double} value.
+     *
+     * @param source       Object to convert
+     * @param sourceLocale (optional) Locale to use for the formatter/parser.
+     *
+     * @return Resulting value ({@code null} or empty string becomes 0)
+     *
+     * @throws NumberFormatException if the source was not compatible.
+     */
+    public static double toDouble(@Nullable final Object source,
+                                  @Nullable final Locale sourceLocale)
+            throws NumberFormatException {
+
+        if (source == null) {
+            return 0d;
+
+        } else if (source instanceof Number) {
+            return ((Number) source).doubleValue();
+
+        } else {
+            final String stringValue = source.toString().trim();
+            if (stringValue.isEmpty()) {
+                return 0;
+            } else {
+                try {
+                    return parseDouble(stringValue, sourceLocale);
+                } catch (@NonNull final NumberFormatException e) {
+                    // as a last resort try boolean
                     return toBoolean(source) ? 1 : 0;
                 }
             }
@@ -248,7 +350,6 @@ public final class ParseUtils {
             return ((Number) source).longValue() != 0;
 
         } else {
-            // is it a String?
             return parseBoolean(source.toString(), true);
         }
     }
@@ -307,40 +408,6 @@ public final class ParseUtils {
     }
 
     /**
-     * Translate the passed Object to a float value.
-     *
-     * @param source       Object to convert
-     * @param sourceLocale (optional) Locale to use for the formatter/parser.
-     *
-     * @return Resulting value ({@code null} or empty becomes 0)
-     *
-     * @throws NumberFormatException if the source was not compatible.
-     */
-    public static float toFloat(@Nullable final Object source,
-                                @Nullable final Locale sourceLocale)
-            throws NumberFormatException {
-
-        if (source == null) {
-            return 0f;
-
-        } else if (source instanceof Number) {
-            return ((Number) source).floatValue();
-
-        } else {
-            final String stringValue = source.toString().trim();
-            if (stringValue.isEmpty()) {
-                return 0f;
-            }
-            try {
-                return parseFloat(stringValue, sourceLocale);
-            } catch (@NonNull final NumberFormatException e) {
-                // desperate ?
-                return toBoolean(source) ? 1 : 0;
-            }
-        }
-    }
-
-    /**
      * Replacement for {@code Float.parseFloat(String)} using Locales.
      *
      * @param source       String to parse
@@ -380,41 +447,6 @@ public final class ParseUtils {
         }
 
         throw new NumberFormatException(ERROR_NOT_A_FLOAT + source);
-    }
-
-    /**
-     * Translate the passed Object to a double value.
-     *
-     * @param source       Object to convert
-     * @param sourceLocale (optional) Locale to use for the formatter/parser.
-     *
-     * @return Resulting value ({@code null} or empty becomes 0)
-     *
-     * @throws NumberFormatException if the source was not compatible.
-     */
-    public static double toDouble(@Nullable final Object source,
-                                  @Nullable final Locale sourceLocale)
-            throws NumberFormatException {
-
-        if (source == null) {
-            return 0d;
-
-        } else if (source instanceof Number) {
-            return ((Number) source).doubleValue();
-
-        } else {
-            final String stringValue = source.toString().trim();
-            if (stringValue.isEmpty()) {
-                return 0;
-            } else {
-                try {
-                    return parseDouble(stringValue, sourceLocale);
-                } catch (@NonNull final NumberFormatException e) {
-                    // desperate ?
-                    return toBoolean(source) ? 1 : 0;
-                }
-            }
-        }
     }
 
     /**

@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -40,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -48,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
@@ -89,8 +92,7 @@ public class BookDaoHelper {
 
     /**
      * Examine the values and make any changes necessary before writing the data.
-     * Called during {@link BookDaoImpl#insert(Context, Book, int)}
-     * and {@link BookDaoImpl#update(Context, Book, int)}.
+     * Called during {@link BookDaoImpl#insert} and {@link BookDaoImpl#update}.
      *
      * @param context Current context
      */
@@ -172,7 +174,7 @@ public class BookDaoHelper {
 
         // Partial/Full Date strings
         domains.stream()
-               .filter(domain -> domain.getType().equals(ColumnInfo.TYPE_DATE))
+               .filter(domain -> domain.getSqLiteDataType() == SqLiteDataType.Date)
                .map(Domain::getName)
                .filter(book::contains)
                .forEach(key -> {
@@ -186,7 +188,7 @@ public class BookDaoHelper {
 
         // Full UTC based DateTime strings
         domains.stream()
-               .filter(domain -> domain.getType().equals(ColumnInfo.TYPE_DATETIME))
+               .filter(domain -> domain.getSqLiteDataType() == SqLiteDataType.DateTime)
                .map(Domain::getName)
                .filter(book::contains)
                .forEach(key -> {
@@ -216,7 +218,7 @@ public class BookDaoHelper {
         final List<Domain> domains = SearchEngineRegistry.getInstance().getExternalIdDomains();
 
         domains.stream()
-               .filter(domain -> domain.getType().equals(ColumnInfo.TYPE_INTEGER))
+               .filter(domain -> domain.getSqLiteDataType() == SqLiteDataType.Integer)
                .map(Domain::getName)
                .filter(book::contains)
                .forEach(key -> {
@@ -257,7 +259,7 @@ public class BookDaoHelper {
                });
 
         domains.stream()
-               .filter(domain -> domain.getType().equals(ColumnInfo.TYPE_TEXT))
+               .filter(domain -> domain.getSqLiteDataType() == SqLiteDataType.Text)
                .map(Domain::getName)
                .filter(book::contains)
                .forEach(key -> {
@@ -366,92 +368,72 @@ public class BookDaoHelper {
                                 "NULL on a non-nullable column|key=" + key);
                     }
                 } else {
-                    switch (columnInfo.storageClass) {
-                        case Real: {
-                            if (entry instanceof Number) {
-                                cv.put(columnInfo.name, ((Number) entry).doubleValue());
+                    final String columnName = columnInfo.getName();
+                    switch (columnInfo.getCursorFieldType()) {
+                        case Cursor.FIELD_TYPE_STRING: {
+                            if (entry instanceof String) {
+                                cv.put(columnName, (String) entry);
                             } else {
-                                // Theoretically we should only get here during an import,
-                                // where everything is handled as a String.
+                                cv.put(columnName, entry.toString());
+                            }
+                            break;
+                        }
+                        case Cursor.FIELD_TYPE_INTEGER: {
+                            if (entry instanceof Boolean) {
+                                cv.put(columnName, (Boolean) entry ? 1 : 0);
+
+                            } else if (entry instanceof Integer) {
+                                cv.put(columnName, (Integer) entry);
+
+                            } else if (entry instanceof Long) {
+                                cv.put(columnName, (Long) entry);
+
+                            } else {
+                                final String s = entry.toString().toLowerCase(bookLocale);
+                                if (s.isEmpty()) {
+                                    // Theoretically we should only get here during an import,
+                                    // where everything is handled as a String.
+                                    cv.put(columnName, "");
+                                } else {
+                                    // Use the full parser so we can detect boolean values
+                                    cv.put(columnName, ParseUtils.toInt(s));
+                                }
+                            }
+                            break;
+                        }
+                        case Cursor.FIELD_TYPE_FLOAT: {
+                            if (entry instanceof Number) {
+                                cv.put(columnName, ((Number) entry).doubleValue());
+
+                            } else {
                                 final String stringValue = entry.toString().trim();
                                 if (stringValue.isEmpty()) {
-                                    cv.put(columnInfo.name, "");
+                                    // Theoretically we should only get here during an import,
+                                    // where everything is handled as a String.
+                                    cv.put(columnName, "");
                                 } else {
                                     // Sqlite does not care about float/double,
                                     // Using double covers float as well.
-                                    //Reminder: do NOT use the bookLocale to parse.
-                                    cv.put(columnInfo.name, Double.parseDouble(stringValue));
+                                    cv.put(columnName, Double.parseDouble(stringValue));
                                 }
                             }
                             break;
                         }
-                        case Integer: {
-                            if (entry instanceof Boolean) {
-                                if ((Boolean) entry) {
-                                    cv.put(columnInfo.name, 1);
-                                } else {
-                                    cv.put(columnInfo.name, 0);
-                                }
-                            } else if (entry instanceof Integer) {
-                                cv.put(columnInfo.name, (Integer) entry);
-                            } else if (entry instanceof Long) {
-                                cv.put(columnInfo.name, (Long) entry);
-                            } else {
-                                // Theoretically we should only get here during an import,
-                                // where everything is handled as a String.
-                                final String s = entry.toString().toLowerCase(bookLocale);
-                                if (s.isEmpty()) {
-                                    cv.put(columnInfo.name, "");
-                                } else {
-                                    // It's not strictly needed to do these conversions.
-                                    // parseInt/catch(Exception) works,
-                                    // but it's not elegant...
-                                    switch (s) {
-                                        case "1":
-                                        case "true":
-                                        case "t":
-                                        case "yes":
-                                        case "y":
-                                            cv.put(columnInfo.name, 1);
-                                            break;
-
-                                        case "0":
-                                        case "0.0":
-                                        case "false":
-                                        case "f":
-                                        case "no":
-                                        case "n":
-                                            cv.put(columnInfo.name, 0);
-                                            break;
-
-                                        default:
-                                            //Reminder: do NOT use the bookLocale to parse.
-                                            cv.put(columnInfo.name, Integer.parseInt(s));
-                                    }
-
-                                }
-                            }
-                            break;
-                        }
-                        case Text: {
-                            if (entry instanceof String) {
-                                cv.put(columnInfo.name, (String) entry);
-                            } else {
-                                cv.put(columnInfo.name, entry.toString());
-                            }
-                            break;
-                        }
-                        case Blob: {
+                        case Cursor.FIELD_TYPE_BLOB: {
                             if (entry instanceof byte[]) {
-                                cv.put(columnInfo.name, (byte[]) entry);
+                                cv.put(columnName, (byte[]) entry);
                             } else {
                                 throw new IllegalArgumentException(
                                         "non-null Blob but not a byte[] ?"
-                                        + "|column.name=" + columnInfo.name
+                                        + "|columnName=" + columnName
                                         + "|key=" + key);
                             }
                             break;
                         }
+                        case Cursor.FIELD_TYPE_NULL:
+                        default:
+                            // ignore
+                            break;
                     }
                 }
             }
@@ -460,8 +442,7 @@ public class BookDaoHelper {
     }
 
     /**
-     * Called during {@link BookDaoImpl#insert(Context, Book, int)}
-     * and {@link BookDaoImpl#update(Context, Book, int)}.
+     * Called during {@link BookDaoImpl#insert} and {@link BookDaoImpl#update}.
      *
      * @throws StorageException The covers directory is not available
      * @throws IOException      on failure

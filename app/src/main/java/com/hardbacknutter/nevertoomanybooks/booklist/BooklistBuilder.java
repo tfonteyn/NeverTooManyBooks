@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -1057,7 +1058,7 @@ class BooklistBuilder {
             final StringBuilder orderBy = new StringBuilder();
             orderByDomains.forEach(sd -> {
                 final Domain domain = sd.getDomain();
-                if (domain.isText()) {
+                if (domain.getSqLiteDataType() == SqLiteDataType.Text) {
                     // The order of this if/elseif/else is important, don't merge branch 1 and 3!
                     if (domain.isPrePreparedOrderBy()) {
                         // always use a pre-prepared order-by column as-is
@@ -1096,7 +1097,7 @@ class BooklistBuilder {
             orderByDomains.forEach(sd -> {
                 final Domain domain = sd.getDomain();
                 indexCols.append(domain.getName());
-                if (domain.isText()) {
+                if (domain.getSqLiteDataType() == SqLiteDataType.Text) {
                     indexCols.append(_COLLATION);
                 }
                 indexCols.append(sd.getSortedExpression()).append(',');

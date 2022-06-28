@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExternalIdBinding;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -166,7 +167,7 @@ public class SearchBookByExternalIdFragment
         final int keyboardIcon;
         final int inputType;
         //noinspection ConstantConditions
-        if (config.getExternalIdDomain().isText()) {
+        if (config.getExternalIdDomain().getSqLiteDataType() == SqLiteDataType.Text) {
             // display an alphanumeric keyboard icon
             keyboardIcon = R.drawable.ic_baseline_keyboard_24;
             inputType = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;

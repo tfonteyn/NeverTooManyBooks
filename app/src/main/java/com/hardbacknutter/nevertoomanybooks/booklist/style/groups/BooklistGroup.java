@@ -45,9 +45,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_ADDED__UTC;
@@ -230,6 +230,7 @@ public class BooklistGroup {
 
     /**
      * Get a list of BooklistGroup's, one for each defined {@link GroupKey}'s.
+     * This <strong>excludes</strong> the Book key itself.
      *
      * @param style Style reference.
      *
@@ -239,8 +240,6 @@ public class BooklistGroup {
     @NonNull
     public static List<BooklistGroup> getAllGroups(@NonNull final Style style) {
         final List<BooklistGroup> list = new ArrayList<>();
-        // Get the set of all valid <strong>Group</strong> values.
-        // In other words: all valid groups, <strong>except</strong> the BOOK.
         for (int id = 1; id <= GROUP_KEY_MAX; id++) {
             list.add(newInstance(id, style));
         }
@@ -446,7 +445,8 @@ public class BooklistGroup {
                 // Formatting is done after fetching.
                 return new GroupKey(R.string.lbl_read_and_unread, "r",
                                     new DomainExpression(
-                                            new Domain.Builder("blg_rd_sts", ColumnInfo.TYPE_TEXT)
+                                            new Domain.Builder("blg_rd_sts",
+                                                               SqLiteDataType.Text)
                                                     .notNull()
                                                     .build(),
                                             TBL_BOOKS.dot(DBKey.READ__BOOL),
@@ -456,7 +456,7 @@ public class BooklistGroup {
                 // Uses the OrderBy column so we get the re-ordered version if applicable.
                 // Formatting is done in the sql expression.
                 final DomainExpression keyDomain = new DomainExpression(
-                        new Domain.Builder("blg_tit_let", ColumnInfo.TYPE_TEXT)
+                        new Domain.Builder("blg_tit_let", SqLiteDataType.Text)
                                 .notNull()
                                 .build(),
                         "UPPER(SUBSTR(" + TBL_BOOKS.dot(DBKey.TITLE_OB) + ",1,1))",
@@ -468,7 +468,7 @@ public class BooklistGroup {
                 // Uses the OrderBy column so we get the re-ordered version if applicable.
                 // Formatting is done in the sql expression.
                 final DomainExpression keyDomain = new DomainExpression(
-                        new Domain.Builder("blg_ser_tit_let", ColumnInfo.TYPE_TEXT)
+                        new Domain.Builder("blg_ser_tit_let", SqLiteDataType.Text)
                                 .notNull()
                                 .build(),
                         "UPPER(SUBSTR(" + TBL_SERIES.dot(DBKey.SERIES_TITLE_OB) + ",1,1))",
@@ -480,7 +480,7 @@ public class BooklistGroup {
             case DATE_PUBLISHED_YEAR: {
                 // UTC. Formatting is done after fetching.
                 final DomainExpression keyDomain = new DomainExpression(
-                        new Domain.Builder("blg_pub_y", ColumnInfo.TYPE_INTEGER).build(),
+                        new Domain.Builder("blg_pub_y", SqLiteDataType.Integer).build(),
                         year(TBL_BOOKS.dot(DBKey.BOOK_PUBLICATION__DATE), false),
                         DomainExpression.Sort.Desc);
                 return new GroupKey(R.string.lbl_publication_year, "yrp", keyDomain)
@@ -489,7 +489,7 @@ public class BooklistGroup {
             case DATE_PUBLISHED_MONTH: {
                 // UTC. Formatting is done after fetching.
                 final DomainExpression keyDomain = new DomainExpression(
-                        new Domain.Builder("blg_pub_m", ColumnInfo.TYPE_INTEGER).build(),
+                        new Domain.Builder("blg_pub_m", SqLiteDataType.Integer).build(),
                         month(TBL_BOOKS.dot(DBKey.BOOK_PUBLICATION__DATE), false),
                         DomainExpression.Sort.Desc);
                 return new GroupKey(R.string.lbl_publication_month, "mp", keyDomain)
@@ -500,7 +500,7 @@ public class BooklistGroup {
             case DATE_FIRST_PUBLICATION_YEAR: {
                 // UTC. Formatting is done in the sql expression.
                 final DomainExpression keyDomain = new DomainExpression(
-                        new Domain.Builder("blg_1pub_y", ColumnInfo.TYPE_INTEGER).build(),
+                        new Domain.Builder("blg_1pub_y", SqLiteDataType.Integer).build(),
                         year(TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION__DATE), false),
                         DomainExpression.Sort.Desc);
                 return new GroupKey(R.string.lbl_first_pub_year, "yfp", keyDomain)
@@ -509,7 +509,7 @@ public class BooklistGroup {
             case DATE_FIRST_PUBLICATION_MONTH: {
                 // Local for the user. Formatting is done after fetching.
                 final DomainExpression keyDomain = new DomainExpression(
-                        new Domain.Builder("blg_1pub_m", ColumnInfo.TYPE_INTEGER).build(),
+                        new Domain.Builder("blg_1pub_m", SqLiteDataType.Integer).build(),
                         month(TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION__DATE), false),
                         DomainExpression.Sort.Desc);
                 return new GroupKey(R.string.lbl_first_pub_month, "mfp", keyDomain)
@@ -520,7 +520,7 @@ public class BooklistGroup {
             case DATE_ACQUIRED_YEAR: {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomain = new DomainExpression(
-                        new Domain.Builder("blg_acq_y", ColumnInfo.TYPE_INTEGER).build(),
+                        new Domain.Builder("blg_acq_y", SqLiteDataType.Integer).build(),
                         year(TBL_BOOKS.dot(DBKey.DATE_ACQUIRED), true),
                         DomainExpression.Sort.Desc);
                 return new GroupKey(R.string.lbl_date_acquired_year, "yac", keyDomain)
@@ -529,7 +529,7 @@ public class BooklistGroup {
             case DATE_ACQUIRED_MONTH: {
                 // Local for the user. Formatting is done after fetching.
                 final DomainExpression keyDomain = new DomainExpression(
-                        new Domain.Builder("blg_acq_m", ColumnInfo.TYPE_INTEGER).build(),
+                        new Domain.Builder("blg_acq_m", SqLiteDataType.Integer).build(),
                         month(TBL_BOOKS.dot(DBKey.DATE_ACQUIRED), true),
                         DomainExpression.Sort.Desc);
                 return new GroupKey(R.string.lbl_date_acquired_month, "mac", keyDomain)
@@ -538,7 +538,7 @@ public class BooklistGroup {
             case DATE_ACQUIRED_DAY: {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomain = new DomainExpression(
-                        new Domain.Builder("blg_acq_d", ColumnInfo.TYPE_INTEGER).build(),
+                        new Domain.Builder("blg_acq_d", SqLiteDataType.Integer).build(),
                         day(TBL_BOOKS.dot(DBKey.DATE_ACQUIRED), true),
                         DomainExpression.Sort.Desc);
                 return new GroupKey(R.string.lbl_date_acquired_day, "dac", keyDomain)
@@ -549,7 +549,7 @@ public class BooklistGroup {
             case DATE_ADDED_YEAR: {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomain = new DomainExpression(
-                        new Domain.Builder("blg_add_y", ColumnInfo.TYPE_INTEGER).build(),
+                        new Domain.Builder("blg_add_y", SqLiteDataType.Integer).build(),
                         year(TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC), true),
                         DomainExpression.Sort.Desc);
                 return new GroupKey(R.string.lbl_added_year, "ya", keyDomain)
@@ -558,7 +558,7 @@ public class BooklistGroup {
             case DATE_ADDED_MONTH: {
                 // Local for the user. Formatting is done after fetching.
                 final DomainExpression keyDomain = new DomainExpression(
-                        new Domain.Builder("blg_add_m", ColumnInfo.TYPE_INTEGER).build(),
+                        new Domain.Builder("blg_add_m", SqLiteDataType.Integer).build(),
                         month(TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC), true),
                         DomainExpression.Sort.Desc);
                 return new GroupKey(R.string.lbl_added_month, "ma", keyDomain)
@@ -567,7 +567,7 @@ public class BooklistGroup {
             case DATE_ADDED_DAY: {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomain = new DomainExpression(
-                        new Domain.Builder("blg_add_d", ColumnInfo.TYPE_INTEGER).build(),
+                        new Domain.Builder("blg_add_d", SqLiteDataType.Integer).build(),
                         day(TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC), true),
                         DomainExpression.Sort.Desc);
                 return new GroupKey(R.string.lbl_added_day, "da", keyDomain)
@@ -578,7 +578,7 @@ public class BooklistGroup {
             case DATE_LAST_UPDATE_YEAR: {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomain = new DomainExpression(
-                        new Domain.Builder("blg_upd_y", ColumnInfo.TYPE_INTEGER).build(),
+                        new Domain.Builder("blg_upd_y", SqLiteDataType.Integer).build(),
                         year(TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC), true),
                         DomainExpression.Sort.Desc);
                 return new GroupKey(R.string.lbl_update_year, "yu", keyDomain)
@@ -587,7 +587,7 @@ public class BooklistGroup {
             case DATE_LAST_UPDATE_MONTH: {
                 // Local for the user. Formatting is done after fetching.
                 final DomainExpression keyDomain = new DomainExpression(
-                        new Domain.Builder("blg_upd_m", ColumnInfo.TYPE_INTEGER).build(),
+                        new Domain.Builder("blg_upd_m", SqLiteDataType.Integer).build(),
                         month(TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC), true),
                         DomainExpression.Sort.Desc);
                 return new GroupKey(R.string.lbl_update_month, "mu", keyDomain)
@@ -596,7 +596,7 @@ public class BooklistGroup {
             case DATE_LAST_UPDATE_DAY: {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomain = new DomainExpression(
-                        new Domain.Builder("blg_upd_d", ColumnInfo.TYPE_INTEGER).build(),
+                        new Domain.Builder("blg_upd_d", SqLiteDataType.Integer).build(),
                         day(TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC), true),
                         DomainExpression.Sort.Desc);
                 return new GroupKey(R.string.lbl_update_day, "du", keyDomain)
@@ -607,7 +607,7 @@ public class BooklistGroup {
             case DATE_READ_YEAR: {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomain = new DomainExpression(
-                        new Domain.Builder("blg_rd_y", ColumnInfo.TYPE_INTEGER).build(),
+                        new Domain.Builder("blg_rd_y", SqLiteDataType.Integer).build(),
                         year(TBL_BOOKS.dot(DBKey.READ_END__DATE), true),
                         DomainExpression.Sort.Desc);
                 return new GroupKey(R.string.lbl_read_year, "yr", keyDomain)
@@ -617,7 +617,7 @@ public class BooklistGroup {
             case DATE_READ_MONTH: {
                 // Local for the user. Formatting is done after fetching.
                 final DomainExpression keyDomain = new DomainExpression(
-                        new Domain.Builder("blg_rd_m", ColumnInfo.TYPE_INTEGER).build(),
+                        new Domain.Builder("blg_rd_m", SqLiteDataType.Integer).build(),
                         month(TBL_BOOKS.dot(DBKey.READ_END__DATE), true),
                         DomainExpression.Sort.Desc);
                 return new GroupKey(R.string.lbl_read_month, "mr", keyDomain)
@@ -627,7 +627,7 @@ public class BooklistGroup {
             case DATE_READ_DAY: {
                 // Local for the user. Formatting is done in the sql expression.
                 final DomainExpression keyDomain = new DomainExpression(
-                        new Domain.Builder("blg_rd_d", ColumnInfo.TYPE_INTEGER).build(),
+                        new Domain.Builder("blg_rd_d", SqLiteDataType.Integer).build(),
                         day(TBL_BOOKS.dot(DBKey.READ_END__DATE), true),
                         DomainExpression.Sort.Desc);
                 return new GroupKey(R.string.lbl_read_day, "dr", keyDomain)

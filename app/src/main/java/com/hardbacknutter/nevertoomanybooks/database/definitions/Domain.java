@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,9 +61,8 @@ public class Domain
     /** This domain represents a primary key. */
     private final boolean primaryKey;
 
-    @ColumnInfo.Type
     @NonNull
-    private final String type;
+    private final SqLiteDataType sqLiteDataType;
 
     /** {@code null} values not allowed. */
     private final boolean notNull;
@@ -93,7 +92,7 @@ public class Domain
     private Domain(@NonNull final Builder builder) {
         name = builder.name;
         primaryKey = builder.primaryKey;
-        type = builder.type;
+        sqLiteDataType = builder.sqLiteDataType;
         notNull = builder.notNull;
         defaultClause = builder.defaultClause;
         references = builder.references;
@@ -111,7 +110,7 @@ public class Domain
     public Domain(@NonNull final Domain from) {
         name = from.name;
         primaryKey = from.primaryKey;
-        type = from.type;
+        sqLiteDataType = from.sqLiteDataType;
         notNull = from.notNull;
         defaultClause = from.defaultClause;
         references = from.references;
@@ -130,7 +129,7 @@ public class Domain
         //noinspection ConstantConditions
         name = in.readString();
         //noinspection ConstantConditions
-        type = in.readString();
+        sqLiteDataType = in.readParcelable(Domain.class.getClassLoader());
         primaryKey = in.readByte() != 0;
         notNull = in.readByte() != 0;
         defaultClause = in.readString();
@@ -145,7 +144,7 @@ public class Domain
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         dest.writeString(name);
-        dest.writeString(type);
+        dest.writeParcelable(sqLiteDataType, flags);
         dest.writeByte((byte) (primaryKey ? 1 : 0));
         dest.writeByte((byte) (notNull ? 1 : 0));
         dest.writeString(defaultClause);
@@ -181,12 +180,11 @@ public class Domain
     /**
      * Get the type of this domain.
      *
-     * @return one of ColumnInfo#TYPE*
+     * @return one of {@link SqLiteDataType}
      */
-    @ColumnInfo.Type
     @NonNull
-    public String getType() {
-        return type;
+    public SqLiteDataType getSqLiteDataType() {
+        return sqLiteDataType;
     }
 
     boolean isPrimaryKey() {
@@ -233,25 +231,6 @@ public class Domain
     }
 
     /**
-     * Convenience method to check the type of this domain.
-     * Can be used to check if collation clauses and/or lower/upper should be used.
-     *
-     * @return {@code true} if this domain is a TYPE_TEXT.
-     */
-    public boolean isText() {
-        return ColumnInfo.TYPE_TEXT.equalsIgnoreCase(type);
-    }
-
-    /**
-     * Convenience method to check the type of this domain.
-     *
-     * @return {@code true} if this domain is a TYPE_BOOLEAN.
-     */
-    public boolean isBoolean() {
-        return ColumnInfo.TYPE_BOOLEAN.equalsIgnoreCase(type);
-    }
-
-    /**
      * Check if this domain is pre-prepared for sorting.
      *
      * @return {@code true} if this field should be used as-is for sorting.
@@ -285,7 +264,7 @@ public class Domain
      */
     @NonNull
     String def(final boolean withConstraints) {
-        final StringBuilder sql = new StringBuilder(name + ' ' + type);
+        final StringBuilder sql = new StringBuilder(name + ' ' + sqLiteDataType.getName());
         if (primaryKey) {
             sql.append(" PRIMARY KEY AUTOINCREMENT");
         }
@@ -319,7 +298,7 @@ public class Domain
                && prePreparedOrderBy == domain.prePreparedOrderBy
                && collationLocalized == domain.collationLocalized
                && name.equals(domain.name)
-               && type.equals(domain.type)
+               && sqLiteDataType == domain.sqLiteDataType
                && Objects.equals(defaultClause, domain.defaultClause)
                && Objects.equals(references, domain.references);
     }
@@ -327,7 +306,7 @@ public class Domain
     @Override
     public int hashCode() {
         return Objects
-                .hash(name, primaryKey, type, notNull, notBlank, defaultClause,
+                .hash(name, primaryKey, sqLiteDataType, notNull, notBlank, defaultClause,
                       references,
                       prePreparedOrderBy, collationLocalized);
     }
@@ -337,9 +316,8 @@ public class Domain
         @NonNull
         private final String name;
 
-        @ColumnInfo.Type
         @NonNull
-        private final String type;
+        private final SqLiteDataType sqLiteDataType;
 
         private boolean primaryKey;
         private boolean notNull;
@@ -353,13 +331,13 @@ public class Domain
         /**
          * Constructor.
          *
-         * @param name column name
-         * @param type column type (text, int, float, ...)
+         * @param name           column name
+         * @param sqLiteDataType column type (text, int, float, ...)
          */
         public Builder(@NonNull final String name,
-                       @ColumnInfo.Type @NonNull final String type) {
+                       @NonNull final SqLiteDataType sqLiteDataType) {
             this.name = name;
-            this.type = type;
+            this.sqLiteDataType = sqLiteDataType;
         }
 
         /**

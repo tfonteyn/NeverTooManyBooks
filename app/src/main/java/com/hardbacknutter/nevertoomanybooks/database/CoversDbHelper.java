@@ -31,8 +31,8 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 /**
@@ -55,22 +55,22 @@ public class CoversDbHelper
 
     /** {@link #TBL_IMAGE}. */
     private static final Domain DOM_PK_ID =
-            new Domain.Builder(PK_ID, ColumnInfo.TYPE_INTEGER)
+            new Domain.Builder(PK_ID, SqLiteDataType.Integer)
                     .primaryKey()
                     .build();
 
     private static final Domain DOM_CACHE_ID =
-            new Domain.Builder(CACHE_ID, ColumnInfo.TYPE_TEXT)
+            new Domain.Builder(CACHE_ID, SqLiteDataType.Text)
                     .notNull()
                     .build();
 
     private static final Domain DOM_IMAGE =
-            new Domain.Builder(BLOB_IMAGE, ColumnInfo.TYPE_BLOB)
+            new Domain.Builder(BLOB_IMAGE, SqLiteDataType.Blob)
                     .notNull()
                     .build();
 
     private static final Domain DOM_UTC_DATETIME =
-            new Domain.Builder(LAST_UPDATED__UTC, ColumnInfo.TYPE_DATETIME)
+            new Domain.Builder(LAST_UPDATED__UTC, SqLiteDataType.DateTime)
                     .notNull()
                     .withDefaultCurrentTimeStamp()
                     .build();

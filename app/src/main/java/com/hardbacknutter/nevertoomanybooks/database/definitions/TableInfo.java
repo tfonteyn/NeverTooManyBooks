@@ -101,7 +101,7 @@ public class TableInfo {
         try (Cursor colCsr = db.rawQuery("PRAGMA table_info(" + tableName + ')', null)) {
             while (colCsr.moveToNext()) {
                 final ColumnInfo col = new ColumnInfo(colCsr);
-                allColumns.put(col.name.toLowerCase(systemLocale), col);
+                allColumns.put(col.getName().toLowerCase(systemLocale), col);
             }
         }
 

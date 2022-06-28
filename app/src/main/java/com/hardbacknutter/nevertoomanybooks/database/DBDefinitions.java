@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,8 +30,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BookDetailsFieldVisib
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -506,47 +506,47 @@ public final class DBDefinitions {
          *  Primary and Foreign Key definitions
          * ====================================================================================== */
 
-        DOM_PK_ID = new Domain.Builder(DBKey.PK_ID, ColumnInfo.TYPE_INTEGER)
+        DOM_PK_ID = new Domain.Builder(DBKey.PK_ID, SqLiteDataType.Integer)
                 .primaryKey()
                 .build();
 
         DOM_FK_AUTHOR =
-                new Domain.Builder(DBKey.FK_AUTHOR, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.FK_AUTHOR, SqLiteDataType.Integer)
                         .notNull()
                         .references(TBL_AUTHORS, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
                         .build();
         DOM_FK_BOOKSHELF =
-                new Domain.Builder(DBKey.FK_BOOKSHELF, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.FK_BOOKSHELF, SqLiteDataType.Integer)
                         .notNull()
                         .references(TBL_BOOKSHELF, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
                         .build();
         DOM_FK_BOOK =
-                new Domain.Builder(DBKey.FK_BOOK, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.FK_BOOK, SqLiteDataType.Integer)
                         .notNull()
                         .references(TBL_BOOKS, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
                         .build();
         DOM_FK_SERIES =
-                new Domain.Builder(DBKey.FK_SERIES, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.FK_SERIES, SqLiteDataType.Integer)
                         .notNull()
                         .references(TBL_SERIES, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
                         .build();
         DOM_FK_PUBLISHER =
-                new Domain.Builder(DBKey.FK_PUBLISHER, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.FK_PUBLISHER, SqLiteDataType.Integer)
                         .notNull()
                         .references(TBL_PUBLISHERS, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
                         .build();
         DOM_FK_TOC_ENTRY =
-                new Domain.Builder(DBKey.FK_TOC_ENTRY, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.FK_TOC_ENTRY, SqLiteDataType.Integer)
                         .notNull()
                         .references(TBL_TOC_ENTRIES, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
                         .build();
         DOM_FK_CALIBRE_LIBRARY =
-                new Domain.Builder(DBKey.FK_CALIBRE_LIBRARY, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.FK_CALIBRE_LIBRARY, SqLiteDataType.Integer)
                         .notNull()
                         .references(TBL_CALIBRE_LIBRARIES, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
                         .build();
         DOM_FK_STYLE =
-                new Domain.Builder(DBKey.FK_STYLE, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.FK_STYLE, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(BuiltinStyle.DEFAULT_ID)
                         .references(TBL_BOOKLIST_STYLES, "ON DELETE SET DEFAULT ON UPDATE CASCADE")
@@ -557,26 +557,26 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_TITLE =
-                new Domain.Builder(DBKey.TITLE, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.TITLE, SqLiteDataType.Text)
                         .notNull()
                         .localized()
                         .build();
 
         DOM_TITLE_OB =
-                new Domain.Builder(DBKey.TITLE_OB, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.TITLE_OB, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .prePreparedOrderBy()
                         .build();
 
         DOM_DATE_FIRST_PUBLICATION =
-                new Domain.Builder(DBKey.FIRST_PUBLICATION__DATE, ColumnInfo.TYPE_DATE)
+                new Domain.Builder(DBKey.FIRST_PUBLICATION__DATE, SqLiteDataType.Date)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_LAST_UPDATED__UTC =
-                new Domain.Builder(DBKey.DATE_LAST_UPDATED__UTC, ColumnInfo.TYPE_DATETIME)
+                new Domain.Builder(DBKey.DATE_LAST_UPDATED__UTC, SqLiteDataType.DateTime)
                         .notNull()
                         .withDefaultCurrentTimeStamp()
                         .build();
@@ -586,34 +586,34 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_BOOKSHELF_NAME =
-                new Domain.Builder(DBKey.BOOKSHELF_NAME, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.BOOKSHELF_NAME, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
         DOM_BOOKSHELF_NAME_CSV =
-                new Domain.Builder(DBKey.BOOKSHELF_NAME_CSV, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.BOOKSHELF_NAME_CSV, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
         DOM_BOOKSHELF_BL_TOP_POS =
-                new Domain.Builder(DBKey.BOOKSHELF_BL_TOP_POS, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.BOOKSHELF_BL_TOP_POS, SqLiteDataType.Integer)
                         .notNull()
                         // RecyclerView.NO_POSITION == -1
                         .withDefault(-1)
                         .build();
 
         DOM_BOOKSHELF_BL_TOP_OFFSET =
-                new Domain.Builder(DBKey.BOOKSHELF_BL_TOP_OFFSET, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.BOOKSHELF_BL_TOP_OFFSET, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(0)
                         .build();
 
         DOM_BOOKSHELF_FILTER_NAME =
-                new Domain.Builder(DBKey.FILTER_DBKEY, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.FILTER_DBKEY, SqLiteDataType.Text)
                         .notNull()
                         .build();
         DOM_BOOKSHELF_FILTER_VALUE =
-                new Domain.Builder(DBKey.FILTER_VALUE, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.FILTER_VALUE, SqLiteDataType.Text)
                         .build();
 
         /* ======================================================================================
@@ -621,34 +621,34 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_AUTHOR_FAMILY_NAME =
-                new Domain.Builder(DBKey.AUTHOR_FAMILY_NAME, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.AUTHOR_FAMILY_NAME, SqLiteDataType.Text)
                         .notNull()
                         .localized()
                         .build();
 
         DOM_AUTHOR_FAMILY_NAME_OB =
-                new Domain.Builder(DBKey.AUTHOR_FAMILY_NAME_OB, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.AUTHOR_FAMILY_NAME_OB, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .prePreparedOrderBy()
                         .build();
 
         DOM_AUTHOR_GIVEN_NAMES =
-                new Domain.Builder(DBKey.AUTHOR_GIVEN_NAMES, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.AUTHOR_GIVEN_NAMES, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
                         .build();
 
         DOM_AUTHOR_GIVEN_NAMES_OB =
-                new Domain.Builder(DBKey.AUTHOR_GIVEN_NAMES_OB, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.AUTHOR_GIVEN_NAMES_OB, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .prePreparedOrderBy()
                         .build();
 
         DOM_AUTHOR_IS_COMPLETE =
-                new Domain.Builder(DBKey.AUTHOR_IS_COMPLETE, ColumnInfo.TYPE_BOOLEAN)
+                new Domain.Builder(DBKey.AUTHOR_IS_COMPLETE, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
@@ -658,20 +658,20 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_SERIES_TITLE =
-                new Domain.Builder(DBKey.SERIES_TITLE, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.SERIES_TITLE, SqLiteDataType.Text)
                         .notNull()
                         .localized()
                         .build();
 
         DOM_SERIES_TITLE_OB =
-                new Domain.Builder(DBKey.SERIES_TITLE_OB, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.SERIES_TITLE_OB, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .prePreparedOrderBy()
                         .build();
 
         DOM_SERIES_IS_COMPLETE =
-                new Domain.Builder(DBKey.SERIES_IS_COMPLETE, ColumnInfo.TYPE_BOOLEAN)
+                new Domain.Builder(DBKey.SERIES_IS_COMPLETE, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
@@ -680,20 +680,20 @@ public final class DBDefinitions {
          *  Publisher domains
          * ====================================================================================== */
         DOM_PUBLISHER_NAME =
-                new Domain.Builder(DBKey.PUBLISHER_NAME, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.PUBLISHER_NAME, SqLiteDataType.Text)
                         .notNull()
                         .localized()
                         .build();
 
         DOM_PUBLISHER_NAME_OB =
-                new Domain.Builder(DBKey.PUBLISHER_NAME_OB, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.PUBLISHER_NAME_OB, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .prePreparedOrderBy()
                         .build();
 
         DOM_PUBLISHER_NAME_CSV =
-                new Domain.Builder(DBKey.PUBLISHER_NAME_CSV, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.PUBLISHER_NAME_CSV, SqLiteDataType.Text)
                         .notNull()
                         .build();
         /* ======================================================================================
@@ -701,77 +701,77 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_BOOK_ISBN =
-                new Domain.Builder(DBKey.BOOK_ISBN, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.BOOK_ISBN, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_BOOK_DATE_PUBLISHED =
-                new Domain.Builder(DBKey.BOOK_PUBLICATION__DATE, ColumnInfo.TYPE_DATE)
+                new Domain.Builder(DBKey.BOOK_PUBLICATION__DATE, SqLiteDataType.Date)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_BOOK_PRINT_RUN =
-                new Domain.Builder(DBKey.PRINT_RUN, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.PRINT_RUN, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_BOOK_PRICE_LISTED =
-                new Domain.Builder(DBKey.PRICE_LISTED, ColumnInfo.TYPE_REAL)
+                new Domain.Builder(DBKey.PRICE_LISTED, SqLiteDataType.Real)
                         .notNull()
                         .withDefault(0d)
                         .build();
 
         DOM_BOOK_PRICE_LISTED_CURRENCY =
-                new Domain.Builder(DBKey.PRICE_LISTED_CURRENCY, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.PRICE_LISTED_CURRENCY, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_BOOK_PAGES =
-                new Domain.Builder(DBKey.PAGE_COUNT, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.PAGE_COUNT, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_BOOK_FORMAT =
-                new Domain.Builder(DBKey.FORMAT, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.FORMAT, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
                         .build();
 
         DOM_BOOK_COLOR =
-                new Domain.Builder(DBKey.COLOR, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.COLOR, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
                         .build();
 
         DOM_BOOK_LANGUAGE =
-                new Domain.Builder(DBKey.LANGUAGE, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.LANGUAGE, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
                         .build();
 
         DOM_BOOK_GENRE =
-                new Domain.Builder(DBKey.GENRE, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.GENRE, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
                         .build();
 
         DOM_BOOK_DESCRIPTION =
-                new Domain.Builder(DBKey.DESCRIPTION, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.DESCRIPTION, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_BOOK_TOC_TYPE =
-                new Domain.Builder(DBKey.TOC_TYPE__BITMASK, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.TOC_TYPE__BITMASK, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(Book.ContentType.Book.value)
                         .build();
@@ -781,86 +781,86 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_BOOK_UUID =
-                new Domain.Builder(DBKey.BOOK_UUID, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.BOOK_UUID, SqLiteDataType.Text)
                         .notNull()
                         .withDefault("(lower(hex(randomblob(16))))")
                         .build();
 
         DOM_BOOK_EDITION =
-                new Domain.Builder(DBKey.EDITION__BITMASK, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.EDITION__BITMASK, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(0)
                         .build();
 
         DOM_BOOK_DATE_ACQUIRED =
-                new Domain.Builder(DBKey.DATE_ACQUIRED, ColumnInfo.TYPE_DATE)
+                new Domain.Builder(DBKey.DATE_ACQUIRED, SqLiteDataType.Date)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_BOOK_PRICE_PAID =
-                new Domain.Builder(DBKey.PRICE_PAID, ColumnInfo.TYPE_REAL)
+                new Domain.Builder(DBKey.PRICE_PAID, SqLiteDataType.Real)
                         .notNull()
                         .withDefault(0d)
                         .build();
 
         DOM_BOOK_PRICE_PAID_CURRENCY =
-                new Domain.Builder(DBKey.PRICE_PAID_CURRENCY, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.PRICE_PAID_CURRENCY, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_ADDED__UTC =
-                new Domain.Builder(DBKey.DATE_ADDED__UTC, ColumnInfo.TYPE_DATETIME)
+                new Domain.Builder(DBKey.DATE_ADDED__UTC, SqLiteDataType.DateTime)
                         .notNull()
                         .withDefaultCurrentTimeStamp()
                         .build();
 
         DOM_BOOK_LOCATION =
-                new Domain.Builder(DBKey.LOCATION, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.LOCATION, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
                         .build();
 
         DOM_BOOK_READ =
-                new Domain.Builder(DBKey.READ__BOOL, ColumnInfo.TYPE_BOOLEAN)
+                new Domain.Builder(DBKey.READ__BOOL, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
         DOM_BOOK_DATE_READ_START =
-                new Domain.Builder(DBKey.READ_START__DATE, ColumnInfo.TYPE_DATE)
+                new Domain.Builder(DBKey.READ_START__DATE, SqLiteDataType.Date)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
         DOM_BOOK_DATE_READ_END =
-                new Domain.Builder(DBKey.READ_END__DATE, ColumnInfo.TYPE_DATE)
+                new Domain.Builder(DBKey.READ_END__DATE, SqLiteDataType.Date)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
         DOM_BOOK_SIGNED =
-                new Domain.Builder(DBKey.SIGNED__BOOL, ColumnInfo.TYPE_BOOLEAN)
+                new Domain.Builder(DBKey.SIGNED__BOOL, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
         DOM_BOOK_RATING =
-                new Domain.Builder(DBKey.RATING, ColumnInfo.TYPE_REAL)
+                new Domain.Builder(DBKey.RATING, SqLiteDataType.Real)
                         .notNull()
                         .withDefault(0)
                         .build();
         DOM_BOOK_PRIVATE_NOTES =
-                new Domain.Builder(DBKey.PERSONAL_NOTES, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.PERSONAL_NOTES, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_BOOK_CONDITION =
-                new Domain.Builder(DBKey.BOOK_CONDITION, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.BOOK_CONDITION, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(0)
                         .build();
         DOM_BOOK_CONDITION_DUST_COVER =
-                new Domain.Builder(DBKey.BOOK_CONDITION_COVER, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.BOOK_CONDITION_COVER, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(0)
                         .build();
@@ -870,27 +870,27 @@ public final class DBDefinitions {
          * ====================================================================================== */
         //NEWTHINGS: adding a new search engine: optional: add external id domain
         DOM_ESID_GOODREADS_BOOK =
-                new Domain.Builder(DBKey.SID_GOODREADS_BOOK, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.SID_GOODREADS_BOOK, SqLiteDataType.Integer)
                         .build();
 
         DOM_ESID_ISFDB =
-                new Domain.Builder(DBKey.SID_ISFDB, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.SID_ISFDB, SqLiteDataType.Integer)
                         .build();
 
         DOM_ESID_LIBRARY_THING =
-                new Domain.Builder(DBKey.SID_LIBRARY_THING, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.SID_LIBRARY_THING, SqLiteDataType.Integer)
                         .build();
 
         DOM_ESID_OPEN_LIBRARY =
-                new Domain.Builder(DBKey.SID_OPEN_LIBRARY, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.SID_OPEN_LIBRARY, SqLiteDataType.Text)
                         .build();
 
         DOM_ESID_STRIP_INFO_BE =
-                new Domain.Builder(DBKey.SID_STRIP_INFO, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.SID_STRIP_INFO, SqLiteDataType.Integer)
                         .build();
 
         DOM_ESID_LAST_DODO_NL =
-                new Domain.Builder(DBKey.SID_LAST_DODO_NL, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.SID_LAST_DODO_NL, SqLiteDataType.Integer)
                         .build();
 
         //NEWTHINGS: adding a new search engine: optional: add specific/extra domains.
@@ -899,29 +899,30 @@ public final class DBDefinitions {
          *  StripInfo.be synchronization domains
          * ====================================================================================== */
         DOM_STRIP_INFO_BE_COLLECTION_ID =
-                new Domain.Builder(DBKey.STRIP_INFO_COLL_ID, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.STRIP_INFO_COLL_ID, SqLiteDataType.Integer)
                         .build();
 
         DOM_STRIP_INFO_BE_OWNED =
-                new Domain.Builder(DBKey.STRIP_INFO_OWNED, ColumnInfo.TYPE_BOOLEAN)
+                new Domain.Builder(DBKey.STRIP_INFO_OWNED, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
         DOM_STRIP_INFO_BE_WANTED =
-                new Domain.Builder(DBKey.STRIP_INFO_WANTED, ColumnInfo.TYPE_BOOLEAN)
+                new Domain.Builder(DBKey.STRIP_INFO_WANTED, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
         DOM_STRIP_INFO_BE_AMOUNT =
-                new Domain.Builder(DBKey.STRIP_INFO_AMOUNT, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.STRIP_INFO_AMOUNT, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(0)
                         .build();
 
         DOM_STRIP_INFO_BE_LAST_SYNC__UTC =
-                new Domain.Builder(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC, ColumnInfo.TYPE_DATETIME)
+                new Domain.Builder(DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC,
+                                   SqLiteDataType.DateTime)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
@@ -930,44 +931,44 @@ public final class DBDefinitions {
          *  Calibre bridge table domains
          * ====================================================================================== */
         DOM_CALIBRE_BOOK_UUID =
-                new Domain.Builder(DBKey.CALIBRE_BOOK_UUID, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.CALIBRE_BOOK_UUID, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
         DOM_CALIBRE_BOOK_ID =
-                new Domain.Builder(DBKey.CALIBRE_BOOK_ID, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.CALIBRE_BOOK_ID, SqLiteDataType.Integer)
                         .build();
 
         DOM_CALIBRE_BOOK_MAIN_FORMAT =
-                new Domain.Builder(DBKey.CALIBRE_BOOK_MAIN_FORMAT, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.CALIBRE_BOOK_MAIN_FORMAT, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_CALIBRE_CUSTOM_FIELD_NAME =
-                new Domain.Builder(DBKey.CALIBRE_CUSTOM_FIELD_NAME, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.CALIBRE_CUSTOM_FIELD_NAME, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
         DOM_CALIBRE_CUSTOM_FIELD_TYPE =
-                new Domain.Builder(DBKey.CALIBRE_CUSTOM_FIELD_TYPE, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.CALIBRE_CUSTOM_FIELD_TYPE, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
         DOM_CALIBRE_CUSTOM_FIELD_MAPPING =
-                new Domain.Builder(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING, SqLiteDataType.Text)
                         .notNull()
                         .build();
 
         DOM_CALIBRE_LIBRARY_LAST_SYNC__UTC =
                 new Domain.Builder(DBKey.CALIBRE_LIBRARY_LAST_SYNC_DATE__UTC,
-                                   ColumnInfo.TYPE_DATETIME)
+                                   SqLiteDataType.DateTime)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_CALIBRE_LIBRARY_STRING_ID =
-                new Domain.Builder(DBKey.CALIBRE_LIBRARY_STRING_ID, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.CALIBRE_LIBRARY_STRING_ID, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
@@ -975,14 +976,14 @@ public final class DBDefinitions {
 
         // can be empty when our Calibre extension is not installed
         DOM_CALIBRE_LIBRARY_UUID =
-                new Domain.Builder(DBKey.CALIBRE_LIBRARY_UUID, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.CALIBRE_LIBRARY_UUID, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
                         .build();
 
         DOM_CALIBRE_LIBRARY_NAME =
-                new Domain.Builder(DBKey.CALIBRE_LIBRARY_NAME, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.CALIBRE_LIBRARY_NAME, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
@@ -990,7 +991,7 @@ public final class DBDefinitions {
 
         // not sure if we should allow empty?
         DOM_CALIBRE_VIRT_LIB_EXPR =
-                new Domain.Builder(DBKey.CALIBRE_VIRT_LIB_EXPR, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.CALIBRE_VIRT_LIB_EXPR, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
@@ -1000,7 +1001,7 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_LOANEE =
-                new Domain.Builder(DBKey.LOANEE_NAME, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.LOANEE_NAME, SqLiteDataType.Text)
                         .notNull()
                         .localized()
                         .build();
@@ -1010,33 +1011,33 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_BOOK_AUTHOR_TYPE_BITMASK =
-                new Domain.Builder(DBKey.AUTHOR_TYPE__BITMASK, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.AUTHOR_TYPE__BITMASK, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(0)
                         .build();
 
         DOM_BOOK_AUTHOR_POSITION =
-                new Domain.Builder(DBKey.BOOK_AUTHOR_POSITION, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.BOOK_AUTHOR_POSITION, SqLiteDataType.Integer)
                         .notNull()
                         .build();
 
         DOM_BOOK_SERIES_POSITION =
-                new Domain.Builder(DBKey.BOOK_SERIES_POSITION, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.BOOK_SERIES_POSITION, SqLiteDataType.Integer)
                         .notNull()
                         .build();
 
         DOM_BOOK_NUM_IN_SERIES =
-                new Domain.Builder(DBKey.SERIES_BOOK_NUMBER, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.SERIES_BOOK_NUMBER, SqLiteDataType.Text)
                         .localized()
                         .build();
 
         DOM_BOOK_PUBLISHER_POSITION =
-                new Domain.Builder(DBKey.BOOK_PUBLISHER_POSITION, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.BOOK_PUBLISHER_POSITION, SqLiteDataType.Integer)
                         .notNull()
                         .build();
 
         DOM_BOOK_TOC_ENTRY_POSITION =
-                new Domain.Builder(DBKey.BOOK_TOC_ENTRY_POSITION, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.BOOK_TOC_ENTRY_POSITION, SqLiteDataType.Integer)
                         .notNull()
                         .build();
 
@@ -1045,122 +1046,125 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_STYLE_UUID =
-                new Domain.Builder(DBKey.STYLE_UUID, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.STYLE_UUID, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_STYLE_IS_BUILTIN =
-                new Domain.Builder(DBKey.STYLE_IS_BUILTIN, ColumnInfo.TYPE_BOOLEAN)
+                new Domain.Builder(DBKey.STYLE_IS_BUILTIN, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
         DOM_STYLE_IS_PREFERRED =
-                new Domain.Builder(DBKey.STYLE_IS_PREFERRED, ColumnInfo.TYPE_BOOLEAN)
+                new Domain.Builder(DBKey.STYLE_IS_PREFERRED, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
         DOM_STYLE_MENU_POSITION =
-                new Domain.Builder(DBKey.STYLE_MENU_POSITION, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.STYLE_MENU_POSITION, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(Style.MENU_POSITION_NOT_PREFERRED)
                         .build();
 
 
         DOM_STYLE_NAME =
-                new Domain.Builder(DBKey.STYLE_NAME, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.STYLE_NAME, SqLiteDataType.Text)
                         .build();
 
         DOM_STYLE_GROUPS =
-                new Domain.Builder(DBKey.STYLE_GROUPS, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.STYLE_GROUPS, SqLiteDataType.Text)
                         .build();
 
         DOM_STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH =
                 new Domain.Builder(DBKey.STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH,
-                                   ColumnInfo.TYPE_BOOLEAN)
+                                   SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
         DOM_STYLE_GROUPS_AUTHOR_PRIMARY_TYPE =
                 new Domain.Builder(DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE,
-                                   ColumnInfo.TYPE_INTEGER)
+                                   SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(Author.TYPE_UNKNOWN)
                         .build();
 
         DOM_STYLE_GROUPS_SERIES_SHOW_UNDER_EACH =
                 new Domain.Builder(DBKey.STYLE_GROUPS_SERIES_SHOW_UNDER_EACH,
-                                   ColumnInfo.TYPE_BOOLEAN)
+                                   SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
         DOM_STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH =
                 new Domain.Builder(DBKey.STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH,
-                                   ColumnInfo.TYPE_BOOLEAN)
+                                   SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
         DOM_STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH =
                 new Domain.Builder(DBKey.STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH,
-                                   ColumnInfo.TYPE_BOOLEAN)
+                                   SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
 
         DOM_STYLE_EXP_LEVEL =
-                new Domain.Builder(DBKey.STYLE_EXP_LEVEL, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.STYLE_EXP_LEVEL, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(1)
                         .build();
 
         DOM_STYLE_ROW_USES_PREF_HEIGHT =
-                new Domain.Builder(DBKey.STYLE_ROW_USES_PREF_HEIGHT, ColumnInfo.TYPE_BOOLEAN)
+                new Domain.Builder(DBKey.STYLE_ROW_USES_PREF_HEIGHT,
+                                   SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(true)
                         .build();
 
         DOM_STYLE_AUTHOR_SORT_BY_GIVEN_NAME =
-                new Domain.Builder(DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME, ColumnInfo.TYPE_BOOLEAN)
+                new Domain.Builder(DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME,
+                                   SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
         DOM_STYLE_AUTHOR_SHOW_BY_GIVEN_NAME =
-                new Domain.Builder(DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME, ColumnInfo.TYPE_BOOLEAN)
+                new Domain.Builder(DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME,
+                                   SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
                         .build();
 
         DOM_STYLE_TEXT_SCALE =
-                new Domain.Builder(DBKey.STYLE_TEXT_SCALE, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.STYLE_TEXT_SCALE, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(Style.DEFAULT_TEXT_SCALE)
                         .build();
         DOM_STYLE_COVER_SCALE =
-                new Domain.Builder(DBKey.STYLE_COVER_SCALE, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.STYLE_COVER_SCALE, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(Style.DEFAULT_COVER_SCALE)
                         .build();
 
         DOM_STYLE_LIST_HEADER =
-                new Domain.Builder(DBKey.STYLE_LIST_HEADER, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.STYLE_LIST_HEADER, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(BooklistHeader.BITMASK_ALL)
                         .build();
 
         DOM_STYLE_DETAILS_SHOW_FIELDS =
-                new Domain.Builder(DBKey.STYLE_DETAILS_SHOW_FIELDS, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.STYLE_DETAILS_SHOW_FIELDS, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(BookDetailsFieldVisibility.DEFAULT)
                         .build();
 
         DOM_STYLE_LIST_SHOW_FIELDS =
-                new Domain.Builder(DBKey.STYLE_LIST_SHOW_FIELDS, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.STYLE_LIST_SHOW_FIELDS, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(BooklistFieldVisibility.DEFAULT)
                         .build();
@@ -1170,39 +1174,39 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT =
-                new Domain.Builder(DBKey.BL_SERIES_NUM_FLOAT, ColumnInfo.TYPE_REAL)
+                new Domain.Builder(DBKey.BL_SERIES_NUM_FLOAT, SqLiteDataType.Real)
                         .build();
 
         DOM_BL_PRIMARY_SERIES_COUNT =
-                new Domain.Builder(DBKey.BL_PRIMARY_SERIES_COUNT, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.BL_PRIMARY_SERIES_COUNT, SqLiteDataType.Integer)
                         .build();
 
         DOM_BL_NODE_KEY =
-                new Domain.Builder(DBKey.BL_NODE_KEY, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.BL_NODE_KEY, SqLiteDataType.Text)
                         .build();
 
         DOM_BL_NODE_GROUP =
-                new Domain.Builder(DBKey.BL_NODE_GROUP, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.BL_NODE_GROUP, SqLiteDataType.Integer)
                         .notNull()
                         .build();
 
         DOM_BL_NODE_LEVEL =
-                new Domain.Builder(DBKey.BL_NODE_LEVEL, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.BL_NODE_LEVEL, SqLiteDataType.Integer)
                         .notNull()
                         .build();
 
         DOM_BL_NODE_VISIBLE =
-                new Domain.Builder(DBKey.BL_NODE_VISIBLE, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.BL_NODE_VISIBLE, SqLiteDataType.Integer)
                         .withDefault(0)
                         .build();
 
         DOM_BL_NODE_EXPANDED =
-                new Domain.Builder(DBKey.BL_NODE_EXPANDED, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.BL_NODE_EXPANDED, SqLiteDataType.Integer)
                         .withDefault(0)
                         .build();
 
         DOM_FK_BL_ROW_ID =
-                new Domain.Builder(DBKey.FK_BL_ROW_ID, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKey.FK_BL_ROW_ID, SqLiteDataType.Integer)
                         .notNull()
                         .build();
 
@@ -1575,11 +1579,11 @@ public final class DBDefinitions {
 
     static {
         DOM_FTS_AUTHOR_NAME =
-                new Domain.Builder(DBKey.FTS_AUTHOR_NAME, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.FTS_AUTHOR_NAME, SqLiteDataType.Text)
                         .build();
 
         DOM_FTS_TOC_ENTRY_TITLE =
-                new Domain.Builder(DBKey.FTS_TOC_ENTRY_TITLE, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKey.FTS_TOC_ENTRY_TITLE, SqLiteDataType.Text)
                         .build();
 
         TBL_FTS_BOOKS = createFtsTableDefinition("books_fts");

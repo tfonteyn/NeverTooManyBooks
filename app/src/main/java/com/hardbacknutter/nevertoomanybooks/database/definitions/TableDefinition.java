@@ -776,7 +776,7 @@ public class TableDefinition {
         final List<String> srcColumns = sourceTable
                 .getColumns()
                 .stream()
-                .map(columnInfo -> columnInfo.name)
+                .map(ColumnInfo::getName)
                 .filter(s -> !removals.contains(s))
                 .collect(Collectors.toList());
 

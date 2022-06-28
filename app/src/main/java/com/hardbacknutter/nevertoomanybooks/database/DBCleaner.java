@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -205,7 +205,7 @@ public class DBCleaner {
         for (final TableDefinition table : tables) {
             table.getDomains()
                  .stream()
-                 .filter(Domain::isBoolean)
+                 .filter(domain -> domain.getSqLiteDataType() == SqLiteDataType.Boolean)
                  .forEach(domain -> booleanCleanup(table.getName(), domain.getName()));
         }
     }

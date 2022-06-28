@@ -32,9 +32,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
@@ -58,7 +58,7 @@ public class AuthorBooklistGroup
     private static final Domain DOM_SORTING;
 
     static {
-        DOM_SORTING = new Domain.Builder(DBKey.BL_AUTHOR_SORT, ColumnInfo.TYPE_TEXT)
+        DOM_SORTING = new Domain.Builder(DBKey.BL_AUTHOR_SORT, SqLiteDataType.Text)
                 .build();
     }
 

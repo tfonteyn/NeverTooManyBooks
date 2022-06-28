@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
@@ -93,6 +94,7 @@ public class TypedCursor
      *
      * <br><br>{@inheritDoc}
      */
+    @SuppressLint("WrongConstant")
     @Override
     public int getType(final int columnIndex) {
 
@@ -104,7 +106,7 @@ public class TypedCursor
         if (tableInfo != null) {
             final ColumnInfo columnInfo = tableInfo.getColumn(getColumnName(columnIndex));
             if (columnInfo != null) {
-                return columnInfo.getType();
+                return columnInfo.getCursorFieldType();
             }
         }
 

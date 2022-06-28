@@ -27,9 +27,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF_NAME;
@@ -57,7 +57,8 @@ public class BookshelfBooklistGroup
     private static final Domain DOM_SORTING;
 
     static {
-        DOM_SORTING = new Domain.Builder(DBKey.BL_BOOKSHELF_SORT, ColumnInfo.TYPE_TEXT)
+        DOM_SORTING = new Domain.Builder(DBKey.BL_BOOKSHELF_SORT,
+                                         SqLiteDataType.Text)
                 .build();
     }
 
