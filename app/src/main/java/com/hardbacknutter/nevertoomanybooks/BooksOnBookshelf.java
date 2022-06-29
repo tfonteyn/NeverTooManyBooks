@@ -80,9 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsCon
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.StripInfoSyncContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooksOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsFragment;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
@@ -205,87 +203,63 @@ public class BooksOnBookshelf
 
     /** Do an import. */
     private final ActivityResultLauncher<Void> importLauncher =
-            registerForActivityResult(new ImportContract(), this::onImportFinished);
+            registerForActivityResult(new ImportContract(),
+                                      data -> vm.onImportFinished(this, data));
+
     /** Manage the list of (preferred) styles. */
     private final ActivityResultLauncher<String> editStylesLauncher =
-            registerForActivityResult(new PreferredStylesContract(), data -> {
-                if (data != null) {
-                    // we get the UUID for the selected style back.
-                    if (data.uuid != null) {
-                        vm.onStyleChanged(this, data.uuid);
-                    }
+            registerForActivityResult(new PreferredStylesContract(),
+                                      data -> vm.onEditStylesFinished(this, data));
 
-                    // This is independent from the above style having been modified ot not.
-                    if (data.modified) {
-                        vm.setForceRebuildInOnResume(true);
-                    }
-                }
-            });
+    /** Edit an individual style. */
+    private final ActivityResultLauncher<EditStyleContract.Input> editStyleLauncher =
+            registerForActivityResult(new EditStyleContract(),
+                                      data -> vm.onEditStyleFinished(this, data));
 
     /**
-     * Display a Book. We still call {@link #onBookEditFinished(EditBookOutput)} as
-     * the user might have done so from the displaying fragment.
+     * Display a Book. We still call
+     * {@link BooksOnBookshelfViewModel#onBookEditFinished(EditBookOutput)}
+     * as the user might have done so from the displaying fragment.
      */
     private final ActivityResultLauncher<ShowBookPagerContract.Input> displayBookLauncher =
-            registerForActivityResult(new ShowBookPagerContract(), this::onBookEditFinished);
+            registerForActivityResult(new ShowBookPagerContract(),
+                                      data -> vm.onBookEditFinished(data));
     /** Add a Book by doing a search on the internet. */
     private final ActivityResultLauncher<AddBookBySearchContract.By> addBookBySearchLauncher =
-            registerForActivityResult(new AddBookBySearchContract(), this::onBookEditFinished);
+            registerForActivityResult(new AddBookBySearchContract(),
+                                      data -> vm.onBookEditFinished(data));
     /** Edit a Book. */
     private final ActivityResultLauncher<Long> editByIdLauncher =
-            registerForActivityResult(new EditBookByIdContract(), this::onBookEditFinished);
+            registerForActivityResult(new EditBookByIdContract(),
+                                      data -> vm.onBookEditFinished(data));
     /** Duplicate and edit a Book. */
     private final ActivityResultLauncher<Bundle> duplicateLauncher =
-            registerForActivityResult(new EditBookFromBundleContract(), this::onBookEditFinished);
-
+            registerForActivityResult(new EditBookFromBundleContract(),
+                                      data -> vm.onBookEditFinished(data));
 
     /** Update an individual Book with information from the internet. */
     private final ActivityResultLauncher<Book> updateBookLauncher =
             registerForActivityResult(new UpdateSingleBookContract(),
-                                      this::onBookAutoUpdateFinished);
+                                      data -> vm.onBookAutoUpdateFinished(data));
     /** Update a list of Books with information from the internet. */
     private final ActivityResultLauncher<UpdateBooklistContract.Input> updateBookListLauncher =
             registerForActivityResult(new UpdateBooklistContract(),
-                                      this::onBookAutoUpdateFinished);
+                                      data -> vm.onBookAutoUpdateFinished(data));
 
     /** View all works of an Author. */
     private final ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher =
-            registerForActivityResult(new AuthorWorksContract(), this::onBookEditFinished);
+            registerForActivityResult(new AuthorWorksContract(),
+                                      data -> vm.onBookEditFinished(data));
     /** The local FTS based search. */
     private final ActivityResultLauncher<SearchCriteria> ftsSearchLauncher =
-            registerForActivityResult(new SearchFtsContract(), criteria -> {
-                if (criteria != null) {
-                    vm.setSearchCriteria(criteria);
-                    vm.setForceRebuildInOnResume(true);
-                }
-            });
+            registerForActivityResult(new SearchFtsContract(),
+                                      criteria -> vm.onFtsSearchFinished(criteria));
 
     /** Manage the book shelves. */
     private final ActivityResultLauncher<Long> manageBookshelvesLauncher =
-            registerForActivityResult(new EditBookshelvesContract(), bookshelfId -> {
-                if (bookshelfId != 0 && bookshelfId != vm.getCurrentBookshelf().getId()) {
-                    vm.setCurrentBookshelf(this, bookshelfId);
-                    vm.setForceRebuildInOnResume(true);
-                }
-            });
-
-    /** Edit an individual style. */
-    private final ActivityResultLauncher<EditStyleContract.Input> editStyleLauncher =
-            registerForActivityResult(new EditStyleContract(), data -> {
-                if (data != null) {
-                    // We get here from the StylePickerDialogFragment (i.e. the style menu)
-                    // when the user choose to EDIT a style.
-                    if (data.uuid != null && !data.uuid.isEmpty()) {
-                        vm.onStyleEdited(this, data.uuid);
-
-                        // ALWAYS rebuild here, even when the style was not modified
-                        // as we're handling this as a style-change
-                        // (we could do checks... but it's not worth the effort.)
-                        // i.e. same as in mOnStylePickerListener
-                        vm.setForceRebuildInOnResume(true);
-                    }
-                }
-            });
+            registerForActivityResult(new EditBookshelvesContract(),
+                                      bookshelfId -> vm.onManageBookshelvesFinished(this,
+                                                                                    bookshelfId));
 
     private ToolbarMenuProvider toolbarMenuProvider;
     /** Encapsulates the FAB button/menu. */
@@ -322,10 +296,10 @@ public class BooksOnBookshelf
     private final SpinnerInteractionListener bookshelfSelectionChangedListener =
             new SpinnerInteractionListener() {
                 @Override
-                public void onItemSelected(final long id) {
-                    if (id != vm.getCurrentBookshelf().getId()) {
+                public void onItemSelected(final long bookshelfId) {
+                    if (bookshelfId != vm.getCurrentBookshelf().getId()) {
                         saveListPosition();
-                        vm.setCurrentBookshelf(BooksOnBookshelf.this, id);
+                        vm.setCurrentBookshelf(BooksOnBookshelf.this, bookshelfId);
                         buildBookList();
                     }
                 }
@@ -346,7 +320,7 @@ public class BooksOnBookshelf
         @Override
         public void onChange(@NonNull final String key,
                              final long id) {
-            BooksOnBookshelf.this.onRowChanged(key, id);
+            onRowChanged(key, id);
         }
     };
 
@@ -355,7 +329,7 @@ public class BooksOnBookshelf
      * <p>
      * We get here after the user SELECTED a style on the {@link StylePickerDialogFragment}.
      * We do NOT come here when the user decided to EDIT a style,
-     * which is handled {@link #editStyleLauncher}.
+     * which is handled by {@link #editStyleLauncher}.
      */
     private final StylePickerDialogFragment.Launcher stylePickerLauncher =
             new StylePickerDialogFragment.Launcher() {
@@ -1568,100 +1542,34 @@ public class BooksOnBookshelf
         // Reminder: the actual Book table (and/or relations) are ALREADY UPDATED.
         // The only thing we are updating here is the temporary BookList table
         // and the displayed data
-        int[] positions = null;
 
-        //TODO: optimize when/if we use more then 2 keys
         if (keys != null && Arrays.asList(keys).contains(DBKey.READ__BOOL)) {
             Objects.requireNonNull(book);
-            positions = vm.onBookRead(book.getId(), book.getBoolean(DBKey.READ__BOOL));
+            updateListPositions(vm.onBookRead(book.getId(), book.getBoolean(DBKey.READ__BOOL)));
 
         } else if (keys != null && Arrays.asList(keys).contains(DBKey.LOANEE_NAME)) {
             Objects.requireNonNull(book);
-            positions = vm.onBookLend(book.getId(), book.getLoanee().orElse(null));
+            updateListPositions(vm.onBookLend(book.getId(), book.getLoanee().orElse(null)));
 
         } else {
             // ENHANCE: update the modified row without a rebuild.
             saveListPosition();
             buildBookList();
         }
-
-        // Refresh the list data for the given positions only.
-        if (positions != null) {
-            // Yes, requery() is deprecated;
-            // but check BooklistCursor were we do the right thing.
-            //noinspection ConstantConditions,deprecation
-            adapter.getCursor().requery();
-
-            for (final int pos : positions) {
-                adapter.notifyItemChanged(pos);
-            }
-        }
     }
 
     /**
-     * Called when a book/book-list was updated with internet data.
-     * After this method is executed, the flow will take us to #onResume.
+     * Refresh the list data for the given positions only.
      *
-     * @param data returned from the update contract
+     * @param positions to update
      */
-    private void onBookAutoUpdateFinished(@Nullable final UpdateBooksOutput data) {
-        if (data != null) {
-            if (data.listModified) {
-                // we processed a list, just force a rebuild
-                vm.setForceRebuildInOnResume(true);
+    private void updateListPositions(@NonNull final int[] positions) {
+        // Yes, requery() is deprecated but see BooklistCursor were we do the right thing.
+        //noinspection ConstantConditions,deprecation
+        adapter.getCursor().requery();
 
-            } else if (data.bookModified > 0) {
-                //URGENT: we processed a single book, we should NOT do a full rebuild
-                vm.setForceRebuildInOnResume(true);
-            }
-
-            // If we got an reposition id back, make any potential rebuild re-position to it.
-            if (data.repositionToBookId > 0) {
-                vm.setCurrentCenteredBookId(data.repositionToBookId);
-            }
-        }
-    }
-
-    /**
-     * This method is called from an ActivityResultContract after the result intent is parsed.
-     * After this method is executed, the flow will take us to #onResume.
-     *
-     * @param data returned from the view/edit contract
-     */
-    private void onBookEditFinished(@Nullable final EditBookOutput data) {
-        if (data != null) {
-            if (data.modified) {
-                vm.setForceRebuildInOnResume(true);
-            }
-
-            // If we got an reposition id back, make any potential rebuild re-position to it.
-            if (data.repositionToBookId > 0) {
-                vm.setCurrentCenteredBookId(data.repositionToBookId);
-            }
-        }
-    }
-
-    /**
-     * Called when the user has finished an Import.
-     * <p>
-     * This method is called from a ActivityResultContract after the result intent is parsed.
-     * After this method is executed, the flow will take us to #onResume.
-     *
-     * @param importResults returned from the import
-     */
-    private void onImportFinished(@Nullable final ImportResults importResults) {
-        if (importResults != null) {
-            if (importResults.styles > 0) {
-                // Force a refresh of the cached styles
-                ServiceLocator.getInstance().getStyles().clearCache();
-            }
-            if (importResults.preferences > 0) {
-                // Refresh the preferred bookshelf. This also refreshes its style.
-                vm.reloadSelectedBookshelf(this);
-            }
-
-            // styles, prefs, books, covers,... it all requires a rebuild.
-            vm.setForceRebuildInOnResume(true);
+        for (final int pos : positions) {
+            adapter.notifyItemChanged(pos);
         }
     }
 

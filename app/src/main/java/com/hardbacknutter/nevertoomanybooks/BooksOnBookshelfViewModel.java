@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 
@@ -31,13 +30,17 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooksOutput;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
@@ -58,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
+import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
 
 public class BooksOnBookshelfViewModel
         extends ViewModel {
@@ -297,14 +301,14 @@ public class BooksOnBookshelfViewModel
     /**
      * Load and set the desired Bookshelf.
      *
-     * @param context Current context
-     * @param id      of desired Bookshelf
+     * @param context     Current context
+     * @param bookshelfId of desired Bookshelf
      */
     void setCurrentBookshelf(@NonNull final Context context,
-                             final long id) {
+                             final long bookshelfId) {
         final long previousBookshelfId = bookshelf == null ? 0 : bookshelf.getId();
 
-        bookshelf = ServiceLocator.getInstance().getBookshelfDao().getById(id);
+        bookshelf = ServiceLocator.getInstance().getBookshelfDao().getById(bookshelfId);
         if (bookshelf == null) {
             bookshelf = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
         }
@@ -316,7 +320,7 @@ public class BooksOnBookshelfViewModel
     }
 
     @SuppressWarnings("UnusedReturnValue")
-    boolean reloadSelectedBookshelf(@NonNull final Context context) {
+    private boolean reloadSelectedBookshelf(@NonNull final Context context) {
         final Bookshelf newBookshelf =
                 Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
         if (!newBookshelf.equals(bookshelf)) {
@@ -342,21 +346,6 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Should be called after <strong>a style was edited</strong>.
-     *
-     * @param context Current context
-     * @param uuid    the style which was edited
-     */
-    void onStyleEdited(@NonNull final Context context,
-                       @NonNull final String uuid) {
-        // The uuid/style SHOULD be valid as we just edited finished editing it.
-        final Style style = ServiceLocator.getInstance().getStyles()
-                                          .getStyle(context, uuid);
-        //noinspection ConstantConditions
-        changeStyle(context, style);
-    }
-
-    /**
      * Should be called after <strong>a style was changed/selected</strong>.
      * The style should exist (id != 0), or if it doesn't, the default style will be used instead.
      *
@@ -368,21 +357,8 @@ public class BooksOnBookshelfViewModel
         // Always validate first
         final Style style = ServiceLocator.getInstance().getStyles()
                                           .getStyleOrDefault(context, styleUuid);
-        changeStyle(context, style);
-    }
-
-    /**
-     * Called after <strong>a style was changed/edited</strong>.
-     * The style <strong>MUST</strong> be valid. No checks are done!
-     *
-     * @param context Current context
-     * @param style   the style to apply
-     */
-    private void changeStyle(@NonNull final Context context,
-                             @NonNull final Style style) {
         Objects.requireNonNull(bookshelf, Bookshelf.TAG);
 
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         // set as the global default.
         ServiceLocator.getInstance().getStyles().setDefault(style.getUuid());
         // save the new bookshelf/style combination
@@ -470,10 +446,6 @@ public class BooksOnBookshelfViewModel
     @NonNull
     SearchCriteria getSearchCriteria() {
         return Objects.requireNonNull(searchCriteria);
-    }
-
-    void setSearchCriteria(@NonNull final SearchCriteria criteria) {
-        searchCriteria = criteria;
     }
 
     /**
@@ -686,6 +658,131 @@ public class BooksOnBookshelfViewModel
                        .stream()
                        .mapToInt(BooklistNode::getAdapterPosition)
                        .toArray();
+    }
+
+
+    /**
+     * Called when a book/book-list was updated with internet data.
+     *
+     * @param data returned from the update contract
+     */
+    void onBookAutoUpdateFinished(@Nullable final UpdateBooksOutput data) {
+        if (data != null) {
+            if (data.listModified) {
+                // we processed a list, just force a rebuild
+                forceRebuildInOnResume = true;
+
+            } else if (data.bookModified > 0) {
+                //URGENT: we processed a single book, we should NOT do a full rebuild
+                forceRebuildInOnResume = true;
+            }
+
+            // If we got an reposition id back, make any potential rebuild re-position to it.
+            if (data.repositionToBookId > 0) {
+                currentCenteredBookId = data.repositionToBookId;
+            }
+        }
+    }
+
+
+    /**
+     * This method is called from an ActivityResultContract after the result intent is parsed.
+     *
+     * @param data returned from the view/edit contract
+     */
+    void onBookEditFinished(@Nullable final EditBookOutput data) {
+        if (data != null) {
+            if (data.modified) {
+                forceRebuildInOnResume = true;
+            }
+
+            // If we got an reposition id back, make any potential rebuild re-position to it.
+            if (data.repositionToBookId > 0) {
+                currentCenteredBookId = data.repositionToBookId;
+            }
+        }
+    }
+
+    /**
+     * This method is called from an ActivityResultContract after the result intent is parsed.
+     *
+     * @param data returned from the view/edit contract
+     */
+    void onEditStylesFinished(@NonNull final Context context,
+                              @Nullable final PreferredStylesContract.Output data) {
+        if (data != null) {
+            // we get the UUID for the selected style back.
+            if (data.uuid != null && !data.uuid.isEmpty()) {
+                onStyleChanged(context, data.uuid);
+            }
+
+            // This is independent from the above style having been modified ot not.
+            if (data.modified) {
+                forceRebuildInOnResume = true;
+            }
+        }
+    }
+
+    /**
+     * This method is called from an ActivityResultContract after the result intent is parsed.
+     *
+     * @param data returned from the view/edit contract
+     */
+    void onEditStyleFinished(@NonNull final Context context,
+                             @Nullable final EditStyleContract.Output data) {
+        if (data != null) {
+            // We get here from the StylePickerDialogFragment (i.e. the style menu)
+            // when the user choose to EDIT a style.
+            if (data.uuid != null && !data.uuid.isEmpty()) {
+                onStyleChanged(context, data.uuid);
+
+                // ALWAYS rebuild here, even when the style was not modified
+                // as we're handling this as a style-change
+                // (we could do checks... but it's not worth the effort.)
+                // i.e. same as in mOnStylePickerListener
+                forceRebuildInOnResume = true;
+            }
+        }
+    }
+
+    void onManageBookshelvesFinished(@NonNull final Context context,
+                                     final long bookshelfId) {
+        if (bookshelfId != 0 && bookshelfId != getCurrentBookshelf().getId()) {
+            setCurrentBookshelf(context, bookshelfId);
+            forceRebuildInOnResume = true;
+        }
+    }
+
+    void onFtsSearchFinished(@Nullable final SearchCriteria criteria) {
+        if (criteria != null) {
+            searchCriteria = criteria;
+            forceRebuildInOnResume = true;
+        }
+    }
+
+
+    /**
+     * Called when the user has finished an Import.
+     * <p>
+     * This method is called from a ActivityResultContract after the result intent is parsed.
+     *
+     * @param importResults returned from the import
+     */
+    void onImportFinished(@NonNull final Context context,
+                          @Nullable final ImportResults importResults) {
+        if (importResults != null) {
+            if (importResults.styles > 0) {
+                // Force a refresh of the cached styles
+                ServiceLocator.getInstance().getStyles().clearCache();
+            }
+            if (importResults.preferences > 0) {
+                // Refresh the preferred bookshelf. This also refreshes its style.
+                reloadSelectedBookshelf(context);
+            }
+
+            // styles, prefs, books, covers,... it all requires a rebuild.
+            forceRebuildInOnResume = true;
+        }
     }
 
     /**
