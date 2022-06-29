@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,7 @@ import androidx.lifecycle.ViewModel;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -221,7 +222,10 @@ public class AuthorWorksViewModel
         return dataModified;
     }
 
-    public void setDataModified() {
-        dataModified = true;
+    void onBookEditFinished(@Nullable final EditBookOutput data) {
+        // ignore the data.bookId
+        if (data != null && data.modified) {
+            dataModified = true;
+        }
     }
 }

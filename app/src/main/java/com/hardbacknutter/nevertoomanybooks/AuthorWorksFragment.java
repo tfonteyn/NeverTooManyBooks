@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -91,7 +91,9 @@ public class AuthorWorksFragment
     private AuthorWorksViewModel vm;
     /** Display a Book. */
     private final ActivityResultLauncher<ShowBookPagerContract.Input> displayBookLauncher =
-            registerForActivityResult(new ShowBookPagerContract(), this::onBookEditFinished);
+            registerForActivityResult(new ShowBookPagerContract(),
+                                      data -> vm.onBookEditFinished(data));
+
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
@@ -118,13 +120,6 @@ public class AuthorWorksFragment
     /** View Binding. */
     private RecyclerView worksListView;
     private ExtPopupMenu contextMenu;
-
-    private void onBookEditFinished(@Nullable final EditBookOutput data) {
-        // ignore the data.bookId
-        if (data != null && data.modified) {
-            vm.setDataModified();
-        }
-    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
