@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -94,6 +94,11 @@ public class SearchTask
 
     void setSearchBy(@NonNull final By by) {
         this.by = by;
+    }
+
+    @NonNull
+    public By getSearchBy() {
+        return by;
     }
 
     /**
