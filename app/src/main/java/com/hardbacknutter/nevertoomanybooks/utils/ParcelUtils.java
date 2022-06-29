@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,6 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * {@link #readParcelableList(Parcel, List, ClassLoader)}
@@ -102,11 +101,16 @@ public final class ParcelUtils {
         return new ParcelableArrayListLong(list);
     }
 
-    @NonNull
+    /**
+     * Extract a {@code List<Long>} from the given arguments.
+     *
+     * @return the list, or {@code null} if not found
+     */
+    @Nullable
     public static List<Long> unwrap(@NonNull final Bundle args,
                                     @NonNull final String key) {
-        return ((ParcelableArrayListLong)
-                        Objects.requireNonNull(args.getParcelable(key), key)).unwrap();
+        final Parcelable parcelable = args.getParcelable(key);
+        return parcelable != null ? ((ParcelableArrayListLong) parcelable).unwrap() : null;
     }
 
     public static final class ParcelableArrayListLong

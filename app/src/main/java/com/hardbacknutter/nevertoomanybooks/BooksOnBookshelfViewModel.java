@@ -159,6 +159,14 @@ public class BooksOnBookshelfViewModel
 
                 // extract search criteria if any are present
                 searchCriteria = args.getParcelable(SearchCriteria.BKEY);
+                if (searchCriteria == null) {
+                    searchCriteria = new SearchCriteria();
+                }
+
+                final List<Long> bookIdlist = ParcelUtils.unwrap(args, Book.BKEY_BOOK_ID_LIST);
+                if (bookIdlist != null) {
+                    searchCriteria.setBookIdList(bookIdlist);
+                }
 
                 // allow the caller to override the user preference
                 if (args.containsKey(BKEY_LIST_STATE)) {

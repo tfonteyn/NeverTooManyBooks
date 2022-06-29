@@ -34,6 +34,7 @@ import androidx.lifecycle.MutableLiveData;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -151,7 +152,9 @@ public class SearchBookUpdatesViewModel
             bookDao = ServiceLocator.getInstance().getBookDao();
 
             if (args != null) {
-                bookIdList = ParcelUtils.unwrap(args, Book.BKEY_BOOK_ID_LIST);
+                // if we have args, then we can expect the list to be present
+                bookIdList = Objects.requireNonNull(
+                        ParcelUtils.unwrap(args, Book.BKEY_BOOK_ID_LIST));
             }
 
             syncProcessorBuilder = createSyncProcessorBuilder(context);
