@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,12 +47,16 @@ public final class EditBookOutput {
     /**
      * Create the result which {@link ActivityResultContract#parseResult(int, Intent)} will receive.
      *
+     * @param repositionToBookId the book to which the list should reposition.
+     *                           Pass in {@code 0} to skip repositioning.
+     * @param modified           flag; whether ANY modifications were made
+     *
      * @return Intent
      */
     @NonNull
-    public static Intent createResult(final long bookId,
+    public static Intent createResult(final long repositionToBookId,
                                       final boolean modified) {
-        return new Intent().putExtra(DBKey.FK_BOOK, bookId)
+        return new Intent().putExtra(DBKey.FK_BOOK, repositionToBookId)
                            .putExtra(BKEY_MODIFIED, modified);
     }
 

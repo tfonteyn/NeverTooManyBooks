@@ -673,13 +673,16 @@ public class ShowBookDetailsFragment
             final List<Author> authors = book.getAuthors();
             //noinspection ConstantConditions
             StandardDialogs.deleteBook(getContext(), title, authors, () -> {
+                final long bookIdDeleted = book.getId();
                 vm.deleteBook();
                 aVm.updateFragmentResult();
 
                 if (bookChangedListener != null) {
-                    bookChangedListener.onBookDeleted(book.getId());
+                    // explicitly tell the listener WHICH book we deleted.
+                    bookChangedListener.onBookDeleted(bookIdDeleted);
 
                 } else {
+                    // set 0 as the repositionToBookId
                     final Intent resultIntent = EditBookOutput
                             .createResult(0, true);
                     //noinspection ConstantConditions

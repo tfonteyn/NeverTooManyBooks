@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
@@ -678,7 +679,7 @@ public class BooksOnBookshelf
             return;
         }
 
-        // If the current list is has any search criteria enabled, clear them and rebuild the list.
+        // If the current list has any search criteria enabled, clear them and rebuild the list.
         if (isTaskRoot() && !vm.getSearchCriteria().isEmpty()) {
             vm.getSearchCriteria().clear();
             setNavIcon();
@@ -1259,8 +1260,9 @@ public class BooksOnBookshelf
         return false;
     }
 
+    @SuppressLint("Range")
     private void showBookDetailsIfWeCan(@IntRange(from = 0) final long bookId) {
-        if (bookId != 0 && hasEmbeddedDetailsFrame()) {
+        if (bookId > 0 && hasEmbeddedDetailsFrame()) {
             vm.setCurrentCenteredBookId(bookId);
             openEmbeddedBookDetails(bookId);
         } else {
@@ -1422,6 +1424,9 @@ public class BooksOnBookshelf
 
     @Override
     public void onBookDeleted(final long bookId) {
+        if (bookId == 0 || bookId == vm.getCurrentCenteredBookId()) {
+            vm.setCurrentCenteredBookId(0);
+        }
         // ENHANCE: remove the row without a rebuild but this could quickly become complex...
         // e.g. if there is(was) only a single book on the level above
         saveListPosition();
