@@ -207,7 +207,7 @@ public final class SyncReaderProcessor
      *
      * @return a {@link Book} object with the <strong>DELTA</strong> fields that we need.
      *         The book id will always be set.
-     *         It can be passed to {@link BookDao#update(Context, Book, int)}
+     *         It can be passed to {@link BookDao#update)}
      */
     @Nullable
     public Book process(@NonNull final Context context,
