@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,6 +37,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.divider.MaterialDividerItemDecoration;
@@ -50,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
+import com.hardbacknutter.nevertoomanybooks.widgets.MultiColumnRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
 
 /**
@@ -150,8 +152,9 @@ public class EditBookshelvesFragment
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> editNewBookshelf());
 
+        final GridLayoutManager layoutManager = (GridLayoutManager) vb.list.getLayoutManager();
         //noinspection ConstantConditions
-        adapter = new BookshelfAdapter(getContext());
+        adapter = new BookshelfAdapter(getContext(), layoutManager.getSpanCount());
         adapter.registerAdapterDataObserver(adapterDataObserver);
         vb.list.addItemDecoration(
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
@@ -180,15 +183,15 @@ public class EditBookshelvesFragment
      * Using {@link ExtPopupMenu} for context menus.
      *
      * @param menuItem that was selected
-     * @param position in the list
+     * @param index    in the list
      *
      * @return {@code true} if handled.
      */
     private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
-                                       final int position) {
+                                       final int index) {
         final int itemId = menuItem.getItemId();
 
-        final Bookshelf bookshelf = vm.getBookshelf(position);
+        final Bookshelf bookshelf = vm.getBookshelf(index);
 
         if (itemId == R.id.MENU_EDIT) {
             editBookshelfLauncher.launch(bookshelf);
@@ -199,8 +202,8 @@ public class EditBookshelvesFragment
                 //noinspection ConstantConditions
                 StandardDialogs.deleteBookshelf(getContext(), bookshelf, () -> {
                     vm.deleteBookshelf(bookshelf);
-                    adapter.notifyItemRemoved(position);
-                    adapter.notifyItemChanged(vm.findAndSelect(position));
+                    adapter.notifyItemRemoved(index);
+                    adapter.notifyItemChanged(vm.findAndSelect(index));
                 });
             } else {
                 //TODO: why not ? as long as we make sure there is another one left..
@@ -252,19 +255,16 @@ public class EditBookshelvesFragment
     }
 
     private class BookshelfAdapter
-            extends RecyclerView.Adapter<Holder> {
-
-        /** Cached inflater. */
-        @NonNull
-        private final LayoutInflater inflater;
+            extends MultiColumnRecyclerViewAdapter<Holder> {
 
         /**
          * Constructor.
          *
          * @param context Current context
          */
-        BookshelfAdapter(@NonNull final Context context) {
-            inflater = LayoutInflater.from(context);
+        BookshelfAdapter(@NonNull final Context context,
+                         final int columnCount) {
+            super(context, columnCount);
         }
 
         @NonNull
@@ -278,11 +278,17 @@ public class EditBookshelvesFragment
             // click -> set the row as 'selected'.
             holder.vb.name.setOnClickListener(v -> {
                 // first update the previous, now unselected, row.
-                notifyItemChanged(vm.getSelectedPosition());
+                final int oldListIndex = vm.getSelectedPosition();
+                final int oldPosition = revert(oldListIndex);
+                notifyItemChanged(oldPosition);
+
                 // store the newly selected row.
-                vm.setSelectedPosition(holder.getBindingAdapterPosition());
+                final int position = holder.getBindingAdapterPosition();
+                final int listIndex = transpose(position);
+
+                vm.setSelectedPosition(listIndex);
                 // update the newly selected row.
-                notifyItemChanged(vm.getSelectedPosition());
+                notifyItemChanged(position);
             });
 
             // long-click -> context menu
@@ -290,9 +296,13 @@ public class EditBookshelvesFragment
                 //noinspection ConstantConditions
                 final ExtPopupMenu popupMenu = new ExtPopupMenu(getContext())
                         .inflate(R.menu.editing_bookshelves);
-                prepareMenu(popupMenu.getMenu(), holder.getBindingAdapterPosition());
+
+                final int position = holder.getBindingAdapterPosition();
+                final int listIndex = transpose(position);
+
+                prepareMenu(popupMenu.getMenu(), position);
                 popupMenu.showAsDropDown(v, menuItem ->
-                        onMenuItemSelected(menuItem, holder.getBindingAdapterPosition()));
+                        onMenuItemSelected(menuItem, listIndex));
                 return true;
             });
 
@@ -303,10 +313,11 @@ public class EditBookshelvesFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
-            final Bookshelf bookshelf = vm.getBookshelf(position);
+            final int listIndex = transpose(position);
+            final Bookshelf bookshelf = vm.getBookshelf(listIndex);
 
             holder.vb.name.setText(bookshelf.getName());
-            holder.itemView.setSelected(position == vm.getSelectedPosition());
+            holder.itemView.setSelected(listIndex == vm.getSelectedPosition());
         }
 
         @Override

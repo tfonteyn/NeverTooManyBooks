@@ -160,4 +160,6 @@
     <dimen name="top_centered_min_width">312dp</dimen>
     <dimen name="top_centered_max_width">600dp</dimen>
 
+    <integer name="span_count_edit_bookshelves">1</integer>
+    <integer name="span_count_update_from_internet">1</integer>
 </resources>

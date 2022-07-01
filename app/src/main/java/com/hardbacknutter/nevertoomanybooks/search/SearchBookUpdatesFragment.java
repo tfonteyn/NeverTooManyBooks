@@ -36,6 +36,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -60,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
+import com.hardbacknutter.nevertoomanybooks.widgets.MultiColumnRecyclerViewAdapter;
 
 /**
  * Search the internet for one book or a list of books and download/update book data
@@ -172,8 +174,10 @@ public class SearchBookUpdatesFragment
     }
 
     private void initAdapter() {
+        final GridLayoutManager layoutManager = (GridLayoutManager) vb.fieldList.getLayoutManager();
         //noinspection ConstantConditions
-        vb.fieldList.setAdapter(new SyncFieldAdapter(getContext(), vm.getSyncFields()));
+        vb.fieldList.setAdapter(new SyncFieldAdapter(getContext(), vm.getSyncFields(),
+                                                     layoutManager.getSpanCount()));
     }
 
     private void afterOnViewCreated() {
@@ -320,12 +324,9 @@ public class SearchBookUpdatesFragment
     }
 
     private static class SyncFieldAdapter
-            extends RecyclerView.Adapter<Holder> {
+            extends MultiColumnRecyclerViewAdapter<Holder> {
 
         static final SyncField[] Z_ARRAY_SYNC_FIELD = new SyncField[0];
-        /** Cached inflater. */
-        @NonNull
-        private final LayoutInflater layoutInflater;
 
         private final SyncField[] syncFields;
 
@@ -336,8 +337,9 @@ public class SearchBookUpdatesFragment
          * @param syncFields to show
          */
         SyncFieldAdapter(@NonNull final Context context,
-                         @NonNull final Collection<SyncField> syncFields) {
-            layoutInflater = LayoutInflater.from(context);
+                         @NonNull final Collection<SyncField> syncFields,
+                         final int columnCount) {
+            super(context, columnCount);
             this.syncFields = syncFields.toArray(Z_ARRAY_SYNC_FIELD);
         }
 
@@ -347,11 +349,14 @@ public class SearchBookUpdatesFragment
                                          final int viewType) {
 
             final RowUpdateFromInternetBinding hVb = RowUpdateFromInternetBinding
-                    .inflate(layoutInflater, parent, false);
+                    .inflate(inflater, parent, false);
             final Holder holder = new Holder(hVb);
 
             holder.vb.cbxUsage.setOnClickListener(v -> {
-                final SyncField fs = syncFields[holder.getBindingAdapterPosition()];
+                final int position = holder.getBindingAdapterPosition();
+                final int listIndex = transpose(position);
+
+                final SyncField fs = syncFields[listIndex];
                 fs.nextState();
                 hVb.cbxUsage.setChecked(fs.getAction() != SyncAction.Skip);
                 hVb.cbxUsage.setText(fs.getActionLabelResId());
@@ -363,7 +368,8 @@ public class SearchBookUpdatesFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
-            final SyncField syncField = syncFields[position];
+            final int listIndex = transpose(position);
+            final SyncField syncField = syncFields[listIndex];
 
             holder.vb.field.setText(syncField.getFieldLabel());
             holder.vb.cbxUsage.setChecked(syncField.getAction() != SyncAction.Skip);
