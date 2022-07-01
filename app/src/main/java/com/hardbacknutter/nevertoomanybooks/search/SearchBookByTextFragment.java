@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -279,7 +279,7 @@ public class SearchBookByTextFragment
     }
 
     @Override
-    void onBookEditingDone(@Nullable final EditBookOutput data) {
+    void onBookEditingDone(@NonNull final EditBookOutput data) {
         super.onBookEditingDone(data);
 
         // refresh, we could have modified/created Authors/Publishers while editing

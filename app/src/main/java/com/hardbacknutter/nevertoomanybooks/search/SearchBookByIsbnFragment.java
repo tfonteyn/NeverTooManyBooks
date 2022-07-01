@@ -56,6 +56,8 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContr
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 /**
@@ -98,9 +100,80 @@ public class SearchBookByIsbnFragment
         }
     }
 
+    private void onBarcodeScanned(@NonNull String barCode) {
+        scannerStarted = false;
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.FAKE_BARCODE_SCANNER) {
+            final String[] testCodes = {
+                    // random == 0 -> cancel scanning
+                    null,
+                    "9780316310420",
+                    "9781250762849",
+                    "9781524763169",
+                    "9780062868930",
+                    "9781786892713",
+                    "9780349701462",
+                    "9781635574043",
+                    "9781538719985",
+                    "9780593230251",
+                    "9780063032491",
+                    };
+            final int random = (int) Math.floor(Math.random() * 10);
+            barCode = testCodes[random];
+            Log.d(TAG, "onBarcodeScanned|Faking barcode=" + barCode);
+        }
+
+        if (barCode != null) {
+            final boolean strictIsbn = coordinator.isStrictIsbn();
+            final ISBN code = new ISBN(barCode, strictIsbn);
+
+            if (code.isValid(strictIsbn)) {
+                if (strictIsbn) {
+                    //noinspection ConstantConditions
+                    ScannerContract.onValidBarcodeBeep(getContext());
+                }
+
+                if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Batch) {
+                    // batch mode, queue the code, and scan next book
+                    vm.addToQueue(code);
+                    scan();
+
+                } else {
+                    // single-scan mode, keep the scanner on and go edit the book
+                    vb.isbn.setText(code.asText());
+                    prepareSearch(code);
+                }
+            } else {
+                //noinspection ConstantConditions
+                ScannerContract.onInvalidBarcodeBeep(getContext());
+                showError(vb.lblIsbn, getString(R.string.warning_x_is_not_a_valid_code,
+                                                code.asText()));
+
+                if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Batch) {
+                    // batch mode, scan next book
+                    scan();
+                } else {
+                    // single-scan mode, quit scanning, let the user edit the code
+                    vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Off);
+                    vb.isbn.setText(code.asText());
+                }
+            }
+
+        } else if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Batch) {
+            // no barcode received, batch mode, quit scanning and present the queue to the user
+            vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Off);
+            populateQueueView();
+
+        } else {
+            // no barcode received, single-scan mode, quit scanning
+            vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Off);
+        }
+    }
+
     /** After a successful scan/search, the data is offered for editing. */
     private final ActivityResultLauncher<Long> editExistingBookLauncher =
-            registerForActivityResult(new EditBookByIdContract(), this::onBookEditingDone);
+            registerForActivityResult(new EditBookByIdContract(),
+                                      o -> o.ifPresent(this::onBookEditingDone));
 
     @Override
     @NonNull
@@ -189,77 +262,24 @@ public class SearchBookByIsbnFragment
         }
     }
 
+    @Override
+    void onSearchCancelled(@NonNull final LiveDataEvent<TaskResult<Bundle>> message) {
+        super.onSearchCancelled(message);
+        // Quit scan mode until the user manually starts it again
+        vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Off);
+    }
+
     /** The scanner. */
     private final ActivityResultLauncher<Fragment> scannerLauncher =
-            registerForActivityResult(new ScannerContract(), this::onBarcodeScanned);
+            registerForActivityResult(new ScannerContract(),
+                                      o -> o.ifPresent(this::onBarcodeScanned));
 
-    private void onBarcodeScanned(@Nullable String barCode) {
-        scannerStarted = false;
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.FAKE_BARCODE_SCANNER) {
-            final String[] testCodes = {
-                    // random == 0 -> cancel scanning
-                    null,
-                    "9780316310420",
-                    "9781250762849",
-                    "9781524763169",
-                    "9780062868930",
-                    "9781786892713",
-                    "9780349701462",
-                    "9781635574043",
-                    "9781538719985",
-                    "9780593230251",
-                    "9780063032491",
-                    };
-            final int random = (int) Math.floor(Math.random() * 10);
-            barCode = testCodes[random];
-            Log.d(TAG, "onBarcodeScanned|Faking barcode=" + barCode);
-        }
-
-        if (barCode != null) {
-            final boolean strictIsbn = coordinator.isStrictIsbn();
-            final ISBN code = new ISBN(barCode, strictIsbn);
-
-            if (code.isValid(strictIsbn)) {
-                if (strictIsbn) {
-                    //noinspection ConstantConditions
-                    ScannerContract.onValidBarcodeBeep(getContext());
-                }
-
-                if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Batch) {
-                    // batch mode, queue the code, and scan next book
-                    vm.addToQueue(code);
-                    scan();
-
-                } else {
-                    // single-scan mode, keep the scanner on and go edit the book
-                    vb.isbn.setText(code.asText());
-                    prepareSearch(code);
-                }
-            } else {
-                //noinspection ConstantConditions
-                ScannerContract.onInvalidBarcodeBeep(getContext());
-                showError(vb.lblIsbn, getString(R.string.warning_x_is_not_a_valid_code,
-                                                code.asText()));
-
-                if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Batch) {
-                    // batch mode, scan next book
-                    scan();
-                } else {
-                    // single-scan mode, quit scanning, let the user edit the code
-                    vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Off);
-                    vb.isbn.setText(code.asText());
-                }
-            }
-
-        } else if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Batch) {
-            // no barcode received, batch mode, quit scanning and present the queue to the user
-            vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Off);
-            populateQueueView();
-
-        } else {
-            // no barcode received, single-scan mode, quit scanning
-            vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Off);
+    @Override
+    void onBookEditingDone(@NonNull final EditBookOutput data) {
+        super.onBookEditingDone(data);
+        if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Single) {
+            // scan another book until the user cancels
+            scan();
         }
     }
 
@@ -346,12 +366,6 @@ public class SearchBookByIsbnFragment
         }
     }
 
-    @Override
-    void onSearchCancelled() {
-        super.onSearchCancelled();
-        // Quit scan mode until the user manually starts it again
-        vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Off);
-    }
 
     @Override
     void onSearchResults(@NonNull final Bundle bookData) {
@@ -368,14 +382,6 @@ public class SearchBookByIsbnFragment
         super.onSearchResults(bookData);
     }
 
-    @Override
-    void onBookEditingDone(@Nullable final EditBookOutput data) {
-        super.onBookEditingDone(data);
-        if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Single) {
-            // scan another book until the user cancels
-            scan();
-        }
-    }
 
     private void onOpenUri(@Nullable final Uri uri) {
         if (uri != null) {

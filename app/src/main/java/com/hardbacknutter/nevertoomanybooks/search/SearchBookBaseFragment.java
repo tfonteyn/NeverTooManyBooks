@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,7 +61,8 @@ public abstract class SearchBookBaseFragment
         extends BaseFragment {
 
     private final ActivityResultLauncher<Bundle> editBookFoundLauncher = registerForActivityResult(
-            new EditBookFromBundleContract(), this::onBookEditingDone);
+            new EditBookFromBundleContract(), o -> o.ifPresent(this::onBookEditingDone));
+
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
@@ -79,12 +80,10 @@ public abstract class SearchBookBaseFragment
 
     private final ActivityResultLauncher<ArrayList<Site>> editSitesLauncher =
             registerForActivityResult(new SearchSitesSingleListContract(),
-                                      sites -> {
-                                          if (sites != null) {
-                                              coordinator.setSiteList(sites);
-                                          }
+                                      o -> o.ifPresent(sites -> {
+                                          coordinator.setSiteList(sites);
                                           explainSitesSupport(sites);
-                                      });
+                                      }));
     @Nullable
     private ProgressDelegate progressDelegate;
 
@@ -96,10 +95,8 @@ public abstract class SearchBookBaseFragment
     protected abstract Bundle getResultData();
 
     @CallSuper
-    void onBookEditingDone(@Nullable final EditBookOutput data) {
-        if (data != null) {
-            EditBookOutput.toBundle(data, getResultData());
-        }
+    void onBookEditingDone(@NonNull final EditBookOutput data) {
+        EditBookOutput.toBundle(data, getResultData());
     }
 
     @Override
@@ -124,10 +121,7 @@ public abstract class SearchBookBaseFragment
         coordinator.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         // Handle both Success and Failed searches
         coordinator.onSearchFinished().observe(getViewLifecycleOwner(), this::onSearchFinished);
-        coordinator.onSearchCancelled().observe(getViewLifecycleOwner(), message -> {
-            closeProgressDialog();
-            onSearchCancelled();
-        });
+        coordinator.onSearchCancelled().observe(getViewLifecycleOwner(), this::onSearchCancelled);
 
         // Warn the user, but don't abort.
         //noinspection ConstantConditions
@@ -172,7 +166,8 @@ public abstract class SearchBookBaseFragment
     }
 
     @CallSuper
-    void onSearchCancelled() {
+    void onSearchCancelled(@NonNull final LiveDataEvent<TaskResult<Bundle>> message) {
+        closeProgressDialog();
         //noinspection ConstantConditions
         Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
     }
