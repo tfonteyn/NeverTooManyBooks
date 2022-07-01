@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -99,11 +99,9 @@ public class EditBookFieldsFragment
 
     /** The scanner. */
     private final ActivityResultLauncher<Fragment> scanLauncher = registerForActivityResult(
-            new ScannerContract(), barCode -> {
-                if (barCode != null) {
-                    vm.getBook().putString(DBKey.BOOK_ISBN, barCode);
-                }
-            });
+            new ScannerContract(), o -> o.ifPresent(barCode -> {
+                vm.getBook().putString(DBKey.BOOK_ISBN, barCode);
+            }));
 
     /** Delegate to handle cover replacement, rotation, etc. */
     private final CoverHandler[] coverHandler = new CoverHandler[2];
@@ -160,17 +158,12 @@ public class EditBookFieldsFragment
 
         createCoverDelegates();
 
-        vm.onAuthorList().observe(getViewLifecycleOwner(), authors ->
-                vm.requireField(R.id.author).setValue(authors));
-
         // Author editor (screen)
         // no listener/callback. We share the book view model in the Activity scope
         vb.lblAuthor.setEndIconOnClickListener(v -> editAuthor());
         vb.author.setOnClickListener(v -> editAuthor());
 
         if (GlobalFieldVisibility.isUsed(DBKey.FK_SERIES)) {
-            vm.onSeriesList().observe(getViewLifecycleOwner(), series ->
-                    vm.requireField(R.id.series_title).setValue(series));
             // Series editor (screen)
             // no listener/callback. We share the book view model in the Activity scope
             vb.lblSeries.setEndIconOnClickListener(v -> editSeries());

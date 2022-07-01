@@ -29,8 +29,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -98,9 +96,6 @@ public class EditBookViewModel
     private final Collection<FragmentId> fragmentsWithUnfinishedEdits =
             EnumSet.noneOf(FragmentId.class);
 
-    private final MutableLiveData<List<Author>> authorList = new MutableLiveData<>();
-    private final MutableLiveData<List<Series>> seriesList = new MutableLiveData<>();
-    private final MutableLiveData<List<Publisher>> publisherList = new MutableLiveData<>();
     private final List<MenuHandler> menuHandlers = new ArrayList<>();
     private final Collection<FieldGroup> fieldGroups = EnumSet.noneOf(FieldGroup.class);
 
@@ -611,34 +606,19 @@ public class EditBookViewModel
         return nrOfReferences <= (book.isNew() ? 0 : 1);
     }
 
-    @NonNull
-    LiveData<List<Author>> onAuthorList() {
-        return authorList;
-    }
-
-    @NonNull
-    LiveData<List<Series>> onSeriesList() {
-        return seriesList;
-    }
-
-    @NonNull
-    LiveData<List<Publisher>> onPublisherList() {
-        return publisherList;
-    }
-
     void updateAuthors(@NonNull final List<Author> list) {
         book.setAuthors(list);
-        authorList.setValue(list);
+        requireField(R.id.author).setValue(list);
     }
 
     void updateSeries(@NonNull final List<Series> list) {
         book.setSeries(list);
-        seriesList.setValue(list);
+        requireField(R.id.series_title).setValue(list);
     }
 
     void updatePublishers(@NonNull final List<Publisher> list) {
         book.setPublishers(list);
-        publisherList.setValue(list);
+        requireField(R.id.publisher).setValue(list);
     }
 
     boolean changeForThisBook(@NonNull final Context context,

@@ -30,7 +30,6 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookPublicationBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
@@ -73,9 +72,6 @@ public class EditBookPublicationFragment
         if (WindowSizeClass.getWidth(getActivity()) == WindowSizeClass.EXPANDED) {
             vm.initFields(context, FragmentId.Publication, FieldGroup.Notes);
         }
-
-        vm.onPublisherList().observe(getViewLifecycleOwner(), publishers ->
-                vm.requireField(R.id.publisher).setValue(publishers));
 
         // Publisher editor (screen)
         // no listener/callback. We share the book view model in the Activity scope
