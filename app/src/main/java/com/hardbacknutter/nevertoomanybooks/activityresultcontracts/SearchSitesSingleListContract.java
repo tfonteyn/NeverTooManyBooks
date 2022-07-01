@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -39,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminViewModel;
 
 public class SearchSitesSingleListContract
-        extends ActivityResultContract<ArrayList<Site>, ArrayList<Site>> {
+        extends ActivityResultContract<ArrayList<Site>, Optional<ArrayList<Site>>> {
 
     /** Log tag. */
     private static final String TAG = "SearchSitesSingleList";
@@ -59,19 +60,24 @@ public class SearchSitesSingleListContract
                 .putParcelableArrayListExtra(SearchAdminViewModel.BKEY_LIST, list);
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public ArrayList<Site> parseResult(final int resultCode,
-                                       @Nullable final Intent intent) {
+    public Optional<ArrayList<Site>> parseResult(final int resultCode,
+                                                 @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent
                                          + "|listKey=" + listKey);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
-            return null;
+            return Optional.empty();
         }
 
-        return intent.getParcelableArrayListExtra(listKey);
+        final ArrayList<Site> siteList = intent.getParcelableArrayListExtra(listKey);
+        if (siteList != null) {
+            return Optional.of(siteList);
+        } else {
+            return Optional.empty();
+        }
     }
 }

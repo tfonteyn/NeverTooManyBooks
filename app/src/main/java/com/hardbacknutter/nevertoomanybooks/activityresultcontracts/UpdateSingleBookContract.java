@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -45,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
  * Update a single Book.
  */
 public class UpdateSingleBookContract
-        extends ActivityResultContract<Book, UpdateBooksOutput> {
+        extends ActivityResultContract<Book, Optional<UpdateBooksOutput>> {
 
     private static final String TAG = "Update1BookContract";
 
@@ -71,15 +72,15 @@ public class UpdateSingleBookContract
     }
 
     @Override
-    @Nullable
-    public UpdateBooksOutput parseResult(final int resultCode,
-                                         @Nullable final Intent intent) {
+    @NonNull
+    public Optional<UpdateBooksOutput> parseResult(final int resultCode,
+                                                   @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
-            return null;
+            return Optional.empty();
         }
 
         final long repositionToBookId =
@@ -91,9 +92,9 @@ public class UpdateSingleBookContract
         final boolean listModified =
                 intent.getBooleanExtra(SearchBookUpdatesViewModel.BKEY_LIST_MODIFIED, false);
 
-        return new UpdateBooksOutput(repositionToBookId,
-                                     bookModified,
-                                     lastBookIdProcessed,
-                                     listModified);
+        return Optional.of(new UpdateBooksOutput(repositionToBookId,
+                                                 bookModified,
+                                                 lastBookIdProcessed,
+                                                 listModified));
     }
 }

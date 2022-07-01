@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,8 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Optional;
+
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
@@ -35,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.SearchFtsFragment;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class SearchFtsContract
-        extends ActivityResultContract<SearchCriteria, SearchCriteria> {
+        extends ActivityResultContract<SearchCriteria, Optional<SearchCriteria>> {
 
     private static final String TAG = "SearchFtsContract";
 
@@ -49,16 +51,21 @@ public class SearchFtsContract
     }
 
     @Override
-    @Nullable
-    public SearchCriteria parseResult(final int resultCode,
-                                      @Nullable final Intent intent) {
+    @NonNull
+    public Optional<SearchCriteria> parseResult(final int resultCode,
+                                                @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
-            return null;
+            return Optional.empty();
         }
-        return intent.getParcelableExtra(SearchCriteria.BKEY);
+        final SearchCriteria searchCriteria = intent.getParcelableExtra(SearchCriteria.BKEY);
+        if (searchCriteria != null) {
+            return Optional.of(searchCriteria);
+        } else {
+            return Optional.empty();
+        }
     }
 }

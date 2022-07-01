@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -40,7 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
 
 public class EditStyleContract
-        extends ActivityResultContract<EditStyleContract.Input, EditStyleContract.Output> {
+        extends ActivityResultContract<EditStyleContract.Input,
+        Optional<EditStyleContract.Output>> {
 
     public static final int ACTION_CLONE = 0;
     public static final int ACTION_EDIT = 1;
@@ -94,15 +96,15 @@ public class EditStyleContract
     }
 
     @Override
-    @Nullable
-    public Output parseResult(final int resultCode,
-                              @Nullable final Intent intent) {
+    @NonNull
+    public Optional<Output> parseResult(final int resultCode,
+                                        @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
-            return null;
+            return Optional.empty();
         }
 
         final String templateUuid = Objects.requireNonNull(
@@ -110,7 +112,7 @@ public class EditStyleContract
         final String uuid = intent.getStringExtra(Style.BKEY_UUID);
         final boolean modified = intent.getBooleanExtra(BKEY_MODIFIED, false);
 
-        return new Output(templateUuid, modified, uuid);
+        return Optional.of(new Output(templateUuid, modified, uuid));
     }
 
     @IntDef({ACTION_CLONE, ACTION_EDIT})

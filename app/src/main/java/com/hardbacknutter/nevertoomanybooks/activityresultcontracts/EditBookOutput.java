@@ -66,6 +66,7 @@ public final class EditBookOutput {
         output.putBoolean(BKEY_MODIFIED, input.modified);
     }
 
+    @NonNull
     public static EditBookOutput parseResult(@NonNull final Intent intent) {
         final long repositionToBookId =
                 intent.getLongExtra(DBKey.FK_BOOK, 0);

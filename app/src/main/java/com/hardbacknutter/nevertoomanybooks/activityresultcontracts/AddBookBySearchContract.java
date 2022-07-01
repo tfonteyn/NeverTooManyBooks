@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,6 +28,8 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Optional;
+
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
@@ -38,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.search.SearchBookByIsbnViewModel;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookByTextFragment;
 
 public class AddBookBySearchContract
-        extends ActivityResultContract<AddBookBySearchContract.By, EditBookOutput> {
+        extends ActivityResultContract<AddBookBySearchContract.By, Optional<EditBookOutput>> {
 
     private static final String TAG = "AddBookBySearchContract";
 
@@ -70,18 +72,18 @@ public class AddBookBySearchContract
     }
 
     @Override
-    @Nullable
-    public EditBookOutput parseResult(final int resultCode,
-                                      @Nullable final Intent intent) {
+    @NonNull
+    public Optional<EditBookOutput> parseResult(final int resultCode,
+                                                @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
-            return null;
+            return Optional.empty();
         }
 
-        return EditBookOutput.parseResult(intent);
+        return Optional.of(EditBookOutput.parseResult(intent));
     }
 
     public enum By {

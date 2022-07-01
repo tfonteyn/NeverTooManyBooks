@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,8 +23,12 @@ import android.app.Activity;
 import android.content.Intent;
 
 import androidx.activity.result.contract.ActivityResultContract;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -38,13 +42,14 @@ public abstract class SyncContractBase
     /** Data was exported/written; no local changes done. */
     public static final int RESULT_WRITE_DONE = 1;
     /** Data was imported; i.e. local changes were made. */
-    public static final int RESULT_READ_DONE = 2;
+    public static final int RESULT_READ_DONE = 1 << 1;
 
     private static final String TAG = "SyncContractBase";
     public static final String BKEY_RESULT = TAG + ":result";
 
     @Override
     @NonNull
+    @Outcome
     public Integer parseResult(final int resultCode,
                                @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
@@ -55,5 +60,13 @@ public abstract class SyncContractBase
             return RESULT_NONE;
         }
         return intent.getIntExtra(BKEY_RESULT, RESULT_NONE);
+    }
+
+    @IntDef(flag = true, value = {RESULT_NONE,
+                                  RESULT_WRITE_DONE,
+                                  RESULT_READ_DONE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Outcome {
+
     }
 }
