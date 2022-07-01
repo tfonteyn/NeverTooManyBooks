@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -28,6 +28,9 @@
     android:minHeight="?attr/listPreferredItemHeightSmall"
     >
 
+    <!-- "invisible" by default (NOT 'gone' as we want the space allocated)
+    hence we also set the minWidth == minHeight of the row
+ -->
     <ImageButton
         android:id="@+id/btn_type"
         android:layout_width="wrap_content"
@@ -43,6 +46,7 @@
         tools:visibility="visible"
         />
 
+    <!-- android:textIsSelectable="false" because we want to be able to click on the row -->
     <TextView
         android:id="@+id/title"
         style="@style/Field.BookTitle"
@@ -54,6 +58,7 @@
         tools:text="@sample/data.json/book/title"
         />
 
+    <!-- android:textIsSelectable="false" because we want to be able to click on the row -->
     <TextView
         android:id="@+id/year"
         style="@style/Field.Generic.Inline"
