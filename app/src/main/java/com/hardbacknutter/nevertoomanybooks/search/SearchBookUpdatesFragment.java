@@ -84,11 +84,8 @@ public class SearchBookUpdatesFragment
     private SearchBookUpdatesViewModel vm;
     private final ActivityResultLauncher<ArrayList<Site>> editSitesLauncher =
             registerForActivityResult(new SearchSitesSingleListContract(),
-                                      sites -> {
-                                          if (sites != null) {
-                                              vm.setSiteList(sites);
-                                          }
-                                      });
+                                      o -> o.ifPresent(sites -> vm.setSiteList(sites)));
+
     @Nullable
     private ProgressDelegate progressDelegate;
     /** View Binding. */
