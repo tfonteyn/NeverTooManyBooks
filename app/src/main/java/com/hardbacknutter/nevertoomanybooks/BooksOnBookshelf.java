@@ -89,7 +89,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.RowChangedListener;
-import com.hardbacknutter.nevertoomanybooks.booklist.TopLevelItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -517,8 +516,6 @@ public class BooksOnBookshelf
 
         // hide the view at creation time. onResume will provide the data and make it visible.
         vb.content.list.setVisibility(View.GONE);
-
-        vb.content.list.addItemDecoration(new TopLevelItemDecoration(this));
 
         // Optional overlay
         final int overlayType = Prefs.getFastScrollerOverlayType(this);
