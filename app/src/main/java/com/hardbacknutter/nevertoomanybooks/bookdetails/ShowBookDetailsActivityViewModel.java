@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,6 +34,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -87,6 +88,13 @@ public class ShowBookDetailsActivityViewModel
 
     void updateFragmentResult() {
         modified = true;
+    }
+
+    void updateFragmentResult(@NonNull final EditBookOutput data) {
+        // ignore the data.bookId
+        if (data.modified) {
+            modified = true;
+        }
     }
 
     /**

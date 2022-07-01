@@ -121,10 +121,10 @@ public class ShowBookDetailsFragment
 
     /** User edits a book. */
     private final ActivityResultLauncher<Long> editBookLauncher = registerForActivityResult(
-            new EditBookByIdContract(), this::onBookEditFinished);
+            new EditBookByIdContract(), o -> o.ifPresent(this::onBookEditFinished));
     /** User updates a book with internet data. */
     private final ActivityResultLauncher<Book> updateBookLauncher = registerForActivityResult(
-            new UpdateSingleBookContract(), this::onBookAutoUpdateFinished);
+            new UpdateSingleBookContract(), o -> o.ifPresent(this::onBookAutoUpdateFinished));
 
     /** Handle the edit-lender dialog. */
     private final EditLenderDialogFragment.Launcher editLenderLauncher =
@@ -270,38 +270,34 @@ public class ShowBookDetailsFragment
     /**
      * Called when the Book was updated with internet data.
      *
-     * @param data (optional) details
+     * @param data details
      */
-    private void onBookAutoUpdateFinished(@Nullable final UpdateBooksOutput data) {
-        if (data != null) {
-            // only override if 'true'; i.e. if we got an id back
-            if (data.bookModified > 0) {
-                aVm.updateFragmentResult();
-            }
+    private void onBookAutoUpdateFinished(@NonNull final UpdateBooksOutput data) {
+        // only override if 'true'; i.e. if we got an id back
+        if (data.bookModified > 0) {
+            aVm.updateFragmentResult();
+        }
 
-            vm.reloadBook();
+        vm.reloadBook();
 
-            if (bookChangedListener != null) {
-                bookChangedListener.onBookUpdated(vm.getBook(), (String) null);
-            }
+        if (bookChangedListener != null) {
+            bookChangedListener.onBookUpdated(vm.getBook(), (String) null);
         }
     }
 
     /**
      * Called when the Book was edited.
      *
-     * @param data (optional) details
+     * @param data details
      */
-    private void onBookEditFinished(@Nullable final EditBookOutput data) {
-        if (data != null) {
-            if (data.modified) {
-                aVm.updateFragmentResult();
+    private void onBookEditFinished(@NonNull final EditBookOutput data) {
+        if (data.modified) {
+            aVm.updateFragmentResult();
 
-                vm.reloadBook();
+            vm.reloadBook();
 
-                if (bookChangedListener != null) {
-                    bookChangedListener.onBookUpdated(vm.getBook(), (String) null);
-                }
+            if (bookChangedListener != null) {
+                bookChangedListener.onBookUpdated(vm.getBook(), (String) null);
             }
         }
     }
