@@ -203,18 +203,18 @@ public class BooksOnBookshelf
 
     /** Do an import. */
     private final ActivityResultLauncher<Void> importLauncher =
-            registerForActivityResult(new ImportContract(),
-                                      data -> vm.onImportFinished(this, data));
+            registerForActivityResult(new ImportContract(), o -> o.ifPresent(
+                    data -> vm.onImportFinished(this, data)));
 
     /** Manage the list of (preferred) styles. */
     private final ActivityResultLauncher<String> editStylesLauncher =
-            registerForActivityResult(new PreferredStylesContract(),
-                                      data -> vm.onEditStylesFinished(this, data));
+            registerForActivityResult(new PreferredStylesContract(), o -> o.ifPresent(
+                    data -> vm.onEditStylesFinished(this, data)));
 
     /** Edit an individual style. */
     private final ActivityResultLauncher<EditStyleContract.Input> editStyleLauncher =
-            registerForActivityResult(new EditStyleContract(),
-                                      data -> vm.onEditStyleFinished(this, data));
+            registerForActivityResult(new EditStyleContract(), o -> o.ifPresent(
+                    data -> vm.onEditStyleFinished(this, data)));
 
     /**
      * Display a Book. We still call
@@ -222,38 +222,43 @@ public class BooksOnBookshelf
      * as the user might have done so from the displaying fragment.
      */
     private final ActivityResultLauncher<ShowBookPagerContract.Input> displayBookLauncher =
-            registerForActivityResult(new ShowBookPagerContract(),
-                                      data -> vm.onBookEditFinished(data));
+            registerForActivityResult(new ShowBookPagerContract(), o -> o.ifPresent(
+                    data -> vm.onBookEditFinished(data)));
+
     /** Add a Book by doing a search on the internet. */
     private final ActivityResultLauncher<AddBookBySearchContract.By> addBookBySearchLauncher =
-            registerForActivityResult(new AddBookBySearchContract(),
-                                      data -> vm.onBookEditFinished(data));
+            registerForActivityResult(new AddBookBySearchContract(), o -> o.ifPresent(
+                    data -> vm.onBookEditFinished(data)));
+
     /** Edit a Book. */
     private final ActivityResultLauncher<Long> editByIdLauncher =
-            registerForActivityResult(new EditBookByIdContract(),
-                                      data -> vm.onBookEditFinished(data));
+            registerForActivityResult(new EditBookByIdContract(), o -> o.ifPresent(
+                    data -> vm.onBookEditFinished(data)));
+
     /** Duplicate and edit a Book. */
     private final ActivityResultLauncher<Bundle> duplicateLauncher =
-            registerForActivityResult(new EditBookFromBundleContract(),
-                                      data -> vm.onBookEditFinished(data));
+            registerForActivityResult(new EditBookFromBundleContract(), o -> o.ifPresent(
+                    data -> vm.onBookEditFinished(data)));
 
     /** Update an individual Book with information from the internet. */
     private final ActivityResultLauncher<Book> updateBookLauncher =
-            registerForActivityResult(new UpdateSingleBookContract(),
-                                      data -> vm.onBookAutoUpdateFinished(data));
+            registerForActivityResult(new UpdateSingleBookContract(), o -> o.ifPresent(
+                    data -> vm.onBookAutoUpdateFinished(data)));
+
     /** Update a list of Books with information from the internet. */
     private final ActivityResultLauncher<UpdateBooklistContract.Input> updateBookListLauncher =
-            registerForActivityResult(new UpdateBooklistContract(),
-                                      data -> vm.onBookAutoUpdateFinished(data));
+            registerForActivityResult(new UpdateBooklistContract(), o -> o.ifPresent(
+                    data -> vm.onBookAutoUpdateFinished(data)));
 
     /** View all works of an Author. */
     private final ActivityResultLauncher<AuthorWorksContract.Input> authorWorksLauncher =
-            registerForActivityResult(new AuthorWorksContract(),
-                                      data -> vm.onBookEditFinished(data));
+            registerForActivityResult(new AuthorWorksContract(), o -> o.ifPresent(
+                    data -> vm.onBookEditFinished(data)));
+
     /** The local FTS based search. */
     private final ActivityResultLauncher<SearchCriteria> ftsSearchLauncher =
-            registerForActivityResult(new SearchFtsContract(),
-                                      criteria -> vm.onFtsSearchFinished(criteria));
+            registerForActivityResult(new SearchFtsContract(), o -> o.ifPresent(
+                    criteria -> vm.onFtsSearchFinished(criteria)));
 
     /** Manage the book shelves. */
     private final ActivityResultLauncher<Long> manageBookshelvesLauncher =
@@ -262,6 +267,7 @@ public class BooksOnBookshelf
                                                                                     bookshelfId));
 
     private ToolbarMenuProvider toolbarMenuProvider;
+
     /** Encapsulates the FAB button/menu. */
     private FabMenu fabMenu;
 
@@ -353,6 +359,7 @@ public class BooksOnBookshelf
                     onBookUpdated(vm.getBook(bookId), DBKey.LOANEE_NAME);
                 }
             };
+
     /**
      * The adapter used to fill the Bookshelf selector.
      */
@@ -402,33 +409,6 @@ public class BooksOnBookshelf
                         .show();
             }
         }
-    }
-
-    private void initToolbar() {
-        setNavIcon();
-
-        vb.toolbar.setNavigationOnClickListener(v -> {
-            if (isRootActivity()) {
-                vb.drawerLayout.openDrawer(GravityCompat.START);
-            } else {
-                onBackPressed();
-            }
-        });
-
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        vb.toolbar.addMenuProvider(toolbarMenuProvider, this);
-    }
-
-    private void setNavIcon() {
-        if (isRootActivity()) {
-            vb.toolbar.setNavigationIcon(R.drawable.ic_baseline_menu_24);
-        } else {
-            vb.toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24);
-        }
-    }
-
-    private boolean isRootActivity() {
-        return isTaskRoot() && vm.getSearchCriteria().isEmpty();
     }
 
     private void createFragmentResultListeners() {
@@ -501,6 +481,36 @@ public class BooksOnBookshelf
         }
     }
 
+    private void initToolbar() {
+        setNavIcon();
+
+        vb.toolbar.setNavigationOnClickListener(v -> {
+            if (isRootActivity()) {
+                vb.drawerLayout.openDrawer(GravityCompat.START);
+            } else {
+                onBackPressed();
+            }
+        });
+
+        toolbarMenuProvider = new ToolbarMenuProvider();
+        vb.toolbar.addMenuProvider(toolbarMenuProvider, this);
+    }
+
+    /**
+     * Listener for clicks on the list.
+     */
+    private void createBookshelfSpinner() {
+        // remove the default title to make space for the spinner.
+        setTitle("");
+
+        // The list is initially empty here; loading the list and
+        // setting/selecting the current shelf are both done in onResume
+        bookshelfAdapter = new EntityArrayAdapter<>(this, vm.getBookshelfList());
+
+        vb.bookshelfSpinner.setAdapter(bookshelfAdapter);
+        bookshelfSelectionChangedListener.attach(vb.bookshelfSpinner);
+    }
+
     private void createBooklistView() {
         //noinspection ConstantConditions
         layoutManager = (LinearLayoutManager) vb.content.list.getLayoutManager();
@@ -518,22 +528,6 @@ public class BooksOnBookshelf
         vb.content.list.setItemViewCacheSize(20);
         vb.content.list.setDrawingCacheEnabled(true);
         vb.content.list.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-    }
-
-
-    /**
-     * Listener for clicks on the list.
-     */
-    private void createBookshelfSpinner() {
-        // remove the default title to make space for the spinner.
-        setTitle("");
-
-        // The list is initially empty here; loading the list and
-        // setting/selecting the current shelf are both done in onResume
-        bookshelfAdapter = new EntityArrayAdapter<>(this, vm.getBookshelfList());
-
-        vb.bookshelfSpinner.setAdapter(bookshelfAdapter);
-        bookshelfSelectionChangedListener.attach(vb.bookshelfSpinner);
     }
 
     private void createFabMenu() {
@@ -561,6 +555,19 @@ public class BooksOnBookshelf
 
         //noinspection ConstantConditions
         getNavigationMenuItem(R.id.SUBMENU_SYNC).setVisible(enable);
+    }
+
+
+    private void setNavIcon() {
+        if (isRootActivity()) {
+            vb.toolbar.setNavigationIcon(R.drawable.ic_baseline_menu_24);
+        } else {
+            vb.toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24);
+        }
+    }
+
+    private boolean isRootActivity() {
+        return isTaskRoot() && vm.getSearchCriteria().isEmpty();
     }
 
     /**

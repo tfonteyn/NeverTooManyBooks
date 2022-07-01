@@ -70,7 +70,7 @@ public class BooksOnBookshelfViewModel
     private static final String TAG = "BooksOnBookshelfViewModel";
 
     /** collapsed/expanded. */
-    static final String BKEY_LIST_STATE = TAG + ":list.state";
+    public static final String BKEY_LIST_STATE = TAG + ":list.state";
 
     static final String BKEY_PROPOSE_BACKUP = TAG + ":pb";
 
@@ -666,40 +666,35 @@ public class BooksOnBookshelfViewModel
      *
      * @param data returned from the update contract
      */
-    void onBookAutoUpdateFinished(@Nullable final UpdateBooksOutput data) {
-        if (data != null) {
-            if (data.listModified) {
-                // we processed a list, just force a rebuild
-                forceRebuildInOnResume = true;
+    void onBookAutoUpdateFinished(@NonNull final UpdateBooksOutput data) {
+        if (data.listModified) {
+            // we processed a list, just force a rebuild
+            forceRebuildInOnResume = true;
 
-            } else if (data.bookModified > 0) {
-                //URGENT: we processed a single book, we should NOT do a full rebuild
-                forceRebuildInOnResume = true;
-            }
+        } else if (data.bookModified > 0) {
+            //URGENT: we processed a single book, we should NOT do a full rebuild
+            forceRebuildInOnResume = true;
+        }
 
-            // If we got an reposition id back, make any potential rebuild re-position to it.
-            if (data.repositionToBookId > 0) {
-                currentCenteredBookId = data.repositionToBookId;
-            }
+        // If we got an reposition id back, make any potential rebuild re-position to it.
+        if (data.repositionToBookId > 0) {
+            currentCenteredBookId = data.repositionToBookId;
         }
     }
-
 
     /**
      * This method is called from an ActivityResultContract after the result intent is parsed.
      *
      * @param data returned from the view/edit contract
      */
-    void onBookEditFinished(@Nullable final EditBookOutput data) {
-        if (data != null) {
-            if (data.modified) {
-                forceRebuildInOnResume = true;
-            }
+    void onBookEditFinished(@NonNull final EditBookOutput data) {
+        if (data.modified) {
+            forceRebuildInOnResume = true;
+        }
 
-            // If we got an reposition id back, make any potential rebuild re-position to it.
-            if (data.repositionToBookId > 0) {
-                currentCenteredBookId = data.repositionToBookId;
-            }
+        // If we got an reposition id back, make any potential rebuild re-position to it.
+        if (data.repositionToBookId > 0) {
+            currentCenteredBookId = data.repositionToBookId;
         }
     }
 
@@ -709,17 +704,15 @@ public class BooksOnBookshelfViewModel
      * @param data returned from the view/edit contract
      */
     void onEditStylesFinished(@NonNull final Context context,
-                              @Nullable final PreferredStylesContract.Output data) {
-        if (data != null) {
-            // we get the UUID for the selected style back.
-            if (data.uuid != null && !data.uuid.isEmpty()) {
-                onStyleChanged(context, data.uuid);
-            }
+                              @NonNull final PreferredStylesContract.Output data) {
+        // we get the UUID for the selected style back.
+        if (data.uuid != null && !data.uuid.isEmpty()) {
+            onStyleChanged(context, data.uuid);
+        }
 
-            // This is independent from the above style having been modified ot not.
-            if (data.modified) {
-                forceRebuildInOnResume = true;
-            }
+        // This is independent from the above style having been modified ot not.
+        if (data.modified) {
+            forceRebuildInOnResume = true;
         }
     }
 
@@ -729,19 +722,17 @@ public class BooksOnBookshelfViewModel
      * @param data returned from the view/edit contract
      */
     void onEditStyleFinished(@NonNull final Context context,
-                             @Nullable final EditStyleContract.Output data) {
-        if (data != null) {
-            // We get here from the StylePickerDialogFragment (i.e. the style menu)
-            // when the user choose to EDIT a style.
-            if (data.uuid != null && !data.uuid.isEmpty()) {
-                onStyleChanged(context, data.uuid);
+                             @NonNull final EditStyleContract.Output data) {
+        // We get here from the StylePickerDialogFragment (i.e. the style menu)
+        // when the user choose to EDIT a style.
+        if (data.uuid != null && !data.uuid.isEmpty()) {
+            onStyleChanged(context, data.uuid);
 
-                // ALWAYS rebuild here, even when the style was not modified
-                // as we're handling this as a style-change
-                // (we could do checks... but it's not worth the effort.)
-                // i.e. same as in mOnStylePickerListener
-                forceRebuildInOnResume = true;
-            }
+            // ALWAYS rebuild here, even when the style was not modified
+            // as we're handling this as a style-change
+            // (we could do checks... but it's not worth the effort.)
+            // i.e. same as in mOnStylePickerListener
+            forceRebuildInOnResume = true;
         }
     }
 
@@ -753,11 +744,9 @@ public class BooksOnBookshelfViewModel
         }
     }
 
-    void onFtsSearchFinished(@Nullable final SearchCriteria criteria) {
-        if (criteria != null) {
-            searchCriteria = criteria;
-            forceRebuildInOnResume = true;
-        }
+    void onFtsSearchFinished(@NonNull final SearchCriteria criteria) {
+        searchCriteria = criteria;
+        forceRebuildInOnResume = true;
     }
 
 
@@ -769,20 +758,18 @@ public class BooksOnBookshelfViewModel
      * @param importResults returned from the import
      */
     void onImportFinished(@NonNull final Context context,
-                          @Nullable final ImportResults importResults) {
-        if (importResults != null) {
-            if (importResults.styles > 0) {
-                // Force a refresh of the cached styles
-                ServiceLocator.getInstance().getStyles().clearCache();
-            }
-            if (importResults.preferences > 0) {
-                // Refresh the preferred bookshelf. This also refreshes its style.
-                reloadSelectedBookshelf(context);
-            }
-
-            // styles, prefs, books, covers,... it all requires a rebuild.
-            forceRebuildInOnResume = true;
+                          @NonNull final ImportResults importResults) {
+        if (importResults.styles > 0) {
+            // Force a refresh of the cached styles
+            ServiceLocator.getInstance().getStyles().clearCache();
         }
+        if (importResults.preferences > 0) {
+            // Refresh the preferred bookshelf. This also refreshes its style.
+            reloadSelectedBookshelf(context);
+        }
+
+        // styles, prefs, books, covers,... it all requires a rebuild.
+        forceRebuildInOnResume = true;
     }
 
     /**
