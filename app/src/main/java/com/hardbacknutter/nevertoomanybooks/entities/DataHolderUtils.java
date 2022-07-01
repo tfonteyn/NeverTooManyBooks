@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,8 +41,10 @@ public final class DataHolderUtils {
         if (rowData.contains(Book.BKEY_AUTHOR_LIST)) {
             final List<Author> list = rowData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
             return !list.isEmpty();
-        } else {
+        } else if (rowData.contains(DBKey.FK_AUTHOR)) {
             return rowData.getLong(DBKey.FK_AUTHOR) > 0;
+        } else {
+            return false;
         }
     }
 
@@ -50,8 +52,10 @@ public final class DataHolderUtils {
         if (rowData.contains(Book.BKEY_SERIES_LIST)) {
             final List<Series> list = rowData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
             return !list.isEmpty();
-        } else {
+        } else if (rowData.contains(DBKey.FK_SERIES)) {
             return rowData.getLong(DBKey.FK_SERIES) > 0;
+        } else {
+            return false;
         }
     }
 
