@@ -91,8 +91,8 @@ public class AuthorWorksFragment
     private AuthorWorksViewModel vm;
     /** Display a Book. */
     private final ActivityResultLauncher<ShowBookPagerContract.Input> displayBookLauncher =
-            registerForActivityResult(new ShowBookPagerContract(),
-                                      data -> vm.onBookEditFinished(data));
+            registerForActivityResult(new ShowBookPagerContract(), o -> o.ifPresent(
+                    data -> vm.onBookEditFinished(data)));
 
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback backPressedCallback =
@@ -169,7 +169,7 @@ public class AuthorWorksFragment
         final int overlayType = Prefs.getFastScrollerOverlayType(context);
         FastScroller.attach(worksListView, overlayType);
 
-        adapter = new TocAdapter(context, vm.getList());
+        adapter = new TocAdapter(context, vm.getWorks());
         adapter.registerAdapterDataObserver(adapterDataObserver);
         worksListView.setAdapter(adapter);
 
@@ -197,7 +197,7 @@ public class AuthorWorksFragment
                                        final int position) {
         final int itemId = menuItem.getItemId();
 
-        final AuthorWork work = vm.getList().get(position);
+        final AuthorWork work = vm.getWorks().get(position);
 
         if (itemId == R.id.MENU_DELETE) {
             deleteWork(position, work);
@@ -241,7 +241,7 @@ public class AuthorWorksFragment
      * @param position in the list
      */
     private void gotoBook(final int position) {
-        final AuthorWork work = vm.getList().get(position);
+        final AuthorWork work = vm.getWorks().get(position);
 
         switch (work.getWorkType()) {
             case TocEntry: {

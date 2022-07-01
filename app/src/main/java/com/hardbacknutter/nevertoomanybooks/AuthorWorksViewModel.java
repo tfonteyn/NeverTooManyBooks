@@ -48,7 +48,7 @@ public class AuthorWorksViewModel
         extends ViewModel {
 
     /** The list of TOC/Books we're displaying. */
-    private final ArrayList<AuthorWork> workslist = new ArrayList<>();
+    private final ArrayList<AuthorWork> works = new ArrayList<>();
 
     /** Database Access. */
     private BookDao bookDao;
@@ -107,14 +107,14 @@ public class AuthorWorksViewModel
     }
 
     void reloadWorkList() {
-        workslist.clear();
+        works.clear();
         final long bookshelfId = allBookshelves ? Bookshelf.ALL_BOOKS : bookshelf.getId();
 
         final ArrayList<AuthorWork> authorWorks =
                 ServiceLocator.getInstance().getAuthorDao()
                               .getAuthorWorks(author, bookshelfId, withTocEntries, withBooks);
 
-        workslist.addAll(authorWorks);
+        works.addAll(authorWorks);
     }
 
     @NonNull
@@ -135,9 +135,9 @@ public class AuthorWorksViewModel
     }
 
     @NonNull
-    ArrayList<AuthorWork> getList() {
+    ArrayList<AuthorWork> getWorks() {
         // used directly by the adapter
-        return workslist;
+        return works;
     }
 
     @NonNull
@@ -182,7 +182,7 @@ public class AuthorWorksViewModel
         }
 
         if (success) {
-            workslist.remove(work);
+            works.remove(work);
         }
         return success;
     }
@@ -197,7 +197,7 @@ public class AuthorWorksViewModel
     @NonNull
     String getScreenTitle(@NonNull final Context context) {
         return context.getString(R.string.name_hash_nr,
-                                 author.getLabel(context), getList().size());
+                                 author.getLabel(context), works.size());
     }
 
     /**
@@ -222,9 +222,9 @@ public class AuthorWorksViewModel
         return dataModified;
     }
 
-    void onBookEditFinished(@Nullable final EditBookOutput data) {
+    void onBookEditFinished(@NonNull final EditBookOutput data) {
         // ignore the data.bookId
-        if (data != null && data.modified) {
+        if (data.modified) {
             dataModified = true;
         }
     }
