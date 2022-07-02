@@ -25,9 +25,13 @@ import android.view.LayoutInflater;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+
 public abstract class MultiColumnRecyclerViewAdapter<HOLDER extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<HOLDER> {
 
+    private static final String TAG = "MultiColumnRecyclerView";
 
     /** Cached inflater. */
     @NonNull
@@ -41,31 +45,74 @@ public abstract class MultiColumnRecyclerViewAdapter<HOLDER extends RecyclerView
     }
 
     protected int transpose(final int position) {
-        final int rowCount = getRowCount();
+        final int realItemCount = getRealItemCount();
+        final int rowCount = getRowCount(realItemCount);
 
         final int column = position % columnCount;
         final int row = position / columnCount;
 
-        return (column * rowCount) + row;
+        int listIndex = (column * rowCount) + row;
+
+        if (listIndex >= realItemCount) {
+            listIndex = -1;
+        }
+
+        if (BuildConfig.DEBUG) {
+            Logger.d(TAG, "transpose",
+                     "realItemCount=" + realItemCount
+                     + ", rowCount=" + rowCount
+                     + ", position=" + position
+                     + ", column=" + column
+                     + ", row=" + row
+                     + ", listIndex=" + listIndex);
+        }
+        return listIndex;
     }
 
     protected int revert(final int listIndex) {
-        final int rowCount = getRowCount();
+        final int realItemCount = getRealItemCount();
+        final int rowCount = getRowCount(realItemCount);
 
         final int column = listIndex % rowCount;
         final int row = listIndex / rowCount;
 
-        return (column * columnCount) + row;
+        final int position = (column * columnCount) + row;
+
+        if (BuildConfig.DEBUG) {
+            Logger.d(TAG, "revert",
+                     "listIndex=" + listIndex
+                     + ", position=" + position);
+        }
+        return position;
     }
 
-    private int getRowCount() {
-        final int itemCount = getItemCount();
+
+    protected int getRowCount(final int realItemCount) {
         final int rowCount;
-        if (itemCount % columnCount != 0) {
-            rowCount = (itemCount / columnCount) + 1;
+        if (realItemCount % columnCount != 0) {
+            rowCount = (realItemCount / columnCount) + 1;
         } else {
-            rowCount = itemCount / columnCount;
+            rowCount = realItemCount / columnCount;
         }
         return rowCount;
+    }
+
+    /**
+     * Acts like the original getItemCount() method.
+     *
+     * @return the actual item count
+     */
+    protected abstract int getRealItemCount();
+
+    /**
+     * Return the <strong>CELL COUNT</strong> for the grid.
+     *
+     * @return cell count
+     */
+    @Override
+    public int getItemCount() {
+        final int itemCount = getRealItemCount();
+        final int rowCount = getRowCount(itemCount);
+        return rowCount * columnCount;
     }
 }

@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
+import com.hardbacknutter.nevertoomanybooks.widgets.GridDividerItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.widgets.MultiColumnRecyclerViewAdapter;
 
 /**
@@ -158,11 +159,15 @@ public class SearchBookUpdatesFragment
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> prepareUpdate());
 
+        //URGENT: MaterialDividerItemDecoration should not draw at far-right.
+        //noinspection ConstantConditions
+        final GridDividerItemDecoration columnDivider =
+                new GridDividerItemDecoration(getContext(), false, true);
+        vb.fieldList.addItemDecoration(columnDivider);
         vb.fieldList.setHasFixedSize(true);
         initAdapter();
 
         if (savedInstanceState == null) {
-            //noinspection ConstantConditions
             TipManager.getInstance()
                       .display(getContext(), R.string.tip_update_fields_from_internet, () ->
                               Site.promptToRegister(getContext(), vm.getSiteList(),
@@ -355,7 +360,10 @@ public class SearchBookUpdatesFragment
             holder.vb.cbxUsage.setOnClickListener(v -> {
                 final int position = holder.getBindingAdapterPosition();
                 final int listIndex = transpose(position);
-
+                if (listIndex == -1) {
+                    // Should never get here
+                    throw new IllegalStateException("ListIndex is -1 for position=" + position);
+                }
                 final SyncField fs = syncFields[listIndex];
                 fs.nextState();
                 hVb.cbxUsage.setChecked(fs.getAction() != SyncAction.Skip);
@@ -369,15 +377,22 @@ public class SearchBookUpdatesFragment
                                      final int position) {
 
             final int listIndex = transpose(position);
-            final SyncField syncField = syncFields[listIndex];
+            if (listIndex >= 0) {
+                final SyncField syncField = syncFields[listIndex];
 
-            holder.vb.field.setText(syncField.getFieldLabel());
-            holder.vb.cbxUsage.setChecked(syncField.getAction() != SyncAction.Skip);
-            holder.vb.cbxUsage.setText(syncField.getActionLabelResId());
+                holder.vb.field.setVisibility(View.VISIBLE);
+                holder.vb.cbxUsage.setVisibility(View.VISIBLE);
+                holder.vb.field.setText(syncField.getFieldLabel());
+                holder.vb.cbxUsage.setChecked(syncField.getAction() != SyncAction.Skip);
+                holder.vb.cbxUsage.setText(syncField.getActionLabelResId());
+            } else {
+                holder.vb.field.setVisibility(View.INVISIBLE);
+                holder.vb.cbxUsage.setVisibility(View.INVISIBLE);
+            }
         }
 
         @Override
-        public int getItemCount() {
+        protected int getRealItemCount() {
             return syncFields.length;
         }
     }

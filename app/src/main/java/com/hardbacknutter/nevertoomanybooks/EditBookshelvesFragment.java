@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -40,7 +41,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.divider.MaterialDividerItemDecoration;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
+import com.hardbacknutter.nevertoomanybooks.widgets.GridDividerItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.widgets.MultiColumnRecyclerViewAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
 
@@ -156,8 +157,11 @@ public class EditBookshelvesFragment
         //noinspection ConstantConditions
         adapter = new BookshelfAdapter(getContext(), layoutManager.getSpanCount());
         adapter.registerAdapterDataObserver(adapterDataObserver);
-        vb.list.addItemDecoration(
-                new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
+
+        final GridDividerItemDecoration decoration =
+                new GridDividerItemDecoration(getContext(), false, true);
+        vb.list.addItemDecoration(decoration);
+
         vb.list.setHasFixedSize(true);
         vb.list.setAdapter(adapter);
     }
@@ -187,6 +191,7 @@ public class EditBookshelvesFragment
      *
      * @return {@code true} if handled.
      */
+    @SuppressLint("NotifyDataSetChanged")
     private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
                                        final int index) {
         final int itemId = menuItem.getItemId();
@@ -202,8 +207,8 @@ public class EditBookshelvesFragment
                 //noinspection ConstantConditions
                 StandardDialogs.deleteBookshelf(getContext(), bookshelf, () -> {
                     vm.deleteBookshelf(bookshelf);
-                    adapter.notifyItemRemoved(index);
-                    adapter.notifyItemChanged(vm.findAndSelect(index));
+                    // due to transposing row and columns, we MUST refresh the whole set.
+                    adapter.notifyDataSetChanged();
                 });
             } else {
                 //TODO: why not ? as long as we make sure there is another one left..
@@ -285,7 +290,10 @@ public class EditBookshelvesFragment
                 // store the newly selected row.
                 final int position = holder.getBindingAdapterPosition();
                 final int listIndex = transpose(position);
-
+                if (listIndex == -1) {
+                    // Should never get here
+                    throw new IllegalStateException("ListIndex is -1 for position=" + position);
+                }
                 vm.setSelectedPosition(listIndex);
                 // update the newly selected row.
                 notifyItemChanged(position);
@@ -299,7 +307,10 @@ public class EditBookshelvesFragment
 
                 final int position = holder.getBindingAdapterPosition();
                 final int listIndex = transpose(position);
-
+                if (listIndex == -1) {
+                    // Should never get here
+                    throw new IllegalStateException("ListIndex is -1 for position=" + position);
+                }
                 prepareMenu(popupMenu.getMenu(), position);
                 popupMenu.showAsDropDown(v, menuItem ->
                         onMenuItemSelected(menuItem, listIndex));
@@ -314,14 +325,19 @@ public class EditBookshelvesFragment
                                      final int position) {
 
             final int listIndex = transpose(position);
-            final Bookshelf bookshelf = vm.getBookshelf(listIndex);
+            if (listIndex >= 0) {
+                final Bookshelf bookshelf = vm.getBookshelf(listIndex);
 
-            holder.vb.name.setText(bookshelf.getName());
-            holder.itemView.setSelected(listIndex == vm.getSelectedPosition());
+                holder.vb.name.setVisibility(View.VISIBLE);
+                holder.vb.name.setText(bookshelf.getName());
+                holder.itemView.setSelected(listIndex == vm.getSelectedPosition());
+            } else {
+                holder.vb.name.setVisibility(View.INVISIBLE);
+            }
         }
 
         @Override
-        public int getItemCount() {
+        protected int getRealItemCount() {
             return vm.getList().size();
         }
     }
