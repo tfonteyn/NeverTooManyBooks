@@ -98,10 +98,9 @@ public class EditBookFieldsFragment
             };
 
     /** The scanner. */
-    private final ActivityResultLauncher<Fragment> scanLauncher = registerForActivityResult(
-            new ScannerContract(), o -> o.ifPresent(barCode -> {
-                vm.getBook().putString(DBKey.BOOK_ISBN, barCode);
-            }));
+    private final ActivityResultLauncher<Fragment> scanLauncher =
+            registerForActivityResult(new ScannerContract(), o -> o.ifPresent(
+                    barCode -> vm.getBook().putString(DBKey.BOOK_ISBN, barCode)));
 
     /** Delegate to handle cover replacement, rotation, etc. */
     private final CoverHandler[] coverHandler = new CoverHandler[2];
