@@ -33,13 +33,13 @@ buildscript {
         // both compile and target SDK
         sdkVersion = 32
 
-        desugar_version = '1.1.5'
+        desugar_version = '1.2.0'
         kotlin_version = '1.7.0'
 
         // https://developer.android.com/jetpack/androidx/versions
 
         // 1.6.0 requires Android 13 Developer Preview 2 SDK
-        androidx_activity_version = '1.5.0-rc01'
+        androidx_activity_version = '1.5.0'
 
         androidx_annotation_version = '1.4.0'
 
@@ -50,7 +50,7 @@ buildscript {
 
         androidx_constraintlayout_core_version = '1.0.3'
 
-        androidx_constraintlayout_version = '2.1.3'
+        androidx_constraintlayout_version = '2.1.4'
 
         androidx_coordinatorlayout_version = '1.2.0'
 
@@ -65,15 +65,15 @@ buildscript {
 
         androidx_exifinterface_version = '1.3.3'
 
-        androidx_fragment_version = '1.5.0-rc01'
+        androidx_fragment_version = '1.5.0'
 
         androidx_interpolator_version = '1.0.0'
 
-        androidx_lifecycle_version = '2.5.0-rc02'
+        androidx_lifecycle_version = '2.5.0'
 
         androidx_preference_version = '1.2.0'
 
-        androidx_recyclerview_version = '1.3.0-alpha02'
+        androidx_recyclerview_version = '1.3.0-beta01'
 
         androidx_viewpager2_version = '1.1.0-beta01'
 
@@ -95,7 +95,7 @@ buildscript {
         apache_commons_codec = '1.15'
 
         // https://github.com/ACRA/acra
-        acra_version = '5.9.3'
+        acra_version = '5.9.5'
 
         // https://github.com/mockito/mockito
         mockito_version = '4.6.1'
