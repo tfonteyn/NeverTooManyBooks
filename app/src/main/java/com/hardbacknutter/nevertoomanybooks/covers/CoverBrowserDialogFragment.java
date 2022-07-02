@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,10 +35,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.divider.MaterialDividerItemDecoration;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
@@ -134,13 +132,6 @@ public class CoverBrowserDialogFragment
                 requireArguments().getString(DBKey.TITLE), DBKey.TITLE);
         vb.toolbar.setSubtitle(bookTitle);
 
-        // LayoutManager is set in the layout xml
-        final LinearLayoutManager galleryLM = Objects.requireNonNull(
-                (LinearLayoutManager) vb.gallery.getLayoutManager(),
-                "Missing LinearLayoutManager");
-        //noinspection ConstantConditions
-        vb.gallery.addItemDecoration(
-                new MaterialDividerItemDecoration(getContext(), galleryLM.getOrientation()));
         galleryAdapter = new GalleryAdapter(vm.getGalleryDisplayExecutor());
         vb.gallery.setAdapter(galleryAdapter);
 
