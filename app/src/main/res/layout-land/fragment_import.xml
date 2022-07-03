@@ -22,7 +22,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/root_scroller"
     style="@style/TopNestedScroller"
     android:visibility="invisible"
     tools:context=".FragmentHostActivity"
