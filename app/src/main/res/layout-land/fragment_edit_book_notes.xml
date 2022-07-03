@@ -28,6 +28,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/TopNestedScroller"
     tools:viewBindingIgnore="true"
+    tools:context=".FragmentHostActivity"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
