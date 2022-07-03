@@ -31,7 +31,6 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         style="@style/TopCentered"
-        android:minWidth="700dp"
         >
 
         <!--suppress LongLine -->
@@ -76,7 +75,7 @@
             app:layout_constraintEnd_toStartOf="@id/middle"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintTop_toBottomOf="@id/archive_name"
-            tools:text="Created: May 26, 2022, 11:37 AM\nBooks: 123\nCovers: 456"
+            tools:text="May 26, 2022, 11:37 AM\nBooks: 123\nCovers: 456"
             />
 
         <androidx.constraintlayout.widget.Guideline

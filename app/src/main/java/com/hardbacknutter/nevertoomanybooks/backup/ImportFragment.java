@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -382,9 +382,7 @@ public class ImportFragment
 
             //noinspection ConstantConditions
             metaData.getCreatedLocalDate().ifPresent(date -> stats
-                    .add(getString(R.string.name_colon_value,
-                                   getString(R.string.lbl_created),
-                                   DateUtils.displayDateTime(getContext(), date))));
+                    .add(DateUtils.displayDateTime(getContext(), date)));
 
             metaData.getBookCount().ifPresent(count -> stats
                     .add(getString(R.string.name_colon_value,
