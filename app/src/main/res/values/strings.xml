@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -1583,12 +1583,6 @@
     <string name="X_lbl_select_style">Select Style</string>
 
     <string name="X_lbl_delete_book">Delete Book</string>
-
-    <string name="X_lbl_edit_author">Edit Author</string>
-    <string name="X_lbl_edit_series">Edit Series</string>
-    <string name="X_lbl_edit_publisher">Edit Publisher</string>
-    <string name="X_lbl_edit_toc_entry">Edit entry</string>
-    <string name="X_lbl_edit_bookshelf">Edit Bookshelf</string>
 
     <string name="X_lbl_clear_search_filters">Clear Filters</string>
 

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -479,9 +479,6 @@
     <string name="X_lbl_delete_book">Smazat knihu</string>
     <string name="lbl_details_have_changed">Podrobnosti se změnily</string>
     <string name="lbl_duplicate_book">Duplicitní kniha</string>
-    <string name="X_lbl_edit_author">Upravit autory</string>
-    <string name="X_lbl_edit_bookshelf">Upravit knihovnu</string>
-    <string name="X_lbl_edit_series">Upravit série</string>
     <string name="lbl_edit_style">Upravit styl</string>
     <string name="lbl_export_options">Vyberte, co bude exportováno.</string>
     <string name="lbl_import_books">Importovat knihy</string>
@@ -546,8 +543,6 @@
     <string name="lbl_all_bookshelves">Všechny knihovny</string>
     <string name="btn_more_ellipsis">Více…</string>
     <string name="lbl_toc_multiple_authors">Více autorů</string>
-    <string name="X_lbl_edit_publisher">Upravit vydavatele</string>
-    <string name="X_lbl_edit_toc_entry">Upravit záznam</string>
     <string name="action_discard">Zahodit</string>
     <string name="btn_show_list">Zobrazit seznam</string>
     <string name="btn_less_ellipsis">Méně…</string>

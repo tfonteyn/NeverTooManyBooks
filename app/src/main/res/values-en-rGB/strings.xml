@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -20,11 +20,11 @@
   -->
 
 <resources>
-    <string name="pt_search_reformat_color">Standardize “book colour” names</string>
     <string name="book_color_full_color">Coloured</string>
     <string name="book_color_support_color">Bicoloured</string>
     <string name="lbl_author_type_colorist">colourist</string>
     <string name="lbl_author_type_cover_colorist">Cover colourist</string>
     <string name="lbl_color">Colour</string>
+    <string name="pt_search_reformat_color">Standardize “book colour” names</string>
 
 </resources>
