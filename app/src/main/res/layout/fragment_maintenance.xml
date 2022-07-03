@@ -34,9 +34,7 @@
 
         <TextView
             android:id="@+id/header"
-            style="@style/Text.Header"
-            android:textColor="?attr/colorSecondary"
-            android:layout_marginStart="@dimen/preference_header_margin_start"
+            style="@style/Text.Header.PreferenceCategory"
             android:text="@string/pt_maintenance"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -94,8 +92,7 @@
 
         <TextView
             android:id="@+id/btn_debug"
-            style="@style/Text.Header"
-            android:layout_marginStart="@dimen/preference_header_margin_start"
+            style="@style/Text.Header.PreferenceCategory"
             android:text="@string/debug"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_rebuild_index"

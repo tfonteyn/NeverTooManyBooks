@@ -64,6 +64,10 @@
         <item name="android:textIsSelectable">true</item>
     </style>
 
+    <style name="Text.Header.PreferenceCategory">
+        <item name="android:layout_marginStart">@dimen/preference_header_margin_start</item>
+        <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
 
     <!-- *************************************************************************************** -->
     <!-- FAB buttons -->
