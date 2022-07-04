@@ -34,7 +34,7 @@
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginEnd="@dimen/bob_list_end_margin"
+        android:paddingEnd="@dimen/scrollbar_padding"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/booksonbookshelf_row_book_scale_2"

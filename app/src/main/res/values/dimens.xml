@@ -131,8 +131,10 @@
     <dimen name="bob_group_level_padding_start">8dp</dimen>
     <dimen name="bob_group_level_bullet_padding">4dp</dimen>
 
-    <!-- on larger screens we'll add an end-margin to allow easier scrolling. -->
-    <dimen name="bob_list_end_margin">2dp</dimen>
+    <!-- on larger screens we'll add a paddingEnd to allow easier scrolling.
+         The width of the scrollbar "android.R.attr.fastScrollTrackDrawable" is 8dp
+    -->
+    <dimen name="scrollbar_padding">2dp</dimen>
 
     <!-- The text size (in sp units, but in float notation) for all text in a book list row. -->
     <array name="bob_text_size_in_sp">
