@@ -25,8 +25,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.TextView;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,35 +35,46 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.fastscroller.FastScroller;
+import com.hardbacknutter.nevertoomanybooks.databinding.RowAuthorWorkBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 public abstract class TocBaseAdapter
-        extends RecyclerView.Adapter<TocBaseAdapter.TocHolder>
+        extends RecyclerView.Adapter<TocBaseAdapter.Holder>
         implements FastScroller.PopupTextProvider {
 
     /** Cached inflater. */
+    @NonNull
     protected final LayoutInflater inflater;
     @NonNull
-    protected final List<AuthorWork> authorWorkList;
+    protected final List<AuthorWork> works;
+    @Nullable
+    private final Author mainAuthor;
+    @NonNull
     private final String bookStr;
+    @NonNull
     private final Drawable bookEntryIcon;
+    @NonNull
     private final String multipleBooksStr;
+    @NonNull
     private final Drawable tocEntryIcon;
 
     /**
      * Constructor.
      *
-     * @param context        Current context
-     * @param authorWorkList to show
+     * @param context    Current context
+     * @param mainAuthor the author who 'owns' the works list
+     * @param works      to show
      */
     @SuppressLint("UseCompatLoadingForDrawables")
     public TocBaseAdapter(@NonNull final Context context,
-                          @NonNull final List<AuthorWork> authorWorkList) {
+                          @Nullable final Author mainAuthor,
+                          @NonNull final List<AuthorWork> works) {
         inflater = LayoutInflater.from(context);
-        this.authorWorkList = authorWorkList;
+        this.mainAuthor = mainAuthor;
+        this.works = works;
 
         final Resources.Theme theme = context.getTheme();
         final Resources res = context.getResources();
@@ -77,17 +87,28 @@ public abstract class TocBaseAdapter
         tocEntryIcon = res.getDrawable(R.drawable.ic_baseline_library_books_24, theme);
     }
 
-    protected void initTypeButton(@NonNull final TocHolder holder,
-                                  final int viewType) {
-        final ImageButton btnType = holder.getIconBtnView();
+    @NonNull
+    @Override
+    public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                     final int viewType) {
+        final RowAuthorWorkBinding hVb = RowAuthorWorkBinding
+                .inflate(inflater, parent, false);
+        final Holder holder = new Holder(hVb);
+        initTypeButton(holder, viewType);
+
+        return holder;
+    }
+
+    private void initTypeButton(@NonNull final Holder holder,
+                                final int viewType) {
 
         if (viewType == AuthorWork.Type.TocEntry.value) {
-            btnType.setImageDrawable(tocEntryIcon);
-            btnType.setContentDescription(multipleBooksStr);
+            holder.vb.btnType.setImageDrawable(tocEntryIcon);
+            holder.vb.btnType.setContentDescription(multipleBooksStr);
 
-            btnType.setOnClickListener(v -> {
+            holder.vb.btnType.setOnClickListener(v -> {
                 final Context context = v.getContext();
-                final String titles = authorWorkList
+                final String titles = works
                         .get(holder.getBindingAdapterPosition())
                         .getBookTitles(context)
                         .stream()
@@ -95,35 +116,35 @@ public abstract class TocBaseAdapter
                                                      bt.getLabel(context)))
                         .collect(Collectors.joining("\n"));
                 final String msg = context.getString(R.string.lbl_story_in_multiple_books,
-                                                     holder.getTitleView().getText().toString(),
+                                                     holder.vb.title.getText().toString(),
                                                      titles);
                 // x/y offsets more or less arbitrary
-                StandardDialogs.infoPopup(btnType, 24, -160, msg);
+                StandardDialogs.infoPopup(holder.vb.btnType, 24, -160, msg);
             });
         } else {
             // AuthorWork.Type.Book
             // AuthorWork.Type.BookLight
-            btnType.setImageDrawable(bookEntryIcon);
-            btnType.setContentDescription(bookStr);
+            holder.vb.btnType.setImageDrawable(bookEntryIcon);
+            holder.vb.btnType.setContentDescription(bookStr);
         }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final TocHolder holder,
+    public void onBindViewHolder(@NonNull final Holder holder,
                                  final int position) {
 
         final Context context = inflater.getContext();
 
-        final AuthorWork work = authorWorkList.get(position);
+        final AuthorWork work = works.get(position);
 
         // No icon for TocEntry which appear in a single book
         if (work.getWorkType() == AuthorWork.Type.TocEntry && work.getBookCount() <= 1) {
-            holder.getIconBtnView().setVisibility(View.INVISIBLE);
+            holder.vb.btnType.setVisibility(View.INVISIBLE);
         } else {
-            holder.getIconBtnView().setVisibility(View.VISIBLE);
+            holder.vb.btnType.setVisibility(View.VISIBLE);
         }
 
-        holder.getTitleView().setText(work.getLabel(context));
+        holder.vb.title.setText(work.getLabel(context));
 
         final PartialDate date = work.getFirstPublicationDate();
         if (date.isPresent()) {
@@ -131,57 +152,49 @@ public abstract class TocBaseAdapter
             // cut the date to just the year.
             final String fp = context.getString(R.string.brackets,
                                                 String.valueOf(date.getYearValue()));
-            holder.getFirstPublicationView().setText(fp);
-            holder.getFirstPublicationView().setVisibility(View.VISIBLE);
+            holder.vb.year.setText(fp);
+            holder.vb.year.setVisibility(View.VISIBLE);
         } else {
-            holder.getFirstPublicationView().setVisibility(View.GONE);
+            holder.vb.year.setVisibility(View.GONE);
         }
 
-        final TextView authorView = holder.getAuthorView();
-        if (authorView != null) {
-            final Author author = work.getPrimaryAuthor();
-            if (author != null) {
-                authorView.setText(author.getLabel(inflater.getContext()));
-            }
+        final Author primaryAuthor = works.get(position).getPrimaryAuthor();
+        // only display a primary author for this work if its different
+        // from the main author
+        if (primaryAuthor != null && !primaryAuthor.equals(mainAuthor)) {
+            holder.vb.author.setVisibility(View.VISIBLE);
+            holder.vb.author.setText(primaryAuthor.getLabel(inflater.getContext()));
+        } else {
+            holder.vb.author.setVisibility(View.GONE);
         }
     }
 
     @Override
     public int getItemViewType(final int position) {
-        final AuthorWork work = authorWorkList.get(position);
+        final AuthorWork work = works.get(position);
         return work.getWorkType().value;
     }
 
     @Override
     public int getItemCount() {
-        return authorWorkList.size();
+        return works.size();
     }
 
     @NonNull
     @Override
     public String[] getPopupText(final int position) {
-        return new String[]{authorWorkList.get(position).getLabel(inflater.getContext())};
+        return new String[]{works.get(position).getLabel(inflater.getContext())};
     }
 
-    public abstract static class TocHolder
+    public static class Holder
             extends RecyclerView.ViewHolder {
 
-        public TocHolder(@NonNull final View itemView) {
-            super(itemView);
-        }
-
         @NonNull
-        public abstract ImageButton getIconBtnView();
+        public final RowAuthorWorkBinding vb;
 
-        @NonNull
-        public abstract TextView getTitleView();
-
-        @NonNull
-        public abstract TextView getFirstPublicationView();
-
-        @Nullable
-        public TextView getAuthorView() {
-            return null;
+        public Holder(@NonNull final RowAuthorWorkBinding vb) {
+            super(vb.getRoot());
+            this.vb = vb;
         }
     }
 }

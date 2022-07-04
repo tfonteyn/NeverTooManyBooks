@@ -32,6 +32,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
@@ -41,9 +42,14 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 public class TocViewModel
         extends ViewModel {
 
+    private static final String TAG = "TocViewModel";
+    static final String BKEY_EMBEDDED = TAG + ":embedded";
+
     /** The list of TOC entries we're displaying. */
     @NonNull
     private final List<AuthorWork> works = new ArrayList<>();
+
+    private long bookId;
 
     @Nullable
     private String bookTitle;
@@ -51,30 +57,63 @@ public class TocViewModel
     @Nullable
     private String authors;
 
+    @Nullable
+    private Author primaryAuthor;
+    private boolean embedded;
+
+    /**
+     * Pseudo constructor.
+     * <p>
+     * In full-screen mode, we get all we need from the arguments.
+     * In embedded mode, we don't use any arguments,
+     * but rely on {@link #reload(Context, Book)} being called.
+     *
+     * @param context Current context
+     * @param args    Bundle with arguments
+     */
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args) {
         if (works.isEmpty()) {
+            embedded = args.getBoolean(BKEY_EMBEDDED, false);
+
+            bookId = args.getLong(DBKey.FK_BOOK, 0);
+            // optional, display purpose only
+            bookTitle = args.getString(DBKey.TITLE);
+
             final ArrayList<TocEntry> tocList = args.getParcelableArrayList(Book.BKEY_TOC_LIST);
             Objects.requireNonNull(tocList, Book.BKEY_TOC_LIST);
             works.addAll(tocList);
 
-            // optional, display purpose only
-            bookTitle = args.getString(DBKey.TITLE);
-            // optional, display purpose only
             final List<Author> authorList = args.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
-            if (authorList != null) {
+            if (authorList != null && !authorList.isEmpty()) {
                 authors = Author.getCondensedNames(context, authorList);
-                if (BuildConfig.DEBUG /* always */) {
-                    final long bookId = args.getLong(DBKey.FK_BOOK, 0);
-                    authors = "[" + bookId + "] " + authors;
-                }
+                primaryAuthor = authorList.get(0);
             }
         }
     }
 
-    public void reload(@NonNull final List<TocEntry> tocList) {
+    public boolean isEmbedded() {
+        return embedded;
+    }
+
+    public void reload(@NonNull final Context context,
+                       @NonNull final Book book) {
+        bookId = book.getId();
+        bookTitle = book.getTitle();
+
         works.clear();
-        works.addAll(tocList);
+        works.addAll(book.getToc());
+
+        final List<Author> authorList = book.getAuthors();
+        if (!authorList.isEmpty()) {
+            authors = Author.getCondensedNames(context, authorList);
+            primaryAuthor = authorList.get(0);
+        }
+    }
+
+    @Nullable
+    public Author getPrimaryAuthor() {
+        return primaryAuthor;
     }
 
     @NonNull
@@ -83,7 +122,7 @@ public class TocViewModel
     }
 
     @NonNull
-    public Optional<String> getAuthors() {
+    public Optional<String> getScreenTitle() {
         if (authors != null && !authors.isEmpty()) {
             return Optional.of(authors);
         } else {
@@ -92,11 +131,20 @@ public class TocViewModel
     }
 
     @NonNull
-    public Optional<String> getBookTitle() {
+    public Optional<String> getScreenSubtitle() {
         if (bookTitle != null && !bookTitle.isEmpty()) {
-            return Optional.of(bookTitle);
+            if (BuildConfig.DEBUG /* always */) {
+                return Optional.of("[" + bookId + "] " + bookTitle);
+            } else {
+                return Optional.of(bookTitle);
+            }
         } else {
             return Optional.empty();
         }
+    }
+
+    @NonNull
+    ArrayList<Long> getBookIds(@NonNull final TocEntry tocEntry) {
+        return ServiceLocator.getInstance().getTocEntryDao().getBookIds(tocEntry.getId());
     }
 }

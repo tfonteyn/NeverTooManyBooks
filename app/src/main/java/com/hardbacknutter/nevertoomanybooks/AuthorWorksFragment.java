@@ -32,8 +32,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -55,9 +53,9 @@ import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
-import com.hardbacknutter.nevertoomanybooks.databinding.RowAuthorWorkBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -169,7 +167,7 @@ public class AuthorWorksFragment
         final int overlayType = Prefs.getFastScrollerOverlayType(context);
         FastScroller.attach(worksListView, overlayType);
 
-        adapter = new TocAdapter(context, vm.getWorks());
+        adapter = new TocAdapter(context, vm.getAuthor(), vm.getWorks());
         adapter.registerAdapterDataObserver(adapterDataObserver);
         worksListView.setAdapter(adapter);
 
@@ -281,39 +279,6 @@ public class AuthorWorksFragment
         }
     }
 
-    /**
-     * Row ViewHolder for {@link TocAdapter}.
-     */
-    private static class Holder
-            extends TocBaseAdapter.TocHolder {
-
-        @NonNull
-        private final RowAuthorWorkBinding vb;
-
-        Holder(@NonNull final RowAuthorWorkBinding vb) {
-            super(vb.getRoot());
-            this.vb = vb;
-        }
-
-        @NonNull
-        @Override
-        public ImageButton getIconBtnView() {
-            return vb.btnType;
-        }
-
-        @NonNull
-        @Override
-        public TextView getTitleView() {
-            return vb.title;
-        }
-
-        @NonNull
-        @Override
-        public TextView getFirstPublicationView() {
-            return vb.year;
-        }
-    }
-
     private class ToolbarMenuProvider
             implements MenuProvider {
 
@@ -382,23 +347,21 @@ public class AuthorWorksFragment
         /**
          * Constructor.
          *
-         * @param context Current context
-         * @param tocList to show
+         * @param context     Current context
+         * @param worksAuthor the author who 'owns' the works list
+         * @param tocList     to show
          */
-        @SuppressLint("UseCompatLoadingForDrawables")
         TocAdapter(@NonNull final Context context,
+                   @NonNull final Author worksAuthor,
                    @NonNull final List<AuthorWork> tocList) {
-            super(context, tocList);
+            super(context, worksAuthor, tocList);
         }
 
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final RowAuthorWorkBinding hVb = RowAuthorWorkBinding
-                    .inflate(inflater, parent, false);
-            final Holder holder = new Holder(hVb);
-            initTypeButton(holder, viewType);
+            final Holder holder = super.onCreateViewHolder(parent, viewType);
 
             // click -> get the book(s) for that entry and display.
             holder.itemView.setOnClickListener(v -> gotoBook(holder.getBindingAdapterPosition()));

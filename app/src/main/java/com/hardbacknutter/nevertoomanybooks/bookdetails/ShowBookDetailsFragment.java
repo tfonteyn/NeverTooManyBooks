@@ -485,7 +485,7 @@ public class ShowBookDetailsFragment
         } else {
             showTocBtn.setVisibility(View.VISIBLE);
             showTocBtn.setOnClickListener(v -> {
-                final Fragment fragment = TocFragment.create(book);
+                final Fragment fragment = TocFragment.create(book, false);
                 // yes, it must be the Activity FragmentManager,
                 // as that is where the R.id.main_fragment View is located.
                 //noinspection ConstantConditions
@@ -515,12 +515,12 @@ public class ShowBookDetailsFragment
 
             Fragment fragment = fm.findFragmentByTag(TocFragment.TAG);
             if (fragment == null) {
-                fragment = TocFragment.createEmbedded(tocList);
+                fragment = TocFragment.create(book, true);
                 fm.beginTransaction()
                   .replace(R.id.toc_frame, fragment, TocFragment.TAG)
                   .commit();
             } else {
-                ((TocFragment) fragment).reload(tocList);
+                ((TocFragment) fragment).reload(book);
             }
         }
     }

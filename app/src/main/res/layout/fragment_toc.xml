@@ -47,7 +47,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_toc"
-        tools:listitem="@layout/row_toc_entry"
+        tools:itemCount="20"
+        tools:listitem="@layout/row_author_work"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

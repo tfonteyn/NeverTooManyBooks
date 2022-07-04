@@ -29,8 +29,8 @@
     >
 
     <!-- "invisible" by default (NOT 'gone' as we want the space allocated)
-    hence we also set the minWidth == minHeight of the row
- -->
+        hence we also set the minWidth == minHeight of the row
+     -->
     <ImageButton
         android:id="@+id/btn_type"
         android:layout_width="wrap_content"
@@ -51,8 +51,8 @@
         android:id="@+id/title"
         style="@style/Field.BookTitle"
         android:textIsSelectable="false"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/year"
+        app:layout_constraintBottom_toTopOf="@id/author"
         app:layout_constraintStart_toEndOf="@id/btn_type"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@sample/data.json/book/title"

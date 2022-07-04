@@ -134,6 +134,16 @@ public class AuthorWorksViewModel
         allBookshelves = all;
     }
 
+    /**
+     * Get the author.
+     *
+     * @return author
+     */
+    @NonNull
+    public Author getAuthor() {
+        return author;
+    }
+
     @NonNull
     ArrayList<AuthorWork> getWorks() {
         // used directly by the adapter

@@ -21,13 +21,14 @@ package com.hardbacknutter.nevertoomanybooks.bookdetails;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,16 +43,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.fastscroller.FastScroller;
-import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
+import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
+import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelfViewModel;
 import com.hardbacknutter.nevertoomanybooks.TocBaseAdapter;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
+import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentTocBinding;
-import com.hardbacknutter.nevertoomanybooks.databinding.RowTocEntryBinding;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
 
 public class TocFragment
         extends BaseFragment {
@@ -62,41 +67,27 @@ public class TocFragment
     private FragmentTocBinding vb;
 
     private TocViewModel vm;
+    private ShowBookDetailsActivityViewModel aVm;
+
+
+    /** Display a Book. */
+    private final ActivityResultLauncher<ShowBookPagerContract.Input> displayBookLauncher =
+            registerForActivityResult(new ShowBookPagerContract(), o -> o.ifPresent(
+                    data -> aVm.updateFragmentResult(data)));
 
     /** The Adapter. */
     private TocAdapter adapter;
 
-    /**
-     * In embedded mode, we just need/display the list itself.
-     *
-     * @param toc list
-     *
-     * @return new instance
-     */
     @NonNull
-    public static Fragment createEmbedded(@NonNull final List<TocEntry> toc) {
+    public static Fragment create(@NonNull final Book book,
+                                  final boolean embedded) {
         final Fragment fragment = new TocFragment();
-        final Bundle args = new Bundle(1);
-        args.putParcelableArrayList(Book.BKEY_TOC_LIST, new ArrayList<>(toc));
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    /**
-     * In full screen mode, we display the authors and book title as the Toolbar title/subtitle
-     *
-     * @param book for Toolbar info display
-     *
-     * @return new instance
-     */
-    @NonNull
-    public static Fragment create(@NonNull final Book book) {
-        final Fragment fragment = new TocFragment();
-        final Bundle args = new Bundle(4);
+        final Bundle args = new Bundle(5);
+        args.putBoolean(TocViewModel.BKEY_EMBEDDED, embedded);
+        args.putLong(DBKey.FK_BOOK, book.getId());
+        args.putString(DBKey.TITLE, book.getTitle());
         args.putParcelableArrayList(Book.BKEY_TOC_LIST, new ArrayList<>(book.getToc()));
         args.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, new ArrayList<>(book.getAuthors()));
-        args.putString(DBKey.TITLE, book.getTitle());
-        args.putLong(DBKey.FK_BOOK, book.getId());
         fragment.setArguments(args);
         return fragment;
     }
@@ -104,6 +95,9 @@ public class TocFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //noinspection ConstantConditions
+        aVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
 
         vm = new ViewModelProvider(this).get(TocViewModel.class);
         //noinspection ConstantConditions
@@ -135,61 +129,67 @@ public class TocFragment
         final int overlayType = Prefs.getFastScrollerOverlayType(context);
         FastScroller.attach(vb.toc, overlayType);
 
-        adapter = new TocAdapter(context, vm.getWorks());
+        adapter = new TocAdapter(context, vm.getPrimaryAuthor(), vm.getWorks());
         vb.toc.setAdapter(adapter);
         vb.toc.setHasFixedSize(true);
 
-        // Author/Book-title are only present when this fragment is full-screen
-        final Toolbar toolbar = getToolbar();
-        vm.getAuthors().ifPresent(toolbar::setTitle);
-        vm.getBookTitle().ifPresent(toolbar::setSubtitle);
+        if (!vm.isEmbedded()) {
+            final Toolbar toolbar = getToolbar();
+            vm.getScreenTitle().ifPresent(toolbar::setTitle);
+            vm.getScreenSubtitle().ifPresent(toolbar::setSubtitle);
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void reload(@NonNull final List<TocEntry> tocList) {
-        vm.reload(tocList);
+    public void reload(@NonNull final Book book) {
+        //noinspection ConstantConditions
+        vm.reload(getContext(), book);
         adapter.notifyDataSetChanged();
     }
 
-    /**
-     * Row ViewHolder for {@link AuthorWorksFragment.TocAdapter}.
-     */
-    private static class Holder
-            extends TocBaseAdapter.TocHolder {
+    private void gotoBook(final int position) {
+        final AuthorWork work = vm.getWorks().get(position);
 
-        @NonNull
-        private final RowTocEntryBinding vb;
+        switch (work.getWorkType()) {
+            case TocEntry: {
+                final TocEntry tocEntry = (TocEntry) work;
+                final ArrayList<Long> bookIdList = vm.getBookIds(tocEntry);
+                if (bookIdList.size() == 1) {
+                    displayBookLauncher.launch(new ShowBookPagerContract.Input(
+                            bookIdList.get(0), aVm.getStyle().getUuid(), null, 0));
 
-        Holder(@NonNull final RowTocEntryBinding vb) {
-            super(vb.getRoot());
-            this.vb = vb;
-        }
+                } else {
+                    // multiple books, open the list as a NEW ACTIVITY
+                    final Intent intent = new Intent(getContext(), BooksOnBookshelf.class)
+                            .putExtra(Book.BKEY_BOOK_ID_LIST, ParcelUtils.wrap(bookIdList))
+                            // Open the list expanded, as otherwise you end up with
+                            // the author as a single line, and no books shown at all,
+                            // which can be quite confusing to the user.
+                            .putExtra(BooksOnBookshelfViewModel.BKEY_LIST_STATE,
+                                      (Parcelable) RebuildBooklist.Expanded);
 
-        @NonNull
-        @Override
-        public ImageButton getIconBtnView() {
-            return vb.btnType;
-        }
+                    //TODO: see AuthorWorksFragment
+//                    if (vm.isAllBookshelves()) {
+//                        intent.putExtra(BooksOnBookshelfViewModel.BKEY_BOOKSHELF,
+//                                        Bookshelf.ALL_BOOKS);
+//                    }
+                    startActivity(intent);
+                }
+                break;
+            }
+            case Book:
+            case BookLight: {
+                displayBookLauncher.launch(new ShowBookPagerContract.Input(
+                        work.getId(), aVm.getStyle().getUuid(), null, 0));
 
-        @NonNull
-        @Override
-        public TextView getTitleView() {
-            return vb.title;
-        }
-
-        @NonNull
-        @Override
-        public TextView getFirstPublicationView() {
-            return vb.year;
-        }
-
-        @NonNull
-        public TextView getAuthorView() {
-            return vb.author;
+                break;
+            }
+            default:
+                throw new IllegalArgumentException(String.valueOf(work));
         }
     }
 
-    private static class TocAdapter
+    private class TocAdapter
             extends TocBaseAdapter {
 
         /**
@@ -198,10 +198,10 @@ public class TocFragment
          * @param context Current context.
          * @param tocList to show
          */
-        @SuppressLint("UseCompatLoadingForDrawables")
         TocAdapter(@NonNull final Context context,
+                   @Nullable final Author primaryAuthor,
                    @NonNull final List<AuthorWork> tocList) {
-            super(context, tocList);
+            super(context, primaryAuthor, tocList);
         }
 
         @NonNull
@@ -209,10 +209,11 @@ public class TocFragment
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
 
-            final RowTocEntryBinding hVb = RowTocEntryBinding
-                    .inflate(inflater, parent, false);
-            final Holder holder = new Holder(hVb);
-            initTypeButton(holder, viewType);
+            final Holder holder = super.onCreateViewHolder(parent, viewType);
+
+            //URGENT TEST
+            // click -> get the book(s) for that entry and display.
+            //holder.itemView.setOnClickListener(v -> gotoBook(holder.getBindingAdapterPosition()));
 
             return holder;
         }
