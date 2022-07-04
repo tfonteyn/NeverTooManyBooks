@@ -24,7 +24,6 @@
     <dimen name="progress_width">340dp</dimen>
 
     <dimen name="top_centered_min_width">600dp</dimen>
-    <dimen name="top_centered_max_width">800dp</dimen>
 
     <!-- fixed width TIL fields -->
     <dimen name="til_fixed_width_year">120dp</dimen>

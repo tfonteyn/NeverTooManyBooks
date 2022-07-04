@@ -223,7 +223,7 @@
     <style name="Button.InfoPopup" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:layout_marginStart">8dp</item>
         <item name="android:padding">4dp</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:src">@drawable/ic_baseline_info_24</item>
@@ -295,11 +295,10 @@
 
     <!-- ConstraintLayout -->
     <style name="TopCentered">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:layout_margin">@dimen/container_margin</item>
-        <item name="android:minWidth">@dimen/top_centered_min_width</item>
         <item name="android:maxWidth">@dimen/top_centered_max_width</item>
     </style>
 

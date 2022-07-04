@@ -31,7 +31,6 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         style="@style/TopCentered"
-        android:minWidth="800dp"
         >
 
         <androidx.constraintlayout.widget.Guideline

@@ -30,6 +30,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         style="@style/TopCentered"
+        android:maxWidth="600dp"
         >
 
         <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
