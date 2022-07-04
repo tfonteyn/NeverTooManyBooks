@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,8 +30,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * This is the glue class which hooks up the RecyclerView with the actual
- * FastScroller implementation and an optional Overlay provider.
+ * This is the glue class which hooks up the {@link RecyclerView} with the actual
+ * {@link FastScrollerImpl} and an optional {@link OverlayProvider).
  * <p>
  * Fast scroll drag bar height too short when there are lots of items in the recyclerview.
  * <a href="https://issuetracker.google.com/issues/64729576">64729576</a>
@@ -40,6 +40,13 @@ import androidx.recyclerview.widget.RecyclerView;
  * <a href="https://stackoverflow.com/questions/47846873">
  * recyclerview-fast-scroll-thumb-height-too-small-for-large-data-set</a>
  * <p>
+ * <strong>IMPORTANT:</strong>
+ *     <ul>
+ *     <li>{@code  android:scrollbarSize} is ignored!
+ *     Instead the size of the passed {@code Drawable} is used.</li>
+ *      <li>{@code android:scrollbarStyle} is ignored!
+ *      Instead set {@code padding} sufficiently large to contain the scrollbar</li>
+ *     </ul>
  * <p>
  * <p>
  * ENHANCE: move the dimen settings to a declarable style,
