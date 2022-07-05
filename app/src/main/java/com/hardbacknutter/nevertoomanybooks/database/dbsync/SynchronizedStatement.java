@@ -24,7 +24,6 @@ import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -55,8 +54,6 @@ public class SynchronizedStatement
     private final SQLiteStatement statement;
     /** Indicates this is a 'read-only' statement. */
     private final boolean readOnly;
-    /** DEBUG: Indicates close() has been called. Also see {@link Closeable#close()}. */
-    private boolean closeWasCalled;
 
     /**
      * Constructor. Do not use directly!
@@ -190,7 +187,6 @@ public class SynchronizedStatement
      */
     @Override
     public void close() {
-        closeWasCalled = true;
         statement.close();
     }
 
@@ -252,6 +248,7 @@ public class SynchronizedStatement
      * @throws SQLiteDoneException if the query returns zero rows
      * @see #simpleQueryForStringOrNull()
      */
+    @SuppressWarnings("unused")
     @NonNull
     public String simpleQueryForString()
             throws SQLiteDoneException {
@@ -369,25 +366,7 @@ public class SynchronizedStatement
     public String toString() {
         return "SynchronizedStatement{"
                + ", readOnly=" + readOnly
-               + ", closeWasCalled=" + closeWasCalled
                + ", statement=" + statement.toString()
                + '}';
-    }
-
-    /**
-     * DEBUG: if we see the warn in the logs, we know we have an issue to fix.
-     */
-    @SuppressWarnings("FinalizeDeclaration")
-    @Override
-    @CallSuper
-    protected void finalize()
-            throws Throwable {
-        if (!closeWasCalled && statement != null) {
-            if (BuildConfig.DEBUG /* always */) {
-                Logger.w(TAG, "finalize|statement=" + statement);
-            }
-            statement.close();
-        }
-        super.finalize();
     }
 }
