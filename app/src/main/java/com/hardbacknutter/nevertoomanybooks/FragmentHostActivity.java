@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,11 +42,13 @@ public class FragmentHostActivity
     private static final String BKEY_ACTIVITY = TAG + ":a";
     private static final String BKEY_FRAGMENT_CLASS = TAG + ":f";
 
+    @NonNull
     public static Intent createIntent(@NonNull final Context context,
                                       @NonNull final Class<? extends Fragment> fragmentClass) {
         return createIntent(context, R.layout.activity_main, fragmentClass);
     }
 
+    @NonNull
     public static Intent createIntent(@NonNull final Context context,
                                       @LayoutRes final int activityLayoutId,
                                       @NonNull final Class<? extends Fragment> fragmentClass) {
