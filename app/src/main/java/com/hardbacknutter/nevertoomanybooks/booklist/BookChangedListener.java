@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,6 +36,12 @@ public interface BookChangedListener {
      */
     void onBookUpdated(@NonNull Book book,
                        @Nullable String... keys);
+
+    // future enhancement
+    default void onBookUpdated(final long bookId,
+                               @Nullable final String... keys) {
+
+    }
 
     /**
      * React to a book having been deleted.

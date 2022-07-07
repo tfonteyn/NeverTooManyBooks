@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,9 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 public class TocViewModel
         extends ViewModel {
 
-    private static final String TAG = "TocViewModel";
-    static final String BKEY_EMBEDDED = TAG + ":embedded";
-
     /** The list of TOC entries we're displaying. */
     @NonNull
     private final List<AuthorWork> works = new ArrayList<>();
@@ -74,7 +71,7 @@ public class TocViewModel
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args) {
         if (works.isEmpty()) {
-            embedded = args.getBoolean(BKEY_EMBEDDED, false);
+            embedded = args.getBoolean(TocFragment.BKEY_EMBEDDED, false);
 
             bookId = args.getLong(DBKey.FK_BOOK, 0);
             // optional, display purpose only
@@ -109,6 +106,10 @@ public class TocViewModel
             authors = Author.getCondensedNames(context, authorList);
             primaryAuthor = authorList.get(0);
         }
+    }
+
+    public long getBookId() {
+        return bookId;
     }
 
     @Nullable

@@ -1487,6 +1487,7 @@ public class BooksOnBookshelf
             if (fragment != null) {
                 getSupportFragmentManager()
                         .beginTransaction()
+                        .setReorderingAllowed(true)
                         .remove(fragment)
                         .commit();
             }
@@ -1752,6 +1753,7 @@ public class BooksOnBookshelf
             fragment = ShowBookDetailsFragment.create(
                     bookId, vm.getStyle(this).getUuid(), true);
             fm.beginTransaction()
+              .setReorderingAllowed(true)
               .replace(R.id.details_frame, fragment, ShowBookDetailsFragment.TAG)
               .commit();
         } else {

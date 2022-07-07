@@ -59,7 +59,6 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
@@ -79,15 +78,16 @@ import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
-import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 
 /**
  * This Fragment is always hosted inside another Fragment.
  * <ul>
- * <li>{@link #embedded} == {@code false} ==> {@link ShowBookPagerFragment}</li>
- * <li>{@link #embedded} == {@code true} ==> {@link BooksOnBookshelf}</li>
+ * <li>{@link ShowBookDetailsViewModel#isEmbedded()} == {@code false}
+ *      ==> {@link ShowBookPagerFragment}</li>
+ * <li>{@link ShowBookDetailsViewModel#isEmbedded()} == {@code true}
+ *      ==> {@link BooksOnBookshelf}</li>
  * </ul>
  * <p>
  * Hence there is NO OnBackPressedCallback in this Fragment.
@@ -102,7 +102,7 @@ public class ShowBookDetailsFragment
      * Whether to run this fragment in embedded mode (i.e. inside a frame on the BoB screen).
      * We could (should?) use a boolean resource in "sw800-land" instead.
      */
-    private static final String BKEY_EMBEDDED = TAG + ":emb";
+    static final String BKEY_EMBEDDED = TAG + ":emb";
 
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_LENDER = TAG + ":rk:" + EditLenderDialogFragment.TAG;
@@ -143,8 +143,6 @@ public class ShowBookDetailsFragment
                 }
             };
 
-    private boolean embedded;
-
     @NonNull
     public static Fragment create(@IntRange(from = 1) final long bookId,
                                   @NonNull final String styleUuid,
@@ -173,15 +171,13 @@ public class ShowBookDetailsFragment
 
         final Bundle args = requireArguments();
 
-        // embedded = getResources().getBoolean(R.bool.book_details_embedded)
-        embedded = args.getBoolean(BKEY_EMBEDDED, false);
-
         //noinspection ConstantConditions
         aVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
-        aVm.init(getActivity(), args);
+        //noinspection ConstantConditions
+        aVm.init(getContext(), args);
 
         vm = new ViewModelProvider(this).get(ShowBookDetailsViewModel.class);
-        vm.init(args);
+        vm.init(getContext(), args, aVm.getStyle());
 
         editLenderLauncher.registerForFragmentResult(getChildFragmentManager(), RK_EDIT_LENDER,
                                                      this);
@@ -202,7 +198,7 @@ public class ShowBookDetailsFragment
         super.onViewCreated(view, savedInstanceState);
 
         // update all Fields with their current View instances
-        aVm.getFields().forEach(field -> field.setParentView(view));
+        vm.getFields().forEach(field -> field.setParentView(view));
 
         // Popup the search widget when the user starts to type.
         //noinspection ConstantConditions
@@ -216,7 +212,7 @@ public class ShowBookDetailsFragment
 
         vm.onBookLoaded().observe(getViewLifecycleOwner(), this::onBindBook);
 
-        final Field<Boolean, CheckBox> cbxRead = aVm.requireField(R.id.read);
+        final Field<Boolean, CheckBox> cbxRead = vm.requireField(R.id.read);
         cbxRead.requireView().setOnClickListener(v -> toggleReadStatus());
     }
 
@@ -292,10 +288,12 @@ public class ShowBookDetailsFragment
      */
     private void onBookEditFinished(@NonNull final EditBookOutput data) {
         if (data.modified) {
+            // needed when running inside the ViewPager
             aVm.updateFragmentResult();
 
             vm.reloadBook();
 
+            // needed when running in embedded mode
             if (bookChangedListener != null) {
                 bookChangedListener.onBookUpdated(vm.getBook(), (String) null);
             }
@@ -321,9 +319,9 @@ public class ShowBookDetailsFragment
         final boolean read = book.toggleRead();
         aVm.updateFragmentResult();
 
-        aVm.requireField(R.id.read).setValue(read);
+        vm.requireField(R.id.read).setValue(read);
 
-        aVm.getField(R.id.read_end).ifPresent(f -> {
+        vm.getField(R.id.read_end).ifPresent(f -> {
             //noinspection unchecked
             final Field<String, TextView> field = (Field<String, TextView>) f;
 
@@ -339,61 +337,62 @@ public class ShowBookDetailsFragment
         }
     }
 
-    private void onBindBook(@NonNull final LiveDataEvent<Book> message) {
-        message.getData().ifPresent(book -> {
-            // The menu is entirely dependent on the book we're displaying
-            final Toolbar toolbar = getToolbar();
-            if (toolbarMenuProvider != null) {
-                toolbar.removeMenuProvider(toolbarMenuProvider);
-            }
-            toolbarMenuProvider = new ToolbarMenuProvider();
-            toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner(),
-                                    Lifecycle.State.RESUMED);
+    // Dev. Note: this will get called FOR EACH fragment currently existing
+    // in the ViewPager ... so ALSO for the fragments off-screen.
+    // DO NOT use a LiveDataEvent !
+    private void onBindBook(@NonNull final Book book) {
+        // The menu is entirely dependent on the book we're displaying
+        final Toolbar toolbar = getToolbar();
+        if (toolbarMenuProvider != null) {
+            toolbar.removeMenuProvider(toolbarMenuProvider);
+        }
+        toolbarMenuProvider = new ToolbarMenuProvider();
+        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner(),
+                                Lifecycle.State.RESUMED);
 
-            if (!embedded) {
-                //noinspection ConstantConditions
-                toolbar.setTitle(Author.getCondensedNames(getContext(), book.getAuthors()));
-
-                String title = book.getString(DBKey.TITLE);
-                if (BuildConfig.DEBUG /* always */) {
-                    title = "[" + book.getId() + "] " + title;
-                }
-                toolbar.setSubtitle(title);
-            }
-
-            final List<Field<?, ? extends View>> fields = aVm.getFields();
-
-            // do NOT call notifyIfChanged, as this is the initial load
-            fields.stream()
-                  .filter(Field::isAutoPopulated)
-                  .forEach(field -> field.setInitialValue(book));
-
-            bindCoverImages();
-            bindLoanee(book);
-            bindToc(book);
-
+        if (!vm.isEmbedded()) {
             //noinspection ConstantConditions
-            fields.forEach(field -> field.setVisibility(getView(), true, false));
+            toolbar.setTitle(Author.getCondensedNames(getContext(), book.getAuthors()));
 
-            // Hide the 'Edition' label if neither edition chips or print-run fields are shown
-            setSectionVisibility(R.id.lbl_edition,
-                                 R.id.edition,
-                                 R.id.print_run);
+            String title = book.getString(DBKey.TITLE);
+            if (BuildConfig.DEBUG /* always */) {
+                title = "[" + book.getId() + "] " + title;
+            }
+            toolbar.setSubtitle(title);
+        }
 
-            // Hide the 'Publication' label if none of the publishing fields are shown.
-            setSectionVisibility(R.id.lbl_publication,
-                                 R.id.publisher,
-                                 R.id.date_published,
-                                 R.id.price_listed,
-                                 R.id.format,
-                                 R.id.color,
-                                 R.id.language,
-                                 R.id.pages);
+        final List<Field<?, ? extends View>> fields = vm.getFields();
 
-            // All views should now have proper visibility set, so fix their focus order.
-            //noinspection ConstantConditions
-            ViewFocusOrder.fix(getView());
-        });
+        // do NOT call notifyIfChanged, as this is the initial load
+        fields.stream()
+              .filter(Field::isAutoPopulated)
+              .forEach(field -> field.setInitialValue(book));
+
+        bindCoverImages();
+        bindLoanee(book);
+        bindToc(book);
+
+        //noinspection ConstantConditions
+        fields.forEach(field -> field.setVisibility(getView(), true, false));
+
+        // Hide the 'Edition' label if neither edition chips or print-run fields are shown
+        setSectionVisibility(R.id.lbl_edition,
+                             R.id.edition,
+                             R.id.print_run);
+
+        // Hide the 'Publication' label if none of the publishing fields are shown.
+        setSectionVisibility(R.id.lbl_publication,
+                             R.id.publisher,
+                             R.id.date_published,
+                             R.id.price_listed,
+                             R.id.format,
+                             R.id.color,
+                             R.id.language,
+                             R.id.pages);
+
+        // All views should now have proper visibility set, so fix their focus order.
+        //noinspection ConstantConditions
+        ViewFocusOrder.fix(getView());
     }
 
     private void bindCoverImages() {
@@ -485,7 +484,7 @@ public class ShowBookDetailsFragment
         } else {
             showTocBtn.setVisibility(View.VISIBLE);
             showTocBtn.setOnClickListener(v -> {
-                final Fragment fragment = TocFragment.create(book, false);
+                final Fragment fragment = TocFragment.create(book, false, aVm.getStyle());
                 // yes, it must be the Activity FragmentManager,
                 // as that is where the R.id.main_fragment View is located.
                 //noinspection ConstantConditions
@@ -515,8 +514,9 @@ public class ShowBookDetailsFragment
 
             Fragment fragment = fm.findFragmentByTag(TocFragment.TAG);
             if (fragment == null) {
-                fragment = TocFragment.create(book, true);
+                fragment = TocFragment.create(book, true, aVm.getStyle());
                 fm.beginTransaction()
+                  .setReorderingAllowed(true)
                   .replace(R.id.toc_frame, fragment, TocFragment.TAG)
                   .commit();
             } else {
@@ -555,9 +555,9 @@ public class ShowBookDetailsFragment
             // duplicating is not supported from inside this fragment
             menu.findItem(R.id.MENU_BOOK_DUPLICATE).setVisible(false);
 
-            menu.findItem(R.id.MENU_SYNC_LIST_WITH_DETAILS).setVisible(embedded);
+            menu.findItem(R.id.MENU_SYNC_LIST_WITH_DETAILS).setVisible(vm.isEmbedded());
 
-            if (embedded) {
+            if (vm.isEmbedded()) {
                 MenuCompat.setGroupDividerEnabled(menu, true);
             } else {
                 //noinspection ConstantConditions
@@ -621,10 +621,17 @@ public class ShowBookDetailsFragment
                 return true;
 
             } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
+                // Must use the Activity fm as the current fragment could be hosted by
+                // ShowBookPagerFragment or embedded inside the BoB
                 //noinspection ConstantConditions
-                final Intent intent = FragmentHostActivity
-                        .createIntent(context, CalibrePreferencesFragment.class);
-                startActivity(intent);
+                getActivity().getSupportFragmentManager()
+                             .beginTransaction()
+                             .setReorderingAllowed(true)
+                             .addToBackStack(CalibrePreferencesFragment.TAG)
+                             .replace(R.id.main_fragment,
+                                      new CalibrePreferencesFragment(),
+                                      CalibrePreferencesFragment.TAG)
+                             .commit();
                 return true;
 
             } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
@@ -655,7 +662,7 @@ public class ShowBookDetailsFragment
             aVm.updateFragmentResult();
 
             bindLoanee(book);
-            if (embedded) {
+            if (vm.isEmbedded()) {
                 updateMenuLendingOptions(getToolbar().getMenu());
             }
 

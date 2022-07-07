@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,7 +48,9 @@ import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelfViewModel;
 import com.hardbacknutter.nevertoomanybooks.TocBaseAdapter;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
+import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentTocBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -62,6 +64,7 @@ public class TocFragment
         extends BaseFragment {
 
     public static final String TAG = "TocFragment";
+    static final String BKEY_EMBEDDED = TAG + ":emb";
 
     /** View Binding. */
     private FragmentTocBinding vb;
@@ -69,21 +72,31 @@ public class TocFragment
     private TocViewModel vm;
     private ShowBookDetailsActivityViewModel aVm;
 
+    /** Callback - used when we're running inside another component; e.g. the BoB. */
+    @Nullable
+    private BookChangedListener bookChangedListener;
 
-    /** Display a Book. */
+    /** Display a Book. From there the user could edit it... so we must propagate the result. */
     private final ActivityResultLauncher<ShowBookPagerContract.Input> displayBookLauncher =
             registerForActivityResult(new ShowBookPagerContract(), o -> o.ifPresent(
-                    data -> aVm.updateFragmentResult(data)));
+                    data -> {
+                        aVm.updateFragmentResult(data);
+                        if (bookChangedListener != null && data.modified) {
+                            bookChangedListener.onBookUpdated(vm.getBookId(), (String) null);
+                        }
+                    }));
 
     /** The Adapter. */
     private TocAdapter adapter;
 
     @NonNull
     public static Fragment create(@NonNull final Book book,
-                                  final boolean embedded) {
+                                  final boolean embedded,
+                                  @NonNull final Style style) {
         final Fragment fragment = new TocFragment();
-        final Bundle args = new Bundle(5);
-        args.putBoolean(TocViewModel.BKEY_EMBEDDED, embedded);
+        final Bundle args = new Bundle(6);
+        args.putBoolean(BKEY_EMBEDDED, embedded);
+        args.putString(DBKey.STYLE_UUID, style.getUuid());
         args.putLong(DBKey.FK_BOOK, book.getId());
         args.putString(DBKey.TITLE, book.getTitle());
         args.putParcelableArrayList(Book.BKEY_TOC_LIST, new ArrayList<>(book.getToc()));
@@ -93,15 +106,27 @@ public class TocFragment
     }
 
     @Override
+    public void onAttach(@NonNull final Context context) {
+        super.onAttach(context);
+
+        if (context instanceof BookChangedListener) {
+            bookChangedListener = (BookChangedListener) context;
+        }
+    }
+
+    @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        final Bundle args = requireArguments();
+
         //noinspection ConstantConditions
         aVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
+        //noinspection ConstantConditions
+        aVm.init(getContext(), args);
 
         vm = new ViewModelProvider(this).get(TocViewModel.class);
-        //noinspection ConstantConditions
-        vm.init(getContext(), requireArguments());
+        vm.init(getContext(), args);
     }
 
     @Override

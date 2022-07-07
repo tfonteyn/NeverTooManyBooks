@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,7 +73,8 @@ public class ShowBookPagerFragment
 
         //noinspection ConstantConditions
         aVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
-        aVm.init(getActivity(), args);
+        //noinspection ConstantConditions
+        aVm.init(getContext(), args);
 
         vm = new ViewModelProvider(this).get(ShowBookPagerViewModel.class);
         vm.init(args);
