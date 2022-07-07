@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -231,9 +231,16 @@ public class MaintenanceFragment
                     .show();
         });
 
-        vb.btnDebugSqShell.setOnClickListener(v -> replaceFragment(
-                SqliteShellFragment.create(debugSqLiteAllowsUpdates),
-                SqliteShellFragment.TAG));
+        vb.btnDebugSqShell.setOnClickListener(v -> {
+            getParentFragmentManager()
+                    .beginTransaction()
+                    .setReorderingAllowed(true)
+                    .addToBackStack(SqliteShellFragment.TAG)
+                    .replace(R.id.main_fragment,
+                             SqliteShellFragment.create(debugSqLiteAllowsUpdates),
+                             SqliteShellFragment.TAG)
+                    .commit();
+        });
     }
 
     private void sendDebug(@NonNull final Set<Integer> selectedItems) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,7 +24,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -65,15 +64,5 @@ public abstract class BaseFragment
                                          "R.id.fab");
         }
         return fab;
-    }
-
-    protected void replaceFragment(@NonNull final Fragment fragment,
-                                   @NonNull final String tag) {
-        final FragmentManager fm = getParentFragmentManager();
-        fm.beginTransaction()
-          .setReorderingAllowed(true)
-          .addToBackStack(tag)
-          .replace(R.id.main_fragment, fragment, tag)
-          .commit();
     }
 }
