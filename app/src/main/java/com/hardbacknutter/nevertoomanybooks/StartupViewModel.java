@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -135,7 +135,8 @@ public class StartupViewModel
     private boolean startTasks = true;
 
     /** stage the startup is at. */
-    private int startupStage;
+    @NonNull
+    private StartupActivity.Stage startupStage = StartupActivity.Stage.Init;
 
     /** Flag we need to prompt the user to make a backup after startup. */
     private boolean proposeBackup;
@@ -166,10 +167,9 @@ public class StartupViewModel
         return proposeBackup;
     }
 
-    int getNextStartupStage(@SuppressWarnings("SameParameterValue") final int max) {
-        if (startupStage < max) {
-            startupStage++;
-        }
+    @NonNull
+    StartupActivity.Stage getNextStartupStage() {
+        startupStage = startupStage.next();
         return startupStage;
     }
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -121,23 +121,25 @@ public class StartupActivity
      * Startup stages.
      */
     private void nextStage() {
-        switch (vm.getNextStartupStage(4)) {
-            case 1:
-                initStorage();
+        switch (vm.getNextStartupStage()) {
+            case Init:
                 break;
 
-            case 2:
+            case InitStorage: {
+                initStorage();
+                break;
+            }
+            case InitDb: {
                 // create static self-reference for DBHelper callbacks.
                 sStartupActivity = new WeakReference<>(this);
                 initDb();
                 break;
-
-            case 3:
+            }
+            case RunTasks: {
                 startTasks();
                 break;
-
-            case 4:
-            default: {
+            }
+            case Done: {
                 // Remove the static self-reference
                 if (sStartupActivity != null) {
                     sStartupActivity.clear();
@@ -289,5 +291,32 @@ public class StartupActivity
                 })
                 .create()
                 .show();
+    }
+
+    public enum Stage {
+        Init,
+        InitStorage,
+        InitDb,
+        RunTasks,
+        Done;
+
+        public Stage next() {
+            switch (this) {
+                case Init:
+                    return InitStorage;
+
+                case InitStorage:
+                    return InitDb;
+
+                case InitDb:
+                    return RunTasks;
+
+                case RunTasks:
+                case Done:
+                    break;
+            }
+
+            return Done;
+        }
     }
 }
