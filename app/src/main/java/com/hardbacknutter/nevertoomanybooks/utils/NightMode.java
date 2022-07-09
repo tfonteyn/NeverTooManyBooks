@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import android.content.Context;
 import android.os.Build;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.math.MathUtils;
@@ -49,11 +50,21 @@ public final class NightMode {
 
     /**
      * Apply the user's preferred NightMode.
+     * Called at startup.
      *
      * @param context Current context
      */
     public static void apply(@NonNull final Context context) {
-        final int mode = Prefs.getIntListPref(context, Prefs.pk_ui_theme, 0);
+        apply(Prefs.getIntListPref(context, Prefs.pk_ui_theme, 0));
+    }
+
+    /**
+     * Apply the user's preferred NightMode.
+     * Called when the user changes the preference.
+     *
+     * @param mode index into {@link #NIGHT_MODES}
+     */
+    public static void apply(@IntRange(from = 0, to = 2) final int mode) {
         AppCompatDelegate.setDefaultNightMode(NIGHT_MODES[MathUtils.clamp(mode, 0, 2)]);
     }
 }

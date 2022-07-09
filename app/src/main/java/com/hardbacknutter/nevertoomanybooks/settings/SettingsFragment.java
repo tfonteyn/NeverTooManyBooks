@@ -149,8 +149,14 @@ public class SettingsFragment
         //noinspection ConstantConditions
         pUiTheme.setSummaryProvider(listSummaryProvider);
         pUiTheme.setOnPreferenceChangeListener((preference, newValue) -> {
-            //noinspection ConstantConditions
-            NightMode.apply(getContext());
+            // we should never have an invalid setting in the prefs... flw
+            try {
+                final int mode = Integer.parseInt(String.valueOf(newValue));
+                NightMode.apply(mode);
+            } catch (@NonNull final NumberFormatException ignore) {
+                NightMode.apply(0);
+            }
+
             return true;
         });
 
