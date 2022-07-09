@@ -67,9 +67,11 @@ public class EditBookPublicationFragment
 
         //noinspection ConstantConditions
         vm.initFields(context, FragmentId.Publication, FieldGroup.Publication);
-        // on EXPANDED screens the notes fields are incorporated in the publication fragment
+        // On tablets the notes fields are incorporated in the publication fragment
+        // On small screens (i.e. phones) they get their own tab
         //noinspection ConstantConditions
-        if (WindowSizeClass.getWidth(getActivity()) == WindowSizeClass.EXPANDED) {
+        if (WindowSizeClass.getWidth(getActivity()) != WindowSizeClass.COMPACT
+            && WindowSizeClass.getHeight(getActivity()) != WindowSizeClass.COMPACT) {
             vm.initFields(context, FragmentId.Publication, FieldGroup.Notes);
         }
 

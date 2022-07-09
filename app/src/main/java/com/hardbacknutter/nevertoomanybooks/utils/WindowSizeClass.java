@@ -31,10 +31,18 @@ import androidx.window.layout.WindowMetricsCalculator;
  * <p>
  * Width:
  * <ul>
- *     <li>EXPANDED -> sw800</li>
- *     <li>MEDIUM -> sw600</li>
- *     <li>COMPACT -> base</li>
+ *     <li>COMPACT -> base; phone in portrait</li>
+ *     <li>MEDIUM -> sw600; phone in landscape + tablet in portrait</li>
+ *     <li>EXPANDED -> sw800; tablet in landscape</li>
  * </ul>
+ * Height:
+ * <ul>
+ *     <li>COMPACT -> base; small phone in landscape</li>
+ *     <li>MEDIUM -> sw600; phone in portrait + tablet in landscape</li>
+ *     <li>EXPANDED -> sw800; tablet in portrait</li>
+ * </ul>
+ * <p>
+ * Never change the order!
  */
 public enum WindowSizeClass {
     COMPACT,

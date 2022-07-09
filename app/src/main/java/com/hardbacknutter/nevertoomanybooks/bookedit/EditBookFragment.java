@@ -145,7 +145,7 @@ public class EditBookFragment
         super.onResume();
 
         int currentTab = vm.getCurrentTab();
-        // sanity check
+        // can happen when rotating a small device where the width changes WindowsClass
         if (currentTab >= tabAdapter.getItemCount()) {
             currentTab = 0;
             vm.setCurrentTab(0);
@@ -306,8 +306,10 @@ public class EditBookFragment
                                     R.string.lbl_tab_publication,
                                     R.string.lbl_publication));
 
-            // on EXPANDED screens the notes fields are incorporated in the publication fragment
-            if (WindowSizeClass.getWidth(container) != WindowSizeClass.EXPANDED) {
+            // On tablets the notes fields are incorporated in the publication fragment
+            // On small screens (i.e. phones) they get their own tab
+            if (WindowSizeClass.getWidth(container) == WindowSizeClass.COMPACT
+                || WindowSizeClass.getHeight(container) == WindowSizeClass.COMPACT) {
                 tabList.add(new TabInfo(EditBookNotesFragment.class,
                                         R.string.lbl_tab_notes,
                                         R.string.lbl_personal_notes));
