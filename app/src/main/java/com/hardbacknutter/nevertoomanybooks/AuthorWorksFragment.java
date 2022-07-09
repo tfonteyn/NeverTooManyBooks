@@ -138,50 +138,19 @@ public class AuthorWorksFragment
         return view;
     }
 
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        final Context context = getContext();
-
-        final Toolbar toolbar = getToolbar();
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
-        //noinspection ConstantConditions
-        toolbar.setTitle(vm.getScreenTitle(context));
-        toolbar.setSubtitle(vm.getScreenSubtitle(context));
-
-        // Popup the search widget when the user starts to type.
-        //noinspection ConstantConditions
-        getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
-
-        getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
-
-        worksListView.setHasFixedSize(true);
-        worksListView.addItemDecoration(
-                new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
-
-        // Optional overlay
-        final int overlayType = Prefs.getFastScrollerOverlayType(context);
-        FastScroller.attach(worksListView, overlayType);
-
-        adapter = new TocAdapter(context, vm.getAuthor(), vm.getWorks());
-        adapter.registerAdapterDataObserver(adapterDataObserver);
-        worksListView.setAdapter(adapter);
-
-        contextMenu = new ExtPopupMenu(context);
-        final Menu menu = contextMenu.getMenu();
-        final Resources res = getResources();
-        menu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
-                 R.string.action_delete)
-            .setIcon(R.drawable.ic_baseline_delete_24);
-
-        if (savedInstanceState == null) {
-            TipManager.getInstance().display(context, R.string.tip_authors_works, null);
+    private final TocEntryHandler tocEntryHandler = new TocEntryHandler() {
+        @Override
+        public void viewBook(final int position) {
+            gotoBook(position);
         }
-    }
+
+        @Override
+        public void showContextMenu(@NonNull final View anchor,
+                                    final int position) {
+            contextMenu.showAsDropDown(anchor, menuItem ->
+                    onMenuItemSelected(menuItem, position));
+        }
+    };
 
     /**
      * Using {@link ExtPopupMenu} for context menus.
@@ -341,8 +310,56 @@ public class AuthorWorksFragment
         }
     }
 
-    public class TocAdapter
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        final Context context = getContext();
+
+        final Toolbar toolbar = getToolbar();
+        toolbarMenuProvider = new ToolbarMenuProvider();
+        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
+        //noinspection ConstantConditions
+        toolbar.setTitle(vm.getScreenTitle(context));
+        toolbar.setSubtitle(vm.getScreenSubtitle(context));
+
+        // Popup the search widget when the user starts to type.
+        //noinspection ConstantConditions
+        getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
+
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), backPressedCallback);
+
+        worksListView.setHasFixedSize(true);
+        worksListView.addItemDecoration(
+                new MaterialDividerItemDecoration(context, RecyclerView.VERTICAL));
+
+        // Optional overlay
+        final int overlayType = Prefs.getFastScrollerOverlayType(context);
+        FastScroller.attach(worksListView, overlayType);
+
+        adapter = new TocAdapter(context, vm.getAuthor(), vm.getWorks(), tocEntryHandler);
+        adapter.registerAdapterDataObserver(adapterDataObserver);
+        worksListView.setAdapter(adapter);
+
+        contextMenu = new ExtPopupMenu(context);
+        final Menu menu = contextMenu.getMenu();
+        final Resources res = getResources();
+        menu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
+                 R.string.action_delete)
+            .setIcon(R.drawable.ic_baseline_delete_24);
+
+        if (savedInstanceState == null) {
+            TipManager.getInstance().display(context, R.string.tip_authors_works, null);
+        }
+    }
+
+    public static class TocAdapter
             extends TocBaseAdapter {
+
+        @NonNull
+        private final TocEntryHandler tocEntryHandler;
 
         /**
          * Constructor.
@@ -353,8 +370,10 @@ public class AuthorWorksFragment
          */
         TocAdapter(@NonNull final Context context,
                    @NonNull final Author worksAuthor,
-                   @NonNull final List<AuthorWork> tocList) {
+                   @NonNull final List<AuthorWork> tocList,
+                   @NonNull final TocEntryHandler tocEntryHandler) {
             super(context, worksAuthor, tocList);
+            this.tocEntryHandler = tocEntryHandler;
         }
 
         @NonNull
@@ -364,11 +383,11 @@ public class AuthorWorksFragment
             final Holder holder = super.onCreateViewHolder(parent, viewType);
 
             // click -> get the book(s) for that entry and display.
-            holder.itemView.setOnClickListener(v -> gotoBook(holder.getBindingAdapterPosition()));
+            holder.itemView.setOnClickListener(
+                    v -> tocEntryHandler.viewBook(holder.getBindingAdapterPosition()));
 
             holder.itemView.setOnLongClickListener(v -> {
-                contextMenu.showAsDropDown(v, menuItem ->
-                        onMenuItemSelected(menuItem, holder.getBindingAdapterPosition()));
+                tocEntryHandler.showContextMenu(v, holder.getBindingAdapterPosition());
                 return true;
             });
 

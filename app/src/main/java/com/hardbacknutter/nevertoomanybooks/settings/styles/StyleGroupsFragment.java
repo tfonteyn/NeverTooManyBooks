@@ -161,7 +161,7 @@ public class StyleGroupsFragment
         }
     }
 
-    static class GroupWrapperListAdapter
+    private static class GroupWrapperListAdapter
             extends RecyclerViewAdapterBase<StyleViewModel.WrappedGroup, Holder> {
 
         /**

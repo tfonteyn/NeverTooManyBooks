@@ -62,11 +62,13 @@ public class EditBookAuthorListDialogFragment
 
     /** Fragment/Log tag. */
     private static final String TAG = "EditBookAuthorListDlg";
+
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_AUTHOR = TAG + ":rk:" + EditBookAuthorDialogFragment.TAG;
 
     /** The book. Must be in the Activity scope. */
     private EditBookViewModel vm;
+
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver adapterDataObserver =
             new SimpleAdapterDataObserver() {
@@ -75,10 +77,12 @@ public class EditBookAuthorListDialogFragment
                     vm.getBook().setStage(EntityStage.Stage.Dirty);
                 }
             };
+
     /** View Binding. */
     private DialogEditBookAuthorListBinding vb;
     /** the rows. */
     private List<Author> authorList;
+
     /** The adapter for the list itself. */
     private AuthorListAdapter adapter;
 
@@ -90,6 +94,15 @@ public class EditBookAuthorListDialogFragment
                     processChanges(original, modified);
                 }
             };
+
+    private final AdapterRowHandler adapterRowHandler = new AdapterRowHandler() {
+
+        @Override
+        public void edit(final int position) {
+            editAuthorLauncher.launch(vm.getBook().getTitle(),
+                                      authorList.get(position));
+        }
+    };
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
@@ -156,7 +169,7 @@ public class EditBookAuthorListDialogFragment
         vb.authorList.setHasFixedSize(true);
 
         authorList = vm.getBook().getAuthors();
-        adapter = new AuthorListAdapter(getContext(), authorList,
+        adapter = new AuthorListAdapter(getContext(), authorList, adapterRowHandler,
                                         vh -> itemTouchHelper.startDrag(vh));
         vb.authorList.setAdapter(adapter);
         adapter.registerAdapterDataObserver(adapterDataObserver);
@@ -346,11 +359,13 @@ public class EditBookAuthorListDialogFragment
         }
     }
 
-    private class AuthorListAdapter
+    private static class AuthorListAdapter
             extends RecyclerViewAdapterBase<Author, Holder> {
 
         @NonNull
         private final FieldFormatter<Author> formatter;
+        @NonNull
+        private final AdapterRowHandler adapterRowHandler;
 
         /**
          * Constructor.
@@ -361,8 +376,10 @@ public class EditBookAuthorListDialogFragment
          */
         AuthorListAdapter(@NonNull final Context context,
                           @NonNull final List<Author> items,
+                          @NonNull final AdapterRowHandler adapterRowHandler,
                           @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
+            this.adapterRowHandler = adapterRowHandler;
 
             formatter = new EntityFormatter<>(Details.Full);
         }
@@ -375,10 +392,8 @@ public class EditBookAuthorListDialogFragment
             final View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_author_list, parent, false);
             final Holder holder = new Holder(view);
-            // click -> edit
-            holder.rowDetailsView.setOnClickListener(v -> editAuthorLauncher.launch(
-                    vm.getBook().getTitle(),
-                    getItem(holder.getBindingAdapterPosition())));
+            holder.rowDetailsView.setOnClickListener(
+                    v -> adapterRowHandler.edit(holder.getBindingAdapterPosition()));
             return holder;
         }
 

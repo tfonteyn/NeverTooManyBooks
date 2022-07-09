@@ -19,10 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.covers;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -40,6 +42,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
@@ -94,6 +97,23 @@ public class CoverBrowserDialogFragment
     private DialogCoverBrowserBinding vb;
 
     private ImageViewLoader previewLoader;
+    private final PositionHandler positionHandler = new PositionHandler() {
+        @Override
+        public void selectGalleryImage(final ImageFileInfo imageFileInfo) {
+            onGalleryImageSelected(imageFileInfo);
+        }
+
+        @Override
+        public void fetchGalleryImage(final String isbn) {
+
+        }
+
+        @Nullable
+        @Override
+        public ImageFileInfo getFileInfo(final String isbn) {
+            return vm.getFileInfo(isbn);
+        }
+    };
 
     /**
      * No-arg constructor for OS use.
@@ -132,7 +152,10 @@ public class CoverBrowserDialogFragment
                 requireArguments().getString(DBKey.TITLE), DBKey.TITLE);
         vb.toolbar.setSubtitle(bookTitle);
 
-        galleryAdapter = new GalleryAdapter(vm.getGalleryDisplayExecutor());
+        //noinspection ConstantConditions
+        galleryAdapter = new GalleryAdapter(getContext(), vm.getEditions(),
+                                            positionHandler,
+                                            vm.getGalleryDisplayExecutor());
         vb.gallery.setAdapter(galleryAdapter);
 
         vm.onGalleryImage().observe(getViewLifecycleOwner(), this::setGalleryImage);
@@ -317,6 +340,16 @@ public class CoverBrowserDialogFragment
 
     }
 
+    private interface PositionHandler {
+
+        void selectGalleryImage(final ImageFileInfo imageFileInfo);
+
+        void fetchGalleryImage(final String isbn);
+
+        @Nullable
+        ImageFileInfo getFileInfo(final String isbn);
+    }
+
     public abstract static class Launcher
             implements FragmentResultListener {
 
@@ -396,7 +429,7 @@ public class CoverBrowserDialogFragment
         }
     }
 
-    private class GalleryAdapter
+    private static class GalleryAdapter
             extends RecyclerView.Adapter<Holder> {
 
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
@@ -409,15 +442,27 @@ public class CoverBrowserDialogFragment
 
         @NonNull
         private final ImageViewLoader imageLoader;
+        private final LayoutInflater inflater;
+        @NonNull
+        private final ArrayList<String> editionsList;
+        @NonNull
+        private final PositionHandler positionHandler;
 
         /**
          * Constructor.
          *
+         * @param context  Current context
          * @param executor to use for loading images
          */
         @SuppressWarnings("SameParameterValue")
-        GalleryAdapter(@NonNull final Executor executor) {
-            final Resources res = getResources();
+        GalleryAdapter(@NonNull final Context context,
+                       @NonNull final ArrayList<String> editionsList,
+                       @NonNull final PositionHandler positionHandler,
+                       @NonNull final Executor executor) {
+            inflater = LayoutInflater.from(context);
+            this.editionsList = editionsList;
+            this.positionHandler = positionHandler;
+            final Resources res = context.getResources();
             maxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_gallery_width);
             maxHeight = res.getDimensionPixelSize(R.dimen.cover_browser_gallery_height);
 
@@ -430,19 +475,16 @@ public class CoverBrowserDialogFragment
                                          final int viewType) {
 
             final RowCoverBrowserGalleryBinding hVb = RowCoverBrowserGalleryBinding
-                    .inflate(getLayoutInflater(), parent, false);
+                    .inflate(inflater, parent, false);
             return new Holder(hVb, maxWidth, maxHeight);
         }
 
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-            if (vm.isCancelled()) {
-                return;
-            }
 
-            final String isbn = vm.getEditions().get(position);
-            final ImageFileInfo imageFileInfo = vm.getFileInfo(isbn);
+            final String isbn = editionsList.get(position);
+            final ImageFileInfo imageFileInfo = positionHandler.getFileInfo(isbn);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                 Log.d(TAG, "onBindViewHolder"
@@ -455,7 +497,7 @@ public class CoverBrowserDialogFragment
                 imageLoader.placeholder(holder.vb.coverImage0,
                                         R.drawable.ic_baseline_image_24);
                 // and queue a request for it.
-                vm.fetchGalleryImage(isbn);
+                positionHandler.fetchGalleryImage(isbn);
                 holder.vb.lblSite.setText("");
 
             } else {
@@ -467,7 +509,7 @@ public class CoverBrowserDialogFragment
 
                     // keep this statement here, or we would need to call file.exists() twice
                     holder.vb.coverImage0.setOnClickListener(
-                            v -> onGalleryImageSelected(imageFileInfo));
+                            v -> positionHandler.selectGalleryImage(imageFileInfo));
 
                     holder.vb.lblSite.setText(SearchEngineRegistry
                                                       .getInstance()
@@ -487,7 +529,7 @@ public class CoverBrowserDialogFragment
 
         @Override
         public int getItemCount() {
-            return vm.getEditions().size();
+            return editionsList.size();
         }
     }
 }

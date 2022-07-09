@@ -86,6 +86,14 @@ public class EditBookPublisherListDialogFragment
                 }
             };
 
+    private final AdapterRowHandler adapterRowHandler = new AdapterRowHandler() {
+
+        @Override
+        public void edit(final int position) {
+            editPublisherLauncher.launch(vm.getBook().getTitle(),
+                                         publisherList.get(position));
+        }
+    };
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
 
@@ -151,7 +159,7 @@ public class EditBookPublisherListDialogFragment
         vb.publisherList.setHasFixedSize(true);
 
         publisherList = vm.getBook().getPublishers();
-        adapter = new PublisherListAdapter(getContext(), publisherList,
+        adapter = new PublisherListAdapter(getContext(), publisherList, adapterRowHandler,
                                            vh -> itemTouchHelper.startDrag(vh));
         vb.publisherList.setAdapter(adapter);
         adapter.registerAdapterDataObserver(adapterDataObserver);
@@ -309,8 +317,11 @@ public class EditBookPublisherListDialogFragment
         }
     }
 
-    private class PublisherListAdapter
+    private static class PublisherListAdapter
             extends RecyclerViewAdapterBase<Publisher, Holder> {
+
+        @NonNull
+        private final AdapterRowHandler adapterRowHandler;
 
         /**
          * Constructor.
@@ -321,22 +332,21 @@ public class EditBookPublisherListDialogFragment
          */
         PublisherListAdapter(@NonNull final Context context,
                              @NonNull final List<Publisher> items,
+                             @NonNull final AdapterRowHandler adapterRowHandler,
                              @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
+            this.adapterRowHandler = adapterRowHandler;
         }
 
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-
             final View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_publisher_list, parent, false);
             final Holder holder = new Holder(view);
-            // click -> edit
-            holder.rowDetailsView.setOnClickListener(v -> editPublisherLauncher.launch(
-                    vm.getBook().getTitle(),
-                    getItem(holder.getBindingAdapterPosition())));
+            holder.rowDetailsView.setOnClickListener(
+                    v -> adapterRowHandler.edit(holder.getBindingAdapterPosition()));
             return holder;
         }
 

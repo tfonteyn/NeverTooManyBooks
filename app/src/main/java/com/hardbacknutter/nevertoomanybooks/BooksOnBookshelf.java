@@ -63,6 +63,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySearchContract;
@@ -1654,7 +1655,7 @@ public class BooksOnBookshelf
                 new ConcatAdapter.Config.Builder()
                         .setStableIdMode(ConcatAdapter.Config.StableIdMode.SHARED_STABLE_IDS)
                         .build(),
-                new HeaderAdapter(this), adapter);
+                new HeaderAdapter(this, () -> vm.getHeaderContent(this)), adapter);
 
         vb.content.list.setAdapter(concatAdapter);
         vb.content.list.setVisibility(View.VISIBLE);
@@ -1773,6 +1774,70 @@ public class BooksOnBookshelf
         }
     }
 
+    private static class HeaderAdapter
+            extends RecyclerView.Adapter<HeaderViewHolder> {
+
+        @NonNull
+        private final LayoutInflater inflater;
+        @NonNull
+        private final Supplier<BooklistHeader> headerSupplier;
+
+        /**
+         * Constructor.
+         *
+         * @param context Current context
+         */
+        HeaderAdapter(@NonNull final Context context,
+                      @NonNull final Supplier<BooklistHeader> headerSupplier) {
+            inflater = LayoutInflater.from(context);
+            this.headerSupplier = headerSupplier;
+            setHasStableIds(true);
+        }
+
+        @NonNull
+        @Override
+        public HeaderViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                                   final int viewType) {
+            final BooksonbookshelfHeaderBinding hVb = BooksonbookshelfHeaderBinding
+                    .inflate(inflater, parent, false);
+            return new HeaderViewHolder(hVb);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull final HeaderViewHolder holder,
+                                     final int position) {
+            final BooklistHeader headerContent = headerSupplier.get();
+
+            String header;
+            header = headerContent.getStyleName();
+            holder.vb.styleName.setText(header);
+            holder.vb.styleName.setVisibility(header != null ? View.VISIBLE : View.GONE);
+
+            header = headerContent.getFilterText();
+            holder.vb.filterText.setText(header);
+            holder.vb.filterText.setVisibility(header != null ? View.VISIBLE : View.GONE);
+
+            header = headerContent.getSearchText();
+            holder.vb.searchText.setText(header);
+            holder.vb.searchText.setVisibility(header != null ? View.VISIBLE : View.GONE);
+
+            header = headerContent.getBookCount();
+            holder.vb.bookCount.setText(header);
+            holder.vb.bookCount.setVisibility(header != null ? View.VISIBLE : View.GONE);
+        }
+
+        @Override
+        public int getItemCount() {
+            return 1;
+        }
+
+        @Override
+        public long getItemId(final int position) {
+            // we only have one row; return a dummy value which is not a row-id in the list-table
+            return Integer.MAX_VALUE;
+        }
+    }
+
     private class ToolbarMenuProvider
             implements MenuProvider {
 
@@ -1843,67 +1908,6 @@ public class BooksOnBookshelf
                 vm.expandAllNodes(topLevel, expand);
                 displayList(null);
             }
-        }
-    }
-
-    private class HeaderAdapter
-            extends RecyclerView.Adapter<HeaderViewHolder> {
-
-        @NonNull
-        private final LayoutInflater inflater;
-
-        /**
-         * Constructor.
-         *
-         * @param context Current context
-         */
-        HeaderAdapter(@NonNull final Context context) {
-            inflater = LayoutInflater.from(context);
-            setHasStableIds(true);
-        }
-
-        @NonNull
-        @Override
-        public HeaderViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
-                                                   final int viewType) {
-            final BooksonbookshelfHeaderBinding hVb = BooksonbookshelfHeaderBinding
-                    .inflate(inflater, parent, false);
-            return new HeaderViewHolder(hVb);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull final HeaderViewHolder holder,
-                                     final int position) {
-            final BooklistHeader headerContent =
-                    vm.getHeaderContent(holder.itemView.getContext());
-
-            String header;
-            header = headerContent.getStyleName();
-            holder.vb.styleName.setText(header);
-            holder.vb.styleName.setVisibility(header != null ? View.VISIBLE : View.GONE);
-
-            header = headerContent.getFilterText();
-            holder.vb.filterText.setText(header);
-            holder.vb.filterText.setVisibility(header != null ? View.VISIBLE : View.GONE);
-
-            header = headerContent.getSearchText();
-            holder.vb.searchText.setText(header);
-            holder.vb.searchText.setVisibility(header != null ? View.VISIBLE : View.GONE);
-
-            header = headerContent.getBookCount();
-            holder.vb.bookCount.setText(header);
-            holder.vb.bookCount.setVisibility(header != null ? View.VISIBLE : View.GONE);
-        }
-
-        @Override
-        public int getItemCount() {
-            return 1;
-        }
-
-        @Override
-        public long getItemId(final int position) {
-            // we only have one row; return a dummy value which is not a row-id in the list-table
-            return Integer.MAX_VALUE;
         }
     }
 }

@@ -43,6 +43,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.List;
+
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
@@ -58,7 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
 /**
  * {@link Bookshelf} maintenance.
  */
-@SuppressWarnings("MethodOnlyUsedFromInnerClass")
 public class EditBookshelvesFragment
         extends BaseFragment {
 
@@ -108,6 +109,28 @@ public class EditBookshelvesFragment
                 }
             };
 
+    private final PositionHandler positionHandler = new PositionHandler() {
+        @Override
+        public int getSelectedPosition() {
+            return vm.getSelectedPosition();
+        }
+
+        @Override
+        public void setSelectedPosition(final int position) {
+            vm.setSelectedPosition(position);
+        }
+
+        @Override
+        public void showContextMenu(final View anchor,
+                                    final int position,
+                                    final int listIndex) {
+            final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
+                    .inflate(R.menu.editing_bookshelves);
+            prepareMenu(popupMenu.getMenu(), position);
+            popupMenu.showAsDropDown(anchor, menuItem -> onMenuItemSelected(menuItem, listIndex));
+        }
+    };
+
     @SuppressWarnings("FieldCanBeLocal")
     private MenuProvider toolbarMenuProvider;
     /** View Binding. */
@@ -155,7 +178,8 @@ public class EditBookshelvesFragment
 
         final GridLayoutManager layoutManager = (GridLayoutManager) vb.list.getLayoutManager();
         //noinspection ConstantConditions
-        adapter = new BookshelfAdapter(getContext(), layoutManager.getSpanCount());
+        adapter = new BookshelfAdapter(getContext(), layoutManager.getSpanCount(),
+                                       vm.getList(), positionHandler);
         adapter.registerAdapterDataObserver(adapterDataObserver);
 
         final GridDividerItemDecoration decoration =
@@ -229,6 +253,17 @@ public class EditBookshelvesFragment
         return false;
     }
 
+    private interface PositionHandler {
+
+        int getSelectedPosition();
+
+        void setSelectedPosition(int position);
+
+        void showContextMenu(final View anchor,
+                             final int position,
+                             final int listIndex);
+    }
+
     public static class Holder
             extends RecyclerView.ViewHolder {
 
@@ -238,6 +273,91 @@ public class EditBookshelvesFragment
         Holder(@NonNull final RowEditBookshelfBinding vb) {
             super(vb.getRoot());
             this.vb = vb;
+        }
+    }
+
+    private static class BookshelfAdapter
+            extends MultiColumnRecyclerViewAdapter<Holder> {
+
+        private final List<Bookshelf> bookshelfList;
+        @NonNull
+        private final PositionHandler positionHandler;
+
+        /**
+         * Constructor.
+         *
+         * @param context Current context
+         */
+        BookshelfAdapter(@NonNull final Context context,
+                         final int columnCount,
+                         final List<Bookshelf> bookshelfList,
+                         @NonNull final PositionHandler positionHandler) {
+            super(context, columnCount);
+            this.bookshelfList = bookshelfList;
+            this.positionHandler = positionHandler;
+        }
+
+        @NonNull
+        @Override
+        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                         final int viewType) {
+            final RowEditBookshelfBinding hVb = RowEditBookshelfBinding
+                    .inflate(inflater, parent, false);
+            final Holder holder = new Holder(hVb);
+
+            // click -> set the row as 'selected'.
+            holder.vb.name.setOnClickListener(v -> {
+                // first update the previous, now unselected, row.
+                final int oldListIndex = positionHandler.getSelectedPosition();
+                final int oldPosition = revert(oldListIndex);
+                notifyItemChanged(oldPosition);
+
+                // store the newly selected row.
+                final int position = holder.getBindingAdapterPosition();
+                final int listIndex = transpose(position);
+                if (listIndex == -1) {
+                    // Should never get here
+                    throw new IllegalStateException("ListIndex is -1 for position=" + position);
+                }
+                positionHandler.setSelectedPosition(listIndex);
+                // update the newly selected row.
+                notifyItemChanged(position);
+            });
+
+            // long-click -> context menu
+            holder.vb.name.setOnLongClickListener(v -> {
+                final int position = holder.getBindingAdapterPosition();
+                final int listIndex = transpose(position);
+                if (listIndex == -1) {
+                    // Should never get here
+                    throw new IllegalStateException("ListIndex is -1 for position=" + position);
+                }
+                positionHandler.showContextMenu(v, position, listIndex);
+                return true;
+            });
+
+            return holder;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull final Holder holder,
+                                     final int position) {
+
+            final int listIndex = transpose(position);
+            if (listIndex >= 0) {
+                final Bookshelf bookshelf = bookshelfList.get(listIndex);
+
+                holder.vb.name.setVisibility(View.VISIBLE);
+                holder.vb.name.setText(bookshelf.getName());
+                holder.itemView.setSelected(listIndex == positionHandler.getSelectedPosition());
+            } else {
+                holder.vb.name.setVisibility(View.INVISIBLE);
+            }
+        }
+
+        @Override
+        protected int getRealItemCount() {
+            return bookshelfList.size();
         }
     }
 
@@ -256,89 +376,6 @@ public class EditBookshelvesFragment
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             return EditBookshelvesFragment.this.onMenuItemSelected(menuItem,
                                                                    vm.getSelectedPosition());
-        }
-    }
-
-    private class BookshelfAdapter
-            extends MultiColumnRecyclerViewAdapter<Holder> {
-
-        /**
-         * Constructor.
-         *
-         * @param context Current context
-         */
-        BookshelfAdapter(@NonNull final Context context,
-                         final int columnCount) {
-            super(context, columnCount);
-        }
-
-        @NonNull
-        @Override
-        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
-                                         final int viewType) {
-            final RowEditBookshelfBinding hVb = RowEditBookshelfBinding
-                    .inflate(inflater, parent, false);
-            final Holder holder = new Holder(hVb);
-
-            // click -> set the row as 'selected'.
-            holder.vb.name.setOnClickListener(v -> {
-                // first update the previous, now unselected, row.
-                final int oldListIndex = vm.getSelectedPosition();
-                final int oldPosition = revert(oldListIndex);
-                notifyItemChanged(oldPosition);
-
-                // store the newly selected row.
-                final int position = holder.getBindingAdapterPosition();
-                final int listIndex = transpose(position);
-                if (listIndex == -1) {
-                    // Should never get here
-                    throw new IllegalStateException("ListIndex is -1 for position=" + position);
-                }
-                vm.setSelectedPosition(listIndex);
-                // update the newly selected row.
-                notifyItemChanged(position);
-            });
-
-            // long-click -> context menu
-            holder.vb.name.setOnLongClickListener(v -> {
-                //noinspection ConstantConditions
-                final ExtPopupMenu popupMenu = new ExtPopupMenu(getContext())
-                        .inflate(R.menu.editing_bookshelves);
-
-                final int position = holder.getBindingAdapterPosition();
-                final int listIndex = transpose(position);
-                if (listIndex == -1) {
-                    // Should never get here
-                    throw new IllegalStateException("ListIndex is -1 for position=" + position);
-                }
-                prepareMenu(popupMenu.getMenu(), position);
-                popupMenu.showAsDropDown(v, menuItem ->
-                        onMenuItemSelected(menuItem, listIndex));
-                return true;
-            });
-
-            return holder;
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull final Holder holder,
-                                     final int position) {
-
-            final int listIndex = transpose(position);
-            if (listIndex >= 0) {
-                final Bookshelf bookshelf = vm.getBookshelf(listIndex);
-
-                holder.vb.name.setVisibility(View.VISIBLE);
-                holder.vb.name.setText(bookshelf.getName());
-                holder.itemView.setSelected(listIndex == vm.getSelectedPosition());
-            } else {
-                holder.vb.name.setVisibility(View.INVISIBLE);
-            }
-        }
-
-        @Override
-        protected int getRealItemCount() {
-            return vm.getList().size();
         }
     }
 }

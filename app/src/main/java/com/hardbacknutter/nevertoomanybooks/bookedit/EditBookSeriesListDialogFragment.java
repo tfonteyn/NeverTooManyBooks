@@ -115,53 +115,14 @@ public class EditBookSeriesListDialogFragment
                                                      this);
     }
 
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    private final AdapterRowHandler seriesHandler = new AdapterRowHandler() {
 
-        vb = DialogEditBookSeriesListBinding.bind(view);
-
-        //noinspection ConstantConditions
-        vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
-
-        vb.toolbar.setSubtitle(vm.getBook().getTitle());
-
-        //noinspection ConstantConditions
-        final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
-                getContext(), R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Diacritic, vm.getAllSeriesTitles());
-        vb.seriesTitle.setAdapter(titleAdapter);
-        vb.seriesTitle.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                vb.seriesTitle.setError(null);
-            }
-        });
-
-        // soft-keyboards 'done' button act as a shortcut to add the series
-        vb.seriesNum.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                hideKeyboard(v);
-                onAdd();
-                return true;
-            }
-            return false;
-        });
-
-        // set up the list view. The adapter is setup in onPopulateViews
-        vb.seriesList.setHasFixedSize(true);
-
-        seriesList = vm.getBook().getSeries();
-        adapter = new SeriesListAdapter(getContext(), seriesList,
-                                        vh -> itemTouchHelper.startDrag(vh));
-        vb.seriesList.setAdapter(adapter);
-        adapter.registerAdapterDataObserver(adapterDataObserver);
-
-        final SimpleItemTouchHelperCallback sitHelperCallback =
-                new SimpleItemTouchHelperCallback(adapter);
-        itemTouchHelper = new ItemTouchHelper(sitHelperCallback);
-        itemTouchHelper.attachToRecyclerView(vb.seriesList);
-    }
+        @Override
+        public void edit(final int position) {
+            editSeriesLauncher.launch(
+                    vm.getBook().getTitle(), seriesList.get(position));
+        }
+    };
 
     @Override
     protected void onToolbarNavigationClick(@NonNull final View v) {
@@ -323,8 +284,59 @@ public class EditBookSeriesListDialogFragment
         }
     }
 
-    private class SeriesListAdapter
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        vb = DialogEditBookSeriesListBinding.bind(view);
+
+        //noinspection ConstantConditions
+        vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
+
+        vb.toolbar.setSubtitle(vm.getBook().getTitle());
+
+        //noinspection ConstantConditions
+        final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
+                getContext(), R.layout.popup_dropdown_menu_item,
+                ExtArrayAdapter.FilterType.Diacritic, vm.getAllSeriesTitles());
+        vb.seriesTitle.setAdapter(titleAdapter);
+        vb.seriesTitle.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                vb.seriesTitle.setError(null);
+            }
+        });
+
+        // soft-keyboards 'done' button act as a shortcut to add the series
+        vb.seriesNum.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                hideKeyboard(v);
+                onAdd();
+                return true;
+            }
+            return false;
+        });
+
+        // set up the list view. The adapter is setup in onPopulateViews
+        vb.seriesList.setHasFixedSize(true);
+
+        seriesList = vm.getBook().getSeries();
+        adapter = new SeriesListAdapter(getContext(), seriesList, seriesHandler,
+                                        vh -> itemTouchHelper.startDrag(vh));
+        vb.seriesList.setAdapter(adapter);
+        adapter.registerAdapterDataObserver(adapterDataObserver);
+
+        final SimpleItemTouchHelperCallback sitHelperCallback =
+                new SimpleItemTouchHelperCallback(adapter);
+        itemTouchHelper = new ItemTouchHelper(sitHelperCallback);
+        itemTouchHelper.attachToRecyclerView(vb.seriesList);
+    }
+
+    private static class SeriesListAdapter
             extends RecyclerViewAdapterBase<Series, Holder> {
+
+        @NonNull
+        private final AdapterRowHandler adapterRowHandler;
 
         /**
          * Constructor.
@@ -335,8 +347,10 @@ public class EditBookSeriesListDialogFragment
          */
         SeriesListAdapter(@NonNull final Context context,
                           @NonNull final List<Series> items,
+                          @NonNull final AdapterRowHandler adapterRowHandler,
                           @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
+            this.adapterRowHandler = adapterRowHandler;
         }
 
         @NonNull
@@ -346,10 +360,8 @@ public class EditBookSeriesListDialogFragment
             final View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_series_list, parent, false);
             final Holder holder = new Holder(view);
-            // click -> edit
-            holder.rowDetailsView.setOnClickListener(v -> editSeriesLauncher.launch(
-                    vm.getBook().getTitle(),
-                    getItem(holder.getBindingAdapterPosition())));
+            holder.rowDetailsView.setOnClickListener(
+                    v -> adapterRowHandler.edit(holder.getBindingAdapterPosition()));
             return holder;
         }
 

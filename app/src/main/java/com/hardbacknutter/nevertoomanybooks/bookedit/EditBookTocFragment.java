@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,6 +61,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTocEntryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
@@ -109,18 +110,23 @@ public class EditBookTocFragment
                     vm.getBook().setStage(EntityStage.Stage.Dirty);
                 }
             };
+
     /**
      * ISFDB editions of a book(isbn).
      * We'll try them one by one if the user asks for a re-try.
      */
     @NonNull
     private final List<Edition> isfdbEditions = new ArrayList<>();
+
     @SuppressWarnings("FieldCanBeLocal")
     private MenuProvider toolbarMenuProvider;
+
     /** the rows. A reference to the parcelled list in the Book. */
     private List<TocEntry> tocEntryList;
+
     /** View Binding. */
     private FragmentEditBookTocBinding vb;
+
     /** The adapter for the list. */
     private TocListEditAdapter adapter;
 
@@ -139,6 +145,7 @@ public class EditBookTocFragment
 
     /** Handles the ISFDB lookup tasks. */
     private EditBookTocViewModel editTocVm;
+
     private final ConfirmTocDialogFragment.Launcher confirmTocResultsLauncher =
             new ConfirmTocDialogFragment.Launcher() {
                 @Override
@@ -154,6 +161,25 @@ public class EditBookTocFragment
             };
 
     private ExtPopupMenu contextMenu;
+
+    private final AdapterRowHandler adapterRowHandler = new AdapterRowHandler() {
+
+        @Override
+        public void edit(final int position) {
+            editEntry(tocEntryList.get(position), position);
+        }
+
+        @Override
+        public void delete(final int position) {
+            deleteEntry(position);
+        }
+
+        @Override
+        public void showContextMenu(@NonNull final View anchor,
+                                    final int position) {
+            contextMenu.showAsDropDown(anchor, menuItem -> onMenuItemSelected(menuItem, position));
+        }
+    };
 
     @NonNull
     @Override
@@ -229,7 +255,7 @@ public class EditBookTocFragment
         vb.tocList.setHasFixedSize(true);
 
         tocEntryList = vm.getBook().getToc();
-        adapter = new TocListEditAdapter(context, tocEntryList,
+        adapter = new TocListEditAdapter(context, tocEntryList, adapterRowHandler,
                                          vh -> itemTouchHelper.startDrag(vh));
         adapter.registerAdapterDataObserver(adapterDataObserver);
         vb.tocList.setAdapter(adapter);
@@ -566,7 +592,6 @@ public class EditBookTocFragment
             private String requestKey;
             private FragmentManager fragmentManager;
 
-            @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
             static void setResult(@NonNull final Fragment fragment,
                                   @NonNull final String requestKey,
                                   @NonNull final Book.ContentType tocBitMask,
@@ -577,7 +602,6 @@ public class EditBookTocFragment
                 fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
             }
 
-            @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
             static void searchNextEdition(@NonNull final Fragment fragment,
                                           @NonNull final String requestKey) {
                 final Bundle result = new Bundle(1);
@@ -646,23 +670,19 @@ public class EditBookTocFragment
             extends ItemTouchHelperViewHolderBase {
 
         @NonNull
-        final TextView titleView;
-        @NonNull
-        final TextView authorView;
-        @NonNull
-        final TextView firstPublicationView;
+        private final RowEditTocEntryBinding vb;
 
-        Holder(@NonNull final View itemView) {
-            super(itemView);
-
-            titleView = rowDetailsView.findViewById(R.id.title);
-            authorView = rowDetailsView.findViewById(R.id.author);
-            firstPublicationView = rowDetailsView.findViewById(R.id.year);
+        Holder(@NonNull final RowEditTocEntryBinding vb) {
+            super(vb.getRoot());
+            this.vb = vb;
         }
     }
 
-    private class TocListEditAdapter
+    private static class TocListEditAdapter
             extends RecyclerViewAdapterBase<TocEntry, Holder> {
+
+        @NonNull
+        private final AdapterRowHandler adapterRowHandler;
 
         /**
          * Constructor.
@@ -673,8 +693,10 @@ public class EditBookTocFragment
          */
         TocListEditAdapter(@NonNull final Context context,
                            @NonNull final List<TocEntry> items,
+                           @NonNull final AdapterRowHandler adapterRowHandler,
                            @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
+            this.adapterRowHandler = adapterRowHandler;
         }
 
         @NonNull
@@ -682,20 +704,14 @@ public class EditBookTocFragment
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
 
-            final View view = getLayoutInflater()
-                    .inflate(R.layout.row_edit_toc_entry, parent, false);
-            final Holder holder = new Holder(view);
-
-            // click -> edit
+            final RowEditTocEntryBinding hVb = RowEditTocEntryBinding
+                    .inflate(getLayoutInflater(), parent, false);
+            final Holder holder = new Holder(hVb);
             holder.rowDetailsView.setOnClickListener(
-                    v -> {
-                        final int position = holder.getBindingAdapterPosition();
-                        editEntry(tocEntryList.get(position), position);
-                    });
+                    v -> adapterRowHandler.edit(holder.getBindingAdapterPosition()));
 
             holder.rowDetailsView.setOnLongClickListener(v -> {
-                contextMenu.showAsDropDown(v, menuItem ->
-                        onMenuItemSelected(menuItem, holder.getBindingAdapterPosition()));
+                adapterRowHandler.showContextMenu(v, holder.getBindingAdapterPosition());
                 return true;
             });
 
@@ -709,24 +725,24 @@ public class EditBookTocFragment
 
             final TocEntry tocEntry = getItem(position);
 
-            holder.titleView.setText(tocEntry.getTitle());
-            holder.authorView.setText(tocEntry.getPrimaryAuthor().getLabel(getContext()));
+            holder.vb.title.setText(tocEntry.getTitle());
+            holder.vb.author.setText(tocEntry.getPrimaryAuthor().getLabel(getContext()));
 
             final PartialDate date = tocEntry.getFirstPublicationDate();
             if (date.isPresent()) {
-                holder.firstPublicationView.setVisibility(View.VISIBLE);
+                holder.vb.year.setVisibility(View.VISIBLE);
                 // cut the date to just the year.
-                holder.firstPublicationView.setText(getString(R.string.brackets,
+                holder.vb.year.setText(getContext().getString(R.string.brackets,
                                                               String.valueOf(date.getYearValue())));
             } else {
-                holder.firstPublicationView.setVisibility(View.GONE);
+                holder.vb.year.setVisibility(View.GONE);
             }
         }
 
         @Override
         protected void onDelete(final int adapterPosition,
                                 @NonNull final TocEntry item) {
-            deleteEntry(adapterPosition);
+            adapterRowHandler.delete(adapterPosition);
         }
     }
 

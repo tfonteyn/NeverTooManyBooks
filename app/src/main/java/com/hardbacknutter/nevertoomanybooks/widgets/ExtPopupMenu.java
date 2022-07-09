@@ -58,7 +58,20 @@ public class ExtPopupMenu {
 
     @NonNull
     private final PopupWindow popupWindow;
+    private final MenuCallback menuCallback = new MenuCallback() {
+        @Override
+        public void update(@NonNull final String title) {
+            vb.title.setText(title);
+            vb.title.setVisibility(View.VISIBLE);
+            final int[] wh = calculatePopupWindowWidthAndHeight();
+            popupWindow.update(wh[0], wh[1]);
+        }
 
+        @Override
+        public void dismiss() {
+            popupWindow.dismiss();
+        }
+    };
     @NonNull
     private Menu menu;
     private boolean groupDividerEnabled;
@@ -281,7 +294,8 @@ public class ExtPopupMenu {
 
     private void initAdapter(@NonNull final Context context,
                              @NonNull final OnMenuItemClickListener listener) {
-        adapter = new MenuItemListAdapter(context, menu, listener);
+        adapter = new MenuItemListAdapter(context, menu, groupDividerEnabled,
+                                          menuCallback, listener);
         vb.itemList.setAdapter(adapter);
     }
 
@@ -303,6 +317,13 @@ public class ExtPopupMenu {
          */
         @SuppressWarnings("UnusedReturnValue")
         boolean onMenuItemClick(@NonNull MenuItem item);
+    }
+
+    private interface MenuCallback {
+
+        void update(@NonNull String title);
+
+        void dismiss();
     }
 
     private static class VBLite {
@@ -345,19 +366,22 @@ public class ExtPopupMenu {
         }
     }
 
-    private class MenuItemListAdapter
+    private static class MenuItemListAdapter
             extends RecyclerView.Adapter<Holder> {
 
         @NonNull
-        private final Drawable mSubMenuPointer;
+        private final Drawable subMenuPointer;
         @NonNull
-        private final List<MenuItem> mList = new ArrayList<>();
+        private final List<MenuItem> list = new ArrayList<>();
         /** Cached inflater. */
         @NonNull
-        private final LayoutInflater mInflater;
+        private final LayoutInflater inflater;
 
+        private final boolean groupDividerEnabled;
+        @NonNull
+        private final MenuCallback menuCallback;
         /** Listener for the result. */
-        private final OnMenuItemClickListener mListener;
+        private final OnMenuItemClickListener menuItemClickListener;
 
         /**
          * Constructor.
@@ -368,13 +392,17 @@ public class ExtPopupMenu {
         @SuppressLint("UseCompatLoadingForDrawables")
         MenuItemListAdapter(@NonNull final Context context,
                             @NonNull final Menu menu,
+                            final boolean groupDividerEnabled,
+                            @NonNull final MenuCallback menuCallback,
                             @NonNull final OnMenuItemClickListener listener) {
 
-            mInflater = LayoutInflater.from(context);
-            mListener = listener;
+            inflater = LayoutInflater.from(context);
+            this.groupDividerEnabled = groupDividerEnabled;
+            this.menuCallback = menuCallback;
+            menuItemClickListener = listener;
 
             //noinspection ConstantConditions
-            mSubMenuPointer = context.getDrawable(R.drawable.ic_baseline_arrow_right_24);
+            subMenuPointer = context.getDrawable(R.drawable.ic_baseline_arrow_right_24);
 
             setMenu(menu);
         }
@@ -387,7 +415,7 @@ public class ExtPopupMenu {
          * @param menu to add.
          */
         private void setMenu(@NonNull final Menu menu) {
-            mList.clear();
+            list.clear();
             int previousGroupId = menu.size() > 0 ? menu.getItem(0).getGroupId() : 0;
 
             for (int i = 0; i < menu.size(); i++) {
@@ -397,20 +425,20 @@ public class ExtPopupMenu {
                     if (groupDividerEnabled && groupId != previousGroupId) {
                         previousGroupId = groupId;
                         // this is silly... but the only way we can create a MenuItem directly
-                        final MenuItem divider = new PopupMenu(mInflater.getContext(), null)
+                        final MenuItem divider = new PopupMenu(inflater.getContext(), null)
                                 .getMenu()
                                 .add(Menu.NONE, R.id.MENU_DIVIDER, item.getOrder(), "")
                                 .setEnabled(false);
-                        mList.add(divider);
+                        list.add(divider);
                     }
-                    mList.add(item);
+                    list.add(item);
                 }
             }
         }
 
         @Override
         public int getItemViewType(final int position) {
-            if (mList.get(position).getItemId() == R.id.MENU_DIVIDER) {
+            if (list.get(position).getItemId() == R.id.MENU_DIVIDER) {
                 return R.layout.row_simple_list_divider;
             } else {
                 return R.layout.row_simple_list_item;
@@ -421,7 +449,7 @@ public class ExtPopupMenu {
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final View root = mInflater.inflate(viewType, parent, false);
+            final View root = inflater.inflate(viewType, parent, false);
 
             final Holder holder = new Holder(viewType, root);
             if (holder.textView != null) {
@@ -432,20 +460,16 @@ public class ExtPopupMenu {
 
         @SuppressLint("NotifyDataSetChanged")
         void onItemClicked(@NonNull final Holder holder) {
-            final MenuItem item = mList.get(holder.getBindingAdapterPosition());
+            final MenuItem item = list.get(holder.getBindingAdapterPosition());
             if (item.isEnabled()) {
                 if (item.hasSubMenu()) {
-                    vb.title.setText(item.getTitle());
-                    vb.title.setVisibility(View.VISIBLE);
                     setMenu(item.getSubMenu());
                     notifyDataSetChanged();
-
-                    final int[] wh = calculatePopupWindowWidthAndHeight();
-                    popupWindow.update(wh[0], wh[1]);
+                    menuCallback.update(item.getTitle().toString());
 
                 } else {
-                    popupWindow.dismiss();
-                    mListener.onMenuItemClick(item);
+                    menuCallback.dismiss();
+                    menuItemClickListener.onMenuItemClick(item);
                 }
             }
         }
@@ -454,7 +478,7 @@ public class ExtPopupMenu {
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
             if (holder.textView != null) {
-                final MenuItem item = mList.get(position);
+                final MenuItem item = list.get(position);
                 holder.textView.setEnabled(item.isEnabled());
 
                 holder.textView.setText(item.getTitle());
@@ -462,7 +486,7 @@ public class ExtPopupMenu {
                 // add a little arrow to indicate sub-menus.
                 if (item.hasSubMenu()) {
                     holder.textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            item.getIcon(), null, mSubMenuPointer, null);
+                            item.getIcon(), null, subMenuPointer, null);
                 } else {
                     holder.textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                             item.getIcon(), null, null, null);
@@ -472,7 +496,7 @@ public class ExtPopupMenu {
 
         @Override
         public int getItemCount() {
-            return mList.size();
+            return list.size();
         }
     }
 }

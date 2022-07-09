@@ -65,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 /**
  * {@link Style} maintenance.
  */
-@SuppressWarnings("MethodOnlyUsedFromInnerClass")
 public class PreferredStylesFragment
         extends BaseFragment {
 
@@ -73,6 +72,7 @@ public class PreferredStylesFragment
     public static final String TAG = "PreferredStylesFragment";
     @SuppressWarnings("FieldCanBeLocal")
     private MenuProvider toolbarMenuProvider;
+    private PreferredStylesViewModel vm;
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback backPressedCallback =
             new OnBackPressedCallback(true) {
@@ -88,8 +88,8 @@ public class PreferredStylesFragment
                     getActivity().finish();
                 }
             };
-    private PreferredStylesViewModel vm;
-
+    /** The adapter for the list. */
+    private StylesAdapter listAdapter;
     /** React to changes in the adapter. */
     private final SimpleAdapterDataObserver adapterDataObserver =
             new SimpleAdapterDataObserver() {
@@ -111,8 +111,6 @@ public class PreferredStylesFragment
                     vm.setDirty(true);
                 }
             };
-    /** The adapter for the list. */
-    private StylesAdapter listAdapter;
     @SuppressLint("NotifyDataSetChanged")
     private final ActivityResultLauncher<EditStyleContract.Input> editStyleContract =
             registerForActivityResult(new EditStyleContract(), o -> o.ifPresent(data -> {
@@ -128,9 +126,44 @@ public class PreferredStylesFragment
                     listAdapter.notifyDataSetChanged();
                 }
             }));
+
+    private final PositionHandler positionHandler = new PositionHandler() {
+
+        @Override
+        public int getSelectedPosition() {
+            return vm.getSelectedPosition();
+        }
+
+        @Override
+        public void setSelectedPosition(final int position) {
+            vm.setSelectedPosition(position);
+        }
+
+        @Override
+        public int findPreferredAndSelect(final int position) {
+            return vm.findPreferredAndSelect(position);
+        }
+
+        @Override
+        public void swapItems(final int fromPosition,
+                              final int toPosition) {
+            vm.onItemMove(fromPosition, toPosition);
+        }
+
+        @Override
+        public void showContextMenu(final View anchor,
+                                    final int position) {
+            final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
+                    .inflate(R.menu.editing_styles)
+                    .setGroupDividerEnabled();
+            prepareMenu(popupMenu.getMenu(), position);
+
+            popupMenu.showAsDropDown(anchor, menuItem ->
+                    onMenuItemSelected(menuItem, position));
+        }
+    };
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
-
     /** View Binding. */
     private FragmentEditStylesBinding vb;
 
@@ -167,7 +200,7 @@ public class PreferredStylesFragment
                      .addCallback(getViewLifecycleOwner(), backPressedCallback);
 
         //noinspection ConstantConditions
-        listAdapter = new StylesAdapter(getContext(), vm.getStyleList(),
+        listAdapter = new StylesAdapter(getContext(), vm.getStyleList(), positionHandler,
                                         vh -> itemTouchHelper.startDrag(vh));
         listAdapter.registerAdapterDataObserver(adapterDataObserver);
         vb.list.addItemDecoration(
@@ -254,6 +287,24 @@ public class PreferredStylesFragment
         return false;
     }
 
+    private interface PositionHandler {
+
+        int getSelectedPosition();
+
+        void setSelectedPosition(int position);
+
+        /**
+         * Find the best candidate position/style and make that one the 'selected'.
+         */
+        int findPreferredAndSelect(int position);
+
+        void swapItems(int fromPosition,
+                       int toPosition);
+
+        void showContextMenu(final View anchor,
+                             final int position);
+    }
+
     private static class Holder
             extends ItemTouchHelperViewHolderBase {
 
@@ -266,26 +317,11 @@ public class PreferredStylesFragment
         }
     }
 
-    private class ToolbarMenuProvider
-            implements MenuProvider {
-
-        @Override
-        public void onCreateMenu(@NonNull final Menu menu,
-                                 @NonNull final MenuInflater menuInflater) {
-            MenuCompat.setGroupDividerEnabled(menu, true);
-            menuInflater.inflate(R.menu.editing_styles, menu);
-            prepareMenu(menu, vm.getSelectedPosition());
-        }
-
-        @Override
-        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            return PreferredStylesFragment.this.onMenuItemSelected(menuItem,
-                                                                   vm.getSelectedPosition());
-        }
-    }
-
-    private class StylesAdapter
+    private static class StylesAdapter
             extends RecyclerViewAdapterBase<Style, Holder> {
+
+        @NonNull
+        private final PositionHandler positionHandler;
 
         /**
          * Constructor.
@@ -296,8 +332,10 @@ public class PreferredStylesFragment
          */
         StylesAdapter(@NonNull final Context context,
                       @NonNull final List<Style> items,
+                      @NonNull final PositionHandler positionHandler,
                       @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
+            this.positionHandler = positionHandler;
         }
 
         @NonNull
@@ -317,22 +355,16 @@ public class PreferredStylesFragment
             // Do NOT modify the 'preferred' state of the row here.
             holder.rowDetailsView.setOnClickListener(v -> {
                 // first update the previous, now unselected, row.
-                notifyItemChanged(vm.getSelectedPosition());
+                notifyItemChanged(positionHandler.getSelectedPosition());
                 // store the newly selected row.
-                vm.setSelectedPosition(holder.getBindingAdapterPosition());
+                positionHandler.setSelectedPosition(holder.getBindingAdapterPosition());
                 // update the newly selected row.
-                notifyItemChanged(vm.getSelectedPosition());
+                notifyItemChanged(positionHandler.getSelectedPosition());
             });
 
             // long-click -> context menu
             holder.rowDetailsView.setOnLongClickListener(v -> {
-                final ExtPopupMenu popupMenu = new ExtPopupMenu(getContext())
-                        .inflate(R.menu.editing_styles)
-                        .setGroupDividerEnabled();
-                prepareMenu(popupMenu.getMenu(), holder.getBindingAdapterPosition());
-
-                popupMenu.showAsDropDown(v, menuItem ->
-                        onMenuItemSelected(menuItem, holder.getBindingAdapterPosition()));
+                positionHandler.showContextMenu(v, holder.getBindingAdapterPosition());
                 return true;
             });
 
@@ -357,7 +389,7 @@ public class PreferredStylesFragment
             holder.checkableButton.setChecked(style.isPreferred());
 
             // set the 'selected' state of the current row
-            holder.itemView.setSelected(position == vm.getSelectedPosition());
+            holder.itemView.setSelected(position == positionHandler.getSelectedPosition());
         }
 
         /**
@@ -385,9 +417,8 @@ public class PreferredStylesFragment
             holder.checkableButton.setChecked(checked);
 
             // if the current position/style is no longer 'preferred' but was 'selected' ...
-            if (!checked && vm.getSelectedPosition() == position) {
-                // find the best candidate position/style and make that one the 'selected'
-                position = vm.findPreferredAndSelect(position);
+            if (!checked && positionHandler.getSelectedPosition() == position) {
+                position = positionHandler.findPreferredAndSelect(position);
             }
 
             notifyItemChanged(position);
@@ -396,8 +427,26 @@ public class PreferredStylesFragment
         @Override
         public boolean onItemMove(final int fromPosition,
                                   final int toPosition) {
-            vm.onItemMove(fromPosition, toPosition);
+            positionHandler.swapItems(fromPosition, toPosition);
             return super.onItemMove(fromPosition, toPosition);
+        }
+    }
+
+    private class ToolbarMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            MenuCompat.setGroupDividerEnabled(menu, true);
+            menuInflater.inflate(R.menu.editing_styles, menu);
+            prepareMenu(menu, vm.getSelectedPosition());
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            return PreferredStylesFragment.this.onMenuItemSelected(menuItem,
+                                                                   vm.getSelectedPosition());
         }
     }
 }

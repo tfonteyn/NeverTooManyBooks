@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelfViewModel;
 import com.hardbacknutter.nevertoomanybooks.TocBaseAdapter;
+import com.hardbacknutter.nevertoomanybooks.TocEntryHandler;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
@@ -154,7 +155,7 @@ public class TocFragment
         final int overlayType = Prefs.getFastScrollerOverlayType(context);
         FastScroller.attach(vb.toc, overlayType);
 
-        adapter = new TocAdapter(context, vm.getPrimaryAuthor(), vm.getWorks());
+        adapter = new TocAdapter(context, vm.getPrimaryAuthor(), vm.getWorks(), this::gotoBook);
         vb.toc.setAdapter(adapter);
         vb.toc.setHasFixedSize(true);
 
@@ -214,8 +215,11 @@ public class TocFragment
         }
     }
 
-    private class TocAdapter
+    private static class TocAdapter
             extends TocBaseAdapter {
+
+        @NonNull
+        private final TocEntryHandler tocEntryHandler;
 
         /**
          * Constructor.
@@ -225,8 +229,10 @@ public class TocFragment
          */
         TocAdapter(@NonNull final Context context,
                    @Nullable final Author primaryAuthor,
-                   @NonNull final List<AuthorWork> tocList) {
+                   @NonNull final List<AuthorWork> tocList,
+                   @NonNull final TocEntryHandler tocEntryHandler) {
             super(context, primaryAuthor, tocList);
+            this.tocEntryHandler = tocEntryHandler;
         }
 
         @NonNull
@@ -238,7 +244,8 @@ public class TocFragment
 
             //URGENT TEST
             // click -> get the book(s) for that entry and display.
-            //holder.itemView.setOnClickListener(v -> gotoBook(holder.getBindingAdapterPosition()));
+//            holder.itemView.setOnClickListener(
+//             v -> tocEntryHandler.viewBook(holder.getBindingAdapterPosition()));
 
             return holder;
         }
