@@ -55,7 +55,7 @@ abstract class TaskBase<Result>
      * Set by a client or from within the task.
      * It's a <strong>request</strong> to cancel while running.
      */
-    private final AtomicBoolean cancelled = new AtomicBoolean();
+    private final AtomicBoolean cancelRequested = new AtomicBoolean();
 
     /** State of this task. */
     @NonNull
@@ -113,7 +113,7 @@ abstract class TaskBase<Result>
     @UiThread
     protected void execute() {
         synchronized (this) {
-            if (status != Status.Created && status != Status.Finished) {
+            if (status == Status.Pending || status == Status.Running) {
                 throw new IllegalStateException("task already running");
             }
 
@@ -181,23 +181,22 @@ abstract class TaskBase<Result>
      */
     protected abstract void setTaskFailure(@NonNull Exception e);
 
-    //FIXME: Potentially unsafe 'if != null then cancel'
     @Override
     @CallSuper
     @AnyThread
     public void cancel() {
-        cancelled.set(true);
+        cancelRequested.set(true);
     }
 
     /**
      * Pull-request to check if this task is / should be cancelled.
      *
-     * @return cancel-status
+     * @return {@code true} if a request was previously made to cancel this task.
      */
     @Override
     @AnyThread
     public boolean isCancelled() {
-        return cancelled.get();
+        return cancelRequested.get();
     }
 
     @AnyThread
@@ -273,5 +272,12 @@ abstract class TaskBase<Result>
          * or it could have been cancelled. Regardless, it's 'done'
          */
         Finished
+//
+//        /** The task has finished successfully. */
+//        Finished,
+//        /** The task failed (usually with an Exception). */
+//        Failed,
+//        /** The task was cancelled. It <strong>might</strong> have a (partial) result. */
+//        Cancelled
     }
 }
