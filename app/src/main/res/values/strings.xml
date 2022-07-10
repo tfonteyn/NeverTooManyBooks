@@ -469,6 +469,7 @@
     <string name="tip_authors_works_book">Book.</string>
     <!-- shown next to related icon / contentDescription for button. -->
     <string name="tip_authors_works_multiple_books">Entry is present in multiple books.</string>
+    <string name="tip_authors_works_single_book">Entry is present in a single book.</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Calibre specific ========== -->
@@ -1355,6 +1356,7 @@
     <string name="lbl_anthology">Anthology</string>
     <string name="lbl_collection">Collection</string>
     <string name="lbl_story_in_multiple_books">“%1$s”\n is present in multiple books:\n\n%2$s</string>
+    <string name="lbl_story_in_single_book">“%1$s”\n is present in a single book:\n\n%2$s</string>
 
     <string name="lbl_format">Format</string>
     <!-- [VERIFIED] -->

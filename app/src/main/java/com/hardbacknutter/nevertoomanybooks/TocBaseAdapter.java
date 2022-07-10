@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,13 +53,19 @@ public abstract class TocBaseAdapter
     @Nullable
     private final Author mainAuthor;
     @NonNull
-    private final String bookStr;
+    protected final TocEntryHandler tocEntryHandler;
     @NonNull
-    private final Drawable bookEntryIcon;
+    private final String tocStr;
+    @NonNull
+    private final Drawable tocIcon;
+    @NonNull
+    private final String bookStr;
     @NonNull
     private final String multipleBooksStr;
     @NonNull
-    private final Drawable tocEntryIcon;
+    private final Drawable bookIcon;
+    @NonNull
+    private final Drawable multipleBooksIcon;
 
     /**
      * Constructor.
@@ -71,61 +77,63 @@ public abstract class TocBaseAdapter
     @SuppressLint("UseCompatLoadingForDrawables")
     public TocBaseAdapter(@NonNull final Context context,
                           @Nullable final Author mainAuthor,
-                          @NonNull final List<AuthorWork> works) {
+                          @NonNull final List<AuthorWork> works,
+                          @NonNull final TocEntryHandler tocEntryHandler) {
         inflater = LayoutInflater.from(context);
         this.mainAuthor = mainAuthor;
         this.works = works;
+        this.tocEntryHandler = tocEntryHandler;
 
         final Resources.Theme theme = context.getTheme();
         final Resources res = context.getResources();
 
-        // The entry is an actual book
-        bookStr = res.getString(R.string.lbl_book);
-        bookEntryIcon = res.getDrawable(R.drawable.ic_baseline_book_24, theme);
+        // The entry is a story (etc...) which appears in one book only.
+        tocStr = res.getString(R.string.lbl_table_of_content_entry);
+        tocIcon = res.getDrawable(R.drawable.ic_baseline_menu_book_24, theme);
         // The entry is a story (etc...) which appears in multiple books.
         multipleBooksStr = res.getString(R.string.tip_authors_works_multiple_books);
-        tocEntryIcon = res.getDrawable(R.drawable.ic_baseline_library_books_24, theme);
+        multipleBooksIcon = res.getDrawable(R.drawable.ic_baseline_library_books_24, theme);
+        // The entry is an actual book
+        bookStr = res.getString(R.string.lbl_book);
+        bookIcon = res.getDrawable(R.drawable.ic_baseline_book_24, theme);
+
     }
 
     @NonNull
     @Override
     public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                      final int viewType) {
-        final RowAuthorWorkBinding hVb = RowAuthorWorkBinding
-                .inflate(inflater, parent, false);
-        final Holder holder = new Holder(hVb);
-        initTypeButton(holder, viewType);
+        final Holder holder = new Holder(RowAuthorWorkBinding
+                                                 .inflate(inflater, parent, false));
+
+        holder.vb.btnType.setOnClickListener(v -> onTypeButtonClicked(v, holder));
 
         return holder;
     }
 
-    private void initTypeButton(@NonNull final Holder holder,
-                                final int viewType) {
+    private void onTypeButtonClicked(@NonNull final View v,
+                                     @NonNull final Holder holder) {
+        final Context context = v.getContext();
+        final AuthorWork work = works.get(holder.getBindingAdapterPosition());
+        final String titles = work
+                .getBookTitles(context)
+                .stream()
+                .map(bt -> context.getString(R.string.list_element,
+                                             bt.getLabel(context)))
+                .collect(Collectors.joining("\n"));
 
-        if (viewType == AuthorWork.Type.TocEntry.value) {
-            holder.vb.btnType.setImageDrawable(tocEntryIcon);
-            holder.vb.btnType.setContentDescription(multipleBooksStr);
-
-            holder.vb.btnType.setOnClickListener(v -> {
-                final Context context = v.getContext();
-                final String titles = works
-                        .get(holder.getBindingAdapterPosition())
-                        .getBookTitles(context)
-                        .stream()
-                        .map(bt -> context.getString(R.string.list_element,
-                                                     bt.getLabel(context)))
-                        .collect(Collectors.joining("\n"));
-                final String msg = context.getString(R.string.lbl_story_in_multiple_books,
-                                                     holder.vb.title.getText().toString(),
-                                                     titles);
-                // x/y offsets more or less arbitrary
-                StandardDialogs.infoPopup(holder.vb.btnType, 24, -160, msg);
-            });
+        if (work.getBookCount() > 1) {
+            final String msg = context.getString(R.string.lbl_story_in_multiple_books,
+                                                 holder.vb.title.getText().toString(),
+                                                 titles);
+            // x/y offsets more or less arbitrary
+            StandardDialogs.infoPopup(holder.vb.btnType, 24, -160, msg);
         } else {
-            // AuthorWork.Type.Book
-            // AuthorWork.Type.BookLight
-            holder.vb.btnType.setImageDrawable(bookEntryIcon);
-            holder.vb.btnType.setContentDescription(bookStr);
+            final String msg = context.getString(R.string.lbl_story_in_single_book,
+                                                 holder.vb.title.getText().toString(),
+                                                 titles);
+            // x/y offsets more or less arbitrary
+            StandardDialogs.infoPopup(holder.vb.btnType, 24, -160, msg);
         }
     }
 
@@ -137,11 +145,19 @@ public abstract class TocBaseAdapter
 
         final AuthorWork work = works.get(position);
 
-        // No icon for TocEntry which appear in a single book
-        if (work.getWorkType() == AuthorWork.Type.TocEntry && work.getBookCount() <= 1) {
-            holder.vb.btnType.setVisibility(View.INVISIBLE);
+        if (work.getWorkType() == AuthorWork.Type.TocEntry) {
+            if (work.getBookCount() > 1) {
+                holder.vb.btnType.setImageDrawable(multipleBooksIcon);
+                holder.vb.btnType.setContentDescription(multipleBooksStr);
+            } else {
+                holder.vb.btnType.setImageDrawable(tocIcon);
+                holder.vb.btnType.setContentDescription(tocStr);
+            }
         } else {
-            holder.vb.btnType.setVisibility(View.VISIBLE);
+            // AuthorWork.Type.Book
+            // AuthorWork.Type.BookLight
+            holder.vb.btnType.setImageDrawable(bookIcon);
+            holder.vb.btnType.setContentDescription(bookStr);
         }
 
         holder.vb.title.setText(work.getLabel(context));

@@ -218,9 +218,6 @@ public class TocFragment
     private static class TocAdapter
             extends TocBaseAdapter {
 
-        @NonNull
-        private final TocEntryHandler tocEntryHandler;
-
         /**
          * Constructor.
          *
@@ -231,8 +228,7 @@ public class TocFragment
                    @Nullable final Author primaryAuthor,
                    @NonNull final List<AuthorWork> tocList,
                    @NonNull final TocEntryHandler tocEntryHandler) {
-            super(context, primaryAuthor, tocList);
-            this.tocEntryHandler = tocEntryHandler;
+            super(context, primaryAuthor, tocList, tocEntryHandler);
         }
 
         @NonNull

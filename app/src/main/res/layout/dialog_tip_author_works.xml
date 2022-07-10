@@ -38,6 +38,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/section_margin_top"
+        android:drawableStart="@drawable/ic_baseline_menu_book_24"
+        android:drawablePadding="@dimen/field_margin_inline"
+        android:text="@string/tip_authors_works_single_book"
+        tools:ignore="UseCompatTextViewDrawableXml"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/section_margin_top"
         android:drawableStart="@drawable/ic_baseline_library_books_24"
         android:drawablePadding="@dimen/field_margin_inline"
         android:text="@string/tip_authors_works_multiple_books"
