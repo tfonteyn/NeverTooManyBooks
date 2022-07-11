@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,18 +28,17 @@ import androidx.annotation.AnyThread;
 public interface Cancellable {
 
     /**
-     * Check if the task is or should be cancelled.
-     *
-     * @return {@code true} if the task was cancelled before it finished/failed
-     *         {@code false} if it has not been started yet, or has finished/failed
-     */
-    @AnyThread
-    boolean isCancelled();
-
-    /**
      * Attempt to cancel execution of the current task.
-     * This is a REQUEST. Implementations might ignore this request.
+     * This is a <strong>request</strong>. Implementations might ignore this request.
      */
     @AnyThread
     void cancel();
+
+    /**
+     * Check if the task is or should be cancelled.
+     *
+     * @return {@code true} if a request was previously made to cancel this task.
+     */
+    @AnyThread
+    boolean isCancelled();
 }
