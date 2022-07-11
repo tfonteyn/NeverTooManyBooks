@@ -51,10 +51,7 @@ abstract class TaskBase<Result>
     @NonNull
     private final String taskName;
 
-    /**
-     * Set by a client or from within the task.
-     * It's a <strong>request</strong> to cancel while running.
-     */
+    /** @see #cancel() */
     private final AtomicBoolean cancelRequested = new AtomicBoolean();
 
     /** State of this task. */
@@ -102,6 +99,11 @@ abstract class TaskBase<Result>
     @NonNull
     String getTaskName() {
         return taskName;
+    }
+
+    @NonNull
+    public Status getStatus() {
+        return status;
     }
 
     /**
@@ -188,20 +190,20 @@ abstract class TaskBase<Result>
         cancelRequested.set(true);
     }
 
-    /**
-     * Pull-request to check if this task is / should be cancelled.
-     *
-     * @return {@code true} if a request was previously made to cancel this task.
-     */
     @Override
     @AnyThread
     public boolean isCancelled() {
         return cancelRequested.get();
     }
 
+    /**
+     * Check if the task has been queued or already running.
+     *
+     * @return {@code true} if the task is in an active state
+     */
     @AnyThread
-    public boolean isRunning() {
-        return status == Status.Running;
+    public boolean isActive() {
+        return status == Status.Running || status == Status.Pending;
     }
 
     /**

@@ -783,7 +783,7 @@ public class BooksOnBookshelfViewModel
     }
 
     boolean isBuilding() {
-        return boBTask.isRunning();
+        return boBTask.isActive();
     }
 
     void onBuildFinished(@NonNull final BoBTask.Outcome outcome) {

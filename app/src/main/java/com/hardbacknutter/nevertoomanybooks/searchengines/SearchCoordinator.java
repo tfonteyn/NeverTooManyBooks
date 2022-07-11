@@ -125,7 +125,7 @@ public class SearchCoordinator
     private final Collection<SearchTask> activeTasks = new HashSet<>();
 
     /** Flag indicating we're shutting down. */
-    private final AtomicBoolean cancelled = new AtomicBoolean();
+    private final AtomicBoolean cancelRequested = new AtomicBoolean();
 
     /** Accumulates the results from <strong>individual</strong> search tasks. */
     @SuppressLint("UseSparseArrays")
@@ -235,7 +235,7 @@ public class SearchCoordinator
         }
 
         // ALWAYS store, even when null!
-        // Presence of the site/task id in the map is an indication that the site ws processed
+        // Presence of the site/task id in the map is an indication that the site was processed
         synchronized (searchResultsBySite) {
             searchResultsBySite.put(taskId, new WrappedTaskResult(taskId, searchBy, result));
         }
@@ -248,7 +248,7 @@ public class SearchCoordinator
 
         // Start new search(es) as needed/allowed.
         boolean searchStarted = false;
-        if (!cancelled.get()) {
+        if (!cancelRequested.get()) {
             //  update our listener with the current progress status
             searchCoordinatorProgress.setValue(new LiveDataEvent<>(accumulateProgress()));
 
@@ -279,7 +279,7 @@ public class SearchCoordinator
             // if we didn't start a new search (which might not be active yet!),
             // and there are no previous searches still running
             // (or we got cancelled) then we are done.
-            stopSearching = !searchStarted && (activeTasks.isEmpty() || cancelled.get());
+            stopSearching = !searchStarted && (activeTasks.isEmpty() || cancelRequested.get());
         }
 
         if (stopSearching) {
@@ -294,7 +294,7 @@ public class SearchCoordinator
             final LiveDataEvent<TaskResult<Bundle>> message =
                     new LiveDataEvent<>(new TaskResult<>(R.id.TASK_ID_SEARCH_COORDINATOR,
                                                          bookData));
-            if (cancelled.get()) {
+            if (cancelRequested.get()) {
                 searchCoordinatorCancelled.setValue(message);
             } else {
                 searchCoordinatorFinished.setValue(message);
@@ -302,7 +302,7 @@ public class SearchCoordinator
 
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "onSearchTaskFinished"
-                           + "|cancelled=" + cancelled.get()
+                           + "|cancelled=" + cancelRequested.get()
                            + "|searchErrors=" + searchErrors);
 
                 if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
@@ -408,7 +408,7 @@ public class SearchCoordinator
      * Cancel all searches.
      */
     public void cancel() {
-        cancelled.set(true);
+        cancelRequested.set(true);
         synchronized (activeTasks) {
             for (final SearchTask searchTask : activeTasks) {
                 searchTask.cancel();
@@ -429,7 +429,7 @@ public class SearchCoordinator
 
     @Override
     public boolean isCancelled() {
-        return cancelled.get();
+        return cancelRequested.get();
     }
 
     /**
@@ -575,7 +575,7 @@ public class SearchCoordinator
 
         // reset flags
         waitingForIsbnOrCode = false;
-        cancelled.set(false);
+        cancelRequested.set(false);
 
         // no synchronized needed here
         searchResultsBySite.clear();
@@ -751,7 +751,7 @@ public class SearchCoordinator
     private boolean startSearch(@NonNull final SearchEngine searchEngine) {
 
         // refuse new searches if we're shutting down.
-        if (cancelled.get()) {
+        if (cancelRequested.get()) {
             return false;
         }
 
@@ -932,7 +932,7 @@ public class SearchCoordinator
      */
     private boolean startSearch() {
         // refuse new searches if we're shutting down.
-        if (cancelled.get()) {
+        if (cancelRequested.get()) {
             return false;
         }
 
@@ -971,7 +971,7 @@ public class SearchCoordinator
      */
     private boolean startNextSearch() {
         // refuse new searches if we're shutting down.
-        if (cancelled.get()) {
+        if (cancelRequested.get()) {
             return false;
         }
 

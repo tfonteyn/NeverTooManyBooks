@@ -87,7 +87,7 @@ public abstract class DataWriterViewModel<RESULTS>
     }
 
     public boolean isRunning() {
-        return writerTask.isRunning();
+        return writerTask.isActive();
     }
 
     public void cancelTask(@IdRes final int taskId) {

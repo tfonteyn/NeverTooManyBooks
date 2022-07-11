@@ -112,7 +112,7 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
     }
 
     public boolean isRunning() {
-        return readerTask.isRunning();
+        return readerTask.isActive();
     }
 
     public void cancelTask(@IdRes final int taskId) {
