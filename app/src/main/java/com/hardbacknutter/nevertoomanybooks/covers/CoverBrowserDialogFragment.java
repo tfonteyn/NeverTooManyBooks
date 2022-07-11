@@ -98,14 +98,28 @@ public class CoverBrowserDialogFragment
 
     private ImageViewLoader previewLoader;
     private final PositionHandler positionHandler = new PositionHandler() {
+
         @Override
-        public void selectGalleryImage(final ImageFileInfo imageFileInfo) {
-            onGalleryImageSelected(imageFileInfo);
+        public void onGalleryImageSelected(final ImageFileInfo imageFileInfo) {
+            // Display the given file in the preview View.
+            // Starts a task to fetch a large(r) image if needed.
+            imageFileInfo.getFile().ifPresent(file -> {
+                if (Size.Large == imageFileInfo.getSize()) {
+                    // the gallery image IS a valid large image, so just display it
+                    setSelectedImage(imageFileInfo);
+                } else {
+                    vb.preview.setVisibility(View.INVISIBLE);
+                    vb.previewProgressBar.show();
+
+                    // start a task to fetch a larger image
+                    vm.fetchSelectedImage(imageFileInfo);
+                }
+            });
         }
 
         @Override
         public void fetchGalleryImage(final String isbn) {
-
+            vm.fetchGalleryImage(isbn);
         }
 
         @Nullable
@@ -202,13 +216,11 @@ public class CoverBrowserDialogFragment
     public void onResume() {
         super.onResume();
         // if the task is NOT already running and we have no editions loaded before
-        if (!vm.isSearchEditionsTaskRunning()) {
-            if (vm.getEditions().isEmpty()) {
-                // start the task
-                vb.statusMessage.setText(R.string.progress_msg_searching_editions);
-                vb.progressBar.show();
-                vm.searchEditions();
-            }
+        if (!vm.isSearchEditionsTaskRunning() && vm.getEditions().isEmpty()) {
+            // start the task
+            vb.statusMessage.setText(R.string.progress_msg_searching_editions);
+            vb.progressBar.show();
+            vm.searchEditions();
         }
 
         // If currently not shown, set a reasonable size for the preview image
@@ -289,28 +301,6 @@ public class CoverBrowserDialogFragment
     }
 
     /**
-     * The user clicked an image in the gallery.
-     * Display the given file in the preview View.
-     * Starts a task to fetch a large(r) image if needed.
-     *
-     * @param imageFileInfo to use
-     */
-    private void onGalleryImageSelected(@NonNull final ImageFileInfo imageFileInfo) {
-        imageFileInfo.getFile().ifPresent(file -> {
-            if (Size.Large == imageFileInfo.getSize()) {
-                // the gallery image IS a valid large image, so just display it
-                setSelectedImage(imageFileInfo);
-            } else {
-                vb.preview.setVisibility(View.INVISIBLE);
-                vb.previewProgressBar.show();
-
-                // start a task to fetch a larger image
-                vm.fetchSelectedImage(imageFileInfo);
-            }
-        });
-    }
-
-    /**
      * Display the given image in the preview View.
      *
      * @param imageFileInfo to display
@@ -337,12 +327,16 @@ public class CoverBrowserDialogFragment
         Snackbar.make(vb.preview, R.string.warning_image_not_found,
                       Snackbar.LENGTH_LONG).show();
         vb.statusMessage.setText(R.string.txt_tap_on_thumbnail_to_zoom);
-
     }
 
     private interface PositionHandler {
 
-        void selectGalleryImage(final ImageFileInfo imageFileInfo);
+        /**
+         * The user clicked an image in the gallery.
+         *
+         * @param imageFileInfo for the image
+         */
+        void onGalleryImageSelected(final ImageFileInfo imageFileInfo);
 
         void fetchGalleryImage(final String isbn);
 
@@ -509,7 +503,7 @@ public class CoverBrowserDialogFragment
 
                     // keep this statement here, or we would need to call file.exists() twice
                     holder.vb.coverImage0.setOnClickListener(
-                            v -> positionHandler.selectGalleryImage(imageFileInfo));
+                            v -> positionHandler.onGalleryImageSelected(imageFileInfo));
 
                     holder.vb.lblSite.setText(SearchEngineRegistry
                                                       .getInstance()
