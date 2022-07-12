@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -118,10 +118,10 @@ public class CalibreHandlerViewModel
     }
 
     /**
-     * Start the download task.
+     * Start the task to download the given book, storing it in the given folder.
      *
      * @param book   to download
-     * @param folder to store the result
+     * @param folder to save to
      */
     public void startDownload(@NonNull final Book book,
                               @NonNull final Uri folder) {

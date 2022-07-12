@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,6 +54,12 @@ class SingleFileDownloadTask
         this.server = server;
     }
 
+    /**
+     * Start the task to download the given book, storing it in the given folder.
+     *
+     * @param book   to download
+     * @param folder to save to
+     */
     public void download(@NonNull final Book book,
                          @NonNull final Uri folder) {
         this.book = book;
@@ -61,7 +67,7 @@ class SingleFileDownloadTask
 
         // sanity check
         if (this.book.getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT).isEmpty()) {
-            //TODO: use a better message
+            //TODO: use a better message + don't abuse the task observers
             setTaskFailure(new TaskStartException(R.string.error_download_failed));
             return;
         }
