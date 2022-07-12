@@ -55,7 +55,7 @@ public abstract class SearchEngineBase
      * Set by a client or from within the task.
      * It's a <strong>request</strong> to cancel while running.
      */
-    private final AtomicBoolean cancelled = new AtomicBoolean();
+    private final AtomicBoolean cancelRequested = new AtomicBoolean();
     @NonNull
     private final ImageDownloader imageDownloader;
     @Nullable
@@ -157,7 +157,7 @@ public abstract class SearchEngineBase
     @AnyThread
     @Override
     public void cancel() {
-        cancelled.set(true);
+        cancelRequested.set(true);
         synchronized (imageDownloader) {
             imageDownloader.cancel();
         }
@@ -166,14 +166,14 @@ public abstract class SearchEngineBase
     @Override
     public void setCaller(@Nullable final Cancellable caller) {
         this.caller = caller;
-        cancelled.set(false);
+        cancelRequested.set(false);
     }
 
     @Override
     public boolean isCancelled() {
         // caller being null should only happen when we check if we're cancelled
         // before a search was started.
-        return cancelled.get() || caller == null || caller.isCancelled();
+        return cancelRequested.get() || caller == null || caller.isCancelled();
     }
 
     /**
