@@ -85,7 +85,7 @@ public class StyleDataStore
 
     /** Show the cover image (front only) for each book on the list screen. */
     public static final String PK_LIST_SHOW_COVERS = "style.booklist.show.thumbnails";
-    /** Show/hide thse fields for each book on the list screen. */
+    /** Show/hide these fields for each book on the list screen. */
     public static final String PK_LIST_SHOW_AUTHOR = "style.booklist.show.author";
     public static final String PK_LIST_SHOW_PUBLISHER = "style.booklist.show.publisher";
     public static final String PK_LIST_SHOW_SERIES = "style.booklist.show.series";
