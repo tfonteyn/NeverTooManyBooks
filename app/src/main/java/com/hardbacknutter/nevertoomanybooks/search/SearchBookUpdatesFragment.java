@@ -159,7 +159,6 @@ public class SearchBookUpdatesFragment
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> prepareUpdate());
 
-        //URGENT: MaterialDividerItemDecoration should not draw at far-right.
         //noinspection ConstantConditions
         final GridDividerItemDecoration columnDivider =
                 new GridDividerItemDecoration(getContext(), false, true);
