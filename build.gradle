@@ -84,7 +84,7 @@ buildscript {
         google_material_version = '1.7.0-alpha02'
 
         // https://jsoup.org/
-        jsoup_version = '1.15.1'
+        jsoup_version = '1.15.2'
 
         // https://github.com/journeyapps/zxing-android-embedded
         zxing_android_embedded_version = '4.3.0'
