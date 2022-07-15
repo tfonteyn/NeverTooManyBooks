@@ -1798,9 +1798,8 @@ public class BooksOnBookshelf
         @Override
         public HeaderViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
                                                    final int viewType) {
-            final BooksonbookshelfHeaderBinding hVb = BooksonbookshelfHeaderBinding
-                    .inflate(inflater, parent, false);
-            return new HeaderViewHolder(hVb);
+            return new HeaderViewHolder(
+                    BooksonbookshelfHeaderBinding.inflate(inflater, parent, false));
         }
 
         @Override

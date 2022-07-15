@@ -301,9 +301,8 @@ public class EditBookshelvesFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final RowEditBookshelfBinding hVb = RowEditBookshelfBinding
-                    .inflate(inflater, parent, false);
-            final Holder holder = new Holder(hVb);
+            final Holder holder = new Holder(
+                    RowEditBookshelfBinding.inflate(inflater, parent, false));
 
             // click -> set the row as 'selected'.
             holder.vb.name.setOnClickListener(v -> {

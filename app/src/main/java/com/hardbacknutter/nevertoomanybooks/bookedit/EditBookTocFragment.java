@@ -704,9 +704,9 @@ public class EditBookTocFragment
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
 
-            final RowEditTocEntryBinding hVb = RowEditTocEntryBinding
-                    .inflate(getLayoutInflater(), parent, false);
-            final Holder holder = new Holder(hVb);
+            final Holder holder = new Holder(
+                    RowEditTocEntryBinding.inflate(getLayoutInflater(), parent, false));
+
             holder.rowDetailsView.setOnClickListener(
                     v -> adapterRowHandler.edit(holder.getBindingAdapterPosition()));
 

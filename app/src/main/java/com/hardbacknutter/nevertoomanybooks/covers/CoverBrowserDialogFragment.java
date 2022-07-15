@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.covers;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
@@ -236,6 +237,7 @@ public class CoverBrowserDialogFragment
     /**
      * Show the user a selection of other covers and allow selection of a replacement.
      */
+    @SuppressLint("NotifyDataSetChanged")
     private void showGallery(@Nullable final Collection<String> result) {
         Objects.requireNonNull(galleryAdapter, "galleryAdapter");
 
@@ -468,9 +470,8 @@ public class CoverBrowserDialogFragment
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
 
-            final RowCoverBrowserGalleryBinding hVb = RowCoverBrowserGalleryBinding
-                    .inflate(inflater, parent, false);
-            return new Holder(hVb, maxWidth, maxHeight);
+            return new Holder(RowCoverBrowserGalleryBinding.inflate(inflater, parent, false),
+                              maxWidth, maxHeight);
         }
 
         @Override

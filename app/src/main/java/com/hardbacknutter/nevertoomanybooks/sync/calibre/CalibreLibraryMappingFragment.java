@@ -273,9 +273,9 @@ public class CalibreLibraryMappingFragment
         @NonNull
         private final RowEditCalibreLibraryBinding vb;
 
-        Holder(@NonNull final View itemView) {
-            super(itemView);
-            vb = RowEditCalibreLibraryBinding.bind(itemView);
+        Holder(@NonNull final RowEditCalibreLibraryBinding vb) {
+            super(vb.getRoot());
+            this.vb = vb;
         }
     }
 
@@ -298,9 +298,9 @@ public class CalibreLibraryMappingFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final View itemView = inflater
-                    .inflate(R.layout.row_edit_calibre_library, parent, false);
-            final Holder holder = new Holder(itemView);
+
+            final Holder holder = new Holder(
+                    RowEditCalibreLibraryBinding.inflate(inflater, parent, false));
 
             holder.vb.bookshelf.setAdapter(bookshelfAdapter);
             holder.vb.bookshelf.setOnItemClickListener((av, v, position, id) -> {

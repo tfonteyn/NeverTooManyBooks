@@ -352,9 +352,8 @@ public class SearchBookUpdatesFragment
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
 
-            final RowUpdateFromInternetBinding hVb = RowUpdateFromInternetBinding
-                    .inflate(inflater, parent, false);
-            final Holder holder = new Holder(hVb);
+            final Holder holder = new Holder(
+                    RowUpdateFromInternetBinding.inflate(inflater, parent, false));
 
             holder.vb.cbxUsage.setOnClickListener(v -> {
                 final int position = holder.getBindingAdapterPosition();
@@ -365,8 +364,8 @@ public class SearchBookUpdatesFragment
                 }
                 final SyncField fs = syncFields[listIndex];
                 fs.nextState();
-                hVb.cbxUsage.setChecked(fs.getAction() != SyncAction.Skip);
-                hVb.cbxUsage.setText(fs.getActionLabelResId());
+                holder.vb.cbxUsage.setChecked(fs.getAction() != SyncAction.Skip);
+                holder.vb.cbxUsage.setText(fs.getActionLabelResId());
             });
             return holder;
         }
