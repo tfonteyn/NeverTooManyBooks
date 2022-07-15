@@ -26,11 +26,10 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskStartException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.org.json.JSONException;
 
@@ -65,11 +64,10 @@ class SingleFileDownloadTask
         this.book = book;
         this.folder = folder;
 
-        // sanity check
-        if (this.book.getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT).isEmpty()) {
-            //TODO: use a better message + don't abuse the task observers
-            setTaskFailure(new TaskStartException(R.string.error_download_failed));
-            return;
+        if (BuildConfig.DEBUG /* always */) {
+            if (!CalibreBook.isCalibreBook(book)) {
+                throw new IllegalArgumentException("Missing Calibre keys");
+            }
         }
         execute();
     }

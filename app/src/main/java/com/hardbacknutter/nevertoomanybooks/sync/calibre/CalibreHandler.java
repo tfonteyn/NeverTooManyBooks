@@ -183,10 +183,8 @@ public class CalibreHandler {
                               @NonNull final Menu menu,
                               @NonNull final Book book) {
 
-        final boolean hasCalibreId = !book.getString(DBKey.CALIBRE_BOOK_UUID).isEmpty();
-
-        menu.findItem(R.id.SUBMENU_CALIBRE).setVisible(hasCalibreId);
-        if (hasCalibreId) {
+        if (CalibreBook.isCalibreBook(book)) {
+            menu.findItem(R.id.SUBMENU_CALIBRE).setVisible(true);
             if (CalibreContentServer.getFolderUri(context).isPresent()) {
                 // conditional
                 menu.findItem(R.id.MENU_CALIBRE_READ)
@@ -213,6 +211,7 @@ public class CalibreHandler {
             }
 
         } else {
+            menu.findItem(R.id.SUBMENU_CALIBRE).setVisible(false);
             menu.findItem(R.id.MENU_CALIBRE_READ).setVisible(false);
             menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD).setVisible(false);
             menu.findItem(R.id.MENU_CALIBRE_SETTINGS).setVisible(false);
