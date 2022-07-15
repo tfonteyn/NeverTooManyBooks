@@ -36,11 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
-/**
- * TODO: our use of observables is not always best-practice.
- * <a href="https://medium.com/androiddevelopers/viewmodel-one-off-event-antipatterns-16a1da869b95">
- *     ViewModel: One-off event antipatterns</a>
- */
 public class EditBookshelvesViewModel
         extends ViewModel {
 

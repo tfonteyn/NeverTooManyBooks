@@ -20,19 +20,22 @@
 package com.hardbacknutter.nevertoomanybooks.tasks;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
 
 import java.util.Optional;
 
 /**
- * Prevent acting twice on a delivered {@link LiveData} event.
+ * TODO: our use of observables is not always best-practice. Maybe look at RxJava
+ * <p>
+ * Prevent acting twice on a delivered {@link androidx.lifecycle.LiveData} event.
  * <p>
  * See <a href="https://medium.com/androiddevelopers/ac2622673150">this Medium post</a>
+ *
+ * <a href="https://medium.com/androiddevelopers/viewmodel-one-off-event-antipatterns-16a1da869b95">
+ * *     ViewModel: One-off event antipatterns</a>
  *
  * <a href = "https://developer.android.com/topic/architecture/ui-layer/events#consuming-trigger-updates">
  * consuming-trigger-updates</a>
  * Problem: the UI layer must perform a handshake with the VM for each and every UI update.
- * TODO: RxJava
  */
 public class LiveDataEvent<T> {
 
