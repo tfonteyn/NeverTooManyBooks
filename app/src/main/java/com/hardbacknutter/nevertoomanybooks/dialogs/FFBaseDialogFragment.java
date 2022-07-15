@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -358,7 +358,7 @@ public abstract class FFBaseDialogFragment
     protected void showError(@NonNull final TextInputLayout til,
                              @NonNull final CharSequence error) {
         til.setError(error);
-        til.postDelayed(() -> til.setError(null), BaseActivity.ERROR_DELAY_MS);
+        til.postDelayed(() -> til.setError(null), BaseActivity.DELAY_LONG_MS);
     }
 
     /**

@@ -160,7 +160,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
                     //noinspection ConstantConditions
                     Snackbar.make(getView(), R.string.info_authorized, Snackbar.LENGTH_SHORT)
                             .show();
-                    getView().postDelayed(this::popBackStackOrFinish, BaseActivity.ERROR_DELAY_MS);
+                    getView().postDelayed(this::popBackStackOrFinish, BaseActivity.DELAY_SHORT_MS);
                 } else {
                     //For now we don't get here, instead we would be in onFailure.
                     // But keeping this here to guard against future changes in the task logic

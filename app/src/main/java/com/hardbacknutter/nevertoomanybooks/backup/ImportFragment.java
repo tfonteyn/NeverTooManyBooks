@@ -363,7 +363,7 @@ public class ImportFragment
             Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG)
                     .show();
             //noinspection ConstantConditions
-            getView().postDelayed(() -> getActivity().finish(), BaseActivity.ERROR_DELAY_MS);
+            getView().postDelayed(() -> getActivity().finish(), BaseActivity.DELAY_LONG_MS);
         });
     }
 
@@ -457,7 +457,7 @@ public class ImportFragment
                 Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG)
                         .show();
                 //noinspection ConstantConditions
-                getView().postDelayed(() -> getActivity().finish(), BaseActivity.ERROR_DELAY_MS);
+                getView().postDelayed(() -> getActivity().finish(), BaseActivity.DELAY_LONG_MS);
             }
         });
     }

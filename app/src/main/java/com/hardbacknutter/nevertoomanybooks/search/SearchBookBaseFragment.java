@@ -274,13 +274,13 @@ public abstract class SearchBookBaseFragment
     protected void showError(@NonNull final TextInputLayout til,
                              @NonNull final CharSequence error) {
         til.setError(error);
-        til.postDelayed(() -> til.setError(null), BaseActivity.ERROR_DELAY_MS);
+        til.postDelayed(() -> til.setError(null), BaseActivity.DELAY_LONG_MS);
     }
 
     protected void showError(@NonNull final TextInputLayout til,
                              @StringRes final int error) {
         til.setError(getString(error));
-        til.postDelayed(() -> til.setError(null), BaseActivity.ERROR_DELAY_MS);
+        til.postDelayed(() -> til.setError(null), BaseActivity.DELAY_LONG_MS);
     }
 
     class SearchSitesToolbarMenuProvider

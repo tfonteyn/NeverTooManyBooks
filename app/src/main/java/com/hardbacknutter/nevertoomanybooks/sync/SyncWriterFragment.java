@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -187,7 +187,7 @@ public class SyncWriterFragment
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
             //noinspection ConstantConditions
-            getView().postDelayed(() -> getActivity().finish(), BaseActivity.ERROR_DELAY_MS);
+            getView().postDelayed(() -> getActivity().finish(), BaseActivity.DELAY_LONG_MS);
         });
     }
 

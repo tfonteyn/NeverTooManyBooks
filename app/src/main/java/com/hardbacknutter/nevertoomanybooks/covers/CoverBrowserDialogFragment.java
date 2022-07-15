@@ -244,7 +244,7 @@ public class CoverBrowserDialogFragment
         if (result == null || result.isEmpty()) {
             vb.progressBar.hide();
             vb.statusMessage.setText(R.string.warning_no_editions);
-            vb.statusMessage.postDelayed(this::dismiss, BaseActivity.ERROR_DELAY_MS);
+            vb.statusMessage.postDelayed(this::dismiss, BaseActivity.DELAY_LONG_MS);
         } else {
             // set the list and trigger the adapter
             vm.setEditions(result);
@@ -298,7 +298,7 @@ public class CoverBrowserDialogFragment
         if (galleryAdapter.getItemCount() == 0) {
             vb.progressBar.hide();
             vb.statusMessage.setText(R.string.warning_image_not_found);
-            vb.statusMessage.postDelayed(this::dismiss, BaseActivity.ERROR_DELAY_MS);
+            vb.statusMessage.postDelayed(this::dismiss, BaseActivity.DELAY_LONG_MS);
         }
     }
 

@@ -40,6 +40,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
@@ -54,9 +55,11 @@ public abstract class BaseActivity
 
     /**
      * Used to create a delay when leaving an Activity, showing a Message, ...
-     * Snackbar.LENGTH_LONG is 2750 ms.
+     * {@link Snackbar#LENGTH_SHORT} is 1500 ms.
+     * {@link Snackbar#LENGTH_LONG} is 2750 ms.
      */
-    public static final int ERROR_DELAY_MS = 3000;
+    public static final int DELAY_SHORT_MS = 1500;
+    public static final int DELAY_LONG_MS = 2800;
 
     private final ActivityResultLauncher<Long> manageBookshelvesBaseLauncher =
             registerForActivityResult(new EditBookshelvesContract(),
