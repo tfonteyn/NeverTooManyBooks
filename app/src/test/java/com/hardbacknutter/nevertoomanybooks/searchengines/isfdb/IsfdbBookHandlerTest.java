@@ -95,7 +95,9 @@ class IsfdbBookHandlerTest
 
         assertEquals("13665857", rawData.getString(DBKey.SID_OCLC));
 
-        assertEquals("Month from Locus1", rawData.getString(DBKey.DESCRIPTION));
+        assertEquals(
+                "First published in Great Britain 1975 by Dobson Books Ltd. This edition published 1986 by Methuen London Ltd. Month from Locus1",
+                rawData.getString(DBKey.DESCRIPTION));
 
         final ArrayList<Publisher> allPublishers = rawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);

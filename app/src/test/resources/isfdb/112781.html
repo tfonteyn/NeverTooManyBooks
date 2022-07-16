@@ -1,5 +1,5 @@
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -19,7 +19,6 @@
   -->
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<!--suppress ALL -->
 <html lang="en-us">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" >
@@ -31,7 +30,7 @@
 <div id="wrap">
 <a class="topbanner" href="http://www.isfdb.org/cgi-bin/index.cgi">
 <span>
-<img alt="ISFDB banner" src="http://www.isfdb.org/IsfdbBanner11.jpg">
+<img alt="ISFDB banner" src="http://www.isfdb.org/IsfdbBanner1.jpg">
 </span>
 </a>
 <div id="statusbar">
@@ -70,86 +69,109 @@ Search the database
 <div class="divider">
 Logged In As
 </div>
-<ul class="navbar">
-<li> HardbackNut
-<li><a href="http://www.isfdb.org/cgi-bin/dologout.cgi">Log Out</a>
-<li><a href="http://www.isfdb.org/wiki/index.php/Help:Navigation_Bar">Help Navigating</a>
-<li><a href="http://www.isfdb.org/wiki/index.php/User_talk:HardbackNut">My Messages</a>
-<li><a href="http://www.isfdb.org/cgi-bin/mypreferences.cgi">My Preferences</a>
-<li><a href="http://www.isfdb.org/cgi-bin/myrecent.cgi?0+I">My Recent Edits</a>
-<li><a href="http://www.isfdb.org/cgi-bin/myrecent.cgi?0+N">My Pending Edits</a>
-<li><a href="http://www.isfdb.org/cgi-bin/myrecent.cgi?0+R">My Rejected Edits</a>
-<li><a href="http://www.isfdb.org/cgi-bin/myrecent.cgi?0+P">My Errored Out Edits</a>
-<li><a href="http://www.isfdb.org/cgi-bin/myvotes.cgi">My Votes</a>
-<li><a href="http://www.isfdb.org/cgi-bin/usertag.cgi?1246525">My Tags</a>
-<li><a href="http://www.isfdb.org/cgi-bin/userver.cgi">My Primary Verifications</a>
-<li><a href="http://www.isfdb.org/cgi-bin/changed_verified_pubs.cgi">My Changed Primary Verifications</a>
-</ul>
+    <ul class="navbar">
+        <li> HardbackNut
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/dologout.cgi">Log Out</a>
+        <li><a href="http://www.isfdb.org/wiki/index.php/Help:Navigation_Bar">Help Navigating</a>
+        <li><a href="http://www.isfdb.org/wiki/index.php/User_talk:HardbackNut">My Messages</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/mypreferences.cgi">My Preferences</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/myrecent.cgi?0+I">My Recent Edits</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/myrecent.cgi?0+N">My Pending Edits</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/myrecent.cgi?0+R">My Rejected Edits</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/myrecent.cgi?0+P">My Errored Out
+            Edits</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/myvotes.cgi">My Votes</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/usertag.cgi?1246525">My Tags</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/my_verifications_menu.cgi">My
+            Verifications</a>
+            <span class="inverted">New!</span>
+    </ul>
 <div class="divider">
 Other Pages:
 </div>
-<ul class="navbar">
-<li><a href="http://www.isfdb.org/cgi-bin/index.cgi">Home Page</a>
-<li><a href="http://www.isfdb.org/wiki/index.php/Main_Page">ISFDB Wiki</a>
-<li><a href="http://www.isfdb.org/wiki/index.php/ISFDB:FAQ">ISFDB FAQ</a>
-<li><a href="http://www.isfdb.org/cgi-bin/calendar_menu.cgi" dir="ltr">SF Calendar</a>
-<li><a href="http://www.isfdb.org/cgi-bin/directory.cgi?author">Author Directory</a>
-<li><a href="http://www.isfdb.org/cgi-bin/award_directory.cgi">Award Directory</a>
-<li><a href="http://www.isfdb.org/cgi-bin/directory.cgi?publisher">Publisher Directory</a>
-<li><a href="http://www.isfdb.org/cgi-bin/directory.cgi?magazine">Magazine Directory</a>
-<li><a href="http://www.isfdb.org/cgi-bin/stats-and-tops.cgi">Statistics/Top Lists</a>
-<li><a href="http://www.isfdb.org/cgi-bin/recent.cgi">Recent Edits</a>
-<li><a href="http://www.isfdb.org/cgi-bin/recent_primary_ver.cgi">Primary Verifications</a>
-<li><a href="http://www.isfdb.org/cgi-bin/recentver.cgi">Secondary Verifications</a>
-<li><a href="http://www.isfdb.org/cgi-bin/edit/cleanup.cgi">Cleanup Reports</a>
-</ul>
-<div class="divider">
-  Amazon Links <i class="downarrow"></i>
-  <div class="divothersites" id="divAmazonsites">
-<ul class="listothersites">
-  <li><a href="https://www.amazon.com.au/dp/0413600106" target="_blank">Amazon Australia</a>
-  <li><a href="https://www.amazon.com.br/dp/0413600106" target="_blank">Amazon Brazil</a>
-  <li><a href="http://www.amazon.ca/dp/0413600106" target="_blank">Amazon Canada</a>
-  <li><a href="https://www.amazon.cn/dp/0413600106" target="_blank">Amazon China</a>
-  <li><a href="http://www.amazon.fr/dp/0413600106" target="_blank">Amazon France</a>
-  <li><a href="http://www.amazon.de/dp/0413600106" target="_blank">Amazon Germany</a>
-  <li><a href="https://www.amazon.in/dp/0413600106" target="_blank">Amazon India</a>
-  <li><a href="https://www.amazon.it/dp/0413600106" target="_blank">Amazon Italy</a>
-  <li><a href="https://www.amazon.co.jp/dp/0413600106" target="_blank">Amazon Japan</a>
-  <li><a href="https://www.amazon.com.mx/dp/0413600106" target="_blank">Amazon Mexico</a>
-  <li><a href="https://www.amazon.nl/dp/0413600106" target="_blank">Amazon Netherlands</a>
-  <li><a href="https://www.amazon.es/dp/0413600106" target="_blank">Amazon Spain</a>
-  <li><a href="https://www.amazon.com.tr/dp/0413600106" target="_blank">Amazon Turkey</a>
-  <li><a href="https://www.amazon.ae/dp/0413600106" target="_blank">Amazon UAE</a>
-<li><a href="http://www.amazon.co.uk/exec/obidos/ASIN/0413600106/isfdb-21" target="_blank">Amazon UK</a>
-<li><a href="http://www.amazon.com/gp/product/0413600106?ie=UTF8&amp;tag=isfdb-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0413600106" target="_blank">Amazon US</a>
-</ul>
-  </div>
+    <ul class="navbar">
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/index.cgi">Home Page</a>
+        <li><a href="http://www.isfdb.org/wiki/index.php/Main_Page">ISFDB Wiki</a>
+        <li><a href="http://www.isfdb.org/wiki/index.php/ISFDB:FAQ">ISFDB FAQ</a>
+        <li><a href="http://www.isfdb.org/cgi-bin/calendar_menu.cgi" dir="ltr">SF Calendar</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/directory.cgi?author">Author
+            Directory</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/award_directory.cgi">Award Directory</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/directory.cgi?publisher">Publisher
+            Directory</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/directory.cgi?magazine">Magazine
+            Directory</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/stats-and-tops.cgi">Statistics/Top
+            Lists</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/recent_activity_menu.cgi">Recent
+            Activity</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/edit/cleanup.cgi">Cleanup Reports</a>
+    </ul>
+    <div class="divider">
+        Amazon Links <i class="downarrow"></i>
+        <div class="divothersites" id="divAmazonsites">
+            <ul class="listothersites">
+                <li><a href="https://www.amazon.com.au/dp/0413600106" target="_blank">Australia</a>
+                <li><a href="https://www.amazon.com.br/dp/0413600106" target="_blank">Brazil</a>
+                <li><a href="http://www.amazon.ca/dp/0413600106" target="_blank">Canada</a>
+                <li><a href="https://www.amazon.cn/dp/0413600106" target="_blank">China</a>
+                <li><a href="http://www.amazon.fr/dp/0413600106" target="_blank">France</a>
+                <li><a href="http://www.amazon.de/dp/0413600106" target="_blank">Germany</a>
+                <li><a href="https://www.amazon.in/dp/0413600106" target="_blank">India</a>
+                <li><a href="https://www.amazon.it/dp/0413600106" target="_blank">Italy</a>
+                <li><a href="https://www.amazon.co.jp/dp/0413600106" target="_blank">Japan</a>
+                <li><a href="https://www.amazon.com.mx/dp/0413600106" target="_blank">Mexico</a>
+                <li><a href="https://www.amazon.nl/dp/0413600106" target="_blank">Netherlands</a>
+                <li><a href="https://www.amazon.es/dp/0413600106" target="_blank">Spain</a>
+                <li><a href="https://www.amazon.com.tr/dp/0413600106" target="_blank">Turkey</a>
+                <li><a href="https://www.amazon.ae/dp/0413600106" target="_blank">UAE</a>
+                <li><a href="http://www.amazon.co.uk/exec/obidos/ASIN/0413600106/isfdb-21"
+                       target="_blank">UK</a> (commissions earned)
+                <li>
+                    <a href="http://www.amazon.com/gp/product/0413600106?ie=UTF8&amp;tag=isfdb-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0413600106"
+                       target="_blank">US</a> (commissions earned)
+            </ul>
+        </div>
 </div>
-  <div class="divider">
-    Other Links <i class="downarrow"></i>
-    <div class="divothersites" id="divOthersites">
-      <ul class="listothersites">
-        <li><a href="http://www.abebooks.com/servlet/SearchResults?isbn=9780413600103"
-               target="_blank">AbeBooks.com</a>
-        <li><a href="http://www.alibris.com/booksearch?isbn=9780413600103"
-               target="_blank">alibris</a>
-<li><a href="http://www.angusrobertson.com.au/books/p/9780413600103" target="_blank">Angus &amp; Robertson</a>
-<li><a href="http://www.barnesandnoble.com/s/9780413600103" target="_blank">Barnes &amp; Noble</a>
-<li><a href="http://catalogue.bnf.fr/rechercher.do?motRecherche=0413600106" target="_blank">Bibliotheque nationale de France</a>
-<li><a href="http://www.biggerbooks.com/book/9780413600103" target="_blank">BiggerBooks.com</a>
-<li><a href="http://bookshop.blackwell.com/jsp/welcome.jsp?action=search&amp;type=isbn&amp;term=9780413600103" target="_blank">Blackwell</a>
-<li><a href="http://www.booksamillion.com/search?query=9780413600103&amp;where=All" target="_blank">Books-A-Million</a>
-<li><a href="http://www.booktopia.com.au/prod9780413600103.html" target="_blank">Booktopia</a>
-<li><a href="http://explore.bl.uk/primo_library/libweb/action/search.do?fn=search&amp;vl(freeText0)=9780413600103" target="_blank">British Library</a>
-<li><a href="http://copac.ac.uk/search?&amp;isn=9780413600103&amp;sort-order=ti%2C-date" target="_blank">COPAC</a>
-<li><a href="https://portal.dnb.de/opac.htm?query=9780413600103&amp;method=simpleSearch" target="_blank">Deutsche Nationalbibliothek</a>
-<li><a href="http://www.ecampus.com/bk_detail.asp?ISBN=9780413600103" target="_blank">eCampus.com</a>
+    <div class="divider">
+        Other Links <i class="downarrow"></i>
+        <div class="divothersites" id="divOthersites">
+            <ul class="listothersites">
+                <li><a href="http://www.abebooks.com/servlet/SearchResults?isbn=9780413600103"
+                       target="_blank">AbeBooks.com</a>
+                <li><a href="http://www.alibris.com/booksearch?isbn=9780413600103" target="_blank">alibris</a>
+                <li><a href="http://www.angusrobertson.com.au/books/p/9780413600103"
+                       target="_blank">Angus &amp; Robertson</a>
+                <li><a href="http://www.barnesandnoble.com/s/9780413600103" target="_blank">Barnes
+                    &amp; Noble</a>
+                <li><a href="http://catalogue.bnf.fr/rechercher.do?motRecherche=0413600106"
+                       target="_blank">Bibliotheque nationale de France</a>
+                <li><a href="http://www.biggerbooks.com/book/9780413600103" target="_blank">BiggerBooks.com</a>
+                <li>
+                    <a href="http://bookshop.blackwell.com/jsp/welcome.jsp?action=search&amp;type=isbn&amp;term=9780413600103"
+                       target="_blank">Blackwell</a>
+                <li><a href="http://www.booksamillion.com/search?query=9780413600103&amp;where=All"
+                       target="_blank">Books-A-Million</a>
+                <li><a href="http://www.booktopia.com.au/prod9780413600103.html" target="_blank">Booktopia</a>
+                <li>
+                    <a href="http://explore.bl.uk/primo_library/libweb/action/search.do?fn=search&amp;vl(freeText0)=9780413600103"
+                       target="_blank">British Library</a>
+                <li>
+                    <a href="https://portal.dnb.de/opac.htm?query=9780413600103&amp;method=simpleSearch"
+                       target="_blank">Deutsche Nationalbibliothek</a>
+                <li><a href="http://www.ecampus.com/bk_detail.asp?ISBN=9780413600103"
+                       target="_blank">eCampus.com</a>
 <li><a href="http://www.theeuropeanlibrary.org/tel4/search?query=0413600106+or+0-413-60010-6" target="_blank">European Library</a>
 <li><a href="http://www.fishpond.com.au/advanced_search_result.php?keywords=9780413600103" target="_blank">Fishpond</a>
 <li><a href="http://www.goodreads.com/book/isbn/9780413600103" target="_blank">Goodreads</a>
-<li><a href="http://books.google.com/books?vid=ISBN9780413600103" target="_blank">Google Books</a>
-<li><a href="https://catalog.loc.gov/vwebv/search?searchArg=9780413600103&amp;searchCode=ISBL&amp;searchType=1" target="_blank">Library of Congress</a>
+                <li><a href="http://books.google.com/books?vid=ISBN9780413600103" target="_blank">Google
+                    Books</a>
+                <li>
+                    <a href="https://discover.libraryhub.jisc.ac.uk/search?&amp;isn=9780413600103&amp;sort-order=ti%2C-date"
+                       target="_blank">Library Hub Discover</a>
+                <li>
+                    <a href="https://catalog.loc.gov/vwebv/search?searchArg=9780413600103&amp;searchCode=ISBL&amp;searchType=1"
+                       target="_blank">Library of Congress</a>
 <li><a href="http://www.librarything.com/isbn/9780413600103" target="_blank">LibraryThing</a>
 <li><a href="http://iss.ndl.go.jp/api/openurl?rft.isbn=9780413600103&amp;locale=en" target="_blank">National Diet Library</a>
 <li><a href="http://openlibrary.org/isbn/0413600106" target="_blank">Open Library</a>
@@ -164,108 +186,168 @@ Other Pages:
 <div class="divider">
 Editing Tools:
 </div>
-<ul class="navbar">
-<li><a href="http://www.isfdb.org/cgi-bin/edit/find_pub_dups.cgi?112781">Check for Duplicate Titles</a>
-<li><a href="http://www.isfdb.org/cgi-bin/edit/editpub.cgi?112781">Edit This Pub</a>
-<li><a href="http://www.isfdb.org/cgi-bin/edit/clone_intermediate.cgi?112781">Clone This Pub</a>
-<li><a href="http://www.isfdb.org/cgi-bin/edit/exportcontent.cgi?112781">Export Content</a>
-<li><a href="http://www.isfdb.org/cgi-bin/edit/importcontent.cgi?112781">Import Content</a>
-<li><a href="http://www.isfdb.org/cgi-bin/edit/rmtitles.cgi?112781">Remove Titles From This Pub</a>
-<li><a href="http://www.isfdb.org/cgi-bin/edit/deletepub.cgi?112781">Delete This Pub</a>
-<li><a href="http://www.isfdb.org/cgi-bin/edit/verify.cgi?112781">Verify This Pub</a>
-</ul>
+    <ul class="navbar">
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/edit/find_pub_dups.cgi?112781">Check for
+            Duplicate Titles</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/edit/editpub.cgi?112781">Edit This
+            Pub</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/edit/clone_intermediate.cgi?112781">Clone
+            This Pub</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/edit/exportcontent.cgi?112781">Export
+            Content</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/edit/importcontent.cgi?112781">Import
+            Content</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/edit/rmtitles.cgi?112781">Remove Titles
+            From This Pub</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/edit/deletepub.cgi?112781">Delete This
+            Pub</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/edit/verify.cgi?112781">Verify This
+            Pub</a>
+    </ul>
 <div class="divider">
 Add New Data:
 </div>
-<ul class="navbar">
-<li><a href="http://www.isfdb.org/cgi-bin/edit/newpub.cgi?Anthology">Add New Anthology</a>
-<li><a href="http://www.isfdb.org/cgi-bin/edit/newpub.cgi?Chapbook">Add New Chapbook</a>
-<li><a href="http://www.isfdb.org/cgi-bin/edit/newpub.cgi?Collection">Add New Collection</a>
-<li><a href="http://www.isfdb.org/cgi-bin/edit/newpub.cgi?Fanzine">Add New Fanzine</a>
-<li><a href="http://www.isfdb.org/cgi-bin/edit/newpub.cgi?Magazine">Add New Magazine</a>
-<li><a href="http://www.isfdb.org/cgi-bin/edit/newpub.cgi?Nonfiction">Add New Nonfiction</a>
-<li><a href="http://www.isfdb.org/cgi-bin/edit/newpub.cgi?Novel">Add New Novel</a>
-<li><a href="http://www.isfdb.org/cgi-bin/edit/newpub.cgi?Omnibus">Add New Omnibus</a>
-<li><a href="http://www.isfdb.org/cgi-bin/edit/select_award_type.cgi?0">Add Untitled Award</a>
-</ul>
+    <ul class="navbar">
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/edit/newpub.cgi?Anthology">Add New
+            Anthology</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/edit/newpub.cgi?Chapbook">Add New
+            Chapbook</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/edit/newpub.cgi?Collection">Add New
+            Collection</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/edit/newpub.cgi?Fanzine">Add New
+            Fanzine</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/edit/newpub.cgi?Magazine">Add New
+            Magazine</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/edit/newpub.cgi?Nonfiction">Add New
+            Nonfiction</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/edit/newpub.cgi?Novel">Add New Novel</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/edit/newpub.cgi?Omnibus">Add New
+            Omnibus</a>
+        <li><a dir="ltr" href="http://www.isfdb.org/cgi-bin/edit/select_award_type.cgi?0">Add
+            Untitled Award</a>
+    </ul>
 <div class="divider">
 Policies:
 </div>
 <ul class="navbar">
-<li><a href="http://www.isfdb.org/wiki/index.php/ISFDB:General_disclaimer">Disclaimer</a>
-<li><a href="http://www.isfdb.org/wiki/index.php/Privacy_Policy">Privacy Policy</a>
-<li><a href="http://www.isfdb.org/wiki/index.php/Banner_Art_Credits">Banner Art Credits</a>
+    <li><a href="http://www.isfdb.org/wiki/index.php/ISFDB:General_disclaimer">Disclaimer</a>
+    <li><a href="http://www.isfdb.org/wiki/index.php/ISFDB:Privacy_policy">Privacy Policy</a>
+    <li><a href="http://www.isfdb.org/wiki/index.php/Banner_Art_Credits">Banner Art Credits</a>
 </ul>
 <div class="divider">
 License:
 </div>
-<div id="cclicense">
-<a rel="license" href="http://creativecommons.org/licenses/by/2.0/">
-<img alt="Creative Commons License" src="http://creativecommons.org/images/public/somerights20.gif"></a><br>
-This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/2.0/">Creative Commons License</a>.
-</div>
+    <div id="cclicense">
+        <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">
+            <img alt="Creative Commons License"
+                 src="https://i.creativecommons.org/l/by/4.0/88x31.png"></a><br>
+        This work is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/"
+                                         rel="license">Creative Commons Attribution 4.0
+        International License</a>.
+    </div>
 </div>
 <div id="content">
-<div class="ContentBox"><table><tr class="scan"><td><a href="http://g-ecx.images-amazon.com/images/G/01/ciu/a4/97/0d2462e89da051d03beb5110.L.jpg"><img src="http://g-ecx.images-amazon.com/images/G/01/ciu/a4/97/0d2462e89da051d03beb5110.L.jpg" alt="picture" class="scan"></a></td><td class="pubheader"><ul><li><b>Publication:</b> Like Nothing on Earth<span class="recordID"><b>Publication Record # </b>112781 [<a href="http://www.isfdb.org/cgi-bin/edit/editpub.cgi?112781">Edit</a>]</span>
-<li>
-<b>Author:</b>
-<a href="http://www.isfdb.org/cgi-bin/ea.cgi?51" dir="ltr">Eric Frank Russell</a>
-<li> <b>Date:</b> 1986-10-00
-  <li><b>ISBN:</b> 0-413-60010-6 [<small>978-0-413-60010-3</small>]
-<li>
-  <b>Publisher:</b> <a href="http://www.isfdb.org/cgi-bin/publisher.cgi?226" dir="ltr">Methuen</a>
-<li>
-  <b>Price:</b> £1.95
-<li>
-  <b>Pages:</b> 159
-<li>
-  <b>Format:</b> <div class="tooltip">pb<sup class="mouseover">?</sup><span class="tooltiptext tooltipnarrow">Paperback. Typically 7" by 4.25" (18 cm by 11 cm) or smaller, though trimming errors can cause them to sometimes be slightly (less than 1/4 extra inch) taller or wider/deeper.</span></div>
-<li>
-  <b>Type:</b> COLLECTION
-<li><b>Cover:</b>
-<a href="http://www.isfdb.org/cgi-bin/title.cgi?282071" dir="ltr">Like Nothing on Earth</a> (1986) &#8226;  by
-<a href="http://www.isfdb.org/cgi-bin/ea.cgi?25102" dir="ltr">Terry Oakes</a>
-<li>
-<div class="notes"><b>Notes:</b> Month from Locus1</div>
-<li>
-  <b>External IDs:</b>
-  <ul class="noindent">
-<li> <abbr class="template" title="Online Computer Library Center">OCLC/WorldCat</abbr>:  <a href="http://www.worldcat.org/oclc/13665857" target="_blank">13665857</a>
-  </ul>
-<li>
-<a href="http://www.isfdb.org/wiki/index.php/Special:Upload?wpDestFile=LKNTHNGNRT1986.jpg&amp;wpUploadDescription=%7B%7BCID1%0A%7CTitle%3DLike%20Nothing%20on%20Earth%0A%7CEdition%3DMethuen%201986%20pb%0A%7CPub%3DLKNTHNGNRT1986%0A%7CPublisher%3DMethuen%0A%7CArtist%3DTerry%20Oakes%0A%7CArtistId%3D25102%0A%7CSource%3DScanned%20by%20%5B%5BUser%3AHardbackNut%5D%5D%7D%7D" target="_blank">Upload new cover scan</a>
-</ul>
-</td>
-</table>
-Cover art supplied by <a href="http://www.amazon.com" target="_blank">Amazon.com</a>
-</div>
-<div class="ContentBox">
-<span class="containertitle">Collection Title:</span>
-<a href="http://www.isfdb.org/cgi-bin/title.cgi?38491" dir="ltr">Like Nothing on Earth</a> &#8226; (1975) &#8226; collection by
-<a href="http://www.isfdb.org/cgi-bin/ea.cgi?51" dir="ltr">Eric Frank Russell</a>
-<h2>Contents <a href="http://www.isfdb.org/cgi-bin/pl.cgi?112781+c"><span class="listingtext">(view Concise Listing)</span></a></h2>
-<ul>
-<li>
-7 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?55829" dir="ltr">Allamagoosa</a> &#8226; (1955) &#8226; short story by
-<a href="http://www.isfdb.org/cgi-bin/ea.cgi?51" dir="ltr">Eric Frank Russell</a>
-<li>
-24 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?41311" dir="ltr">Hobbyist</a> &#8226; (1947) &#8226; novelette by
-<a href="http://www.isfdb.org/cgi-bin/ea.cgi?51" dir="ltr">Eric Frank Russell</a>
-<li>
-65 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?71451" dir="ltr">The Mechanical Mice</a> &#8226; (1941) &#8226; novelette by
-<a href="http://www.isfdb.org/cgi-bin/ea.cgi?2094" dir="ltr">Maurice G. Hugi</a> <b>and</b> <a href="http://www.isfdb.org/cgi-bin/ea.cgi?51" dir="ltr">Eric Frank Russell</a>
-<li>
-95 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?55728" dir="ltr">Into Your Tent I'll Creep</a> &#8226; (1957) &#8226; short story by
-<a href="http://www.isfdb.org/cgi-bin/ea.cgi?51" dir="ltr">Eric Frank Russell</a>
-<li>
-106 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?55827" dir="ltr">Nothing New</a> &#8226; (1955) &#8226; short story by
-<a href="http://www.isfdb.org/cgi-bin/ea.cgi?51" dir="ltr">Eric Frank Russell</a>
-<li>
-119 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?52219" dir="ltr">Exposure</a> &#8226; (1950) &#8226; short story by
-<a href="http://www.isfdb.org/cgi-bin/ea.cgi?51" dir="ltr">Eric Frank Russell</a>
-<li>
-141 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?56118" dir="ltr">Ultima Thule</a> &#8226; (1951) &#8226; short story by
-<a href="http://www.isfdb.org/cgi-bin/ea.cgi?51" dir="ltr">Eric Frank Russell</a>
+    <div class="ContentBox">
+        <table>
+            <tr class="scan">
+                <td><a href="http://www.isfdb.org/wiki/images/a/ad/LKNTHNGNRT1986.jpg"><img
+                        alt="picture" class="scan"
+                        src="http://www.isfdb.org/wiki/images/a/ad/LKNTHNGNRT1986.jpg"></a></td>
+                <td class="pubheader">
+                    <ul>
+                        <li><b>Publication:</b> Like Nothing on Earth<span class="recordID"><b>Publication Record # </b>112781 [<a
+                                href="http://www.isfdb.org/cgi-bin/edit/editpub.cgi?112781">Edit</a>] [<a
+                                href="http://www.isfdb.org/cgi-bin/pub_history.cgi?112781">Edit History</a>]</span>
+                        <li>
+                            <b>Author:</b>
+                            <a href="http://www.isfdb.org/cgi-bin/ea.cgi?51" dir="ltr">Eric Frank
+                                Russell</a>
+                        <li><b>Date:</b> 1986-10-00
+                        <li><b>ISBN:</b> 0-413-60010-6 [<small>978-0-413-60010-3</small>]
+                        <li>
+                            <b>Publisher:</b> <a
+                                href="http://www.isfdb.org/cgi-bin/publisher.cgi?226" dir="ltr">Methuen</a>
+                        <li>
+                            <b>Price:</b>
+                            <div class="tooltip tooltipright">£1.95<sup
+                                    class="mouseover">?</sup><span
+                                    class="tooltiptext tooltipnarrow tooltipright">£: UK pound</span>
+                            </div>
+                        <li>
+                            <b>Pages:</b> 159
+                        <li>
+                            <b>Format:</b>
+                            <div class="tooltip tooltipright">pb<sup class="mouseover">?</sup><span
+                                    class="tooltiptext tooltipnarrow tooltipright">Paperback. Typically 7" by 4.25" (18 cm by 11 cm) or smaller, though trimming errors can cause them to sometimes be slightly (less than 1/4 extra inch) taller or wider/deeper.</span>
+                            </div>
+                        <li>
+                            <b>Type:</b> COLLECTION
+                        <li><b>Cover:</b>
+                            <a dir="ltr" href="http://www.isfdb.org/cgi-bin/title.cgi?282071">Like
+                                Nothing on Earth</a> (1986) &#8226; by
+                            <a href="http://www.isfdb.org/cgi-bin/ea.cgi?25102" dir="ltr">Terry
+                                Oakes</a>
+                        <li>
+                            <div class="notes"><b>Notes:</b> First published in Great Britain 1975
+                                by Dobson Books Ltd.
+                                This edition published 1986 by Methuen London Ltd.
+                                Month from Locus1
+                            </div>
+                        <li>
+                            <b>External IDs:</b>
+                            <ul class="noindent">
+                                <li><abbr class="template" title="Online Computer Library Center">OCLC/WorldCat</abbr>:
+                                    <a href="http://www.worldcat.org/oclc/13665857" target="_blank">13665857</a>
+                            </ul>
+                        <li>
+                            <a href="http://www.isfdb.org/wiki/index.php/Special:Upload?wpDestFile=LKNTHNGNRT1986.jpg&amp;wpUploadDescription=%7B%7BCID1%0A%7CTitle%3DLike%20Nothing%20on%20Earth%0A%7CEdition%3DMethuen%201986%20pb%0A%7CPub%3DLKNTHNGNRT1986%0A%7CPublisher%3DMethuen%0A%7CArtist%3DTerry%20Oakes%0A%7CArtistId%3D25102%0A%7CSource%3DScanned%20by%20%5B%5BUser%3AHardbackNut%5D%5D%7D%7D"
+                               target="_blank">Upload new cover scan</a>
+                    </ul>
+                </td>
+        </table>
+        Cover art supplied by <a href="http://www.isfdb.org" target="_blank">ISFDB</a>
+        on <a href="http://www.isfdb.org/wiki/index.php/Image:LKNTHNGNRT1986.jpg" target="_blank">this
+        Web page</a>
+    </div>
+    <div class="ContentBox">
+        <span class="containertitle">Collection Title:</span>
+        <a dir="ltr" href="http://www.isfdb.org/cgi-bin/title.cgi?38491">Like Nothing on Earth</a>
+        &#8226; (1975) &#8226; collection by
+        <a href="http://www.isfdb.org/cgi-bin/ea.cgi?51" dir="ltr">Eric Frank Russell</a>
+        <h2>Contents <a class="listingtext" dir="ltr"
+                        href="http://www.isfdb.org/cgi-bin/pl.cgi?112781+c">(view Concise
+            Listing)</a></h2>
+        <ul>
+            <li>
+                7 &#8226; <a dir="ltr" href="http://www.isfdb.org/cgi-bin/title.cgi?55829">Allamagoosa</a>
+                &#8226; (1955) &#8226; short story by
+                <a href="http://www.isfdb.org/cgi-bin/ea.cgi?51" dir="ltr">Eric Frank Russell</a>
+            <li>
+                24 &#8226; <a dir="ltr"
+                              href="http://www.isfdb.org/cgi-bin/title.cgi?41311">Hobbyist</a>
+                &#8226; (1947) &#8226; novelette by
+                <a href="http://www.isfdb.org/cgi-bin/ea.cgi?51" dir="ltr">Eric Frank Russell</a>
+            <li>
+                65 &#8226; <a dir="ltr" href="http://www.isfdb.org/cgi-bin/title.cgi?71451">The
+                Mechanical Mice</a> &#8226; (1941) &#8226; novelette by
+                <a href="http://www.isfdb.org/cgi-bin/ea.cgi?2094" dir="ltr">Maurice G. Hugi</a> <b>and</b>
+                <a href="http://www.isfdb.org/cgi-bin/ea.cgi?51" dir="ltr">Eric Frank Russell</a>
+            <li>
+                95 &#8226; <a dir="ltr" href="http://www.isfdb.org/cgi-bin/title.cgi?55728">Into
+                Your Tent I'll Creep</a> &#8226; (1957) &#8226; short story by
+                <a href="http://www.isfdb.org/cgi-bin/ea.cgi?51" dir="ltr">Eric Frank Russell</a>
+            <li>
+                106 &#8226; <a dir="ltr" href="http://www.isfdb.org/cgi-bin/title.cgi?55827">Nothing
+                New</a> &#8226; (1955) &#8226; short story by
+                <a href="http://www.isfdb.org/cgi-bin/ea.cgi?51" dir="ltr">Eric Frank Russell</a>
+            <li>
+                119 &#8226; <a dir="ltr" href="http://www.isfdb.org/cgi-bin/title.cgi?52219">Exposure</a>
+                &#8226; (1950) &#8226; short story by
+                <a href="http://www.isfdb.org/cgi-bin/ea.cgi?51" dir="ltr">Eric Frank Russell</a>
+            <li>
+                141 &#8226; <a dir="ltr" href="http://www.isfdb.org/cgi-bin/title.cgi?56118">Ultima
+                Thule</a> &#8226; (1951) &#8226; short story by
+                <a href="http://www.isfdb.org/cgi-bin/ea.cgi?51" dir="ltr">Eric Frank Russell</a>
 </ul>
 </div>
 <div class="VerificationBox">
@@ -287,26 +369,26 @@ Cover art supplied by <a href="http://www.amazon.com" target="_blank">Amazon.com
 <td><a href="http://www.isfdb.org/wiki/index.php/User:Willem H.">Willem H.</a></td>
 <td class="keep">2010-06-18 08:57:19</td>
 <td class="keep">Permanent</td>
-  <td>2019-11-26</td>
+    <td>2022-07-11</td>
 </tr>
-<tr class="table2">
-<td><a href="http://www.isfdb.org/wiki/index.php/User:Hauck">Hauck</a></td>
-<td class="keep">2010-06-27 08:31:23</td>
-<td class="keep">Permanent</td>
-<td>2018-06-29</td>
-</tr>
-<tr class="table2">
-<td><a href="http://www.isfdb.org/wiki/index.php/User:Dirk P Broer">Dirk P Broer</a></td>
-<td class="keep">2011-04-26 05:33:38</td>
-<td class="keep">Permanent</td>
-  <td>2019-11-26</td>
-</tr>
-<tr class="table2">
-<td><a href="http://www.isfdb.org/wiki/index.php/User:Stoecker">Stoecker</a></td>
-<td class="keep">2013-10-12 14:19:28</td>
-<td class="keep">Permanent</td>
-  <td>2019-10-31</td>
-</tr>
+    <tr class="table2">
+        <td><a href="http://www.isfdb.org/wiki/index.php/User:Dirk P Broer">Dirk P Broer</a></td>
+        <td class="keep">2011-04-26 05:33:38</td>
+        <td class="keep">Permanent</td>
+        <td>2022-07-15</td>
+    </tr>
+    <tr class="table2">
+        <td><a href="http://www.isfdb.org/wiki/index.php/User:Stoecker">Stoecker</a></td>
+        <td class="keep">2013-10-12 14:19:28</td>
+        <td class="keep">Permanent</td>
+        <td>2022-06-20</td>
+    </tr>
+    <tr class="table2">
+        <td><a href="http://www.isfdb.org/wiki/index.php/User:Mavmaramis">Mavmaramis</a></td>
+        <td class="keep">2022-06-20 12:05:41</td>
+        <td class="keep">Permanent</td>
+        <td>2022-07-16</td>
+    </tr>
 </table>
 </div>
 <div class="VerificationBox">
@@ -318,98 +400,122 @@ Cover art supplied by <a href="http://www.amazon.com" target="_blank">Amazon.com
 <th>Verifier</th>
 <th>Date</th>
 </tr>
+    <tr>
+        <td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:BleilerEarlyYears">Bleiler
+            Early Years</a></td>
+        <td class="drop"><b>Not Verified</b></td>
+        <td class="drop">&nbsp;</td>
+        <td class="drop">&nbsp;</td>
+    </tr>
+    <tr>
+        <td class="label"><a
+                href="http://www.isfdb.org/wiki/index.php/Reference:BleilerSupernatural">Bleiler
+            Supernatural</a></td>
+        <td class="drop"><b>Not Verified</b></td>
+        <td class="drop">&nbsp;</td>
+        <td class="drop">&nbsp;</td>
+    </tr>
 <tr>
-<td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:Clute/Nicholls">Clute/Nicholls</a></td>
+    <td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:Bleiler1">Bleiler1
+        (Gernsback)</a></td>
+<td class="label">N/A</td>
+<td class="label"><a href="http://www.isfdb.org/wiki/index.php/User:Bluesman">Bluesman</a></td>
+<td class="label">2009-10-15 17:16:15</td>
+</tr>
+<tr>
+    <td class="label"><a
+            href="http://www.isfdb.org/wiki/index.php/Reference:Bleiler78">Bleiler78</a></td>
+<td class="label">N/A</td>
+<td class="label"><a href="http://www.isfdb.org/wiki/index.php/User:Bluesman">Bluesman</a></td>
+<td class="label">2009-10-15 17:16:15</td>
+</tr>
+<tr>
+    <td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:Clute/Grant">Clute/Grant</a>
+    </td>
 <td class="label">N/A</td>
 <td class="label"><a href="http://www.isfdb.org/wiki/index.php/User:Dirk P Broer">Dirk P Broer</a></td>
 <td class="label">2011-04-26 05:33:38</td>
 </tr>
+    <tr>
+        <td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:Clute/Nicholls">Clute/Nicholls</a>
+        </td>
+        <td class="label">N/A</td>
+        <td class="label"><a href="http://www.isfdb.org/wiki/index.php/User:Dirk P Broer">Dirk P
+            Broer</a></td>
+        <td class="label">2011-04-26 05:33:38</td>
+    </tr>
 <tr>
-<td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:Clute/Grant">Clute/Grant</a></td>
+    <td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:Contento1">Contento1
+        (anth/coll)</a></td>
 <td class="label">N/A</td>
-<td class="label"><a href="http://www.isfdb.org/wiki/index.php/User:Dirk P Broer">Dirk P Broer</a></td>
-<td class="label">2011-04-26 05:33:38</td>
+    <td class="label"><a href="http://www.isfdb.org/wiki/index.php/User:Bluesman">Bluesman</a></td>
+    <td class="label">2009-10-15 17:16:15</td>
 </tr>
+    <tr>
+        <td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:Currey">Currey</a>
+        </td>
+        <td class="label">N/A</td>
+        <td class="label"><a href="http://www.isfdb.org/wiki/index.php/User:Bluesman">Bluesman</a>
+        </td>
+        <td class="label">2009-10-15 17:16:15</td>
+    </tr>
+    <tr>
+        <td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:Locus1">Locus1</a>
+        </td>
+        <td class="keep">Verified</td>
+        <td class="keep"><a href="http://www.isfdb.org/wiki/index.php/User:Bluesman">Bluesman</a>
+        </td>
+        <td class="keep">2009-10-15 17:16:15</td>
+    </tr>
+    <tr>
+        <td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:Miller/Contento">Miller/Contento</a>
+        </td>
+        <td class="label">N/A</td>
+        <td class="label"><a href="http://www.isfdb.org/wiki/index.php/User:Bluesman">Bluesman</a>
+        </td>
+        <td class="label">2009-10-15 17:16:15</td>
+    </tr>
+    <tr>
+        <td class="label"><a href="http://www.isfdb.org/wiki/index.php/Help:Using_Worldcat_data">OCLC/Worldcat</a>
+        </td>
+        <td class="keep">Verified</td>
+        <td class="keep"><a href="http://www.isfdb.org/wiki/index.php/User:Bluesman">Bluesman</a>
+        </td>
+        <td class="keep">2009-10-15 17:16:15</td>
+    </tr>
 <tr>
-<td class="label"><a href="http://www.philsp.com/homeville/ISFAC/0start.htm">Contento1 (anth/coll)</a></td>
-<td class="label">N/A</td>
-<td class="label"><a href="http://www.isfdb.org/wiki/index.php/User:Bluesman">Bluesman</a></td>
-<td class="label">2009-10-15 17:16:15</td>
-</tr>
-<tr>
-<td class="label"><a href="http://www.locusmag.com/index/">Locus1</a></td>
-<td class="keep">Verified</td>
-<td class="keep"><a href="http://www.isfdb.org/wiki/index.php/User:Bluesman">Bluesman</a></td>
-<td class="keep">2009-10-15 17:16:15</td>
-</tr>
-<tr>
-<td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:Reginald1">Reginald1</a></td>
-<td class="label">N/A</td>
-<td class="label"><a href="http://www.isfdb.org/wiki/index.php/User:Bluesman">Bluesman</a></td>
-<td class="label">2009-10-15 17:16:15</td>
-</tr>
-<tr>
-<td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:Reginald3">Reginald3</a></td>
-<td class="label">N/A</td>
-<td class="label"><a href="http://www.isfdb.org/wiki/index.php/User:Dirk P Broer">Dirk P Broer</a></td>
-<td class="label">2011-04-26 05:33:38</td>
-</tr>
-<tr>
-<td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:Tuck">Tuck</a></td>
-<td class="label">N/A</td>
-<td class="label"><a href="http://www.isfdb.org/wiki/index.php/User:Bluesman">Bluesman</a></td>
-<td class="label">2009-10-15 17:16:15</td>
-</tr>
-<tr>
-<td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:Miller/Contento">Miller/Contento</a></td>
-<td class="label">N/A</td>
-<td class="label"><a href="http://www.isfdb.org/wiki/index.php/User:Bluesman">Bluesman</a></td>
-<td class="label">2009-10-15 17:16:15</td>
-</tr>
-<tr>
-<td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:Bleiler1">Bleiler1 (Gernsback)</a></td>
-<td class="label">N/A</td>
-<td class="label"><a href="http://www.isfdb.org/wiki/index.php/User:Bluesman">Bluesman</a></td>
-<td class="label">2009-10-15 17:16:15</td>
-</tr>
-<tr>
-<td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:Currey">Currey</a></td>
-<td class="label">N/A</td>
-<td class="label"><a href="http://www.isfdb.org/wiki/index.php/User:Bluesman">Bluesman</a></td>
-<td class="label">2009-10-15 17:16:15</td>
-</tr>
-<tr>
-<td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:BleilerSupernatural">Bleiler Supernatural</a></td>
-<td class="drop"><b>Not Verified</b></td>
-<td class="drop">&nbsp;</td>
-<td class="drop">&nbsp;</td>
-</tr>
-<tr>
-<td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:Bleiler78">Bleiler78</a></td>
+    <td class="label"><a
+            href="http://www.isfdb.org/wiki/index.php/Reference:Reginald1">Reginald1</a></td>
 <td class="label">N/A</td>
 <td class="label"><a href="http://www.isfdb.org/wiki/index.php/User:Bluesman">Bluesman</a></td>
 <td class="label">2009-10-15 17:16:15</td>
 </tr>
-<tr>
-<td class="label"><a href="http://www.isfdb.org/wiki/index.php/Help:Using_Worldcat_data">OCLC/Worldcat</a></td>
-<td class="keep">Verified</td>
-<td class="keep"><a href="http://www.isfdb.org/wiki/index.php/User:Bluesman">Bluesman</a></td>
-<td class="keep">2009-10-15 17:16:15</td>
-</tr>
-<tr>
-<td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:BleilerEarlyYears">Bleiler Early Years</a></td>
-<td class="drop"><b>Not Verified</b></td>
-<td class="drop">&nbsp;</td>
-<td class="drop">&nbsp;</td>
-</tr>
+    <tr>
+        <td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:Reginald3">Reginald3</a>
+        </td>
+        <td class="label">N/A</td>
+        <td class="label"><a href="http://www.isfdb.org/wiki/index.php/User:Dirk P Broer">Dirk P
+            Broer</a></td>
+        <td class="label">2011-04-26 05:33:38</td>
+    </tr>
+    <tr>
+        <td class="label"><a href="http://www.isfdb.org/wiki/index.php/Reference:Tuck">Tuck</a></td>
+        <td class="label">N/A</td>
+        <td class="label"><a href="http://www.isfdb.org/wiki/index.php/User:Bluesman">Bluesman</a>
+        </td>
+        <td class="label">2009-10-15 17:16:15</td>
+    </tr>
 </table>
 </div>
 </div>
-<div id="bottom">
-Copyright (c) 1995-2019 Al von Ruff and the ISFDB team
-<br>
-<b>ISFDB Engine</b> - Version 4.00 (04/24/06)
-</div>
+    <div id="bottom">
+        Copyright &copy; 1995-2022 Al von Ruff and the ISFDB team
+        <br>
+        <b>ISFDB Engine</b> - Version 4.00 (2006-04-24)
+        <br>
+        ISFDB is an Amazon Associate in order to have access to Amazon's product data. As an Amazon
+        Associate ISFDB earns from qualifying purchases.
+    </div>
 </div>
 </body>
 </html>

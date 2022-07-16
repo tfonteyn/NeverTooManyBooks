@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -908,16 +908,18 @@ public class IsfdbSearchEngine
                             break;
                         }
                         case "Price:": {
-                            nextSibling = labelElement.nextSibling();
-                            if (nextSibling != null) {
-                                tmpString = nextSibling.toString().trim();
-                                final Money money = new Money(getLocale(context), tmpString);
-                                if (money.getCurrencyCode() != null) {
-                                    bookData.putDouble(DBKey.PRICE_LISTED, money.doubleValue());
-                                    bookData.putString(DBKey.PRICE_LISTED_CURRENCY,
-                                                       money.getCurrencyCode());
-                                } else {
-                                    bookData.putString(DBKey.PRICE_LISTED, tmpString);
+                            final Element nextElementSibling = labelElement.nextElementSibling();
+                            if (nextElementSibling != null) {
+                                tmpString = nextElementSibling.ownText();
+                                if (!tmpString.isEmpty()) {
+                                    final Money money = new Money(getLocale(context), tmpString);
+                                    if (money.getCurrencyCode() != null) {
+                                        bookData.putDouble(DBKey.PRICE_LISTED, money.doubleValue());
+                                        bookData.putString(DBKey.PRICE_LISTED_CURRENCY,
+                                                           money.getCurrencyCode());
+                                    } else {
+                                        bookData.putString(DBKey.PRICE_LISTED, tmpString);
+                                    }
                                 }
                             }
                             break;
