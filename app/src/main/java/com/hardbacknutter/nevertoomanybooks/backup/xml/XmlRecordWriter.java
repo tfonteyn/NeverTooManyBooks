@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -395,6 +395,8 @@ public class XmlRecordWriter
      *
      * @param context          Current context
      * @param writer           writer
+     * @param sinceDateTime    (optional) UTC based date to select only items
+     *                         modified or added since.
      * @param progressListener Progress and cancellation interface
      *
      * @return results summary
@@ -403,7 +405,7 @@ public class XmlRecordWriter
      */
     private ExportResults writeBooks(@NonNull final Context context,
                                      @NonNull final Writer writer,
-                                     @Nullable final LocalDateTime utcSinceDateTime,
+                                     @Nullable final LocalDateTime sinceDateTime,
                                      final boolean collectCoverFilenames,
                                      @NonNull final ProgressListener progressListener)
             throws IOException {
@@ -417,7 +419,7 @@ public class XmlRecordWriter
                 .getInstance().getExternalIdDomains();
 
         final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
-        try (Cursor cursor = bookDao.fetchBooksForExport(utcSinceDateTime)) {
+        try (Cursor cursor = bookDao.fetchBooksForExport(sinceDateTime)) {
 
             writer.write('<' + RecordType.Books.getName());
             writer.write(XmlUtils.versionAttr(VERSION_BOOKS));

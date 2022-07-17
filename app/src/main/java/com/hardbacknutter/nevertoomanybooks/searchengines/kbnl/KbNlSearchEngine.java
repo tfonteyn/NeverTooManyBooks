@@ -156,7 +156,7 @@ public class KbNlSearchEngine
             final SAXParser parser = factory.newSAXParser();
 
             // Don't follow redirects, so we get the XML instead of the rendered page
-            futureHttpGet.setInstanceFollowRedirects(false); //9020612476
+            futureHttpGet.setInstanceFollowRedirects(false);
 
             futureHttpGet.get(url, request -> {
                 try (BufferedInputStream bis = new BufferedInputStream(request.getInputStream())) {

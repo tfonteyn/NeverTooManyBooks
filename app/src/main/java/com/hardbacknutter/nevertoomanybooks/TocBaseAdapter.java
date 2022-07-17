@@ -47,9 +47,9 @@ public abstract class TocBaseAdapter
 
     /** Cached inflater. */
     @NonNull
-    protected final LayoutInflater inflater;
+    private final LayoutInflater inflater;
     @NonNull
-    protected final List<AuthorWork> works;
+    private final List<AuthorWork> works;
     @Nullable
     private final Author mainAuthor;
     @NonNull
@@ -188,7 +188,7 @@ public abstract class TocBaseAdapter
     @Override
     public int getItemViewType(final int position) {
         final AuthorWork work = works.get(position);
-        return work.getWorkType().value;
+        return work.getWorkType().asChar();
     }
 
     @Override

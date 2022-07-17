@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -161,6 +161,8 @@ public class ArchiveMetaData
     /**
      * This is partially a debug method and partially a basic check to see if the info
      * block looks more or less correct.
+     *
+     * @param context Current context
      *
      * @throws DataReaderException on failure to recognise a supported archive
      */

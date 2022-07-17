@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -71,7 +71,7 @@ abstract class KbNlHandlerBase
             final char c = s.charAt(i);
             // allows an X anywhere instead of just at the end;
             // Doesn't really matter, we'll check for being a valid ISBN later anyhow.
-            if (Character.isDigit(c) || (isIsbn && (c == 'X' || c == 'x'))) {
+            if (Character.isDigit(c) || isIsbn && (c == 'X' || c == 'x')) {
                 sb.append(c);
             }
         }

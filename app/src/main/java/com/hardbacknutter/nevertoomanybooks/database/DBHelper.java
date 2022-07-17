@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -104,11 +104,11 @@ public class DBHelper
             "SELECT name FROM sqlite_master WHERE type = 'index' AND sql IS NOT NULL";
 
     /** Readers/Writer lock for <strong>this</strong> database. */
-    private static final Synchronizer sSynchronizer = new Synchronizer();
+    private static final Synchronizer SYNCHRONIZER = new Synchronizer();
 
     /** Static Factory object to create a {@link SynchronizedCursor} cursor. */
     private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
-            (db, d, et, q) -> new SynchronizedCursor(d, et, q, sSynchronizer);
+            (db, d, et, q) -> new SynchronizedCursor(d, et, q, SYNCHRONIZER);
 
     @Nullable
     private static Boolean sIsCollationCaseSensitive;
@@ -217,7 +217,7 @@ public class DBHelper
             if (synchronizedDb == null) {
                 // Dev note: don't move this to the constructor, "this" must
                 // be fully constructed before we can pass it to the SynchronizedDb constructor
-                synchronizedDb = new SynchronizedDb(sSynchronizer, this,
+                synchronizedDb = new SynchronizedDb(SYNCHRONIZER, this,
                                                     stmtCacheSize);
             }
         }
@@ -629,7 +629,7 @@ public class DBHelper
                     DBDefinitions.DOM_STYLE_LIST_SHOW_FIELDS);
 
             final List<String> uuids = new ArrayList<>();
-            try (final Cursor cursor = db.rawQuery(
+            try (Cursor cursor = db.rawQuery(
                     "SELECT uuid FROM " + TBL_BOOKLIST_STYLES.getName()
                     + " WHERE " + DBKey.STYLE_IS_BUILTIN + "=0", null)) {
                 while (cursor.moveToNext()) {
@@ -637,7 +637,7 @@ public class DBHelper
                 }
             }
 
-            try (final SQLiteStatement stmt = db.compileStatement(
+            try (SQLiteStatement stmt = db.compileStatement(
                     "UPDATE " + TBL_BOOKLIST_STYLES.getName() + " SET "
                     + DBKey.STYLE_NAME + "=?, "
 

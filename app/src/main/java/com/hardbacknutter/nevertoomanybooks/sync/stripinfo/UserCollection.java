@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -135,18 +135,19 @@ public class UserCollection {
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param userId  as extracted from the auth Cookie.
+     * @param context      Current context
+     * @param searchEngine to use
+     * @param userId       as extracted from the auth Cookie.
      */
     @AnyThread
     UserCollection(@NonNull final Context context,
                    @NonNull final StripInfoSearchEngine searchEngine,
                    @NonNull final String userId,
-                   @NonNull final BookshelfMapper config) {
+                   @NonNull final BookshelfMapper bookshelfmapper) {
         this.userId = userId;
         this.searchEngine = searchEngine;
         jsoupLoader = new JsoupLoader(this.searchEngine.createFutureGetRequest());
-        rowParser = new RowParser(context, config);
+        rowParser = new RowParser(context, bookshelfmapper);
     }
 
     public int getMaxPages() {
@@ -301,8 +302,8 @@ public class UserCollection {
          */
         @AnyThread
         RowParser(@NonNull final Context context,
-                  @NonNull final BookshelfMapper config) {
-            super(context, config);
+                  @NonNull final BookshelfMapper bookshelfmapper) {
+            super(context, bookshelfmapper);
         }
 
         /**

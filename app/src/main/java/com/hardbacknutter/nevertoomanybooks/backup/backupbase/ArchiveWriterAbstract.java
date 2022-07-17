@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -98,6 +98,7 @@ public abstract class ArchiveWriterAbstract
      * This covers the styles/prefs/etc... and a small extra safety.
      */
     private static final int EXTRA_STEPS = 10;
+    public static final int META_WRITER_BUFFER = 1024;
 
     /** Export configuration. */
     @NonNull
@@ -229,6 +230,8 @@ public abstract class ArchiveWriterAbstract
      * {@link ExportResults#addBook(long)} and {@link ExportResults#addCover} as needed.
      *
      * @param context          Current context
+     * @param dateSince        (optional) UTC based date to select only items
+     *                         modified or added since.
      * @param progressListener Progress and cancellation interface
      *
      * @return the temporary books file
@@ -284,7 +287,7 @@ public abstract class ArchiveWriterAbstract
 
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-             Writer bw = new BufferedWriter(osw, 1024);
+             Writer bw = new BufferedWriter(osw, META_WRITER_BUFFER);
              RecordWriter recordWriter = encoding.createWriter(null)) {
             recordWriter.writeMetaData(bw, ArchiveMetaData.create(context, VERSION, data));
         }
@@ -392,7 +395,7 @@ public abstract class ArchiveWriterAbstract
 
     @NonNull
     @AnyThread
-    protected abstract RecordEncoding getEncoding(@NonNull final RecordType recordType);
+    protected abstract RecordEncoding getEncoding(@NonNull RecordType recordType);
 
     /**
      * Write a generic byte array to the archive.
@@ -417,9 +420,9 @@ public abstract class ArchiveWriterAbstract
      *
      * @throws IOException on failure
      */
-    protected abstract void putFile(@NonNull final String name,
-                                    @NonNull final File file,
-                                    final boolean compress)
+    protected abstract void putFile(@NonNull String name,
+                                    @NonNull File file,
+                                    boolean compress)
             throws IOException;
 
     @FunctionalInterface

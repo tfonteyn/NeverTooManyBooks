@@ -121,7 +121,7 @@ public class EditBookshelvesFragment
         }
 
         @Override
-        public void showContextMenu(final View anchor,
+        public void showContextMenu(@NonNull final View anchor,
                                     final int position,
                                     final int listIndex) {
             final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
@@ -204,7 +204,7 @@ public class EditBookshelvesFragment
     private void prepareMenu(@NonNull final Menu menu,
                              final int position) {
         // only if a shelf is selected
-        menu.findItem(R.id.MENU_PURGE_BLNS).setVisible((position != RecyclerView.NO_POSITION));
+        menu.findItem(R.id.MENU_PURGE_BLNS).setVisible(position != RecyclerView.NO_POSITION);
     }
 
     /**
@@ -259,9 +259,9 @@ public class EditBookshelvesFragment
 
         void setSelectedPosition(int position);
 
-        void showContextMenu(final View anchor,
-                             final int position,
-                             final int listIndex);
+        void showContextMenu(@NonNull View anchor,
+                             int position,
+                             int listIndex);
     }
 
     public static class Holder
@@ -302,7 +302,7 @@ public class EditBookshelvesFragment
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
             final Holder holder = new Holder(
-                    RowEditBookshelfBinding.inflate(inflater, parent, false));
+                    RowEditBookshelfBinding.inflate(getInflater(), parent, false));
 
             // click -> set the row as 'selected'.
             holder.vb.name.setOnClickListener(v -> {

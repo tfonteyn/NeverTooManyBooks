@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -30,17 +30,17 @@
 -->
 <module name="Checker">
     <property name="severity"
-        value="warning" />
+              value="warning" />
     <!-- workaround for CheckStyle issue #483 -->
     <property name="charset"
-        value="UTF-8" />
+              value="UTF-8" />
 
     <!-- ========== Headers ========== -->
     <!--<module name="Header"/>-->
     <!--<module name="RegexpHeader"/>-->
 
     <!-- Checks that each Java package has a package-info.java file -->
-    <module name="JavadocPackage" />
+    <!--    <module name="JavadocPackage" />-->
 
     <!-- Require files to end with newline characters -->
     <module name="NewlineAtEndOfFile">
@@ -53,7 +53,7 @@
 
     <module name="LineLength">
         <property name="max"
-            value="100" />
+                  value="100" />
     </module>
 
     <!-- Checks that there are no tab characters -->
@@ -63,11 +63,11 @@
     <!-- A check for detecting single lines that match a supplied regular expression. -->
     <module name="RegexpSingleline">
         <property name="severity"
-            value="ignore" />
+                  value="ignore" />
         <property name="format"
-            value="\s+$" />
+                  value="\s+$" />
         <property name="message"
-            value="Line has trailing spaces." />
+                  value="Line has trailing spaces." />
     </module>
     <!--<module name="RegexpOnFilename"/>-->
 
@@ -76,7 +76,7 @@
 
     <module name="TreeWalker">
         <property name="tabWidth"
-            value="4" />
+                  value="4" />
 
         <!-- ========== Annotations ========== -->
         <module name="AnnotationLocation" />
@@ -107,13 +107,13 @@
         <module name="OneTopLevelClass" />
         <module name="ThrowsCount">
             <property name="max"
-                value="6" />
+                      value="6" />
         </module>
         <module name="VisibilityModifier" />
 
         <!-- ========== Coding ========== -->
-        <module name="ArrayTrailingComma" />
-        <module name="AvoidInlineConditionals" />
+        <!--        <module name="ArrayTrailingComma" />-->
+        <!--        <module name="AvoidInlineConditionals" />-->
         <module name="CovariantEquals" />
         <!--<module name="DeclarationOrder"/>-->
         <module name="DefaultComesLast" />
@@ -125,9 +125,9 @@
         <module name="FinalLocalVariable">
             <!--<property name="tokens" value="VARIABLE_DEF,PARAMETER_DEF"/>-->
             <property name="tokens"
-                value="PARAMETER_DEF" />
+                      value="PARAMETER_DEF" />
         </module>
-        <module name="HiddenField" />
+        <!--        <module name="HiddenField" />-->
         <module name="IllegalCatch" />
         <module name="IllegalInstantiation" />
         <module name="IllegalThrows" />
@@ -137,7 +137,7 @@
         <module name="InnerAssignment" />
         <module name="MagicNumber" />
         <!--<module name="MissingCtor" />-->
-        <module name="MissingSwitchDefault" />
+        <!--        <module name="MissingSwitchDefault" />-->
         <module name="ModifiedControlVariable" />
         <module name="MultipleStringLiterals" />
         <module name="MultipleVariableDeclarations" />
@@ -146,14 +146,14 @@
         <module name="NoClone" />
         <module name="NoFinalizer" />
         <module name="OneStatementPerLine" />
-        <module name="OverloadMethodsDeclarationOrder" />
+        <!--        <module name="OverloadMethodsDeclarationOrder" />-->
         <module name="ParameterAssignment" />
         <!--<module name="RequireThis"/>-->
         <module name="ReturnCount">
             <property name="max"
-                value="3" />
+                      value="3" />
             <property name="maxForVoid"
-                value="5" />
+                      value="5" />
         </module>
         <module name="SimplifyBooleanExpression" />
         <module name="SimplifyBooleanReturn" />
@@ -177,13 +177,13 @@
         <!--<module name="AtclauseOrder" />-->
         <module name="JavadocMethod">
             <property name="validateThrows"
-                value="true" />
+                      value="true" />
         </module>
         <!--<module name="JavadocParagraph"/>-->
         <!--<module name="JavadocTagContinuationIndentation" />-->
         <!--<module name="JavadocStyle" />-->
         <module name="JavadocType" />
-        <module name="JavadocVariable" />
+        <!--        <module name="JavadocVariable" />-->
         <module name="NonEmptyAtclauseDescription" />
         <module name="SingleLineJavadoc" />
         <module name="SummaryJavadocCheck" />
@@ -191,25 +191,25 @@
         <!-- ========== Metrics ========== -->
         <module name="BooleanExpressionComplexity" />
         <!-- Measures the number of instantiations of other classes within the given class.  -->
-        <module name="ClassDataAbstractionCoupling" />
+        <!--        <module name="ClassDataAbstractionCoupling" />-->
         <!-- Checks the number of other classes a given class relies on. -->
-        <module name="ClassFanOutComplexity">
-            <property name="excludedPackages"
-                value="java, android, androidx" />
-        </module>
+        <!--        <module name="ClassFanOutComplexity">-->
+        <!--            <property name="excludedPackages"-->
+        <!--                      value="java, android, androidx" />-->
+        <!--        </module>-->
         <!-- a measure of the minimum number of possible paths through the source and
              therefore the number of required tests. -->
-        <module name="CyclomaticComplexity" />
+        <!--        <module name="CyclomaticComplexity" />-->
         <!-- Rationale: Too large methods and classes are hard to read and costly to maintain.
             A large NCSS number often means that a method or class has too many responsibilities
             which should be decomposed into smaller units. -->
         <module name="JavaNCSS" />
         <!-- The NPATH metric computes the number of possible execution paths through a function.
          -->
-        <module name="NPathComplexity">
-            <property name="max"
-                value="5000" />
-        </module>
+        <!--        <module name="NPathComplexity">-->
+        <!--            <property name="max"-->
+        <!--                      value="5000" />-->
+        <!--        </module>-->
 
         <!-- ========== Miscellaneous ========== -->
         <module name="ArrayTypeStyle" />
@@ -256,7 +256,7 @@
         <!-- ========== Size Violations ========== -->
         <module name="AnonInnerLength">
             <property name="max"
-                value="30" />
+                      value="30" />
         </module>
         <!--<module name="ExecutableStatementCount"/>-->
         <!--<module name="FileLength" /> on top-level -->
@@ -278,15 +278,15 @@
         <module name="ParenPad" />
         <module name="SeparatorWrap">
             <property name="tokens"
-                value="DOT" />
+                      value="DOT" />
             <property name="option"
-                value="nl" />
+                      value="nl" />
         </module>
         <module name="SeparatorWrap">
             <property name="tokens"
-                value="COMMA" />
+                      value="COMMA" />
             <property name="option"
-                value="eol" />
+                      value="eol" />
         </module>
         <module name="SingleSpaceSeparator" />
         <module name="TypecastParenPad" />

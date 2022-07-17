@@ -276,6 +276,6 @@ public class EditTocEntryDialogFragment
          * @param tocEntry the modified entry
          */
         public abstract void onResult(@NonNull TocEntry tocEntry,
-                                      final int position);
+                                      int position);
     }
 }

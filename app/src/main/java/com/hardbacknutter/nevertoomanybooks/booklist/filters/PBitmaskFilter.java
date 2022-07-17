@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
+ * A persistable {@link Filter}.
  * <ul>
  * <li>The value is a {@code Set<Integer>} with the key being a single bit.</li>
  * <li>A {@code null} value indicates an inactive filter.</li>

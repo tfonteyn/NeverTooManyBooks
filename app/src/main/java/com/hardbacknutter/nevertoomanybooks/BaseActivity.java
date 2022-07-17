@@ -66,8 +66,7 @@ public abstract class BaseActivity
                                       bookshelfId -> {
                                       });
 
-    @SuppressWarnings("WeakerAccess")
-    protected RecreateViewModel recreateVm;
+    private RecreateViewModel recreateVm;
 
     private final ActivityResultLauncher<String> editSettingsLauncher =
             registerForActivityResult(new SettingsContract(), recreateActivity -> {
@@ -176,6 +175,10 @@ public abstract class BaseActivity
         if (recreateVm.isRecreationRequired()) {
             recreate();
         }
+    }
+
+    protected boolean isRecreating() {
+        return recreateVm.isRecreating();
     }
 
     /**

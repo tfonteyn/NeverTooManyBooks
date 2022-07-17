@@ -83,6 +83,7 @@ public class GridDividerItemDecoration
     /**
      * Sets the thickness of the divider.
      *
+     * @param context     Current context
      * @param thicknessId The id of the thickness dimension resource to be set.
      *
      * @see #getDividerThickness()
@@ -115,7 +116,7 @@ public class GridDividerItemDecoration
 
     /**
      * Sets the color of the divider.
-     *
+     * @param context Current context
      * @param colorId The id of the color resource to be set.
      *
      * @see #getDividerColor()
@@ -149,7 +150,7 @@ public class GridDividerItemDecoration
 
     /**
      * Sets the start inset of the divider.
-     *
+     * @param context Current context
      * @param insetStartId The id of the inset dimension resource to be set.
      *
      * @see #getDividerInsetStart()
@@ -182,7 +183,7 @@ public class GridDividerItemDecoration
 
     /**
      * Sets the end inset of the divider.
-     *
+     * @param context Current context
      * @param insetEndId The id of the inset dimension resource to be set.
      *
      * @see #getDividerInsetEnd()

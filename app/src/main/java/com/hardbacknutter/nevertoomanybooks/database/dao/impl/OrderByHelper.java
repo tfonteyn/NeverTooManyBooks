@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,6 +40,8 @@ public final class OrderByHelper {
     /**
      * Get the global default for this preference.
      *
+     * @param context Current context
+     *
      * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
      */
     static boolean forSorting(@NonNull final Context context) {
@@ -52,6 +54,7 @@ public final class OrderByHelper {
      * Optionally lookup/verify the actual Locale of the item.
      *
      * @param context    Current context
+     * @param title      to reorder
      * @param bookLocale to use if the lookup fails, or if lookupLocale was {@code false}
      *
      * @return title and locale data which should be used to construct ORDER-BY columns

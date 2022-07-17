@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -78,6 +78,8 @@ public final class CoverDir {
     /**
      * Get the *permanent* directory where we store covers.
      *
+     * @param context Current context
+     *
      * @return directory
      *
      * @throws StorageException The covers directory is not available
@@ -104,6 +106,8 @@ public final class CoverDir {
     /**
      * Get the *temporary* directory where we store covers.
      * Currently this is a sun directory of the permanent one to facilitate move==renames.
+     *
+     * @param context Current context
      *
      * @return directory
      *

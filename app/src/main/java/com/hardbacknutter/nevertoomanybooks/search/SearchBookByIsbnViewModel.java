@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -102,7 +102,7 @@ public class SearchBookByIsbnViewModel
      * @return flag
      */
     boolean isAutoStart() {
-        if ((scannerMode != ScanMode.Off) && firstStart) {
+        if (scannerMode != ScanMode.Off && firstStart) {
             firstStart = false;
             return true;
         }

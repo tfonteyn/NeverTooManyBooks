@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 
 /**
+ * A persistable {@link Filter}.
  * <ul>
  * <li>The value is a {@code String}.</li>
  * <li>A {@code null} value indicates an inactive filter.</li>
@@ -131,6 +132,8 @@ public class PStringEqualityFilter
 
     /**
      * UI support.
+     *
+     * @param context Current context
      */
     @Nullable
     private FieldFormatter<String> getFormatter(@NonNull final Context context) {
@@ -142,9 +145,6 @@ public class PStringEqualityFilter
         return formatter;
     }
 
-    /**
-     * UI support.
-     */
     @NonNull
     @Override
     public String getValueText(@NonNull final Context context,
@@ -163,6 +163,8 @@ public class PStringEqualityFilter
 
     /**
      * UI support.
+     *
+     * @param context Current context
      */
     public void setValueText(@NonNull final Context context,
                              @Nullable final String value) {

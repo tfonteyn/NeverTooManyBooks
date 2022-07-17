@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,6 +45,14 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 public class CompoundButtonField
         extends BaseField<Boolean, CompoundButton> {
 
+    /**
+     * Constructor.
+     *
+     * @param fragmentId  the hosting {@link FragmentId} for this {@link Field}
+     * @param fieldViewId the view id for this {@link Field}
+     * @param fieldKey    Key used to access a {@link DataManager}
+     *                    Set to {@code ""} to suppress all access.
+     */
     public CompoundButtonField(@NonNull final FragmentId fragmentId,
                                @IdRes final int fieldViewId,
                                @NonNull final String fieldKey) {

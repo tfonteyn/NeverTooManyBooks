@@ -104,7 +104,7 @@ public class StyleDataStore
             };
 
 
-    /** See {@link BooklistGroup#setPreferencesVisible(PreferenceScreen, boolean)} */
+    /** See {@link BooklistGroup#setPreferencesVisible(PreferenceScreen, boolean)}. */
     public static final String PSK_STYLE_AUTHOR = "psk_style_author";
     public static final String PSK_STYLE_SERIES = "psk_style_series";
     public static final String PSK_STYLE_PUBLISHER = "psk_style_publisher";

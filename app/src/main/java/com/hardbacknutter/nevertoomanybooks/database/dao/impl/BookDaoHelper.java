@@ -95,6 +95,8 @@ public class BookDaoHelper {
      * Called during {@link BookDaoImpl#insert} and {@link BookDaoImpl#update}.
      *
      * @param context Current context
+     *
+     * @return {@code this} (for chaining)
      */
     BookDaoHelper process(@NonNull final Context context) {
         // Handle TITLE
@@ -310,10 +312,10 @@ public class BookDaoHelper {
                     final Object o = book.get(domain.getName());
                     if (
                         // Fields which are null but not allowed to be null
-                            (o == null && domain.isNotNull())
+                            o == null && domain.isNotNull()
                             ||
                             // Fields which are null/empty (i.e. blank) but not allowed to be blank
-                            ((o == null || o.toString().isEmpty()) && domain.isNotBlank())
+                            (o == null || o.toString().isEmpty()) && domain.isNotBlank()
                     ) {
                         if (isNew) {
                             book.remove(domain.getName());

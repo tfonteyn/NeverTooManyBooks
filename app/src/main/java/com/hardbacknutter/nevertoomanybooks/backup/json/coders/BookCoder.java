@@ -61,6 +61,8 @@ public class BookCoder
 
     /**
      * Constructor.
+     *
+     * @param context Current context
      */
     public BookCoder(@NonNull final Context context) {
 

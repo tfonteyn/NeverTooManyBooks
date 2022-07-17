@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 
 public interface TocEntryHandler {
 
-    void viewBook(final int position);
+    void viewBook(int position);
 
     default void showContextMenu(@NonNull final View anchor,
                                  final int position) {

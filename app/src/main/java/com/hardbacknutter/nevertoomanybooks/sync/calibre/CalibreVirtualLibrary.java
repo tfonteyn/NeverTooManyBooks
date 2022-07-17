@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,6 +53,10 @@ public class CalibreVirtualLibrary
 
     /**
      * Constructor without ID.
+     *
+     * @param name              the Calibre name for this virtual library
+     * @param expr              the Calibre search expression which defines the virtual library
+     * @param mappedBookshelfId the {@link Bookshelf} id this virtual library is mapped to
      */
     public CalibreVirtualLibrary(final long libraryId,
                                  @NonNull final String name,
@@ -66,6 +70,10 @@ public class CalibreVirtualLibrary
 
     /**
      * Constructor without ID.
+     *
+     * @param name            the Calibre name for this virtual library
+     * @param expr            the Calibre search expression which defines the virtual library
+     * @param mappedBookshelf the {@link Bookshelf} this virtual library is mapped to
      */
     public CalibreVirtualLibrary(final long libraryId,
                                  @NonNull final String name,

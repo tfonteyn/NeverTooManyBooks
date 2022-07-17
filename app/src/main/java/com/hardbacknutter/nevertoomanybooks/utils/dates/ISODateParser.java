@@ -124,7 +124,7 @@ public class ISODateParser
          * '2011-12-03 10:15:30+01:00'
          * '2011-12-03 10:15:30+01:00[Europe/Paris]'
          */
-        final DateTimeFormatter SQLITE_ISO_DATE_TIME = new DateTimeFormatterBuilder()
+        final DateTimeFormatter sqliteIsoDateTime = new DateTimeFormatterBuilder()
                 .parseCaseInsensitive()
                 .append(DateTimeFormatter.ISO_LOCAL_DATE)
                 // A space instead of the normal 'T'
@@ -140,6 +140,6 @@ public class ISODateParser
                 // Uses ResolverStyle.SMART and 'null' Chronology
                 .toFormatter(ServiceLocator.getSystemLocale());
 
-        parsers.add(SQLITE_ISO_DATE_TIME);
+        parsers.add(sqliteIsoDateTime);
     }
 }

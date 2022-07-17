@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,9 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 /**
- * an SQL WHERE clause (column IN (a,b,c,...)
+ * A non-persistable {@link Filter}.
+ * <p>
+ * Represents an SQL WHERE clause (column IN (a,b,c,...)
  *
  * @param <T> type of the elements of the 'IN' list.
  */

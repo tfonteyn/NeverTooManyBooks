@@ -372,19 +372,19 @@ public class Money
         return Objects.requireNonNull(value).doubleValue();
     }
 
-    /** <strong>DO NOT USE</strong> */
+    /** <strong>DO NOT USE</strong>. */
     @Override
     public int intValue() {
         return Objects.requireNonNull(value).round(MathContext.UNLIMITED).intValue();
     }
 
-    /** <strong>DO NOT USE</strong> */
+    /** <strong>DO NOT USE</strong>. */
     @Override
     public long longValue() {
         return Objects.requireNonNull(value).round(MathContext.UNLIMITED).longValue();
     }
 
-    /** <strong>DO NOT USE</strong> */
+    /** <strong>DO NOT USE</strong>. */
     @Override
     public float floatValue() {
         return Objects.requireNonNull(value).floatValue();

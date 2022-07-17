@@ -362,8 +362,8 @@ public class SyncReaderFragment
     }
 
     /**
-     * the value stored in the ViewModel is what we'll actually use
-     * the field is display-only
+     * The value stored in the ViewModel is what we'll actually use.
+     * The field is display-only.
      *
      * @param lastSyncDate to use
      */

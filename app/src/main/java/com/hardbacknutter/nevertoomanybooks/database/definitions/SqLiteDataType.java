@@ -149,9 +149,9 @@ public enum SqLiteDataType
     @Override
     @NonNull
     public String toString() {
-        return "SqLiteDataType{" +
-               "typeName=`" + typeName + '`' +
-               ", cursorFieldType=" + cursorFieldType +
-               '}';
+        return "SqLiteDataType{"
+               + "typeName=`" + typeName + '`'
+               + ", cursorFieldType=" + cursorFieldType
+               + '}';
     }
 }

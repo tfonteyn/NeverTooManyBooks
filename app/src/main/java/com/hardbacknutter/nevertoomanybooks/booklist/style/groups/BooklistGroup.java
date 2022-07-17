@@ -360,6 +360,8 @@ public class BooklistGroup {
     /**
      * Create/get a GroupKey. We create the keys only once and keep them in a static cache map.
      * This must be called <strong>after</strong> construction, i.e. from {@link #newInstance}.
+     *
+     * @return the GroupKey
      */
     @NonNull
     private GroupKey initGroupKey() {

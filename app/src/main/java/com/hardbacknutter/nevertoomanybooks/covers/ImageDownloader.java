@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -145,7 +145,7 @@ public class ImageDownloader {
         } catch (@NonNull final IOException e) {
             FileUtils.delete(destination);
 
-            if ((BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) || TestFlags.isJUnit) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS || TestFlags.isJUnit) {
                 Logger.d(TAG, e, "saveImage");
 
                 // When running as a JUnit test, the file.renameTo done during the

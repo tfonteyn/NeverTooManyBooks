@@ -76,9 +76,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 public abstract class FFBaseDialogFragment
         extends DialogFragment {
 
-    // SnackBar:
-    //  SHORT_DURATION_MS = 1500;
-    //  LONG_DURATION_MS = 2750;
     private static final int USE_DEFAULT = -1;
     /** The <strong>Dialog</strong> Toolbar. Not to be confused with the Activity's Toolbar! */
     Toolbar dialogToolbar;
@@ -118,7 +115,7 @@ public abstract class FFBaseDialogFragment
      * FLOATING DIALOG mode only. Has no effect in fullscreen mode.
      * If required, this <strong>MUST</strong> be called from the constructor.
      * <p>
-     * Default: R.dimen.floating_dialogs_min_width
+     * Default: {@code R.dimen.floating_dialogs_min_width}
      *
      * @param dimenResId the width to use as an 'R.dimen.value'
      */
@@ -144,7 +141,7 @@ public abstract class FFBaseDialogFragment
      * FLOATING DIALOG mode only. Has no effect in fullscreen mode.
      * If required, this <strong>MUST</strong> be called from the constructor.
      * <p>
-     * Default: the resolved R.attr.actionBarSize
+     * Default: the resolved {@code R.attr.actionBarSize}
      *
      * @param dimenResId the bottom margin to use as an 'R.dimen.value'
      */

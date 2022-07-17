@@ -32,6 +32,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.fields.endicon.ExtEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
@@ -63,6 +64,10 @@ public class EditTextField<T, V extends EditText>
 
     /**
      * Constructor.
+     *
+     * @param fragmentId  the hosting {@link FragmentId} for this {@link Field}
+     * @param fieldViewId the view id for this {@link Field}
+     * @param fieldKey    Key used to access a {@link DataManager}
      */
     public EditTextField(@NonNull final FragmentId fragmentId,
                          @IdRes final int fieldViewId,
@@ -74,7 +79,11 @@ public class EditTextField<T, V extends EditText>
     /**
      * Constructor.
      *
-     * @param formatter      to use
+     * @param fragmentId     the hosting {@link FragmentId} for this {@link Field}
+     * @param fieldViewId    the view id for this {@link Field}
+     * @param fieldKey       Key used to access a {@link DataManager}
+     *                       Set to {@code ""} to suppress all access.
+     * @param formatter      formatter to use
      * @param enableReformat flag: reformat after every user-change.
      */
     public EditTextField(@NonNull final FragmentId fragmentId,
@@ -90,6 +99,8 @@ public class EditTextField<T, V extends EditText>
      * Set the id for the surrounding TextInputLayout (if this field has one).
      *
      * @param viewId view id
+     *
+     * @return {@code this} (for chaining)
      */
     @NonNull
     public EditTextField<T, V> setTextInputLayoutId(@IdRes final int viewId) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,7 +59,7 @@ public abstract class SpinnerInteractionListener
      *
      * @param id selected
      */
-    protected abstract void onItemSelected(final long id);
+    protected abstract void onItemSelected(long id);
 
     /** internal listener - use {@link #onItemSelected(long)} instead. */
     @Override

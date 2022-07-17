@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -340,7 +340,7 @@ class IsfdbPublicationListHandler
                     addIfNotPresent(IsfdbSearchEngine.SiteField.BOOK_TYPE, tmpString);
                     final Book.ContentType type = IsfdbSearchEngine.TYPE_MAP.get(tmpString);
                     if (type != null) {
-                        publicationData.putLong(DBKey.TOC_TYPE__BITMASK, type.value);
+                        publicationData.putLong(DBKey.TOC_TYPE__BITMASK, type.getId());
                     }
                     break;
                 }

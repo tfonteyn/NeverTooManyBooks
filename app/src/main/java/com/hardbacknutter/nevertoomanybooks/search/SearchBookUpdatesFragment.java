@@ -353,7 +353,7 @@ public class SearchBookUpdatesFragment
                                          final int viewType) {
 
             final Holder holder = new Holder(
-                    RowUpdateFromInternetBinding.inflate(inflater, parent, false));
+                    RowUpdateFromInternetBinding.inflate(getInflater(), parent, false));
 
             holder.vb.cbxUsage.setOnClickListener(v -> {
                 final int position = holder.getBindingAdapterPosition();

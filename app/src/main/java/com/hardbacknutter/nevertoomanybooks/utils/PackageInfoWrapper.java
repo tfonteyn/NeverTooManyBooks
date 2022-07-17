@@ -83,7 +83,7 @@ public final class PackageInfoWrapper {
     }
 
     /**
-     * The name of this package. From the <manifest> tag's "name" attribute.
+     * The name of this package as defined in {@code <manifest name="...">}.
      *
      * @return name
      */

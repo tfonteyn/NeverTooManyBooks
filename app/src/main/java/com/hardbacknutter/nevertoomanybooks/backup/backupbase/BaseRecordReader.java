@@ -74,8 +74,10 @@ public abstract class BaseRecordReader
     /**
      * insert or update a single book which has a <strong>valid UUID</strong>.
      *
-     * @param context Current context
-     * @param book    to import
+     * @param context         Current context
+     * @param book            to import
+     * @param importNumericId (optional) the numeric id for the book as found in the import.
+     *                        {@code 0} for none
      *
      * @throws StorageException  The covers directory is not available
      * @throws DaoWriteException on failure

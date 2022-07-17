@@ -338,12 +338,12 @@ public class CoverBrowserDialogFragment
          *
          * @param imageFileInfo for the image
          */
-        void onGalleryImageSelected(final ImageFileInfo imageFileInfo);
+        void onGalleryImageSelected(ImageFileInfo imageFileInfo);
 
-        void fetchGalleryImage(final String isbn);
+        void fetchGalleryImage(String isbn);
 
         @Nullable
-        ImageFileInfo getFileInfo(final String isbn);
+        ImageFileInfo getFileInfo(String isbn);
     }
 
     public abstract static class Launcher

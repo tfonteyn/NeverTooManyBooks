@@ -170,6 +170,8 @@ public abstract class FutureHttpBase<T> {
      * Set the optional connect-timeout.
      *
      * @param timeoutInMs in millis, use {@code 0} for infinite timeout
+     *
+     * @return {@code this} (for chaining)
      */
     @NonNull
     public FutureHttpBase<T> setConnectTimeout(@IntRange(from = 0) final int timeoutInMs) {
@@ -181,6 +183,8 @@ public abstract class FutureHttpBase<T> {
      * Set the optional read-timeout.
      *
      * @param timeoutInMs in millis, use {@code 0} for infinite timeout
+     *
+     * @return {@code this} (for chaining)
      */
     @NonNull
     public FutureHttpBase<T> setReadTimeout(@IntRange(from = 0) final int timeoutInMs) {
@@ -192,6 +196,8 @@ public abstract class FutureHttpBase<T> {
      * Set a throttler to obey site usage rules.
      *
      * @param throttler (optional) to use
+     *
+     * @return {@code this} (for chaining)
      */
     @NonNull
     public FutureHttpBase<T> setThrottler(@Nullable final Throttler throttler) {
@@ -209,6 +215,8 @@ public abstract class FutureHttpBase<T> {
      * Override the default retry count {@link #NR_OF_TRIES}.
      *
      * @param retryCount to use, should be {@code 0} for no retries.
+     *
+     * @return {@code this} (for chaining)
      */
     @NonNull
     public FutureHttpBase<T> setRetryCount(@IntRange(from = 0) final int retryCount) {
@@ -220,6 +228,8 @@ public abstract class FutureHttpBase<T> {
      * For secure connections.
      *
      * @param sslContext (optional) SSL context to use instead of the system one.
+     *
+     * @return {@code this} (for chaining)
      */
     @NonNull
     public FutureHttpBase<T> setSSLContext(@Nullable final SSLContext sslContext) {

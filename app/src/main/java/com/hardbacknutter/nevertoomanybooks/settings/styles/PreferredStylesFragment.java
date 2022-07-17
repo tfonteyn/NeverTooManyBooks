@@ -151,7 +151,7 @@ public class PreferredStylesFragment
         }
 
         @Override
-        public void showContextMenu(final View anchor,
+        public void showContextMenu(@NonNull final View anchor,
                                     final int position) {
             final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
                     .inflate(R.menu.editing_styles)
@@ -228,7 +228,8 @@ public class PreferredStylesFragment
     /**
      * Called for toolbar and list adapter context menu.
      *
-     * @param menu o prepare
+     * @param menu     to prepare
+     * @param position in the list
      */
     private void prepareMenu(@NonNull final Menu menu,
                              final int position) {
@@ -301,8 +302,8 @@ public class PreferredStylesFragment
         void swapItems(int fromPosition,
                        int toPosition);
 
-        void showContextMenu(final View anchor,
-                             final int position);
+        void showContextMenu(@NonNull View anchor,
+                             int position);
     }
 
     private static class Holder

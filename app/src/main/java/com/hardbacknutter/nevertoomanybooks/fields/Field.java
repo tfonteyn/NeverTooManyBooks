@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -112,7 +112,7 @@ public interface Field<T, V extends View> {
      *
      * @param parent to use
      */
-    void setParentView(@NonNull final View parent);
+    void setParentView(@NonNull View parent);
 
     /**
      * <strong>Conditionally</strong> set the visibility for the field and its related fields.
@@ -200,8 +200,11 @@ public interface Field<T, V extends View> {
 
     /**
      * Propagate the fact that this field was changed to the {@link AfterChangedListener}.
+     * The current value should be compared to the initial and/or given previous values.
+     *
+     * @param previous value to compare to
      */
-    void notifyIfChanged(@Nullable final T previous);
+    void notifyIfChanged(@Nullable T previous);
 
     void setAfterFieldChangeListener(@Nullable AfterChangedListener listener);
 

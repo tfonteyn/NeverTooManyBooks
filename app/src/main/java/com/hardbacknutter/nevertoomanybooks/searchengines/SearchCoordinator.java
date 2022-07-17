@@ -775,12 +775,12 @@ public class SearchCoordinator
         }
 
         if (externalId != null && !externalId.isEmpty()
-            && (searchEngine instanceof SearchEngine.ByExternalId)) {
+            && searchEngine instanceof SearchEngine.ByExternalId) {
             task.setSearchBy(SearchTask.By.ExternalId);
             task.setExternalId(externalId);
 
         } else if (isbn.isValid(true)
-                   && (searchEngine instanceof SearchEngine.ByIsbn)) {
+                   && searchEngine instanceof SearchEngine.ByIsbn) {
             task.setSearchBy(SearchTask.By.Isbn);
             if (searchEngine.getConfig().isSearchPrefersIsbn10() && isbn.isIsbn10Compat()) {
                 task.setIsbn(isbn.asText(ISBN.Type.Isbn10));
@@ -789,7 +789,7 @@ public class SearchCoordinator
             }
 
         } else if (isbn.isValid(false)
-                   && (searchEngine instanceof SearchEngine.ByBarcode)) {
+                   && searchEngine instanceof SearchEngine.ByBarcode) {
             task.setSearchBy(SearchTask.By.Barcode);
             task.setIsbn(isbn.asText());
 
@@ -908,7 +908,7 @@ public class SearchCoordinator
         prepareSearch();
 
         // If we have one or more ID's
-        if ((externalIdSearchText != null && externalIdSearchText.size() > 0)
+        if (externalIdSearchText != null && externalIdSearchText.size() > 0
             // or we have a valid code
             || isbn.isValid(strictIsbn)) {
 

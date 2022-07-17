@@ -135,7 +135,7 @@ public class EditBookshelfDialogFragment
         final long existingId = bookshelfDao.find(bookshelf);
 
         // are we adding a new one but trying to use an existing name?
-        if ((bookshelf.getId() == 0) && (existingId != 0)) {
+        if (bookshelf.getId() == 0 && existingId != 0) {
             final Context context = getContext();
 
             //noinspection ConstantConditions

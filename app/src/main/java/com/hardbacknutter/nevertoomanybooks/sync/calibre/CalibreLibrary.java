@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -81,6 +81,11 @@ public class CalibreLibrary
 
     /**
      * Constructor without ID.
+     *
+     * @param uuid              the Calibre native UUID for the library
+     * @param libraryId         the Calibre native {@code stringId} for the library
+     * @param name              the Calibre name for the library
+     * @param mappedBookshelfId the {@link Bookshelf} id this library is mapped to
      */
     public CalibreLibrary(@NonNull final String uuid,
                           @NonNull final String libraryId,
@@ -95,6 +100,11 @@ public class CalibreLibrary
 
     /**
      * Constructor without ID.
+     *
+     * @param uuid            the Calibre native UUID for the library
+     * @param libraryId       the Calibre native {@code stringId} for the library
+     * @param name            the Calibre name for the library
+     * @param mappedBookshelf the {@link Bookshelf} this library is mapped to
      */
     public CalibreLibrary(@NonNull final String uuid,
                           @NonNull final String libraryId,

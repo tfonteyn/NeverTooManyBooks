@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -444,7 +444,7 @@ public class CropImageView
                      * getScale();
         zoom = Math.max(1f, zoom);
 
-        if ((Math.abs(zoom - getScale()) / zoom) > 0.1) {
+        if (Math.abs(zoom - getScale()) / zoom > 0.1) {
             final float[] coordinates = {hv.cropRect.centerX(), hv.cropRect.centerY()};
             getImageMatrix().mapPoints(coordinates);
             final float duration = 300f;
@@ -456,7 +456,7 @@ public class CropImageView
                 public void run() {
                     final long now = System.currentTimeMillis();
                     final float currentMs = Math.min(duration, now - startTime);
-                    final float target = oldScale + (incrementPerMs * currentMs);
+                    final float target = oldScale + incrementPerMs * currentMs;
                     zoomTo(target, coordinates[0], coordinates[1]);
 
                     if (currentMs < duration) {
@@ -602,7 +602,7 @@ public class CropImageView
                 // draw the two horizontal resize handles
                 width = resizeHorizontal.getIntrinsicWidth();
                 height = resizeHorizontal.getIntrinsicHeight();
-                middle = drawRect.top + ((drawRect.bottom - drawRect.top) / 2);
+                middle = drawRect.top + (drawRect.bottom - drawRect.top) / 2;
 
                 resizeHorizontal.setBounds(drawRect.left - width, middle - height,
                                            drawRect.left + width, middle + height);
@@ -615,7 +615,7 @@ public class CropImageView
                 // draw the two vertical resize handles
                 width = resizeVertical.getIntrinsicWidth();
                 height = resizeVertical.getIntrinsicHeight();
-                middle = drawRect.left + ((drawRect.right - drawRect.left) / 2);
+                middle = drawRect.left + (drawRect.right - drawRect.left) / 2;
 
                 resizeVertical.setBounds(middle - width, drawRect.top - height,
                                          middle + width, drawRect.top + height);
@@ -643,22 +643,22 @@ public class CropImageView
 
             // vertical: check if the position is between the top and the bottom edge,
             // (with some tolerance). Similar for horizontal.
-            final boolean vertical = (y >= r.top - HYSTERESIS) && (y < r.bottom + HYSTERESIS);
-            final boolean horizontal = (x >= r.left - HYSTERESIS) && (x < r.right + HYSTERESIS);
+            final boolean vertical = y >= r.top - HYSTERESIS && y < r.bottom + HYSTERESIS;
+            final boolean horizontal = x >= r.left - HYSTERESIS && x < r.right + HYSTERESIS;
 
             int hitValue = GROW_NONE;
 
             // Check whether the position is near some edge(s).
-            if ((Math.abs(r.left - x) < HYSTERESIS) && vertical) {
+            if (Math.abs(r.left - x) < HYSTERESIS && vertical) {
                 hitValue |= GROW_LEFT_EDGE;
             }
-            if ((Math.abs(r.right - x) < HYSTERESIS) && vertical) {
+            if (Math.abs(r.right - x) < HYSTERESIS && vertical) {
                 hitValue |= GROW_RIGHT_EDGE;
             }
-            if ((Math.abs(r.top - y) < HYSTERESIS) && horizontal) {
+            if (Math.abs(r.top - y) < HYSTERESIS && horizontal) {
                 hitValue |= GROW_TOP_EDGE;
             }
-            if ((Math.abs(r.bottom - y) < HYSTERESIS) && horizontal) {
+            if (Math.abs(r.bottom - y) < HYSTERESIS && horizontal) {
                 hitValue |= GROW_BOTTOM_EDGE;
             }
 
@@ -699,8 +699,8 @@ public class CropImageView
                 // Convert to image space before sending to growBy().
                 final float xDelta = dx * (cropRect.width() / r.width());
                 final float yDelta = dy * (cropRect.height() / r.height());
-                growBy((((edge & GROW_LEFT_EDGE) != 0) ? -1 : 1) * xDelta,
-                       (((edge & GROW_TOP_EDGE) != 0) ? -1 : 1) * yDelta);
+                growBy(((edge & GROW_LEFT_EDGE) != 0 ? -1 : 1) * xDelta,
+                       ((edge & GROW_TOP_EDGE) != 0 ? -1 : 1) * yDelta);
             }
         }
 

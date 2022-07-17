@@ -419,7 +419,7 @@ public class EditBookTocFragment
                            final int position) {
         final Field<Long, View> typeField = vm.requireField(R.id.book_type);
         //noinspection ConstantConditions
-        final boolean multipleAuthors = typeField.getValue() == Book.ContentType.Anthology.value;
+        final boolean multipleAuthors = typeField.getValue() == Book.ContentType.Anthology.getId();
         editTocEntryLauncher.launch(vm.getBook(), position, tocEntry, multipleAuthors);
     }
 
@@ -597,7 +597,7 @@ public class EditBookTocFragment
                                   @NonNull final Book.ContentType tocBitMask,
                                   @NonNull final ArrayList<TocEntry> tocEntries) {
                 final Bundle result = new Bundle(2);
-                result.putLong(TOC_BIT_MASK, tocBitMask.value);
+                result.putLong(TOC_BIT_MASK, tocBitMask.getId());
                 result.putParcelableArrayList(TOC_LIST, tocEntries);
                 fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
             }
@@ -653,7 +653,7 @@ public class EditBookTocFragment
              * @param contentType bit flags
              * @param tocEntries  the list of entries
              */
-            public abstract void onResult(@NonNull final Book.ContentType contentType,
+            public abstract void onResult(@NonNull Book.ContentType contentType,
                                           @NonNull List<TocEntry> tocEntries);
 
             /**

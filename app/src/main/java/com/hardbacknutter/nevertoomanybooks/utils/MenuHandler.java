@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,6 +37,6 @@ public interface MenuHandler {
                        @NonNull DataHolder rowData);
 
     boolean onMenuItemSelected(@NonNull Context context,
-                               @NonNull final MenuItem menuItem,
+                               @NonNull MenuItem menuItem,
                                @NonNull DataHolder rowData);
 }

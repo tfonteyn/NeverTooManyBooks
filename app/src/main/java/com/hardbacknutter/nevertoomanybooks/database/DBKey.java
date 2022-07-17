@@ -269,7 +269,7 @@ public final class DBKey {
     public static final String BL_LIST_VIEW_NODE_ROW_ID = "lv_node_row_id";
 
 
-    /** Column alias for {@link AuthorWork.Type} */
+    /** Column alias for {@link AuthorWork.Type}. */
     public static final String AUTHOR_WORK_TYPE = "work_type";
 
     /** FTS Primary key. */

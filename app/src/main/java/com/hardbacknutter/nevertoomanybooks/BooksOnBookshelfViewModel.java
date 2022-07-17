@@ -440,7 +440,7 @@ public class BooksOnBookshelfViewModel
             loanee = ServiceLocator.getInstance().getLoaneeDao().getLoaneeByBookId(
                     rowData.getLong(DBKey.FK_BOOK));
         }
-        return (loanee == null) || loanee.isEmpty();
+        return loanee == null || loanee.isEmpty();
     }
 
     @NonNull
@@ -701,7 +701,8 @@ public class BooksOnBookshelfViewModel
     /**
      * This method is called from an ActivityResultContract after the result intent is parsed.
      *
-     * @param data returned from the view/edit contract
+     * @param context Current context
+     * @param data    returned from the view/edit contract
      */
     void onEditStylesFinished(@NonNull final Context context,
                               @NonNull final PreferredStylesContract.Output data) {
@@ -719,7 +720,8 @@ public class BooksOnBookshelfViewModel
     /**
      * This method is called from an ActivityResultContract after the result intent is parsed.
      *
-     * @param data returned from the view/edit contract
+     * @param context Current context
+     * @param data    returned from the view/edit contract
      */
     void onEditStyleFinished(@NonNull final Context context,
                              @NonNull final EditStyleContract.Output data) {
@@ -755,6 +757,7 @@ public class BooksOnBookshelfViewModel
      * <p>
      * This method is called from a ActivityResultContract after the result intent is parsed.
      *
+     * @param context       Current context
      * @param importResults returned from the import
      */
     void onImportFinished(@NonNull final Context context,

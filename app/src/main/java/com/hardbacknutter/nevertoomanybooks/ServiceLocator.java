@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -293,7 +293,7 @@ public final class ServiceLocator {
     }
 
     /**
-     * Get a <strong>new</strong>> localized Application Context
+     * Get a <strong>new</strong>> localized Application Context.
      *
      * @return Application Context using the user preferred Locale
      */

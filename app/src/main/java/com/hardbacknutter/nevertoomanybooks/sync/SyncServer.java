@@ -126,7 +126,7 @@ public enum SyncServer
 
     /**
      * Check whether each book has a specific last-update date to
-     * (help) sync it with the server/web site
+     * (help) sync it with the server/web site.
      */
     public boolean hasLastUpdateDateField() {
         return hasLastUpdateDateField;

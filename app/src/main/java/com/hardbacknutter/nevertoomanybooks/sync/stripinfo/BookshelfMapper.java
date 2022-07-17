@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,6 +32,7 @@ public class BookshelfMapper {
     /** The {@link Bookshelf} to which the wishlist is mapped. */
     public static final String PK_BOOKSHELF_WISHLIST =
             StripInfoAuth.PREF_KEY + ".bookshelf.wishlist";
+    /** The {@link Bookshelf} to which the owned-books list is mapped. */
     public static final String PK_BOOKSHELF_OWNED =
             StripInfoAuth.PREF_KEY + ".bookshelf.owned";
 

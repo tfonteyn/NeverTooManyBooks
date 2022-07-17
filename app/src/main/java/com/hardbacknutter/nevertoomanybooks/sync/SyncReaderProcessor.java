@@ -207,7 +207,7 @@ public final class SyncReaderProcessor
      *
      * @return a {@link Book} object with the <strong>DELTA</strong> fields that we need.
      *         The book id will always be set.
-     *         It can be passed to {@link BookDao#update)}
+     *         It can be passed to {@link BookDao#update}
      */
     @Nullable
     public Book process(@NonNull final Context context,
@@ -286,7 +286,8 @@ public final class SyncReaderProcessor
     /**
      * Check if we already have this field (with content) in the original data.
      *
-     * @param key to test for
+     * @param book to check
+     * @param key  to test for
      *
      * @return {@code true} if already present
      */
@@ -339,6 +340,7 @@ public final class SyncReaderProcessor
      * Combines two ParcelableArrayList's, weeding out duplicates.
      *
      * @param context    Current context
+     * @param book       to check
      * @param bookLocale to use
      * @param bookData   Bundle to update
      * @param key        into the incoming data
@@ -576,7 +578,7 @@ public final class SyncReaderProcessor
         public SyncReaderProcessor build() {
             for (final Map.Entry<String, String> entry : relatedFields.entrySet()) {
                 final SyncField syncField = fields.get(entry.getKey());
-                if (syncField != null && (syncField.getAction() != SyncAction.Skip)) {
+                if (syncField != null && syncField.getAction() != SyncAction.Skip) {
                     final String relatedKey = entry.getValue();
                     fields.put(relatedKey, syncField.createRelatedField(relatedKey));
                 }

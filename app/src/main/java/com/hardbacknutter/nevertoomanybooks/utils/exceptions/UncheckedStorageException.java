@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -75,9 +75,9 @@ public class UncheckedStorageException
      * @throws InvalidObjectException if the object is invalid or has a cause that is not
      *                                an {@code StorageException}
      */
-    private void readObject(@NonNull final ObjectInputStream s)
+    private void readObject(@NonNull final ObjectInputStream ois)
             throws IOException, ClassNotFoundException {
-        s.defaultReadObject();
+        ois.defaultReadObject();
         final Throwable cause = super.getCause();
         if (!(cause instanceof StorageException)) {
             throw new InvalidObjectException("Cause must be an StorageException");

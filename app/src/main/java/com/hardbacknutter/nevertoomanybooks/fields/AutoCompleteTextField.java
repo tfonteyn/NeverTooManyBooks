@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import java.util.List;
 import java.util.function.Supplier;
 
+import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 
 
@@ -47,6 +48,9 @@ public class AutoCompleteTextField
     /**
      * Constructor.
      *
+     * @param fragmentId   the hosting {@link FragmentId} for this {@link Field}
+     * @param fieldViewId  the view id for this {@link Field}
+     * @param fieldKey     Key used to access a {@link DataManager}
      * @param listSupplier Supplier with auto complete values
      */
     public AutoCompleteTextField(@NonNull final FragmentId fragmentId,
@@ -60,7 +64,10 @@ public class AutoCompleteTextField
     /**
      * Constructor.
      *
-     * @param formatter      to use
+     * @param fragmentId     the hosting {@link FragmentId} for this {@link Field}
+     * @param fieldViewId    the view id for this {@link Field}
+     * @param fieldKey       Key used to access a {@link DataManager}
+     * @param formatter      formatter to use
      * @param enableReformat flag: reformat after every user-change.
      * @param listSupplier   Supplier with auto complete values
      */

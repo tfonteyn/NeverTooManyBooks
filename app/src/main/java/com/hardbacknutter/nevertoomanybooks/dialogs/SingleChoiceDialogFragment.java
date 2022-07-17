@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -176,6 +176,7 @@ public class SingleChoiceDialogFragment
         /**
          * Launch the dialog.
          *
+         * @param context      Current context
          * @param dialogTitle  the dialog title
          * @param fieldId      this dialog operates on
          *                     (one launcher can serve multiple fields)

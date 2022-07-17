@@ -547,9 +547,9 @@ public class BooksOnBookshelf
      */
     private void updateSyncMenuVisibility() {
         final boolean enable =
-                (SyncServer.CalibreCS.isEnabled() && calibreSyncLauncher != null)
+                SyncServer.CalibreCS.isEnabled() && calibreSyncLauncher != null
                 ||
-                (SyncServer.StripInfo.isEnabled() && stripInfoSyncLauncher != null);
+                SyncServer.StripInfo.isEnabled() && stripInfoSyncLauncher != null;
 
         //noinspection ConstantConditions
         getNavigationMenuItem(R.id.SUBMENU_SYNC).setVisible(enable);
@@ -676,7 +676,7 @@ public class BooksOnBookshelf
         super.onResume();
 
         // don't build the list needlessly
-        if (recreateVm.isRecreating() || isFinishing() || isDestroyed()) {
+        if (isRecreating() || isFinishing() || isDestroyed()) {
             return;
         }
 
@@ -1785,7 +1785,8 @@ public class BooksOnBookshelf
         /**
          * Constructor.
          *
-         * @param context Current context
+         * @param context        Current context
+         * @param headerSupplier a supplier to get the current header values from
          */
         HeaderAdapter(@NonNull final Context context,
                       @NonNull final Supplier<BooklistHeader> headerSupplier) {

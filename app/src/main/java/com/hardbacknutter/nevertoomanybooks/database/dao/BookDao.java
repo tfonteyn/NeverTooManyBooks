@@ -60,7 +60,7 @@ public interface BookDao {
      * @return {@code true} on success
      */
     @SuppressWarnings("UnusedReturnValue")
-    boolean touch(@NonNull final Book book);
+    boolean touch(@NonNull Book book);
 
     /**
      * Create a new Book using the details provided.

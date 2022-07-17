@@ -116,11 +116,11 @@ public class BooklistAdapter
     /** Cached inflater. */
     @NonNull
     private final LayoutInflater inflater;
+    /** caching the book condition strings. */
+    private final String[] conditionDescriptions;
     /** Whether to use the covers DAO caching. */
     private boolean imageCachingEnabled;
     private boolean reorderTitleForDisplaying;
-    /** caching the book condition strings. */
-    private final String[] conditionDescriptions;
     /** A collection of 'in-use' flags for the fields we might display. */
     private FieldsInUse fieldsInUse;
     /** List style to apply. */
@@ -737,7 +737,7 @@ public class BooklistAdapter
          *
          * @param position The position of the item within the adapter's data set.
          */
-        void onClick(final int position);
+        void onClick(int position);
     }
 
     @FunctionalInterface
@@ -751,8 +751,8 @@ public class BooklistAdapter
          *
          * @return true if the callback consumed the long click, false otherwise.
          */
-        boolean onLongClick(@NonNull final View v,
-                            final int position);
+        boolean onLongClick(@NonNull View v,
+                            int position);
     }
 
     /**
@@ -1409,7 +1409,9 @@ public class BooklistAdapter
         }
 
         /**
-         * @param columnKey Column name to use for the 'isComplete' status
+         * Set the Column name to use for the 'isComplete' status.
+         *
+         * @param columnKey key name
          */
         void setIsCompleteColumnKey(@NonNull final String columnKey) {
             completeKey = columnKey;

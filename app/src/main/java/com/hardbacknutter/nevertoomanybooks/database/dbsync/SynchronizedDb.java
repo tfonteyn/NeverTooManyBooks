@@ -62,6 +62,7 @@ public class SynchronizedDb
     private static final String ERROR_TX_NOT_STARTED = "No TX started";
     private static final String ERROR_TX_INSIDE_SHARED = "Inside shared TX";
     private static final String ERROR_TX_WRONG_LOCK = "Wrong lock";
+    public static final int DEFAULT_STMT_CACHE_SIZE = 25;
 
     @NonNull
     private final SQLiteOpenHelper sqLiteOpenHelper;
@@ -168,7 +169,7 @@ public class SynchronizedDb
     private SQLiteDatabase getReadableDatabase() {
         final SQLiteDatabase db = sqLiteOpenHelper.getReadableDatabase();
         // only set when bigger than the default
-        if ((preparedStmtCacheSize > 25)) {
+        if (preparedStmtCacheSize > DEFAULT_STMT_CACHE_SIZE) {
             db.setMaxSqlCacheSize(preparedStmtCacheSize);
         }
         return db;
@@ -185,7 +186,7 @@ public class SynchronizedDb
     private SQLiteDatabase getWritableDatabase() {
         final SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
         // only set when bigger than the default
-        if ((preparedStmtCacheSize > 25)) {
+        if (preparedStmtCacheSize > DEFAULT_STMT_CACHE_SIZE) {
             db.setMaxSqlCacheSize(preparedStmtCacheSize);
         }
         return db;

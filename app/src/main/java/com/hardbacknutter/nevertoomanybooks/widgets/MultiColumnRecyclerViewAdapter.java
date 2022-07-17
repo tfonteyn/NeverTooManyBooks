@@ -35,13 +35,18 @@ public abstract class MultiColumnRecyclerViewAdapter<HOLDER extends RecyclerView
 
     /** Cached inflater. */
     @NonNull
-    protected final LayoutInflater inflater;
-    protected final int columnCount;
+    private final LayoutInflater inflater;
+    private final int columnCount;
 
     public MultiColumnRecyclerViewAdapter(@NonNull final Context context,
                                           final int columnCount) {
         this.inflater = LayoutInflater.from(context);
         this.columnCount = columnCount;
+    }
+
+    @NonNull
+    protected LayoutInflater getInflater() {
+        return inflater;
     }
 
     protected int transpose(final int position) {

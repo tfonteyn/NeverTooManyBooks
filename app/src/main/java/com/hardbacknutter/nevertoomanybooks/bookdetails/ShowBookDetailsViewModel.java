@@ -79,6 +79,7 @@ public class ShowBookDetailsViewModel
      *
      * @param context current context
      * @param args    Bundle with arguments
+     * @param style   to apply
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void init(@NonNull final Context context,

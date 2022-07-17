@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,7 +73,7 @@ public class PreferredStylesViewModel
     }
 
     /**
-     * Find the position in the list of the style with the given uuid,
+     * Find the position in the list of the style with the given uuid.
      *
      * @param uuid to find
      *
@@ -144,7 +144,7 @@ public class PreferredStylesViewModel
     }
 
     /**
-     * Look up and down in the list to find a 'preferred' row, and set it 'selected'
+     * Look up and down in the list to find a 'preferred' row, and set it 'selected'.
      *
      * @return the new 'selected' position
      */

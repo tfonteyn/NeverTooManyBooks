@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -291,13 +291,14 @@ public class OpenLibrarySearchEngine
 
     /**
      * Fetch and parse.
+     *
+     * @param context Current context
      */
     private void fetchBook(@NonNull final Context context,
                            @NonNull final String url,
                            @NonNull final boolean[] fetchCovers,
                            @NonNull final Bundle bookData)
-            throws StorageException,
-                   SearchException {
+            throws StorageException, SearchException {
 
         futureHttpGet = createFutureGetRequest();
 
@@ -618,7 +619,7 @@ public class OpenLibrarySearchEngine
             if (!toc.isEmpty()) {
                 bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
                 if (toc.size() > 1) {
-                    bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Collection.value);
+                    bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Collection.getId());
                 }
             }
         }

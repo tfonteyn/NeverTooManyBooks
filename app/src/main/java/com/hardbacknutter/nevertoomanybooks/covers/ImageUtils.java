@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -122,8 +122,8 @@ public final class ImageUtils {
 
         // Abort if no size info, or to small to be any good.
         if (options.outHeight <= 0 || options.outWidth <= 0
-            || (options.outHeight < MIN_VALID_IMAGE_SIDE
-                && options.outWidth < MIN_VALID_IMAGE_SIDE)) {
+            || options.outHeight < MIN_VALID_IMAGE_SIDE
+               && options.outWidth < MIN_VALID_IMAGE_SIDE) {
             return null;
         }
 
@@ -135,8 +135,8 @@ public final class ImageUtils {
 
             // Calculate the largest inSampleSize value that is a power of 2 and keeps both
             // height and width LARGER than the requested height and width.
-            while ((halfHeight / options.inSampleSize) >= reqHeight
-                   && (halfWidth / options.inSampleSize) >= reqWidth) {
+            while (halfHeight / options.inSampleSize >= reqHeight
+                   && halfWidth / options.inSampleSize >= reqWidth) {
                 options.inSampleSize *= 2;
             }
         }
@@ -147,9 +147,10 @@ public final class ImageUtils {
     }
 
     /**
-     * Write out to the destination file
+     * Write out to the destination file.
      *
-     * @param bitmap to write
+     * @param bitmap   to write
+     * @param destFile file to write to
      *
      * @return (potentially) compressed bitmap; or {@code null} on any non-fatal error.
      *

@@ -54,8 +54,8 @@ public enum WindowSizeClass {
         final WindowMetrics metrics = WindowMetricsCalculator
                 .getOrCreate().computeCurrentWindowMetrics(activity);
 
-        final float widthDp = metrics.getBounds().width() /
-                              activity.getResources().getDisplayMetrics().density;
+        final float widthDp = metrics.getBounds().width()
+                              / activity.getResources().getDisplayMetrics().density;
         if (widthDp < 600f) {
             return COMPACT;
         } else if (widthDp < 840f) {
@@ -70,8 +70,8 @@ public enum WindowSizeClass {
         final WindowMetrics metrics = WindowMetricsCalculator
                 .getOrCreate().computeCurrentWindowMetrics(activity);
 
-        final float heightDp = metrics.getBounds().height() /
-                               activity.getResources().getDisplayMetrics().density;
+        final float heightDp = metrics.getBounds().height()
+                               / activity.getResources().getDisplayMetrics().density;
         if (heightDp < 480f) {
             return COMPACT;
         } else if (heightDp < 900f) {

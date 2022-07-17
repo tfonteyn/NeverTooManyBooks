@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -208,7 +208,7 @@ public final class ViewFocusOrder {
         // Get the view id and add it to collection if not already present.
         @IdRes
         final int id = view.getId();
-        if (id != View.NO_ID && (list.get(id) == null)) {
+        if (id != View.NO_ID && list.get(id) == null) {
             list.put(id, view);
         }
         // If it's a ViewGroup, then process children recursively.

@@ -121,7 +121,7 @@ public class CalibreContentServerReader
     @NonNull
     private final Updates updateOption;
     /**
-     * If we want new-books-only {@link Updates#Skip)
+     * If we want new-books-only {@link Updates#Skip}
      * or new-books-and-updates {@link Updates#OnlyNewer},
      * we limit the fetch to the sync-date.
      */
@@ -375,7 +375,7 @@ public class CalibreContentServerReader
                     }
                     offset += num;
                 }
-            } while (valid && num > 0 && (totalNum > offset + num)
+            } while (valid && num > 0 && totalNum > offset + num
                      && !progressListener.isCancelled());
 
         } catch (@NonNull final JSONException e) {

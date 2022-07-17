@@ -952,7 +952,7 @@ public class IsfdbSearchEngine
                                 bookData.putString(SiteField.BOOK_TYPE, tmpString);
                                 final Book.ContentType type = TYPE_MAP.get(tmpString);
                                 if (type != null) {
-                                    bookData.putLong(DBKey.TOC_TYPE__BITMASK, type.value);
+                                    bookData.putLong(DBKey.TOC_TYPE__BITMASK, type.getId());
                                 }
                             }
                             break;
@@ -1033,9 +1033,9 @@ public class IsfdbSearchEngine
             bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
             if (toc.size() > 1) {
                 if (TocEntry.hasMultipleAuthors(toc)) {
-                    bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Anthology.value);
+                    bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Anthology.getId());
                 } else {
-                    bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Collection.value);
+                    bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Collection.getId());
                 }
             }
         }
@@ -1411,14 +1411,14 @@ public class IsfdbSearchEngine
         // getpub_by_internal_ID.cgi
         //   calls this server code:
         // def SQLGetPubById(id):
-        //	query = "select * from pubs where pub_id = '%d'" % (int(id))
-        //	db.query(query)
-        //	result = db.store_result()
-        //	if result.num_rows() > 0:
-        //		pub = result.fetch_row()
-        //		return pub[0]
-        //	else:
-        //		return 0
+        //  query = "select * from pubs where pub_id = '%d'" % (int(id))
+        //  db.query(query)
+        //  result = db.store_result()
+        //  if result.num_rows() > 0:
+        //    pub = result.fetch_row()
+        //    return pub[0]
+        //  else:
+        //    return 0
         final String url = getSiteUrl() + String.format(REST_BY_EXTERNAL_ID, externalId);
         final List<Bundle> bookData = fetchPublications(context, url, fetchCovers, 1);
         if (bookData.isEmpty()) {
@@ -1489,8 +1489,7 @@ public class IsfdbSearchEngine
                                            @NonNull final boolean[] fetchCovers,
                                            @SuppressWarnings("SameParameterValue")
                                            final int maxRecords)
-            throws StorageException,
-                   SearchException {
+            throws StorageException, SearchException {
 
         futureHttpGet = createFutureGetRequest();
 

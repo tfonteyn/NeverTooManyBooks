@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -144,8 +144,10 @@ public class ImageFileInfo
      * or if we already established the image does not exist.
      *
      * @param size to compare to
+     *
+     * @return {@code true} if the image is usable
      */
-    boolean isUseThisImage(@NonNull final Size size) {
+    boolean isUsable(@NonNull final Size size) {
         // Does it have an actual file ?
         if (fileSpec != null) {
             // There is a file and it is good (as determined at download time)

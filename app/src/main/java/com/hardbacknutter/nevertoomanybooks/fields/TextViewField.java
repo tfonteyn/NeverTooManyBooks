@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,6 +25,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.fields.endicon.ExtEndIconDelegate;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
@@ -43,12 +44,27 @@ public class TextViewField<T>
     /** Log tag. */
     private static final String TAG = "TextViewField";
 
+    /**
+     * Constructor.
+     *
+     * @param fragmentId  the hosting {@link FragmentId} for this {@link Field}
+     * @param fieldViewId the view id for this {@link Field}
+     * @param fieldKey    Key used to access a {@link DataManager}
+     */
     public TextViewField(@NonNull final FragmentId fragmentId,
                          @IdRes final int fieldViewId,
                          @NonNull final String fieldKey) {
         super(fragmentId, fieldViewId, fieldKey, fieldKey, null);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param fragmentId  the hosting {@link FragmentId} for this {@link Field}
+     * @param fieldViewId the view id for this {@link Field}
+     * @param fieldKey    Key used to access a {@link DataManager}
+     * @param formatter   (optional) formatter to use
+     */
     public TextViewField(@NonNull final FragmentId fragmentId,
                          @IdRes final int fieldViewId,
                          @NonNull final String fieldKey,
@@ -56,6 +72,15 @@ public class TextViewField<T>
         super(fragmentId, fieldViewId, fieldKey, fieldKey, formatter);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param fragmentId  the hosting {@link FragmentId} for this {@link Field}
+     * @param fieldViewId the view id for this {@link Field}
+     * @param fieldKey    Key used to access a {@link DataManager}
+     * @param prefKey     The preference key to check if this Field is used or not
+     * @param formatter   (optional) formatter to use
+     */
     public TextViewField(@NonNull final FragmentId fragmentId,
                          @IdRes final int fieldViewId,
                          @NonNull final String fieldKey,
@@ -68,6 +93,8 @@ public class TextViewField<T>
      * Set the id for the surrounding TextInputLayout (if this field has one).
      *
      * @param viewId view id
+     *
+     * @return {@code this} (for chaining)
      */
     @NonNull
     public TextViewField<T> setTextInputLayoutId(@IdRes final int viewId) {
@@ -76,6 +103,13 @@ public class TextViewField<T>
         return this;
     }
 
+    /**
+     * Set the mode to use for the end-icon.
+     *
+     * @param endIconMode to use
+     *
+     * @return {@code this} (for chaining)
+     */
     @NonNull
     public TextViewField<T> setEndIconMode(
             @ExtEndIconDelegate.EndIconMode final int endIconMode) {

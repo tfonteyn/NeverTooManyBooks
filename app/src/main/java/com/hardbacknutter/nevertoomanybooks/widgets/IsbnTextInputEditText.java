@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -115,7 +115,7 @@ public class IsbnTextInputEditText
         if (current != null) {
             // only allow one X character
             if (keyChar != 'X'
-                || (!current.toString().contains("X") && !current.toString().contains("x"))) {
+                || !current.toString().contains("X") && !current.toString().contains("x")) {
 
                 current.replace(start, end, String.valueOf(keyChar));
                 // set the cursor immediately behind the inserted character

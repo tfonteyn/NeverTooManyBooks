@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,7 +35,7 @@ public interface ProgressListener
      * @param message to send
      */
     @WorkerThread
-    void publishProgress(@NonNull final TaskProgress message);
+    void publishProgress(@NonNull TaskProgress message);
 
     /**
      * Advance progress by 'delta'.

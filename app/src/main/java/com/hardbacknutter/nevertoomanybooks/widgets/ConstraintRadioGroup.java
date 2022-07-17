@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -157,7 +157,7 @@ public final class ConstraintRadioGroup
      */
     public void check(@IdRes final int viewId) {
         // don't even bother
-        if (viewId != View.NO_ID && (viewId == mCheckedId)) {
+        if (viewId != View.NO_ID && viewId == mCheckedId) {
             return;
         }
 

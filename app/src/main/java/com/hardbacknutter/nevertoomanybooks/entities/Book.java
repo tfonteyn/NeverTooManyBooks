@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -666,7 +666,7 @@ public class Book
     }
 
     public void setContentType(@NonNull final ContentType type) {
-        putLong(DBKey.TOC_TYPE__BITMASK, type.value);
+        putLong(DBKey.TOC_TYPE__BITMASK, type.getId());
     }
 
     /**
@@ -1238,7 +1238,7 @@ public class Book
     }
 
     /**
-     * Database representation of column {@link DBKey#TOC_TYPE__BITMASK}
+     * Database representation of column {@link DBKey#TOC_TYPE__BITMASK}.
      */
     public enum ContentType
             implements Entity {
@@ -1250,9 +1250,9 @@ public class Book
         /** Multiple works, multiple Authors. */
         Anthology(3, R.string.lbl_anthology);
 
-        public final int value;
+        private final int value;
         @StringRes
-        public final int labelResId;
+        private final int labelResId;
 
         ContentType(final int value,
                     @StringRes final int labelResId) {

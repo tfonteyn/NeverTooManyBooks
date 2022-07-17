@@ -430,7 +430,7 @@ public class FtsDaoImpl
                 }
             }
 
-            try (final SynchronizedStatement stmt = db.compileStatement(sql)) {
+            try (SynchronizedStatement stmt = db.compileStatement(sql)) {
                 bindStringOrNull(stmt, 1, rowData.getString(TITLE));
                 // FTS_AUTHOR_NAME
                 bindStringOrNull(stmt, 2, authorText.toString());

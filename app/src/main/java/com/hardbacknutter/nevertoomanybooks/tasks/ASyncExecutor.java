@@ -70,7 +70,8 @@ public final class ASyncExecutor {
     private static final int KEEP_ALIVE_SECONDS = 3;
 
     private static final int BACKUP_POOL_SIZE = 5;
-    private static final ThreadFactory sThreadFactory = new ThreadFactory() {
+
+    private static final ThreadFactory THREAD_FACTORY = new ThreadFactory() {
         private final AtomicInteger threadIdCounter = new AtomicInteger(1);
 
         public Thread newThread(@NonNull final Runnable r) {
@@ -80,7 +81,7 @@ public final class ASyncExecutor {
 
     /** Used for rejected executions. Initialization protected by sRunOnSerialPolicy lock. */
     private static ThreadPoolExecutor sBackupExecutor;
-    private static final RejectedExecutionHandler sRunOnSerialPolicy =
+    private static final RejectedExecutionHandler REJECTED_EXECUTION_HANDLER =
             new RejectedExecutionHandler() {
                 public void rejectedExecution(@NonNull final Runnable r,
                                               @NonNull final ThreadPoolExecutor e) {
@@ -92,7 +93,7 @@ public final class ASyncExecutor {
                             sBackupExecutor = new ThreadPoolExecutor(
                                     BACKUP_POOL_SIZE, BACKUP_POOL_SIZE,
                                     KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
-                                    new LinkedBlockingQueue<>(), sThreadFactory);
+                                    new LinkedBlockingQueue<>(), THREAD_FACTORY);
                             sBackupExecutor.allowCoreThreadTimeOut(true);
                         }
                     }
@@ -105,11 +106,11 @@ public final class ASyncExecutor {
         final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
                 CORE_POOL_SIZE, MAXIMUM_POOL_SIZE,
                 KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
-                new SynchronousQueue<>(), sThreadFactory);
-        threadPoolExecutor.setRejectedExecutionHandler(sRunOnSerialPolicy);
+                new SynchronousQueue<>(), THREAD_FACTORY);
+        threadPoolExecutor.setRejectedExecutionHandler(REJECTED_EXECUTION_HANDLER);
         MAIN = threadPoolExecutor;
 
-        SERVICE = Executors.newCachedThreadPool(sThreadFactory);
+        SERVICE = Executors.newCachedThreadPool(THREAD_FACTORY);
     }
 
     private ASyncExecutor() {

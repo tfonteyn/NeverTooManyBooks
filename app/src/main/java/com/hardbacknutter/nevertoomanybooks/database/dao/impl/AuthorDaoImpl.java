@@ -97,7 +97,7 @@ public class AuthorDaoImpl
      * We need TITLE_OB as it will be used to ORDER BY
      */
     private static final String SELECT_BOOK_TITLES_BY_AUTHOR_ID =
-            SELECT_ + "'" + AuthorWork.Type.BookLight.value + "' AS " + DBKey.AUTHOR_WORK_TYPE
+            SELECT_ + "'" + AuthorWork.Type.BookLight.asChar() + "' AS " + DBKey.AUTHOR_WORK_TYPE
             + ',' + TBL_BOOKS.dotAs(DBKey.PK_ID,
                                     DBKey.TITLE,
                                     DBKey.TITLE_OB,
@@ -118,7 +118,7 @@ public class AuthorDaoImpl
      * We need TITLE_OB as it will be used to ORDER BY
      */
     private static final String SELECT_TOC_ENTRIES_BY_AUTHOR_ID =
-            SELECT_ + "'" + AuthorWork.Type.TocEntry.value + "' AS " + DBKey.AUTHOR_WORK_TYPE
+            SELECT_ + "'" + AuthorWork.Type.TocEntry.asChar() + "' AS " + DBKey.AUTHOR_WORK_TYPE
             + ',' + TBL_TOC_ENTRIES.dotAs(DBKey.PK_ID,
                                           DBKey.TITLE,
                                           DBKey.TITLE_OB,

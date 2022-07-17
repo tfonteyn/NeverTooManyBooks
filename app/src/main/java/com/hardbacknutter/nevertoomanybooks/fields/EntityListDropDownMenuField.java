@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,7 +48,12 @@ public class EntityListDropDownMenuField<T extends Entity>
     /**
      * Constructor.
      *
-     * @param context Current context
+     * @param fragmentId  the hosting {@link FragmentId} for this {@link Field}
+     * @param fieldViewId the view id for this {@link Field}
+     * @param fieldKey    Key used to access a {@link DataManager}
+     *                    Set to {@code ""} to suppress all access.
+     * @param context     Current context
+     * @param items       the list of items for the dropdown menu
      */
     public EntityListDropDownMenuField(@NonNull final FragmentId fragmentId,
                                        @IdRes final int fieldViewId,

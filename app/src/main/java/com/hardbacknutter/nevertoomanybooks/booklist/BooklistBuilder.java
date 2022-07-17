@@ -792,6 +792,8 @@ class BooklistBuilder {
          * Add a simple domain for the lowest level; i.e. the book.
          *
          * @param domain to add
+         *
+         * @return {@code true} if the domain was added, {@code false} if it was already present.
          */
         @SuppressWarnings("UnusedReturnValue")
         private boolean addDomain(@NonNull final Domain domain) {

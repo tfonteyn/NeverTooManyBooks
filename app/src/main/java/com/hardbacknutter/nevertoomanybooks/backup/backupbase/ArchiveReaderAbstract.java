@@ -318,22 +318,22 @@ public abstract class ArchiveReaderAbstract
                 if (record.getType().isPresent()) {
                     final RecordType type = record.getType().get();
 
-                    if ((type == RecordType.Cover && readCovers)
+                    if (type == RecordType.Cover && readCovers
 
-                        || (type == RecordType.Books
-                            && recordTypes.contains(RecordType.Books))
+                        || type == RecordType.Books
+                           && recordTypes.contains(RecordType.Books)
 
-                        || (type == RecordType.Bookshelves
-                            && recordTypes.contains(RecordType.Bookshelves))
+                        || type == RecordType.Bookshelves
+                           && recordTypes.contains(RecordType.Bookshelves)
 
-                        || (type == RecordType.Certificates
-                            && recordTypes.contains(RecordType.Certificates))
+                        || type == RecordType.Certificates
+                           && recordTypes.contains(RecordType.Certificates)
 
-                        || (type == RecordType.CalibreLibraries
-                            && recordTypes.contains(RecordType.CalibreLibraries))
+                        || type == RecordType.CalibreLibraries
+                           && recordTypes.contains(RecordType.CalibreLibraries)
 
-                        || (type == RecordType.CalibreCustomFields
-                            && recordTypes.contains(RecordType.CalibreCustomFields))
+                        || type == RecordType.CalibreCustomFields
+                           && recordTypes.contains(RecordType.CalibreCustomFields)
 
                     ) {
                         readRecord(context, recordTypes, record, progressListener);

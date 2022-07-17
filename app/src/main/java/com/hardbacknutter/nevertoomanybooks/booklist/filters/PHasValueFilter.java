@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 /**
+ * A persistable {@link Filter}.
  * <ul>
  * <li>Variant of {@link PBooleanFilter} with the expression testing the presence of a value</li>
  * <li>The value is a {@code Boolean}.</li>

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -127,7 +127,8 @@ public interface DataHolder {
      * <p>
      * If the value was not a String, implementations <strong>must</strong> stringify it.
      *
-     * @param key a String
+     * @param key      a String
+     * @param defValue (optional) default value
      *
      * @return Value of the data, or the 'defValue'
      */

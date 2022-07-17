@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -55,8 +55,7 @@ public abstract class AbstractLinkedTableBooklistGroup
     }
 
     @NonNull
-    protected abstract DomainExpression createDisplayDomainExpression(
-            @NonNull final Style style);
+    protected abstract DomainExpression createDisplayDomainExpression(@NonNull Style style);
 
     @Override
     @NonNull

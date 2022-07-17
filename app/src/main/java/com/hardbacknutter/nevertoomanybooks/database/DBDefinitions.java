@@ -773,7 +773,7 @@ public final class DBDefinitions {
         DOM_BOOK_TOC_TYPE =
                 new Domain.Builder(DBKey.TOC_TYPE__BITMASK, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(Book.ContentType.Book.value)
+                        .withDefault(Book.ContentType.Book.getId())
                         .build();
 
         /* ======================================================================================

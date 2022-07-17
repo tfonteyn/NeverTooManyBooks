@@ -176,8 +176,9 @@ public class CalibreHandler {
     /**
      * Add a Calibre submenu with read/download/settings options as appropriate for the given Book.
      *
-     * @param menu to add to
-     * @param book to use
+     * @param context Current context
+     * @param menu    to add to
+     * @param book    to use
      */
     public void onPrepareMenu(@NonNull final Context context,
                               @NonNull final Menu menu,
@@ -221,6 +222,7 @@ public class CalibreHandler {
     /**
      * Called from a list screen. i.e. the data comes from a row {@link DataHolder}.
      *
+     * @param context  Current context
      * @param menuItem to check
      * @param rowData  data to use
      */
@@ -233,6 +235,7 @@ public class CalibreHandler {
     /**
      * Called from a details screen. i.e. the data comes from a {@link Book}.
      *
+     * @param context  Current context
      * @param menuItem to check
      * @param book     data to use
      */

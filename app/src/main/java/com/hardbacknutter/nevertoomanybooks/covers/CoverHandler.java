@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -218,8 +218,8 @@ public class CoverHandler {
         view.setOnClickListener(v -> {
             // Allow zooming by clicking on the image;
             bookSupplier.get()
-                        .getCoverFile(cIdx).
-                        ifPresent(file -> ZoomedImageDialogFragment.launch(fm, file));
+                        .getCoverFile(cIdx)
+                        .ifPresent(file -> ZoomedImageDialogFragment.launch(fm, file));
         });
 
         view.setOnLongClickListener(this::onCreateContextMenu);
@@ -537,9 +537,9 @@ public class CoverHandler {
      */
     private void takePicture(final boolean alreadyGranted) {
         final Context context = fragmentView.getContext();
-        if (alreadyGranted ||
-            ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-            == PackageManager.PERMISSION_GRANTED) {
+        if (alreadyGranted
+            || ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+               == PackageManager.PERMISSION_GRANTED) {
 
             try {
                 final File dstFile = getTempFile();

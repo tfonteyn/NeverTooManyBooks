@@ -329,9 +329,9 @@ public class LastDodoSearchEngine
         parseToc(sections).ifPresent(toc -> {
             bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
             if (TocEntry.hasMultipleAuthors(toc)) {
-                bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Anthology.value);
+                bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Anthology.getId());
             } else {
-                bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Collection.value);
+                bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Collection.getId());
             }
         });
 

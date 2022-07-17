@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -102,7 +102,7 @@ public enum ArchiveEncoding
         }
     };
 
-    /* Log tag. */
+    /** Log tag. */
     private static final String TAG = "ArchiveEncoding";
 
     /** The <strong>proposed</strong> archive filename extension to write to. */

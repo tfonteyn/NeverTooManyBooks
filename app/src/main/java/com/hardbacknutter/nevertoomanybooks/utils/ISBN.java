@@ -255,7 +255,7 @@ public class ISBN {
             final char c = s.charAt(i);
             // allows an X anywhere instead of just at the end; doesn't really matter,
             // we're not looking for a fully valid isbn here.
-            if (Character.isDigit(c) || ((c == 'X' || c == 'x'))) {
+            if (Character.isDigit(c) || c == 'X' || c == 'x') {
                 sb.append(c);
             }
         }
@@ -382,7 +382,7 @@ public class ISBN {
      * @return {@code true} if compatible; {@code false} if not compatible or not a valid ISBN
      */
     public boolean isIsbn10Compat() {
-        return codeType == Type.Isbn10 || (codeType == Type.Isbn13 && codeText.startsWith("978"));
+        return codeType == Type.Isbn10 || codeType == Type.Isbn13 && codeText.startsWith("978");
     }
 
     /**

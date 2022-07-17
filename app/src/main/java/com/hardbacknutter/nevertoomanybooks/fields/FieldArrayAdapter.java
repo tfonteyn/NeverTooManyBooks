@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -52,6 +52,7 @@ public final class FieldArrayAdapter
      *                   i.e. the user can select from a fixed list of values
      * @param ids        The id's for the values; pass in {@code null} to use the position instead.
      * @param labels     The labels to show in the list view
+     * @param formatter  (optional) formatter to use
      */
     private FieldArrayAdapter(@NonNull final Context context,
                               @NonNull final FilterType filterType,
@@ -67,6 +68,12 @@ public final class FieldArrayAdapter
     /**
      * Create an adapter suited for an AutoComplete field.
      * A formatter is <string>required</string>.
+     *
+     * @param context   Current context
+     * @param labels    The labels to show in the list view
+     * @param formatter formatter to use
+     *
+     * @return adapter
      */
     public static FieldArrayAdapter createAutoComplete(@NonNull final Context context,
                                                        @NonNull final List<String> labels,
@@ -78,6 +85,12 @@ public final class FieldArrayAdapter
 
     /**
      * Create an adapter suited for a fixed DropDownMenu using plain String values.
+     *
+     * @param context   Current context
+     * @param labels    The labels to show in the list view
+     * @param formatter (optional) formatter to use
+     *
+     * @return adapter
      */
     public static FieldArrayAdapter createStringDropDown(@NonNull final Context context,
                                                          @NonNull final List<String> labels,
@@ -89,6 +102,11 @@ public final class FieldArrayAdapter
 
     /**
      * Create an adapter suited for a fixed DropDownMenu using {@link Entity} values.
+     *
+     * @param context  Current context
+     * @param entities The entities (labels) to show in the list view
+     *
+     * @return adapter
      */
     public static FieldArrayAdapter createEntityDropDown(@NonNull final Context context,
                                                          @NonNull

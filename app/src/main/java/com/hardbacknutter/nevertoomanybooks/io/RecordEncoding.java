@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -107,6 +107,14 @@ public enum RecordEncoding {
         return extension;
     }
 
+    /**
+     * Create a {@link RecordWriter} for this encoding.
+     *
+     * @param utcSinceDateTime (optional) UTC based date to select only items
+     *                         modified or added since.
+     *
+     * @return {@link RecordWriter}
+     */
     @NonNull
     public RecordWriter createWriter(@Nullable final LocalDateTime utcSinceDateTime) {
         switch (this) {
@@ -125,6 +133,8 @@ public enum RecordEncoding {
     }
 
     /**
+     * Create a {@link RecordReader} for this encoding.
+     *
      * @param context              Current context
      * @param importEntriesAllowed the record types which the reader
      *                             will be <strong>allowed</strong> to read

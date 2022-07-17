@@ -151,7 +151,7 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
         this.endIconOnClickConsumer = endIconOnClickConsumer;
     }
 
-    /** Called from {@link Field#setParentView(View)} */
+    /** Called from {@link Field#setParentView(View)}. */
     @Override
     public void setTextInputLayout(@NonNull final TextInputLayout til) {
         textInputLayout = til;
@@ -183,7 +183,7 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
         initAnimators();
     }
 
-    /** Called from {@link Field#setValue(Object)} */
+    /** Called from {@link Field#setValue(Object)}. */
     @Override
     public void updateEndIcon() {
         textInputLayout.setEndIconVisible(shouldBeVisible());

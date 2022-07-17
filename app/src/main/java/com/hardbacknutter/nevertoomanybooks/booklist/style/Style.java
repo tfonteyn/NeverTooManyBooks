@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -212,7 +212,7 @@ public interface Style {
      * @return {@code true} if in use
      */
     boolean isShowField(@NonNull Screen screen,
-                        @NonNull final String dbKey);
+                        @NonNull String dbKey);
 
     /**
      * Get the bitmask value which defines book-field visibility.
@@ -247,7 +247,7 @@ public interface Style {
      *
      * @return {@code true} if present
      */
-    boolean hasGroup(@BooklistGroup.Id final int id);
+    boolean hasGroup(@BooklistGroup.Id int id);
 
     /**
      * Get the group for the given id.
@@ -257,7 +257,7 @@ public interface Style {
      * @return Optional with the group
      */
     @NonNull
-    Optional<BooklistGroup> getGroupById(@BooklistGroup.Id final int id);
+    Optional<BooklistGroup> getGroupById(@BooklistGroup.Id int id);
 
     /**
      * Get the group for the given id.
@@ -285,7 +285,7 @@ public interface Style {
      * @throws IndexOutOfBoundsException on bug
      */
     @NonNull
-    BooklistGroup getGroupByLevel(@IntRange(from = 1) final int level)
+    BooklistGroup getGroupByLevel(@IntRange(from = 1) int level)
             throws IndexOutOfBoundsException;
 
     /**
@@ -298,7 +298,7 @@ public interface Style {
 
 
     /**
-     * {@link AuthorBooklistGroup} property
+     * {@link AuthorBooklistGroup} property.
      *
      * @return bitmask
      */
@@ -306,22 +306,22 @@ public interface Style {
     int getPrimaryAuthorType();
 
     /**
-     * {@link AuthorBooklistGroup} property
+     * {@link AuthorBooklistGroup} property.
      */
     boolean isShowBooksUnderEachAuthor();
 
     /**
-     * {@link SeriesBooklistGroup} property
+     * {@link SeriesBooklistGroup} property.
      */
     boolean isShowBooksUnderEachSeries();
 
     /**
-     * {@link PublisherBooklistGroup} property
+     * {@link PublisherBooklistGroup} property.
      */
     boolean isShowBooksUnderEachPublisher();
 
     /**
-     * {@link BookshelfBooklistGroup} property
+     * {@link BookshelfBooklistGroup} property.
      */
     boolean isShowBooksUnderEachBookshelf();
 
@@ -335,10 +335,10 @@ public interface Style {
      * @return summary text
      */
     @NonNull
-    String getGroupsSummaryText(@NonNull final Context context);
+    String getGroupsSummaryText(@NonNull Context context);
 
     @NonNull
-    String getFieldVisibilitySummaryText(@NonNull final Context context);
+    String getFieldVisibilitySummaryText(@NonNull Context context);
 
 
     enum Screen {

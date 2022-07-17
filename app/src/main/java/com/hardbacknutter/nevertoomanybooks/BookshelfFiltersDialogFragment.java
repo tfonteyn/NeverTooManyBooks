@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -247,7 +247,7 @@ public class BookshelfFiltersDialogFragment
         /**
          * Callback handler with the user's selection.
          */
-        public abstract void onResult(final boolean modified);
+        public abstract void onResult(boolean modified);
     }
 
     private static class FilterListAdapter

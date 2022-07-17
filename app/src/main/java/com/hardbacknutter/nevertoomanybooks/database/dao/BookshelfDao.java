@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -102,7 +102,7 @@ public interface BookshelfDao {
      *
      * @return {@code true} if the list was modified.
      */
-    boolean pruneList(@NonNull final Collection<Bookshelf> list);
+    boolean pruneList(@NonNull Collection<Bookshelf> list);
 
     /**
      * Tries to find the item in the database using all or some of its fields (except the id).

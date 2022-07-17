@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -98,7 +98,7 @@ public interface FtsDao {
         }
 
         // append a wildcard if prev character was non-ws, and not negation
-        if (!Character.isWhitespace(prev) && (prev != '-')) {
+        if (!Character.isWhitespace(prev) && prev != '-') {
             parameter.append('*');
         }
         // reminder to self: we do not need to prepend with a '*' for MATCH to work.
@@ -145,7 +145,10 @@ public interface FtsDao {
                               + prepareSearchText(publisherName, DBKey.PUBLISHER_NAME)
         ).trim();
 
-        return query.isEmpty() ? Optional.empty() : Optional.of(query);
+        if (query.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(query);
     }
 
     /**

@@ -73,7 +73,7 @@ abstract class BaseDaoImpl {
     static final String _NOT_IN_ = " NOT IN ";
 
     /**
-     * Update a single Book's DATE_LAST_UPDATED__UTC to 'now'
+     * Update a single Book's DATE_LAST_UPDATED__UTC to 'now'.
      */
     private static final String TOUCH =
             UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
@@ -140,7 +140,7 @@ abstract class BaseDaoImpl {
     }
 
     /**
-     * Execute the given SQL, and fetches column 0 as an ArrayList<String>.
+     * Execute the given SQL, and fetches column 0 as an {@code ArrayList<String>}.
      *
      * @param sql to execute
      *
@@ -158,7 +158,7 @@ abstract class BaseDaoImpl {
     }
 
     /**
-     * Execute the given SQL, and fetches column 0 as an ArrayList<Long>.
+     * Execute the given SQL, and fetches column 0 as an {@code ArrayList<Long>}.
      *
      * @param sql SQL to execute
      *

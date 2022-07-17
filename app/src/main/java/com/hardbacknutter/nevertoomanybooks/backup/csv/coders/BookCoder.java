@@ -324,6 +324,8 @@ public class BookCoder {
     /**
      * Database access is strictly limited to fetching ID's for the list elements.
      *
+     * @param context Current context
+     *
      * @return the decoded book
      */
     public Book decode(@NonNull final Context context,

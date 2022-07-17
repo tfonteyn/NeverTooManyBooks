@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -77,9 +77,9 @@ public class UncheckedSAXException
      * @throws InvalidObjectException if the object is invalid or has a cause that is not
      *                                an {@code SAXException}
      */
-    private void readObject(@NonNull final ObjectInputStream s)
+    private void readObject(@NonNull final ObjectInputStream ois)
             throws IOException, ClassNotFoundException {
-        s.defaultReadObject();
+        ois.defaultReadObject();
         final Throwable cause = super.getCause();
         if (!(cause instanceof SAXException)) {
             throw new InvalidObjectException("Cause must be an SAXException");

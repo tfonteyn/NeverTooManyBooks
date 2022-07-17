@@ -179,7 +179,7 @@ public enum RecordType {
         // If we're doing books, then we must do its dependencies:
         if (recordTypes.contains(Books)) {
             recordTypes.add(Bookshelves);
-            recordTypes.add((CalibreLibraries));
+            recordTypes.add(CalibreLibraries);
         }
     }
 

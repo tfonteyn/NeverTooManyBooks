@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -136,7 +136,7 @@ public class FileManager {
 
             // Do we already have a file previously downloaded?
             imageFileInfo = files.get(isbn);
-            if (imageFileInfo != null && imageFileInfo.isUseThisImage(size)) {
+            if (imageFileInfo != null && imageFileInfo.isUsable(size)) {
                 return imageFileInfo;
             }
 

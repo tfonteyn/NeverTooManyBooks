@@ -91,7 +91,7 @@ class IsfdbBookHandlerTest
         assertEquals("159", rawData.getString(DBKey.PAGE_COUNT));
         assertEquals("pb", rawData.getString(DBKey.FORMAT));
         assertEquals("COLLECTION", rawData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE));
-        assertEquals(Book.ContentType.Anthology.value, rawData.getLong(DBKey.TOC_TYPE__BITMASK));
+        assertEquals(Book.ContentType.Anthology.getId(), rawData.getLong(DBKey.TOC_TYPE__BITMASK));
 
         assertEquals("13665857", rawData.getString(DBKey.SID_OCLC));
 

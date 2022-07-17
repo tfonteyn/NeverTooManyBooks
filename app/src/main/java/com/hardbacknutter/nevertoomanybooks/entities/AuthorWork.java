@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
  * for use in a list of works by an {@link Author}.
  * i.e. {@link AuthorDao#getAuthorWorks}.
  * <p>
- * The {@link Type#value} allows us to return the type directly from a DAO using an SQL column.
+ * The {@link Type#asChar()} allows us to return the type directly from a DAO using an SQL column.
  */
 public interface AuthorWork {
 
@@ -100,10 +100,10 @@ public interface AuthorWork {
         TocEntry('T'),
         /** 'L'  as returned by the DAO SQL. */
         BookLight('L'),
-
+        /** 'B' : a full {@link com.hardbacknutter.nevertoomanybooks.entities.Book} object. */
         Book('B');
 
-        public final char value;
+        private final char value;
 
         Type(final char value) {
             this.value = value;
@@ -120,6 +120,10 @@ public interface AuthorWork {
                 default:
                     throw new IllegalArgumentException(String.valueOf(value));
             }
+        }
+
+        public char asChar() {
+            return value;
         }
     }
 }

@@ -62,7 +62,7 @@ public class EditBookshelvesViewModel
     }
 
     /**
-     * Find the position in the list of the Bookshelf with the given id,
+     * Find the position in the list of the Bookshelf with the given id.
      *
      * @param id to find
      *

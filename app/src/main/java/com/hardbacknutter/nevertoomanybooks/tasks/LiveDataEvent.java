@@ -68,9 +68,9 @@ public class LiveDataEvent<T> {
     @Override
     @NonNull
     public String toString() {
-        return "LiveDataEvent{" +
-               "hasBeenHandled=" + hasBeenHandled +
-               ", data=" + data +
-               '}';
+        return "LiveDataEvent{"
+               + "hasBeenHandled=" + hasBeenHandled
+               + ", data=" + data
+               + '}';
     }
 }

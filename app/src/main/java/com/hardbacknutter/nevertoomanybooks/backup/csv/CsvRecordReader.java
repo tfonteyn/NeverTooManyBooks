@@ -24,6 +24,7 @@ import android.database.sqlite.SQLiteDoneException;
 import android.util.Log;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 import java.io.BufferedReader;
@@ -261,7 +262,7 @@ public class CsvRecordReader
 
             delta++;
             final long now = System.currentTimeMillis();
-            if ((now - lastUpdateTime) > progressListener.getUpdateIntervalInMs()
+            if (now - lastUpdateTime > progressListener.getUpdateIntervalInMs()
                 && !progressListener.isCancelled()) {
                 final String msg = String.format(progressMessage,
                                                  booksString,
@@ -281,8 +282,10 @@ public class CsvRecordReader
     /**
      * insert or update a single book which has a potentially usable id.
      *
-     * @param context Current context
-     * @param book    to import
+     * @param context         Current context
+     * @param helper          import configuration
+     * @param book            to import
+     * @param importNumericId the numeric id for the book as found in the import.
      *
      * @throws StorageException  The covers directory is not available
      * @throws DaoWriteException on failure
@@ -290,7 +293,7 @@ public class CsvRecordReader
     private void importBookWithId(@NonNull final Context context,
                                   @NonNull final ImportHelper helper,
                                   @NonNull final Book book,
-                                  final long importNumericId)
+                                  @IntRange(from = 1) final long importNumericId)
             throws StorageException, DaoWriteException {
         // Add the importNumericId back to the book.
         book.putLong(DBKey.PK_ID, importNumericId);
@@ -467,7 +470,7 @@ public class CsvRecordReader
             // Last position in row
             final int endPos = line.length() - 1;
             // 'Next' char
-            char next = (line.isEmpty()) ? '\0' : line.charAt(0);
+            char next = line.isEmpty() ? '\0' : line.charAt(0);
 
             // '\0' is used as (and artificial) null character indicating end-of-string.
             while (next != '\0') {
@@ -533,7 +536,7 @@ public class CsvRecordReader
                 } else {
                     // This is just a raw string; no escape or quote active.
                     // Ignore leading whitespace.
-                    if ((c != ' ' && c != '\t') || sb.length() != 0) {
+                    if (c != ' ' && c != '\t' || sb.length() != 0) {
                         switch (c) {
                             case '"':
                                 if (sb.length() > 0) {

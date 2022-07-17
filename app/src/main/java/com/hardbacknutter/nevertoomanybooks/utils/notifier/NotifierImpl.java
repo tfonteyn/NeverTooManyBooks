@@ -66,8 +66,8 @@ public final class NotifierImpl
             // Apps targeting Android 12 and higher must specify either FLAG_IMMUTABLE
             // or FLAG_MUTABLE when constructing a PendingIntent.
             pendingIntent = PendingIntent.getActivity(context, requestCode, intent,
-                                                      PendingIntent.FLAG_IMMUTABLE |
-                                                      PendingIntent.FLAG_UPDATE_CURRENT);
+                                                      PendingIntent.FLAG_IMMUTABLE
+                                                      | PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
         final NotificationManager notificationManager =

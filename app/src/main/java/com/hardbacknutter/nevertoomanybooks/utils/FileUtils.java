@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -447,6 +447,10 @@ public final class FileUtils {
      *  <li>{@link android.os.FileUtils}#buildValidExtFilename</li>
      *  <li>{@link android.os.FileUtils}#trimFilename</li>
      * </ul>
+     *
+     * @param name the file name to mutate
+     *
+     * @return the actual file name to use
      */
     @NonNull
     public static String buildValidFilename(@Nullable final String name)

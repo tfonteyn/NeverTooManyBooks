@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,7 +42,9 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
- * an SQL WHERE clause (column IN (a,b,c,...)
+ * A persistable {@link Filter}.
+ * <p>
+ * Represents an SQL WHERE clause (column IN (a,b,c,...)
  *
  * <ul>
  * <li>The value is a {@code Set<Long>} with the key being the entity id.</li>
@@ -100,8 +102,8 @@ public class PEntityListFilter<T extends Entity>
                         .map(String::valueOf)
                         .collect(Collectors.joining(
                                 ",",
-                                '(' + table.dot(domain) + " IN ("
-                                , "))"));
+                                '(' + table.dot(domain) + " IN (",
+                                "))"));
         }
     }
 

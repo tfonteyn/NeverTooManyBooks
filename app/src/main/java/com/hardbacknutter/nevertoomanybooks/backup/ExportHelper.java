@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -101,6 +101,11 @@ public class ExportHelper
         addRecordType(recordTypes);
     }
 
+    /**
+     * Get the type of archive (file) to write to.
+     *
+     * @return encoding
+     */
     @NonNull
     public ArchiveEncoding getEncoding() {
         return encoding;

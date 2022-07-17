@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -99,6 +99,8 @@ public interface SearchEngine
 
     /**
      * Get the name for this engine.
+     *
+     * @param context Current context
      *
      * @return name
      */

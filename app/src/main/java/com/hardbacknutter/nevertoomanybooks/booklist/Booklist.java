@@ -393,7 +393,7 @@ public class Booklist
     }
 
     /**
-     * Get <strong>all</strong> nodes for the given book id
+     * Get <strong>all</strong> nodes for the given book id.
      *
      * @param bookId to use
      *

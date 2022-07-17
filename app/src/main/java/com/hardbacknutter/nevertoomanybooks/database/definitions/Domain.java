@@ -245,7 +245,7 @@ public class Domain
     }
 
     /**
-     * toString() <strong>NOT DEBUG, must only ever return the column name</strong>
+     * toString() <strong>NOT DEBUG, must only ever return the column name</strong>.
      *
      * @return the name of the domain.
      */

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -113,7 +113,9 @@ public final class ImportHelper
     }
 
     /**
-     * Get the location to read from.
+     * Get the type of archive (file) to read from.
+     *
+     * @return encoding
      */
     @NonNull
     public ArchiveEncoding getEncoding() {

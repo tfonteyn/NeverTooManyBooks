@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -149,6 +149,8 @@ public abstract class BaseField<T, V extends View>
      * but that means creating a group for EACH field. That would be overkill.
      *
      * @param viewIds labels etc
+     *
+     * @return {@code this} (for chaining)
      */
     @NonNull
     public Field<T, V> addRelatedViews(@NonNull @IdRes final Integer... viewIds) {
@@ -160,6 +162,8 @@ public abstract class BaseField<T, V extends View>
      * Set the optional validator for this field.
      *
      * @param validator to use
+     *
+     * @return {@code this} (for chaining)
      */
     @NonNull
     public Field<T, V> setValidator(@NonNull final Validator<T, V> validator) {
@@ -209,7 +213,7 @@ public abstract class BaseField<T, V extends View>
      *
      * @see #putValue(DataManager)
      */
-    abstract void internalPutValue(@NonNull final DataManager target);
+    abstract void internalPutValue(@NonNull DataManager target);
 
     @Override
     public void putValue(@NonNull final DataManager target) {
@@ -260,8 +264,8 @@ public abstract class BaseField<T, V extends View>
         final View view = requireView();
         final int currentVisibility = view.getVisibility();
 
-        if ((view instanceof ImageView)
-            || (keepHiddenFieldsHidden && currentVisibility == View.GONE)) {
+        if (view instanceof ImageView
+            || keepHiddenFieldsHidden && currentVisibility == View.GONE) {
             // An ImageView always keeps its current visibility.
             // When 'keepHiddenFieldsHidden' is set, hidden fields stay hidden.
             // Either way, the related views follow the main view
@@ -353,22 +357,21 @@ public abstract class BaseField<T, V extends View>
     /**
      * Check if the given value is considered to be 'empty'.
      *
+     * @param value to check
+     *
      * @return {@code true} if empty.
      */
     abstract boolean isEmpty(@Nullable T value);
 
-    /**
-     * Notify an {@link Field} if the value was changed compared
-     * to the initial and/or previous.
-     */
+    @Override
     public void notifyIfChanged(@Nullable final T previous) {
         final T currentValue = getValue();
         final boolean allEqual =
                 // all empty
-                (isEmpty(initialValue) && isEmpty(previous) && isEmpty(currentValue))
+                isEmpty(initialValue) && isEmpty(previous) && isEmpty(currentValue)
                 // or all equal?
-                || (Objects.equals(initialValue, previous)
-                    && Objects.equals(previous, currentValue));
+                || Objects.equals(initialValue, previous)
+                   && Objects.equals(previous, currentValue);
 
         if (!allEqual) {
             if (afterFieldChangeListener != null && afterFieldChangeListener.get() != null) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,6 +73,8 @@ public final class NetworkUtils {
      * When running a JUnit test, this method will always
      * return {@link TestFlags#isInternetConnected}.
      *
+     * @param context Current context
+     *
      * @return {@code true} if the application can access the internet
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -139,6 +141,7 @@ public final class NetworkUtils {
      * @throws UnknownHostException   the IP address of a host could not be determined.
      * @throws IOException            if we cannot reach the site
      * @throws SocketTimeoutException on timeouts (both DNS and host itself)
+     * @throws MalformedURLException  if the URL does not start with {@code http} or {@code https}
      */
     @WorkerThread
     public static void ping(@NonNull final String urlStr)

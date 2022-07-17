@@ -194,6 +194,8 @@ public class CalibrePreferencesFragment
 
     /**
      * Read the existing CA file from storage, and create the preference summary.
+     *
+     * @return text to display as the summary
      */
     @NonNull
     private String createCaSummary() {
