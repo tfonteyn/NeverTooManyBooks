@@ -130,26 +130,30 @@ abstract class TaskBase<Result>
             try {
                 final Result result = doWork(context);
                 if (isCancelled()) {
+                    status = Status.Cancelled;
                     setTaskCancelled(result);
                 } else {
+                    status = Status.Finished;
                     setTaskFinished(result);
                 }
             } catch (@NonNull final CancellationException e) {
+                status = Status.Cancelled;
                 setTaskCancelled(null);
 
             } catch (@NonNull final UncheckedStorageException e) {
+                status = Status.Failed;
                 //noinspection ConstantConditions
                 setTaskFailure(e.getCause());
 
             } catch (@NonNull final UncheckedIOException e) {
+                status = Status.Failed;
                 //noinspection ConstantConditions
                 setTaskFailure(e.getCause());
 
             } catch (@NonNull final Exception e) {
+                status = Status.Failed;
                 setTaskFailure(e);
             }
-
-            status = Status.Finished;
         });
     }
 
@@ -265,21 +269,17 @@ abstract class TaskBase<Result>
     public enum Status {
         /** initial status before the task has been queued. */
         Created,
+
         /** The task has been submitted, and is scheduled to start. */
         Pending,
         /** The task is actively doing work. */
         Running,
-        /**
-         * The task is finished; it could have done so with success or failure,
-         * or it could have been cancelled. Regardless, it's 'done'
-         */
-        Finished
-//
-//        /** The task has finished successfully. */
-//        Finished,
-//        /** The task failed (usually with an Exception). */
-//        Failed,
-//        /** The task was cancelled. It <strong>might</strong> have a (partial) result. */
-//        Cancelled
+
+        /** The task has finished successfully. */
+        Finished,
+        /** The task failed (usually with an Exception). */
+        Failed,
+        /** The task was cancelled. It <strong>might</strong> have a (partial) result. */
+        Cancelled
     }
 }
