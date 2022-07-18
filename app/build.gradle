@@ -308,7 +308,8 @@ dependencies {
     androidTestImplementation("androidx.test:runner:${androidx_test_runner_version}")
     androidTestImplementation("androidx.test:rules:${androidx_test_rules_version}")
 
-    androidTestImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:" +
+            "${kotlinx_coroutines_core}")
 
 //    testImplementation("org.robolectric:robolectric:4.4")
 //    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")

@@ -35,6 +35,7 @@ buildscript {
 
         // 1.2 requires Studio 'Dolphin'
         desugar_version = '1.1.6'
+
         kotlin_version = '1.7.0'
 
         // https://developer.android.com/jetpack/androidx/versions
@@ -80,6 +81,8 @@ buildscript {
 
         androidx_window_version = '1.1.0-alpha02'
 
+
+
         // https://github.com/material-components/material-components-android/releases
         google_material_version = '1.7.0-alpha02'
 
@@ -108,6 +111,9 @@ buildscript {
         androidx_test_core_version = '1.4.0'
         androidx_test_runner_version = '1.4.0'
         androidx_test_rules_version = '1.4.0'
+
+        // needed for testing
+        kotlinx_coroutines_core = '1.5.2'
     }
 
     repositories {
@@ -117,7 +123,7 @@ buildscript {
     dependencies {
         classpath('com.android.tools.build:gradle:7.2.1')
         classpath("de.mannodermaus.gradle.plugins:android-junit5:1.7.1.1")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.0")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10")
     }
 }
 
