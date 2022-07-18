@@ -85,7 +85,7 @@ public class StartupViewModel
             new MutableLiveData<>();
     private final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> failureLiveData =
             new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskProgress>> progressLiveData =
+    private final MutableLiveData<TaskProgress> progressLiveData =
             new MutableLiveData<>();
 
     /** TaskId holder. Added when started. Removed when stopped. */
@@ -127,16 +127,12 @@ public class StartupViewModel
 
         @Override
         public void onProgress(@NonNull final TaskProgress message) {
-            progressLiveData.setValue(new LiveDataEvent<>(message));
+            progressLiveData.setValue(message);
         }
     };
 
     /** Flag to ensure tasks are only ever started once. */
     private boolean startTasks = true;
-
-    /** stage the startup is at. */
-    @NonNull
-    private StartupActivity.Stage startupStage = StartupActivity.Stage.Init;
 
     /** Flag we need to prompt the user to make a backup after startup. */
     private boolean proposeBackup;
@@ -165,12 +161,6 @@ public class StartupViewModel
 
     boolean isProposeBackup() {
         return proposeBackup;
-    }
-
-    @NonNull
-    StartupActivity.Stage getNextStartupStage() {
-        startupStage = startupStage.next();
-        return startupStage;
     }
 
     /**
@@ -269,10 +259,8 @@ public class StartupViewModel
             startTask(new OptimizeDbTask(taskListener));
         }
 
-        if (!isRunning()) {
-            finishedLiveData.setValue(new LiveDataEvent<>(true));
-        }
-
+        // We started at least one task (BuildLanguageMappingsTask) hence nextStage()
+        // will be triggered by onFinished()
         return true;
     }
 
@@ -307,7 +295,7 @@ public class StartupViewModel
      * @return a {@link TaskProgress} with the progress counter, a text message, ...
      */
     @NonNull
-    public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
+    public LiveData<TaskProgress> onProgress() {
         return progressLiveData;
     }
 

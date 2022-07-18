@@ -103,27 +103,24 @@ public class StartupActivity
         final PackageInfoWrapper info = PackageInfoWrapper.create(this);
         vb.version.setText(info.getVersionName());
 
-        vm.onProgress().observe(this, message -> message.getData().ifPresent(
-                data -> onProgress(data.text)));
+        vm.onProgress().observe(this, message -> onProgress(message.text));
 
         // when all tasks are done, move on to next startup-stage
         vm.onFinished().observe(this, message -> message.getData().ifPresent(
-                data -> nextStage()));
+                data -> nextStage(Stage.RunTasks)));
 
         // Not called for now, see {@link StartupViewModel} #mTaskListener.
         vm.onFailure().observe(this, message -> message.getData().ifPresent(
                 data -> onFailure(data.getResult())));
 
-        nextStage();
+        nextStage(Stage.Init);
     }
 
     /**
      * Startup stages.
      */
-    private void nextStage() {
-        switch (vm.getNextStartupStage()) {
-            case Init:
-                break;
+    private void nextStage(@NonNull final Stage currentStage) {
+        switch (currentStage.next()) {
 
             case InitStorage: {
                 initStorage();
@@ -155,6 +152,10 @@ public class StartupActivity
                 finish();
                 break;
             }
+
+            case Init:
+                // we'll never get here
+                break;
         }
     }
 
@@ -171,7 +172,7 @@ public class StartupActivity
 
         if (storedVolumeIndex == actualVolumeIndex) {
             // all ok
-            nextStage();
+            nextStage(Stage.InitStorage);
         } else {
             onStorageVolumeChanged(actualVolumeIndex);
         }
@@ -189,7 +190,7 @@ public class StartupActivity
             return;
         }
 
-        nextStage();
+        nextStage(Stage.InitDb);
     }
 
     /**
@@ -199,7 +200,7 @@ public class StartupActivity
     private void startTasks() {
         if (!vm.startTasks(this)) {
             // If no task were started, simply move to the next startup stage.
-            nextStage();
+            nextStage(Stage.RunTasks);
         }
         // else we wait until all tasks finish and mVm.onFinished() kicks in
     }
@@ -270,7 +271,7 @@ public class StartupActivity
                         case 1: {
                             // Just set the new location and continue startup
                             CoverDir.setVolume(this, actualVolumeIndex);
-                            nextStage();
+                            nextStage(Stage.InitStorage);
                             break;
                         }
                         case 2:
