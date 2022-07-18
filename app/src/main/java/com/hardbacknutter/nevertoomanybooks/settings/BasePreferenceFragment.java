@@ -34,7 +34,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.settings.widgets.TriStateMultiSelectListPreference;
 
 /**
  * Base settings page. This handles:
@@ -123,30 +122,6 @@ public abstract class BasePreferenceFragment
             scrollToPreference(autoScrollToKey);
             autoScrollToKey = null;
         }
-    }
-
-    /**
-     * TriStateMultiSelectListPreference get a custom Dialog were the neutral button displays
-     * the "unused" option.
-     *
-     * <br><br>{@inheritDoc}
-     */
-    @Override
-    public void onDisplayPreferenceDialog(@NonNull final Preference preference) {
-        if (preference instanceof TriStateMultiSelectListPreference) {
-            // getParentFragmentManager is required by PreferenceDialogFragmentCompat
-            // as the latter insists on using setTargetFragment to communicate back.
-
-            // check if dialog is already showing
-            if (getParentFragmentManager().findFragmentByTag(
-                    TriStateMultiSelectListPreference.TSMSLPreferenceDialogFragment.TAG) == null) {
-                TriStateMultiSelectListPreference.TSMSLPreferenceDialogFragment
-                        .launch(this, (TriStateMultiSelectListPreference) preference);
-            }
-            return;
-        }
-
-        super.onDisplayPreferenceDialog(preference);
     }
 
     @Override
