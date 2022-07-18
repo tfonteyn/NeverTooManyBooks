@@ -231,16 +231,14 @@ public class MaintenanceFragment
                     .show();
         });
 
-        vb.btnDebugSqShell.setOnClickListener(v -> {
-            getParentFragmentManager()
-                    .beginTransaction()
-                    .setReorderingAllowed(true)
-                    .addToBackStack(SqliteShellFragment.TAG)
-                    .replace(R.id.main_fragment,
-                             SqliteShellFragment.create(debugSqLiteAllowsUpdates),
-                             SqliteShellFragment.TAG)
-                    .commit();
-        });
+        vb.btnDebugSqShell.setOnClickListener(v -> getParentFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .addToBackStack(SqliteShellFragment.TAG)
+                .replace(R.id.main_fragment,
+                         SqliteShellFragment.create(debugSqLiteAllowsUpdates),
+                         SqliteShellFragment.TAG)
+                .commit());
     }
 
     private void sendDebug(@NonNull final Set<Integer> selectedItems) {
