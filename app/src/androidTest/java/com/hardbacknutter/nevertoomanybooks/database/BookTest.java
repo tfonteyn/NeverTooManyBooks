@@ -38,6 +38,9 @@ import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -171,7 +174,7 @@ public class BookTest {
      * @param files from the Pictures directory
      * @param cIdx  cover index to create
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     private void prepareTempCover(@NonNull final Context context,
                                   @NonNull final List<File> files,
@@ -342,17 +345,21 @@ public class BookTest {
     @Test
     public void showBookVM()
             throws DaoWriteException, StorageException, IOException {
-        final ServiceLocator sl = ServiceLocator.getInstance();
-        final Context context = sl.getLocalizedAppContext();
-        final BookDao bookDao = sl.getBookDao();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final Context context = serviceLocator.getLocalizedAppContext();
+
+        final StylesHelper stylesHelper = serviceLocator.getStyles();
+        final Style style = stylesHelper.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
+        assertNotNull(style);
+
+        final BookDao bookDao = serviceLocator.getBookDao();
         book[0] = prepareAndInsertBook(context, bookDao);
         bookId[0] = book[0].getId();
-
         final ShowBookDetailsViewModel vm = new ShowBookDetailsViewModel();
         final Bundle args = ServiceLocator.newBundle();
         args.putLong(DBKey.FK_BOOK, bookId[0]);
 
-        vm.init(args);
+        vm.init(context, args, style);
         final Book retrieved = vm.getBook();
         assertEquals(bookId[0], retrieved.getId());
         checkBookAfterInitialInsert(retrieved);
