@@ -21,6 +21,8 @@
 
 -dontwarn javax.annotation.Nullable
 -dontwarn javax.annotation.ParametersAreNonnullByDefault
+-dontwarn javax.annotation.processing.AbstractProcessor
+-dontwarn javax.annotation.processing.SupportedOptions
 # used by acra
 -dontwarn com.google.auto.service.AutoService
 

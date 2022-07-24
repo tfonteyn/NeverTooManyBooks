@@ -22,18 +22,18 @@ buildscript {
     ext {
         // see NOTES.txt
         // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
-        // 2022-03-30 world wide:
-        // 12.0      9.47
-        // 11.0     45.09
-        // 10.0     68.90
-        // 9.0      80.67
-        // 8.1      86.85
-        // 8.0      89.68
+        // 2022-07-22 world wide:
+        // 12.0     17.54
+        // 11.0     49.19
+        // 10.0     71.11
+        // 9.0      82.17
+        // 8.1      88.07
+        // 8.0      90.68
         minSdkVersion = 26
         // both compile and target SDK
         sdkVersion = 32
 
-        // 1.2 requires Studio 'Dolphin'
+        // 1.2.0 requires a bleeding-edge Android Studio
         desugar_version = '1.1.6'
 
         kotlin_version = '1.7.0'
@@ -46,7 +46,7 @@ buildscript {
         androidx_annotation_version = '1.4.0'
 
         // 1.6.0 requires Android 13 Developer Preview 2 SDK
-        androidx_appcompat_version = '1.4.2'
+        androidx_appcompat_version = '1.5.0-beta01'
 
         androidx_cardview_version = '1.0.0'
 
@@ -84,7 +84,7 @@ buildscript {
 
 
         // https://github.com/material-components/material-components-android/releases
-        google_material_version = '1.7.0-alpha02'
+        google_material_version = '1.7.0-alpha03'
 
         // https://jsoup.org/
         jsoup_version = '1.15.2'
