@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -473,7 +473,8 @@ public class CalibreContentServer
      *
      * @param context Current context
      *
-     * @throws IOException on failures
+     * @throws IOException      on generic/other IO failures
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     public void readMetaData(@NonNull final Context context)
@@ -610,9 +611,9 @@ public class CalibreContentServer
         if (userMetaData != null) {
             // check the supported fields
             for (final CalibreCustomField cf : this.calibreCustomFields) {
-                final JSONObject data = userMetaData.optJSONObject(cf.calibreKey);
+                final JSONObject data = userMetaData.optJSONObject(cf.getCalibreKey());
                 // do we have a match? (this check is needed, it's NOT a sanity check)
-                if (data != null && cf.type.equals(data.getString(
+                if (data != null && cf.getType().equals(data.getString(
                         CalibreCustomField.METADATA_DATATYPE))) {
                     fields.add(cf);
                 }
@@ -666,15 +667,17 @@ public class CalibreContentServer
      *      }
      * </pre>
      *
-     * @param libraryId to read from
+     * @param libraryStringId the Calibre native {@code stringId} for the library to read from
+     * @param calibreIds      the list of books (id only)
      *
      * @return see above, or {@code null} if the extension is missing
      *
-     * @throws IOException on other failures
+     * @throws IOException      on generic/other IO failures
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     @Nullable
-    public JSONObject getVirtualLibrariesForBooks(@NonNull final String libraryId,
+    public JSONObject getVirtualLibrariesForBooks(@NonNull final String libraryStringId,
                                                   @NonNull final JSONArray calibreIds)
             throws IOException,
                    StorageException,
@@ -684,7 +687,7 @@ public class CalibreContentServer
         }
 
         final String url = serverUri + "/ntmb/virtual-libraries-for-books/"
-                           + getCsvIds(calibreIds) + "/" + libraryId;
+                           + getCsvIds(calibreIds) + "/" + libraryStringId;
         return new JSONObject(fetch(url, BUFFER_SMALL));
     }
 
@@ -710,24 +713,25 @@ public class CalibreContentServer
      *     }
      * </pre>
      *
-     * @param libraryId to read from
-     * @param num       number of books to fetch
-     * @param offset    to start fetching from
+     * @param libraryStringId the Calibre native {@code stringId} for the library to read from
+     * @param num             number of books to fetch
+     * @param offset          to start fetching from
      *
      * @return see above
      *
-     * @throws IOException on failures
+     * @throws IOException      on generic/other IO failures
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     @NonNull
-    public JSONObject getBookIds(@NonNull final String libraryId,
+    public JSONObject getBookIds(@NonNull final String libraryStringId,
                                  @SuppressWarnings("SameParameterValue") final int num,
                                  final int offset)
             throws StorageException,
                    IOException,
                    JSONException {
 
-        final String url = serverUri + "/ajax/category/616c6c626f6f6b73/" + libraryId
+        final String url = serverUri + "/ajax/category/616c6c626f6f6b73/" + libraryStringId
                            + "?num=" + num + "&offset=" + offset;
         return new JSONObject(fetch(url, BUFFER_SMALL));
     }
@@ -758,6 +762,9 @@ public class CalibreContentServer
      *      "book_ids": [6, 294, 219, 300, 34, 299, 298, 302, 301],
      *      "vl": ""}
      * </pre>
+     *
+     * @throws IOException      on generic/other IO failures
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     @NonNull
@@ -765,7 +772,9 @@ public class CalibreContentServer
                              @SuppressWarnings("SameParameterValue") final int num,
                              final int offset,
                              @NonNull final String query)
-            throws StorageException, IOException, JSONException {
+            throws StorageException,
+                   IOException,
+                   JSONException {
 
         final String url = serverUri + "/ajax/search/" + libraryId
                            + "?num=" + num + "&offset=" + offset + "&query=" + query;
@@ -1037,19 +1046,23 @@ public class CalibreContentServer
      *     },
      * </pre>
      *
-     * @param libraryId to read from
+     * @param libraryStringId the Calibre native {@code stringId} for the library to read from
+     * @param calibreIds      the list of books (id only)
      *
      * @return JSONObject with a list of Calibre book objects; NOT an array.
      *
-     * @throws IOException on failures
+     * @throws IOException      on generic/other IO failures
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     @NonNull
-    public JSONObject getBooks(@NonNull final String libraryId,
+    public JSONObject getBooks(@NonNull final String libraryStringId,
                                @NonNull final JSONArray calibreIds)
-            throws StorageException, IOException, JSONException {
+            throws StorageException,
+                   IOException,
+                   JSONException {
 
-        final String url = serverUri + "/ajax/books/" + libraryId
+        final String url = serverUri + "/ajax/books/" + libraryStringId
                            + "?category_urls=false&ids=" + getCsvIds(calibreIds);
         return new JSONObject(fetch(url, BUFFER_BOOK_LIST));
     }
@@ -1077,20 +1090,20 @@ public class CalibreContentServer
      * <p>
      * If id_is_uuid is true then the book_id is assumed to be a book uuid instead.
      *
-     * @param libraryId   to read from
-     * @param calibreUuid of the book to get
+     * @param libraryStringId the Calibre native {@code stringId} for the library to read from
+     * @param calibreUuid     of the book to get
      *
      * @return Calibre book object
      *
-     * @throws IOException on failures
+     * @throws IOException on generic/other IO failuress
      */
     @WorkerThread
     @NonNull
-    public JSONObject getBook(@NonNull final String libraryId,
+    public JSONObject getBook(@NonNull final String libraryStringId,
                               @NonNull final String calibreUuid)
             throws StorageException, IOException, JSONException {
 
-        final String url = serverUri + "/ajax/book/" + calibreUuid + '/' + libraryId
+        final String url = serverUri + "/ajax/book/" + calibreUuid + '/' + libraryStringId
                            + "?id_is_uuid=true";
         return new JSONObject(fetch(url, BUFFER_BOOK));
     }
@@ -1098,20 +1111,21 @@ public class CalibreContentServer
     /**
      * See{@link #getBook(String, String)}.
      *
-     * @param libraryId to read from
-     * @param calibreId of the book to get
+     * @param libraryStringId the Calibre native {@code stringId} for the library to read from
+     * @param calibreId       of the book to get
      *
      * @return Calibre book object
      *
-     * @throws IOException on failures
+     * @throws IOException      on generic/other IO failures
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     @NonNull
-    public JSONObject getBook(@NonNull final String libraryId,
+    public JSONObject getBook(@NonNull final String libraryStringId,
                               final int calibreId)
             throws StorageException, IOException, JSONException {
 
-        final String url = serverUri + "/ajax/book/" + calibreId + '/' + libraryId;
+        final String url = serverUri + "/ajax/book/" + calibreId + '/' + libraryStringId;
         return new JSONObject(fetch(url, BUFFER_BOOK));
     }
 
@@ -1143,7 +1157,8 @@ public class CalibreContentServer
      * @throws CancellationException  if the user cancelled us
      * @throws SocketTimeoutException if the timeout expires before
      *                                the connection can be established
-     * @throws IOException            on failures
+     * @throws IOException            on generic/other IO failures
+     * @throws StorageException       on storage related failures
      */
     @NonNull
     private String fetch(@NonNull final String url,
@@ -1173,16 +1188,18 @@ public class CalibreContentServer
     /**
      * Download the main format file for the given book and store it in the given folder.
      *
-     * @param context Current context
-     * @param book    to download
-     * @param folder  to store the download in
+     * @param context          Current context
+     * @param book             to download
+     * @param folder           to store the download in
+     * @param progressListener Progress and cancellation interface
      *
      * @return the file
      *
      * @throws CancellationException  if the user cancelled us
      * @throws SocketTimeoutException if the timeout expires before
      *                                the connection can be established
-     * @throws IOException            on failures
+     * @throws StorageException       on storage related failures
+     * @throws IOException            on generic/other IO failures
      */
     @NonNull
     Uri fetchFile(@NonNull final Context context,
@@ -1348,13 +1365,14 @@ public class CalibreContentServer
     /**
      * Send updates to the server.
      *
-     * @param libraryId to write to
-     * @param calibreId book to update
-     * @param changes   to send
+     * @param libraryStringId the Calibre native {@code stringId} for the library to write to
+     * @param calibreId       book to update
+     * @param changes         to send
      *
-     * @throws IOException on other failures
+     * @throws IOException      on generic/other IO failures
+     * @throws StorageException on storage related failures
      */
-    public void pushChanges(@NonNull final String libraryId,
+    public void pushChanges(@NonNull final String libraryStringId,
                             final int calibreId,
                             @NonNull final JSONObject changes)
             throws IOException, JSONException, StorageException {
@@ -1362,7 +1380,7 @@ public class CalibreContentServer
         final JSONArray loadedBookIds = new JSONArray()
                 .put(calibreId);
 
-        final String url = serverUri + "/cdb/set-fields/" + calibreId + '/' + libraryId;
+        final String url = serverUri + "/cdb/set-fields/" + calibreId + '/' + libraryStringId;
         final String postBody = new JSONObject()
                 .put("changes", changes)
                 .put("loaded_book_ids", loadedBookIds)

@@ -81,11 +81,11 @@ public class CoversDbHelper
             .setPrimaryKey(DOM_PK_ID);
 
     /** Readers/Writer lock for <strong>this</strong> database. */
-    private static final Synchronizer sSynchronizer = new Synchronizer();
+    private static final Synchronizer SYNCHRONIZER = new Synchronizer();
 
     /** Static Factory object to create the custom cursor. */
     private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
-            (db, d, et, q) -> new SynchronizedCursor(d, et, q, sSynchronizer);
+            (db, d, et, q) -> new SynchronizedCursor(d, et, q, SYNCHRONIZER);
 
     /* table indexes. */
     static {
@@ -119,7 +119,7 @@ public class CoversDbHelper
             if (db == null) {
                 // Dev note: don't move this to the constructor, "this" must
                 // be fully constructed before we can pass it to the SynchronizedDb constructor
-                db = new SynchronizedDb(sSynchronizer, this);
+                db = new SynchronizedDb(SYNCHRONIZER, this);
             }
             return db;
         }

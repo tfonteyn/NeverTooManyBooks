@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -69,17 +69,21 @@ public class CalibreCustomField
     static final String VALUE = "#value#";
 
     @NonNull
-    public final String calibreKey;
+    private final String calibreKey;
     @NonNull
-    public final String dbKey;
+    private final String dbKey;
     @Type
     @NonNull
-    public final String type;
+    private final String type;
     /** Row ID. */
     private long id;
 
     /**
      * Constructor without ID.
+     *
+     * @param calibreKey The Calibre field name
+     * @param type       The Calibre field type
+     * @param dbKey      The local {@link DBKey} to which the field is to be mapped
      */
     public CalibreCustomField(@NonNull final String calibreKey,
                               @NonNull @Type final String type,
@@ -124,6 +128,21 @@ public class CalibreCustomField
 
     public void setId(final long id) {
         this.id = id;
+    }
+
+    @NonNull
+    public String getCalibreKey() {
+        return calibreKey;
+    }
+
+    @NonNull
+    public String getDbKey() {
+        return dbKey;
+    }
+
+    @NonNull
+    public String getType() {
+        return type;
     }
 
     @Override

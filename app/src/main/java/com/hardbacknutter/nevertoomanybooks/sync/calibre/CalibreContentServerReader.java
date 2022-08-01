@@ -673,17 +673,17 @@ public class CalibreContentServerReader
             if (userMetaData != null) {
                 //noinspection ConstantConditions
                 for (final CalibreCustomField cf : library.getCustomFields()) {
-                    final JSONObject data = userMetaData.optJSONObject(cf.calibreKey);
+                    final JSONObject data = userMetaData.optJSONObject(cf.getCalibreKey());
 
                     // Sanity check, at this point it should always be true
-                    if (data != null && cf.type.equals(data.getString(
+                    if (data != null && cf.getType().equals(data.getString(
                             CalibreCustomField.METADATA_DATATYPE))) {
 
                         if (!data.isNull(CalibreCustomField.VALUE)) {
-                            switch (cf.type) {
+                            switch (cf.getType()) {
                                 case CalibreCustomField.TYPE_BOOL: {
                                     // always overwrite
-                                    localBook.putBoolean(cf.dbKey,
+                                    localBook.putBoolean(cf.getDbKey(),
                                                          data.getBoolean(CalibreCustomField.VALUE));
                                     break;
                                 }
@@ -693,12 +693,12 @@ public class CalibreContentServerReader
                                     final String value = data.getString(CalibreCustomField.VALUE);
                                     // don't overwrite the local value with a remote 'not-set' value
                                     if (!CalibreContentServer.VALUE_IS_NONE.equals(value)) {
-                                        localBook.putString(cf.dbKey, value);
+                                        localBook.putString(cf.getDbKey(), value);
                                     }
                                     break;
                                 }
                                 default:
-                                    throw new IllegalArgumentException(cf.type);
+                                    throw new IllegalArgumentException(cf.getType());
                             }
                         }
                     }

@@ -112,9 +112,9 @@ public class CalibreCustomFieldDaoImpl
     @Override
     public long insert(@NonNull final CalibreCustomField calibreCustomField) {
         try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
-            stmt.bindString(1, calibreCustomField.calibreKey);
-            stmt.bindString(2, calibreCustomField.type);
-            stmt.bindString(3, calibreCustomField.dbKey);
+            stmt.bindString(1, calibreCustomField.getCalibreKey());
+            stmt.bindString(2, calibreCustomField.getType());
+            stmt.bindString(3, calibreCustomField.getDbKey());
             final long iId = stmt.executeInsert();
             if (iId > 0) {
                 calibreCustomField.setId(iId);
@@ -127,9 +127,9 @@ public class CalibreCustomFieldDaoImpl
     public boolean update(@NonNull final CalibreCustomField calibreCustomField) {
 
         final ContentValues cv = new ContentValues();
-        cv.put(DBKey.CALIBRE_CUSTOM_FIELD_NAME, calibreCustomField.calibreKey);
-        cv.put(DBKey.CALIBRE_CUSTOM_FIELD_TYPE, calibreCustomField.type);
-        cv.put(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING, calibreCustomField.dbKey);
+        cv.put(DBKey.CALIBRE_CUSTOM_FIELD_NAME, calibreCustomField.getCalibreKey());
+        cv.put(DBKey.CALIBRE_CUSTOM_FIELD_TYPE, calibreCustomField.getType());
+        cv.put(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING, calibreCustomField.getDbKey());
 
         final int rowsAffected = db.update(TBL_CALIBRE_CUSTOM_FIELDS.getName(), cv,
                                            DBKey.PK_ID + "=?",

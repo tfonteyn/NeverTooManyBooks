@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,9 +36,9 @@ public class CalibreCustomFieldCoder
         final JSONObject out = new JSONObject();
 
         out.put(DBKey.PK_ID, field.getId());
-        out.put(DBKey.CALIBRE_CUSTOM_FIELD_NAME, field.calibreKey);
-        out.put(DBKey.CALIBRE_CUSTOM_FIELD_TYPE, field.type);
-        out.put(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING, field.dbKey);
+        out.put(DBKey.CALIBRE_CUSTOM_FIELD_NAME, field.getCalibreKey());
+        out.put(DBKey.CALIBRE_CUSTOM_FIELD_TYPE, field.getType());
+        out.put(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING, field.getDbKey());
         return out;
     }
 

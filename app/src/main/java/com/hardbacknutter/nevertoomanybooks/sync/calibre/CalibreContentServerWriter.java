@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -219,6 +219,7 @@ public class CalibreContentServerWriter
             try {
                 dateStr = calibreBook.getString(CalibreBook.LAST_MODIFIED);
             } catch (@NonNull final JSONException ignore) {
+                // ignore
             }
         }
 
@@ -243,10 +244,14 @@ public class CalibreContentServerWriter
      * Copy the wanted fields from the local {@link Book} into a {@link JSONObject}
      * with field names {@link CalibreBook} as needed by Calibre.
      *
+     * @param library                the library to which the given books belongs
      * @param calibreBookIdentifiers the <strong>full</strong> list of identifiers for this
      *                               book as <strong>fetched from the Calibre server</strong>
+     * @param localBook              the Book we're syncing
      *
      * @return the JSON data to send to the Calibre server
+     *
+     * @throws IOException on generic/other IO failures
      */
     @NonNull
     private JSONObject collectChanges(@NonNull final CalibreLibrary library,
@@ -281,6 +286,7 @@ public class CalibreContentServerWriter
             try {
                 number = Float.parseFloat(optSeries.get().getNumber());
             } catch (@NonNull final NumberFormatException ignore) {
+                // ignore
             }
         }
 
@@ -321,19 +327,19 @@ public class CalibreContentServerWriter
         }
 
         for (final CalibreCustomField cf : library.getCustomFields()) {
-            switch (cf.type) {
+            switch (cf.getType()) {
                 case CalibreCustomField.TYPE_BOOL: {
-                    changes.put(cf.calibreKey, localBook.getBoolean(cf.dbKey));
+                    changes.put(cf.getCalibreKey(), localBook.getBoolean(cf.getDbKey()));
                     break;
                 }
                 case CalibreCustomField.TYPE_DATETIME:
                 case CalibreCustomField.TYPE_COMMENTS:
                 case CalibreCustomField.TYPE_TEXT: {
-                    changes.put(cf.calibreKey, localBook.getString(cf.dbKey));
+                    changes.put(cf.getCalibreKey(), localBook.getString(cf.getDbKey()));
                     break;
                 }
                 default:
-                    throw new IllegalArgumentException(cf.type);
+                    throw new IllegalArgumentException(cf.getType());
             }
         }
 
