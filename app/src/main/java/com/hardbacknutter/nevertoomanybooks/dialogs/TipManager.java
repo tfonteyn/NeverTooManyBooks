@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,8 +61,8 @@ public final class TipManager {
     /** Preferences prefix for all tips. */
     private static final String PREF_TIP = PREF_PREFIX + "tip.";
     private static TipManager sInstance;
-    /** All tips managed by this class. */
-    private final SparseArray<Tip> ALL = new SparseArray<>();
+    /** Cache for all tips managed by this class. */
+    private final SparseArray<Tip> cached = new SparseArray<>();
 
     private TipManager() {
     }
@@ -77,7 +77,7 @@ public final class TipManager {
     }
 
     private Tip getTip(@StringRes final int id) {
-        Tip tip = ALL.get(id);
+        Tip tip = cached.get(id);
         if (tip == null) {
             if (id == R.string.tip_booklist_styles_editor) {
                 tip = new Tip(id, "booklist_styles_editor");
@@ -107,7 +107,7 @@ public final class TipManager {
             } else {
                 throw new IllegalArgumentException(String.valueOf(id));
             }
-            ALL.put(id, tip);
+            cached.put(id, tip);
         }
         return tip;
     }
@@ -120,7 +120,7 @@ public final class TipManager {
     public void reset(@NonNull final Context context) {
         // remove all. This has the benefit of removing any obsolete keys.
         reset(context, PREF_TIP);
-        ALL.clear();
+        cached.clear();
     }
 
     /**
@@ -238,6 +238,8 @@ public final class TipManager {
          * Using the specified layout instead of the default.
          *
          * @param layoutId to use
+         *
+         * @return {@code this} (for chaining)
          */
         Tip setLayoutId(@SuppressWarnings("SameParameterValue") @LayoutRes final int layoutId) {
             this.layoutId = layoutId;
