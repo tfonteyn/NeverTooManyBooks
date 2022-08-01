@@ -226,12 +226,8 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processTitle(@NonNull final Iterable<String> currentData) {
-        final StringBuilder sbTitle = new StringBuilder();
-        for (final String name : currentData) {
-            sbTitle.append(name).append(" ");
-        }
-
-        final String cleanedTitle = sbTitle.toString().split("/")[0].trim();
+        final String cleanedTitle = String.join(" ", currentData)
+                                          .split("/")[0].trim();
         bookData.putString(DBKey.TITLE, cleanedTitle);
     }
 
