@@ -1017,15 +1017,15 @@ public class BookDaoImpl
     }
 
     @Override
-    public int countBooksForExport(@Nullable final LocalDateTime since) {
-        if (since == null) {
+    public int countBooksForExport(@Nullable final LocalDateTime sinceDateTime) {
+        if (sinceDateTime == null) {
             try (SynchronizedStatement stmt = db.compileStatement(Sql.Count.BOOKS)) {
                 return (int) stmt.simpleQueryForLongOrZero();
             }
         } else {
             try (SynchronizedStatement stmt = db.compileStatement(
                     Sql.Count.BOOKS + _WHERE_ + DATE_LAST_UPDATED__UTC + ">=?")) {
-                stmt.bindString(1, SqlEncode.date(since));
+                stmt.bindString(1, SqlEncode.date(sinceDateTime));
                 return (int) stmt.simpleQueryForLongOrZero();
             }
         }
@@ -1033,12 +1033,12 @@ public class BookDaoImpl
 
     @Override
     @NonNull
-    public TypedCursor fetchBooksForExport(@Nullable final LocalDateTime since) {
-        if (since == null) {
+    public TypedCursor fetchBooksForExport(@Nullable final LocalDateTime sinceDateTime) {
+        if (sinceDateTime == null) {
             return getBookCursor(null, null, TBL_BOOKS.dot(PK_ID));
         } else {
             return getBookCursor(TBL_BOOKS.dot(DATE_LAST_UPDATED__UTC) + ">=?",
-                                 new String[]{SqlEncode.date(since)},
+                                 new String[]{SqlEncode.date(sinceDateTime)},
                                  TBL_BOOKS.dot(PK_ID));
         }
     }
@@ -1046,28 +1046,29 @@ public class BookDaoImpl
     @Override
     @NonNull
     public TypedCursor fetchBooksForExportToCalibre(final long libraryId,
-                                                    @Nullable final LocalDateTime since) {
-        if (since == null) {
+                                                    @Nullable final LocalDateTime sinceDateTime) {
+        if (sinceDateTime == null) {
             return getBookCursor(TBL_CALIBRE_BOOKS.dot(FK_CALIBRE_LIBRARY) + "=?",
                                  new String[]{String.valueOf(libraryId)},
                                  TBL_BOOKS.dot(PK_ID));
         } else {
             return getBookCursor(TBL_CALIBRE_BOOKS.dot(FK_CALIBRE_LIBRARY) + "=?"
                                  + _AND_ + TBL_BOOKS.dot(DATE_LAST_UPDATED__UTC) + ">=?",
-                                 new String[]{String.valueOf(libraryId), SqlEncode.date(since)},
+                                 new String[]{String.valueOf(libraryId), SqlEncode.date(
+                                         sinceDateTime)},
                                  TBL_BOOKS.dot(PK_ID));
         }
     }
 
     @Override
     @NonNull
-    public TypedCursor fetchBooksForExportToStripInfo(@Nullable final LocalDateTime since) {
-        if (since == null) {
+    public TypedCursor fetchBooksForExportToStripInfo(@Nullable final LocalDateTime sinceDateTime) {
+        if (sinceDateTime == null) {
             return getBookCursor(null, null, TBL_BOOKS.dot(PK_ID));
         } else {
             return getBookCursor(TBL_STRIPINFO_COLLECTION.dot(
                                          STRIP_INFO_LAST_SYNC_DATE__UTC) + ">=?",
-                                 new String[]{SqlEncode.date(since)},
+                                 new String[]{SqlEncode.date(sinceDateTime)},
                                  TBL_BOOKS.dot(PK_ID));
         }
     }
