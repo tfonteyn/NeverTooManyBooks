@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class SearchInternetPreferenceFragment
         extends BasePreferenceFragment {
 
-    private static final String psk_search_site_ = "psk_search_site_";
+    private static final String PSK_SEARCH_SITE_ = "psk_search_site_";
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -43,23 +43,23 @@ public class SearchInternetPreferenceFragment
         setPreferencesFromResource(R.xml.preferences_site_searches, rootKey);
 
         //noinspection ConstantConditions
-        findPreference(psk_search_site_ + "googlebooks")
+        findPreference(PSK_SEARCH_SITE_ + "googlebooks")
                 .setVisible(BuildConfig.ENABLE_GOOGLE_BOOKS);
 
         //noinspection ConstantConditions
-        findPreference(psk_search_site_ + "kbnl")
+        findPreference(PSK_SEARCH_SITE_ + "kbnl")
                 .setVisible(BuildConfig.ENABLE_KB_NL);
 
         //noinspection ConstantConditions
-        findPreference(psk_search_site_ + "lastdodo")
+        findPreference(PSK_SEARCH_SITE_ + "lastdodo")
                 .setVisible(BuildConfig.ENABLE_LAST_DODO);
 
         //noinspection ConstantConditions
-        findPreference(psk_search_site_ + "librarything")
+        findPreference(PSK_SEARCH_SITE_ + "librarything")
                 .setVisible(BuildConfig.ENABLE_LIBRARY_THING_ALT_ED);
 
         //noinspection ConstantConditions
-        findPreference(psk_search_site_ + "stripinfo")
+        findPreference(PSK_SEARCH_SITE_ + "stripinfo")
                 .setVisible(BuildConfig.ENABLE_STRIP_INFO);
     }
 }
