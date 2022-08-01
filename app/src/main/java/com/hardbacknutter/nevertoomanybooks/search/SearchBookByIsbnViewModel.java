@@ -143,7 +143,7 @@ public class SearchBookByIsbnViewModel
      * @param uri        to read from
      * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     void readQueue(@NonNull final Context context,
                    @NonNull final Uri uri,

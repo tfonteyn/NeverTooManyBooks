@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -136,8 +136,10 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
      *
      * @return reader
      *
-     * @throws DataReaderException on failure to produce a supported reader
-     * @throws IOException         on other failures
+     * @throws DataReaderException  on failure to produce a supported reader
+     * @throws IOException          on generic/other IO failures
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException     on storage related failures
      */
     @NonNull
     protected abstract DataReader<METADATA, RESULTS> createReader(@NonNull Context context)
@@ -154,6 +156,10 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
      *
      * @return Optional with {@link METADATA}
      *
+     * @throws DataReaderException  on failure to read the metadata
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException     on storage related failures
+     * @throws IOException          on generic/other IO failures
      * @see DataReader
      */
     @NonNull
@@ -187,6 +193,10 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
      *
      * @return results summary
      *
+     * @throws DataReaderException  on failure to read the data
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException     on storage related failures
+     * @throws IOException          on generic/other IO failures
      * @see DataReader
      */
     @NonNull

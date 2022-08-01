@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -133,6 +133,8 @@ public final class AttrUtils {
      * @param attr    attribute id to resolve
      *
      * @return size in integer pixels
+     *
+     * @throws Resources.NotFoundException if the requested attribute/resource does not exist.
      */
     public static int getDimensionPixelSize(@NonNull final Context context,
                                             @AttrRes final int attr)

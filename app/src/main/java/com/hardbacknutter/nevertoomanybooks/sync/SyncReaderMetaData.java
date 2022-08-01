@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,6 +30,8 @@ public class SyncReaderMetaData
 
     /**
      * Constructor.
+     *
+     * @param args The (usually new/empty) bundle; will be returned by {@link #getData()}
      */
     public SyncReaderMetaData(@NonNull final Bundle args) {
         super(args);

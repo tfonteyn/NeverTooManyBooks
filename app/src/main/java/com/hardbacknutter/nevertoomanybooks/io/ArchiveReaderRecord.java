@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,7 +40,7 @@ public interface ArchiveReaderRecord {
      *
      * @return the InputStream
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     @NonNull
     InputStream getInputStream()

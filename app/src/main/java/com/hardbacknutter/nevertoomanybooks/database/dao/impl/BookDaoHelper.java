@@ -447,7 +447,7 @@ public class BookDaoHelper {
      * Called during {@link BookDaoImpl#insert} and {@link BookDaoImpl#update}.
      *
      * @throws StorageException The covers directory is not available
-     * @throws IOException      on failure
+     * @throws IOException      on generic/other IO failures
      */
     void persistCovers()
             throws StorageException, IOException {

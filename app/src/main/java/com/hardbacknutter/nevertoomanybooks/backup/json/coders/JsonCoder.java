@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ import com.hardbacknutter.org.json.JSONObject;
  * while {@link #decodeReference(JSONObject)} returns an Optional because the actual object
  * might legitimate not exist.
  *
- * @param <T>
+ * @param <T> the type of Object we're encoding/decoding
  */
 public interface JsonCoder<T> {
 

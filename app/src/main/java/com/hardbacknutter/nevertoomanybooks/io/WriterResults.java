@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,6 +42,9 @@ public abstract class WriterResults
     }
 
     /**
+     * Track cover file names. This is called during book processing to collect all
+     * cover file names.The list is subsequently used to process the covers themselves.
+     *
      * @param name the file name, without path
      */
     public abstract void addCover(@NonNull String name);

@@ -60,8 +60,8 @@ public class ArchiveMetaData
     /**
      * Constructor used while reading from an Archive.
      * <p>
-     * The bundle is passed in to allow an Archive reader to construct it
-     * at runtime + to allow testing.
+     *
+     * @param args The (usually new/empty) bundle; will be returned by {@link #getData()}
      */
     public ArchiveMetaData(@NonNull final Bundle args) {
         super(args);
@@ -73,6 +73,8 @@ public class ArchiveMetaData
      * @param context Current context
      * @param version of the archive structure
      * @param result  to add to the header bundle
+     *
+     * @return new instance
      */
     @NonNull
     public static ArchiveMetaData create(@NonNull final Context context,

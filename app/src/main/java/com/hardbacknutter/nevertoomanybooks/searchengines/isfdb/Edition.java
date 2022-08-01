@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -66,6 +66,7 @@ public class Edition {
      *
      * @param isfdbId  of the book we found
      * @param isbn     of the book we <strong>searched</strong>
+     * @param langIso3 the 3 character ISO language code of the book we found
      * @param document the JSoup document of the book we found
      */
     Edition(final long isfdbId,

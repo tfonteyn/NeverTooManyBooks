@@ -228,7 +228,7 @@ public abstract class ArchiveReaderAbstract
      *
      * @return results summary
      *
-     * @throws IOException         on failure
+     * @throws IOException on generic/other IO failures
      * @throws DataReaderException on record format failures
      */
     @NonNull
@@ -397,7 +397,7 @@ public abstract class ArchiveReaderAbstract
     /**
      * Concrete reader should implement {@link #closeInputStream}.
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     @Override
     @CallSuper
@@ -417,7 +417,7 @@ public abstract class ArchiveReaderAbstract
      *
      * @return The next record, or {@code null} if at end
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     @WorkerThread
     @NonNull
@@ -433,7 +433,7 @@ public abstract class ArchiveReaderAbstract
      * @return Optional with the record
      *
      * @throws DataReaderException wraps a format specific Exception
-     * @throws IOException         on failure
+     * @throws IOException         on generic/other IO failures
      */
     @WorkerThread
     @NonNull
@@ -443,7 +443,7 @@ public abstract class ArchiveReaderAbstract
     /**
      * Reset the reader so {@link #next()} will get the first record.
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     protected abstract void closeInputStream()
             throws IOException;

@@ -27,6 +27,10 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
+/**
+ * Helper class to determine mapping the stripinfo.be specific wishlist/owned flags
+ * to a {@link Bookshelf}.
+ */
 public class BookshelfMapper {
 
     /** The {@link Bookshelf} to which the wishlist is mapped. */

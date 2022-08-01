@@ -309,6 +309,9 @@ public enum ArchiveEncoding
      *
      * @return a new reader
      *
+     * @throws StorageException     on storage related failures
+     * @throws IOException          on generic/other IO failures
+     * @throws CredentialsException on authentication/login failures
      * @see DataReader
      */
     @WorkerThread

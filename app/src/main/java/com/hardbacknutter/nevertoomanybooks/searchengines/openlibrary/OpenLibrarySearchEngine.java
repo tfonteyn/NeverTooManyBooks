@@ -292,7 +292,13 @@ public class OpenLibrarySearchEngine
     /**
      * Fetch and parse.
      *
-     * @param context Current context
+     * @param context     Current context
+     * @param url         to fetch
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
+     * @param bookData    Bundle to update
+     *
+     * @throws StorageException on storage related failures
      */
     private void fetchBook(@NonNull final Context context,
                            @NonNull final String url,
@@ -469,9 +475,12 @@ public class OpenLibrarySearchEngine
      * @param context     Current context
      * @param response    the complete response; a String containing JSON
      * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
      * @param bookData    Bundle to update
      *
      * @return {@code true} on success, {@code false} if we were cancelled.
+     *
+     * @throws StorageException on storage related failures
      */
     @VisibleForTesting
     boolean handleResponse(@NonNull final Context context,
@@ -514,7 +523,10 @@ public class OpenLibrarySearchEngine
      * @param validIsbn   of the book
      * @param document    JSON result data
      * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
      * @param bookData    Bundle to update
+     *
+     * @throws StorageException on storage related failures
      */
     private void parse(@NonNull final Context context,
                        @NonNull final String validIsbn,

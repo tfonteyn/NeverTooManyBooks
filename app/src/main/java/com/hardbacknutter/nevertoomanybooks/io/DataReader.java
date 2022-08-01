@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,9 +54,10 @@ public interface DataReader<METADATA, RESULTS>
      *
      * @return Optional with {@link METADATA}
      *
-     * @throws DataReaderException on a decoding/parsing of data issue
-     * @throws StorageException    there is an issue with the storage media
-     * @throws IOException         on other failures
+     * @throws DataReaderException  on a decoding/parsing of data issue
+     * @throws StorageException     on storage related failures
+     * @throws IOException          on generic/other IO failures
+     * @throws CredentialsException on authentication/login failures
      */
     @WorkerThread
     @NonNull
@@ -76,8 +77,9 @@ public interface DataReader<METADATA, RESULTS>
      *
      * @param context Current context
      *
-     * @throws DataReaderException on a decoding/parsing of data issue
-     * @throws IOException         on other failures
+     * @throws DataReaderException  on a decoding/parsing of data issue
+     * @throws IOException on generic/other IO failures
+     * @throws CredentialsException on authentication/login failures
      */
     @WorkerThread
     default void validate(@NonNull final Context context)
@@ -95,9 +97,10 @@ public interface DataReader<METADATA, RESULTS>
      *
      * @return results summary
      *
-     * @throws DataReaderException on a decoding/parsing of data issue
-     * @throws StorageException    there is an issue with the storage media
-     * @throws IOException         on other failures
+     * @throws DataReaderException  on a decoding/parsing of data issue
+     * @throws StorageException     on storage related failures
+     * @throws IOException on generic/other IO failures
+     * @throws CredentialsException on authentication/login failures
      */
     @WorkerThread
     @NonNull
@@ -115,7 +118,7 @@ public interface DataReader<METADATA, RESULTS>
     /**
      * Override if the implementation needs to close something.
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     @Override
     default void close()

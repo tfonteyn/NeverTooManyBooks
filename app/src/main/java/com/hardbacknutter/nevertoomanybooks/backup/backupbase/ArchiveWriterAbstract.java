@@ -62,7 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * <ol>
  *     <li>These always come first in the given order</li>
  *     <li>{@link RecordType#MetaData}</li>
- *     <li>{@link RecordType#Styles}</li
+ *     <li>{@link RecordType#Styles}</li>
  *     <li>{@link RecordType#Preferences}</li>
  *
  *     <li>These depend on other types being included or not</li>
@@ -98,7 +98,7 @@ public abstract class ArchiveWriterAbstract
      * This covers the styles/prefs/etc... and a small extra safety.
      */
     private static final int EXTRA_STEPS = 10;
-    public static final int META_WRITER_BUFFER = 1024;
+    private static final int META_WRITER_BUFFER = 1024;
 
     /** Export configuration. */
     @NonNull
@@ -125,7 +125,7 @@ public abstract class ArchiveWriterAbstract
      * @return results summary
      *
      * @throws DataWriterException on a decoding/parsing of data issue
-     * @throws IOException         on failure
+     * @throws IOException         on generic/other IO failures
      */
     @NonNull
     @Override
@@ -237,7 +237,7 @@ public abstract class ArchiveWriterAbstract
      * @return the temporary books file
      *
      * @throws DataWriterException on a decoding/parsing of data issue
-     * @throws IOException         on failure
+     * @throws IOException on generic/other IO failures
      */
     private File prepareBooks(@NonNull final Context context,
                               @Nullable final LocalDateTime dateSince,
@@ -276,7 +276,7 @@ public abstract class ArchiveWriterAbstract
      * @param data    to add to the header bundle
      *
      * @throws DataWriterException on a decoding/parsing of data issue
-     * @throws IOException         on failure
+     * @throws IOException on generic/other IO failures
      */
     private void writeMetaData(@NonNull final Context context,
                                @NonNull final ExportResults data)
@@ -316,7 +316,7 @@ public abstract class ArchiveWriterAbstract
      * @return results summary
      *
      * @throws DataWriterException on a decoding/parsing of data issue
-     * @throws IOException         on failure
+     * @throws IOException on generic/other IO failures
      */
     @NonNull
     private ExportResults writeRecord(@NonNull final Context context,
@@ -355,7 +355,7 @@ public abstract class ArchiveWriterAbstract
      * @param progressListener Progress and cancellation interface
      *
      * @throws StorageException The covers directory is not available
-     * @throws IOException      on failure
+     * @throws IOException      on generic/other IO failures
      */
     public void writeCovers(@NonNull final Context context,
                             @NonNull final ProgressListener progressListener)
@@ -404,7 +404,7 @@ public abstract class ArchiveWriterAbstract
      * @param bytes    to store in the archive
      * @param compress Flag: compress the data if the writer supports it.
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     protected abstract void putByteArray(@NonNull String name,
                                          @NonNull byte[] bytes,
@@ -418,7 +418,7 @@ public abstract class ArchiveWriterAbstract
      * @param file     to store in the archive
      * @param compress Flag: compress the file if the writer supports it.
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     protected abstract void putFile(@NonNull String name,
                                     @NonNull File file,
@@ -434,7 +434,8 @@ public abstract class ArchiveWriterAbstract
          * @param context          Current context
          * @param progressListener Progress and cancellation interface
          *
-         * @throws IOException on failure
+         * @throws IOException on generic/other IO failures
+         * @throws StorageException on storage related failures
          */
         @WorkerThread
         void writeCovers(@NonNull Context context,

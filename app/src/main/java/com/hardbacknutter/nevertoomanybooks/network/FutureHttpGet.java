@@ -52,7 +52,7 @@ public class FutureHttpGet<T>
     /**
      * Perform the actual opening of the connection.
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     private void connect(@NonNull final HttpURLConnection request)
             throws IOException {

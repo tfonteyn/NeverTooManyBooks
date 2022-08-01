@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -145,6 +145,8 @@ public class GoogleBooksSearchEngine
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
      * @param bookData    Bundle to update <em>(passed in to allow mocking)</em>
+     *
+     * @throws StorageException on storage related failures
      */
     private void fetchBook(@NonNull final Context context,
                            @NonNull final String url,

@@ -152,7 +152,11 @@ public class LastDodoSearchEngine
      * @param context     Current context
      * @param document    to parse
      * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
      * @param bookData    Bundle to update
+     *
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException     on storage related failures
      */
     @WorkerThread
     private void parseMultiResult(@NonNull final Context context,

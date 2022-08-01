@@ -26,6 +26,8 @@ import androidx.window.layout.WindowMetrics;
 import androidx.window.layout.WindowMetricsCalculator;
 
 /**
+ * Screen size support.
+ *
  * <a href="https://developer.android.com/guide/topics/large-screens/support-different-screen-sizes">
  * support-different-screen-sizes</a>
  * <p>

@@ -125,6 +125,8 @@ final class XmlFilter {
      * Currently just used local_name from the context.
      *
      * @param context Current ElementContext
+     *
+     * @return Matching filter, or {@code null} if none found
      */
     @Nullable
     public XmlFilter getSubFilter(@NonNull final ElementContext context) {
@@ -211,11 +213,13 @@ final class XmlFilter {
      * Add a filter at this level; ensure it is unique.
      *
      * @param filter filter to add
+     *
+     * @throws IllegalStateException if the filter already exists
      */
     private void addFilter(@NonNull final XmlFilter filter) {
         final String lcPat = filter.getTagName().toLowerCase(ServiceLocator.getSystemLocale());
         if (subFilterHash.containsKey(lcPat)) {
-            throw new RuntimeException("Filter " + filter.getTagName() + " already exists");
+            throw new IllegalStateException("Filter " + filter.getTagName() + " already exists");
         }
         subFilterHash.put(lcPat, filter);
         subFilters.add(filter);

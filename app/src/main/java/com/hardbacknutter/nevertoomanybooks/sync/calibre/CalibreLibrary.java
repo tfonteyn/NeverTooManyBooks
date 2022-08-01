@@ -83,17 +83,17 @@ public class CalibreLibrary
      * Constructor without ID.
      *
      * @param uuid              the Calibre native UUID for the library
-     * @param libraryId         the Calibre native {@code stringId} for the library
+     * @param libraryStringId   the Calibre native {@code stringId} for the library
      * @param name              the Calibre name for the library
      * @param mappedBookshelfId the {@link Bookshelf} id this library is mapped to
      */
     public CalibreLibrary(@NonNull final String uuid,
-                          @NonNull final String libraryId,
+                          @NonNull final String libraryStringId,
                           @NonNull final String name,
                           final long mappedBookshelfId) {
         super(name, mappedBookshelfId);
 
-        libraryStringId = libraryId;
+        this.libraryStringId = libraryStringId;
         this.uuid = uuid;
         lastSyncDate = "";
     }
@@ -102,17 +102,17 @@ public class CalibreLibrary
      * Constructor without ID.
      *
      * @param uuid            the Calibre native UUID for the library
-     * @param libraryId       the Calibre native {@code stringId} for the library
+     * @param libraryStringId the Calibre native {@code stringId} for the library
      * @param name            the Calibre name for the library
      * @param mappedBookshelf the {@link Bookshelf} this library is mapped to
      */
     public CalibreLibrary(@NonNull final String uuid,
-                          @NonNull final String libraryId,
+                          @NonNull final String libraryStringId,
                           @NonNull final String name,
                           @NonNull final Bookshelf mappedBookshelf) {
         super(name, mappedBookshelf);
 
-        libraryStringId = libraryId;
+        this.libraryStringId = libraryStringId;
         this.uuid = uuid;
         lastSyncDate = "";
     }

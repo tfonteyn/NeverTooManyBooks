@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -155,7 +155,7 @@ public final class XmlUtils {
      *
      * @return xml tag
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     @NonNull
     static String typedTag(@Nullable final String name,
@@ -196,7 +196,7 @@ public final class XmlUtils {
      *
      * @return partial xml
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     @NonNull
     private static String typedCollection(@NonNull final Iterable<?> values)
@@ -215,7 +215,7 @@ public final class XmlUtils {
      *
      * @return the array
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     @NonNull
     private static byte[] convertToBytes(@NonNull final Object object)

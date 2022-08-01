@@ -53,6 +53,8 @@ public class HttpStatusException
     private final int siteResId;
 
     /**
+     * Constructor.
+     *
      * @param siteResId     the site string res; which will be embedded in a default user message
      * @param statusCode    the original status code from the HTTP request
      * @param statusMessage the original status message from the HTTP request

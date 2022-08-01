@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -207,8 +207,9 @@ public class StripInfoAuth
      *
      * @return the valid user id
      *
-     * @throws CredentialsException on login failure
-     * @throws IOException          on other failures
+     * @throws CredentialsException on authentication/login failures
+     * @throws IOException          on generic/other IO failures
+     * @throws StorageException     on storage related failures
      */
     @WorkerThread
     @NonNull

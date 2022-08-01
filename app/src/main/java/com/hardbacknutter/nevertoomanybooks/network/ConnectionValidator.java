@@ -55,7 +55,9 @@ public interface ConnectionValidator {
      *
      * @return {@code true} if al is well.
      *
-     * @throws IOException on failure
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException     on storage related failures
+     * @throws IOException          on generic/other IO failures
      */
     @WorkerThread
     boolean validateConnection(@NonNull Context context)

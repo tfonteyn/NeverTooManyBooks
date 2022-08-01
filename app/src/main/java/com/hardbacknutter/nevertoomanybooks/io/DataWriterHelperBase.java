@@ -120,6 +120,9 @@ public abstract class DataWriterHelperBase<RESULTS> {
      *
      * @return results summary
      *
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException     on storage related failures
+     * @throws IOException          on generic/other IO failures
      * @see DataWriter
      */
     @WorkerThread

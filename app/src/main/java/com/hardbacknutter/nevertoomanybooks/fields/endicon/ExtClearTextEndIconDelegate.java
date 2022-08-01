@@ -47,11 +47,14 @@ import com.hardbacknutter.nevertoomanybooks.fields.MultiOnFocusChangeListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 
 /**
- * https://github.com/material-components/material-components-android/pull/2025
- * generic input field with clear-text icon at the end. -
+ * <a href="https://github.com/material-components/material-components-android/pull/2025">
+ * generic input field with clear-text icon at the end.</a>
  * <p>
  * Most of the code in this class was copied from material 1.5 library
- * com.google.android.material.textfield.ClearTextEndIconDelegate
+ * {@code com.google.android.material.textfield.ClearTextEndIconDelegate}
+ *
+ * @param <T> type of Field value.
+ * @param <V> type of View for this field
  */
 public class ExtClearTextEndIconDelegate<V extends TextView, T>
         implements ExtEndIconDelegate {

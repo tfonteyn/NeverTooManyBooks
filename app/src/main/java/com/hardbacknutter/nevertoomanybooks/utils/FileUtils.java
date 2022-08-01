@@ -88,7 +88,7 @@ public final class FileUtils {
      * @param is InputStream
      * @param os OutputStream
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     public static void copy(@NonNull final InputStream is,
                             @NonNull final OutputStream os)
@@ -113,7 +113,7 @@ public final class FileUtils {
      * @param source      file
      * @param destination file
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     public static void copy(@NonNull final File source,
                             @NonNull final File destination)
@@ -130,7 +130,7 @@ public final class FileUtils {
      * @param source      file
      * @param destination file
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     public static void copy(@NonNull final FileInputStream source,
                             @NonNull final FileOutputStream destination)
@@ -151,7 +151,7 @@ public final class FileUtils {
      * @param destination final destination file
      * @param copies      #copies of the previous one to keep
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     public static void copyWithBackup(@NonNull final File source,
                                       @NonNull final File destination,
@@ -187,7 +187,7 @@ public final class FileUtils {
      * @param destDir     directory
      * @param cancellable (optional) to check for user cancellation
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     public static void copyDirectory(@NonNull final File sourceDir,
                                      @NonNull final File destDir,
@@ -222,7 +222,7 @@ public final class FileUtils {
      * @param destination new name
      *
      * @throws FileNotFoundException if the source does not exist
-     * @throws IOException           on failure
+     * @throws IOException           on generic/other IO failures
      */
     public static void rename(@NonNull final File source,
                               @NonNull final File destination)
@@ -311,7 +311,7 @@ public final class FileUtils {
      *
      * @return number of bytes free
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     public static long getFreeSpace(@NonNull final File root)
             throws IOException {
@@ -416,7 +416,7 @@ public final class FileUtils {
      *
      * @return crc32
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     @NonNull
     public static CRC32 getCrc32(@NonNull final File file)

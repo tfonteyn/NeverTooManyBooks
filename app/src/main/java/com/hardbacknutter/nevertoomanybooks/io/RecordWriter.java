@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,7 +46,7 @@ public interface RecordWriter
      * @param metaData the bundle of information to write
      *
      * @throws DataWriterException on a decoding/parsing of data issue
-     * @throws IOException         on other failures
+     * @throws IOException         on generic/other IO failures
      */
     @WorkerThread
     default void writeMetaData(@NonNull final Writer writer,
@@ -71,7 +71,7 @@ public interface RecordWriter
      * @return results summary
      *
      * @throws DataWriterException on a decoding/parsing of data issue
-     * @throws IOException         on failure
+     * @throws IOException on generic/other IO failures
      */
     @WorkerThread
     @NonNull

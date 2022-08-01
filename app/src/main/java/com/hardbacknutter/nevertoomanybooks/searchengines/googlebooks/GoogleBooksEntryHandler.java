@@ -246,6 +246,7 @@ class GoogleBooksEntryHandler
      *
      * @param searchEngine to use
      * @param fetchCovers  Set to {@code true} if we want to get covers
+     *                     The array is guaranteed to have at least one element.
      * @param bookData     Bundle to update <em>(passed in to allow mocking)</em>
      */
     GoogleBooksEntryHandler(@NonNull final GoogleBooksSearchEngine searchEngine,

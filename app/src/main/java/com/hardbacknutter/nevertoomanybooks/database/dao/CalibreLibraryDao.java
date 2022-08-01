@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -68,7 +68,7 @@ public interface CalibreLibraryDao {
      * Get the <strong>virtual</strong> {@link CalibreLibrary} for the given library + name.
      * The mapped {@link Bookshelf} will have been resolved.
      *
-     * @param libraryId to lookup
+     * @param libraryId row id for the physical library
      * @param name      of the virtual library to lookup
      *
      * @return virtual library

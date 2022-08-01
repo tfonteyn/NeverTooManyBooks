@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,6 +33,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 
@@ -48,7 +49,11 @@ public class DecimalEditTextField
     /**
      * Constructor.
      *
-     * @param formatter to use
+     * @param fragmentId  the hosting {@link FragmentId} for this {@link Field}
+     * @param fieldViewId the view id for this {@link Field}
+     * @param fieldKey    Key used to access a {@link DataManager}
+     *                    Set to {@code ""} to suppress all access.
+     * @param formatter   to use
      */
     public DecimalEditTextField(@NonNull final FragmentId fragmentId,
                                 @IdRes final int fieldViewId,
@@ -113,38 +118,38 @@ public class DecimalEditTextField
             }
         }
 
-//        public static class DecimalDigitsInputFilter
-//                implements InputFilter {
-//
-//            Pattern pattern;
-//
-//            public DecimalDigitsInputFilter(@NonNull final Context context,
-//                                            final int digitsBeforeZero,
-//                                            final int digitsAfterZero) {
-//                DecimalFormatSymbols d =
-//                        new DecimalFormatSymbols(AppLocale.getUserLocale(context));
-//                String s = "\\\\" + d.getDecimalSeparator();
-//                pattern = Pattern.compile(
-//                        "[0-9]{0," + (digitsBeforeZero - 1) + "}+"
-//                        + "((" + s + "[0-9]{0," + (digitsAfterZero - 1) + "})?)"
-//                        + ""
-//                        + "|(" + s + ")?");
-//            }
-//
-//            @Override
-//            public CharSequence filter(CharSequence source,
-//                                       int start,
-//                                       int end,
-//                                       Spanned dest,
-//                                       int dstart,
-//                                       int dend) {
-//
-//                Matcher matcher = pattern.matcher(dest);
-//                if (!matcher.matches()) {
-//                    return "";
-//                }
-//                return null;
-//            }
-//        }
+        //        public static class DecimalDigitsInputFilter
+        //                implements InputFilter {
+        //
+        //            Pattern pattern;
+        //
+        //            public DecimalDigitsInputFilter(@NonNull final Context context,
+        //                                            final int digitsBeforeZero,
+        //                                            final int digitsAfterZero) {
+        //                DecimalFormatSymbols d =
+        //                        new DecimalFormatSymbols(AppLocale.getUserLocale(context));
+        //                String s = "\\\\" + d.getDecimalSeparator();
+        //                pattern = Pattern.compile(
+        //                        "[0-9]{0," + (digitsBeforeZero - 1) + "}+"
+        //                        + "((" + s + "[0-9]{0," + (digitsAfterZero - 1) + "})?)"
+        //                        + ""
+        //                        + "|(" + s + ")?");
+        //            }
+        //
+        //            @Override
+        //            public CharSequence filter(CharSequence source,
+        //                                       int start,
+        //                                       int end,
+        //                                       Spanned dest,
+        //                                       int dstart,
+        //                                       int dend) {
+        //
+        //                Matcher matcher = pattern.matcher(dest);
+        //                if (!matcher.matches()) {
+        //                    return "";
+        //                }
+        //                return null;
+        //            }
+        //        }
     }
 }

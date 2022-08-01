@@ -72,8 +72,9 @@ public class ConnectionValidatorTask
      *
      * @return {@code true} on success
      *
-     * @throws CertificateException on failures related to a user installed CA.
-     * @throws IOException          on other failures
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException     on storage related failures
+     * @throws IOException          on generic/other IO failures
      */
     @Nullable
     @Override

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -274,7 +274,7 @@ public class ExtArrayAdapter<T>
      * @param filterType     to use
      * @param textArrayResId The identifier of the array to use as the data source.
      *
-     * @return An ExtArrayAdapter<CharSequence>.
+     * @return An {@code ExtArrayAdapter<CharSequence>}
      */
     @NonNull
     public static ExtArrayAdapter<CharSequence> createFromResource(

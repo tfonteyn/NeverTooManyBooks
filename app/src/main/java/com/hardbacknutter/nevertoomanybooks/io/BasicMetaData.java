@@ -36,6 +36,8 @@ public class BasicMetaData {
 
     /**
      * Constructor.
+     *
+     * @param args The (usually new/empty) bundle; will be returned by {@link #getData()}
      */
     public BasicMetaData(@NonNull final Bundle args) {
         data = args;

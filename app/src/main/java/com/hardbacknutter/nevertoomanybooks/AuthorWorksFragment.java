@@ -118,6 +118,19 @@ public class AuthorWorksFragment
     /** View Binding. */
     private RecyclerView worksListView;
     private ExtPopupMenu contextMenu;
+    private final TocEntryHandler tocEntryHandler = new TocEntryHandler() {
+        @Override
+        public void viewBook(final int position) {
+            gotoBook(position);
+        }
+
+        @Override
+        public void showContextMenu(@NonNull final View anchor,
+                                    final int position) {
+            contextMenu.showAsDropDown(anchor, menuItem ->
+                    onMenuItemSelected(menuItem, position));
+        }
+    };
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -137,20 +150,6 @@ public class AuthorWorksFragment
         worksListView = view.findViewById(R.id.author_works);
         return view;
     }
-
-    private final TocEntryHandler tocEntryHandler = new TocEntryHandler() {
-        @Override
-        public void viewBook(final int position) {
-            gotoBook(position);
-        }
-
-        @Override
-        public void showContextMenu(@NonNull final View anchor,
-                                    final int position) {
-            contextMenu.showAsDropDown(anchor, menuItem ->
-                    onMenuItemSelected(menuItem, position));
-        }
-    };
 
     /**
      * Using {@link ExtPopupMenu} for context menus.
@@ -248,68 +247,6 @@ public class AuthorWorksFragment
         }
     }
 
-    private class ToolbarMenuProvider
-            implements MenuProvider {
-
-        @Override
-        public void onCreateMenu(@NonNull final Menu menu,
-                                 @NonNull final MenuInflater menuInflater) {
-            MenuCompat.setGroupDividerEnabled(menu, true);
-            menuInflater.inflate(R.menu.author_works, menu);
-
-            onPrepareMenu(menu);
-        }
-
-        @Override
-        public void onPrepareMenu(@NonNull final Menu menu) {
-            // show if we got here with a specific bookshelf selected.
-            // hide if the bookshelf was set to Bookshelf.ALL_BOOKS.
-            menu.findItem(R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES)
-                .setVisible(vm.getBookshelfId() != Bookshelf.ALL_BOOKS)
-                .setChecked(vm.isAllBookshelves());
-        }
-
-        @SuppressLint("NotifyDataSetChanged")
-        @Override
-        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            final int itemId = menuItem.getItemId();
-
-            if (itemId == R.id.MENU_AUTHOR_WORKS_ALL) {
-                menuItem.setChecked(true);
-                vm.reloadWorkList(true, true);
-                adapter.notifyDataSetChanged();
-                return true;
-
-            } else if (itemId == R.id.MENU_AUTHOR_WORKS_TOC) {
-                menuItem.setChecked(true);
-                vm.reloadWorkList(true, false);
-                adapter.notifyDataSetChanged();
-                return true;
-
-            } else if (itemId == R.id.MENU_AUTHOR_WORKS_BOOKS) {
-                menuItem.setChecked(true);
-                vm.reloadWorkList(false, true);
-                adapter.notifyDataSetChanged();
-                return true;
-
-            } else if (itemId == R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES) {
-                final boolean checked = !menuItem.isChecked();
-                menuItem.setChecked(checked);
-                vm.setAllBookshelves(checked);
-                vm.reloadWorkList();
-                adapter.notifyDataSetChanged();
-
-                final Toolbar toolbar = getToolbar();
-                //noinspection ConstantConditions
-                toolbar.setTitle(vm.getScreenTitle(getContext()));
-                toolbar.setSubtitle(vm.getScreenSubtitle(getContext()));
-                return true;
-            }
-
-            return false;
-        }
-    }
-
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
@@ -388,6 +325,68 @@ public class AuthorWorksFragment
             });
 
             return holder;
+        }
+    }
+
+    private class ToolbarMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            MenuCompat.setGroupDividerEnabled(menu, true);
+            menuInflater.inflate(R.menu.author_works, menu);
+
+            onPrepareMenu(menu);
+        }
+
+        @Override
+        public void onPrepareMenu(@NonNull final Menu menu) {
+            // show if we got here with a specific bookshelf selected.
+            // hide if the bookshelf was set to Bookshelf.ALL_BOOKS.
+            menu.findItem(R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES)
+                .setVisible(vm.getBookshelfId() != Bookshelf.ALL_BOOKS)
+                .setChecked(vm.isAllBookshelves());
+        }
+
+        @SuppressLint("NotifyDataSetChanged")
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            final int itemId = menuItem.getItemId();
+
+            if (itemId == R.id.MENU_AUTHOR_WORKS_ALL) {
+                menuItem.setChecked(true);
+                vm.reloadWorkList(true, true);
+                adapter.notifyDataSetChanged();
+                return true;
+
+            } else if (itemId == R.id.MENU_AUTHOR_WORKS_TOC) {
+                menuItem.setChecked(true);
+                vm.reloadWorkList(true, false);
+                adapter.notifyDataSetChanged();
+                return true;
+
+            } else if (itemId == R.id.MENU_AUTHOR_WORKS_BOOKS) {
+                menuItem.setChecked(true);
+                vm.reloadWorkList(false, true);
+                adapter.notifyDataSetChanged();
+                return true;
+
+            } else if (itemId == R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES) {
+                final boolean checked = !menuItem.isChecked();
+                menuItem.setChecked(checked);
+                vm.setAllBookshelves(checked);
+                vm.reloadWorkList();
+                adapter.notifyDataSetChanged();
+
+                final Toolbar toolbar = getToolbar();
+                //noinspection ConstantConditions
+                toolbar.setTitle(vm.getScreenTitle(getContext()));
+                toolbar.setSubtitle(vm.getScreenSubtitle(getContext()));
+                return true;
+            }
+
+            return false;
         }
     }
 }

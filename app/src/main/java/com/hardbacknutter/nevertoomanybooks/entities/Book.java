@@ -733,12 +733,13 @@ public class Book
      * Keep in mind that internally we always use PNG compression (except for the cache).
      * So a jpg named file can be a png encoded file. (But we don't need to care about that.)
      *
-     * @param cIdx 0..n image index
+     * @param downloadedFile the file to store
+     * @param cIdx           0..n image index
      *
      * @return The persisted file
      *
      * @throws StorageException The covers directory is not available
-     * @throws IOException      on other failures
+     * @throws IOException      on generic/other IO failures
      * @see #getPersistedCoverFile(int)
      */
     @NonNull
@@ -903,7 +904,7 @@ public class Book
      * @return the File after processing (either original, or a renamed/moved file)
      *
      * @throws StorageException The covers directory is not available
-     * @throws IOException      on failure
+     * @throws IOException      on generic/other IO failures
      */
     @SuppressWarnings("UnusedReturnValue")
     @Nullable

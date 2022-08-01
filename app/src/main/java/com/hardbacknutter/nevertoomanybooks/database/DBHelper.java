@@ -511,7 +511,7 @@ public class DBHelper
     }
 
     /**
-     * <strong>REMINDER: foreign key constraints are DISABLED here</strong>
+     * <strong>REMINDER: foreign key constraints are DISABLED here.</strong>
      * <strong>WARNING: do NOT use SynchronizedDb here!</strong>
      * <p>
      * {@inheritDoc}
@@ -538,7 +538,7 @@ public class DBHelper
     }
 
     /**
-     * <strong>REMINDER: foreign key constraints are DISABLED here</strong>
+     * <strong>REMINDER: foreign key constraints are DISABLED here.</strong>
      * <p>
      * {@inheritDoc}
      */

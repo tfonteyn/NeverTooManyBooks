@@ -92,6 +92,7 @@ public class ExportHelper
     /**
      * Constructor for testing individual options.
      *
+     * @param encoding    of the archive we'll be exporting to
      * @param recordTypes to write
      */
     @VisibleForTesting

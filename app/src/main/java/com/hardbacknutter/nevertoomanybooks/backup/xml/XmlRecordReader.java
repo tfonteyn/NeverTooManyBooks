@@ -138,7 +138,7 @@ public class XmlRecordReader
      * @param accessor the EntityReader to convert XML to the object
      *
      * @throws DataReaderException on a decoding/parsing of data issue
-     * @throws IOException         on failure
+     * @throws IOException         on generic/other IO failures
      */
     private void fromXml(@NonNull final ArchiveReaderRecord record,
                          @NonNull final EntityReader<String> accessor)

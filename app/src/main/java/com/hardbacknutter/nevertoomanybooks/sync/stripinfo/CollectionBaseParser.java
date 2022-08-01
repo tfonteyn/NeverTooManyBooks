@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -68,12 +68,18 @@ abstract class CollectionBaseParser {
     String idPricePaid;
     String idAmount;
 
+    /**
+     * Constructor.
+     *
+     * @param context         Current context
+     * @param bookshelfMapper mapper for the wishlist/owned flags
+     */
     @AnyThread
     CollectionBaseParser(@NonNull final Context context,
-                         @NonNull final BookshelfMapper bookshelfmapper) {
+                         @NonNull final BookshelfMapper bookshelfMapper) {
 
-        ownedBooksBookshelf = bookshelfmapper.getOwnedBooksBookshelf(context);
-        wishListBookshelf = bookshelfmapper.getWishListBookshelf(context);
+        ownedBooksBookshelf = bookshelfMapper.getOwnedBooksBookshelf(context);
+        wishListBookshelf = bookshelfMapper.getWishListBookshelf(context);
     }
 
     @AnyThread

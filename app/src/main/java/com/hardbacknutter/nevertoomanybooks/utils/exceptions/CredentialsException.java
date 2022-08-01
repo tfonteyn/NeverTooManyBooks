@@ -43,7 +43,7 @@ public class CredentialsException
      * Constructor.
      *
      * @param siteResId the site string res; which will be embedded in a default user message
-     * @param message   message
+     * @param message   internal message for the log file
      */
     public CredentialsException(@StringRes final int siteResId,
                                 @NonNull final String message) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,9 +57,10 @@ public interface DataWriter<RESULT>
      *
      * @return results summary
      *
-     * @throws DataWriterException on a decoding/parsing of data issue
-     * @throws StorageException    there is an issue with the storage media
-     * @throws IOException         on other failures
+     * @throws DataWriterException  on a decoding/parsing of data issue
+     * @throws StorageException     on storage related failures
+     * @throws IOException          on generic/other IO failures
+     * @throws CredentialsException on authentication/login failures
      */
     @WorkerThread
     @NonNull
@@ -77,7 +78,7 @@ public interface DataWriter<RESULT>
     /**
      * Override if the implementation needs to close something.
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     @Override
     default void close()

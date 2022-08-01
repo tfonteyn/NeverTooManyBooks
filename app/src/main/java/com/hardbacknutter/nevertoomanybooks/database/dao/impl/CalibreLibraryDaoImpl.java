@@ -275,7 +275,7 @@ public class CalibreLibraryDaoImpl
     /**
      * Get the list of Calibre <strong>virtual</strong>libraries for the given library id.
      *
-     * @param libraryId to lookup
+     * @param libraryId row id for the physical library
      *
      * @return list of virtual libs
      */

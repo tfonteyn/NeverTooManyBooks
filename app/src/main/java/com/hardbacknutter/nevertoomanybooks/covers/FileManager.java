@@ -104,6 +104,9 @@ public class FileManager {
      * @param sizes   a list of images sizes in order of preference
      *
      * @return a {@link ImageFileInfo} object with or without a valid fileSpec.
+     *
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException on storage related failures
      */
     @NonNull
     @WorkerThread

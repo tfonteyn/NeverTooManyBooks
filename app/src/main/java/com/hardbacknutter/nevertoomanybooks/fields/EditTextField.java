@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
  * Stores and retrieves data from an {@link EditText}.
  *
  * @param <T> type of Field value.
+ * @param <V> type of Field View, must extend TextView
  */
 public class EditTextField<T, V extends EditText>
         extends BaseTextField<T, V>

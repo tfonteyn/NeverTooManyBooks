@@ -170,7 +170,8 @@ public class App
                                   new DialogConfigurationBuilder()
                                           .withText(getString(R.string.acra_resDialogText))
                                           .withTitle(getString(R.string.app_name))
-                                          .withCommentPrompt(getString(R.string.acra_resDialogCommentPrompt))
+                                          .withCommentPrompt(
+                                                  getString(R.string.acra_resDialogCommentPrompt))
                                           .withResTheme(R.style.Theme_App)
                                           .withResIcon(R.drawable.ic_baseline_warning_24)
                                           .withEnabled(true)

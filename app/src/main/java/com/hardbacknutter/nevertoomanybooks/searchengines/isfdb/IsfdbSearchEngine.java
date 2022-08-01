@@ -1087,6 +1087,8 @@ public class IsfdbSearchEngine
      * @param document to parse
      * @param isbn     (optional) ISBN of the book, will be used for the cover filename
      * @param cIdx     0..n image index
+     *
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     @VisibleForTesting
@@ -1146,6 +1148,8 @@ public class IsfdbSearchEngine
      * @param validIsbn to get editions for. MUST be valid.
      *
      * @return list of editions found, can be empty, but never {@code null}
+     *
+     * @throws CredentialsException on authentication/login failures
      */
     @WorkerThread
     @NonNull
@@ -1262,6 +1266,8 @@ public class IsfdbSearchEngine
      * @param url     A fully qualified ISFDB search url
      *
      * @return list of editions found, can be empty, but never {@code null}
+     *
+     * @throws CredentialsException on authentication/login failures
      */
     @WorkerThread
     @NonNull
@@ -1434,7 +1440,11 @@ public class IsfdbSearchEngine
      * @param context     Current context
      * @param edition     to get
      * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
      * @param bookData    Bundle to update <em>(passed in to allow mocking)</em>
+     *
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException     on storage related failures
      */
     @WorkerThread
     void fetchByEdition(@NonNull final Context context,
@@ -1482,6 +1492,8 @@ public class IsfdbSearchEngine
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
      * @param maxRecords  the maximum number of "Publication" records to fetch
+     *
+     * @throws StorageException on storage related failures
      */
     @NonNull
     private List<Bundle> fetchPublications(@NonNull final Context context,

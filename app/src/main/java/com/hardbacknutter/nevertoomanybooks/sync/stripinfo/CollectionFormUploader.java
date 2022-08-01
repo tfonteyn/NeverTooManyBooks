@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -107,8 +107,9 @@ public class CollectionFormUploader {
      *
      * @param book to use
      *
-     * @throws IOException              on any failure
+     * @throws IOException              on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
+     * @throws StorageException         on storage related failures
      */
     @WorkerThread
     public void setOwned(@NonNull final Book book)
@@ -127,8 +128,9 @@ public class CollectionFormUploader {
      *
      * @param book to use
      *
-     * @throws IOException              on any failure
+     * @throws IOException on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     public void setRead(@NonNull final Book book)
@@ -147,8 +149,9 @@ public class CollectionFormUploader {
      *
      * @param book to use
      *
-     * @throws IOException              on any failure
+     * @throws IOException on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     public void setWanted(@NonNull final Book book)
@@ -198,8 +201,9 @@ public class CollectionFormUploader {
      *
      * @param book to send
      *
-     * @throws IOException              on any failure
+     * @throws IOException on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     public void send(@NonNull final Book book)
@@ -325,8 +329,9 @@ public class CollectionFormUploader {
      * @param book to use
      * @param mode one of the 3 flags, in either 'on'  or 'off' format.
      *
-     * @throws IOException              on any failure
+     * @throws IOException on generic/other IO failures
      * @throws IllegalArgumentException if the external id was not present
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     private void setBooleanByMode(@NonNull final Book book,
@@ -373,7 +378,8 @@ public class CollectionFormUploader {
      *
      * @return the JSoup parsed Document
      *
-     * @throws IOException on any failure
+     * @throws IOException on generic/other IO failures
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     @NonNull

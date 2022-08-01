@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,7 +49,7 @@ public interface RecordReader
      * @return Optional with the meta-data
      *
      * @throws DataReaderException on a decoding/parsing of data issue
-     * @throws IOException         on failure
+     * @throws IOException         on generic/other IO failures
      */
     @WorkerThread
     @NonNull
@@ -71,8 +71,8 @@ public interface RecordReader
      * @return results summary
      *
      * @throws DataReaderException on a decoding/parsing of data issue
-     * @throws StorageException    there is an issue with the storage media
-     * @throws IOException         on other failures
+     * @throws StorageException    on storage related failures
+     * @throws IOException         on generic/other IO failures
      */
     @WorkerThread
     @NonNull

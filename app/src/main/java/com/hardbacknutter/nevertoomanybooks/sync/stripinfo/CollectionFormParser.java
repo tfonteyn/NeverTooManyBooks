@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -74,12 +74,13 @@ public class CollectionFormParser
     /**
      * Constructor.
      *
-     * @param context Current context
+     * @param context         Current context
+     * @param bookshelfMapper mapper for the wishlist/owned flags
      */
     @AnyThread
     public CollectionFormParser(@NonNull final Context context,
-                                @NonNull final BookshelfMapper bookshelfmapper) {
-        super(context, bookshelfmapper);
+                                @NonNull final BookshelfMapper bookshelfMapper) {
+        super(context, bookshelfMapper);
 
         idLocation = FF_LOCATIE;
         idNotes = FF_OPMERKING;
@@ -108,14 +109,16 @@ public class CollectionFormParser
      * @param collectionId website book collection-id
      * @param destBundle   to store the results in
      *
-     * @throws IOException on any failure
+     * @throws IOException      on generic/other IO failures
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     public void parse(@NonNull final Element root,
                       @IntRange(from = 1) final long externalId,
                       @IntRange(from = 1) final long collectionId,
                       @NonNull final Bundle destBundle)
-            throws IOException, StorageException {
+            throws IOException,
+                   StorageException {
 
         idOwned = "stripCollectieInBezit-" + externalId;
         idRead = "stripCollectieGelezen-" + externalId;

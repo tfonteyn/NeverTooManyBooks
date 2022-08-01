@@ -108,7 +108,7 @@ public class JsoupLoader {
      *
      * @return the parsed Document
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     @WorkerThread
     @NonNull

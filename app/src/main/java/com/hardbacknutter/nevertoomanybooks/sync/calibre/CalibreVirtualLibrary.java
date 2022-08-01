@@ -54,6 +54,7 @@ public class CalibreVirtualLibrary
     /**
      * Constructor without ID.
      *
+     * @param libraryId         row id for the physical library
      * @param name              the Calibre name for this virtual library
      * @param expr              the Calibre search expression which defines the virtual library
      * @param mappedBookshelfId the {@link Bookshelf} id this virtual library is mapped to
@@ -71,6 +72,7 @@ public class CalibreVirtualLibrary
     /**
      * Constructor without ID.
      *
+     * @param libraryId       row id for the physical library
      * @param name            the Calibre name for this virtual library
      * @param expr            the Calibre search expression which defines the virtual library
      * @param mappedBookshelf the {@link Bookshelf} this virtual library is mapped to

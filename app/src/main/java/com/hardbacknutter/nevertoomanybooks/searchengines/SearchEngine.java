@@ -300,6 +300,9 @@ public interface SearchEngine
          *                    The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
+         *
+         * @throws CredentialsException on authentication/login failures
+         * @throws StorageException     on storage related failures
          */
         @WorkerThread
         @NonNull
@@ -339,6 +342,9 @@ public interface SearchEngine
          *                    The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
+         *
+         * @throws CredentialsException on authentication/login failures
+         * @throws StorageException     on storage related failures
          */
         @WorkerThread
         @NonNull
@@ -366,6 +372,8 @@ public interface SearchEngine
          *                    The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
+         * @throws CredentialsException on authentication/login failures
+         * @throws StorageException     on storage related failures
          */
         @WorkerThread
         @NonNull
@@ -402,6 +410,8 @@ public interface SearchEngine
          *                    The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
+         * @throws CredentialsException on authentication/login failures
+         * @throws StorageException     on storage related failures
          */
         @WorkerThread
         @NonNull
@@ -434,6 +444,8 @@ public interface SearchEngine
          * @param size      of image to get.
          *
          * @return fileSpec, or {@code null} when none found (or any other failure)
+         * @throws CredentialsException on authentication/login failures
+         * @throws StorageException     on storage related failures
          */
         @WorkerThread
         @Nullable
@@ -458,6 +470,8 @@ public interface SearchEngine
          * @return ArrayList with a single fileSpec (This is for convenience, as the result
          *         is meant to be stored into the book-data as a parcelable array;
          *         and it allows extending to multiple images at a future time)
+         * @throws CredentialsException on authentication/login failures
+         * @throws StorageException     on storage related failures
          */
         @WorkerThread
         @NonNull
@@ -497,6 +511,7 @@ public interface SearchEngine
          * @param validIsbn to search for, <strong>must</strong> be valid.
          *
          * @return a list of isbn numbers for alternative editions of the original, can be empty.
+         * @throws CredentialsException on authentication/login failures
          */
         @WorkerThread
         @NonNull

@@ -94,15 +94,14 @@ public class XmlRecordWriter
     private static final String TAG_TOC_ENTRY = "tocentry";
     private static final String TAG_BOOK = "book";
 
-    /** Database Access. */
     @Nullable
     private final LocalDateTime sinceDateTime;
 
     /**
      * Constructor.
      *
-     * @param sinceDateTime (optional) UTC based date to select only items
-     *                      modified or added since.
+     * @param sinceDateTime (optional) select all books modified or added since that
+     *                      date/time (UTC based). Set to {@code null} for *all* books.
      */
     @AnyThread
     public XmlRecordWriter(@Nullable final LocalDateTime sinceDateTime) {
@@ -219,7 +218,7 @@ public class XmlRecordWriter
      * @param writer           writer
      * @param progressListener Progress and cancellation interface
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     private void writeBookshelves(@NonNull final Writer writer,
                                   @NonNull final ProgressListener progressListener)
@@ -251,7 +250,7 @@ public class XmlRecordWriter
      * @param writer           writer
      * @param progressListener Progress and cancellation interface
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     private void writeAuthors(@NonNull final Writer writer,
                               @NonNull final ProgressListener progressListener)
@@ -286,7 +285,7 @@ public class XmlRecordWriter
      * @param writer           writer
      * @param progressListener Progress and cancellation interface
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     private void writeSeries(@NonNull final Writer writer,
                              @NonNull final ProgressListener progressListener)
@@ -320,7 +319,7 @@ public class XmlRecordWriter
      * @param writer           writer
      * @param progressListener Progress and cancellation interface
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     private void writePublishers(@NonNull final Writer writer,
                                  @NonNull final ProgressListener progressListener)
@@ -351,7 +350,7 @@ public class XmlRecordWriter
      * @param writer           writer
      * @param progressListener Progress and cancellation interface
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     private void writeToc(@NonNull final Writer writer,
                           @NonNull final ProgressListener progressListener)
@@ -393,15 +392,17 @@ public class XmlRecordWriter
     /**
      * 'loan_to' is added to the books section here, this might be removed.
      *
-     * @param context          Current context
-     * @param writer           writer
-     * @param sinceDateTime    (optional) UTC based date to select only items
-     *                         modified or added since.
-     * @param progressListener Progress and cancellation interface
+     * @param context               Current context
+     * @param writer                writer
+     * @param sinceDateTime         (optional) select all books modified or added since that
+     *                              date/time (UTC based). Set to {@code null} for *all* books.
+     * @param collectCoverFilenames flag; whether cover file file specs should be collected
+     *                              for processing later on
+     * @param progressListener      Progress and cancellation interface
      *
      * @return results summary
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     private ExportResults writeBooks(@NonNull final Context context,
                                      @NonNull final Writer writer,

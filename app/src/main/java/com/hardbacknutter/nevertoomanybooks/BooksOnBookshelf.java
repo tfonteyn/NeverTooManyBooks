@@ -182,6 +182,9 @@ public class BooksOnBookshelf
 
     private static final String RK_FILTERS = TAG + ":rk:" + BookshelfFiltersDialogFragment.TAG;
 
+    /** Number of views to cache offscreen arbitrarily set to 20; the default is 2. */
+    private static final int OFFSCREEN_CACHE_SIZE = 20;
+
     /** Make a backup. */
     private final ActivityResultLauncher<Void> exportLauncher =
             registerForActivityResult(new ExportContract(), success -> {
@@ -522,8 +525,8 @@ public class BooksOnBookshelf
         final int overlayType = Prefs.getFastScrollerOverlayType(this);
         FastScroller.attach(vb.content.list, overlayType);
 
-        // Number of views to cache offscreen arbitrarily set to 20; the default is 2.
-        vb.content.list.setItemViewCacheSize(20);
+
+        vb.content.list.setItemViewCacheSize(OFFSCREEN_CACHE_SIZE);
         vb.content.list.setDrawingCacheEnabled(true);
         vb.content.list.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
     }
@@ -571,7 +574,7 @@ public class BooksOnBookshelf
     /**
      * Entry point for the system search request.
      *
-     * @param intent to use
+     * @param intent The new intent that was started for the activity.
      */
     @Override
     protected void onNewIntent(@NonNull final Intent intent) {
@@ -589,6 +592,8 @@ public class BooksOnBookshelf
      * See
      * <a href="https://developer.android.com/guide/topics/search/search-dialog#ReceivingTheQuery">
      * ReceivingTheQuery</a>
+     *
+     * @param intent potentially containing the action
      */
     private void handleStandardSearchIntent(@NonNull final Intent intent) {
         final String query;
@@ -728,6 +733,8 @@ public class BooksOnBookshelf
      *      <li>Book: open the details page.</li>
      *      <li>Not a book: expand/collapse the section as appropriate.</li>
      * </ul>
+     *
+     * @param position The position of the item within the adapter's data set.
      */
     private void onRowClicked(final int position) {
         //noinspection ConstantConditions
@@ -972,7 +979,7 @@ public class BooksOnBookshelf
      * Using {@link ExtPopupMenu} for context menus.
      *
      * @param menuItem that was selected
-     * @param position in the list
+     * @param position The position of the item within the adapter's data set.
      *
      * @return {@code true} if handled.
      */
@@ -1298,7 +1305,7 @@ public class BooksOnBookshelf
      * IMPORTANT: this is from a context click on a row.
      * We pass the book ID's which are suited for that row.
      *
-     * @param position in the list
+     * @param position The position of the item within the adapter's data set.
      * @param rowData  for the row which was selected
      * @param message  to show to the user; can be 'null' if the group is a "no series" etc...
      */
@@ -1406,8 +1413,9 @@ public class BooksOnBookshelf
         if (bookId == 0 || bookId == vm.getCurrentCenteredBookId()) {
             vm.setCurrentCenteredBookId(0);
         }
-        // ENHANCE: remove the row without a rebuild but this could quickly become complex...
-        // e.g. if there is(was) only a single book on the level above
+        // We don't try to remove the row without a rebuild as this could quickly become complex...
+        // e.g. if there is(was) only a single book on the level, we'd have to recursively
+        // cleanup each level above the book
         saveListPosition();
         buildBookList();
     }

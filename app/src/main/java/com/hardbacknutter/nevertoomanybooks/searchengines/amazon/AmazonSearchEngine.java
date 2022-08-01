@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -510,6 +510,10 @@ public class AmazonSearchEngine
      * @param document to parse
      * @param isbn     (optional) ISBN of the book, will be used for the cover filename
      * @param cIdx     0..n image index
+     *
+     * @return a list with fileSpecs; can be empty
+     *
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     @VisibleForTesting

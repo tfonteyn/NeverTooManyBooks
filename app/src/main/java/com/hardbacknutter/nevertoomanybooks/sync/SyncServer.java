@@ -127,6 +127,8 @@ public enum SyncServer
     /**
      * Check whether each book has a specific last-update date to
      * (help) sync it with the server/web site.
+     *
+     * @return {@code true} if a last-update date is available
      */
     public boolean hasLastUpdateDateField() {
         return hasLastUpdateDateField;
@@ -171,6 +173,9 @@ public enum SyncServer
      *
      * @return a new reader
      *
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException     on storage related failures
+     * @throws IOException          on generic/other IO failures
      * @see DataReader
      */
     @NonNull

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -326,6 +326,8 @@ public class Bookshelf
      * Prune the filters so we only keep the active ones.
      *
      * @param context Current context
+     *
+     * @return list of active filters
      */
     @NonNull
     public List<PFilter<?>> pruneFilters(@NonNull final Context context) {

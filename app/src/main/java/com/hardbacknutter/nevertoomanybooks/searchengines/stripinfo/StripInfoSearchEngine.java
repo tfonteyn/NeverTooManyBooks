@@ -296,7 +296,11 @@ public class StripInfoSearchEngine
      * @param context     Current context
      * @param document    to parse
      * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
      * @param bookData    Bundle to update
+     *
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException     on storage related failures
      */
     @WorkerThread
     private void parseMultiResult(@NonNull final Context context,
@@ -570,6 +574,8 @@ public class StripInfoSearchEngine
      * @param document to parse
      * @param cIdx     0..n image index
      * @param bookData Bundle to update
+     *
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     private void processCover(@NonNull final Document document,
@@ -631,6 +637,8 @@ public class StripInfoSearchEngine
      * @param url  location
      *
      * @return fileSpec, or {@code null} when not found
+     *
+     * @throws StorageException on storage related failures
      */
     @WorkerThread
     @Nullable

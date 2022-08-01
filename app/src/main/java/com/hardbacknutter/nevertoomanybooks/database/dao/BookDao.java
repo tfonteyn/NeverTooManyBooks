@@ -347,39 +347,47 @@ public interface BookDao {
      * Can be called before {@link #fetchBooksForExport(LocalDateTime)} to count
      * the number of books before starting the actual export.
      *
-     * @param since to select all books added/modified since that date/time (UTC based).
-     *              Set to {@code null} for *all* books.
+     * @param sinceDateTime (optional) select all books modified or added since that
+     *                      date/time (UTC based). Set to {@code null} for *all* books.
      *
      * @return number of books that would be exported
      */
-    int countBooksForExport(@Nullable LocalDateTime since);
+    int countBooksForExport(@Nullable LocalDateTime sinceDateTime);
 
     /**
      * Return an Cursor with all Books, or with all updated Books since the given date/time.
      *
-     * @param since to select all books added/modified since that date/time (UTC based).
-     *              Set to {@code null} for *all* books.
+     * @param sinceDateTime (optional) select all books modified or added since that
+     *                      date/time (UTC based). Set to {@code null} for *all* books.
      *
      * @return A Book Cursor with 0..n rows; ordered by book id
      */
     @NonNull
-    TypedCursor fetchBooksForExport(@Nullable LocalDateTime since);
+    TypedCursor fetchBooksForExport(@Nullable LocalDateTime sinceDateTime);
 
     /**
      * Same as {@link #fetchBooksForExport(LocalDateTime)} but for a specific Calibre library.
      *
-     * @param libraryId to use
-     * @param since     to select all books added/modified since that date/time (UTC based).
-     *                  Set to {@code null} for *all* books.
+     * @param libraryId     row id for the physical library
+     * @param sinceDateTime (optional) select all books modified or added since that
+     *                      date/time (UTC based). Set to {@code null} for *all* books.
      *
      * @return A Book Cursor with 0..n rows; ordered by book id
      */
     @NonNull
     TypedCursor fetchBooksForExportToCalibre(long libraryId,
-                                             @Nullable LocalDateTime since);
+                                             @Nullable LocalDateTime sinceDateTime);
 
+    /**
+     * Same as {@link #fetchBooksForExport(LocalDateTime)} but specific to the stripinfo.be website.
+     *
+     * @param sinceDateTime (optional) select all books modified or added since that
+     *                      date/time (UTC based). Set to {@code null} for *all* books.
+     *
+     * @return A Book Cursor with 0..n rows; ordered by book id
+     */
     @NonNull
-    TypedCursor fetchBooksForExportToStripInfo(@Nullable LocalDateTime since);
+    TypedCursor fetchBooksForExportToStripInfo(@Nullable LocalDateTime sinceDateTime);
 
     /**
      * Fetch all book UUID, and return them as a List.

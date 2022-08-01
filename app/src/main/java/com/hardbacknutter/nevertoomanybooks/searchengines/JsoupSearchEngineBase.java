@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -82,6 +82,8 @@ public abstract class JsoupSearchEngineBase
      * @param url     to load
      *
      * @return the document
+     *
+     * @throws CredentialsException on authentication/login failures
      */
     @WorkerThread
     @NonNull
@@ -106,7 +108,10 @@ public abstract class JsoupSearchEngineBase
      * @param context     Current context
      * @param document    to parse
      * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
      * @param bookData    Bundle to update
+     *
+     * @throws StorageException on storage related failures
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @WorkerThread

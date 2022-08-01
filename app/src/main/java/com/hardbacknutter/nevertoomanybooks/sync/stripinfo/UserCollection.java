@@ -135,19 +135,20 @@ public class UserCollection {
     /**
      * Constructor.
      *
-     * @param context      Current context
-     * @param searchEngine to use
-     * @param userId       as extracted from the auth Cookie.
+     * @param context         Current context
+     * @param searchEngine    to use
+     * @param userId          as extracted from the auth Cookie.
+     * @param bookshelfMapper mapper for the wishlist/owned flags
      */
     @AnyThread
     UserCollection(@NonNull final Context context,
                    @NonNull final StripInfoSearchEngine searchEngine,
                    @NonNull final String userId,
-                   @NonNull final BookshelfMapper bookshelfmapper) {
+                   @NonNull final BookshelfMapper bookshelfMapper) {
         this.userId = userId;
         this.searchEngine = searchEngine;
         jsoupLoader = new JsoupLoader(this.searchEngine.createFutureGetRequest());
-        rowParser = new RowParser(context, bookshelfmapper);
+        rowParser = new RowParser(context, bookshelfMapper);
     }
 
     public int getMaxPages() {
@@ -163,7 +164,8 @@ public class UserCollection {
      *
      * @return list with book-data Bundles
      *
-     * @throws IOException on failure
+     * @throws StorageException on storage related failures
+     * @throws IOException      on generic/other IO failures
      */
     @SuppressLint("DefaultLocale")
     @WorkerThread
@@ -298,12 +300,13 @@ public class UserCollection {
         /**
          * Constructor.
          *
-         * @param context Current context
+         * @param context         Current context
+         * @param bookshelfMapper mapper for the wishlist/owned flags
          */
         @AnyThread
         RowParser(@NonNull final Context context,
-                  @NonNull final BookshelfMapper bookshelfmapper) {
-            super(context, bookshelfmapper);
+                  @NonNull final BookshelfMapper bookshelfMapper) {
+            super(context, bookshelfMapper);
         }
 
         /**

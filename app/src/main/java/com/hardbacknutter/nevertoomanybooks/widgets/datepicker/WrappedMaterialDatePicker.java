@@ -206,6 +206,8 @@ public final class WrappedMaterialDatePicker<S>
          * @param timeStart    current start-selection, or {@code null} for none
          * @param endFieldId   field for the end-date this dialog is bound to
          * @param timeEnd      current end-selection, or {@code null} for none
+         * @param todayIfNone  flag; if timeStart/timeEnd is not set, {@code true} will
+         *                     set {@code today} as their value.
          */
         public void launch(@StringRes final int titleResId,
                            @IdRes final int startFieldId,

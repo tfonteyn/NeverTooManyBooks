@@ -154,7 +154,7 @@ public final class ImageUtils {
      *
      * @return (potentially) compressed bitmap; or {@code null} on any non-fatal error.
      *
-     * @throws IOException on failure
+     * @throws IOException on generic/other IO failures
      */
     @WorkerThread
     @Nullable
@@ -201,7 +201,7 @@ public final class ImageUtils {
      *
      * @throws StorageException      The {@link CoverDir} directory is not available
      * @throws FileNotFoundException if the input stream was {@code null}
-     * @throws IOException           on other failures
+     * @throws IOException           on generic/other IO failures
      */
     @NonNull
     public static File copy(@Nullable final InputStream is,
