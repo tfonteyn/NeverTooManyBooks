@@ -483,7 +483,8 @@ public class EditBookTocFragment
     private void onIsfdbDataConfirmed(@NonNull final Book.ContentType contentType,
                                       @NonNull final Collection<TocEntry> tocEntries) {
         if (contentType != Book.ContentType.Book) {
-            vm.requireField(R.id.book_type).setValue(contentType);
+            final Field<Long, View> typeField = vm.requireField(R.id.book_type);
+            typeField.setValue(contentType.getId());
         }
 
         // append the new data
