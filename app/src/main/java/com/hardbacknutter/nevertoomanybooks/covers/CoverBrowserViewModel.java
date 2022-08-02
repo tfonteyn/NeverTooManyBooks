@@ -245,7 +245,7 @@ public class CoverBrowserViewModel
     /**
      * Set the given list as the editions list.
      *
-     * @param list to use
+     * @param list with ISBN numbers
      */
     public void setEditions(@Nullable final Collection<String> list) {
         editions.clear();

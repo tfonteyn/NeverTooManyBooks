@@ -236,18 +236,20 @@ public class CoverBrowserDialogFragment
 
     /**
      * Show the user a selection of other covers and allow selection of a replacement.
+     *
+     * @param editionsList a list with ISBN numbers
      */
     @SuppressLint("NotifyDataSetChanged")
-    private void showGallery(@Nullable final Collection<String> result) {
+    private void showGallery(@Nullable final Collection<String> editionsList) {
         Objects.requireNonNull(galleryAdapter, "galleryAdapter");
 
-        if (result == null || result.isEmpty()) {
+        if (editionsList == null || editionsList.isEmpty()) {
             vb.progressBar.hide();
             vb.statusMessage.setText(R.string.warning_no_editions);
             vb.statusMessage.postDelayed(this::dismiss, BaseActivity.DELAY_LONG_MS);
         } else {
             // set the list and trigger the adapter
-            vm.setEditions(result);
+            vm.setEditions(editionsList);
             galleryAdapter.notifyDataSetChanged();
             // Show help message
             vb.statusMessage.setText(R.string.txt_tap_on_thumbnail_to_zoom);
@@ -447,8 +449,9 @@ public class CoverBrowserDialogFragment
         /**
          * Constructor.
          *
-         * @param context  Current context
-         * @param executor to use for loading images
+         * @param context      Current context
+         * @param editionsList a list with ISBN numbers
+         * @param executor     to use for loading images
          */
         @SuppressWarnings("SameParameterValue")
         GalleryAdapter(@NonNull final Context context,

@@ -1188,6 +1188,9 @@ public class BooklistAdapter
 
         /**
          * Conditionally display 'text'.
+         *
+         * @param view to populate
+         * @param text to set
          */
         private void showOrHide(@NonNull final TextView view,
                                 @Nullable final String text) {

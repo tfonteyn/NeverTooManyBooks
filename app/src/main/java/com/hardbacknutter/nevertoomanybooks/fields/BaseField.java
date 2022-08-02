@@ -211,6 +211,8 @@ public abstract class BaseField<T, V extends View>
     /**
      * Internal to the Field class.
      *
+     * @param target {@link DataManager} to save the Field value into.
+     *
      * @see #putValue(DataManager)
      */
     abstract void internalPutValue(@NonNull DataManager target);
@@ -288,8 +290,9 @@ public abstract class BaseField<T, V extends View>
     /**
      * Get the previously set view.
      *
-     * @return view
+     * @return view, or {@code null} if the reference is dead
      *
+     * @throws NoViewException if the View-reference is not set.
      * @see #requireView()
      */
     @Nullable

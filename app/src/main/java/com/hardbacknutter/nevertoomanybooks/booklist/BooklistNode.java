@@ -174,6 +174,9 @@ public class BooklistNode {
     /**
      * Update the node with the actual list position,
      * <strong>taking into account invisible rows</strong>.
+     *
+     * @param db        Database Access
+     * @param listTable to use
      */
     void updateAdapterPosition(@NonNull final SynchronizedDb db,
                                @NonNull final TableDefinition listTable) {

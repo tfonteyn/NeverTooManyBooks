@@ -44,6 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.ParcelableEntity;
  * A {@code null} value is always handled as an empty {@link ArrayList}.
  * <p>
  * Relies on {@link R.attr#appChipFilterStyle}
+ *
+ * @param <T> type of Entity (== Field) value.
  */
 public class ListChipGroupField<T extends ParcelableEntity>
         extends BaseField<ArrayList<T>, ChipGroup> {

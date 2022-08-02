@@ -559,11 +559,10 @@ class BooklistBuilder {
             try (SynchronizedStatement stmt = db.compileStatement(sqlForInitialInsert)) {
                 initialInsertCount = stmt.executeUpdateDelete();
             }
-            final long t1_insert = System.nanoTime();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
                 Log.d(TAG, "build|insert(" + initialInsertCount + "): "
-                           + ((t1_insert - t0) / NANO_TO_MILLIS) + " ms");
+                           + ((System.nanoTime() - t0) / NANO_TO_MILLIS) + " ms");
             }
 
             if (!collationIsCaseSensitive) {

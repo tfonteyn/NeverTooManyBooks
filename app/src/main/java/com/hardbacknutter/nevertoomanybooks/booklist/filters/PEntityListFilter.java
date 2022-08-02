@@ -51,6 +51,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
  * <li>The Set is never {@code null}.</li>
  * <li>An empty Set indicates an inactive filter.</li>
  * </ul>
+ *
+ * @param <T> type of Entity value.
  */
 public class PEntityListFilter<T extends Entity>
         implements PFilter<Set<Long>> {

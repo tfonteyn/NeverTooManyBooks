@@ -85,7 +85,14 @@ public class EditBookSeriesListDialogFragment
                     processChanges(original, modified);
                 }
             };
+    private final AdapterRowHandler seriesHandler = new AdapterRowHandler() {
 
+        @Override
+        public void edit(final int position) {
+            editSeriesLauncher.launch(
+                    vm.getBook().getTitle(), seriesList.get(position));
+        }
+    };
     /** Drag and drop support for the list view. */
     private ItemTouchHelper itemTouchHelper;
 
@@ -114,15 +121,6 @@ public class EditBookSeriesListDialogFragment
         editSeriesLauncher.registerForFragmentResult(getChildFragmentManager(), RK_EDIT_SERIES,
                                                      this);
     }
-
-    private final AdapterRowHandler seriesHandler = new AdapterRowHandler() {
-
-        @Override
-        public void edit(final int position) {
-            editSeriesLauncher.launch(
-                    vm.getBook().getTitle(), seriesList.get(position));
-        }
-    };
 
     @Override
     protected void onToolbarNavigationClick(@NonNull final View v) {
@@ -269,21 +267,6 @@ public class EditBookSeriesListDialogFragment
         }
     }
 
-    /**
-     * Holder for each row.
-     */
-    private static class Holder
-            extends ItemTouchHelperViewHolderBase {
-
-        @NonNull
-        final TextView seriesView;
-
-        Holder(@NonNull final View itemView) {
-            super(itemView);
-            seriesView = itemView.findViewById(R.id.row_series);
-        }
-    }
-
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
@@ -330,6 +313,21 @@ public class EditBookSeriesListDialogFragment
                 new SimpleItemTouchHelperCallback(adapter);
         itemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         itemTouchHelper.attachToRecyclerView(vb.seriesList);
+    }
+
+    /**
+     * Holder for each row.
+     */
+    private static class Holder
+            extends ItemTouchHelperViewHolderBase {
+
+        @NonNull
+        final TextView seriesView;
+
+        Holder(@NonNull final View itemView) {
+            super(itemView);
+            seriesView = itemView.findViewById(R.id.row_series);
+        }
     }
 
     private static class SeriesListAdapter

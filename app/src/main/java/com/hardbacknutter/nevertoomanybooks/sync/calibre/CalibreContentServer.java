@@ -1271,6 +1271,10 @@ public class CalibreContentServer
      * @param book     to get
      * @param folder   where the files are
      * @param creating set {@code true} when creating, set {@code false} for checking existence
+     *
+     * @return the eBook file
+     *
+     * @throws FileNotFoundException on any failure
      */
     @NonNull
     DocumentFile getDocumentFile(@NonNull final Context context,

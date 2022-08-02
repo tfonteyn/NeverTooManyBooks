@@ -35,7 +35,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 
 /**
+ * A dropdown {@link Field} displaying a list of Entities,
+ * but with the value being the {@link Entity#getId()}.
+ * <p>
  * A {@code null} value is always handled as the 0'th element in the list.
+ *
+ * @param <T> type of Entity value.
  */
 public class EntityListDropDownMenuField<T extends Entity>
         extends BaseField<Long, AutoCompleteTextView> {

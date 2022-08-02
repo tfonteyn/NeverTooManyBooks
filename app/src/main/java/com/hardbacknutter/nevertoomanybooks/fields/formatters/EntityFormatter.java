@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,9 +28,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
+ * A formatter which uses {@link Entity#getLabel} to display a single {@link Entity}.
+ *
  * <ul>
  *      <li>Multiple fields: <strong>no</strong></li>
  * </ul>
+ *
+ * @param <T> type of Entity (== Field) value.
  */
 public class EntityFormatter<T extends Entity>
         implements FieldFormatter<T> {
