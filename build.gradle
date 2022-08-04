@@ -41,7 +41,7 @@ buildscript {
         // https://developer.android.com/jetpack/androidx/versions
 
         // 1.6.0 requires Android 13 Developer Preview 2 SDK
-        androidx_activity_version = '1.5.0'
+        androidx_activity_version = '1.5.1'
 
         androidx_annotation_version = '1.4.0'
 
@@ -67,11 +67,11 @@ buildscript {
 
         androidx_exifinterface_version = '1.3.3'
 
-        androidx_fragment_version = '1.5.0'
+        androidx_fragment_version = '1.5.1'
 
         androidx_interpolator_version = '1.0.0'
 
-        androidx_lifecycle_version = '2.5.0'
+        androidx_lifecycle_version = '2.5.1'
 
         androidx_preference_version = '1.2.0'
 
@@ -79,7 +79,7 @@ buildscript {
 
         androidx_viewpager2_version = '1.1.0-beta01'
 
-        androidx_window_version = '1.1.0-alpha02'
+        androidx_window_version = '1.1.0-alpha03'
 
 
 
@@ -99,13 +99,13 @@ buildscript {
         apache_commons_codec = '1.15'
 
         // https://github.com/ACRA/acra
-        acra_version = '5.9.5'
+        acra_version = '5.9.6'
 
         // https://github.com/mockito/mockito
         mockito_version = '4.6.1'
 
         // https://junit.org/junit5/docs/current/user-guide/#overview
-        jupiter_version = '5.8.2'
+        jupiter_version = '5.9.0'
 
         // https://developer.android.com/jetpack/androidx/releases/test
         androidx_test_core_version = '1.4.0'
@@ -121,7 +121,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath('com.android.tools.build:gradle:7.2.1')
+        classpath('com.android.tools.build:gradle:7.2.2')
         classpath("de.mannodermaus.gradle.plugins:android-junit5:1.7.1.1")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10")
     }
