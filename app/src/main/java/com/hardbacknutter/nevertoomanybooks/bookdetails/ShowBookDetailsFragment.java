@@ -474,7 +474,8 @@ public class ShowBookDetailsFragment
     /**
      * Smaller displays have a button to show the TOC in the current Activity.
      *
-     * @param book to load
+     * @param showTocBtn the "Show TOC" button view
+     * @param book       to load
      */
     private void bindTocButton(@NonNull final Button showTocBtn,
                                @NonNull final Book book) {
@@ -501,7 +502,8 @@ public class ShowBookDetailsFragment
     /**
      * Larger displays show the TOC in a child Fragment of this one.
      *
-     * @param book to load
+     * @param tocFrame the TOC frame view
+     * @param book     to load
      */
     private void bindTocFrame(@NonNull final FragmentContainerView tocFrame,
                               @NonNull final Book book) {
