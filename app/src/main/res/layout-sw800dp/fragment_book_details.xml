@@ -24,8 +24,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/TopNestedScroller"
-    tools:viewBindingIgnore="true"
     tools:context=".FragmentHostActivity"
+    tools:viewBindingIgnore="true"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -87,8 +87,8 @@
         <TextView
             android:id="@+id/lend_to"
             style="@style/Field.LendOutToBar"
-            android:visibility="gone"
             android:layout_marginStart="@dimen/field_margin_start"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/barrier_covers_end"
             app:layout_constraintTop_toTopOf="parent"
@@ -210,12 +210,13 @@
         <TextView
             android:id="@+id/description"
             style="@style/Field.Description"
-            app:layout_constraintEnd_toStartOf="@id/col2"
+            app:layout_constraintEnd_toStartOf="@id/toc_frame"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/barrier_description_top"
             tools:ignore="SelectableText"
-            tools:text="@tools:sample/lorem/random"
             tools:maxLines="10"
+            tools:text="@tools:sample/lorem/random"
+            tools:visibility="visible"
             />
 
         <androidx.fragment.app.FragmentContainerView
@@ -226,8 +227,9 @@
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1"
             app:layout_constraintStart_toEndOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@id/personal_data_section"
+            app:layout_constraintTop_toBottomOf="@id/barrier_description_top"
             app:layout_constraintVertical_bias="0.0"
             tools:layout="@layout/fragment_toc"
             tools:visibility="visible"
