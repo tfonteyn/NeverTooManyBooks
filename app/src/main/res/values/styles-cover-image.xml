@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -24,14 +24,38 @@
 
     <!-- ImageView - Generic cover image. -->
     <style name="CoverImage">
-        <!-- padding MUST be 0dp to allow scaling ratio to work properly. -->
-        <item name="android:padding">0dp</item>
-        <item name="android:layout_margin">4dp</item>
         <!-- we'll add a context menu -->
         <item name="android:focusable">true</item>
         <item name="android:adjustViewBounds">true</item>
         <item name="android:scaleType">fitStart</item>
         <item name="layout_constraintHorizontal_bias">0</item>
+    </style>
+
+    <style name="CoverImage.Details.0" parent="CoverImage">
+        <item name="android:padding">@dimen/cover_details_0_padding</item>
+        <item name="android:layout_width">@dimen/cover_details_0_width</item>
+        <item name="android:layout_height">@dimen/cover_details_0_height</item>
+        <item name="android:contentDescription">@string/lbl_cover_front</item>
+    </style>
+
+    <style name="CoverImage.Details.1" parent="CoverImage">
+        <item name="android:padding">@dimen/cover_details_1_padding</item>
+        <item name="android:layout_width">@dimen/cover_details_1_width</item>
+        <item name="android:layout_height">@dimen/cover_details_1_height</item>
+        <item name="android:contentDescription">@string/lbl_cover_back</item>
+    </style>
+
+    <style name="CoverImage.Edit.0" parent="CoverImage">
+        <item name="android:layout_width">@dimen/cover_edit_0_width</item>
+        <item name="android:layout_height">@dimen/cover_edit_0_height</item>
+        <item name="android:contentDescription">@string/lbl_cover_front</item>
+    </style>
+
+    <style name="CoverImage.Edit.1" parent="CoverImage">
+        <item name="android:layout_width">@dimen/cover_edit_1_width</item>
+        <item name="android:layout_height">@dimen/cover_edit_1_height</item>
+        <item name="android:contentDescription">@string/lbl_cover_back</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
     </style>
 
     <style name="CoverImage.BrowserPreview">

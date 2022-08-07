@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -64,6 +64,9 @@
         <item>@dimen/cover_details_0_width</item>
         <item>@dimen/cover_details_1_width</item>
     </array>
+
+    <dimen name="cover_details_0_padding">10dp</dimen>
+    <dimen name="cover_details_1_padding">10dp</dimen>
 
     <!-- Book edit screen.
         0: Front cover

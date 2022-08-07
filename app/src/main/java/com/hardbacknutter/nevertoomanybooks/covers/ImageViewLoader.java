@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,7 @@ import android.widget.ImageView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.annotation.UiThread;
 
 import java.io.File;
@@ -51,7 +52,9 @@ public class ImageViewLoader {
     @NonNull
     private final Executor executor;
 
+    @Px
     private final int width;
+    @Px
     private final int height;
 
     @NonNull
@@ -61,8 +64,8 @@ public class ImageViewLoader {
 
     @UiThread
     public ImageViewLoader(@NonNull final Executor executor,
-                           final int width,
-                           final int height) {
+                           @Px final int width,
+                           @Px final int height) {
         this(executor, ImageView.ScaleType.FIT_START, width, height, true);
     }
 
@@ -78,8 +81,8 @@ public class ImageViewLoader {
     @UiThread
     public ImageViewLoader(@NonNull final Executor executor,
                            @NonNull final ImageView.ScaleType scaleType,
-                           final int width,
-                           final int height,
+                           @Px final int width,
+                           @Px final int height,
                            final boolean enforceMaxSize) {
 
         handler = new Handler(Looper.getMainLooper());
@@ -102,11 +105,10 @@ public class ImageViewLoader {
     public void placeholder(@NonNull final ImageView imageView,
                             @DrawableRes final int drawable) {
         final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-        lp.width = width;
-        lp.height = height;
+        lp.width = width + imageView.getPaddingLeft() + imageView.getPaddingRight();
+        lp.height = height + imageView.getPaddingTop() + imageView.getPaddingBottom();
         imageView.setLayoutParams(lp);
 
-        imageView.setPadding(0, 0, 0, 0);
         imageView.setAdjustViewBounds(true);
         imageView.setMaxHeight(Integer.MAX_VALUE);
         imageView.setMaxWidth(Integer.MAX_VALUE);
@@ -125,27 +127,29 @@ public class ImageViewLoader {
     public void fromBitmap(@NonNull final ImageView imageView,
                            @NonNull final Bitmap bitmap) {
 
+        final int tmpWidth = width + imageView.getPaddingLeft() + imageView.getPaddingRight();
+        final int tmpHeight = height + imageView.getPaddingTop() + imageView.getPaddingBottom();
+
         // Modifying the layout parameters is mainly for zooming,
         // but is sometimes (why?) needed elsewhere.
         final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
         if (bitmap.getWidth() < bitmap.getHeight()) {
             // image is portrait; limit the height
             lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            lp.height = height;
+            lp.height = tmpHeight;
         } else {
             // image is landscape; limit the width
-            lp.width = width;
+            lp.width = tmpWidth;
             lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
         imageView.setLayoutParams(lp);
 
-        // padding MUST be 0dp to allow scaling ratio to work properly
-        imageView.setPadding(0, 0, 0, 0);
-        // essential, so lets not reply on it having been set in xml
+        // essential, so lets not rely on it having been set in xml
         imageView.setAdjustViewBounds(true);
+
         if (enforceMaxSize) {
-            imageView.setMaxHeight(height);
-            imageView.setMaxWidth(width);
+            imageView.setMaxHeight(tmpHeight);
+            imageView.setMaxWidth(tmpWidth);
         } else {
             imageView.setMaxHeight(Integer.MAX_VALUE);
             imageView.setMaxWidth(Integer.MAX_VALUE);
