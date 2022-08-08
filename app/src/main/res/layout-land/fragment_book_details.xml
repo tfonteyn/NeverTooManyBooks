@@ -223,6 +223,7 @@
         <TextView
             android:id="@+id/description"
             style="@style/Field.Description"
+            android:background="@drawable/bg_outline"
             app:layout_constraintEnd_toEndOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="@dimen/section_margin_top"

@@ -32,13 +32,12 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list"
-        android:layout_width="0dp"
+        android:layout_width="400dp"
         android:layout_height="match_parent"
         android:paddingEnd="@dimen/scrollbar_padding"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintEnd_toStartOf="@id/details_frame"
-        app:layout_constraintHorizontal_weight="0.33"
         app:layout_constraintStart_toStartOf="parent"
         tools:listitem="@layout/booksonbookshelf_row_book_scale_2"
         tools:showIn="@layout/booksonbookshelf"
@@ -50,7 +49,6 @@
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_weight="0.66"
         app:layout_constraintStart_toEndOf="@id/list"
         tools:layout="@layout/fragment_book_details"
         />

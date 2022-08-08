@@ -32,6 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/container_margin"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
         <androidx.constraintlayout.widget.Guideline
@@ -44,23 +45,19 @@
 
         <ImageView
             android:id="@id/cover_image_0"
-            style="@style/CoverImage"
-            android:layout_width="@dimen/cover_details_0_width"
-            android:layout_height="@dimen/cover_details_0_height"
-            android:contentDescription="@string/lbl_cover_front"
+            style="@style/CoverImage.Details.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription"
             tools:src="@sample/covers"
             />
 
         <ImageView
             android:id="@id/cover_image_1"
-            style="@style/CoverImage"
-            android:layout_width="@dimen/cover_details_1_width"
-            android:layout_height="@dimen/cover_details_1_height"
-            android:contentDescription="@string/lbl_cover_back"
-            app:layout_constraintStart_toStartOf="parent"
+            style="@style/CoverImage.Details.1"
+            app:layout_constraintStart_toStartOf="@id/cover_image_0"
             app:layout_constraintTop_toBottomOf="@id/cover_image_0"
+            tools:ignore="ContentDescription"
             tools:src="@sample/covers"
             />
 
@@ -210,11 +207,13 @@
         <TextView
             android:id="@+id/description"
             style="@style/Field.Description"
+            android:background="@drawable/bg_outline"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintEnd_toStartOf="@id/toc_frame"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/barrier_description_top"
             tools:ignore="SelectableText"
-            tools:maxLines="10"
+            tools:maxLines="200"
             tools:text="@tools:sample/lorem/random"
             tools:visibility="visible"
             />
@@ -225,6 +224,7 @@
             android:layout_height="0dp"
             android:layout_marginTop="@dimen/field_margin_top"
             android:visibility="gone"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1"

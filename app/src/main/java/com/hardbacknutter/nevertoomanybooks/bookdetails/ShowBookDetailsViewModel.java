@@ -220,7 +220,8 @@ public class ShowBookDetailsViewModel
                            .addRelatedViews(R.id.lbl_isbn));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.description, DBKey.DESCRIPTION,
-                                       notesFormatter));
+                                       notesFormatter)
+                           .addRelatedViews(R.id.description_scroller));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.genre, DBKey.GENRE)
                            .addRelatedViews(R.id.lbl_genre));
