@@ -271,7 +271,7 @@ dependencies {
 
     implementation("androidx.preference:preference:${androidx_preference_version}")
     implementation("androidx.recyclerview:recyclerview:${androidx_recyclerview_version}")
-//    implementation("androidx.slidingpanelayout:slidingpanelayout:1.2.0-beta01")
+//    implementation("androidx.slidingpanelayout:slidingpanelayout:${androidx_slidingpanelayout_version}")
     implementation("androidx.viewpager2:viewpager2:${androidx_viewpager2_version}")
     implementation("androidx.window:window:${androidx_window_version}")
 

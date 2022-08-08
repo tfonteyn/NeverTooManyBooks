@@ -77,10 +77,11 @@ buildscript {
 
         androidx_recyclerview_version = '1.3.0-beta01'
 
+//        androidx_slidingpanelayout_version = '1.2.0'
+
         androidx_viewpager2_version = '1.1.0-beta01'
 
         androidx_window_version = '1.1.0-alpha03'
-
 
 
         // https://github.com/material-components/material-components-android/releases
