@@ -36,25 +36,20 @@
 
         <ImageView
             android:id="@id/cover_image_0"
-            style="@style/CoverImage"
-            android:layout_width="@dimen/cover_details_0_width"
-            android:layout_height="@dimen/cover_details_0_height"
-            android:contentDescription="@string/lbl_cover_front"
+            style="@style/CoverImage.Details.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title"
             tools:src="@sample/covers"
+            tools:ignore="ContentDescription"
             />
 
         <ImageView
             android:id="@id/cover_image_1"
-            style="@style/CoverImage"
-            android:layout_width="@dimen/cover_details_1_width"
-            android:layout_height="@dimen/cover_details_1_height"
-            android:layout_marginStart="4dp"
-            android:contentDescription="@string/lbl_cover_back"
-            app:layout_constraintStart_toStartOf="parent"
+            style="@style/CoverImage.Details.1"
+            app:layout_constraintStart_toStartOf="@id/cover_image_0"
             app:layout_constraintTop_toBottomOf="@id/cover_image_0"
             tools:src="@sample/covers"
+            tools:ignore="ContentDescription"
             />
 
         <androidx.constraintlayout.widget.Barrier
