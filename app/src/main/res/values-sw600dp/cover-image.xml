@@ -23,14 +23,14 @@
 <resources>
     <dimen name="app_logo">150dp</dimen>
 
-    <!-- multiplier: 1.7 -->
-    <dimen name="cover_details_0_height">340dp</dimen>
-    <dimen name="cover_details_0_width">218dp</dimen>
-    <dimen name="cover_details_1_height">170dp</dimen>
-    <dimen name="cover_details_1_width">110dp</dimen>
+    <dimen name="cover_details_0_padding">15dp</dimen>
+    <dimen name="cover_details_1_padding">15dp</dimen>
 
-    <dimen name="cover_details_0_padding">20dp</dimen>
-    <dimen name="cover_details_1_padding">20dp</dimen>
+    <!-- multiplier: 1.5 -->
+    <dimen name="cover_details_0_height">300dp</dimen>
+    <dimen name="cover_details_0_width">192dp</dimen>
+    <dimen name="cover_details_1_height">150dp</dimen>
+    <dimen name="cover_details_1_width">96dp</dimen>
 
     <!-- multiplier: 1.5 -->
     <dimen name="cover_edit_0_height">150dp</dimen>
@@ -38,14 +38,16 @@
     <dimen name="cover_edit_1_height">150dp</dimen>
     <dimen name="cover_edit_1_width">96dp</dimen>
 
-    <dimen name="cover_browser_gallery_text_size">14sp</dimen>
-    <integer name="cover_browser_gallery_span_count">2</integer>
-
+    <!-- multiplier: 1.5 -->
     <dimen name="cover_browser_gallery_height">150dp</dimen>
     <dimen name="cover_browser_gallery_width">96dp</dimen>
 
-    <dimen name="cover_browser_preview_height">400dp</dimen>
-    <dimen name="cover_browser_preview_width">256dp</dimen>
+    <!-- multiplier: 1.5 -->
+    <dimen name="cover_browser_preview_height">375dp</dimen>
+    <dimen name="cover_browser_preview_width">240dp</dimen>
+
+    <dimen name="cover_browser_gallery_text_size">14sp</dimen>
+    <integer name="cover_browser_gallery_span_count">2</integer>
 
 
 </resources>

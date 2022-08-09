@@ -27,14 +27,14 @@
 <resources>
     <dimen name="app_logo">100dp</dimen>
 
+    <dimen name="cover_details_0_padding">10dp</dimen>
+    <dimen name="cover_details_1_padding">10dp</dimen>
+
     <!-- multiplier: 1 -->
     <dimen name="cover_details_0_height">200dp</dimen>
     <dimen name="cover_details_0_width">128dp</dimen>
     <dimen name="cover_details_1_height">100dp</dimen>
     <dimen name="cover_details_1_width">64dp</dimen>
-
-    <dimen name="cover_details_0_padding">10dp</dimen>
-    <dimen name="cover_details_1_padding">10dp</dimen>
 
     <!-- multiplier: 1 -->
     <dimen name="cover_edit_0_height">100dp</dimen>
@@ -42,11 +42,14 @@
     <dimen name="cover_edit_1_height">100dp</dimen>
     <dimen name="cover_edit_1_width">64dp</dimen>
 
-    <integer name="cover_browser_gallery_span_count">1</integer>
-
+    <!-- multiplier: 1 -->
     <dimen name="cover_browser_gallery_height">100dp</dimen>
     <dimen name="cover_browser_gallery_width">64dp</dimen>
 
+    <!-- multiplier: 0.8 -->
     <dimen name="cover_browser_preview_height">200dp</dimen>
-    <dimen name="cover_browser_preview_width">132dp</dimen>
+    <dimen name="cover_browser_preview_width">128dp</dimen>
+
+    <integer name="cover_browser_gallery_span_count">1</integer>
+
 </resources>

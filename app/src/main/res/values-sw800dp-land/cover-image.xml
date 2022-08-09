@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -21,19 +21,26 @@
 
 <!-- Generic 10.1" (800 x 1280) - 160dpi - sw800 -->
 <resources>
+    <!-- smaller than sw600 as we're in embedded mode here -->
+    <dimen name="cover_details_0_padding">10dp</dimen>
+    <dimen name="cover_details_1_padding">10dp</dimen>
 
-    <!-- slightly smaller than sw600 as we're in embedded mode here - multiplier: 1.25 -->
+    <!-- smaller than sw600 as we're in embedded mode here
+         multiplier: 1.25 -->
     <dimen name="cover_details_0_height">250dp</dimen>
     <dimen name="cover_details_0_width">160dp</dimen>
-    <dimen name="cover_details_1_height">125dp</dimen>
-    <dimen name="cover_details_1_width">80dp</dimen>
+    <!-- multiplier: 1.5 -->
+    <dimen name="cover_details_1_height">150dp</dimen>
+    <dimen name="cover_details_1_width">96dp</dimen>
 
-
-    <integer name="cover_browser_gallery_span_count">3</integer>
-
+    <!-- multiplier: 1.5 -->
     <dimen name="cover_browser_gallery_height">150dp</dimen>
     <dimen name="cover_browser_gallery_width">96dp</dimen>
 
+    <!-- multiplier: 2.4 -->
     <dimen name="cover_browser_preview_height">600dp</dimen>
     <dimen name="cover_browser_preview_width">384dp</dimen>
+
+    <integer name="cover_browser_gallery_span_count">3</integer>
+
 </resources>
