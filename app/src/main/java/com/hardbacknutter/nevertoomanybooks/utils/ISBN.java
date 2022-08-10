@@ -776,30 +776,14 @@ public class ISBN {
         }
 
         // Both are valid ISBN codes and we know the lengths are either 10 or 13
-        // when we get here. So ... compare the significant digits:
-        // ISBN13: skip the first 3 character, and don't include the checksum.
-        // ISBN10: don't include the checksum.
+        // when we get here. So ... compare the 9 significant digits:
+        // ISBN13: skip the first 3 character, and don't include the checksum -> 3..12
+        // ISBN10: don't include the checksum -> 0..9
         if (codeDigits.size() == 10) {
-            return digitsMatch(9, codeDigits, 0, cmp.codeDigits, 3);
+            return codeDigits.subList(0, 9).equals(cmp.codeDigits.subList(3, 12));
         } else {
-            return digitsMatch(9, codeDigits, 3, cmp.codeDigits, 0);
+            return codeDigits.subList(3, 12).equals(cmp.codeDigits.subList(0, 9));
         }
-    }
-
-    /**
-     * Check if all relevant digits are the same.
-     */
-    private boolean digitsMatch(@SuppressWarnings("SameParameterValue") final int length,
-                                @NonNull final List<Integer> digits1,
-                                int posFrom1,
-                                @NonNull final List<Integer> digits2,
-                                int posFrom2) {
-        for (int i = 0; i < length; i++) {
-            if (!digits1.get(posFrom1++).equals(digits2.get(posFrom2++))) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public enum Type {
@@ -816,7 +800,7 @@ public class ISBN {
         Loose(1),
         Strict(2);
 
-        final int value;
+        private final int value;
 
         Validity(final int value) {
             this.value = value;
