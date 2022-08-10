@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,34 +36,41 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
  */
 public final class ASIN {
 
+    /** ASIN codes are always 10 characters. */
+    private static final int ASIN_LEN = 10;
+
     private ASIN() {
     }
 
     /**
      * Validate an Amazon ASIN.
+     *
+     * @param asin to validate
+     *
+     * @return validity
      */
-    public static boolean isValidAsin(@NonNull String asin) {
+    public static boolean isValidAsin(@NonNull final String asin) {
 
-        // ASIN codes are always 10 characters.
-        if (asin.length() != 10) {
+
+        if (asin.length() != ASIN_LEN) {
             return false;
         }
 
-        // An Book ASIN is basically an ISBN-10.
+        // A Book ASIN is basically an ISBN-10.
         if (ISBN.isValidIsbn(asin)) {
             return true;
         }
 
         boolean foundAlpha = false;
-        asin = asin.trim().toUpperCase(Locale.ENGLISH);
-        for (int i = 0; i < asin.length(); i++) {
-            final int pos = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(asin.charAt(i));
+        final String ucAsin = asin.trim().toUpperCase(Locale.ENGLISH);
+        for (int i = 0; i < ucAsin.length(); i++) {
+            final int pos = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(ucAsin.charAt(i));
             // Make sure it's a valid char
             if (pos == -1) {
                 return false;
             }
             // See if we got a non-numeric
-            if (pos >= 10) {
+            if (pos >= ASIN_LEN) {
                 foundAlpha = true;
             }
         }
