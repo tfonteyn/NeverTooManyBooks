@@ -47,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.8"
+            app:layout_constraintGuide_percent="0.5"
             />
 
         <androidx.constraintlayout.widget.Barrier
@@ -63,7 +63,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="cover_image_0,cover_image_1,author"
+            app:constraint_referenced_ids="cover_image_0,cover_image_1"
+            />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_series_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="author,genre,series_title"
             />
 
         <ImageView
@@ -120,7 +128,9 @@
         <RatingBar
             android:id="@+id/rating"
             style="@style/Field.RatingBar.Indicator"
-            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
+            android:layout_marginStart="@dimen/field_margin_inline"
+            app:layout_constraintEnd_toStartOf="@id/btn_show_toc"
+            app:layout_constraintStart_toEndOf="@id/read"
             app:layout_constraintTop_toBottomOf="@id/title"
             />
 
@@ -129,14 +139,14 @@
             style="@style/Field.Checkable"
             android:text="@string/lbl_read"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/rating"
+            app:layout_constraintTop_toBottomOf="@id/title"
             />
 
         <Button
             android:id="@+id/btn_show_toc"
             style="@style/Button.Action.OpenToc"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/rating"
+            app:layout_constraintTop_toBottomOf="@id/title"
             tools:visibility="visible"
             />
 
@@ -155,8 +165,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/section_margin_top"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintEnd_toStartOf="@id/col1"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
             >
 
@@ -171,7 +181,7 @@
             style="@style/Label"
             android:text="@string/lbl_genre"
             app:layout_constraintStart_toEndOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/publication_section"
+            app:layout_constraintTop_toBottomOf="@id/author"
             />
 
         <TextView
@@ -209,7 +219,7 @@
             android:layout_marginTop="@dimen/section_margin_top"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/series_title"
+            app:layout_constraintTop_toBottomOf="@id/description"
             >
 
             <include
@@ -219,15 +229,14 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-
         <TextView
             android:id="@+id/description"
             style="@style/Field.Description"
             android:background="@drawable/bg_outline"
-            app:layout_constraintEnd_toEndOf="@id/col1"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/col1"
             android:layout_marginTop="@dimen/section_margin_top"
-            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
+            app:layout_constraintTop_toBottomOf="@id/barrier_series_bottom"
             tools:ignore="SelectableText"
             tools:text="@tools:sample/lorem/random"
             tools:maxLines="10"
