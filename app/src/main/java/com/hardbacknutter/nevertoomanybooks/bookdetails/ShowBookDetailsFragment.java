@@ -571,8 +571,6 @@ public class ShowBookDetailsFragment
             }
 
             aVm.getMenuHandlers().forEach(h -> h.onCreateMenu(menu, inflater));
-
-            onPrepareMenu(menu);
         }
 
         @Override
