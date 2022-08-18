@@ -582,7 +582,7 @@
     <string name="system">(Σύστημα)</string>
     <string name="tip_authors_book_may_appear_more_than_once">Αν εμφανίζεται για κάθε συγγραφέα, ένα βιβλίο μπορεί να εμφανίζεται πολλές φορές σε μια λίστα. Τότε, αν διαγραφεί ένα από αυτά, θα διαγραφούν όλα από τη λίστα.</string>
     <string name="tip_authors_works_book">Βιβλίο.</string>
-    <string name="tip_authors_works_multiple_books">Η είσοδος υπάρχει σε πολλά βιβλία.</string>
+    <string name="tip_authors_works_multiple_books">Ο τίτλος υπάρχει σε πολλά βιβλία.</string>
     <string name="tip_authors_works">Χρησιμοποιούμενα εικονίδια</string>
     <string name="tip_autorotate_camera_images">Αν παρατηρείτε ότι περιστρέφετε τις εικόνες από κάμερα πάντα στην ίδια κατεύθυνση, μπορείτε να αλλάξετε τις επιλογές ορίζοντας μια περιστροφή που να εφαρμόζεται αυτόματα.</string>
     <string name="tip_book_list">Πατώντας στιγμιαία σε ένα βιβλίο θα εμφανίσει λεπτομέρειες, πατώντας παρατεταμένα θα εμφανίσει και άλλες επιλογές.</string>
@@ -707,5 +707,7 @@
     <string name="X_whichImageCaptureApplication">Λήψη εικόνας με</string>
     <string name="X_whichSendToApplication">Αποστολή μέσω</string>
     <string name="yes">Ναι</string>
+    <string name="warning_nothing_selected">Τίποτα επιλεγμένο</string>
+    <string name="tip_authors_works_single_book">Ο τίτλος υπάρχει σε ένα μόνο βιβλίο.</string>
 
 </resources>

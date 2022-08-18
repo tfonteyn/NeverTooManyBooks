@@ -580,7 +580,7 @@
     <string name="system">(Systemowa)</string>
     <string name="tip_authors_book_may_appear_more_than_once">Jeśli jest wyświetlana dla każdego autora, pojedyncza książka może pojawić się więcej niż raz na liście. W takim przypadku usunięcie jednej z tych książek spowoduje usunięcie wszystkich instancji z listy.</string>
     <string name="tip_authors_works_book">Książka.</string>
-    <string name="tip_authors_works_multiple_books">Wpis jest obecny w wielu książkach.</string>
+    <string name="tip_authors_works_multiple_books">Tytuł jest obecny w wielu książkach.</string>
     <string name="tip_authors_works">Użyte ikony</string>
     <string name="tip_autorotate_camera_images">Jeśli zawsze obracasz obrazy z kamery w tym samym kierunku, spróbuj zmienić preferencje aplikacji, aby określić obrót, który ma zostać zastosowany automatycznie.</string>
     <string name="tip_book_list">Dotknięcie książki pokaże szczegóły książki. Długie naciśnięcie elementu na liście daje więcej opcji.</string>
@@ -705,5 +705,7 @@
     <string name="X_whichImageCaptureApplication">Zrób zdjęcie w aplikacji</string>
     <string name="X_whichSendToApplication">Wyślij za pomocą</string>
     <string name="yes">Tak</string>
+    <string name="warning_nothing_selected">Niczego nie wybrano</string>
+    <string name="tip_authors_works_single_book">Tytuł jest obecny w jednej księdze.</string>
 
 </resources>

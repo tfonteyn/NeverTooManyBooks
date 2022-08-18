@@ -583,7 +583,7 @@
     <string name="system">(Sistema)</string>
     <string name="tip_authors_book_may_appear_more_than_once">Si se muestra para cada autor, un mismo libro puede aparecer más de una vez en un listado. En ese caso, si se elimina uno de esos libros se eliminará de todas las posiciones del listado.</string>
     <string name="tip_authors_works_book">Libro.</string>
-    <string name="tip_authors_works_multiple_books">La entrada está presente en varios libros.</string>
+    <string name="tip_authors_works_multiple_books">El título está presente en varios libros.</string>
     <string name="tip_authors_works">Iconos utilizados</string>
     <string name="tip_autorotate_camera_images">Si siempre está girando las imágenes de la cámara en la misma dirección, intente cambiar las preferencias de la aplicación para especificar una rotación que se aplique automáticamente.</string>
     <string name="tip_book_list">Si pulsa sobre un libro se muestran sus detalles. Si mantiene pulsado, se muestran más opciones.</string>
@@ -708,5 +708,7 @@
     <string name="X_whichImageCaptureApplication">Capturar imagen con</string>
     <string name="X_whichSendToApplication">Enviar con</string>
     <string name="yes">Sí</string>
+    <string name="warning_nothing_selected">Nada seleccionado</string>
+    <string name="tip_authors_works_single_book">El título está presente en un solo libro.</string>
 
 </resources>

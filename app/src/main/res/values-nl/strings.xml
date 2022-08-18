@@ -580,7 +580,7 @@
     <string name="system">(Systeem)</string>
     <string name="tip_authors_book_may_appear_more_than_once">Als boeken worden getoond met alle auteurs, kunnen ze meermalen voorkomen in de lijst. Het verwijderen van één van die boeken heeft tot gevolg dat alle exemplaren worden verwijderd uit de lijst.</string>
     <string name="tip_authors_works_book">Boek.</string>
-    <string name="tip_authors_works_multiple_books">Item is aanwezig in meerdere boeken.</string>
+    <string name="tip_authors_works_multiple_books">De titel komt in meerdere boeken voor.</string>
     <string name="tip_authors_works">Gebruikte pictogrammen</string>
     <string name="tip_autorotate_camera_images">Als je altijd camera-opnames dezelfde kant opdraait kan je de applicatie-instellingen veranderen zodat dit automatisch gebeurt.</string>
     <string name="tip_book_list">Tikken op een boek zal de details van het boek tonen, lang drukken op een titel in de lijst geeft verdere opties.</string>
@@ -705,5 +705,7 @@
     <string name="X_whichImageCaptureApplication">Afbeelding vastleggen met</string>
     <string name="X_whichSendToApplication">Verzenden met</string>
     <string name="yes">Ja</string>
+    <string name="warning_nothing_selected">Niets geselecteerd</string>
+    <string name="tip_authors_works_single_book">De titel is aanwezig in een enkel boek.</string>
 
 </resources>

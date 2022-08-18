@@ -220,6 +220,8 @@
     <string name="warning_select_at_least_1_group">Select at least one group.</string>
     <string name="warning_select_at_least_1_field">Select at least one field to update.</string>
 
+    <string name="warning_nothing_selected">Nothing selected</string>
+
     <string name="warning_requires_at_least_1_field">At least one field must not be blank.</string>
 
     <string name="warning_requires_isbn">This action requires a valid ISBN.</string>
@@ -468,8 +470,8 @@
     <!-- shown next to the Book icon -->
     <string name="tip_authors_works_book">Book.</string>
     <!-- shown next to related icon / contentDescription for button. -->
-    <string name="tip_authors_works_multiple_books">Entry is present in multiple books.</string>
-    <string name="tip_authors_works_single_book">Entry is present in a single book.</string>
+    <string name="tip_authors_works_multiple_books">The title is present in multiple books.</string>
+    <string name="tip_authors_works_single_book">The title is present in a single book.</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Calibre specific ========== -->
@@ -1624,7 +1626,6 @@
 
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Wishlist mapped bookshelf</string>
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>
-    <string name="warning_nothing_selected">Nothing selected</string>
 
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->

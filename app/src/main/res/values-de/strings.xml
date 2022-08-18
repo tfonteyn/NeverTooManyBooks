@@ -582,7 +582,7 @@
     <string name="system">(System)</string>
     <string name="tip_authors_book_may_appear_more_than_once">Ein Buch kann mehrfach in einer Liste erscheinen, wenn es bei jedem Autor angezeigt wird. In diesem Fall führt das Löschen eines Buchs zum Löschen aller Vorkommen von der Liste.</string>
     <string name="tip_authors_works_book">Buch.</string>
-    <string name="tip_authors_works_multiple_books">Eintrag ist in mehreren Büchern vorhanden.</string>
+    <string name="tip_authors_works_multiple_books">Der Titel ist in mehreren Büchern vorhanden.</string>
     <string name="tip_authors_works">Verwendete Icons</string>
     <string name="tip_autorotate_camera_images">Wenn Sie Bilder von der Kamera immer in dieselbe Richtung drehen müssen, versuchen Sie,die automatische Drehrichtung in den Einstellungen festzulegen.</string>
     <string name="tip_book_list">Tippen Sie auf ein Buch, um dessen Details zu sehen. Ein langer Druck auf einen Listeneintrag zeigt weitere Optionen.</string>
@@ -707,5 +707,7 @@
     <string name="X_whichImageCaptureApplication">Bild aufnehmen mit</string>
     <string name="X_whichSendToApplication">Senden via</string>
     <string name="yes">Ja</string>
+    <string name="warning_nothing_selected">Nichts ausgewählt</string>
+    <string name="tip_authors_works_single_book">Der Titel ist in einem einzigen Buch vorhanden.</string>
 
 </resources>

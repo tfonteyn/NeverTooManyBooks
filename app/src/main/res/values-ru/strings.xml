@@ -580,7 +580,7 @@
     <string name="system">(системное)</string>
     <string name="tip_authors_book_may_appear_more_than_once">Если показывается по авторам, то одна и та же книга может появиться в списке многократно. В этом случае удаление одной из таких книг, удалит и все остальные из списка.</string>
     <string name="tip_authors_works_book">Книга.</string>
-    <string name="tip_authors_works_multiple_books">Запись присутствует в нескольких книгах.</string>
+    <string name="tip_authors_works_multiple_books">Название присутствует в нескольких книгах.</string>
     <string name="tip_authors_works">Используемые значки</string>
     <string name="tip_autorotate_camera_images">Если вы заметили, что всегда поворачиваете камеру в одном направлении, попробуйте установить в настройках опцию автоматического поворота.</string>
     <string name="tip_book_list">Клик по книге покажет детальную информацию, долгое нажатие на элемент списка покажет остальные действия.</string>
@@ -705,5 +705,7 @@
     <string name="X_whichImageCaptureApplication">Делать снимки с помощью:</string>
     <string name="X_whichSendToApplication">Выберите приложение</string>
     <string name="yes">Да</string>
+    <string name="warning_nothing_selected">Ничего не выбрано</string>
+    <string name="tip_authors_works_single_book">Название присутствует в одной книге.</string>
 
 </resources>

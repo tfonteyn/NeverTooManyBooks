@@ -581,7 +581,7 @@
     <string name="system">(Sistem)</string>
     <string name="tip_authors_book_may_appear_more_than_once">Eğer her yazar için gösteriliyorsa, tek bir kitap bir dizelgede birden fazla görünebilir. Böyle bir durumda bu kitaplardan birini silmek dizelgeden tüm girileri silecektir.</string>
     <string name="tip_authors_works_book">Kitap.</string>
-    <string name="tip_authors_works_multiple_books">Giriş birden fazla kitapta var.</string>
+    <string name="tip_authors_works_multiple_books">Başlık birden fazla kitapta mevcuttur.</string>
     <string name="tip_authors_works">Kullanılan simgeler</string>
     <string name="tip_autorotate_camera_images">Eğer kendinizi sürekli kamera resimlerini aynı doğrultuda döndürüyor buluyorsanız uygulama ayarlarını sürekli bir yöne görselleri kendiliğinden döndürecek biçimde ayarlayabilirsiniz.</string>
     <string name="tip_book_list">Bir kitabın üzerine dokunmak kitap ayrıntılarını gösterir, uzun basılı tutmak daha fazla seçeneğin olduğu bir dizelge verir.</string>
@@ -706,5 +706,7 @@
     <string name="X_whichImageCaptureApplication">Fotoğraf çekmek için şu uygulamayı kullan:</string>
     <string name="X_whichSendToApplication">Göndermek için kullanılacak uygulama</string>
     <string name="yes">Evet</string>
+    <string name="warning_nothing_selected">Hiçbir şey seçilmedi</string>
+    <string name="tip_authors_works_single_book">Başlık tek bir kitapta mevcuttur.</string>
 
 </resources>
