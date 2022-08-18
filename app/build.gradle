@@ -102,8 +102,8 @@ android {
 
     defaultConfig {
         applicationId "com.hardbacknutter.nevertoomanybooks"
-        versionCode 16
-        versionName = '3.1.0'
+        versionCode 17
+        versionName = '3.1.1'
 
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
@@ -271,7 +271,8 @@ dependencies {
 
     implementation("androidx.preference:preference:${androidx_preference_version}")
     implementation("androidx.recyclerview:recyclerview:${androidx_recyclerview_version}")
-//    implementation("androidx.slidingpanelayout:slidingpanelayout:${androidx_slidingpanelayout_version}")
+//    implementation("androidx.slidingpanelayout:slidingpanelayout:"
+//            + "${androidx_slidingpanelayout_version}")
     implementation("androidx.viewpager2:viewpager2:${androidx_viewpager2_version}")
     implementation("androidx.window:window:${androidx_window_version}")
 
