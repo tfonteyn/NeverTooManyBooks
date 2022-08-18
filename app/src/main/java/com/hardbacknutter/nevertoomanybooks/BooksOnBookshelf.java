@@ -1674,10 +1674,6 @@ public class BooksOnBookshelf
         vb.content.list.setVisibility(View.VISIBLE);
 
         if (adapter.getItemCount() > 0) {
-            // we can get here after a style change (or as initial build obviously)
-            // so make sure the menu reflects the style
-            toolbarMenuProvider.onPrepareMenu(vb.toolbar.getMenu());
-
             // scroll to the saved position - this should get us close to where we need to be
             scrollToSavedPosition();
             // and wait for layout cycle
@@ -1859,8 +1855,6 @@ public class BooksOnBookshelf
                                  @NonNull final MenuInflater menuInflater) {
             menuInflater.inflate(R.menu.bob, menu);
             MenuUtils.setupSearchActionView(BooksOnBookshelf.this, menu);
-
-            onPrepareMenu(menu);
         }
 
         @Override
