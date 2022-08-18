@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -298,6 +298,7 @@ public class SearchFtsFragment
             menuInflater.inflate(R.menu.toolbar_action_go, menu);
 
             final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
+            //noinspection ConstantConditions
             final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
             button.setText(R.string.btn_show_list);
             button.setOnClickListener(v -> onMenuItemSelected(menuItem));

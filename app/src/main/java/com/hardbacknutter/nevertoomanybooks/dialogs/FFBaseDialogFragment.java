@@ -261,6 +261,7 @@ public abstract class FFBaseDialogFragment
             final MenuItem menuItem = dialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
             if (menuItem != null) {
                 // the ok-button is a button inside the action view of the toolbar menu item
+                //noinspection ConstantConditions
                 final Button okButton = menuItem.getActionView().findViewById(R.id.btn_confirm);
                 if (okButton != null) {
                     okButton.setText(menuItem.getTitle());
