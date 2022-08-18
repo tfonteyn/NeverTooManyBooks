@@ -63,7 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
-import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
 
 /**
  * Display all {@link TocEntry}'s for an Author.
@@ -84,6 +83,7 @@ public class AuthorWorksFragment
     /** Optional. Show the books. Defaults to {@code true}. */
     static final String BKEY_WITH_BOOKS = TAG + ":books";
 
+    @SuppressWarnings("FieldCanBeLocal")
     private ToolbarMenuProvider toolbarMenuProvider;
     /** The Fragment ViewModel. */
     private AuthorWorksViewModel vm;
@@ -102,14 +102,6 @@ public class AuthorWorksFragment
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
-                }
-            };
-    /** React to changes in the adapter. */
-    private final SimpleAdapterDataObserver adapterDataObserver =
-            new SimpleAdapterDataObserver() {
-                @Override
-                public void onChanged() {
-                    toolbarMenuProvider.onPrepareMenu(getToolbar().getMenu());
                 }
             };
 
@@ -277,7 +269,6 @@ public class AuthorWorksFragment
         FastScroller.attach(worksListView, overlayType);
 
         adapter = new TocAdapter(context, vm.getAuthor(), vm.getWorks(), tocEntryHandler);
-        adapter.registerAdapterDataObserver(adapterDataObserver);
         worksListView.setAdapter(adapter);
 
         contextMenu = new ExtPopupMenu(context);
@@ -336,8 +327,6 @@ public class AuthorWorksFragment
                                  @NonNull final MenuInflater menuInflater) {
             MenuCompat.setGroupDividerEnabled(menu, true);
             menuInflater.inflate(R.menu.author_works, menu);
-
-            onPrepareMenu(menu);
         }
 
         @Override
