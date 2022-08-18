@@ -323,7 +323,7 @@ public class BooksOnBookshelf
      * {@link EditPublisherDialogFragment}
      * and others.
      *
-     * @see #onMenuItemSelected(MenuItem, int)
+     * @see #onRowContextMenuItemSelected(MenuItem, int)
      */
     private final RowChangedListener rowChangedListener = new RowChangedListener() {
         @Override
@@ -960,14 +960,15 @@ public class BooksOnBookshelf
 
             if (menu.size() < 5) {
                 // small menu, show it anchored to the row
-                contextMenu.showAsDropDown(v, menuItem -> onMenuItemSelected(menuItem, position));
+                contextMenu.showAsDropDown(v, menuItem ->
+                        onRowContextMenuItemSelected(menuItem, position));
 
             } else if (hasEmbeddedDetailsFrame()) {
-                contextMenu.show(v, Gravity.START,
-                                 menuItem -> onMenuItemSelected(menuItem, position));
+                contextMenu.show(v, Gravity.START, menuItem ->
+                        onRowContextMenuItemSelected(menuItem, position));
             } else {
-                contextMenu.show(v, Gravity.CENTER,
-                                 menuItem -> onMenuItemSelected(menuItem, position));
+                contextMenu.show(v, Gravity.CENTER, menuItem ->
+                        onRowContextMenuItemSelected(menuItem, position));
             }
             return true;
         }
@@ -977,14 +978,18 @@ public class BooksOnBookshelf
 
     /**
      * Using {@link ExtPopupMenu} for context menus.
+     * <p>
+     * Dev. note: this used to be simply "onMenuItemSelected",
+     * but due to an R8 bug confusing it with "onMenuItemSelected(int, android.view.MenuItem)"
+     * ended throwing a "java.lang.LinkageError" ... so the name had to be changed.
      *
      * @param menuItem that was selected
      * @param position The position of the item within the adapter's data set.
      *
      * @return {@code true} if handled.
      */
-    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
-                                       final int position) {
+    private boolean onRowContextMenuItemSelected(@NonNull final MenuItem menuItem,
+                                                 final int position) {
         final int itemId = menuItem.getItemId();
 
         // Move the cursor, so we can read the data for this row.
