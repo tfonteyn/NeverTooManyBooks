@@ -537,23 +537,23 @@ public class ExportFragment
             menuInflater.inflate(R.menu.toolbar_action_go, menu);
 
             final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
+            //noinspection ConstantConditions
             final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
             button.setText(menuItem.getTitle());
             button.setOnClickListener(v -> onMenuItemSelected(menuItem));
-
-            onPrepareMenu(menu);
-        }
-
-        @Override
-        public void onPrepareMenu(@NonNull final Menu menu) {
-            menu.findItem(R.id.MENU_ACTION_CONFIRM)
-                .setEnabled(vm.isReadyToGo());
         }
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-                exportPickUri();
+                if (vm.isReadyToGo()) {
+                    exportPickUri();
+                } else {
+                    //noinspection ConstantConditions
+                    Snackbar.make(getView(), R.string.warning_nothing_selected,
+                                  Snackbar.LENGTH_SHORT)
+                            .show();
+                }
                 return true;
             }
             return false;

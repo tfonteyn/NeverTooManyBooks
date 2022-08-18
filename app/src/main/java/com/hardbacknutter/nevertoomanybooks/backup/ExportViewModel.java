@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,9 +26,11 @@ import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterViewModel;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 
 /**
  * Coordinate between the UI and the {@link ExportHelper}.
@@ -105,9 +107,9 @@ public class ExportViewModel
 
     @Override
     public boolean isReadyToGo() {
-        // slightly bogus test... right now Prefs/Styles are always included,
-        // but we're keeping all variations of DataReader/DataWriter classes the same
-        return exportHelper.getRecordTypes().size() > 1;
+        // Prefs/Styles are always included, so we need to specifically check for books/covers
+        final Set<RecordType> recordTypes = exportHelper.getRecordTypes();
+        return recordTypes.contains(RecordType.Books) || recordTypes.contains(RecordType.Cover);
     }
 
     void startExport(@NonNull final Uri uri) {

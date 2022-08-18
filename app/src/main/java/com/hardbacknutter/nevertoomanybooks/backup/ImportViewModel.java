@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -62,6 +62,8 @@ public class ImportViewModel
 
     @Override
     public boolean isReadyToGo() {
-        return importHelper != null && importHelper.getMetaData().isPresent();
+        return importHelper != null
+               && importHelper.getMetaData().isPresent()
+               && !importHelper.getRecordTypes().isEmpty();
     }
 }
