@@ -70,8 +70,6 @@ public class PreferredStylesFragment
 
     /** Log tag. */
     public static final String TAG = "PreferredStylesFragment";
-    @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider toolbarMenuProvider;
     private PreferredStylesViewModel vm;
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback backPressedCallback =
@@ -191,8 +189,7 @@ public class PreferredStylesFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
+        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
         toolbar.setTitle(R.string.lbl_styles_long);
 
         //noinspection ConstantConditions

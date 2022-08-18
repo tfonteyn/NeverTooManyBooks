@@ -73,9 +73,6 @@ public class SearchOrderFragment
     private SearchSiteListAdapter listAdapter;
     private ItemTouchHelper itemTouchHelper;
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider toolbarMenuProvider;
-
     /* The View model. */
     private SearchAdminViewModel vm;
 
@@ -125,8 +122,7 @@ public class SearchOrderFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner(),
+        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner(),
                                 Lifecycle.State.RESUMED);
         toolbar.setTitle(R.string.lbl_settings);
         toolbar.setSubtitle(R.string.lbl_websites);

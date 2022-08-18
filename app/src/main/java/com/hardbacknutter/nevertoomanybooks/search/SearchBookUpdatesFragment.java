@@ -80,9 +80,6 @@ public class SearchBookUpdatesFragment
     public static final String BKEY_SCREEN_TITLE = TAG + ":title";
     public static final String BKEY_SCREEN_SUBTITLE = TAG + ":subtitle";
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider toolbarMenuProvider;
-
     /** The extended SearchCoordinator. */
     private SearchBookUpdatesViewModel vm;
     private final ActivityResultLauncher<ArrayList<Site>> editSitesLauncher =
@@ -121,8 +118,7 @@ public class SearchBookUpdatesFragment
         final Bundle args = getArguments();
 
         final Toolbar toolbar = getToolbar();
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
+        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
 
         // optional activity title
         if (args != null && args.containsKey(BKEY_SCREEN_TITLE)) {

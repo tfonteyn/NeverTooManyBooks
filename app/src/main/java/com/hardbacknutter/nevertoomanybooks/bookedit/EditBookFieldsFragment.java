@@ -36,7 +36,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
@@ -115,9 +114,6 @@ public class EditBookFieldsFragment
     /** View Binding. */
     private FragmentEditBookFieldsBinding vb;
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider toolbarMenuProvider;
-
     @NonNull
     @Override
     public FragmentId getFragmentId() {
@@ -146,10 +142,8 @@ public class EditBookFieldsFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Toolbar toolbar = getToolbar();
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner(),
-                                Lifecycle.State.RESUMED);
+        getToolbar().addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner(),
+                                     Lifecycle.State.RESUMED);
 
         final Context context = getContext();
         //noinspection ConstantConditions

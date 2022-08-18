@@ -88,8 +88,6 @@ public class SyncReaderFragment
                     getActivity().finish();
                 }
             };
-    @SuppressWarnings("FieldCanBeLocal")
-    private ToolbarMenuProvider toolbarMenuProvider;
     /** The ViewModel. */
     private SyncReaderViewModel vm;
 
@@ -135,8 +133,7 @@ public class SyncReaderFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
+        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
         toolbar.setTitle(vm.getDataReaderHelper().getSyncServer().getLabelResId());
 
         //noinspection ConstantConditions

@@ -33,7 +33,6 @@ import android.webkit.WebSettings;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
@@ -73,8 +72,6 @@ public class SqliteShellFragment
             + "SELECT 'T' AS T, tbl_name FROM sqlite_temp_master WHERE type='table'"
             + " ORDER BY tbl_name";
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider toolbarMenuProvider;
     private boolean allowUpdates;
     /** View Binding. */
     private FragmentSqliteShellBinding vb;
@@ -117,9 +114,7 @@ public class SqliteShellFragment
         super.onViewCreated(view, savedInstanceState);
 
 
-        final Toolbar toolbar = getToolbar();
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
+        getToolbar().addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
 
         final WebSettings settings = vb.output.getSettings();
         settings.setTextZoom(75);

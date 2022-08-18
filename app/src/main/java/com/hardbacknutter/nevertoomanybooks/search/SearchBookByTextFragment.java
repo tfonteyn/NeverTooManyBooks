@@ -30,7 +30,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -66,9 +65,6 @@ public class SearchBookByTextFragment
 
     private SearchBookByTextViewModel vm;
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider searchSitesToolbarMenuProvider;
-
     @Override
     @NonNull
     protected Bundle getResultData() {
@@ -100,8 +96,7 @@ public class SearchBookByTextFragment
 
         final Toolbar toolbar = getToolbar();
         toolbar.setTitle(R.string.lbl_search_for_books);
-        searchSitesToolbarMenuProvider = new SearchSitesToolbarMenuProvider();
-        toolbar.addMenuProvider(searchSitesToolbarMenuProvider, getViewLifecycleOwner());
+        toolbar.addMenuProvider(new SearchSitesToolbarMenuProvider(), getViewLifecycleOwner());
 
         if (vm.usePublisher()) {
             vb.lblPublisher.setVisibility(View.VISIBLE);

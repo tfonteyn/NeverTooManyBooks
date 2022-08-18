@@ -248,6 +248,7 @@ public class CoverHandler {
         } else {
             // there is no current image; only show the replace menu
             final MenuItem menuItem = popupMenu.getMenu().findItem(R.id.SUBMENU_THUMB_REPLACE);
+            //noinspection ConstantConditions
             popupMenu.setMenu(menuItem.getSubMenu());
         }
 

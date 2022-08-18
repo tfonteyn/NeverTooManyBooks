@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -232,6 +232,8 @@ public final class Logger {
                 buf.write((byte) result);
                 result = bis.read();
             }
+            // Charset needs API 33
+            //noinspection CharsetObjectCanBeUsed
             d(tag, method, buf.toString("UTF-8"));
         } catch (@NonNull final IOException e) {
             d(tag, e, "dumping failed: ");

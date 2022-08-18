@@ -64,7 +64,6 @@ public class SyncWriterFragment
 
     /** Log tag. */
     public static final String TAG = "SyncWriterFragment";
-    private ToolbarMenuProvider toolbarMenuProvider;
     /** The ViewModel. */
     private SyncWriterViewModel vm;
     /** View Binding. */
@@ -106,8 +105,7 @@ public class SyncWriterFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
+        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
         toolbar.setTitle(vm.getSyncWriterHelper().getSyncServer().getLabelResId());
 
         vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
@@ -118,9 +116,8 @@ public class SyncWriterFragment
         vb.cbxBooks.setChecked(true);
         vb.cbxBooks.setEnabled(true);
 
-        vb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            vm.getSyncWriterHelper().setRecordType(isChecked, RecordType.Cover);
-        });
+        vb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> vm
+                .getSyncWriterHelper().setRecordType(isChecked, RecordType.Cover));
 
         vb.infExportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
 

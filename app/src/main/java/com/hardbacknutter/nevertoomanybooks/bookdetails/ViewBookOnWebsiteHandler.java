@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,6 +73,7 @@ public class ViewBookOnWebsiteHandler
         final SearchEngineRegistry registry = SearchEngineRegistry.getInstance();
         final SubMenu subMenu = subMenuItem.getSubMenu();
         boolean subMenuVisible = false;
+        //noinspection ConstantConditions
         for (int i = 0; i < subMenu.size(); i++) {
             final MenuItem menuItem = subMenu.getItem(i);
             boolean visible = false;

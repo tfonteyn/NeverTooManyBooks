@@ -1330,6 +1330,7 @@ public class IsfdbSearchEngine
      */
     private void processExternalIdElements(@NonNull final Collection<Element> elements,
                                            @NonNull final Bundle bookData) {
+        //noinspection ConstantConditions
         elements.stream()
                 .map(element -> element.select("a").first())
                 .filter(Objects::nonNull)

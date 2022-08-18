@@ -74,8 +74,6 @@ public class SearchFtsFragment
     /** 1 second idle trigger. */
     private static final int NANO_TO_SECONDS = 1_000_000_000;
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider toolbarMenuProvider;
     /** Indicates user has changed something since the last search. */
     private boolean searchIsDirty;
     /** Timer reset each time the user clicks, in order to detect an idle time. */
@@ -117,8 +115,7 @@ public class SearchFtsFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
+        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
         toolbar.setTitle(R.string.lbl_local_search);
 
         vm.onSearchCriteriaUpdate().observe(getViewLifecycleOwner(), this::onSearchCriteriaUpdate);
@@ -246,14 +243,14 @@ public class SearchFtsFragment
      * Stop the timer.
      */
     private void stopIdleTimer() {
-        final Timer timer;
+        final Timer tmpTimer;
         // Synchronize since this is relevant to more than 1 thread.
         synchronized (this) {
-            timer = this.timer;
+            tmpTimer = this.timer;
             this.timer = null;
         }
-        if (timer != null) {
-            timer.cancel();
+        if (tmpTimer != null) {
+            tmpTimer.cancel();
         }
     }
 

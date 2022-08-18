@@ -83,8 +83,6 @@ public class AuthorWorksFragment
     /** Optional. Show the books. Defaults to {@code true}. */
     static final String BKEY_WITH_BOOKS = TAG + ":books";
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private ToolbarMenuProvider toolbarMenuProvider;
     /** The Fragment ViewModel. */
     private AuthorWorksViewModel vm;
     /** Display a Book. */
@@ -247,8 +245,7 @@ public class AuthorWorksFragment
         final Context context = getContext();
 
         final Toolbar toolbar = getToolbar();
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
+        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
         //noinspection ConstantConditions
         toolbar.setTitle(vm.getScreenTitle(context));
         toolbar.setSubtitle(vm.getScreenSubtitle(context));

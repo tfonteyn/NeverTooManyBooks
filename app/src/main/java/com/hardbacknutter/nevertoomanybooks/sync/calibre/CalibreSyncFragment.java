@@ -55,9 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterFragment;
 public class CalibreSyncFragment
         extends BaseFragment {
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider toolbarMenuProvider;
-
     /** View Binding. */
     private FragmentSyncCalibreBinding vb;
 
@@ -76,8 +73,7 @@ public class CalibreSyncFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
+        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
         toolbar.setTitle(R.string.action_synchronize);
 
         vb.btnLibMap.setOnClickListener(v -> {

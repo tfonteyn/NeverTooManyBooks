@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -148,6 +148,8 @@ public class DebugReport {
         if (preferences != null) {
             final File file = new File(context.getCacheDir(), "preferences.txt");
             file.deleteOnExit();
+            // Charset needs API 33
+            //noinspection CharsetObjectCanBeUsed
             try (PrintWriter printWriter = new PrintWriter(file, "UTF-8")) {
                 printWriter.println(preferences);
             }

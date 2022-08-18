@@ -463,8 +463,10 @@ public class ExtPopupMenu {
             final MenuItem item = list.get(holder.getBindingAdapterPosition());
             if (item.isEnabled()) {
                 if (item.hasSubMenu()) {
+                    //noinspection ConstantConditions
                     setMenu(item.getSubMenu());
                     notifyDataSetChanged();
+                    //noinspection ConstantConditions
                     menuCallback.update(item.getTitle().toString());
 
                 } else {

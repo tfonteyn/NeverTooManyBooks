@@ -35,7 +35,6 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -71,8 +70,6 @@ public class EditBookFragment
 
     /** Log tag. */
     private static final String TAG = "EditBookActivity";
-    @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider toolbarMenuProvider;
     /** Host for the tabbed fragments. */
     private TabAdapter tabAdapter;
     /** View model. Must be in the Activity scope. */
@@ -120,9 +117,7 @@ public class EditBookFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Toolbar toolbar = getToolbar();
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
+        getToolbar().addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()

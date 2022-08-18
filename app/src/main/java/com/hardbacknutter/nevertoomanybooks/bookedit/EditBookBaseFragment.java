@@ -87,10 +87,9 @@ public abstract class EditBookBaseFragment
                     onDateSet(fieldId, date.getIsoString());
                 }
             };
-    private DateParser dateParser;
-    private MenuHandlersMenuProvider menuHandlersMenuProvider;
     /** Listener for all field changes. MUST keep strong reference. */
     private final Field.AfterChangedListener afterChangedListener = this::onAfterFieldChange;
+    private DateParser dateParser;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -105,10 +104,8 @@ public abstract class EditBookBaseFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Toolbar toolbar = getToolbar();
-        menuHandlersMenuProvider = new MenuHandlersMenuProvider();
-        toolbar.addMenuProvider(menuHandlersMenuProvider, getViewLifecycleOwner(),
-                                Lifecycle.State.RESUMED);
+        getToolbar().addMenuProvider(new MenuHandlersMenuProvider(), getViewLifecycleOwner(),
+                                     Lifecycle.State.RESUMED);
 
         //noinspection ConstantConditions
         dateParser = new FullDateParser(getContext());

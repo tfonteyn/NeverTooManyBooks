@@ -1027,6 +1027,7 @@ class BooklistBuilder {
                                   @NonNull final Collection<Filter> filters) {
             final StringBuilder where = new StringBuilder();
 
+            //noinspection ConstantConditions
             filters.stream()
                    // ONLY APPLY ACTIVE FILTERS!
                    .filter(filter -> filter.isActive(context))

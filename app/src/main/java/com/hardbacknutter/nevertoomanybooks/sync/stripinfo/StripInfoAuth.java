@@ -172,6 +172,8 @@ public class StripInfoAuth
             final HttpCookie cookie = oCookie.get();
             if (!cookie.hasExpired()) {
                 try {
+                    // Charset needs API 33
+                    //noinspection CharsetObjectCanBeUsed
                     final String cookieValue = URLDecoder.decode(cookie.getValue(), UTF_8);
                     // {"userid":"66","password":"blah","settings":{"acceptCookies":true}}
                     final JSONObject jsonCookie = new JSONObject(cookieValue);
@@ -233,6 +235,8 @@ public class StripInfoAuth
         }
 
         final String url = siteUrl + USER_LOGIN_URL;
+        // Charset needs API 33
+        //noinspection CharsetObjectCanBeUsed
         final String postBody = new StringJoiner("&")
                 .add("userName=" + URLEncoder.encode(username, UTF_8))
                 .add("passw=" + URLEncoder.encode(password, UTF_8))

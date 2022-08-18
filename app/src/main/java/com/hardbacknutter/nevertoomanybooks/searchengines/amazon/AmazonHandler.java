@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -90,6 +90,7 @@ public class AmazonHandler
         subMenuItem.setVisible(show);
         if (show) {
             final SubMenu sm = subMenuItem.getSubMenu();
+            //noinspection ConstantConditions
             sm.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR)
               .setVisible(hasAuthor);
             sm.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES)

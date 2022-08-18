@@ -131,8 +131,6 @@ public class EditBookshelvesFragment
         }
     };
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider toolbarMenuProvider;
     /** View Binding. */
     private FragmentEditBookshelvesBinding vb;
 
@@ -162,8 +160,7 @@ public class EditBookshelvesFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
+        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
         toolbar.setTitle(R.string.lbl_bookshelves);
 
         //noinspection ConstantConditions

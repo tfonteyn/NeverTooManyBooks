@@ -269,8 +269,6 @@ public class BooksOnBookshelf
                                       bookshelfId -> vm.onManageBookshelvesFinished(this,
                                                                                     bookshelfId));
 
-    private ToolbarMenuProvider toolbarMenuProvider;
-
     /** Encapsulates the FAB button/menu. */
     private FabMenu fabMenu;
 
@@ -478,7 +476,7 @@ public class BooksOnBookshelf
                         .setProgressFrame(findViewById(R.id.progress_frame));
                 calibreHandler.onViewCreated(this, vb.getRoot());
             } catch (@NonNull final CertificateException ignore) {
-//                TipManager.getInstance().display(this, R.string.tip_calibre, null);
+                // TipManager.getInstance().display(this, R.string.tip_calibre, null);
                 // ignore
             }
         }
@@ -495,8 +493,7 @@ public class BooksOnBookshelf
             }
         });
 
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        vb.toolbar.addMenuProvider(toolbarMenuProvider, this);
+        vb.toolbar.addMenuProvider(new ToolbarMenuProvider(), this);
     }
 
     /**

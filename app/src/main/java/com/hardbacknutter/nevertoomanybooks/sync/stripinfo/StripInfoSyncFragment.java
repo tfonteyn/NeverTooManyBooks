@@ -53,9 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterFragment;
 public class StripInfoSyncFragment
         extends BaseFragment {
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider toolbarMenuProvider;
-
     /** View Binding. */
     private FragmentSyncStripinfoBinding vb;
 
@@ -74,8 +71,7 @@ public class StripInfoSyncFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
+        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
         toolbar.setTitle(R.string.action_synchronize);
 
         vb.btnImport.setOnClickListener(v -> {

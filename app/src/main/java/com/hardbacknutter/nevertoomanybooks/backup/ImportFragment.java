@@ -104,8 +104,6 @@ public class ImportFragment
                     getActivity().finish();
                 }
             };
-    @SuppressWarnings("FieldCanBeLocal")
-    private ToolbarMenuProvider toolbarMenuProvider;
     /** The ViewModel. */
     private ImportViewModel vm;
 
@@ -146,8 +144,7 @@ public class ImportFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
+        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
         toolbar.setTitle(R.string.lbl_import);
 
         //noinspection ConstantConditions

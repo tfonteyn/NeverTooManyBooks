@@ -72,11 +72,6 @@ public class SearchBookByIsbnFragment
     /** See remarks in {@link com.hardbacknutter.nevertoomanybooks.backup.ImportFragment}. */
     private static final String MIME_TYPES = "*/*";
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider searchSitesToolbarMenuProvider;
-    @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider toolbarMenuProvider;
-
     /** flag indicating the scanner is already started. */
     private boolean scannerStarted;
 
@@ -196,10 +191,8 @@ public class SearchBookByIsbnFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        searchSitesToolbarMenuProvider = new SearchSitesToolbarMenuProvider();
-        toolbar.addMenuProvider(searchSitesToolbarMenuProvider, getViewLifecycleOwner());
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner());
+        toolbar.addMenuProvider(new SearchSitesToolbarMenuProvider(), getViewLifecycleOwner());
+        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
         toolbar.setTitle(R.string.lbl_search_isbn);
 
         vb.isbn.setText(coordinator.getIsbnSearchText());

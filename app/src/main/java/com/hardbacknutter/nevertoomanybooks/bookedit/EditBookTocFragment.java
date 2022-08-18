@@ -35,7 +35,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -117,9 +116,6 @@ public class EditBookTocFragment
      */
     @NonNull
     private final List<Edition> isfdbEditions = new ArrayList<>();
-
-    @SuppressWarnings("FieldCanBeLocal")
-    private MenuProvider toolbarMenuProvider;
 
     /** the rows. A reference to the parcelled list in the Book. */
     private List<TocEntry> tocEntryList;
@@ -220,10 +216,8 @@ public class EditBookTocFragment
         fab.setOnClickListener(v -> editEntry(
                 new TocEntry(vm.getPrimaryAuthor(getContext()), ""), POS_NEW_ENTRY));
 
-        final Toolbar toolbar = getToolbar();
-        toolbarMenuProvider = new ToolbarMenuProvider();
-        toolbar.addMenuProvider(toolbarMenuProvider, getViewLifecycleOwner(),
-                                Lifecycle.State.RESUMED);
+        getToolbar().addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner(),
+                                     Lifecycle.State.RESUMED);
 
         final Context context = getContext();
         //noinspection ConstantConditions
