@@ -172,8 +172,6 @@ public abstract class EditBookBaseFragment
             //noinspection ConstantConditions
             toolbar.setSubtitle(Author.getCondensedNames(getContext(), book.getAuthors()));
         }
-
-        menuHandlersMenuProvider.onPrepareMenu(toolbar.getMenu());
     }
 
     /**
@@ -239,7 +237,6 @@ public abstract class EditBookBaseFragment
     @CallSuper
     public void onAfterFieldChange(@NonNull final Field<?, ? extends View> field) {
         vm.getBook().setStage(EntityStage.Stage.Dirty);
-        menuHandlersMenuProvider.onPrepareMenu(getToolbar().getMenu());
     }
 
     @Override
@@ -402,8 +399,6 @@ public abstract class EditBookBaseFragment
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
             vm.getMenuHandlers().forEach(h -> h.onCreateMenu(menu, menuInflater));
-
-            onPrepareMenu(menu);
         }
 
         @Override
