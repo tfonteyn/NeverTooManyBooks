@@ -98,7 +98,7 @@ if (project.hasProperty("NeverTooManyBooks.email")
 android {
     namespace "com.hardbacknutter.nevertoomanybooks"
 
-    compileSdk rootProject.ext.sdkVersion
+    compileSdk rootProject.ext.compileSdk
 
     defaultConfig {
         applicationId "com.hardbacknutter.nevertoomanybooks"
@@ -106,7 +106,7 @@ android {
         versionName = '3.1.0'
 
         minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.sdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
 
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -244,13 +244,13 @@ dependencies {
     implementation project(path: ":repacked-org-json")
     implementation project(path: ":fastscroller")
 
-    // https://github.com/google/desugar_jdk_libs
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:${desugar_version}")
 
     implementation("androidx.activity:activity:${androidx_activity_version}")
     implementation("androidx.annotation:annotation:${androidx_annotation_version}")
     implementation("androidx.appcompat:appcompat:${androidx_appcompat_version}")
     implementation("androidx.cardview:cardview:${androidx_cardview_version}")
+    implementation("androidx.collection:collection:${androidx_collection_version}")
     // core is only needed for custom constraint helpers
     implementation("androidx.constraintlayout:constraintlayout-core:"
             + "${androidx_constraintlayout_core_version}")
