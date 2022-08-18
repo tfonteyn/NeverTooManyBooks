@@ -233,7 +233,7 @@ public class SearchBookByIsbnFragment
                 new ISBN.ValidationTextWatcher(vb.lblIsbn, vb.isbn, isbnValidityCheck);
         vb.isbn.addTextChangedListener(isbnValidationTextWatcher);
 
-        vb.btnSearch.setOnClickListener(this::onBarcodeEntered);
+        vb.btnSearch.setOnClickListener(btn -> onBarcodeEntered());
 
         vb.btnClearQueue.setOnClickListener(v -> {
             vm.getScanQueue().clear();
@@ -353,7 +353,7 @@ public class SearchBookByIsbnFragment
     /**
      * The user entered a barcode and clicked the search button.
      */
-    private void onBarcodeEntered(@NonNull final View btn) {
+    private void onBarcodeEntered() {
         //noinspection ConstantConditions
         final String userEntry = vb.isbn.getText().toString().trim();
         final boolean strictIsbn = coordinator.isStrictIsbn();
@@ -441,8 +441,6 @@ public class SearchBookByIsbnFragment
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
             menuInflater.inflate(R.menu.search_by_isbn, menu);
-
-            onPrepareMenu(menu);
         }
 
         @Override
@@ -472,7 +470,6 @@ public class SearchBookByIsbnFragment
             } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
                 final boolean checked = !menuItem.isChecked();
                 coordinator.setStrictIsbn(checked);
-                onPrepareMenu(getToolbar().getMenu());
 
                 final ISBN.Validity validity = checked ? ISBN.Validity.Strict : ISBN.Validity.None;
                 isbnCleanupTextWatcher.setValidityLevel(validity);

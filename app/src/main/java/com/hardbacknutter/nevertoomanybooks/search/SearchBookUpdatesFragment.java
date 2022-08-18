@@ -402,8 +402,6 @@ public class SearchBookUpdatesFragment
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
             menuInflater.inflate(R.menu.search_for_updates, menu);
-
-            onPrepareMenu(menu);
         }
 
         @Override
@@ -423,7 +421,6 @@ public class SearchBookUpdatesFragment
             } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
                 final boolean checked = !menuItem.isChecked();
                 vm.setStrictIsbn(checked);
-                onPrepareMenu(getToolbar().getMenu());
 
             } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_SKIP_ALL) {
                 vm.setAll(SyncAction.Skip);
