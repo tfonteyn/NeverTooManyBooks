@@ -88,6 +88,7 @@ public class SyncReaderFragment
                     getActivity().finish();
                 }
             };
+    @SuppressWarnings("FieldCanBeLocal")
     private ToolbarMenuProvider toolbarMenuProvider;
     /** The ViewModel. */
     private SyncReaderViewModel vm;
@@ -264,11 +265,10 @@ public class SyncReaderFragment
 
     /**
      * Display the name of the server + any valid data we can get from it.
+     *
+     * @param metaData as read from the import source (sync server)
      */
     private void showMetaData(@Nullable final SyncReaderMetaData metaData) {
-        // do this here, as the menu depends on the meta-data having been fetched
-        toolbarMenuProvider.onPrepareMenu(getToolbar().getMenu());
-
         if (metaData == null) {
             vb.archiveContent.setVisibility(View.INVISIBLE);
             vb.lblCalibreLibrary.setVisibility(View.GONE);
@@ -331,9 +331,6 @@ public class SyncReaderFragment
 
         vm.getDataReaderHelper().getExtraArgs()
           .putParcelable(CalibreContentServer.BKEY_LIBRARY, library);
-
-        // do this again, as the selection will affect the menu
-        toolbarMenuProvider.onPrepareMenu(getToolbar().getMenu());
     }
 
     private void onSyncDateSet(@NonNull final int[] fieldIds,
@@ -512,32 +509,31 @@ public class SyncReaderFragment
             menuInflater.inflate(R.menu.toolbar_action_go, menu);
 
             final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
-            menuItem.setEnabled(false);
+            //noinspection ConstantConditions
             final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
             button.setText(menuItem.getTitle());
             button.setOnClickListener(v -> onMenuItemSelected(menuItem));
-
-            onPrepareMenu(menu);
-        }
-
-        @Override
-        public void onPrepareMenu(@NonNull final Menu menu) {
-            menu.findItem(R.id.MENU_ACTION_CONFIRM)
-                .setEnabled(vm.isReadyToGo());
         }
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-                if (progressDelegate == null) {
-                    progressDelegate = new ProgressDelegate(getProgressFrame())
-                            .setTitle(R.string.lbl_importing)
-                            .setPreventSleep(true)
-                            .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_IMPORT));
+                if (vm.isReadyToGo()) {
+                    if (progressDelegate == null) {
+                        progressDelegate = new ProgressDelegate(getProgressFrame())
+                                .setTitle(R.string.lbl_importing)
+                                .setPreventSleep(true)
+                                .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_IMPORT));
+                    }
+                    //noinspection ConstantConditions
+                    progressDelegate.show(() -> getActivity().getWindow());
+                    vm.readData();
+                } else {
+                    //noinspection ConstantConditions
+                    Snackbar.make(getView(), R.string.warning_nothing_selected,
+                                  Snackbar.LENGTH_SHORT)
+                            .show();
                 }
-                //noinspection ConstantConditions
-                progressDelegate.show(() -> getActivity().getWindow());
-                vm.readData();
                 return true;
             }
             return false;
