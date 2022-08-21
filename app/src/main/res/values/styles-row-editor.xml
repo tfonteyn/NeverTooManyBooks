@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -45,13 +45,12 @@
     </style>
 
     <!-- CheckBox -->
-    <style name="RowEditor.Button.Checkable" parent="Widget.Material3.CompoundButton.CheckBox">
+    <style name="RowEditor.Button.Checkable" parent="Widget.App.CheckBox">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <!-- don't want it to close to the edge of the screen. -->
         <item name="android:layout_marginStart">12dp</item>
         <item name="android:contentDescription">@string/action_select</item>
-        <item name="buttonTint">@color/selection_control_button_tint</item>
     </style>
 
 

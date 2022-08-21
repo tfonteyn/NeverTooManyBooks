@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -107,120 +107,135 @@
     <!-- Base theme - used by both Day and Night themes. -->
     <style name="Base.Theme.App" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Material3 style attributes -->
-        <item name="radioButtonStyle">@style/App.radioButtonStyle</item>
-        <item name="checkboxStyle">@style/App.checkboxStyle</item>
-        <item name="chipGroupStyle">@style/App.chipGroupStyle</item>
-        <item name="snackbarTextViewStyle">@style/App.snackbarTextViewStyle</item>
-        <item name="switchStyle">@style/App.switchStyle</item>
-        <item name="tabStyle">@style/App.tabStyle</item>
+        <item name="tabStyle">@style/Widget.App.TabLayout</item>
+        <item name="circularProgressIndicatorStyle">@style/Widget.App.CircularProgressIndicator</item>
+        <item name="linearProgressIndicatorStyle">@style/Widget.App.LinearProgressIndicator</item>
+        <item name="chipGroupStyle">@style/Widget.App.ChipGroup</item>
+        <item name="snackbarTextViewStyle">@style/Widget.App.Snackbar.TextView</item>
+        <item name="checkboxStyle">@style/Widget.App.CheckBox</item>
+        <item name="radioButtonStyle">@style/Widget.App.RadioButton</item>
+        <item name="materialSwitchStyle">@style/Widget.App.Switch</item>
 
-        <item name="circularProgressIndicatorStyle">@style/App.circularProgressIndicatorStyle</item>
-        <item name="linearProgressIndicatorStyle">@style/App.linearProgressIndicatorStyle</item>
+        <!-- these have no effect ?? -->
+        <item name="switchStyle">@style/Widget.App.Switch</item>
+        <item name="switchPreferenceCompatStyle">@style/Widget.App.Switch</item>
+        <item name="switchPreferenceStyle">@style/Widget.App.Switch</item>
 
         <!-- We MUST set the styles separately! Just setting the common buttonBarButtonStyle is NOT enough -->
-        <item name="buttonBarButtonStyle">@style/App.buttonBarButtonStyle</item>
-        <item name="buttonBarPositiveButtonStyle">@style/App.buttonBarButtonStyle</item>
-        <item name="buttonBarNegativeButtonStyle">@style/App.buttonBarButtonStyle</item>
-        <item name="buttonBarNeutralButtonStyle">@style/App.buttonBarButtonStyle</item>
+        <item name="buttonBarButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
 
         <!-- Material3 theme overlays -->
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
-        <item name="materialCalendarTheme">@style/ThemeOverlay.App.materialCalendarTheme</item>
-        <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.App.materialCalendarFullscreenTheme</item>
+        <item name="materialCalendarTheme">@style/ThemeOverlay.App.MaterialCalendarTheme</item>
+        <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.App.MaterialCalendarFullscreenTheme</item>
 
         <!-- Chip styles as attributes makes it easy to add chips from code -->
         <item name="appChipFilterStyle">@style/Widget.Material3.Chip.Filter</item>
         <item name="appChipInputStyle">@style/Widget.Material3.Chip.Input</item>
     </style>
 
+    <!-- *************************************************************************************** -->
+    <style name="Widget.App.TabLayout" parent="Widget.Material3.TabLayout">
+        <item name="tabMode">scrollable</item>
+        <!-- Both indicator and text color are set to colorSecondary. -->
+        <item name="tabIndicatorColor">?attr/colorSecondary</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.TabLayout</item>
+    </style>
+
+    <style name="Widget.App.ChipGroup" parent="Widget.Material3.ChipGroup">
+        <!-- the default was 8dp. -->
+        <item name="chipSpacingVertical">4dp</item>
+    </style>
+
+    <style name="Widget.App.Snackbar.TextView" parent="Widget.Material3.Snackbar.TextView">
+        <item name="android:maxLines">2</item>
+    </style>
+
+    <style name="Widget.App.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.CheckBox</item>
+    </style>
+
+    <style name="Widget.App.RadioButton" parent="Widget.Material3.CompoundButton.RadioButton">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.RadioButton</item>
+    </style>
+
+    <style name="Widget.App.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Switch</item>
+    </style>
+
+    <style name="Widget.App.LinearProgressIndicator" parent="Widget.Material3.LinearProgressIndicator">
+        <item name="android:padding">@dimen/progress_padding</item>
+    </style>
+
+    <style name="Widget.App.CircularProgressIndicator" parent="Widget.Material3.CircularProgressIndicator">
+        <item name="android:clickable">true</item>
+        <item name="android:alpha">0.8</item>
+        <item name="android:elevation">@dimen/progress_z</item>
+        <item name="android:indeterminate">true</item>
+        <item name="indicatorSize">96dp</item>
+    </style>
+
+    <style name="Widget.App.Button.TextButton.Dialog" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
+    <style name="ThemeOverlay.App.TabLayout" parent="">
+        <!-- selected -->
+        <item name="colorPrimary">?attr/colorSecondary</item>
+    </style>
+
+    <style name="ThemeOverlay.App.CheckBox" parent="">
+        <!-- checked -->
+        <item name="colorPrimary">?attr/colorSecondary</item>
+    </style>
+
+    <style name="ThemeOverlay.App.RadioButton" parent="">
+        <!-- checked -->
+        <item name="colorPrimary">?attr/colorSecondary</item>
+    </style>
+
+    <style name="ThemeOverlay.App.Switch" parent="">
+        <!-- checked -->
+        <item name="colorPrimary">?attr/colorSecondary</item>
+    </style>
+
     <style name="ThemeOverlay.App.MaterialAlertDialog"
            parent="ThemeOverlay.Material3.MaterialAlertDialog">
 
         <!-- We MUST set the styles separately! Just setting the common buttonBarButtonStyle is NOT enough -->
-        <item name="buttonBarButtonStyle">@style/App.buttonBarButtonStyle</item>
-        <item name="buttonBarPositiveButtonStyle">@style/App.buttonBarButtonStyle</item>
-        <item name="buttonBarNegativeButtonStyle">@style/App.buttonBarButtonStyle</item>
-        <item name="buttonBarNeutralButtonStyle">@style/App.buttonBarButtonStyle</item>
+        <item name="buttonBarButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
     </style>
 
-    <style name="ThemeOverlay.App.materialCalendarTheme"
+    <style name="ThemeOverlay.App.MaterialCalendarTheme"
            parent="@style/ThemeOverlay.Material3.MaterialCalendar">
 
         <!-- We MUST set the styles separately! Just setting the common buttonBarButtonStyle is NOT enough -->
-        <item name="buttonBarButtonStyle">@style/App.buttonBarButtonStyle</item>
-        <item name="buttonBarPositiveButtonStyle">@style/App.buttonBarButtonStyle</item>
-        <item name="buttonBarNegativeButtonStyle">@style/App.buttonBarButtonStyle</item>
-        <item name="buttonBarNeutralButtonStyle">@style/App.buttonBarButtonStyle</item>
+        <item name="buttonBarButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
     </style>
 
-    <style name="ThemeOverlay.App.materialCalendarFullscreenTheme"
+    <style name="ThemeOverlay.App.MaterialCalendarFullscreenTheme"
            parent="ThemeOverlay.Material3.MaterialCalendar.Fullscreen">
 
         <item name="materialCalendarHeaderLayout">@style/App.materialCalendarHeaderLayout</item>
         <item name="materialCalendarHeaderConfirmButton">@style/App.materialCalendarHeaderConfirmButton</item>
     </style>
 
-    <!-- *************************************************************************************** -->
-    <style name="App.radioButtonStyle" parent="Widget.Material3.CompoundButton.RadioButton">
-        <item name="buttonTint">@color/selection_control_button_tint</item>
-    </style>
-
-    <style name="App.checkboxStyle" parent="Widget.Material3.CompoundButton.CheckBox">
-        <item name="buttonTint">@color/selection_control_button_tint</item>
-    </style>
-
-    <style name="App.switchStyle" parent="Widget.Material3.CompoundButton.Switch">
-        <item name="trackTint">@color/switch_track_tint</item>
-    </style>
-
-    <style name="App.chipGroupStyle" parent="Widget.Material3.ChipGroup">
-        <!-- the default was 8dp. -->
-        <item name="chipSpacingVertical">4dp</item>
-    </style>
-
-    <style name="App.tabStyle" parent="Widget.Material3.TabLayout">
-        <item name="tabMode">scrollable</item>
-        <!-- Both indicator and text color are set to colorSecondary. -->
-        <item name="tabIndicatorColor">?attr/colorSecondary</item>
-        <item name="tabTextColor">@color/tabs_text_color</item>
-    </style>
-
-    <style name="App.snackbarTextViewStyle" parent="Widget.Material3.Snackbar.TextView">
-        <item name="android:maxLines">2</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
-
-    <style name="App.circularProgressIndicatorStyle" parent="Widget.Material3.CircularProgressIndicator">
-        <item name="android:clickable">true</item>
-        <item name="android:alpha">0.8</item>
-        <item name="android:elevation">@dimen/progress_z</item>
-        <item name="android:indeterminate">true</item>
-        <item name="indicatorSize">96dp</item>
-        <!--   <item name="android:background">?attr/colorSurface</item>-->
-    </style>
-
-    <style name="App.linearProgressIndicatorStyle" parent="Widget.Material3.LinearProgressIndicator">
-        <item name="android:padding">@dimen/progress_padding</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
-
-    <style name="App.buttonBarButtonStyle" parent="Widget.Material3.Button.TextButton.Dialog">
-        <item name="android:textColor">?attr/colorSecondary</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
-
-    <!-- Global theme attribute "materialCalendarHeaderLayout"
-         We want the full screen calendar widget to use the same header style (toolbar)
-         as all our edit-screens. -->
+    <!-- We want the full screen calendar widget to use the same header style (toolbar) as all edit-screens. -->
     <style name="App.materialCalendarHeaderLayout" parent="Widget.Material3.MaterialCalendar.HeaderLayout">
         <item name="android:background">?attr/appToolbarBackground</item>
     </style>
 
-    <!-- Global theme attribute "materialCalendarHeaderConfirmButton"
-         The "Save" button in the header (toolbar).-->
+    <!-- The "Save" button in the header (toolbar).-->
     <style name="App.materialCalendarHeaderConfirmButton" parent="Widget.Material3.Button.TextButton">
         <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:backgroundTint">?attr/colorButtonNormal</item>
