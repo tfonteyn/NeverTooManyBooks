@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -47,8 +47,4 @@
         </attr>
     </declare-styleable>
 
-    <declare-styleable name="TriStateMultiSelectListPreference">
-        <attr name="neutralButtonText" format="string" />
-        <attr name="neutralButtonSummaryText" format="string" />
-    </declare-styleable>
 </resources>
