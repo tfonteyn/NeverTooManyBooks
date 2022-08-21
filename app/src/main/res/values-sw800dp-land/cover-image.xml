@@ -21,6 +21,8 @@
 
 <!-- Generic 10.1" (800 x 1280) - 160dpi - sw800 -->
 <resources>
+
+    <dimen name="cover_list_padding">4dp</dimen>
     <!-- smaller than sw600 as we're in embedded mode here -->
     <dimen name="cover_details_0_padding">10dp</dimen>
     <dimen name="cover_details_1_padding">10dp</dimen>

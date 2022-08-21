@@ -65,6 +65,7 @@
         <item>@dimen/cover_details_1_width</item>
     </array>
 
+    <dimen name="cover_list_padding">2dp</dimen>
     <dimen name="cover_details_0_padding">10dp</dimen>
     <dimen name="cover_details_1_padding">10dp</dimen>
 

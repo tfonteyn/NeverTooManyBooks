@@ -29,6 +29,11 @@
     land:  w640dp h336dp
 -->
 <resources>
+
+    <dimen name="cover_list_padding">2dp</dimen>
+    <dimen name="cover_details_0_padding">10dp</dimen>
+    <dimen name="cover_details_1_padding">10dp</dimen>
+
     <!-- multiplier: 1 -->
     <dimen name="cover_details_0_height">200dp</dimen>
     <dimen name="cover_details_0_width">128dp</dimen>
