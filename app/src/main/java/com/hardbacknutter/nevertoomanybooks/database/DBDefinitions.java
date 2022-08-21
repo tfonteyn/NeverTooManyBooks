@@ -294,6 +294,8 @@ public final class DBDefinitions {
     public static final Domain DOM_BOOK_CONDITION;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_CONDITION_DUST_COVER;
+    /** {@link #TBL_BOOKS}. */
+    public static final Domain DOM_AUTO_UPDATE;
 
     /** {@link #TBL_BOOKS}. Book ID, not 'work' ID. */
     public static final Domain DOM_ESID_GOODREADS_BOOK;
@@ -865,6 +867,12 @@ public final class DBDefinitions {
                         .withDefault(0)
                         .build();
 
+        DOM_AUTO_UPDATE =
+                new Domain.Builder(DBKey.AUTO_UPDATE, SqLiteDataType.Boolean)
+                        .notNull()
+                        .withDefault(true)
+                        .build();
+
         /* ======================================================================================
          *  Book external website id domains
          * ====================================================================================== */
@@ -1341,6 +1349,7 @@ public final class DBDefinitions {
                             DOM_BOOK_PRIVATE_NOTES,
                             DOM_BOOK_CONDITION,
                             DOM_BOOK_CONDITION_DUST_COVER,
+                            DOM_AUTO_UPDATE,
 
                             // external id/data
                             //NEWTHINGS: adding a new search engine: optional: add external id DOM

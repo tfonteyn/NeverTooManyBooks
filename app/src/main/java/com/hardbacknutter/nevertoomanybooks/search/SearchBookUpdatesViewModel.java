@@ -259,7 +259,7 @@ public class SearchBookUpdatesViewModel
 
     /**
      * Allows to set the 'lowest' Book id to start from.
-     * See {@link BookDao#fetchFromIdOnwards(long)}
+     * See {@link BookDao#fetchForAutoUpdateFromIdOnwards(long)}
      *
      * @param id the lowest book id to start from.
      *           This allows to fetch a subset of the requested set.
@@ -302,14 +302,19 @@ public class SearchBookUpdatesViewModel
 
         try {
             if (bookIdList == null || bookIdList.isEmpty()) {
-                currentCursor = bookDao.fetchFromIdOnwards(lastBookIdProcessed);
+                currentCursor = bookDao.fetchForAutoUpdateFromIdOnwards(lastBookIdProcessed);
             } else {
-                currentCursor = bookDao.fetchById(bookIdList);
+                currentCursor = bookDao.fetchForAutoUpdate(bookIdList);
             }
             currentCursorCount = currentCursor.getCount();
 
         } catch (@NonNull final Exception e) {
             postSearch(e);
+            return false;
+        }
+
+        if (currentCursorCount == 0) {
+            postSearch(false);
             return false;
         }
 

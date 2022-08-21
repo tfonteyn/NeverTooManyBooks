@@ -203,6 +203,7 @@ public final class DBKey {
     public static final String BOOK_CONDITION = "cond_bk";
     public static final String BOOK_CONDITION_COVER = "cond_cvr";
 
+    public static final String AUTO_UPDATE = "auto_update";
 
     /** {@link DBDefinitions#TBL_BOOK_LOANEE}. */
     public static final String LOANEE_NAME = "loaned_to";

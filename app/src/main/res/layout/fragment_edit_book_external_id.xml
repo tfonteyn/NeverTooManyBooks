@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -29,17 +29,33 @@
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        style="@style/TopCentered"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/container_margin"
         >
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/flow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="lbl_site_goodreads,lbl_site_isfdb,lbl_site_library_thing,lbl_site_open_library,lbl_site_strip_info_be,lbl_site_last_dodo_nl"
+            app:flow_horizontalAlign="start"
+            app:flow_horizontalBias="0"
+            app:flow_horizontalGap="8dp"
+            app:flow_maxElementsWrap="3"
+            app:flow_verticalBias="0"
+            app:flow_verticalGap="8dp"
+            app:flow_wrapMode="chain"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_goodreads"
             style="@style/TIL.Text.ExternalId"
             android:layout_marginTop="@dimen/section_margin_top"
             android:hint="@string/site_goodreads"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -47,7 +63,7 @@
                 style="@style/TIE.Generic"
                 android:imeOptions="actionNext"
                 android:inputType="number"
-                tools:ignore="Autofill"
+                tools:ignore="Autofill,DuplicateSpeakableTextCheck"
                 tools:text="123456"
                 />
 
@@ -57,9 +73,6 @@
             android:id="@+id/lbl_site_isfdb"
             style="@style/TIL.Text.ExternalId"
             android:hint="@string/site_isfdb"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_site_goodreads"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -77,9 +90,6 @@
             android:id="@+id/lbl_site_library_thing"
             style="@style/TIL.Text.ExternalId"
             android:hint="@string/site_library_thing"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_site_isfdb"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -97,9 +107,6 @@
             android:id="@+id/lbl_site_open_library"
             style="@style/TIL.Text.ExternalId"
             android:hint="@string/site_open_library"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_site_library_thing"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -116,9 +123,6 @@
             android:id="@+id/lbl_site_strip_info_be"
             style="@style/TIL.Text.ExternalId"
             android:hint="@string/site_stripinfo_be"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_site_open_library"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -136,9 +140,6 @@
             android:id="@+id/lbl_site_last_dodo_nl"
             style="@style/TIL.Text.ExternalId"
             android:hint="@string/site_lastdodo_nl"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_site_strip_info_be"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -152,6 +153,29 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/barrier_ext_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="48dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_site_last_dodo_nl"
+            />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/btn_auto_update_allowed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/section_margin_top"
+            android:checked="true"
+            android:text="@string/lbl_auto_updates"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/barrier_ext_id"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
 

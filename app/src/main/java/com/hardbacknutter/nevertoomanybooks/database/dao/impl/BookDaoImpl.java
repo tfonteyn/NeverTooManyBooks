@@ -87,6 +87,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CA
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.AUTHOR_TYPE__BITMASK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.AUTO_UPDATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_AUTHOR_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_CONDITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOK_CONDITION_COVER;
@@ -991,17 +992,19 @@ public class BookDaoImpl
 
     @Override
     @NonNull
-    public TypedCursor fetchById(@NonNull final List<Long> idList) {
+    public TypedCursor fetchForAutoUpdate(@NonNull final List<Long> idList) {
         SanityCheck.requireValue(idList, "idList");
 
         if (idList.size() == 1) {
             // optimize for single book
-            return getBookCursor(TBL_BOOKS.dot(PK_ID) + "=?",
+            return getBookCursor(TBL_BOOKS.dot(AUTO_UPDATE) + "=1"
+                                 + _AND_ + TBL_BOOKS.dot(PK_ID) + "=?",
                                  new String[]{String.valueOf(idList.get(0))},
                                  null);
 
         } else {
-            return getBookCursor(TBL_BOOKS.dot(PK_ID)
+            return getBookCursor(TBL_BOOKS.dot(AUTO_UPDATE) + "=1"
+                                 + _AND_ + TBL_BOOKS.dot(PK_ID)
                                  + " IN (" + TextUtils.join(",", idList) + ')',
                                  null,
                                  TBL_BOOKS.dot(PK_ID));
@@ -1010,8 +1013,9 @@ public class BookDaoImpl
 
     @Override
     @NonNull
-    public TypedCursor fetchFromIdOnwards(final long id) {
-        return getBookCursor(TBL_BOOKS.dot(PK_ID) + ">=?",
+    public TypedCursor fetchForAutoUpdateFromIdOnwards(final long id) {
+        return getBookCursor(TBL_BOOKS.dot(AUTO_UPDATE) + "=1"
+                             + _AND_ + TBL_BOOKS.dot(PK_ID) + ">=?",
                              new String[]{String.valueOf(id)},
                              TBL_BOOKS.dot(PK_ID));
     }
@@ -1285,7 +1289,8 @@ public class BookDaoImpl
             static final String SQL_BOOK;
 
             static {
-                // Developer: adding fields ? Now is a good time to update {@link Book#duplicate}/
+                //NEWTHINGS: adding fields ? Now is a good time to update {@link Book#duplicate}
+
                 // Note we could use TBL_BOOKS.dot("*")
                 // We'd fetch the unneeded TITLE_OB field, but that would be ok.
                 // Nevertheless, listing the fields here gives a better understanding
@@ -1307,7 +1312,8 @@ public class BookDaoImpl
                         DATE_ACQUIRED,
                         PRICE_PAID, PRICE_PAID_CURRENCY,
                         // added/updated
-                        DATE_ADDED__UTC, DATE_LAST_UPDATED__UTC
+                        DATE_ADDED__UTC, DATE_LAST_UPDATED__UTC,
+                        AUTO_UPDATE
                         //NEWTHINGS: adding a new search engine: optional: add engine specific keys
                                                     )
 

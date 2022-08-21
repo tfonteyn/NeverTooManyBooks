@@ -312,11 +312,12 @@ public interface BookDao {
      * @param idList List of book ID's to retrieve; should not be empty!
      *
      * @return A Book Cursor with 0..n rows; ordered by book id
+     *         Only books with {@link DBKey#AUTO_UPDATE} set will be returned.
      *
      * @throws SanityCheck.MissingValueException if the list is empty
      */
     @NonNull
-    TypedCursor fetchById(@NonNull List<Long> idList);
+    TypedCursor fetchForAutoUpdate(@NonNull List<Long> idList);
 
     /**
      * Return an Cursor with all Books for the given list of ISBN numbers.
@@ -338,9 +339,10 @@ public interface BookDao {
      * @param id the lowest book id to start from.
      *
      * @return A Book Cursor with 0..n rows; ordered by book id
+     *         Only books with {@link DBKey#AUTO_UPDATE} set will be returned.
      */
     @NonNull
-    TypedCursor fetchFromIdOnwards(long id);
+    TypedCursor fetchForAutoUpdateFromIdOnwards(long id);
 
 
     /**

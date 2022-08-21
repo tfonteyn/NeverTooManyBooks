@@ -1050,6 +1050,9 @@ public class EditBookViewModel
 
     private void initFieldsExternalId(@NonNull final FragmentId fragmentId) {
 
+        fields.add(new CompoundButtonField(fragmentId, R.id.btn_auto_update_allowed,
+                                           DBKey.AUTO_UPDATE));
+
         // These FieldFormatters can be shared between multiple fields.
         final FieldFormatter<Number> longNumberFormatter = new LongNumberFormatter();
 

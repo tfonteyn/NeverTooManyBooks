@@ -85,7 +85,7 @@ public class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 19;
+    public static final int DATABASE_VERSION = 20;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -752,6 +752,10 @@ public class DBHelper
                 });
             }
 
+        }
+
+        if (oldVersion < 20) {
+            TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_AUTO_UPDATE);
         }
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table:
