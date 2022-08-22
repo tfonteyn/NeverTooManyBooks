@@ -81,6 +81,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
+@SuppressWarnings("WeakerAccess")
 public class EditBookViewModel
         extends ViewModel {
 
@@ -150,7 +151,8 @@ public class EditBookViewModel
     /** These FieldFormatters can be shared between multiple fields. */
     private FieldFormatter<String> dateFormatter;
     private FieldFormatter<String> languageFormatter;
-    private ListFormatter<Entity> normalDetailListFormatter;
+    private ListFormatter<Entity> listFormatterAutoDetails;
+    private ListFormatter<Entity> listFormatterNormalDetails;
     private DoubleNumberFormatter doubleNumberFormatter;
 
     private boolean changed;
@@ -182,8 +184,9 @@ public class EditBookViewModel
             final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
             dateFormatter = new DateFieldFormatter(locale);
             languageFormatter = new LanguageFormatter(locale);
-            normalDetailListFormatter = new ListFormatter<>(Details.Normal, null);
             doubleNumberFormatter = new DoubleNumberFormatter();
+            listFormatterAutoDetails = new ListFormatter<>(Details.Auto, null);
+            listFormatterNormalDetails = new ListFormatter<>(Details.Normal, null);
 
             if (args != null) {
                 // 1. Do we have a bundle? e.g. after an internet search
@@ -270,7 +273,8 @@ public class EditBookViewModel
     /**
      * Save the values of the specified field group to the given Book.
      *
-     * @param book to put the field values in
+     * @param fragmentId the hosting fragment for this set of fields
+     * @param book       to put the field values in
      */
     void saveFields(@NonNull final FragmentId fragmentId,
                     @NonNull final Book book) {
@@ -818,14 +822,14 @@ public class EditBookViewModel
 
         fields.add(new TextViewField<>(fragmentId, R.id.author, Book.BKEY_AUTHOR_LIST,
                                        DBKey.FK_AUTHOR,
-                                       normalDetailListFormatter)
+                                       listFormatterAutoDetails)
                            .setTextInputLayoutId(R.id.lbl_author)
                            .setValidator(field -> field.setErrorIfEmpty(
                                    errStrNonBlankRequired)));
 
         fields.add(new TextViewField<>(fragmentId, R.id.series_title, Book.BKEY_SERIES_LIST,
                                        DBKey.FK_SERIES,
-                                       normalDetailListFormatter)
+                                       listFormatterAutoDetails)
                            .setTextInputLayoutId(R.id.lbl_series));
 
         fields.add(new EditTextField<>(fragmentId, R.id.title, DBKey.TITLE)
@@ -859,7 +863,7 @@ public class EditBookViewModel
 
         fields.add(new TextViewField<>(fragmentId, R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
                                        DBKey.FK_BOOKSHELF,
-                                       normalDetailListFormatter)
+                                       listFormatterNormalDetails)
                            .setTextInputLayoutId(R.id.lbl_bookshelves)
                            .setValidator(field -> field.setErrorIfEmpty(
                                    errStrNonBlankRequired)));
@@ -877,7 +881,7 @@ public class EditBookViewModel
 
         fields.add(new TextViewField<>(fragmentId, R.id.publisher, Book.BKEY_PUBLISHER_LIST,
                                        DBKey.FK_PUBLISHER,
-                                       normalDetailListFormatter)
+                                       listFormatterNormalDetails)
                            .setTextInputLayoutId(R.id.lbl_publisher));
 
         fields.add(new TextViewField<>(fragmentId, R.id.first_publication,
@@ -1089,6 +1093,11 @@ public class EditBookViewModel
 
     /**
      * Check if the given fragment handles (displays) the given field.
+     *
+     * @param fragmentId the hosting fragment for this set of fields
+     * @param fieldId    to check
+     *
+     * @return {@code true} if the given fragment handles the given field
      */
     public boolean handlesField(@NonNull final FragmentId fragmentId,
                                 final int fieldId) {
