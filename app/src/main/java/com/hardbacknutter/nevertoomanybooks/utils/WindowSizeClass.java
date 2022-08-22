@@ -20,6 +20,8 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.ContextWrapper;
 
 import androidx.annotation.NonNull;
 import androidx.window.layout.WindowMetrics;
@@ -68,6 +70,11 @@ public enum WindowSizeClass {
     }
 
     @NonNull
+    public static WindowSizeClass getWidth(@NonNull final Context context) {
+        return getWidth(getActivity(context));
+    }
+
+    @NonNull
     public static WindowSizeClass getHeight(@NonNull final Activity activity) {
         final WindowMetrics metrics = WindowMetricsCalculator
                 .getOrCreate().computeCurrentWindowMetrics(activity);
@@ -81,5 +88,23 @@ public enum WindowSizeClass {
         } else {
             return EXPANDED;
         }
+    }
+
+    @NonNull
+    public static WindowSizeClass getHeight(@NonNull final Context context) {
+        return getHeight(getActivity(context));
+    }
+
+    @NonNull
+    private static Activity getActivity(@NonNull final Context context) {
+        // Gross way of unwrapping the Activity
+        Context tmp = context;
+        while (tmp instanceof ContextWrapper) {
+            if (tmp instanceof Activity) {
+                return (Activity) tmp;
+            }
+            tmp = ((ContextWrapper) tmp).getBaseContext();
+        }
+        throw new IllegalStateException();
     }
 }
