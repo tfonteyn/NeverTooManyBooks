@@ -64,25 +64,24 @@ public class EditBookAuthorListDialogFragment
     private static final String TAG = "EditBookAuthorListDlg";
 
     /** FragmentResultListener request key. */
-    private static final String RK_EDIT_AUTHOR = TAG + ":rk:" + EditBookAuthorDialogFragment.TAG;
+    private static final String RK_EDIT_AUTHOR =
+            TAG + ":rk:" + EditBookAuthorDialogFragment.TAG;
 
     /** The book. Must be in the Activity scope. */
     private EditBookViewModel vm;
-
-    /** If the list changes, the book is dirty. */
+    /** View Binding. */
+    private DialogEditBookAuthorListBinding vb;
+    /** the rows. */
+    private List<Author> authorList;
+    /** React to list changes. */
     private final SimpleAdapterDataObserver adapterDataObserver =
             new SimpleAdapterDataObserver() {
                 @Override
                 public void onChanged() {
                     vm.getBook().setStage(EntityStage.Stage.Dirty);
+                    vm.updateAuthors(authorList);
                 }
             };
-
-    /** View Binding. */
-    private DialogEditBookAuthorListBinding vb;
-    /** the rows. */
-    private List<Author> authorList;
-
     /** The adapter for the list itself. */
     private AuthorListAdapter adapter;
 
@@ -233,7 +232,7 @@ public class EditBookAuthorListDialogFragment
 
     protected boolean saveChanges() {
         if (!vb.author.getText().toString().isEmpty()) {
-            // Discarding applies to the edit field(s) only. The list itself is still saved.
+            // Discarding applies to the edit field(s) only.
             //noinspection ConstantConditions
             StandardDialogs.unsavedEdits(getContext(), null, () -> {
                 vb.author.setText("");
@@ -244,7 +243,7 @@ public class EditBookAuthorListDialogFragment
             return false;
         }
 
-        vm.updateAuthors(authorList);
+        // The list itself is already saved by the adapterDataObserver
         return true;
     }
 

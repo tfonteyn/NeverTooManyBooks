@@ -63,20 +63,22 @@ public class EditBookPublisherListDialogFragment
 
     /** The book. Must be in the Activity scope. */
     private EditBookViewModel vm;
-    /** If the list changes, the book is dirty. */
+    /** View Binding. */
+    private DialogEditBookPublisherListBinding vb;
+    /** the rows. */
+    private List<Publisher> publisherList;
+    /** React to list changes. */
     private final SimpleAdapterDataObserver adapterDataObserver =
             new SimpleAdapterDataObserver() {
                 @Override
                 public void onChanged() {
                     vm.getBook().setStage(EntityStage.Stage.Dirty);
+                    vm.updatePublishers(publisherList);
                 }
             };
-    /** View Binding. */
-    private DialogEditBookPublisherListBinding vb;
-    /** the rows. */
-    private List<Publisher> publisherList;
     /** The adapter for the list itself. */
     private PublisherListAdapter adapter;
+
     private final EditBookPublisherDialogFragment.Launcher editPublisherLauncher =
             new EditBookPublisherDialogFragment.Launcher() {
                 @Override
@@ -221,7 +223,7 @@ public class EditBookPublisherListDialogFragment
 
     private boolean saveChanges() {
         if (!vb.publisher.getText().toString().isEmpty()) {
-            // Discarding applies to the edit field(s) only. The list itself is still saved.
+            // Discarding applies to the edit field(s) only.
             //noinspection ConstantConditions
             StandardDialogs.unsavedEdits(getContext(), null, () -> {
                 vb.publisher.setText("");
@@ -232,7 +234,7 @@ public class EditBookPublisherListDialogFragment
             return false;
         }
 
-        vm.updatePublishers(publisherList);
+        // The list itself is already saved by the adapterDataObserver
         return true;
     }
 
