@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -471,7 +471,7 @@ public class Author
      *     <li>{@link Details#Full}: standard formatted name combined
      *          (if enabled) with the author type. The latter uses HTML formatting.
      *     </li>
-     *     <li>{@link Details#Normal}: standard formatted name.</li>
+     *     <li>{@link Details#Normal}, {@link Details#Auto}: standard formatted name.</li>
      *     <li>{@link Details#Short}: initial + family-name</li>
      * </ul>
      *
@@ -506,6 +506,7 @@ public class Author
                 }
                 return label;
             }
+            case Auto:
             case Normal: {
                 return getFormattedName(givenFirst);
             }
@@ -518,8 +519,9 @@ public class Author
                     return familyName + ' ' + givenNames.charAt(0);
                 }
             }
+            default:
+                throw new IllegalArgumentException("details=" + details);
         }
-        throw new IllegalArgumentException("detail=" + details);
     }
 
     /**
@@ -694,9 +696,9 @@ public class Author
         if ((type & TYPE_WRITER) != 0) {
             sj.add("TYPE_WRITER");
         }
-//        if ((mType & TYPE_ORIGINAL_SCRIPT_WRITER) != 0) {
-//            sj.add("TYPE_ORIGINAL_SCRIPT_WRITER");
-//        }
+        //        if ((mType & TYPE_ORIGINAL_SCRIPT_WRITER) != 0) {
+        //            sj.add("TYPE_ORIGINAL_SCRIPT_WRITER");
+        //        }
         if ((type & TYPE_FOREWORD) != 0) {
             sj.add("TYPE_FOREWORD");
         }
