@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
  * @param <T> type of Entity (== Field) value.
  */
 public class EntityFormatter<T extends Entity>
-        implements FieldFormatter<T> {
+        extends HtmlFormatter<T> {
 
     /** how much details to show. */
     @NonNull
