@@ -35,12 +35,15 @@
     <dimen name="field_margin_inline">12dp</dimen>
 
     <!-- fixed width TIL fields -->
+    <dimen name="til_fixed_width_personal_name">360dp</dimen>
     <dimen name="til_fixed_width_year">120dp</dimen>
     <dimen name="til_fixed_width_price">160dp</dimen>
     <dimen name="til_fixed_width_currency">140dp</dimen>
     <dimen name="til_fixed_width_language">200dp</dimen>
     <dimen name="til_fixed_width_series_num">200dp</dimen>
     <dimen name="til_fixed_width_external_id">200dp</dimen>
+
+    <dimen name="cbx_fixed_width_author_type">160dp</dimen>
 
     <dimen name="btn_open_toc_width">@dimen/wrap_content</dimen>
     <dimen name="btn_open_toc_height">@dimen/wrap_content</dimen>

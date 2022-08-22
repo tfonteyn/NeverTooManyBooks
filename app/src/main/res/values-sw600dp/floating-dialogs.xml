@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -21,14 +21,6 @@
 
 <!-- Generic  7.0" (600 x 1024) - 160dpi - sw600 -->
 <resources>
-    <!-- com/hardbacknutter/nevertoomanybooks/dialogs/FFBaseDialogFragment.java
-     FLOATING dialog enabled.
-    -->
-    <bool name="floating_dialogs_enabled">true</bool>
-    <!-- the default if a dialog does not specify a width. -->
-    <dimen name="floating_dialogs_width">380dp</dimen>
-
-    <!-- dialog specific settings. -->
     <dimen name="floating_dialogs_styles_picker_height">520dp</dimen>
     <dimen name="floating_dialogs_cover_browser_width">500dp</dimen>
 </resources>

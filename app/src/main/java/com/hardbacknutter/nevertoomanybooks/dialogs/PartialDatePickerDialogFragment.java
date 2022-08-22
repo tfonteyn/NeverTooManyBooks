@@ -173,7 +173,7 @@ public class PartialDatePickerDialogFragment
         // Ensure components match current Locale order
         reorderPickers(view);
 
-        dialogToolbar.setTitle(dialogTitleId != 0 ? dialogTitleId : R.string.action_edit);
+        setTitle(dialogTitleId != 0 ? dialogTitleId : R.string.action_edit);
 
         final NumberPicker yearPicker = view.findViewById(R.id.year);
         // 0: 'not set'

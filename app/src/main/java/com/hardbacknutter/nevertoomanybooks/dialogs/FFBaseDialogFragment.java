@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -51,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.StylePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 /**
  * Provides fullscreen or floating dialog support.
@@ -78,7 +78,7 @@ public abstract class FFBaseDialogFragment
 
     private static final int USE_DEFAULT = -1;
     /** The <strong>Dialog</strong> Toolbar. Not to be confused with the Activity's Toolbar! */
-    Toolbar dialogToolbar;
+    private Toolbar dialogToolbar;
     @Nullable
     private View buttonPanel;
     /** Show the dialog fullscreen (default) or as a floating dialog. */
@@ -154,14 +154,15 @@ public abstract class FFBaseDialogFragment
     @CallSuper
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        fullscreen = !getResources().getBoolean(R.bool.floating_dialogs_enabled)
+
+        //noinspection ConstantConditions
+        fullscreen = WindowSizeClass.getWidth(getActivity()) == WindowSizeClass.COMPACT
                      || forceFullscreen;
+
         if (fullscreen) {
             setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
 
         } else {
-//            setStyle(DialogFragment.STYLE_NO_FRAME, 0);
-
             if (widthDimenResId == USE_DEFAULT) {
                 widthDimenResId = R.dimen.floating_dialogs_width;
             }
@@ -172,21 +173,6 @@ public abstract class FFBaseDialogFragment
                 marginBottomDimenResId = AttrUtils.getResId(context, R.attr.actionBarSize);
             }
         }
-    }
-
-    @SuppressLint("UseCompatLoadingForDrawables")
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        final View v = super.onCreateView(inflater, container, savedInstanceState);
-//        if (!mFullscreen) {
-//            //noinspection ConstantConditions
-//            v.setBackground(v.getContext().getDrawable(R.drawable.bg_floating_dialog));
-//            v.setClipToOutline(true);
-//        }
-        return v;
     }
 
     /**
@@ -235,6 +221,10 @@ public abstract class FFBaseDialogFragment
                 lp.setMargins(0, 0, 0, marginBottom);
             }
         }
+    }
+
+    public void setTitle(@StringRes final int titleResId) {
+        dialogToolbar.setTitle(titleResId);
     }
 
     /**

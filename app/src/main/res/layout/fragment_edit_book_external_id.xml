@@ -35,17 +35,18 @@
         >
 
         <androidx.constraintlayout.helper.widget.Flow
-            android:id="@+id/flow"
+            android:id="@+id/flow_site_ids"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:constraint_referenced_ids="lbl_site_goodreads,lbl_site_isfdb,lbl_site_library_thing,lbl_site_open_library,lbl_site_strip_info_be,lbl_site_last_dodo_nl"
+            app:flow_horizontalBias="0.5"
             app:flow_horizontalAlign="start"
-            app:flow_horizontalBias="0"
-            app:flow_horizontalGap="8dp"
-            app:flow_maxElementsWrap="3"
+            app:flow_horizontalGap="@dimen/field_margin_inline"
+            app:flow_horizontalStyle="packed"
+            app:flow_maxElementsWrap="4"
             app:flow_verticalBias="0"
-            app:flow_verticalGap="8dp"
-            app:flow_wrapMode="chain"
+            app:flow_verticalGap="@dimen/field_margin_top"
+            app:flow_wrapMode="aligned"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -155,14 +156,14 @@
 
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/barrier_ext_id"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="48dp"
+            android:layout_marginTop="24dp"
             android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_site_last_dodo_nl"
+            app:layout_constraintEnd_toEndOf="@id/flow_site_ids"
+            app:layout_constraintStart_toStartOf="@id/flow_site_ids"
+            app:layout_constraintTop_toBottomOf="@id/flow_site_ids"
             />
 
         <com.google.android.material.materialswitch.MaterialSwitch
@@ -172,8 +173,7 @@
             android:layout_margin="@dimen/section_margin_top"
             android:checked="true"
             android:text="@string/lbl_auto_updates"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/barrier_ext_id"
             app:layout_constraintTop_toBottomOf="@id/barrier_ext_id"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>

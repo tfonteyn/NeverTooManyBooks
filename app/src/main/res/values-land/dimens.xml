@@ -24,6 +24,7 @@
     <dimen name="progress_width">340dp</dimen>
 
     <!-- fixed width TIL fields -->
+    <dimen name="til_fixed_width_personal_name">320dp</dimen>
     <dimen name="til_fixed_width_year">120dp</dimen>
     <dimen name="til_fixed_width_price">130dp</dimen>
     <dimen name="til_fixed_width_currency">120dp</dimen>
