@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -111,19 +111,23 @@ public class BitmaskFormatter
                            .map(s -> "<li>" + s + "</li>")
                            .collect(Collectors.joining("", "<ul>", "</ul>"));
             }
+            case Auto:
             case Normal: {
                 return String.join(delimiter, list);
             }
             case Short: {
                 if (list.size() > 1) {
-                    // special case, we use the Normal setting and use the "and_others" suffix
+                    // special case, we only show the first element and the "and_others" suffix
                     return context.getString(R.string.and_others_plus, list.get(0),
                                              list.size() - 1);
                 } else {
                     return list.get(0);
                 }
             }
+
+
+            default:
+                throw new IllegalArgumentException("details=" + details);
         }
-        return "";
     }
 }
