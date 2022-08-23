@@ -413,8 +413,8 @@ public class EditBookTocFragment
                            final int position) {
         final Field<Long, View> typeField = vm.requireField(R.id.book_type);
         //noinspection ConstantConditions
-        final boolean multipleAuthors = typeField.getValue() == Book.ContentType.Anthology.getId();
-        editTocEntryLauncher.launch(vm.getBook(), position, tocEntry, multipleAuthors);
+        final boolean isAnthology = typeField.getValue() == Book.ContentType.Anthology.getId();
+        editTocEntryLauncher.launch(vm.getBook(), position, tocEntry, isAnthology);
     }
 
     /**
