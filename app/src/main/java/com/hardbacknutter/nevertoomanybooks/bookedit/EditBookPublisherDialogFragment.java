@@ -25,11 +25,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Objects;
@@ -56,20 +51,21 @@ public class EditBookPublisherDialogFragment
 
     /** FragmentResultListener request key to use for our response. */
     private String requestKey;
-
+    /** View model. Must be in the Activity scope. */
     private EditBookViewModel vm;
+    /** View Binding. */
+    private DialogEditBookPublisherBinding vb;
 
     /** Displayed for info only. */
     @Nullable
     private String bookTitle;
-    /** View Binding. */
-    private DialogEditBookPublisherBinding vb;
 
     /** The Publisher we're editing. */
     private Publisher publisher;
-
     /** Current edit. */
     private Publisher currentEdit;
+    /** Adding or Editing. */
+    private EditAction action;
 
     /**
      * No-arg constructor for OS use.
@@ -88,15 +84,17 @@ public class EditBookPublisherDialogFragment
         final Bundle args = requireArguments();
         requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                             BKEY_REQUEST_KEY);
-        publisher = Objects.requireNonNull(args.getParcelable(DBKey.FK_PUBLISHER),
-                                           DBKey.FK_PUBLISHER);
+        action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY),
+                                        EditAction.BKEY);
+        publisher = Objects.requireNonNull(args.getParcelable(EditLauncher.BKEY_ITEM),
+                                           EditLauncher.BKEY_ITEM);
         bookTitle = args.getString(DBKey.TITLE);
 
         if (savedInstanceState == null) {
             currentEdit = new Publisher(publisher.getName());
         } else {
             //noinspection ConstantConditions
-            currentEdit = savedInstanceState.getParcelable(DBKey.FK_PUBLISHER);
+            currentEdit = savedInstanceState.getParcelable(EditLauncher.BKEY_ITEM);
         }
     }
 
@@ -136,7 +134,11 @@ public class EditBookPublisherDialogFragment
             return false;
         }
 
-        Launcher.setResult(this, requestKey, publisher, currentEdit);
+        if (action == EditAction.Add) {
+            Launcher.setResult(this, requestKey, currentEdit);
+        } else {
+            Launcher.setResult(this, requestKey, publisher, currentEdit);
+        }
         return true;
     }
 
@@ -147,7 +149,7 @@ public class EditBookPublisherDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(DBKey.FK_PUBLISHER, currentEdit);
+        outState.putParcelable(EditLauncher.BKEY_ITEM, currentEdit);
     }
 
     @Override
@@ -157,64 +159,15 @@ public class EditBookPublisherDialogFragment
     }
 
     public abstract static class Launcher
-            implements FragmentResultListener {
-
-        private static final String ORIGINAL = "original";
-        private static final String MODIFIED = "modified";
-        private String requestKey;
-        private FragmentManager fragmentManager;
-
-        static void setResult(@NonNull final Fragment fragment,
-                              @NonNull final String requestKey,
-                              @NonNull final Publisher original,
-                              @NonNull final Publisher modified) {
-            final Bundle result = new Bundle(2);
-            result.putParcelable(ORIGINAL, original);
-            result.putParcelable(MODIFIED, modified);
-            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-        }
-
-        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                              @NonNull final String requestKey,
-                                              @NonNull final LifecycleOwner lifecycleOwner) {
-            this.fragmentManager = fragmentManager;
-            this.requestKey = requestKey;
-            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
-        }
-
-        /**
-         * Launch the dialog.
-         *
-         * @param bookTitle displayed for info only
-         * @param publisher to edit
-         */
-        void launch(@NonNull final String bookTitle,
-                    @NonNull final Publisher publisher) {
-            final Bundle args = new Bundle(3);
-            args.putString(BKEY_REQUEST_KEY, requestKey);
-            args.putString(DBKey.TITLE, bookTitle);
-            args.putParcelable(DBKey.FK_PUBLISHER, publisher);
-
-            final DialogFragment frag = new EditBookPublisherDialogFragment();
-            frag.setArguments(args);
-            frag.show(fragmentManager, TAG);
-        }
+            extends EditLauncher<Publisher> {
 
         @Override
-        public void onFragmentResult(@NonNull final String requestKey,
-                                     @NonNull final Bundle result) {
-            onResult(Objects.requireNonNull(result.getParcelable(ORIGINAL), ORIGINAL),
-                     Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
+        public void launch(@NonNull final String bookTitle,
+                           @NonNull final EditAction action,
+                           @NonNull final Publisher publisher) {
+            super.launch(new EditBookPublisherDialogFragment(),
+                         bookTitle, action, publisher);
         }
-
-        /**
-         * Callback handler.
-         *
-         * @param original the original item
-         * @param modified the modified item
-         */
-        public abstract void onResult(@NonNull Publisher original,
-                                      @NonNull Publisher modified);
     }
 
 }

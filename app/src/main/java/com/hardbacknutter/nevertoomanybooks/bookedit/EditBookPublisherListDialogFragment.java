@@ -79,11 +79,16 @@ public class EditBookPublisherListDialogFragment
     /** The adapter for the list itself. */
     private PublisherListAdapter adapter;
 
-    private final EditBookPublisherDialogFragment.Launcher editPublisherLauncher =
+    private final EditBookPublisherDialogFragment.Launcher editLauncher =
             new EditBookPublisherDialogFragment.Launcher() {
                 @Override
-                public void onResult(@NonNull final Publisher original,
-                                     @NonNull final Publisher modified) {
+                public void onAdd(@NonNull final Publisher publisher) {
+                    add(publisher);
+                }
+
+                @Override
+                public void onModified(@NonNull final Publisher original,
+                                       @NonNull final Publisher modified) {
                     processChanges(original, modified);
                 }
             };
@@ -92,8 +97,9 @@ public class EditBookPublisherListDialogFragment
 
         @Override
         public void edit(final int position) {
-            editPublisherLauncher.launch(vm.getBook().getTitle(),
-                                         publisherList.get(position));
+            editLauncher.launch(vm.getBook().getTitle(),
+                                EditAction.Edit,
+                                publisherList.get(position));
         }
     };
     /** Drag and drop support for the list view. */
@@ -124,8 +130,10 @@ public class EditBookPublisherListDialogFragment
         //noinspection ConstantConditions
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
-        editPublisherLauncher.registerForFragmentResult(getChildFragmentManager(),
-                                                        RK_EDIT_PUBLISHER, this);
+        editLauncher.registerForFragmentResult(getChildFragmentManager(),
+                                               EditBookPublisherDialogFragment.BKEY_REQUEST_KEY,
+                                               RK_EDIT_PUBLISHER,
+                                               this);
     }
 
     @Override
@@ -201,17 +209,28 @@ public class EditBookPublisherListDialogFragment
             return;
         }
 
-        final Publisher newPublisher = Publisher.from(name);
+        final Publisher publisher = Publisher.from(name);
 
+        //URGENT: decide if we want to use the dialog instead (as Author does)
+        add(publisher);
+        // editPublisherLauncher.launch(vm.getBook().getTitle(), EditAction.Add, publisher);
+    }
+
+    /**
+     * Add the given Publisher to the list, providing it's not already there.
+     *
+     * @param publisher to add
+     */
+    private void add(@NonNull final Publisher publisher) {
         // see if it already exists
         //noinspection ConstantConditions
-        vm.fixId(getContext(), newPublisher);
+        vm.fixId(getContext(), publisher);
         // and check it's not already in the list.
-        if (publisherList.contains(newPublisher)) {
+        if (publisherList.contains(publisher)) {
             vb.lblPublisher.setError(getString(R.string.warning_already_in_list));
         } else {
             // add and scroll to the new item
-            publisherList.add(newPublisher);
+            publisherList.add(publisher);
             adapter.notifyItemInserted(publisherList.size() - 1);
             vb.publisherList.scrollToPosition(adapter.getItemCount() - 1);
 

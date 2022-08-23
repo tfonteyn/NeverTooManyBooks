@@ -79,21 +79,27 @@ public class EditBookSeriesListDialogFragment
     /** The adapter for the list itself. */
     private SeriesListAdapter adapter;
 
-    private final EditBookSeriesDialogFragment.Launcher editSeriesLauncher =
+    private final EditBookSeriesDialogFragment.Launcher editLauncher =
             new EditBookSeriesDialogFragment.Launcher() {
                 @Override
-                public void onResult(@NonNull final Series original,
-                                     @NonNull final Series modified) {
+                public void onAdd(@NonNull final Series series) {
+                    add(series);
+                }
+
+                @Override
+                public void onModified(@NonNull final Series original,
+                                       @NonNull final Series modified) {
                     processChanges(original, modified);
                 }
             };
 
-    private final AdapterRowHandler seriesHandler = new AdapterRowHandler() {
+    private final AdapterRowHandler adapterRowHandler = new AdapterRowHandler() {
 
         @Override
         public void edit(final int position) {
-            editSeriesLauncher.launch(vm.getBook().getTitle(),
-                                      seriesList.get(position));
+            editLauncher.launch(vm.getBook().getTitle(),
+                                EditAction.Edit,
+                                seriesList.get(position));
         }
     };
     /** Drag and drop support for the list view. */
@@ -121,8 +127,10 @@ public class EditBookSeriesListDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        editSeriesLauncher.registerForFragmentResult(getChildFragmentManager(), RK_EDIT_SERIES,
-                                                     this);
+        editLauncher.registerForFragmentResult(getChildFragmentManager(),
+                                               EditBookSeriesDialogFragment.BKEY_REQUEST_KEY,
+                                               RK_EDIT_SERIES,
+                                               this);
     }
 
     @Override
@@ -162,7 +170,7 @@ public class EditBookSeriesListDialogFragment
         vb.seriesList.setHasFixedSize(true);
 
         seriesList = vm.getBook().getSeries();
-        adapter = new SeriesListAdapter(getContext(), seriesList, seriesHandler,
+        adapter = new SeriesListAdapter(getContext(), seriesList, adapterRowHandler,
                                         vh -> itemTouchHelper.startDrag(vh));
         vb.seriesList.setAdapter(adapter);
         adapter.registerAdapterDataObserver(adapterDataObserver);
@@ -202,19 +210,30 @@ public class EditBookSeriesListDialogFragment
             return;
         }
 
-        final Series newSeries = new Series(title);
+        final Series series = new Series(title);
         //noinspection ConstantConditions
-        newSeries.setNumber(vb.seriesNum.getText().toString().trim());
+        series.setNumber(vb.seriesNum.getText().toString().trim());
 
+        //URGENT: decide if we want to use the dialog instead (as Author does)
+        add(series);
+        // editSeriesLauncher.launch(vm.getBook().getTitle(), EditAction.Add, series);
+    }
+
+    /**
+     * Add the given Series to the list, providing it's not already there.
+     *
+     * @param series to add
+     */
+    private void add(@NonNull final Series series) {
         // see if it already exists
         //noinspection ConstantConditions
-        vm.fixId(getContext(), newSeries);
+        vm.fixId(getContext(), series);
         // and check it's not already in the list.
-        if (seriesList.contains(newSeries)) {
+        if (seriesList.contains(series)) {
             vb.lblSeries.setError(getString(R.string.warning_already_in_list));
         } else {
             // add and scroll to the new item
-            seriesList.add(newSeries);
+            seriesList.add(series);
             adapter.notifyItemInserted(seriesList.size() - 1);
             vb.seriesList.scrollToPosition(adapter.getItemCount() - 1);
 

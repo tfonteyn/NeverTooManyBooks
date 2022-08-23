@@ -54,8 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
 /**
  * Edit the list of Authors of a Book.
- * <p>
- * Maybe TODO: cannot set author type when creating but only when editing existing author.
  */
 public class EditBookAuthorListDialogFragment
         extends FFBaseDialogFragment {
@@ -85,11 +83,16 @@ public class EditBookAuthorListDialogFragment
     /** The adapter for the list itself. */
     private AuthorListAdapter adapter;
 
-    private final EditBookAuthorDialogFragment.Launcher editAuthorLauncher =
+    private final EditBookAuthorDialogFragment.Launcher editLauncher =
             new EditBookAuthorDialogFragment.Launcher() {
                 @Override
-                public void onResult(@NonNull final Author original,
-                                     @NonNull final Author modified) {
+                public void onAdd(@NonNull final Author author) {
+                    add(author);
+                }
+
+                @Override
+                public void onModified(@NonNull final Author original,
+                                       @NonNull final Author modified) {
                     processChanges(original, modified);
                 }
             };
@@ -98,8 +101,9 @@ public class EditBookAuthorListDialogFragment
 
         @Override
         public void edit(final int position) {
-            editAuthorLauncher.launch(vm.getBook().getTitle(),
-                                      authorList.get(position));
+            editLauncher.launch(vm.getBook().getTitle(),
+                                EditAction.Edit,
+                                authorList.get(position));
         }
     };
 
@@ -131,8 +135,10 @@ public class EditBookAuthorListDialogFragment
         //noinspection ConstantConditions
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
-        editAuthorLauncher.registerForFragmentResult(getChildFragmentManager(), RK_EDIT_AUTHOR,
-                                                     this);
+        editLauncher.registerForFragmentResult(getChildFragmentManager(),
+                                               EditBookAuthorDialogFragment.BKEY_REQUEST_KEY,
+                                               RK_EDIT_AUTHOR,
+                                               this);
     }
 
     @Override
@@ -208,19 +214,26 @@ public class EditBookAuthorListDialogFragment
             return;
         }
 
-        // Editing the Author type is not provided on the main screen.
-        // The user must open the detail dialog after creation of the entry.
-        final Author newAuthor = Author.from(name);
+        final Author author = Author.from(name);
+        editLauncher.launch(vm.getBook().getTitle(), EditAction.Add, author);
+    }
 
+    /**
+     * Add the given Author to the list, providing it's not already there.
+     *
+     * @param author to add
+     */
+    private void add(@NonNull final Author author) {
         // see if it already exists
         //noinspection ConstantConditions
-        vm.fixId(getContext(), newAuthor);
+        vm.fixId(getContext(), author);
+
         // and check it's not already in the list.
-        if (authorList.contains(newAuthor)) {
+        if (authorList.contains(author)) {
             vb.lblAuthor.setError(getString(R.string.warning_already_in_list));
         } else {
             // add and scroll to the new item
-            authorList.add(newAuthor);
+            authorList.add(author);
             adapter.notifyItemInserted(authorList.size() - 1);
             vb.authorList.scrollToPosition(adapter.getItemCount() - 1);
 

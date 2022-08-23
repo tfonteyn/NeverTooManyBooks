@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,11 +27,6 @@ import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Objects;
@@ -65,21 +60,21 @@ public class EditBookAuthorDialogFragment
 
     /** FragmentResultListener request key to use for our response. */
     private String requestKey;
-
+    /** View model. Must be in the Activity scope. */
     private EditBookViewModel vm;
+    /** View Binding. */
+    private DialogEditBookAuthorBinding vb;
 
     /** Displayed for info only. */
     @Nullable
     private String bookTitle;
 
-    /** View Binding. */
-    private DialogEditBookAuthorBinding vb;
-
     /** The Author we're editing. */
     private Author author;
-
     /** Current edit. */
     private Author currentEdit;
+    /** Adding or Editing. */
+    private EditAction action;
 
     /**
      * No-arg constructor for OS use.
@@ -99,8 +94,10 @@ public class EditBookAuthorDialogFragment
         final Bundle args = requireArguments();
         requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                             BKEY_REQUEST_KEY);
-        author = Objects.requireNonNull(args.getParcelable(DBKey.FK_AUTHOR),
-                                        DBKey.FK_AUTHOR);
+        action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY),
+                                        EditAction.BKEY);
+        author = Objects.requireNonNull(args.getParcelable(EditLauncher.BKEY_ITEM),
+                                        EditLauncher.BKEY_ITEM);
         bookTitle = args.getString(DBKey.TITLE);
 
         if (savedInstanceState == null) {
@@ -110,7 +107,7 @@ public class EditBookAuthorDialogFragment
             currentEdit.setType(author.getType());
         } else {
             //noinspection ConstantConditions
-            currentEdit = savedInstanceState.getParcelable(DBKey.FK_AUTHOR);
+            currentEdit = savedInstanceState.getParcelable(EditLauncher.BKEY_ITEM);
         }
     }
 
@@ -209,7 +206,11 @@ public class EditBookAuthorDialogFragment
             currentEdit.setType(Author.TYPE_UNKNOWN);
         }
 
-        Launcher.setResult(this, requestKey, author, currentEdit);
+        if (action == EditAction.Add) {
+            Launcher.setResult(this, requestKey, currentEdit);
+        } else {
+            Launcher.setResult(this, requestKey, author, currentEdit);
+        }
         return true;
     }
 
@@ -230,7 +231,7 @@ public class EditBookAuthorDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(DBKey.FK_AUTHOR, currentEdit);
+        outState.putParcelable(EditLauncher.BKEY_ITEM, currentEdit);
     }
 
     @Override
@@ -240,63 +241,14 @@ public class EditBookAuthorDialogFragment
     }
 
     public abstract static class Launcher
-            implements FragmentResultListener {
-
-        private static final String ORIGINAL = "original";
-        private static final String MODIFIED = "modified";
-        private String requestKey;
-        private FragmentManager fragmentManager;
-
-        static void setResult(@NonNull final Fragment fragment,
-                              @NonNull final String requestKey,
-                              @NonNull final Author original,
-                              @NonNull final Author modified) {
-            final Bundle result = new Bundle(2);
-            result.putParcelable(ORIGINAL, original);
-            result.putParcelable(MODIFIED, modified);
-            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-        }
-
-        public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
-                                              @NonNull final String requestKey,
-                                              @NonNull final LifecycleOwner lifecycleOwner) {
-            this.fragmentManager = fragmentManager;
-            this.requestKey = requestKey;
-            this.fragmentManager.setFragmentResultListener(this.requestKey, lifecycleOwner, this);
-        }
-
-        /**
-         * Launch the dialog.
-         *
-         * @param bookTitle displayed for info only
-         * @param author    to edit
-         */
-        void launch(@NonNull final String bookTitle,
-                    @NonNull final Author author) {
-            final Bundle args = new Bundle(3);
-            args.putString(BKEY_REQUEST_KEY, requestKey);
-            args.putString(DBKey.TITLE, bookTitle);
-            args.putParcelable(DBKey.FK_AUTHOR, author);
-
-            final DialogFragment frag = new EditBookAuthorDialogFragment();
-            frag.setArguments(args);
-            frag.show(fragmentManager, TAG);
-        }
+            extends EditLauncher<Author> {
 
         @Override
-        public void onFragmentResult(@NonNull final String requestKey,
-                                     @NonNull final Bundle result) {
-            onResult(Objects.requireNonNull(result.getParcelable(ORIGINAL), ORIGINAL),
-                     Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
+        public void launch(@NonNull final String bookTitle,
+                           @NonNull final EditAction action,
+                           @NonNull final Author author) {
+            super.launch(new EditBookAuthorDialogFragment(),
+                         bookTitle, action, author);
         }
-
-        /**
-         * Callback handler.
-         *
-         * @param original the original item
-         * @param modified the modified item
-         */
-        public abstract void onResult(@NonNull Author original,
-                                      @NonNull Author modified);
     }
 }
