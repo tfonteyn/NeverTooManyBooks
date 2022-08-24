@@ -25,12 +25,6 @@
     <attr name="appChipFilterStyle" format="reference" />
     <attr name="appChipInputStyle" format="reference" />
 
-    <!-- Background for Activity and Dialog toolbars. -->
-    <attr name="appToolbarBackground" format="reference|color" />
-    <!-- Color used for the drop-down icon in ExposedDropdownMenu.
-         Overrides the default to make it better visible. -->
-    <attr name="appDropdownIconColor" format="reference|color" />
-
     <!-- Color to give (the icon) of certain preferences a visual indicator. -->
     <attr name="appPreferenceAlertColor" format="reference|color" />
 

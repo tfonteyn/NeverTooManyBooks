@@ -102,7 +102,7 @@
     <style name="Toolbar.Activity" parent="Widget.Material3.Toolbar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
-        <item name="android:background">?attr/appToolbarBackground</item>
+        <item name="android:background">?attr/colorPrimary</item>
         <item name="layout_scrollFlags">scroll|enterAlways|snap</item>
     </style>
 
@@ -110,7 +110,7 @@
     <style name="Toolbar.Dialog" parent="Widget.Material3.Toolbar.Surface">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
-        <item name="android:background">?attr/appToolbarBackground</item>
+        <item name="android:background">?attr/colorPrimary</item>
         <item name="navigationIcon">@drawable/ic_baseline_close_24</item>
     </style>
 
@@ -173,7 +173,7 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <!-- override to make it better visible. -->
-        <item name="endIconTint">?attr/appDropdownIconColor</item>
+        <item name="endIconTint">?attr/colorOnSurface</item>
     </style>
 
     <!-- A button in a list of action-options. -->

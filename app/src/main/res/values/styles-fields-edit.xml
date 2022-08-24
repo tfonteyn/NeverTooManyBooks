@@ -139,7 +139,7 @@
         <item name="android:layout_marginStart">@dimen/til_margin</item>
         <item name="android:layout_marginEnd">@dimen/til_margin</item>
         <!-- override to make it better visible. -->
-        <item name="endIconTint">?attr/appDropdownIconColor</item>
+        <item name="endIconTint">?attr/colorOnSurface</item>
     </style>
 
     <style name="TIL.Currency" parent="TIL.AutoCompleteTextView">
@@ -162,7 +162,7 @@
         <item name="android:layout_marginStart">@dimen/til_margin</item>
         <item name="android:layout_marginEnd">@dimen/til_margin</item>
         <!-- override to make it better visible. -->
-        <item name="endIconTint">?attr/appDropdownIconColor</item>
+        <item name="endIconTint">?attr/colorOnSurface</item>
     </style>
     <!-- *************************************************************************************** -->
 
@@ -181,7 +181,7 @@
         <item name="android:layout_marginStart">@dimen/til_margin</item>
         <item name="android:layout_marginEnd">@dimen/til_margin</item>
         <!-- override to make it better visible. -->
-        <item name="endIconTint">?attr/appDropdownIconColor</item>
+        <item name="endIconTint">?attr/colorOnSurface</item>
     </style>
 
     <!-- *************************************************************************************** -->

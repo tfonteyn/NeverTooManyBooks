@@ -50,7 +50,7 @@
             android:id="@+id/progress_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="?attr/appToolbarBackground"
+            android:background="?attr/colorPrimary"
             android:elevation="4dp"
             android:padding="@dimen/progress_padding"
             android:textAppearance="?attr/textAppearanceTitleMedium"

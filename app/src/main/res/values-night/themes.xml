@@ -29,8 +29,6 @@
         <!-- The system status bar at the very top of a screen.
              Reminder: never set this to colorPrimary! -->
         <item name="android:statusBarColor">@color/m3grey_900</item>
-        <!-- All toolbars and dialog title bars use this as the background color. -->
-        <item name="appToolbarBackground">@color/m3grey_700</item>
 
         <!-- <item name="android:navigationBarColor">@color/m3grey_900</item>-->
 
@@ -70,7 +68,6 @@
         <item name="colorOnSurfaceInverse">@color/m3grey_800</item>
 
         <!-- Application specific -->
-        <item name="appDropdownIconColor">?attr/colorOnSurface</item>
         <item name="appPreferenceAlertColor">@color/red_500</item>
 
         <!-- gradient used in the Navigation side bar. -->
