@@ -163,8 +163,7 @@
     </array>
 
 
-    <!-- The width for the "@style/TopCentered" - 8dp less than the next sw-->
-    <dimen name="top_centered_min_width">312dp</dimen>
+    <!-- The width for the "@style/TopCentered" -->
     <dimen name="top_centered_max_width">600dp</dimen>
 
     <integer name="span_count_edit_bookshelves">1</integer>
