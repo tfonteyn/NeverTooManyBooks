@@ -46,19 +46,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:layout="@layout/fragment_edit_book_toc"
         />
 
     <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton
         android:id="@+id/fab"
-        style="@style/FAB"
+        style="@style/Widget.App.FloatingActionButton"
         android:visibility="invisible"
         tools:visibility="visible"
+        tools:src="@drawable/ic_baseline_add_24"
         />
 
     <include
         android:id="@+id/progress_frame"
         layout="@layout/dialog_progress"
         android:visibility="gone"
-        tools:visibility="visible"
+        tools:visibility="invisible"
         />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

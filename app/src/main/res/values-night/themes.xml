@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -33,13 +33,10 @@
         <!-- <item name="android:navigationBarColor">@color/m3grey_900</item>-->
 
         <!-- Material color attributes -->
-        <!-- Reminder colorPrimary
-            - CheckBox: 'checked' status
-        -->
         <item name="colorPrimary">@color/m3grey_700</item>
         <item name="colorOnPrimary">@color/m3grey_200</item>
-        <item name="colorPrimaryContainer">#ff4f378b</item>
-        <item name="colorOnPrimaryContainer">#ffeaddff</item>
+        <item name="colorPrimaryContainer">@color/blue_grey_400</item>
+        <item name="colorOnPrimaryContainer">@color/blue_grey_100</item>
         <item name="colorPrimaryInverse">#ff6750a4</item>
 
         <item name="colorSecondary">@color/teal_500</item>
@@ -58,9 +55,6 @@
         <item name="colorOnBackground">@color/m3grey_300</item>
 
         <item name="colorSurface">@color/m3grey_900</item>
-        <!-- Reminder colorOnSurface
-            - CheckBox: 'unchecked' status
-        -->
         <item name="colorOnSurface">@color/m3grey_300</item>
         <item name="colorSurfaceVariant">@color/m3grey_700</item>
         <item name="colorOnSurfaceVariant">@color/m3grey_400</item>

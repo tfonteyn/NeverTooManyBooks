@@ -55,13 +55,10 @@
         <!-- <item name="android:navigationBarColor">@color/m3grey_700</item>-->
 
         <!-- Material color attributes -->
-        <!-- Reminder colorPrimary
-            - CheckBox: 'checked' status
-        -->
         <item name="colorPrimary">@color/m3grey_400</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorPrimaryContainer">#ffeaddff</item>
-        <item name="colorOnPrimaryContainer">#ff21005d</item>
+        <item name="colorPrimaryContainer">@color/blue_grey_400</item>
+        <item name="colorOnPrimaryContainer">@color/blue_grey_900</item>
         <item name="colorPrimaryInverse">#ffd0bcff</item>
 
         <item name="colorSecondary">@color/teal_500</item>
@@ -79,9 +76,6 @@
         <item name="android:colorBackground">@color/m3grey_50</item>
         <item name="colorOnBackground">@color/m3grey_900</item>
 
-        <!-- Reminder colorOnSurface
-            - CheckBox: 'unchecked' status
-        -->
         <item name="colorSurface">@color/m3grey_50</item>
         <item name="colorOnSurface">@color/m3grey_900</item>
         <item name="colorSurfaceVariant">@color/m3grey_100</item>
@@ -113,16 +107,19 @@
         <item name="radioButtonStyle">@style/Widget.App.RadioButton</item>
         <item name="materialSwitchStyle">@style/Widget.App.Switch</item>
 
+        <item name="floatingActionButtonStyle">@style/Widget.App.FloatingActionButton</item>
+        <item name="extendedFloatingActionButtonStyle">@style/Widget.App.ExtendedFloatingActionButton</item>
+
         <!-- these have no effect ?? -->
         <item name="switchStyle">@style/Widget.App.Switch</item>
         <item name="switchPreferenceCompatStyle">@style/Widget.App.Switch</item>
         <item name="switchPreferenceStyle">@style/Widget.App.Switch</item>
 
-        <!-- We MUST set the styles separately! Just setting the common buttonBarButtonStyle is NOT enough -->
-        <item name="buttonBarButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
-        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
-        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
-        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
+        <!-- We MUST set these separately! Just setting the common buttonBarButtonStyle is NOT enough -->
+        <item name="buttonBarButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
+        <item name="buttonBarPositiveButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
+        <item name="buttonBarNegativeButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
+        <item name="buttonBarNeutralButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
 
         <!-- Material3 theme overlays -->
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
@@ -134,109 +131,4 @@
         <item name="appChipInputStyle">@style/Widget.Material3.Chip.Input</item>
     </style>
 
-    <!-- *************************************************************************************** -->
-    <style name="Widget.App.TabLayout" parent="Widget.Material3.TabLayout">
-        <item name="tabMode">scrollable</item>
-        <!-- Both indicator and text color are set to colorSecondary. -->
-        <item name="tabIndicatorColor">?attr/colorSecondary</item>
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.TabLayout</item>
-    </style>
-
-    <style name="Widget.App.ChipGroup" parent="Widget.Material3.ChipGroup">
-        <!-- the default was 8dp. -->
-        <item name="chipSpacingVertical">4dp</item>
-    </style>
-
-    <style name="Widget.App.Snackbar.TextView" parent="Widget.Material3.Snackbar.TextView">
-        <item name="android:maxLines">2</item>
-    </style>
-
-    <style name="Widget.App.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.CheckBox</item>
-    </style>
-
-    <style name="Widget.App.RadioButton" parent="Widget.Material3.CompoundButton.RadioButton">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.RadioButton</item>
-    </style>
-
-    <style name="Widget.App.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Switch</item>
-    </style>
-
-    <style name="Widget.App.LinearProgressIndicator" parent="Widget.Material3.LinearProgressIndicator">
-        <item name="android:padding">@dimen/progress_padding</item>
-    </style>
-
-    <style name="Widget.App.CircularProgressIndicator" parent="Widget.Material3.CircularProgressIndicator">
-        <item name="android:clickable">true</item>
-        <item name="android:alpha">0.8</item>
-        <item name="android:elevation">@dimen/progress_z</item>
-        <item name="android:indeterminate">true</item>
-        <item name="indicatorSize">96dp</item>
-    </style>
-
-    <style name="Widget.App.Button.TextButton.Dialog" parent="Widget.Material3.Button.TextButton.Dialog">
-        <item name="android:textColor">?attr/colorSecondary</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
-    <style name="ThemeOverlay.App.TabLayout" parent="">
-        <!-- selected -->
-        <item name="colorPrimary">?attr/colorSecondary</item>
-    </style>
-
-    <style name="ThemeOverlay.App.CheckBox" parent="">
-        <!-- checked -->
-        <item name="colorPrimary">?attr/colorSecondary</item>
-    </style>
-
-    <style name="ThemeOverlay.App.RadioButton" parent="">
-        <!-- checked -->
-        <item name="colorPrimary">?attr/colorSecondary</item>
-    </style>
-
-    <style name="ThemeOverlay.App.Switch" parent="">
-        <!-- checked -->
-        <item name="colorPrimary">?attr/colorSecondary</item>
-    </style>
-
-    <style name="ThemeOverlay.App.MaterialAlertDialog"
-           parent="ThemeOverlay.Material3.MaterialAlertDialog">
-
-        <!-- We MUST set the styles separately! Just setting the common buttonBarButtonStyle is NOT enough -->
-        <item name="buttonBarButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
-        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
-        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
-        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
-    </style>
-
-    <style name="ThemeOverlay.App.MaterialCalendarTheme"
-           parent="@style/ThemeOverlay.Material3.MaterialCalendar">
-
-        <!-- We MUST set the styles separately! Just setting the common buttonBarButtonStyle is NOT enough -->
-        <item name="buttonBarButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
-        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
-        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
-        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.Button.TextButton.Dialog</item>
-    </style>
-
-    <style name="ThemeOverlay.App.MaterialCalendarFullscreenTheme"
-           parent="ThemeOverlay.Material3.MaterialCalendar.Fullscreen">
-
-        <item name="materialCalendarHeaderLayout">@style/App.materialCalendarHeaderLayout</item>
-        <item name="materialCalendarHeaderConfirmButton">@style/App.materialCalendarHeaderConfirmButton</item>
-    </style>
-
-    <!-- We want the full screen calendar widget to use the same header style (toolbar) as all edit-screens. -->
-    <style name="App.materialCalendarHeaderLayout" parent="Widget.Material3.MaterialCalendar.HeaderLayout">
-        <item name="android:background">?attr/appToolbarBackground</item>
-    </style>
-
-    <!-- The "Save" button in the header (toolbar).-->
-    <style name="App.materialCalendarHeaderConfirmButton" parent="Widget.Material3.Button.TextButton">
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
-        <item name="android:backgroundTint">?attr/colorButtonNormal</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
 </resources>

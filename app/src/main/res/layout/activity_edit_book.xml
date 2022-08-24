@@ -65,7 +65,7 @@
 
         <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton
             android:id="@+id/fab"
-            style="@style/FAB"
+            style="@style/Widget.App.FloatingActionButton"
             android:visibility="invisible"
             tools:visibility="visible"
             />

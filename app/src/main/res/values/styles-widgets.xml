@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2022 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+<resources>
+    <!-- Main FAB; contains an icon, no text-->
+    <style name="Widget.App.FloatingActionButton"
+           parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">bottom|end</item>
+        <item name="android:layout_margin">@dimen/fab_margin</item>
+    </style>
+
+    <!-- FAB buttons that appear as a menu above the actual FAB button.
+    These contain a text + an icon -->
+    <style name="Widget.App.ExtendedFloatingActionButton"
+           parent="Widget.Material3.ExtendedFloatingActionButton.Icon.Primary">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/fab_margin</item>
+        <item name="android:visibility">invisible</item>
+        <item name="iconGravity">end</item>
+        <item name="layout_anchorGravity">top|end</item>
+        <!-- the anchorGravity is set to the 'end', hence the layout gravity must be 'start'
+        to get everything aligned on the right (end) side. -->
+        <item name="android:layout_gravity">start</item>
+    </style>
+
+    <style name="Widget.App.TabLayout" parent="Widget.Material3.TabLayout">
+        <item name="tabMode">scrollable</item>
+        <!-- Both indicator and text color are set to colorSecondary. -->
+        <item name="tabIndicatorColor">?attr/colorSecondary</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.TabLayout</item>
+    </style>
+
+    <style name="Widget.App.ChipGroup" parent="Widget.Material3.ChipGroup">
+        <!-- the default was 8dp. -->
+        <item name="chipSpacingVertical">4dp</item>
+    </style>
+
+    <style name="Widget.App.Snackbar.TextView" parent="Widget.Material3.Snackbar.TextView">
+        <item name="android:maxLines">2</item>
+    </style>
+
+    <style name="Widget.App.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.CheckBox</item>
+    </style>
+
+    <style name="Widget.App.RadioButton" parent="Widget.Material3.CompoundButton.RadioButton">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.RadioButton</item>
+    </style>
+
+    <style name="Widget.App.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Switch</item>
+    </style>
+
+    <style name="Widget.App.LinearProgressIndicator" parent="Widget.Material3.LinearProgressIndicator">
+        <item name="android:padding">@dimen/progress_padding</item>
+    </style>
+
+    <style name="Widget.App.CircularProgressIndicator" parent="Widget.Material3.CircularProgressIndicator">
+        <item name="android:clickable">true</item>
+        <item name="android:alpha">0.8</item>
+        <item name="android:elevation">@dimen/progress_z</item>
+        <item name="android:indeterminate">true</item>
+        <item name="indicatorSize">96dp</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
+
+    <style name="ThemeOverlay.App.TabLayout" parent="">
+        <!-- selected -->
+        <item name="colorPrimary">?attr/colorSecondary</item>
+    </style>
+
+    <style name="ThemeOverlay.App.CheckBox" parent="">
+        <!-- checked -->
+        <item name="colorPrimary">?attr/colorSecondary</item>
+    </style>
+
+    <style name="ThemeOverlay.App.RadioButton" parent="">
+        <!-- checked -->
+        <item name="colorPrimary">?attr/colorSecondary</item>
+    </style>
+
+    <style name="ThemeOverlay.App.Switch" parent="">
+        <!-- checked -->
+        <item name="colorPrimary">?attr/colorSecondary</item>
+    </style>
+
+    <style name="ThemeOverlay.App.MaterialAlertDialog"
+           parent="ThemeOverlay.Material3.MaterialAlertDialog">
+
+        <!-- We MUST set the styles separately! Just setting the common buttonBarButtonStyle is NOT enough -->
+        <item name="buttonBarButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
+        <item name="buttonBarPositiveButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
+        <item name="buttonBarNegativeButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
+        <item name="buttonBarNeutralButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
+    </style>
+
+    <style name="ThemeOverlay.App.MaterialCalendarTheme"
+           parent="@style/ThemeOverlay.Material3.MaterialCalendar">
+
+        <!-- We MUST set the styles separately! Just setting the common buttonBarButtonStyle is NOT enough -->
+        <item name="buttonBarButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
+        <item name="buttonBarPositiveButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
+        <item name="buttonBarNegativeButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
+        <item name="buttonBarNeutralButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
+    </style>
+
+    <style name="ThemeOverlay.App.MaterialCalendarFullscreenTheme"
+           parent="ThemeOverlay.Material3.MaterialCalendar.Fullscreen">
+
+        <item name="materialCalendarHeaderLayout">
+            @style/ThemeOverlay.App.MaterialCalendarFullscreenTheme.MaterialCalendarHeaderLayout
+        </item>
+        <item name="materialCalendarHeaderConfirmButton">
+            @style/ThemeOverlay.App.MaterialCalendarFullscreenTheme.MaterialCalendarHeaderConfirmButton
+        </item>
+    </style>
+
+    <!-- We want the full screen calendar widget to use the same header style (toolbar) as all edit-screens. -->
+    <style name="ThemeOverlay.App.MaterialCalendarFullscreenTheme.MaterialCalendarHeaderLayout"
+           parent="Widget.Material3.MaterialCalendar.HeaderLayout">
+        <item name="android:background">?attr/colorPrimary</item>
+    </style>
+
+    <!-- The "Save" button in the header (toolbar).-->
+    <style name="ThemeOverlay.App.MaterialCalendarFullscreenTheme.MaterialCalendarHeaderConfirmButton"
+           parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:backgroundTint">?attr/colorButtonNormal</item>
+    </style>
+
+    <!-- used by the "buttonBarButtonStyle" attributes -->
+    <style name="ThemeOverlay.DialogButtonBarButtons"
+           parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+</resources>
