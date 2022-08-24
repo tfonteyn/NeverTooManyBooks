@@ -52,7 +52,7 @@ public class EditTocEntryDialogFragment
 
     /** Log tag. */
     public static final String TAG = "EditTocEntryDialogFrag";
-    private static final String BKEY_HAS_MULTIPLE_AUTHORS = TAG + ":hasMultipleAuthors";
+    private static final String BKEY_ANTHOLOGY = TAG + ":anthology";
     private static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
     private static final String BKEY_POSITION = TAG + ":pos";
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
@@ -78,7 +78,7 @@ public class EditTocEntryDialogFragment
     private String authorName;
 
     /** Helper to show/hide the author edit field. */
-    private boolean hasMultipleAuthors;
+    private boolean isAnthology;
 
     /**
      * No-arg constructor for OS use.
@@ -94,7 +94,7 @@ public class EditTocEntryDialogFragment
         final Bundle args = requireArguments();
         requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
         bookTitle = args.getString(DBKey.TITLE);
-        hasMultipleAuthors = args.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
+        isAnthology = args.getBoolean(BKEY_ANTHOLOGY, false);
         tocEntry = Objects.requireNonNull(args.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY);
         editPosition = args.getInt(BKEY_POSITION, 0);
 
@@ -127,7 +127,7 @@ public class EditTocEntryDialogFragment
         firstPublicationDate.ifPresent(date -> vb.firstPublication.setText(
                 String.valueOf(date.getYearValue())));
 
-        if (hasMultipleAuthors) {
+        if (isAnthology) {
             //noinspection ConstantConditions
             final ExtArrayAdapter<String> authorAdapter = new ExtArrayAdapter<>(
                     getContext(), R.layout.popup_dropdown_menu_item,
@@ -179,7 +179,7 @@ public class EditTocEntryDialogFragment
         // store changes
         tocEntry.setTitle(title);
         tocEntry.setFirstPublicationDate(firstPublicationDate);
-        if (hasMultipleAuthors) {
+        if (isAnthology) {
             tocEntry.setPrimaryAuthor(Author.from(authorName));
         }
 
@@ -194,7 +194,7 @@ public class EditTocEntryDialogFragment
         title = vb.title.getText().toString().trim();
         //noinspection ConstantConditions
         firstPublicationDate = new PartialDate(vb.firstPublication.getText().toString().trim());
-        if (hasMultipleAuthors) {
+        if (isAnthology) {
             authorName = vb.author.getText().toString().trim();
         }
     }
@@ -241,20 +241,20 @@ public class EditTocEntryDialogFragment
         /**
          * Constructor.
          *
-         * @param book               the entry belongs to
-         * @param position           of the tocEntry in the list
-         * @param tocEntry           to edit.
-         * @param hasMultipleAuthors Flag that will enable/disable the author edit field
+         * @param book        the entry belongs to
+         * @param position    of the tocEntry in the list
+         * @param tocEntry    to edit.
+         * @param isAnthology Flag that will enable/disable the author edit field
          */
         public void launch(@NonNull final Book book,
                            final int position,
                            @NonNull final TocEntry tocEntry,
-                           final boolean hasMultipleAuthors) {
+                           final boolean isAnthology) {
 
             final Bundle args = new Bundle(5);
             args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putString(DBKey.TITLE, book.getTitle());
-            args.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, hasMultipleAuthors);
+            args.putBoolean(BKEY_ANTHOLOGY, isAnthology);
             args.putInt(BKEY_POSITION, position);
             args.putParcelable(BKEY_TOC_ENTRY, tocEntry);
 
@@ -274,6 +274,7 @@ public class EditTocEntryDialogFragment
          * Callback handler.
          *
          * @param tocEntry the modified entry
+         * @param position the position in the list we we're editing
          */
         public abstract void onResult(@NonNull TocEntry tocEntry,
                                       int position);
