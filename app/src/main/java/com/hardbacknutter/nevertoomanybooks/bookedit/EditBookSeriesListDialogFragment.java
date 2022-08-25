@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
@@ -150,9 +151,10 @@ public class EditBookSeriesListDialogFragment
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getAllSeriesTitles());
         vb.seriesTitle.setAdapter(titleAdapter);
+        vb.seriesTitle.addTextChangedListener((ExtTextWatcher) s -> vb.lblSeries.setError(null));
         vb.seriesTitle.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
-                vb.seriesTitle.setError(null);
+                vb.lblSeries.setError(null);
             }
         });
 
