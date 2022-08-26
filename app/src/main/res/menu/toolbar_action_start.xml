@@ -31,7 +31,7 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@id/MENU_ACTION_CONFIRM"
-        android:title="@string/action_add"
-        app:actionLayout="@layout/toolbar_menu_buttons_add"
+        android:title="@string/action_go"
+        app:actionLayout="@layout/toolbar_menu_buttons_start"
         app:showAsAction="always" />
 </menu>

@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
@@ -141,7 +142,8 @@ public class BookshelfFiltersDialogFragment
     }
 
     @Override
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item,
+                                             @Nullable final Button button) {
         final int itemId = item.getItemId();
         if (itemId == R.id.MENU_ACTION_CONFIRM) {
             onAdd();

@@ -53,6 +53,7 @@ import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -218,8 +219,7 @@ public class AuthorWorksFragment
                                       (Parcelable) RebuildBooklist.Expanded);
 
                     if (vm.isAllBookshelves()) {
-                        intent.putExtra(BooksOnBookshelfViewModel.BKEY_BOOKSHELF,
-                                        Bookshelf.ALL_BOOKS);
+                        intent.putExtra(DBKey.FK_BOOKSHELF, Bookshelf.ALL_BOOKS);
                     }
                     startActivity(intent);
                 }

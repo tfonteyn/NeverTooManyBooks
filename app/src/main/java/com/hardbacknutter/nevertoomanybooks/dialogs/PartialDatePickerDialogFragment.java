@@ -25,6 +25,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.NumberPicker;
 
 import androidx.annotation.CallSuper;
@@ -207,7 +208,8 @@ public class PartialDatePickerDialogFragment
     }
 
     @Override
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item,
+                                             @Nullable final Button button) {
         if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
             if (saveChanges()) {
                 dismiss();

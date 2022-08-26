@@ -23,6 +23,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -131,7 +132,8 @@ public class EditPublisherDialogFragment
     }
 
     @Override
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item,
+                                             @Nullable final Button button) {
         if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
             if (saveChanges()) {
                 dismiss();

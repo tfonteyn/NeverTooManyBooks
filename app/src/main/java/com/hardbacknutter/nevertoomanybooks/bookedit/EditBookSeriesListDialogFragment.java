@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -191,7 +192,8 @@ public class EditBookSeriesListDialogFragment
     }
 
     @Override
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item,
+                                             @Nullable final Button button) {
         if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
             onAdd();
             return true;

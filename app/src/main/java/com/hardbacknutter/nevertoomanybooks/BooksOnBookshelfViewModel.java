@@ -74,9 +74,6 @@ public class BooksOnBookshelfViewModel
 
     static final String BKEY_PROPOSE_BACKUP = TAG + ":pb";
 
-    /** Allows to set an explicit shelf. */
-    static final String BKEY_BOOKSHELF = TAG + ":bs";
-
     private static final String ERROR_NULL_BOOKLIST = "booklist";
     /** Cache for all bookshelves. */
     private final List<Bookshelf> bookshelfList = new ArrayList<>();
@@ -180,9 +177,9 @@ public class BooksOnBookshelfViewModel
                 }
 
                 // check for an explicit bookshelf set
-                if (args.containsKey(BKEY_BOOKSHELF)) {
+                if (args.containsKey(DBKey.FK_BOOKSHELF)) {
                     // might be null, that's ok.
-                    bookshelf = Bookshelf.getBookshelf(context, args.getInt(BKEY_BOOKSHELF));
+                    bookshelf = Bookshelf.getBookshelf(context, args.getInt(DBKey.FK_BOOKSHELF));
                 }
             }
         } else {

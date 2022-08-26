@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -19,23 +19,31 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!--
+    If we want an outline to be drawn AROUND the icon, then we seem forced to use an "actionLayout"
+    with an icon-Button using the outline style.
+
+    Only alternative is to use an icon with outline builtin... which makes the actual icon to small.
+
+    Also: MENU_ACTION_CONFIRM must be used to have "FFBaseDialogFragment" handle some mapping automatically.
+-->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
-    <!-- Reminder: MENU_ACTION_CONFIRM must be used to
-         have "FFBaseDialogFragment" handle some mapping automatically. -->
-    <item
-        android:id="@id/MENU_ACTION_CONFIRM"
-        android:title="@string/action_select"
-        app:actionLayout="@layout/mnu_btn_confirm"
-        app:showAsAction="always" />
-    <item
-        android:id="@id/MENU_EDIT"
-        android:icon="@drawable/ic_baseline_edit_24"
-        android:title="@string/action_edit"
-        app:showAsAction="ifRoom" />
+
     <item
         android:id="@id/MENU_STYLE_LIST_TOGGLE"
         android:icon="@drawable/ic_baseline_unfold_more_24"
         android:title="@string/btn_more_ellipsis"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@id/MENU_EDIT"
+        android:icon="@drawable/ic_baseline_edit_24"
+        android:title="@string/action_edit"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@id/MENU_ACTION_CONFIRM"
+        android:title="@string/action_select"
+        app:actionLayout="@layout/toolbar_menu_buttons_select"
+        app:showAsAction="always" />
 </menu>

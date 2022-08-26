@@ -301,13 +301,12 @@ public class SyncWriterFragment
         @Override
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
-            menuInflater.inflate(R.menu.toolbar_action_go, menu);
+            menuInflater.inflate(R.menu.toolbar_action_start, menu);
 
             final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
             menuItem.setEnabled(vm.isReadyToGo());
             //noinspection ConstantConditions
             final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
-            button.setText(menuItem.getTitle());
             button.setOnClickListener(v -> onMenuItemSelected(menuItem));
         }
 

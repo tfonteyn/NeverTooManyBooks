@@ -496,13 +496,7 @@ public class BooksOnBookshelf
         vb.toolbar.addMenuProvider(new ToolbarMenuProvider(), this);
     }
 
-    /**
-     * Listener for clicks on the list.
-     */
     private void createBookshelfSpinner() {
-        // remove the default title to make space for the spinner.
-        setTitle("");
-
         // The list is initially empty here; loading the list and
         // setting/selecting the current shelf are both done in onResume
         bookshelfAdapter = new EntityArrayAdapter<>(this, vm.getBookshelfList());

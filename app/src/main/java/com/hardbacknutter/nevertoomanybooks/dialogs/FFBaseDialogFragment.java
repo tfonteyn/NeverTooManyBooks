@@ -64,6 +64,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
  * - force the height to a 'dimen' to work around the RecyclerView collapsing or growing to large.
  * - prevent the compensation of the 'actionBarSize'.
  * <p>
+ * Why an action-view in the toolbar?
+ * If we want an outline to be drawn AROUND the icon, then we seem forced to use an "actionLayout"
+ * with an icon-Button using the outline style.
+ * <p>
+ * Only alternative is to use an icon with outline builtin... which makes the actual icon to small.
+ * <p>
  * 2020-10-10: experiments done to reverse fullscreen/floating coding produced MORE problems...
  * In onViewCreated set MATCH_PARENT when running fullscreen, and do nothing when floating.
  * Set the width of the CoordinatorLayout to 360dp
@@ -79,8 +85,6 @@ public abstract class FFBaseDialogFragment
     private static final int USE_DEFAULT = -1;
     /** The <strong>Dialog</strong> Toolbar. Not to be confused with the Activity's Toolbar! */
     private Toolbar dialogToolbar;
-    @Nullable
-    private View buttonPanel;
     /** Show the dialog fullscreen (default) or as a floating dialog. */
     private boolean fullscreen;
     private boolean forceFullscreen;
@@ -197,13 +201,72 @@ public abstract class FFBaseDialogFragment
         super.onViewCreated(view, savedInstanceState);
 
         dialogToolbar = Objects.requireNonNull(view.findViewById(R.id.toolbar), "R.id.toolbar");
+        dialogToolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
+        dialogToolbar.setOnMenuItemClickListener(item -> onToolbarMenuItemClick(item, null));
 
-        // dialogs that are set as full-screen ONLY will NOT have a button bar.
-        buttonPanel = view.findViewById(R.id.buttonPanel);
+        final View buttonPanel = view.findViewById(R.id.buttonPanel);
 
-        hookupButtons();
+        if (fullscreen) {
+            // Always hide the button bar if there is one
+            if (buttonPanel != null) {
+                buttonPanel.setVisibility(View.GONE);
+            }
 
-        if (!fullscreen) {
+            // Hookup any/all buttons in the action-view.
+            final MenuItem menuItem = dialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
+            if (menuItem != null) {
+                final View actionView = menuItem.getActionView();
+
+                if (actionView instanceof Button) {
+                    actionView.setOnClickListener(v -> onToolbarMenuItemClick(
+                            menuItem, (Button) v));
+
+                } else if (actionView instanceof ViewGroup) {
+                    final ViewGroup av = (ViewGroup) actionView;
+                    for (int c = 0; c < av.getChildCount(); c++) {
+                        final View child = av.getChildAt(c);
+                        if (child instanceof Button) {
+                            child.setOnClickListener(v -> onToolbarMenuItemClick(
+                                    menuItem, (Button) v));
+                        }
+                    }
+                }
+            }
+
+        } else {
+            if (buttonPanel != null) {
+                // Always show the button bar
+                buttonPanel.setVisibility(View.VISIBLE);
+
+                // Hookup the button-bar 'cancel' and 'ok' buttons.
+                final MenuItem menuItem =
+                        dialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
+                if (menuItem != null) {
+                    // Always hide the menu item
+                    menuItem.setVisible(false);
+                    // the ok-button is a simple button on the button panel.
+                    // We copy the title/listener from the toolbar confirm menuItem
+                    final Button okButton = buttonPanel.findViewById(R.id.btn_ok);
+                    if (okButton != null) {
+                        okButton.setVisibility(View.VISIBLE);
+                        okButton.setText(menuItem.getTitle());
+                        okButton.setOnClickListener(
+                                v -> onToolbarMenuItemClick(menuItem, (Button) v));
+                    }
+                }
+
+                // Toolbar navigation icon is mapped to the cancel button. Both are visible.
+                final Button cancelBtn = buttonPanel.findViewById(R.id.btn_cancel);
+                if (cancelBtn != null) {
+                    // If the nav button has a description, use it for the 'cancel' button.
+                    final CharSequence text = dialogToolbar.getNavigationContentDescription();
+                    if (text != null) {
+                        cancelBtn.setText(text);
+                    }
+                    cancelBtn.setOnClickListener(this::onToolbarNavigationClick);
+                }
+            }
+
             final Resources res = getResources();
 
             if (widthDimenResId != 0) {
@@ -223,74 +286,15 @@ public abstract class FFBaseDialogFragment
         }
     }
 
-    public void setTitle(@StringRes final int titleResId) {
-        dialogToolbar.setTitle(titleResId);
-    }
-
     /**
-     * In fullscreen mode, hookup the navigation icon to the 'cancel' action,
-     * and the toolbar action view confirmation button to the 'ok' action.
-     * <p>
-     * In floating mode, hookup the navigation icon to the 'cancel' action,
-     * remove the toolbar action view, and display the button-bar instead.
-     * Then hookup the button-bar 'cancel' and 'ok' buttons.
+     * Set the title of the toolbar.
+     *
+     * @param resId Resource ID of a string to set as the title
      */
-    private void hookupButtons() {
-
-        dialogToolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
-        dialogToolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClick);
-
-        if (fullscreen) {
-            // Always hide the button bar
-            if (buttonPanel != null) {
-                buttonPanel.setVisibility(View.GONE);
-            }
-
-            // Hook-up the toolbar 'confirm' button with the menu 'title' attribute
-            // and redirect a click to our default menu listener.
-            final MenuItem menuItem = dialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
-            if (menuItem != null) {
-                // the ok-button is a button inside the action view of the toolbar menu item
-                //noinspection ConstantConditions
-                final Button okButton = menuItem.getActionView().findViewById(R.id.btn_confirm);
-                if (okButton != null) {
-                    okButton.setText(menuItem.getTitle());
-                    okButton.setOnClickListener(v -> onToolbarMenuItemClick(menuItem));
-                }
-            }
-
-        } else {
-            if (buttonPanel != null) {
-                // Always show the button bar
-                buttonPanel.setVisibility(View.VISIBLE);
-                // Toolbar confirmation menu item is mapped to the ok button.
-                final MenuItem menuItem =
-                        dialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
-                if (menuItem != null) {
-                    // The menu item is hidden.
-                    menuItem.setVisible(false);
-                    // the ok-button is a simple button on the button panel.
-                    final Button okButton = buttonPanel.findViewById(R.id.btn_ok);
-                    if (okButton != null) {
-                        okButton.setVisibility(View.VISIBLE);
-                        okButton.setText(menuItem.getTitle());
-                        okButton.setOnClickListener(v -> onToolbarMenuItemClick(menuItem));
-                    }
-                }
-
-                // Toolbar navigation icon is mapped to the cancel button. Both are visible.
-                final Button cancelBtn = buttonPanel.findViewById(R.id.btn_cancel);
-                if (cancelBtn != null) {
-                    // If the nav button has a description, use it for the 'cancel' button.
-                    final CharSequence text = dialogToolbar.getNavigationContentDescription();
-                    if (text != null) {
-                        cancelBtn.setText(text);
-                    }
-                    cancelBtn.setOnClickListener(this::onToolbarNavigationClick);
-                }
-            }
-        }
+    public void setTitle(@StringRes final int resId) {
+        dialogToolbar.setTitle(resId);
     }
+
 
     /**
      * Called when the user clicks the Navigation icon from the toolbar menu.
@@ -306,11 +310,14 @@ public abstract class FFBaseDialogFragment
      * Called when the user selects a menu item from the toolbar menu.
      * The default action ignores the selection.
      *
-     * @param item {@link MenuItem} that was clicked
+     * @param item   {@link MenuItem} that was clicked
+     * @param button the actual button if the menu-item has an action-view
+     *               otherwise {@code null}
      *
      * @return {@code true} if the event was handled, {@code false} otherwise.
      */
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item,
+                                             @Nullable final Button button) {
         return false;
     }
 

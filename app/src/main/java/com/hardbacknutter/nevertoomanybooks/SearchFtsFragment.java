@@ -146,7 +146,7 @@ public class SearchFtsFragment
         onBooklistUpdate(criteria.getBookIdList());
     }
 
-    private void onBooklistUpdate(final List<Long> idList) {
+    private void onBooklistUpdate(@NonNull final List<Long> idList) {
         final int count = idList.size();
         final String s = getResources().getQuantityString(R.plurals.n_books_found, count, count);
         getToolbar().setSubtitle(s);
@@ -292,12 +292,11 @@ public class SearchFtsFragment
         @Override
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
-            menuInflater.inflate(R.menu.toolbar_action_go, menu);
+            menuInflater.inflate(R.menu.toolbar_action_start, menu);
 
             final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
             //noinspection ConstantConditions
             final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
-            button.setText(R.string.btn_show_list);
             button.setOnClickListener(v -> onMenuItemSelected(menuItem));
         }
 

@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -167,7 +168,7 @@ public class EditBookAuthorListDialogFragment
         vb.author.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 hideKeyboard(v);
-                onAdd();
+                onAdd(false);
                 return true;
             }
             return false;
@@ -195,9 +196,10 @@ public class EditBookAuthorListDialogFragment
     }
 
     @Override
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item,
+                                             @Nullable final Button button) {
         if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-            onAdd();
+            onAdd(button != null && button.getId() == R.id.btn_add_details);
             return true;
         }
         return false;
@@ -205,8 +207,11 @@ public class EditBookAuthorListDialogFragment
 
     /**
      * Create a new entry.
+     *
+     * @param withDetails {@code true} to use the detailed dialog to add an Author
+     *                    {@code false} to just add the Author name as-is
      */
-    private void onAdd() {
+    private void onAdd(final boolean withDetails) {
         // clear any previous error
         vb.lblAuthor.setError(null);
 
@@ -217,7 +222,11 @@ public class EditBookAuthorListDialogFragment
         }
 
         final Author author = Author.from(name);
-        editLauncher.launch(vm.getBook().getTitle(), EditAction.Add, author);
+        if (withDetails) {
+            editLauncher.launch(vm.getBook().getTitle(), EditAction.Add, author);
+        } else {
+            add(author);
+        }
     }
 
     /**
