@@ -151,7 +151,7 @@
         <!--<module name="RequireThis"/>-->
         <module name="ReturnCount">
             <property name="max"
-                      value="3" />
+                      value="5" />
             <property name="maxForVoid"
                       value="5" />
         </module>
