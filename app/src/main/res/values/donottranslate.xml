@@ -196,8 +196,8 @@
     <!-- ListPreference - Booklist Filter -->
     <string-array name="pe_bob_filter_anthology">
         <item>@string/btn_all_books</item>
-        <item>@string/pe_bob_filter_anthology_no</item>
-        <item>@string/pe_bob_filter_anthology_yes</item>
+        <item>@string/X_pe_bob_filter_anthology_no</item>
+        <item>@string/X_pe_bob_filter_anthology_yes</item>
     </string-array>
 
     <!-- ListPreference - Booklist Filter -->

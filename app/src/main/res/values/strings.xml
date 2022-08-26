@@ -98,7 +98,7 @@
     <string name="debug_send_info_text">This will create a backup copy of your database as well as any log files and send it to the developers. If you do not wish to send any of these files, delete them from the mail attachments before sending.</string>
 
     <string name="acra_resDialogText">It looks like &APP_NAME; has crashed. If possible describe anything you think may be relevant below and press “OK” to send us an email about the crash. You will see the email before it is sent.</string>
-    <string name="acra_resToastText">&APP_NAME; has crashed unexpectedly. Please help us to make the application better by reporting this crash.</string>
+    <string name="X_acra_resToastText">&APP_NAME; has crashed unexpectedly. Please help us to make the application better by reporting this crash.</string>
     <string name="acra_resDialogCommentPrompt">Your comments (or just leave blank):</string>
 
     <!-- ####################################################################################### -->
@@ -107,7 +107,7 @@
     -->
     <!-- ####################################################################################### -->
     <!-- [VERIFIED] - Displayed when a web request failed because there was an input or output error. -->
-    <string name="httpErrorIO">Couldn\'t communicate with the server. Try again later.</string>
+    <string name="X_httpErrorIO">Couldn\'t communicate with the server. Try again later.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because the request timed out -->
     <string name="httpErrorTimeout">The connection to the server timed out.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because the a secure connection couldn't be made to the server.-->
@@ -140,7 +140,7 @@
     <string name="error_network_site_access_failed">There was a network problem while accessing %1$s. Please check if the website is up, and if the problem persists please contact support.</string>
     <!-- A website did respond to a request, but the response was not valid.
          We report to the user that the site is not working as expected. -->
-    <string name="error_network_site_has_problems">The website is not working as expected.</string>
+    <string name="X_error_network_site_has_problems">The website is not working as expected.</string>
 
     <!-- [VERIFIED] -->
     <string name="error_network_failed_try_again">Check connection and try again</string>
@@ -148,7 +148,7 @@
     <!-- Shared Storage file system access fails for some reason. No specifics. -->
     <string name="error_storage_not_accessible">Please check that storage is accessible.</string>
     <!-- Shared Storage file system access fails for some reason. With name of the type of storage. -->
-    <string name="error_storage_not_accessible_s">Storage not accessible: %1$s</string>
+    <string name="X_error_storage_not_accessible_s">Storage not accessible: %1$s</string>
 
     <!-- Displayed when any write operation to the database, or to Shared Storage fails
      FIXME: error_storage_not_writable is too widely used; must be split into multiple different messages -->
@@ -259,7 +259,7 @@
     <!-- Headings in 'about' dialog -->
     <string name="lbl_about_contact">Contact:</string>
 
-    <string name="txt_thank_you">Thank you!</string>
+    <string name="X_txt_thank_you">Thank you!</string>
 
     <!-- Shown in the heading of booklist. -->
     <string name="txt_displaying_n_books_in_m_entries">%1$d books, in %2$d entries</string>
@@ -274,9 +274,6 @@
     <string name="txt_select_fields_to_update">Selected fields will be updated from the internet. Unselected fields will remain unchanged.</string>
 
     <string name="txt_manage_fields">Selected fields are visible in the add/edit book screens. Unselected fields are hidden.</string>
-
-    <!-- Info message for the "editions" filter selection (part of the style settings). -->
-    <string name="info_filter_edition">Select 0 or more options and tap “OK” to apply them, or tap “All books” to disregard all of them.</string>
 
     <string name="txt_rebuild_scheduled">Rebuild scheduled</string>
 
@@ -432,26 +429,9 @@
     <string name="tip_reset_done">Tips have been reset</string>
 
     <string name="tip_book_search_by_text">Adding books by ISBN is much more accurate than adding by author and title and is generally preferred. Please remember you can sometimes find the correct barcode on the inside front cover.</string>
-    <string name="tip_booklist_styles_editor">
-        You can use this screen to customize the list of styles that will be displayed in your
-        default styles menu. A “tick” indicates the style will be shown in the list,
-        “un-tick” to hide it and vice versa.  If no styles are ticked, then all styles will be
-        shown. You can re-order the hierarchy by dragging the icon at the extreme right of each
-        row up or down. Long-pressing anywhere else in a row will allow you to edit or clone
-        the details of a specific style. If you cloned a style, and changed your mind, you
-        will need to delete it yourself.
-    </string>
-    <string name="tip_booklist_style_groups">
-        You can use this screen to modify the hierarchy of headings for a specific booklist style.
-        A “tick” indicates the heading will be shown in the list, “un-tick” to hide it
-        and vice versa.  You can re-order the hierarchy by dragging the icon at the extreme
-        right of each row up or down.
-    </string>
-    <string name="tip_booklist_style_properties">
-        You can use this screen to set the characteristics of a specific booklist style.
-        You can change the name, edit the groupings to change the hierarchy, and adjust a
-        variety of other preferences to build a style that you find useful.
-    </string>
+    <string name="tip_booklist_styles_editor">You can use this screen to customize the list of styles that will be displayed in your default styles menu. A “tick” indicates the style will be shown in the list, “un-tick” to hide it and vice versa.  If no styles are ticked, then all styles will be shown. You can re-order the hierarchy by dragging the icon at the extreme right of each row up or down. Long-pressing anywhere else in a row will allow you to edit or clone the details of a specific style. If you cloned a style, and changed your mind, you will need to delete it yourself.</string>
+    <string name="tip_booklist_style_groups">You can use this screen to modify the hierarchy of headings for a specific booklist style. A “tick” indicates the heading will be shown in the list, “un-tick” to hide it and vice versa.  You can re-order the hierarchy by dragging the icon at the extreme right of each row up or down.</string>
+    <string name="tip_booklist_style_properties">You can use this screen to set the characteristics of a specific booklist style. You can change the name, edit the groupings to change the hierarchy, and adjust a variety of other preferences to build a style that you find useful.</string>
 
     <string name="tip_authors_book_may_appear_more_than_once">If shown for every author, a single book may appear more than once in a list. In such a case deleting one of those books will delete all instances from the list.</string>
     <string name="tip_series_book_may_appear_more_than_once">If shown in every series, a single book may appear more than once in a list. In such a case deleting one of those books will delete all instances from the list.</string>
@@ -589,7 +569,7 @@
 
     <!-- category: search sites -->
     <string name="pt_website_order_and_enable">Reorder, enable &amp; disable</string>
-    <string name="pt_site_settings">Website settings</string>
+    <string name="X_pt_site_settings">Website settings</string>
 
     <!-- SwitchPreference - allow mobile network usage or limit to use wifi/ethernet only. -->
     <string name="pt_allow_mobile_data">Allow mobile data usage</string>
@@ -638,8 +618,8 @@
     <string name="pe_bob_filter_read_no">Books Unread</string>
     <string name="pe_bob_filter_signed_yes">Books Signed</string>
     <string name="pe_bob_filter_signed_no">Books Unsigned</string>
-    <string name="pe_bob_filter_anthology_yes">Anthologies</string>
-    <string name="pe_bob_filter_anthology_no">All but Anthologies</string>
+    <string name="X_pe_bob_filter_anthology_yes">Anthologies</string>
+    <string name="X_pe_bob_filter_anthology_no">All but Anthologies</string>
     <string name="pe_bob_filter_lend_out_yes">Books lend out</string>
     <string name="pe_bob_filter_lend_out_no">Books available</string>
     <string name="pe_bob_filter_isbn_yes">With ISBN</string>
@@ -729,8 +709,7 @@
     <!-- Dialog title. -->
     <string name="lbl_test_connection">Test connection</string>
 
-    <!-- A section header on a screen. -->
-    <string name="lbl_queue">Queue</string>
+    <string name="X_lbl_queue">Queue</string>
 
     <!-- ####################################################################################### -->
     <!-- == Import and Export. == -->
@@ -826,7 +805,7 @@
     <string name="menu_download_ebook_format">Download eBook (%1$s)</string>
     <string name="progress_msg_downloading">Downloading…</string>
     <string name="progress_end_download_successful">Download successful</string>
-    <string name="error_download_failed">Download failed</string>
+    <string name="X_error_download_failed">Download failed</string>
 
     <!-- ####################################################################################### -->
     <!-- == Booklist FAB menu options. == -->
@@ -956,7 +935,7 @@
     <!-- [VERIFIED] -->
     <string name="action_not_now">Not now</string>
     <!-- [VERIFIED] e.g. clearing a form. -->
-    <string name="action_clear">Clear</string>
+    <string name="X_action_clear">Clear</string>
     <!-- [VERIFIED] -->
     <string name="action_show_all">Show all</string>
     <!-- [VERIFIED] -->
@@ -964,7 +943,7 @@
     <!-- [VERIFIED] -->
     <string name="action_skip">Skip</string>
     <!-- [VERIFIED] -->
-    <string name="action_reset">Reset</string>
+    <string name="X_action_reset">Reset</string>
     <!-- [VERIFIED] -->
     <string name="action_reset_to_default">Reset to default</string>
     <!-- [VERIFIED] -->
@@ -978,7 +957,7 @@
     <!-- [VERIFIED] -->
     <string name="action_search">Search</string>
     <!-- [VERIFIED] -->
-    <string name="action_send">Send</string>
+    <string name="X_action_send">Send</string>
     <!-- [VERIFIED] 6 chars max -->
     <string name="X_action_next">Next</string>
     <!-- [VERIFIED] 6 chars max -->
@@ -987,11 +966,11 @@
     <string name="action_done">Done</string>
 
     <!-- [VERIFIED] - Title of wizard button prompting user to start data migration [CHAR LIMIT=32] -->
-    <string name="action_move">Move</string>
+    <string name="X_action_move">Move</string>
     <!-- [VERIFIED] -->
     <string name="X_action_execute">Execute</string>
 
-    <string name="action_validate">Validate</string>
+    <string name="X_action_validate">Validate</string>
 
     <string name="action_create">Create</string>
 
@@ -1027,7 +1006,7 @@
     <string name="menu_barcode_scan_continuous">Scan continuously</string>
     <string name="btn_clear_queue">Clear queue</string>
 
-    <string name="btn_show_list">Show list</string>
+    <string name="X_btn_show_list">Show list</string>
 
     <!-- Button text; shown only on larger screens - max 25 chars?
         On smaller screens, "tab_lbl_toc" is used.
@@ -1261,7 +1240,7 @@
     <string name="none">None</string>
     <string name="strict">Strict</string>
 
-    <string name="neither">Neither</string>
+    <string name="X_neither">Neither</string>
 
     <!-- 'and' as used in lists:  x and y -->
     <string name="list_and">and</string>
@@ -1342,7 +1321,7 @@
     <string name="lbl_covers_long">Cover images</string>
 
     <!-- [VERIFIED] -->
-    <string name="lbl_image">Image</string>
+    <string name="X_lbl_image">Image</string>
 
     <!-- number of pages; this is a field-label. -->
     <string name="lbl_pages">Pages</string>
@@ -1409,7 +1388,7 @@
     <string name="lbl_delete_removed_books">Delete local books which are no longer present on the server</string>
 
     <!-- checkbox for the TOC edit screen. -->
-    <string name="lbl_toc_multiple_authors">Multiple authors</string>
+    <string name="X_lbl_toc_multiple_authors">Multiple authors</string>
 
 
     <string name="lbl_select_fields">Select Fields</string>
@@ -1523,7 +1502,7 @@
     <string name="lbl_storage_quit_and_reinsert_sdcard">Quit and reinsert the correct SD CARD</string>
     <string name="lbl_storage_select">Use “%1$s”</string>
     <!-- [VERIFIED] -->
-    <string name="lbl_folder">Folder</string>
+    <string name="X_lbl_folder">Folder</string>
     <!-- [VERIFIED] - Notification title when moving data to external storage [CHAR LIMIT=32] -->
     <string name="lbl_moving_data">Moving data</string>
 
@@ -1627,6 +1606,7 @@
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Wishlist mapped bookshelf</string>
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>
     <string name="lbl_auto_updates">Allow automatic updates from the internet</string>
+    <string name="action_add_author_with_types">Add details</string>
 
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
