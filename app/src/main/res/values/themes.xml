@@ -106,14 +106,11 @@
         <item name="checkboxStyle">@style/Widget.App.CheckBox</item>
         <item name="radioButtonStyle">@style/Widget.App.RadioButton</item>
         <item name="materialSwitchStyle">@style/Widget.App.Switch</item>
+        <item name="switchPreferenceStyle">@style/Widget.App.SwitchPreference</item>
 
         <item name="floatingActionButtonStyle">@style/Widget.App.FloatingActionButton</item>
         <item name="extendedFloatingActionButtonStyle">@style/Widget.App.ExtendedFloatingActionButton</item>
 
-        <!-- these have no effect ?? -->
-        <item name="switchStyle">@style/Widget.App.Switch</item>
-        <item name="switchPreferenceCompatStyle">@style/Widget.App.Switch</item>
-        <item name="switchPreferenceStyle">@style/Widget.App.Switch</item>
 
         <!-- We MUST set these separately! Just setting the common buttonBarButtonStyle is NOT enough -->
         <item name="buttonBarButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>

@@ -71,6 +71,10 @@
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.Switch</item>
     </style>
 
+    <style name="Widget.App.SwitchPreference" parent="Preference.SwitchPreference.Material">
+        <item name="android:widgetLayout">@layout/widget_prefs_switch</item>
+    </style>
+
     <style name="Widget.App.LinearProgressIndicator" parent="Widget.Material3.LinearProgressIndicator">
         <item name="android:padding">@dimen/progress_padding</item>
     </style>
