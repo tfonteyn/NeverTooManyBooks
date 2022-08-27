@@ -163,7 +163,7 @@ public class EditBookPublisherListDialogFragment
         vb.publisher.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 hideKeyboard(v);
-                onAdd();
+                onAdd(false);
                 return true;
             }
             return false;
@@ -194,7 +194,7 @@ public class EditBookPublisherListDialogFragment
     protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item,
                                              @Nullable final Button button) {
         if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-            onAdd();
+            onAdd(button != null && button.getId() == R.id.btn_add_details);
             return true;
         }
         return false;
@@ -202,8 +202,11 @@ public class EditBookPublisherListDialogFragment
 
     /**
      * Create a new entry.
+     *
+     * @param withDetails {@code true} to use the detailed dialog to add a Publisher
+     *                    {@code false} to just add the Publisher name as-is
      */
-    private void onAdd() {
+    private void onAdd(final boolean withDetails) {
         // clear any previous error
         vb.lblPublisher.setError(null);
 
@@ -214,10 +217,11 @@ public class EditBookPublisherListDialogFragment
         }
 
         final Publisher publisher = Publisher.from(name);
-
-        //URGENT: decide if we want to use the dialog instead (as Author does)
-        add(publisher);
-        // editPublisherLauncher.launch(vm.getBook().getTitle(), EditAction.Add, publisher);
+        if (withDetails) {
+            editLauncher.launch(vm.getBook().getTitle(), EditAction.Add, publisher);
+        } else {
+            add(publisher);
+        }
     }
 
     /**

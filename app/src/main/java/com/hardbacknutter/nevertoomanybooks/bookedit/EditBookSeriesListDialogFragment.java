@@ -163,7 +163,7 @@ public class EditBookSeriesListDialogFragment
         vb.seriesNum.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 hideKeyboard(v);
-                onAdd();
+                onAdd(false);
                 return true;
             }
             return false;
@@ -195,7 +195,7 @@ public class EditBookSeriesListDialogFragment
     protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item,
                                              @Nullable final Button button) {
         if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-            onAdd();
+            onAdd(button != null && button.getId() == R.id.btn_add_details);
             return true;
         }
         return false;
@@ -203,8 +203,11 @@ public class EditBookSeriesListDialogFragment
 
     /**
      * Create a new entry.
+     *
+     * @param withDetails {@code true} to use the detailed dialog to add a Series
+     *                    {@code false} to just add the Series name as-is
      */
-    private void onAdd() {
+    private void onAdd(final boolean withDetails) {
         // clear any previous error
         vb.lblSeries.setError(null);
 
@@ -217,10 +220,11 @@ public class EditBookSeriesListDialogFragment
         final Series series = new Series(title);
         //noinspection ConstantConditions
         series.setNumber(vb.seriesNum.getText().toString().trim());
-
-        //URGENT: decide if we want to use the dialog instead (as Author does)
-        add(series);
-        // editSeriesLauncher.launch(vm.getBook().getTitle(), EditAction.Add, series);
+        if (withDetails) {
+            editLauncher.launch(vm.getBook().getTitle(), EditAction.Add, series);
+        } else {
+            add(series);
+        }
     }
 
     /**

@@ -33,6 +33,10 @@
         app:elevation="0dp"
         >
 
+        <!--
+            We only do a "quick-add" as the Publisher has no other fields aside of the name.
+            app:menu="@menu/toolbar_action_add2"
+        -->
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             style="@style/Toolbar.Dialog"

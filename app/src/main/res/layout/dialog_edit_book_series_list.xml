@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -33,6 +33,11 @@
         app:elevation="0dp"
         >
 
+        <!--
+            URGENT: decide if we want to use the dialog instead (as Author does)
+                    The only extra field is the "is complete"...
+            app:menu="@menu/toolbar_action_add2"
+        -->
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             style="@style/Toolbar.Dialog"
