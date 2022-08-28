@@ -134,7 +134,6 @@ public class Languages {
         if (source.isEmpty()) {
             return "";
         }
-        //noinspection ConstantConditions
         return getCacheFile().getString(source, source);
     }
 

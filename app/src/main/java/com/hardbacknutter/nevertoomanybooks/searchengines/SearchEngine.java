@@ -111,8 +111,6 @@ public interface SearchEngine
 
     /**
      * Get the site url.
-     * <p>
-     * Override if the URL needs to be user configurable.
      *
      * @return url, including scheme.
      */
@@ -202,6 +200,7 @@ public interface SearchEngine
      *                       {@code false} if it would be beneficial.
      * @param callerIdString String used to flag in preferences if we showed the alert from
      *                       that caller already or not.
+     * @param onResult       called after user selects an outcome
      *
      * @return {@code true} if an alert is currently shown
      */
@@ -267,9 +266,9 @@ public interface SearchEngine
     }
 
     @NonNull
-    default <FRT> FutureHttpGet<FRT> createFutureGetRequest() {
+    default <T> FutureHttpGet<T> createFutureGetRequest() {
         final SearchEngineConfig config = getConfig();
-        final FutureHttpGet<FRT> httpGet = new FutureHttpGet<>(config.getLabelResId());
+        final FutureHttpGet<T> httpGet = new FutureHttpGet<>(config.getLabelResId());
         httpGet.setConnectTimeout(config.getConnectTimeoutInMs())
                .setReadTimeout(config.getReadTimeoutInMs())
                .setThrottler(config.getThrottler());
@@ -372,6 +371,7 @@ public interface SearchEngine
          *                    The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
+         *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
          */
@@ -410,6 +410,7 @@ public interface SearchEngine
          *                    The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
+         *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
          */
@@ -444,6 +445,7 @@ public interface SearchEngine
          * @param size      of image to get.
          *
          * @return fileSpec, or {@code null} when none found (or any other failure)
+         *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
          */
@@ -470,6 +472,7 @@ public interface SearchEngine
          * @return ArrayList with a single fileSpec (This is for convenience, as the result
          *         is meant to be stored into the book-data as a parcelable array;
          *         and it allows extending to multiple images at a future time)
+         *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
          */
@@ -511,6 +514,7 @@ public interface SearchEngine
          * @param validIsbn to search for, <strong>must</strong> be valid.
          *
          * @return a list of isbn numbers for alternative editions of the original, can be empty.
+         *
          * @throws CredentialsException on authentication/login failures
          */
         @WorkerThread

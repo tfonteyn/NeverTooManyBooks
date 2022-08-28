@@ -140,7 +140,6 @@ public class StripInfoAuth
      */
     @AnyThread
     public static boolean isUsernameSet(@NonNull final Context context) {
-        //noinspection ConstantConditions
         return !PreferenceManager.getDefaultSharedPreferences(context)
                                  .getString(PK_HOST_USER, "")
                                  .isEmpty();
@@ -222,7 +221,6 @@ public class StripInfoAuth
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final String username = prefs.getString(PK_HOST_USER, "");
         final String password = prefs.getString(PK_HOST_PASS, "");
-        //noinspection ConstantConditions
         if (username.isEmpty() || password.isEmpty()) {
             throw new CredentialsException(R.string.site_stripinfo_be, "missing password");
         }

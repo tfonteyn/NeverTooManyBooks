@@ -252,12 +252,10 @@ public class CalibreContentServer
         // We're assuming Calibre will be setup with basic-auth as per their SSL recommendations
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final String username = prefs.getString(PK_HOST_USER, "");
-        //noinspection ConstantConditions
         if (username.isEmpty()) {
             authHeader = null;
         } else {
             final String password = prefs.getString(PK_HOST_PASS, "");
-            //noinspection ConstantConditions
             authHeader = createBasicAuthHeader(username, password);
         }
 
@@ -291,7 +289,6 @@ public class CalibreContentServer
     @NonNull
     @AnyThread
     public static String getHostUrl(@NonNull final Context context) {
-        //noinspection ConstantConditions
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getString(PK_HOST_URL, "");
     }
@@ -306,7 +303,6 @@ public class CalibreContentServer
 
         // If the old one is different then the current selection, release the previous Uri
         final String oldFolder = prefs.getString(PK_LOCAL_FOLDER_URI, "");
-        //noinspection ConstantConditions
         if (!oldFolder.equals(uri.toString())) {
             getFolderUri(context).ifPresent(
                     oldUri -> contentResolver.releasePersistableUriPermission(
@@ -335,7 +331,6 @@ public class CalibreContentServer
 
         final String folder = PreferenceManager.getDefaultSharedPreferences(context)
                                                .getString(PK_LOCAL_FOLDER_URI, "");
-        //noinspection ConstantConditions
         if (folder.isEmpty()) {
             return Optional.empty();
         }

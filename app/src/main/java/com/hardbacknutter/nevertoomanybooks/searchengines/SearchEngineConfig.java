@@ -187,7 +187,6 @@ public final class SearchEngineConfig {
 
     @NonNull
     public String getHostUrl() {
-        //noinspection ConstantConditions
         return ServiceLocator.getPreferences().getString(
                 prefKey + Prefs.pk_suffix_host_url, hostUrl);
     }
