@@ -82,7 +82,7 @@ public class TocFragment
             registerForActivityResult(new ShowBookPagerContract(), o -> o.ifPresent(
                     data -> {
                         aVm.updateFragmentResult(data);
-                        if (bookChangedListener != null && data.modified) {
+                        if (bookChangedListener != null && data.isModified()) {
                             bookChangedListener.onBookUpdated(vm.getBookId(), (String) null);
                         }
                     }));
@@ -194,11 +194,10 @@ public class TocFragment
                             .putExtra(BooksOnBookshelfViewModel.BKEY_LIST_STATE,
                                       (Parcelable) RebuildBooklist.Expanded);
 
-                    //TODO: see AuthorWorksFragment
-//                    if (vm.isAllBookshelves()) {
-//                        intent.putExtra(BooksOnBookshelfViewModel.BKEY_BOOKSHELF,
-//                                        Bookshelf.ALL_BOOKS);
-//                    }
+                    // TODO: see AuthorWorksFragment
+                    // if (vm.isAllBookshelves()) {
+                    //     intent.putExtra(DBKey.FK_BOOKSHELF, Bookshelf.ALL_BOOKS);
+                    // }
                     startActivity(intent);
                 }
                 break;
@@ -221,8 +220,10 @@ public class TocFragment
         /**
          * Constructor.
          *
-         * @param context Current context.
-         * @param tocList to show
+         * @param context         Current context
+         * @param primaryAuthor   the primary author from the book
+         * @param tocList         to show
+         * @param tocEntryHandler the handler to act on row clicks
          */
         TocAdapter(@NonNull final Context context,
                    @Nullable final Author primaryAuthor,
@@ -235,13 +236,16 @@ public class TocFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-
             final Holder holder = super.onCreateViewHolder(parent, viewType);
 
-            //URGENT TEST
-            // click -> get the book(s) for that entry and display.
-//            holder.itemView.setOnClickListener(
-//             v -> tocEntryHandler.viewBook(holder.getBindingAdapterPosition()));
+            holder.itemView.setOnClickListener(v -> {
+                // If there's only one book, there is no point doing this
+                // as we're already on the book.
+                final int position = holder.getBindingAdapterPosition();
+                if (getWork(position).getBookCount() > 1) {
+                    tocEntryHandler.viewBook(position);
+                }
+            });
 
             return holder;
         }

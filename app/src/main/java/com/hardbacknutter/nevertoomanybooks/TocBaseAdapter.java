@@ -45,6 +45,13 @@ public abstract class TocBaseAdapter
         extends RecyclerView.Adapter<TocBaseAdapter.Holder>
         implements FastScroller.PopupTextProvider {
 
+    /** x/y offsets more or less arbitrary. */
+    private static final int XOFF = 24;
+    private static final int YOFF = -160;
+
+    @NonNull
+    protected final TocEntryHandler tocEntryHandler;
+
     /** Cached inflater. */
     @NonNull
     private final LayoutInflater inflater;
@@ -52,8 +59,6 @@ public abstract class TocBaseAdapter
     private final List<AuthorWork> works;
     @Nullable
     private final Author mainAuthor;
-    @NonNull
-    protected final TocEntryHandler tocEntryHandler;
     @NonNull
     private final String tocStr;
     @NonNull
@@ -70,9 +75,10 @@ public abstract class TocBaseAdapter
     /**
      * Constructor.
      *
-     * @param context    Current context
-     * @param mainAuthor the author who 'owns' the works list
-     * @param works      to show
+     * @param context         Current context
+     * @param mainAuthor      the author who 'owns' the works list
+     * @param works           to show
+     * @param tocEntryHandler the handler to act on row clicks
      */
     @SuppressLint("UseCompatLoadingForDrawables")
     public TocBaseAdapter(@NonNull final Context context,
@@ -126,15 +132,18 @@ public abstract class TocBaseAdapter
             final String msg = context.getString(R.string.lbl_story_in_multiple_books,
                                                  holder.vb.title.getText().toString(),
                                                  titles);
-            // x/y offsets more or less arbitrary
-            StandardDialogs.infoPopup(holder.vb.btnType, 24, -160, msg);
+            StandardDialogs.infoPopup(holder.vb.btnType, XOFF, YOFF, msg);
         } else {
             final String msg = context.getString(R.string.lbl_story_in_single_book,
                                                  holder.vb.title.getText().toString(),
                                                  titles);
-            // x/y offsets more or less arbitrary
-            StandardDialogs.infoPopup(holder.vb.btnType, 24, -160, msg);
+            StandardDialogs.infoPopup(holder.vb.btnType, XOFF, YOFF, msg);
         }
+    }
+
+    @NonNull
+    protected AuthorWork getWork(final int position) {
+        return works.get(position);
     }
 
     @Override
@@ -175,8 +184,7 @@ public abstract class TocBaseAdapter
         }
 
         final Author primaryAuthor = works.get(position).getPrimaryAuthor();
-        // only display a primary author for this work if its different
-        // from the main author
+        // only display a primary author for this work if its different from the main author
         if (primaryAuthor != null && !primaryAuthor.equals(mainAuthor)) {
             holder.vb.author.setVisibility(View.VISIBLE);
             holder.vb.author.setText(primaryAuthor.getLabel(inflater.getContext()));
