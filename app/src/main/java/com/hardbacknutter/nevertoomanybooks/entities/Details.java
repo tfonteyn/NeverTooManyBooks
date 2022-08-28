@@ -24,6 +24,5 @@ public enum Details {
     Full,
     Normal,
     Short,
-    Auto;
-
+    Auto
 }
