@@ -318,7 +318,7 @@ public class CoverBrowserDialogFragment
         if (imageFileInfo != null) {
             final Optional<File> file = imageFileInfo.getFile();
             if (file.isPresent()) {
-                previewLoader.fromFile(vb.preview, file.get(), (bitmap) -> {
+                previewLoader.fromFile(vb.preview, file.get(), bitmap -> {
                     // Set AFTER it was successfully loaded and displayed for maximum reliability
                     vm.setSelectedFile(file.get());
                     vb.preview.setVisibility(View.VISIBLE);
