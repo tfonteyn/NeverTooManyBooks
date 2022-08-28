@@ -286,9 +286,10 @@ public class AuthorWorksFragment
         /**
          * Constructor.
          *
-         * @param context     Current context
-         * @param worksAuthor the author who 'owns' the works list
-         * @param tocList     to show
+         * @param context         Current context
+         * @param worksAuthor     the author who 'owns' the works list
+         * @param tocList         to show
+         * @param tocEntryHandler the handler to act on row clicks
          */
         TocAdapter(@NonNull final Context context,
                    @NonNull final Author worksAuthor,

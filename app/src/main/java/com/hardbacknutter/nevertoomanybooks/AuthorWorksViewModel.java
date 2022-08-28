@@ -234,7 +234,7 @@ public class AuthorWorksViewModel
 
     void onBookEditFinished(@NonNull final EditBookOutput data) {
         // ignore the data.bookId
-        if (data.modified) {
+        if (data.isModified()) {
             dataModified = true;
         }
     }

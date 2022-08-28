@@ -59,8 +59,7 @@ public class ShowBookDetailsActivityViewModel
     }
 
     void updateFragmentResult(@NonNull final EditBookOutput data) {
-        // ignore the data.bookId
-        if (data.modified) {
+        if (data.isModified()) {
             modified = true;
         }
     }

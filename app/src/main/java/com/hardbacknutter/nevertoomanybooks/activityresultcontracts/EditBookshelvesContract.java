@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,6 +42,9 @@ public class EditBookshelvesContract
 
     /**
      * Create the result which {@link #parseResult(int, Intent)} will receive.
+     *
+     * @param selectedBookshelf the Bookshelf which is currently selected,
+     *                          or {@code null} for none.
      *
      * @return Intent
      */

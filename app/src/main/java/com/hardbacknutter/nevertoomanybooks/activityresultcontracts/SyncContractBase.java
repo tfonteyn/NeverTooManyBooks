@@ -23,22 +23,20 @@ import android.app.Activity;
 import android.content.Intent;
 
 import androidx.activity.result.contract.ActivityResultContract;
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import java.util.EnumSet;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public abstract class SyncContractBase
-        extends ActivityResultContract<Void, Integer> {
+        extends ActivityResultContract<Void, EnumSet<SyncContractBase.Outcome>> {
 
     /** No result / cancelled / failed. */
-    public static final int RESULT_NONE = 0;
+    private static final int RESULT_NONE = 0;
     /** Data was exported/written; no local changes done. */
     public static final int RESULT_WRITE_DONE = 1;
     /** Data was imported; i.e. local changes were made. */
@@ -49,24 +47,30 @@ public abstract class SyncContractBase
 
     @Override
     @NonNull
-    @Outcome
-    public Integer parseResult(final int resultCode,
-                               @Nullable final Intent intent) {
+    public EnumSet<SyncContractBase.Outcome> parseResult(final int resultCode,
+                                                         @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
+        final EnumSet<Outcome> outcome = EnumSet.noneOf(Outcome.class);
+
         if (intent == null || resultCode != Activity.RESULT_OK) {
-            return RESULT_NONE;
+            return outcome;
         }
-        return intent.getIntExtra(BKEY_RESULT, RESULT_NONE);
+
+        final int bits = intent.getIntExtra(BKEY_RESULT, RESULT_NONE);
+        if ((bits & RESULT_READ_DONE) != 0) {
+            outcome.add(Outcome.Read);
+        }
+        if ((bits & RESULT_WRITE_DONE) != 0) {
+            outcome.add(Outcome.Write);
+        }
+        return outcome;
     }
 
-    @IntDef(flag = true, value = {RESULT_NONE,
-                                  RESULT_WRITE_DONE,
-                                  RESULT_READ_DONE})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Outcome {
-
+    public enum Outcome {
+        Read,
+        Write
     }
 }

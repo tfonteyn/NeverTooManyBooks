@@ -148,16 +148,16 @@ public class EditStyleContract
 
         /** The uuid which was passed into the {@link Input#uuid} for editing. */
         @NonNull
-        public final String templateUuid;
+        private final String templateUuid;
 
         /** SOMETHING was modified. This normally means that BoB will need to rebuild. */
-        public final boolean modified;
+        private final boolean modified;
 
         /**
          * Either a new UUID if we cloned a style, or the UUID of the style we edited.
          */
         @Nullable
-        public final String uuid;
+        private final String uuid;
 
         private Output(@NonNull final String templateUuid,
                        final boolean modified,
@@ -165,6 +165,28 @@ public class EditStyleContract
             this.templateUuid = templateUuid;
             this.modified = modified;
             this.uuid = uuid;
+        }
+
+        @NonNull
+        public String getTemplateUuid() {
+            return templateUuid;
+        }
+
+        public boolean isModified() {
+            return modified;
+        }
+
+        /**
+         * Get the UUID.
+         *
+         * @return (Optional) a non-blank UUID
+         */
+        @NonNull
+        public Optional<String> getUuid() {
+            if (uuid == null || uuid.isBlank()) {
+                return Optional.empty();
+            }
+            return Optional.of(uuid);
         }
     }
 }

@@ -33,15 +33,25 @@ public final class EditBookOutput {
 
     private static final String BKEY_MODIFIED = TAG + ":m";
     /** The BoB should reposition on this book. */
-    public final long repositionToBookId;
+    private final long repositionToBookId;
 
     /** SOMETHING was modified. This normally means that BoB will need to rebuild. */
-    public final boolean modified;
+    private final boolean modified;
 
     private EditBookOutput(final long repositionToBookId,
                            final boolean modified) {
         this.repositionToBookId = repositionToBookId;
         this.modified = modified;
+    }
+
+    public static void toBundle(@NonNull final EditBookOutput input,
+                                @NonNull final Bundle output) {
+        output.putLong(DBKey.FK_BOOK, input.getRepositionToBookId());
+        output.putBoolean(BKEY_MODIFIED, input.isModified());
+    }
+
+    public long getRepositionToBookId() {
+        return repositionToBookId;
     }
 
     /**
@@ -60,10 +70,8 @@ public final class EditBookOutput {
                            .putExtra(BKEY_MODIFIED, modified);
     }
 
-    public static void toBundle(@NonNull final EditBookOutput input,
-                                @NonNull final Bundle output) {
-        output.putLong(DBKey.FK_BOOK, input.repositionToBookId);
-        output.putBoolean(BKEY_MODIFIED, input.modified);
+    public boolean isModified() {
+        return modified;
     }
 
     @NonNull

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,17 +22,16 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 public final class UpdateBooksOutput {
 
     /** The BoB should reposition on this book. */
-    public final long repositionToBookId;
+    private final long repositionToBookId;
 
     /** We processed a single book. */
-    public final long bookModified;
+    private final long bookModified;
 
     /** We processed a list of books. This normally means that BoB will need to rebuild. */
-    public final boolean listModified;
+    private final boolean listModified;
 
     /** We processed a single book. */
-    @SuppressWarnings("WeakerAccess")
-    public final long lastBookIdProcessed;
+    private final long lastBookIdProcessed;
 
     UpdateBooksOutput(final long repositionToBookId,
                       final long bookModified,
@@ -42,5 +41,21 @@ public final class UpdateBooksOutput {
         this.bookModified = bookModified;
         this.listModified = listModified;
         this.lastBookIdProcessed = lastBookIdProcessed;
+    }
+
+    public long getRepositionToBookId() {
+        return repositionToBookId;
+    }
+
+    public long getBookModified() {
+        return bookModified;
+    }
+
+    public boolean isListModified() {
+        return listModified;
+    }
+
+    public long getLastBookIdProcessed() {
+        return lastBookIdProcessed;
     }
 }

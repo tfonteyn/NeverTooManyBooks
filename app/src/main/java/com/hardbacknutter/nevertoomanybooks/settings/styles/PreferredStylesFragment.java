@@ -112,14 +112,15 @@ public class PreferredStylesFragment
     @SuppressLint("NotifyDataSetChanged")
     private final ActivityResultLauncher<EditStyleContract.Input> editStyleContract =
             registerForActivityResult(new EditStyleContract(), o -> o.ifPresent(data -> {
-                if (data.modified) {
-                    //noinspection ConstantConditions
-                    @Nullable
-                    final Style style = vm.getStyle(getContext(), data.uuid);
-                    if (style != null) {
-                        vm.onStyleEdited(style, data.templateUuid);
+                if (data.isModified()) {
+                    if (data.getUuid().isPresent()) {
+                        //noinspection ConstantConditions
+                        @Nullable
+                        final Style style = vm.getStyle(getContext(), data.getUuid().get());
+                        if (style != null) {
+                            vm.onStyleEdited(style, data.getTemplateUuid());
+                        }
                     }
-
                     // always update ALL rows as the order might have changed
                     listAdapter.notifyDataSetChanged();
                 }

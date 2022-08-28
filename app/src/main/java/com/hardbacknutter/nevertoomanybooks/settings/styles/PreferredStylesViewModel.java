@@ -127,12 +127,8 @@ public class PreferredStylesViewModel
 
     @Nullable
     Style getStyle(@NonNull final Context context,
-                   @Nullable final String uuid) {
-        if (uuid != null && !uuid.isEmpty()) {
-            return stylesHelper.getStyle(context, uuid);
-        } else {
-            return null;
-        }
+                   @NonNull final String uuid) {
+        return stylesHelper.getStyle(context, uuid);
     }
 
     int getSelectedPosition() {

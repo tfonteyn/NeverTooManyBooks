@@ -270,7 +270,7 @@ public class ShowBookDetailsFragment
      */
     private void onBookAutoUpdateFinished(@NonNull final UpdateBooksOutput data) {
         // only override if 'true'; i.e. if we got an id back
-        if (data.bookModified > 0) {
+        if (data.getBookModified() > 0) {
             aVm.updateFragmentResult();
         }
 
@@ -287,7 +287,7 @@ public class ShowBookDetailsFragment
      * @param data details
      */
     private void onBookEditFinished(@NonNull final EditBookOutput data) {
-        if (data.modified) {
+        if (data.isModified()) {
             // needed when running inside the ViewPager
             aVm.updateFragmentResult();
 

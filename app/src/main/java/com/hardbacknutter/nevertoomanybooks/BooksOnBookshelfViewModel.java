@@ -664,18 +664,18 @@ public class BooksOnBookshelfViewModel
      * @param data returned from the update contract
      */
     void onBookAutoUpdateFinished(@NonNull final UpdateBooksOutput data) {
-        if (data.listModified) {
+        if (data.isListModified()) {
             // we processed a list, just force a rebuild
             forceRebuildInOnResume = true;
 
-        } else if (data.bookModified > 0) {
+        } else if (data.getBookModified() > 0) {
             //URGENT: we processed a single book, we should NOT do a full rebuild
             forceRebuildInOnResume = true;
         }
 
         // If we got an reposition id back, make any potential rebuild re-position to it.
-        if (data.repositionToBookId > 0) {
-            currentCenteredBookId = data.repositionToBookId;
+        if (data.getRepositionToBookId() > 0) {
+            currentCenteredBookId = data.getRepositionToBookId();
         }
     }
 
@@ -685,13 +685,13 @@ public class BooksOnBookshelfViewModel
      * @param data returned from the view/edit contract
      */
     void onBookEditFinished(@NonNull final EditBookOutput data) {
-        if (data.modified) {
+        if (data.isModified()) {
             forceRebuildInOnResume = true;
         }
 
         // If we got an reposition id back, make any potential rebuild re-position to it.
-        if (data.repositionToBookId > 0) {
-            currentCenteredBookId = data.repositionToBookId;
+        if (data.getRepositionToBookId() > 0) {
+            currentCenteredBookId = data.getRepositionToBookId();
         }
     }
 
@@ -724,8 +724,8 @@ public class BooksOnBookshelfViewModel
                              @NonNull final EditStyleContract.Output data) {
         // We get here from the StylePickerDialogFragment (i.e. the style menu)
         // when the user choose to EDIT a style.
-        if (data.uuid != null && !data.uuid.isEmpty()) {
-            onStyleChanged(context, data.uuid);
+        if (data.getUuid().isPresent()) {
+            onStyleChanged(context, data.getUuid().get());
 
             // ALWAYS rebuild here, even when the style was not modified
             // as we're handling this as a style-change
