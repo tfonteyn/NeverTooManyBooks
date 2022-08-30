@@ -24,7 +24,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.math.MathUtils;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
+@SuppressWarnings("WeakerAccess")
 public class EditBookshelvesViewModel
         extends ViewModel {
 
@@ -99,7 +99,7 @@ public class EditBookshelvesViewModel
 
     @NonNull
     Bookshelf getBookshelf(final int position) {
-        return Objects.requireNonNull(list.get(position), String.valueOf(position));
+        return Objects.requireNonNull(list.get(position), () -> String.valueOf(position));
     }
 
     int getSelectedPosition() {
@@ -108,16 +108,6 @@ public class EditBookshelvesViewModel
 
     void setSelectedPosition(final int position) {
         selectedPosition = position;
-    }
-
-    /**
-     * Verify and set the position 'above' as the new selected position.
-     *
-     * @return the new 'selected' position
-     */
-    public int findAndSelect(final int position) {
-        selectedPosition = MathUtils.clamp(position - 1, 0, list.size() - 1);
-        return selectedPosition;
     }
 
     /**
