@@ -162,16 +162,14 @@ public final class SyncReaderProcessor
                             if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
                                 // check if it's missing or empty.
                                 final Optional<File> file = book.getPersistedCoverFile(0);
-                                //noinspection SimplifyOptionalCallChains
-                                if (!file.isPresent()) {
+                                if (file.isEmpty()) {
                                     filteredMap.put(field.key, field);
                                 }
 
                             } else if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[1])) {
                                 // check if it's missing or empty.
                                 final Optional<File> file = book.getPersistedCoverFile(1);
-                                //noinspection SimplifyOptionalCallChains
-                                if (!file.isPresent()) {
+                                if (file.isEmpty()) {
                                     filteredMap.put(field.key, field);
                                 }
 

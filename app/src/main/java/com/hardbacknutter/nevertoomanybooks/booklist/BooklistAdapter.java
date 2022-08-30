@@ -1234,8 +1234,7 @@ public class BooklistAdapter
             // 2. Cache did not have it, or we were not allowed to check.
             final Optional<File> file = Book.getPersistedCoverFile(uuid, 0);
             // Check if the file exists; if it does not...
-            //noinspection SimplifyOptionalCallChains
-            if (!file.isPresent()) {
+            if (file.isEmpty()) {
                 // leave the space blank, but preserve the width BASED on the coverLongestSide!
                 final ViewGroup.LayoutParams lp = coverView.getLayoutParams();
                 lp.width = (int) (coverLongestSide * HW_RATIO);
