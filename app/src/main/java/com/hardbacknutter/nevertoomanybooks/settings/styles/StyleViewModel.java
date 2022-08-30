@@ -70,7 +70,7 @@ public class StyleViewModel
 
             final Style dbStyle = ServiceLocator.getInstance().getStyles()
                                                 .getStyle(context, uuid);
-            Objects.requireNonNull(dbStyle, "uuid not found: " + uuid);
+            Objects.requireNonNull(dbStyle, () -> "uuid not found: " + uuid);
 
             @EditStyleContract.EditAction
             final int action = args.getInt(EditStyleContract.BKEY_ACTION,
