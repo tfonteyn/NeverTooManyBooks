@@ -286,6 +286,9 @@ public class PreferredStylesFragment
         return false;
     }
 
+    /**
+     * The glue between fragment and adapter.
+     */
     private interface PositionHandler {
 
         int getSelectedPosition();
@@ -294,6 +297,10 @@ public class PreferredStylesFragment
 
         /**
          * Find the best candidate position/style and make that one the 'selected'.
+         *
+         * @param position current position
+         *
+         * @return the new 'selected' position
          */
         int findPreferredAndSelect(int position);
 
