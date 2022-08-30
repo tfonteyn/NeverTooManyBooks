@@ -89,7 +89,8 @@ public class StripInfoReader
         implements DataReader<SyncReaderMetaData, ReaderResults> {
 
     @SuppressWarnings("WeakerAccess")
-    public static final String SYNC_PROCESSOR_PREFIX = StripInfoAuth.PREF_KEY + ".fields.update.";
+    public static final String SYNC_PROCESSOR_PREFIX = EngineId.StripInfoBe.getPreferenceKey()
+                                                       + ".fields.update.";
     private static final String TAG = "StripInfoReader";
     @NonNull
     private final Updates updateOption;
@@ -209,7 +210,7 @@ public class StripInfoReader
 
         searchEngine.setCaller(progressListener);
 
-        final StripInfoAuth loginHelper = new StripInfoAuth(searchEngine.getHostUrl());
+        final StripInfoAuth loginHelper = new StripInfoAuth();
         final String userId = loginHelper.login(context);
 
         searchEngine.setLoginHelper(loginHelper);

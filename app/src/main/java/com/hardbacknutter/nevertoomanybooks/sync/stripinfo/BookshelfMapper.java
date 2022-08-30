@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
@@ -35,10 +36,10 @@ public class BookshelfMapper {
 
     /** The {@link Bookshelf} to which the wishlist is mapped. */
     public static final String PK_BOOKSHELF_WISHLIST =
-            StripInfoAuth.PREF_KEY + ".bookshelf.wishlist";
+            EngineId.StripInfoBe.getPreferenceKey() + ".bookshelf.wishlist";
     /** The {@link Bookshelf} to which the owned-books list is mapped. */
     public static final String PK_BOOKSHELF_OWNED =
-            StripInfoAuth.PREF_KEY + ".bookshelf.owned";
+            EngineId.StripInfoBe.getPreferenceKey() + ".bookshelf.owned";
 
     @Nullable
     private static Bookshelf getBookshelf(@NonNull final Context context,

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,11 +23,12 @@ import androidx.annotation.AnyThread;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
 public class StripInfoHandler {
 
     /** Whether to show any sync menus at all. */
-    public static final String PK_ENABLED = StripInfoAuth.PREF_KEY + ".enabled";
+    public static final String PK_ENABLED = EngineId.StripInfoBe.getPreferenceKey() + ".enabled";
 
     /**
      * Check if SYNC menus should be shown at all. This does not affect searching.

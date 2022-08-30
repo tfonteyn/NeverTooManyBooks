@@ -199,7 +199,7 @@ public class StripInfoSearchEngine
 
         if (StripInfoAuth.isLoginToSearch(context)) {
             if (loginHelper == null) {
-                loginHelper = new StripInfoAuth(getHostUrl());
+                loginHelper = new StripInfoAuth();
                 try {
                     loginHelper.login(context);
                 } catch (@NonNull final IOException | StorageException e) {

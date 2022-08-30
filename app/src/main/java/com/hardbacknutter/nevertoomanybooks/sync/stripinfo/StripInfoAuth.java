@@ -59,11 +59,13 @@ public class StripInfoAuth
         implements ConnectionValidator {
 
     /** Preferences prefix. */
-    public static final String PREF_KEY = EngineId.StripInfoBe.getPreferenceKey();
+    private static final String PREF_KEY = EngineId.StripInfoBe.getPreferenceKey();
+
     public static final String PK_HOST_USER = PREF_KEY + ".host.user";
     public static final String PK_HOST_PASS = PREF_KEY + ".host.password";
 
     static final String PK_LAST_SYNC = PREF_KEY + ".last.sync.date";
+
     private static final String PK_LOGIN_TO_SEARCH = PREF_KEY + ".login.to.search";
     /** the id returned in the cookie. Stored for easy access. */
     private static final String PK_HOST_USER_ID = PREF_KEY + ".host.userId";
@@ -85,29 +87,21 @@ public class StripInfoAuth
     private final FutureHttpPost<Void> futureHttpPost;
 
     @NonNull
-    private final String siteUrl;
+    private final String hostUrl;
 
     @NonNull
     private final CookieManager cookieManager;
 
     public StripInfoAuth() {
-        this(SearchEngineRegistry
-                     .getInstance()
-                     .getByEngineId(EngineId.StripInfoBe)
-                     .getHostUrl());
-
-    }
-
-    public StripInfoAuth(@NonNull final String siteUrl) {
-        this.siteUrl = siteUrl;
-
         // Setup BEFORE doing first request!
         cookieManager = ServiceLocator.getInstance().getCookieManager();
 
         final SearchEngineConfig config = SearchEngineRegistry
                 .getInstance().getByEngineId(EngineId.StripInfoBe);
 
-        futureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
+        hostUrl = config.getHostUrl();
+
+        futureHttpPost = new FutureHttpPost<>(config.getLabelResId());
         futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())
                       .setReadTimeout(config.getReadTimeoutInMs())
                       .setThrottler(StripInfoSearchEngine.THROTTLER);
@@ -232,7 +226,7 @@ public class StripInfoAuth
             return userId;
         }
 
-        final String url = siteUrl + USER_LOGIN_URL;
+        final String url = hostUrl + USER_LOGIN_URL;
         // Charset needs API 33
         //noinspection CharsetObjectCanBeUsed
         final String postBody = new StringJoiner("&")
