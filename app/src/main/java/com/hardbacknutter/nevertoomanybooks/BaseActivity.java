@@ -210,7 +210,7 @@ public abstract class BaseActivity
         //noinspection ConstantConditions
         final View anchor = navigationView.findViewById(itemId);
         // Not 100% we are using a legal way of getting the View...
-        Objects.requireNonNull(anchor, "navigationView.findViewById(" + itemId + ")");
+        Objects.requireNonNull(anchor, () -> "navigationView.findViewById(" + itemId + ")");
         return anchor;
     }
 
