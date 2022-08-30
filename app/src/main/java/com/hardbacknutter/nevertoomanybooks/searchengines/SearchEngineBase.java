@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -113,8 +114,36 @@ public abstract class SearchEngineBase
 
     @NonNull
     @Override
-    public SearchEngineConfig getConfig() {
-        return config;
+    public EngineId getEngineId() {
+        return config.getEngineId();
+    }
+
+    @NonNull
+    @Override
+    public String getName(@NonNull final Context context) {
+        return config.getName(context);
+    }
+
+    @NonNull
+    @Override
+    public String getHostUrl() {
+        return config.getHostUrl();
+    }
+
+    @Override
+    public boolean prefersIsbn10() {
+        return config.prefersIsbn10();
+    }
+
+    @Override
+    public boolean supportsMultipleCoverSizes() {
+        return config.supportsMultipleCoverSizes();
+    }
+
+    @NonNull
+    @Override
+    public Locale getLocale(@NonNull final Context context) {
+        return config.getLocale();
     }
 
     /**
@@ -164,6 +193,11 @@ public abstract class SearchEngineBase
     }
 
     @Override
+    public void reset() {
+        setCaller(null);
+    }
+
+    @Override
     public void setCaller(@Nullable final Cancellable caller) {
         this.caller = caller;
         cancelRequested.set(false);
@@ -174,6 +208,21 @@ public abstract class SearchEngineBase
         // caller being null should only happen when we check if we're cancelled
         // before a search was started.
         return cancelRequested.get() || caller == null || caller.isCancelled();
+    }
+
+    /**
+     * Convenience method which uses the engines specific network configuration
+     * to create a suitable {@link FutureHttpGet}.
+     *
+     * @return new {@link FutureHttpGet} instance
+     */
+    @NonNull
+    public <T> FutureHttpGet<T> createFutureGetRequest() {
+        final FutureHttpGet<T> httpGet = new FutureHttpGet<>(config.getLabelResId());
+        httpGet.setConnectTimeout(config.getConnectTimeoutInMs())
+               .setReadTimeout(config.getReadTimeoutInMs())
+               .setThrottler(config.getThrottler());
+        return httpGet;
     }
 
     /**

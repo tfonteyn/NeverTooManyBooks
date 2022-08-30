@@ -40,8 +40,6 @@ import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
-import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
-import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -79,23 +77,12 @@ public interface SearchEngine
     String TAG = "SearchEngine";
 
     /**
-     * Get the configuration for this engine.
-     *
-     * @return config
-     */
-    @AnyThread
-    @NonNull
-    SearchEngineConfig getConfig();
-
-    /**
      * Get the engine id.
      *
      * @return engine id
      */
     @NonNull
-    default EngineId getEngineId() {
-        return getConfig().getEngineId();
-    }
+    EngineId getEngineId();
 
     /**
      * Get the name for this engine.
@@ -105,9 +92,7 @@ public interface SearchEngine
      * @return name
      */
     @NonNull
-    default String getName(@NonNull final Context context) {
-        return getConfig().getName(context);
-    }
+    String getName(@NonNull Context context);
 
     /**
      * Get the host url.
@@ -116,15 +101,10 @@ public interface SearchEngine
      */
     @AnyThread
     @NonNull
-    default String getHostUrl() {
-        return getConfig().getHostUrl();
-    }
+    String getHostUrl();
 
     /**
      * Get the Locale for this engine.
-     * <p>
-     * Override if the Locale needs to be user configurable.
-     * (Presumably depending on the host url: see {@link AmazonSearchEngine} for an example)
      *
      * @param context Current context
      *
@@ -132,9 +112,28 @@ public interface SearchEngine
      */
     @AnyThread
     @NonNull
-    default Locale getLocale(@NonNull final Context context) {
-        return getConfig().getLocale();
-    }
+    Locale getLocale(@NonNull Context context);
+
+    /**
+     * Indicates if ISBN code should be forced down to ISBN10 (if possible) before a search.
+     * <p>
+     * By default, we search on the ISBN entered by the user.
+     * A preference setting per site can override this.
+     * If set, and an ISBN13 is passed in, it will be translated to an ISBN10 before starting
+     * the search.
+     *
+     * @return {@code true} if ISBN10 should be preferred.
+     */
+    boolean prefersIsbn10();
+
+    /**
+     * {@link SearchEngine.CoverByIsbn} only.
+     * <p>
+     * A site can support a single (default) or multiple sizes.
+     *
+     * @return {@code true} if multiple sizes are supported.
+     */
+    boolean supportsMultipleCoverSizes();
 
     /**
      * Generic test to be implemented by individual site search managers to check if
@@ -153,13 +152,8 @@ public interface SearchEngine
     /**
      * Reset the engine, ready for a new search.
      * This is called by {@link Site#getSearchEngine()}.
-     * <p>
-     * The default implementation calls {@code setCaller(null)}.
-     * Custom implementations should do the same.
      */
-    default void reset() {
-        setCaller(null);
-    }
+    void reset();
 
     /**
      * Set the caller to allow <strong>PULL</strong> checks if we should cancel the search.
@@ -226,7 +220,7 @@ public interface SearchEngine
         }
 
         if (showAlert) {
-            final String siteName = getConfig().getName(context);
+            final String siteName = getName(context);
 
             final AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_warning_24)
@@ -262,16 +256,6 @@ public interface SearchEngine
         }
 
         return showAlert;
-    }
-
-    @NonNull
-    default <T> FutureHttpGet<T> createFutureGetRequest() {
-        final SearchEngineConfig config = getConfig();
-        final FutureHttpGet<T> httpGet = new FutureHttpGet<>(config.getLabelResId());
-        httpGet.setConnectTimeout(config.getConnectTimeoutInMs())
-               .setReadTimeout(config.getReadTimeoutInMs())
-               .setThrottler(config.getThrottler());
-        return httpGet;
     }
 
     enum RegistrationAction {
@@ -487,7 +471,7 @@ public interface SearchEngine
             final ArrayList<String> list = new ArrayList<>();
             String fileSpec = searchCoverByIsbn(context, validIsbn, cIdx,
                                                 Size.Large);
-            if (fileSpec == null && getConfig().supportsMultipleCoverSizes()) {
+            if (fileSpec == null && supportsMultipleCoverSizes()) {
                 fileSpec = searchCoverByIsbn(context, validIsbn, cIdx,
                                              Size.Medium);
                 if (fileSpec == null) {

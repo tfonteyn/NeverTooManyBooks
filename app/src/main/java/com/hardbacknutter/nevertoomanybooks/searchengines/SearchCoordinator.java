@@ -739,7 +739,7 @@ public class SearchCoordinator
         } else if (isbn.isValid(true)
                    && searchEngine instanceof SearchEngine.ByIsbn) {
             task.setSearchBy(SearchTask.By.Isbn);
-            if (searchEngine.getConfig().isSearchPrefersIsbn10() && isbn.isIsbn10Compat()) {
+            if (searchEngine.prefersIsbn10() && isbn.isIsbn10Compat()) {
                 task.setIsbn(isbn.asText(ISBN.Type.Isbn10));
             } else {
                 task.setIsbn(isbn.asText());

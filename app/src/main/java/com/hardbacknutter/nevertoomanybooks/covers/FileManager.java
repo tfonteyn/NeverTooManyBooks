@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
@@ -159,11 +158,9 @@ public class FileManager {
 
                         searchEngine.setCaller(caller);
 
-                        final SearchEngineConfig seConfig = searchEngine.getConfig();
-
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                             Log.d(TAG, "search|SEARCHING"
-                                       + "|searchEngine=" + seConfig.getName(context)
+                                       + "|searchEngine=" + searchEngine.getName(context)
                                        + "|isbn=" + isbn
                                        + "|cIdx=" + cIdx
                                        + "|size=" + size);
@@ -181,7 +178,7 @@ public class FileManager {
 
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                                 Log.d(TAG, "search|FAILED"
-                                           + "|searchEngine=" + seConfig.getName(context)
+                                           + "|searchEngine=" + searchEngine.getName(context)
                                            + "|imageFileInfo=" + imageFileInfo,
                                       e);
                             }
@@ -191,12 +188,12 @@ public class FileManager {
                         if (fileSpec != null) {
                             // we got a file
                             imageFileInfo = new ImageFileInfo(isbn, fileSpec, size,
-                                                              seConfig.getEngineId());
+                                                              searchEngine.getEngineId());
                             files.put(isbn, imageFileInfo);
 
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                                 Log.d(TAG, "search|SUCCESS"
-                                           + "|searchEngine=" + seConfig.getName(context)
+                                           + "|searchEngine=" + searchEngine.getName(context)
                                            + "|imageFileInfo=" + imageFileInfo);
                             }
                             // abort search, we got an image
@@ -205,7 +202,7 @@ public class FileManager {
                         } else {
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                                 Log.d(TAG, "search|NO FILE"
-                                           + "|searchEngine=" + seConfig.getName(context)
+                                           + "|searchEngine=" + searchEngine.getName(context)
                                            + "|isbn=" + isbn
                                            + "|cIdx=" + cIdx
                                            + "|size=" + size);
@@ -214,7 +211,7 @@ public class FileManager {
 
                         // if the site we just searched only supports one image,
                         // disable it for THIS search
-                        if (!seConfig.supportsMultipleCoverSizes()) {
+                        if (!searchEngine.supportsMultipleCoverSizes()) {
                             currentSites.remove(site.getEngineId());
                         }
                     } else {
