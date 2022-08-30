@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,12 +27,7 @@ import androidx.core.content.FileProvider;
 
 import java.io.File;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-
 /**
- * <a href="https://developer.android.com/reference/androidx/core/content/FileProvider">
- * https://developer.android.com/reference/androidx/core/content/FileProvider</a>
- * <p>
  * Note that the only reason we create this subclass is to have a central point to manage the
  * authority string transparently to the rest of the app.
  * <p>
@@ -41,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
  * {@code
  * <provider
  *     android:name=".utils.GenericFileProvider"
- *     android:authorities="${applicationId}.GenericFileProvider"
+ *     android:authorities="com.hardbacknutter.nevertoomanybooks.GenericFileProvider"
  *     android:exported="false"
  *     android:grantUriPermissions="true">
  *     <meta-data
@@ -52,23 +47,37 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
  *  res/xml/provider_paths.xml
  * {@code
  * <paths>
+ *     <!-- Access limited to the Pictures directory. -->
  *     <external-files-path
  *         name="external-path-pics"
  *         path="Pictures/" />
+ *     <!-- Log and Upgrades; just expose the root. -->
  *     <files-path
  *         name="files-path-root"
  *         path="./" />
+ *     <!-- For the debug-report attachments, just expose the root. -->
  *     <cache-path
  *         name="cache-path-root"
  *         path="./" />
  * </paths>
  * }
  * </pre>
+ *
+ * @see <a href="https://developer.android.com/reference/androidx/core/content/FileProvider">
+ *         FileProvider</a>
+ * @see <a href="https://developer.android.com/reference/android/content/ContentProvider.html">
+ *         ContentProvider</a>
  */
 public class GenericFileProvider
         extends FileProvider {
 
-    private static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".GenericFileProvider";
+    /**
+     * The authorities value must match:
+     * - AndroidManifest.xml/provider/android:authorities
+     * - GenericFileProvider.java/AUTHORITY
+     */
+    private static final String AUTHORITY =
+            "com.hardbacknutter.nevertoomanybooks.GenericFileProvider";
 
     /**
      * Get a FileProvider URI for the given file.

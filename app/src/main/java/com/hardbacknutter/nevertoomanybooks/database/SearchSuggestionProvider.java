@@ -19,21 +19,58 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
+import android.view.Menu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 
+/**
+ * We're using the default search action view and the standard "SUGGEST" Uri and MIME types.
+ * <p>
+ * Our query returns book titles as the {@link SearchManager#SUGGEST_COLUMN_INTENT_DATA}.
+ * <p>
+ * The {@link #AUTHORITY} must match the Manifest attribute {@code "android:authorities"}:
+ * <pre>
+ * {@code
+ * <provider
+ *      android:name=".database.SearchSuggestionProvider"
+ *      android:authorities="com.hardbacknutter.nevertoomanybooks.SearchSuggestionProvider"
+ *      android:exported="false" />
+ * }
+ *
+ * res/xml/searchable.xml
+ * {@code
+ *  <searchable
+ *     xmlns:android="http://schemas.android.com/apk/res/android"
+ *     android:hint="@string/lbl_search_for_books"
+ *     android:label="@string/lbl_search_for_books"
+ *     android:searchSuggestAuthority="com.hardbacknutter.nevertoomanybooks.SearchSuggestionProvider"
+ *     android:searchSuggestIntentAction="android.intent.action.VIEW"
+ *     android:searchSuggestThreshold="2"
+ *     android:searchSuggestSelection=" ?"
+ *     />
+ * }
+ * </pre>
+ *
+ * @see MenuUtils#setupSearchActionView(Activity, Menu)
+ * @see <a href="https://developer.android.com/reference/android/content/ContentProvider.html">
+ *         ContentProvider</a>
+ * @see <a href="https://developer.android.com/guide/topics/providers/content-provider-creating#MIMETypes">
+ *         MIMETypes</a>
+ */
 public class SearchSuggestionProvider
         extends ContentProvider {
 
@@ -43,7 +80,8 @@ public class SearchSuggestionProvider
      * - src/main/res/xml/searchable.xml/searchSuggestAuthority
      * - SearchSuggestionProvider.java/AUTHORITY
      */
-    private static final String AUTHORITY = ".SearchSuggestionProvider";
+    private static final String AUTHORITY =
+            "com.hardbacknutter.nevertoomanybooks.SearchSuggestionProvider";
 
     /** Standard Local-search. */
     private static final String SEARCH_SUGGESTIONS =
@@ -59,16 +97,18 @@ public class SearchSuggestionProvider
             + " WHERE " + TBL_FTS_BOOKS.getName() + " MATCH ?";
 
     /** Uri and query support. Arbitrary code to indicate a match. */
-    private static final int URI_MATCH_SUGGEST = 1;
+    private static final int SUGGEST_URI_PATH_ID = 1;
+
     /** Uri and query support. */
-    private UriMatcher uriMatcher;
+    private static final UriMatcher URI_MATCHER;
+
+    static {
+        URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
+        URI_MATCHER.addURI(AUTHORITY, SearchManager.SUGGEST_URI_PATH_QUERY, SUGGEST_URI_PATH_ID);
+    }
 
     @Override
     public boolean onCreate() {
-        uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        //noinspection ConstantConditions
-        uriMatcher.addURI(getContext().getPackageName() + AUTHORITY,
-                          SearchManager.SUGGEST_URI_PATH_QUERY, URI_MATCH_SUGGEST);
         return true;
     }
 
@@ -80,25 +120,15 @@ public class SearchSuggestionProvider
                         @Nullable final String[] selectionArgs,
                         @Nullable final String sortOrder) {
 
-        if (uriMatcher.match(uri) == URI_MATCH_SUGGEST) {
+        if (URI_MATCHER.match(uri) == SUGGEST_URI_PATH_ID) {
             if (selectionArgs == null || selectionArgs[0] == null || selectionArgs[0].isEmpty()) {
                 return null;
             }
 
             final String query = FtsDao.prepareSearchText(selectionArgs[0], null);
-            // do we have anything to search for?
             if (!query.isEmpty()) {
-                //noinspection UnnecessaryLocalVariable
-                final Cursor cursor = ServiceLocator.getInstance().getDb()
-                                                    .rawQuery(SEARCH_SUGGESTIONS,
-                                                              new String[]{query});
-
-                //  if (cursor != null) {
-                //      //noinspection ConstantConditions
-                //     cursor.setNotificationUri(getContext().getContentResolver(), uri);
-                //  }
-
-                return cursor;
+                return ServiceLocator.getInstance().getDb()
+                                     .rawQuery(SEARCH_SUGGESTIONS, new String[]{query});
             }
         }
 
@@ -108,21 +138,8 @@ public class SearchSuggestionProvider
     @Nullable
     @Override
     public String getType(@NonNull final Uri uri) {
-        if (uriMatcher.match(uri) == URI_MATCH_SUGGEST) {
+        if (URI_MATCHER.match(uri) == SUGGEST_URI_PATH_ID) {
             return SearchManager.SUGGEST_MIME_TYPE;
-        }
-
-        // not sure this is actually useful.
-        final int length = uri.getPathSegments().size();
-        if (length >= 1) {
-            final String base = uri.getPathSegments().get(0);
-            if ("suggestions".equals(base)) {
-                if (length == 1) {
-                    return "vnd.android.cursor.dir/suggestion";
-                } else if (length == 2) {
-                    return "vnd.android.cursor.item/suggestion";
-                }
-            }
         }
 
         throw new IllegalArgumentException(String.valueOf(uri));
