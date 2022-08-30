@@ -574,13 +574,12 @@ public final class SyncReaderProcessor
 
         @NonNull
         public SyncReaderProcessor build() {
-            for (final Map.Entry<String, String> entry : relatedFields.entrySet()) {
-                final SyncField syncField = fields.get(entry.getKey());
+            relatedFields.forEach((key, relatedKey) -> {
+                final SyncField syncField = fields.get(key);
                 if (syncField != null && syncField.getAction() != SyncAction.Skip) {
-                    final String relatedKey = entry.getValue();
                     fields.put(relatedKey, syncField.createRelatedField(relatedKey));
                 }
-            }
+            });
             return new SyncReaderProcessor(fields);
         }
     }
