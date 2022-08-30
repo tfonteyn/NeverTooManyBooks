@@ -167,10 +167,12 @@ public enum EngineId
      * Register all {@link SearchEngine} classes.
      * <p>
      * NEWTHINGS: adding a new search engine: add the search engine class
+     *
+     * @param registry singleton
      */
     static void registerSearchEngineClasses(@NonNull final SearchEngineRegistry registry) {
-        //dev note: we could scan for the annotation or for classes implementing the interface...
-        // ... but that means traversing the class path. Not really worth the hassle.
+        //dev note: we could scan for annotations/interfaces on the engine classes...
+        // Not really worth the hassle.
         // For the BuildConfig.ENABLE_ usage: see app/build.gradle
         // The order added is not relevant
 
