@@ -211,6 +211,7 @@ public class SearchBookUpdatesViewModel
 
 
         // Add the external-id fields at the end.
+        // The label is the search engine name, the value is the external id field name
         final SortedMap<String, String> sidMap = new TreeMap<>();
         SearchEngineRegistry.getInstance().getAll().forEach(seConfig -> {
             final Domain domain = seConfig.getExternalIdDomain();
