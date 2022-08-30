@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
@@ -122,7 +123,7 @@ public class PreferredStylesViewModel
 
     @NonNull
     Style getStyle(final int position) {
-        return Objects.requireNonNull(styleList.get(position), String.valueOf(position));
+        return Objects.requireNonNull(styleList.get(position), () -> String.valueOf(position));
     }
 
     @Nullable
@@ -141,6 +142,8 @@ public class PreferredStylesViewModel
 
     /**
      * Look up and down in the list to find a 'preferred' row, and set it 'selected'.
+     *
+     * @param position current position
      *
      * @return the new 'selected' position
      */
@@ -227,13 +230,10 @@ public class PreferredStylesViewModel
         // based on the uuid, find the style in the list.
         // Don't use 'indexOf' (use id instead), as the incoming style object
         // was parcelled along the way, which *might* have changed it.
-        int editedRow = -1;
-        for (int i = 0; i < styleList.size(); i++) {
-            if (styleList.get(i).getId() == style.getId()) {
-                editedRow = i;
-                break;
-            }
-        }
+        int editedRow = IntStream.range(0, styleList.size())
+                                 .filter(i -> styleList.get(i).getId() == style.getId())
+                                 .findFirst()
+                                 .orElse(-1);
 
         if (editedRow < 0) {
             // Not in the list; we're adding a new Style.
