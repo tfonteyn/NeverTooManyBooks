@@ -160,6 +160,9 @@ public final class SearchEngineConfig {
     /**
      * Get the <strong>standard</strong> Locale for this engine.
      *
+     * <strong>MUST NOT be called directly;
+     * instead use {@link SearchEngine#getLocale(Context)}</strong>
+     *
      * @return site locale
      */
     @NonNull
