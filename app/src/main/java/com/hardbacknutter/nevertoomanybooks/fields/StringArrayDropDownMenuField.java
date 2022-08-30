@@ -98,7 +98,7 @@ public class StringArrayDropDownMenuField
 
         final AutoCompleteTextView view = getView();
         if (view != null) {
-            if (rawValue >= 0 && rawValue < adapter.getCount()) {
+            if (rawValue != null && rawValue >= 0 && rawValue < adapter.getCount()) {
                 view.setText(adapter.getItem(rawValue), false);
             } else {
                 view.setText(adapter.getItem(0), false);

@@ -105,7 +105,7 @@ public class ListChipGroupField<T extends ParcelableEntity>
             for (final T entity : listSupplier.get()) {
 
                 final Chip chip = new Chip(context, null, R.attr.appChipFilterStyle);
-                chip.setChecked(rawValue.contains(entity));
+                chip.setChecked(rawValue != null && rawValue.contains(entity));
                 chip.setOnClickListener(editChipListener);
 
                 // RTL-friendly Chip Layout

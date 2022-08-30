@@ -61,7 +61,7 @@ public class RatingBarField
 
         final RatingBar view = getView();
         if (view != null) {
-            view.setRating(rawValue);
+            view.setRating(getValue());
         }
     }
 

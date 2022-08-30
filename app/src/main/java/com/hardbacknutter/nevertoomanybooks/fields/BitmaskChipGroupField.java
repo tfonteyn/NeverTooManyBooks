@@ -98,10 +98,10 @@ public class BitmaskChipGroupField
 
             final Context context = chipGroup.getContext();
 
+            final int bits = getValue();
             mapSupplier.get().forEach((key, resId) -> {
-
                 final Chip chip = new Chip(context, null, R.attr.appChipFilterStyle);
-                chip.setChecked((key & rawValue) != 0);
+                chip.setChecked((key & bits) != 0);
                 chip.setOnClickListener(editChipListener);
 
                 // RTL-friendly Chip Layout

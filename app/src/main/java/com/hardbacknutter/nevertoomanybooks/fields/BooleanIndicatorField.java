@@ -73,9 +73,9 @@ public class BooleanIndicatorField
         if (view != null) {
             if (view instanceof Checkable) {
                 view.setVisibility(View.VISIBLE);
-                ((Checkable) view).setChecked(rawValue);
+                ((Checkable) view).setChecked(getValue());
             } else {
-                view.setVisibility(rawValue ? View.VISIBLE : View.GONE);
+                view.setVisibility(getValue() ? View.VISIBLE : View.GONE);
             }
         }
     }

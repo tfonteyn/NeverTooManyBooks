@@ -81,7 +81,7 @@ public class CompoundButtonField
 
         final CompoundButton view = getView();
         if (view != null) {
-            view.setChecked(rawValue);
+            view.setChecked(getValue());
         }
     }
 
