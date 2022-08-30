@@ -196,7 +196,7 @@ public abstract class SearchEngineBase
                             @Nullable final Size size)
             throws StorageException {
 
-        final File tmpFile = imageDownloader.getTempFile(getConfig().getFilenameSuffix(),
+        final File tmpFile = imageDownloader.getTempFile(getEngineId().getPreferenceKey(),
                                                          bookId, cIdx, size);
         return imageDownloader.fetch(url, tmpFile)
                               .map(File::getAbsolutePath)

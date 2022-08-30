@@ -151,17 +151,6 @@ public final class SearchEngineConfig {
         return context.getString(labelResId);
     }
 
-    /**
-     * Get the file suffix used for cover files.
-     *
-     * @return suffix string
-     */
-    @SuppressWarnings("WeakerAccess")
-    @NonNull
-    public String getFilenameSuffix() {
-        return engineId.getPreferenceKey();
-    }
-
     @NonNull
     public String getHostUrl() {
         return ServiceLocator.getPreferences().getString(
