@@ -49,12 +49,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -96,10 +96,9 @@ public class AmazonSearchEngine
     /** Website character encoding. */
     static final String CHARSET = "UTF-8";
 
-    /** Preferences prefix. */
-    private static final String PREF_KEY = "amazon";
-    /** Type: {@code String}. */
-    public static final String PK_HOST_URL = PREF_KEY + Prefs.pk_suffix_host_url;
+    /** Preferences - Type: {@code String}. */
+    public static final String PK_HOST_URL = EngineId.Amazon.getPreferenceKey()
+                                             + Prefs.pk_suffix_host_url;
     /** Log tag. */
     private static final String TAG = "AmazonSearchEngine";
 
@@ -143,7 +142,7 @@ public class AmazonSearchEngine
     public AmazonSearchEngine(@NonNull final SearchEngineConfig config) {
         super(config);
 
-        final String baseUrl = getSiteUrl();
+        final String baseUrl = getHostUrl();
         // check the domain name to determine the language of the site
         final String root = baseUrl.substring(baseUrl.lastIndexOf('.') + 1);
         final String pagesStr;
@@ -164,14 +163,11 @@ public class AmazonSearchEngine
         pagesPattern = Pattern.compile(pagesStr, Pattern.LITERAL);
     }
 
+    @NonNull
     public static SearchEngineConfig createConfig() {
-        return new SearchEngineConfig.Builder(AmazonSearchEngine.class,
-                                              SearchSites.AMAZON,
+        return new SearchEngineConfig.Builder(EngineId.Amazon,
                                               R.string.site_amazon,
-                                              PREF_KEY,
                                               "https://www.amazon.com")
-                .setFilenameSuffix("AMZ")
-
                 // ENHANCE: support ASIN
 //                .setDomainKey(DBKey.SID_ASIN)
 //                .setDomainViewId(R.id.site_amazon)
@@ -183,7 +179,7 @@ public class AmazonSearchEngine
     @Override
     public Locale getLocale(@NonNull final Context context) {
         // Derive the Locale from the user configured url.
-        return getLocale(context, getSiteUrl());
+        return getLocale(context, getHostUrl());
     }
 
     @NonNull
@@ -213,7 +209,7 @@ public class AmazonSearchEngine
         final String asin = tmp.isIsbn10Compat() ? tmp.asText(ISBN.Type.Isbn10) : validIsbn;
 
         return genericSearch(context,
-                             getSiteUrl() + String.format(BY_EXTERNAL_ID, asin),
+                             getHostUrl() + String.format(BY_EXTERNAL_ID, asin),
                              fetchCovers);
     }
 
@@ -226,7 +222,7 @@ public class AmazonSearchEngine
 
         if (ASIN.isValidAsin(barcode)) {
             return genericSearch(context,
-                                 getSiteUrl() + String.format(BY_EXTERNAL_ID, barcode),
+                                 getHostUrl() + String.format(BY_EXTERNAL_ID, barcode),
                                  fetchCovers);
 
         } else {
@@ -243,7 +239,7 @@ public class AmazonSearchEngine
                                     @Nullable final Size size)
             throws StorageException, SearchException, CredentialsException {
 
-        final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, validIsbn);
+        final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, validIsbn);
         final Document document = loadDocument(context, url);
         if (!isCancelled()) {
             final ArrayList<String> imageList = parseCovers(document, validIsbn, 0);

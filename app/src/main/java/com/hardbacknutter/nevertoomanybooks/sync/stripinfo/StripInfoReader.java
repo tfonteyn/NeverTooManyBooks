@@ -59,9 +59,9 @@ import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderHelper;
@@ -124,7 +124,7 @@ public class StripInfoReader
 
         // create a new instance just for our own use
         searchEngine = (StripInfoSearchEngine) SearchEngineRegistry
-                .getInstance().createSearchEngine(SearchSites.STRIP_INFO_BE);
+                .getInstance().createSearchEngine(EngineId.StripInfoBe);
 
         booksString = context.getString(R.string.lbl_books);
     }
@@ -202,14 +202,14 @@ public class StripInfoReader
         }
 
         // can we reach the site ?
-        NetworkUtils.ping(searchEngine.getSiteUrl());
+        NetworkUtils.ping(searchEngine.getHostUrl());
 
         progressListener.setIndeterminate(true);
         progressListener.publishProgress(0, context.getString(R.string.progress_msg_connecting));
 
         searchEngine.setCaller(progressListener);
 
-        final StripInfoAuth loginHelper = new StripInfoAuth(searchEngine.getSiteUrl());
+        final StripInfoAuth loginHelper = new StripInfoAuth(searchEngine.getHostUrl());
         final String userId = loginHelper.login(context);
 
         searchEngine.setLoginHelper(loginHelper);

@@ -44,11 +44,11 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedSAXException;
@@ -70,10 +70,9 @@ public class LibraryThingSearchEngine
         implements SearchEngine.ViewBookByExternalId,
                    SearchEngine.AlternativeEditions {
 
-    /** Preferences prefix. */
-    private static final String PREF_KEY = "librarything";
-    /** Type: {@code String}. */
-    public static final String PK_HOST_URL = PREF_KEY + Prefs.pk_suffix_host_url;
+    /** Preferences - Type: {@code String}. */
+    public static final String PK_HOST_URL = EngineId.LibraryThing.getPreferenceKey()
+                                             + Prefs.pk_suffix_host_url;
     @Nullable
     private FutureHttpGet<Boolean> futureHttpGet;
 
@@ -87,14 +86,12 @@ public class LibraryThingSearchEngine
         super(config);
     }
 
+    @NonNull
     public static SearchEngineConfig createConfig() {
-        return new SearchEngineConfig.Builder(LibraryThingSearchEngine.class,
-                                              SearchSites.LIBRARY_THING,
+        return new SearchEngineConfig.Builder(EngineId.LibraryThing,
                                               R.string.site_library_thing,
-                                              PREF_KEY,
                                               "https://www.librarything.com")
                 .setSupportsMultipleCoverSizes(true)
-                .setFilenameSuffix("LT")
 
                 .setDomainKey(DBKey.SID_LIBRARY_THING)
                 .setDomainViewId(R.id.site_library_thing)
@@ -107,13 +104,13 @@ public class LibraryThingSearchEngine
     @Override
     public Locale getLocale(@NonNull final Context context) {
         // Derive the Locale from the user configured url.
-        return getLocale(context, getSiteUrl());
+        return getLocale(context, getHostUrl());
     }
 
     @NonNull
     @Override
     public String createBrowserUrl(@NonNull final String externalId) {
-        return getSiteUrl() + String.format("/work/%1$s", externalId);
+        return getHostUrl() + String.format("/work/%1$s", externalId);
     }
 
     @Override
@@ -148,7 +145,7 @@ public class LibraryThingSearchEngine
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();
 
-        final String url = getSiteUrl() + String.format("/api/thingISBN/%1$s", validIsbn);
+        final String url = getHostUrl() + String.format("/api/thingISBN/%1$s", validIsbn);
 
         try {
             final SAXParser parser = factory.newSAXParser();

@@ -79,17 +79,23 @@ public class SearchTask
      *      <li>text</li>
      * </ol>
      *
+     * @param taskId       a unique task identifier, returned with each message
      * @param searchEngine the search site engine
      * @param taskListener for the results
      */
-    SearchTask(@NonNull final SearchEngine searchEngine,
+    SearchTask(final int taskId,
+               @NonNull final SearchEngine searchEngine,
                @NonNull final TaskListener<Bundle> taskListener) {
-        super(searchEngine.getEngineId(),
-              TAG + ' ' + searchEngine.getName(ServiceLocator.getAppContext()),
+        super(taskId, TAG + ' ' + searchEngine.getName(ServiceLocator.getAppContext()),
               taskListener);
 
         this.searchEngine = searchEngine;
         this.searchEngine.setCaller(this);
+    }
+
+    @NonNull
+    public SearchEngine getSearchEngine() {
+        return searchEngine;
     }
 
     void setSearchBy(@NonNull final By by) {
@@ -188,7 +194,7 @@ public class SearchTask
         }
 
         // can we reach the site ?
-        NetworkUtils.ping(searchEngine.getSiteUrl());
+        NetworkUtils.ping(searchEngine.getHostUrl());
 
         // sanity check, see #setFetchCovers
         if (fetchCovers == null) {

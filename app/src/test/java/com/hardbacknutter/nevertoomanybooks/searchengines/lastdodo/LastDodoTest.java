@@ -35,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,7 +52,7 @@ class LastDodoTest
             throws ParserConfigurationException, SAXException {
         super.setup();
         searchEngine = (LastDodoSearchEngine) Site.Type.Data
-                .getSite(SearchSites.LAST_DODO).getSearchEngine();
+                .getSite(EngineId.LastDodoNl).getSearchEngine();
         searchEngine.setCaller(new MockCancellable());
     }
 

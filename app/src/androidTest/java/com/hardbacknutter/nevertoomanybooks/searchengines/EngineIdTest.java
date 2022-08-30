@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,9 +31,9 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class SearchSitesTest {
+public class EngineIdTest {
 
-    private static final String TAG = "SearchSitesTest";
+    private static final String TAG = "EngineIdTest";
 
     @Test
     public void dumpEngines() {
@@ -52,7 +52,7 @@ public class SearchSitesTest {
 
             for (final Site site : sites) {
                 final SearchEngineConfig config =
-                        SearchEngineRegistry.getInstance().getByEngineId(site.engineId);
+                        SearchEngineRegistry.getInstance().getByEngineId(site.getEngineId());
                 assertNotNull(config);
                 final SearchEngine searchEngine = site.getSearchEngine();
                 assertNotNull(searchEngine);
@@ -62,33 +62,42 @@ public class SearchSitesTest {
         }
     }
 
-    /**
-     * 1  : google
-     * 2  : amazon
-     * 4  : library thing
-     * 8  : goodreads
-     * 16 : isfdb
-     * 32 : openlibrary
-     * 64 : KB NL
-     * 128: stripinfo.be
-     * 256: lastdodo.nl
-     * <p>
-     * default order (2020-12-12): 2,8,1,4,16,128,64,256,32
-     */
     @Test
     public void order() {
         final ArrayList<Site> sites = Site.Type.Data.getSites();
-        // 4 should be removed, 128/256 added as loadPrefs will have been called
-        assertEquals("2,8,1,16,128,64,256,32",
+        // LIBRARY_THING should be removed, STRIP_INFO_BE + LAST_DODO
+        // added as loadPrefs will have been called
+        assertEquals(List.of(EngineId.Amazon,
+                             EngineId.Goodreads,
+                             EngineId.GoogleBooks,
+                             EngineId.IsfDb,
+                             EngineId.StripInfoBe,
+                             EngineId.KbNl,
+                             EngineId.LastDodoNl,
+                             EngineId.OpenLibrary),
                      sites.stream()
-                          .map(element -> String.valueOf(element.engineId))
-                          .collect(Collectors.joining(",")));
+                          .map(Site::getEngineId)
+                          .collect(Collectors.toList()));
 
-        final List<Site> reordered = Site.Type.reorder(sites, "1,2,4,16,64,128,256,512");
-        // 4/512 should be removed, 8/32 NOT added as loadPrefs will NOT have been called
-        assertEquals("1,2,16,64,128,256",
+        final List<Site> reordered = Site.Type.reorder(
+                sites, List.of(EngineId.GoogleBooks,
+                               EngineId.Amazon,
+                               EngineId.LibraryThing,
+                               EngineId.IsfDb,
+                               EngineId.KbNl,
+                               EngineId.StripInfoBe,
+                               EngineId.LastDodoNl));
+
+        // LIBRARY_THING should be removed, GOODREADS/OPEN_LIBRARY
+        // NOT added as loadPrefs will NOT have been called
+        assertEquals(List.of(EngineId.GoogleBooks,
+                             EngineId.Amazon,
+                             EngineId.IsfDb,
+                             EngineId.KbNl,
+                             EngineId.StripInfoBe,
+                             EngineId.LastDodoNl),
                      reordered.stream()
-                              .map(element -> String.valueOf(element.engineId))
-                              .collect(Collectors.joining(",")));
+                              .map(Site::getEngineId)
+                              .collect(Collectors.toList()));
     }
 }

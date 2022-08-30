@@ -33,13 +33,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -106,7 +108,7 @@ public class FileManager {
      * @return a {@link ImageFileInfo} object with or without a valid fileSpec.
      *
      * @throws CredentialsException on authentication/login failures
-     * @throws StorageException on storage related failures
+     * @throws StorageException     on storage related failures
      */
     @NonNull
     @WorkerThread
@@ -121,11 +123,10 @@ public class FileManager {
 
         // We will disable sites on the fly for the *current* search without
         // modifying the list by using a simple bitmask.
-        @SearchSites.EngineId
-        int currentSearchSites = 0;
-        for (final Site site : enabledSites) {
-            currentSearchSites = currentSearchSites | site.engineId;
-        }
+        final Set<EngineId> currentSites = enabledSites
+                .stream()
+                .map(Site::getEngineId)
+                .collect(Collectors.toSet());
 
         ImageFileInfo imageFileInfo;
 
@@ -145,7 +146,7 @@ public class FileManager {
 
             for (final Site site : enabledSites) {
                 // Should we search this site ?
-                if ((currentSearchSites & site.engineId) != 0) {
+                if (currentSites.contains(site.getEngineId())) {
 
                     if (caller.isCancelled()) {
                         return new ImageFileInfo(isbn);
@@ -176,7 +177,7 @@ public class FileManager {
                         } catch (@NonNull final SearchException e) {
                             // ignore, don't let a single search break the loop.
                             // disable it for THIS search
-                            currentSearchSites &= ~site.engineId;
+                            currentSites.remove(site.getEngineId());
 
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                                 Log.d(TAG, "search|FAILED"
@@ -214,12 +215,12 @@ public class FileManager {
                         // if the site we just searched only supports one image,
                         // disable it for THIS search
                         if (!seConfig.supportsMultipleCoverSizes()) {
-                            currentSearchSites &= ~site.engineId;
+                            currentSites.remove(site.getEngineId());
                         }
                     } else {
                         // if the site we just searched was not available,
                         // disable it for THIS search
-                        currentSearchSites &= ~site.engineId;
+                        currentSites.remove(site.getEngineId());
                     }
                 }
                 // loop for next site

@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
@@ -53,7 +53,7 @@ class AmazonHtmlHandlerTest
             throws ParserConfigurationException, SAXException {
         super.setup();
         searchEngine = (AmazonSearchEngine) Site.Type.Data
-                .getSite(SearchSites.AMAZON).getSearchEngine();
+                .getSite(EngineId.Amazon).getSearchEngine();
         searchEngine.setCaller(new MockCancellable());
     }
 

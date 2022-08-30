@@ -51,12 +51,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -181,15 +181,13 @@ public class OpenLibrarySearchEngine
         super(config);
     }
 
+    @NonNull
     public static SearchEngineConfig createConfig() {
-        return new SearchEngineConfig.Builder(OpenLibrarySearchEngine.class,
-                                              SearchSites.OPEN_LIBRARY,
+        return new SearchEngineConfig.Builder(EngineId.OpenLibrary,
                                               R.string.site_open_library,
-                                              "openlibrary",
                                               "https://openlibrary.org")
 
                 .setSupportsMultipleCoverSizes(true)
-                .setFilenameSuffix("OL")
 
                 .setDomainKey(DBKey.SID_OPEN_LIBRARY)
                 .setDomainViewId(R.id.site_open_library)
@@ -200,7 +198,7 @@ public class OpenLibrarySearchEngine
     @NonNull
     @Override
     public String createBrowserUrl(@NonNull final String externalId) {
-        return getSiteUrl() + "/books/" + externalId;
+        return getHostUrl() + "/books/" + externalId;
     }
 
     @NonNull
@@ -212,7 +210,7 @@ public class OpenLibrarySearchEngine
 
         final Bundle bookData = ServiceLocator.newBundle();
 
-        final String url = getSiteUrl() + String.format(BASE_BOOK_URL, "OLID", externalId);
+        final String url = getHostUrl() + String.format(BASE_BOOK_URL, "OLID", externalId);
 
         fetchBook(context, url, fetchCovers, bookData);
         return bookData;
@@ -232,7 +230,7 @@ public class OpenLibrarySearchEngine
 
         final Bundle bookData = ServiceLocator.newBundle();
 
-        final String url = getSiteUrl() + String.format(BASE_BOOK_URL, "ISBN", validIsbn);
+        final String url = getHostUrl() + String.format(BASE_BOOK_URL, "ISBN", validIsbn);
 
         fetchBook(context, url, fetchCovers, bookData);
         return bookData;

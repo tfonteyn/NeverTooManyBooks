@@ -39,9 +39,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
@@ -89,7 +89,7 @@ public class CollectionFormUploader {
     @AnyThread
     public CollectionFormUploader() {
         final SearchEngineConfig config = SearchEngineRegistry
-                .getInstance().getByEngineId(SearchSites.STRIP_INFO_BE);
+                .getInstance().getByEngineId(EngineId.StripInfoBe);
 
         futureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
         futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())
@@ -386,7 +386,7 @@ public class CollectionFormUploader {
     private Document doPost(@NonNull final String postBody)
             throws IOException, StorageException {
 
-        return Objects.requireNonNull(futureHttpPost.post(FORM_URL, postBody, (bis) -> {
+        return Objects.requireNonNull(futureHttpPost.post(FORM_URL, postBody, bis -> {
             try {
                 return Jsoup.parse(bis, null, FORM_URL);
             } catch (@NonNull final IOException e) {

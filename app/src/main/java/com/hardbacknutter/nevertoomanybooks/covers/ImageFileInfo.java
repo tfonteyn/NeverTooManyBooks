@@ -27,11 +27,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
 /**
  * Info about a cover file.
@@ -58,8 +59,8 @@ public class ImageFileInfo
     private final Size size;
     @Nullable
     private final String fileSpec;
-    @SearchSites.EngineId
-    private final int engineId;
+    @Nullable
+    private final EngineId engineId;
 
     /**
      * Constructor. No file.
@@ -70,7 +71,7 @@ public class ImageFileInfo
         this.isbn = isbn;
         fileSpec = null;
         size = null;
-        engineId = 0;
+        engineId = null;
     }
 
     /**
@@ -84,7 +85,7 @@ public class ImageFileInfo
     ImageFileInfo(@NonNull final String isbn,
                   @Nullable final String fileSpec,
                   @Nullable final Size size,
-                  @SearchSites.EngineId final int engineId) {
+                  @NonNull final EngineId engineId) {
         this.isbn = isbn;
         this.fileSpec = fileSpec;
         this.size = size;
@@ -100,7 +101,7 @@ public class ImageFileInfo
         //noinspection ConstantConditions
         isbn = in.readString();
         fileSpec = in.readString();
-        engineId = in.readInt();
+        engineId = in.readParcelable(getClass().getClassLoader());
         size = in.readParcelable(getClass().getClassLoader());
     }
 
@@ -109,7 +110,7 @@ public class ImageFileInfo
                               final int flags) {
         dest.writeString(isbn);
         dest.writeString(fileSpec);
-        dest.writeInt(engineId);
+        dest.writeParcelable(engineId, flags);
         dest.writeParcelable(size, flags);
     }
 
@@ -123,9 +124,16 @@ public class ImageFileInfo
         return size;
     }
 
-    @SearchSites.EngineId
-    int getEngineId() {
-        return engineId;
+    /**
+     * The site where we found the image.
+     * <p>
+     * This method should only be called if {@link #getFile()} returns a valid result.
+     *
+     * @return engine-id
+     */
+    @NonNull
+    EngineId getEngineId() {
+        return Objects.requireNonNull(engineId);
     }
 
     @NonNull

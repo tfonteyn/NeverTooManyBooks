@@ -61,12 +61,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.network.Throttler;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.BookshelfMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.CollectionFormParser;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
@@ -148,14 +148,12 @@ public class StripInfoSearchEngine
         super(config);
     }
 
+    @NonNull
     public static SearchEngineConfig createConfig() {
-        return new SearchEngineConfig.Builder(StripInfoSearchEngine.class,
-                                              SearchSites.STRIP_INFO_BE,
+        return new SearchEngineConfig.Builder(EngineId.StripInfoBe,
                                               R.string.site_stripinfo_be,
-                                              StripInfoAuth.PREF_KEY,
                                               WWW_STRIPINFO_BE)
                 .setCountry("BE", "nl")
-                .setFilenameSuffix("SI")
 
                 .setDomainKey(DBKey.SID_STRIP_INFO)
                 .setDomainViewId(R.id.site_strip_info_be)
@@ -170,7 +168,7 @@ public class StripInfoSearchEngine
     @NonNull
     @Override
     public String createBrowserUrl(@NonNull final String externalId) {
-        return getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
+        return getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
     }
 
     public void setLoginHelper(@NonNull final StripInfoAuth loginHelper) {
@@ -201,7 +199,7 @@ public class StripInfoSearchEngine
 
         if (StripInfoAuth.isLoginToSearch(context)) {
             if (loginHelper == null) {
-                loginHelper = new StripInfoAuth(getSiteUrl());
+                loginHelper = new StripInfoAuth(getHostUrl());
                 try {
                     loginHelper.login(context);
                 } catch (@NonNull final IOException | StorageException e) {
@@ -226,7 +224,7 @@ public class StripInfoSearchEngine
 
         final Bundle bookData = ServiceLocator.newBundle();
 
-        final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
+        final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url);
         if (!isCancelled()) {
             parse(context, document, fetchCovers, bookData);
@@ -248,7 +246,7 @@ public class StripInfoSearchEngine
 
         final Bundle bookData = ServiceLocator.newBundle();
 
-        final String url = getSiteUrl() + String.format(BY_ISBN, validIsbn);
+        final String url = getHostUrl() + String.format(BY_ISBN, validIsbn);
         final Document document = loadDocument(context, url);
         if (!isCancelled()) {
             processDocument(context, validIsbn, document, fetchCovers, bookData);

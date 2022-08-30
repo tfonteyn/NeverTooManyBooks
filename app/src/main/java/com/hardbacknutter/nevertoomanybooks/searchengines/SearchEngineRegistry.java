@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,8 +25,10 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -39,17 +41,24 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 /**
  * A registry of all {@link SearchEngine} classes and their {@link SearchEngineConfig}.
+ *
+ * @see EngineId
+ * @see SearchEngine
+ * @see SearchEngineConfig
+ * @see Site
  */
 public final class SearchEngineRegistry {
 
+    private static final String ERROR_ENGINE_NOT_FOUND = "engine not found";
     private static final String ERROR_EMPTY_CONFIG_MAP = "empty config map";
+    private static final String ERROR_REGISTRY_NOT_CREATED = "SearchEngineRegistry not created";
 
     /** Singleton. */
     @Nullable
     private static SearchEngineRegistry sInstance;
 
     /** All site configurations. */
-    private final Map<Integer, SearchEngineConfig> siteConfigs = new HashMap<>();
+    private final Map<EngineId, SearchEngineConfig> siteConfigs = new EnumMap<>(EngineId.class);
 
     /**
      * Constructor. Use {@link #getInstance()}.
@@ -60,7 +69,7 @@ public final class SearchEngineRegistry {
     public static void create(@NonNull final Context context) {
         synchronized (SearchEngineRegistry.class) {
             sInstance = new SearchEngineRegistry();
-            SearchSites.registerSearchEngineClasses(sInstance);
+            EngineId.registerSearchEngineClasses(sInstance);
             Site.Type.registerAllTypes(context);
         }
     }
@@ -73,7 +82,7 @@ public final class SearchEngineRegistry {
     @NonNull
     public static SearchEngineRegistry getInstance() {
         // do not lazy initialize here. We want the SearchEngineRegistry running at startup.
-        return Objects.requireNonNull(sInstance, "SearchEngineRegistry not created");
+        return Objects.requireNonNull(sInstance, ERROR_REGISTRY_NOT_CREATED);
     }
 
     /**
@@ -110,8 +119,8 @@ public final class SearchEngineRegistry {
      * @return SearchEngineConfig
      */
     @NonNull
-    public SearchEngineConfig getByEngineId(@SearchSites.EngineId final int engineId) {
-        return Objects.requireNonNull(siteConfigs.get(engineId), "engine not found");
+    public SearchEngineConfig getByEngineId(@NonNull final EngineId engineId) {
+        return Objects.requireNonNull(siteConfigs.get(engineId), ERROR_ENGINE_NOT_FOUND);
     }
 
     /**
@@ -149,22 +158,6 @@ public final class SearchEngineRegistry {
     }
 
     /**
-     * Create a SearchEngine instance based on the registered configuration for the given id.
-     *
-     * @param engineId the search engine id
-     *
-     * @return a new instance
-     */
-    @NonNull
-    public SearchEngine createSearchEngine(@SearchSites.EngineId final int engineId) {
-        if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requirePositiveValue(siteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
-        }
-        //noinspection ConstantConditions
-        return siteConfigs.get(engineId).createSearchEngine();
-    }
-
-    /**
      * Get the list of <strong>configured</strong> external-id domains.
      *
      * @return list
@@ -181,4 +174,29 @@ public final class SearchEngineRegistry {
                           .collect(Collectors.toList());
     }
 
+    /**
+     * Create a SearchEngine instance based on the registered configuration for the given id.
+     *
+     * @param engineId the search engine id
+     *
+     * @return a new instance
+     */
+    @NonNull
+    public SearchEngine createSearchEngine(@NonNull final EngineId engineId) {
+        if (BuildConfig.DEBUG /* always */) {
+            SanityCheck.requirePositiveValue(siteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
+        }
+
+        final SearchEngineConfig searchEngineConfig = siteConfigs.get(engineId);
+        try {
+            final Constructor<? extends SearchEngine> c = engineId.getClazz().getConstructor(
+                    SearchEngineConfig.class);
+            return c.newInstance(searchEngineConfig);
+
+        } catch (@NonNull final NoSuchMethodException | IllegalAccessException
+                | InstantiationException | InvocationTargetException e) {
+            throw new IllegalStateException(
+                    engineId.getClazz() + " must implement SearchEngine(SearchEngineConfig)", e);
+        }
+    }
 }

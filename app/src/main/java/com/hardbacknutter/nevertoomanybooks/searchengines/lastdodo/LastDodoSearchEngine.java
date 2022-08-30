@@ -44,12 +44,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -85,14 +85,12 @@ public class LastDodoSearchEngine
         super(config);
     }
 
+    @NonNull
     public static SearchEngineConfig createConfig() {
-        return new SearchEngineConfig.Builder(LastDodoSearchEngine.class,
-                                              SearchSites.LAST_DODO,
+        return new SearchEngineConfig.Builder(EngineId.LastDodoNl,
                                               R.string.site_lastdodo_nl,
-                                              "lastdodo",
                                               "https://www.lastdodo.nl")
                 .setCountry("NL", "nl")
-                .setFilenameSuffix("LDD")
                 .setSearchPrefersIsbn10(true)
 
                 .setDomainKey(DBKey.SID_LAST_DODO_NL)
@@ -104,7 +102,7 @@ public class LastDodoSearchEngine
     @NonNull
     @Override
     public String createBrowserUrl(@NonNull final String externalId) {
-        return getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
+        return getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
     }
 
     @NonNull
@@ -115,7 +113,7 @@ public class LastDodoSearchEngine
 
         final Bundle bookData = ServiceLocator.newBundle();
 
-        final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
+        final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url);
         if (!isCancelled()) {
             parse(context, document, fetchCovers, bookData);
@@ -135,7 +133,7 @@ public class LastDodoSearchEngine
         // This is silly...
         // 2022-05-31: searching the site with the ISBN now REQUIRES the dashes between
         // the digits.
-        final String url = getSiteUrl() + String.format(BY_ISBN, ISBN.prettyPrint(validIsbn));
+        final String url = getHostUrl() + String.format(BY_ISBN, ISBN.prettyPrint(validIsbn));
         final Document document = loadDocument(context, url);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
@@ -174,7 +172,7 @@ public class LastDodoSearchEngine
                 String url = urlElement.attr("href");
                 // sanity check - it normally does NOT have the protocol/site part
                 if (url.startsWith("/")) {
-                    url = getSiteUrl() + url;
+                    url = getHostUrl() + url;
                 }
                 final Document redirected = loadDocument(context, url);
                 if (!isCancelled()) {

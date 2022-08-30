@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -92,7 +92,7 @@ public class SearchEditionsTask
             searchEngine.setCaller(this);
             try {
                 // can we reach the site ?
-                NetworkUtils.ping(searchEngine.getSiteUrl());
+                NetworkUtils.ping(searchEngine.getHostUrl());
 
                 isbnList.addAll(((SearchEngine.AlternativeEditions) searchEngine)
                                         .searchAlternativeEditions(context, isbn));

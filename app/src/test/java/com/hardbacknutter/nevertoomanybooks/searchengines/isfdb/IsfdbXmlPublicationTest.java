@@ -36,7 +36,7 @@ import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 
 import static com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine.PK_SERIES_FROM_TOC;
@@ -53,7 +53,7 @@ class IsfdbXmlPublicationTest
             throws ParserConfigurationException, SAXException {
         super.setup();
         searchEngine = (IsfdbSearchEngine) Site.Type.Data
-                .getSite(SearchSites.ISFDB).getSearchEngine();
+                .getSite(EngineId.IsfDb).getSearchEngine();
         searchEngine.setCaller(new MockCancellable());
 
         // Override the default 'false'

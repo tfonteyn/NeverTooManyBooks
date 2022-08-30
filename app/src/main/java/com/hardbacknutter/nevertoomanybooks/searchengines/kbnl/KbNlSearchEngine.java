@@ -43,12 +43,12 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedSAXException;
@@ -64,9 +64,6 @@ public class KbNlSearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIsbn,
                    SearchEngine.CoverByIsbn {
-
-    /** Preferences prefix. */
-    private static final String PREF_KEY = "kbnl";
 
     /**
      * <strong>Note:</strong> This is not the same site as the search site itself.
@@ -108,14 +105,12 @@ public class KbNlSearchEngine
         super(config);
     }
 
+    @NonNull
     public static SearchEngineConfig createConfig() {
-        return new SearchEngineConfig.Builder(KbNlSearchEngine.class,
-                                              SearchSites.KB_NL,
+        return new SearchEngineConfig.Builder(EngineId.KbNl,
                                               R.string.site_kb_nl,
-                                              PREF_KEY,
                                               "https://opc-kb.oclc.org")
                 .setCountry("NL", "nl")
-                .setFilenameSuffix("KB")
                 .setSupportsMultipleCoverSizes(true)
                 .build();
     }
@@ -147,7 +142,7 @@ public class KbNlSearchEngine
 
         futureHttpGet = createFutureGetRequest();
 
-        final String url = getSiteUrl() + String.format(BOOK_URL, validIsbn);
+        final String url = getHostUrl() + String.format(BOOK_URL, validIsbn);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final DefaultHandler handler = new KbNlBookHandler(bookData);

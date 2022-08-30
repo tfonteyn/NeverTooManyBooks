@@ -45,7 +45,13 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminFragment;
 
 /**
- * Encapsulates a {@link SearchEngine} instance + the current enabled/disabled state.
+ * Encapsulates a {@link SearchEngine} instance + the {@link Type}
+ * and the the enabled/disabled state.
+ *
+ * @see EngineId
+ * @see SearchEngine
+ * @see SearchEngineConfig
+ * @see SearchEngineRegistry
  */
 public final class Site
         implements Parcelable {
@@ -73,8 +79,8 @@ public final class Site
     private static final String PREF_SUFFIX_ENABLED = "enabled";
 
     /** SearchEngine ID. Used to (re)create {@link #searchEngine}. */
-    @SearchSites.EngineId
-    public final int engineId;
+    @NonNull
+    private final EngineId engineId;
 
     /** Type of this site. */
     @NonNull
@@ -83,7 +89,7 @@ public final class Site
     /** user preference: enable/disable this site. */
     private boolean enabled;
 
-    /** the class which implements the search engine for a specific site. */
+    /** The cached search engine for a specific site. */
     @Nullable
     private SearchEngine searchEngine;
 
@@ -95,7 +101,7 @@ public final class Site
      * @param enabled  flag
      */
     private Site(@NonNull final Type type,
-                 @SearchSites.EngineId final int engineId,
+                 @NonNull final EngineId engineId,
                  final boolean enabled) {
 
         this.engineId = engineId;
@@ -124,7 +130,8 @@ public final class Site
      * @param in Parcel to construct the object from
      */
     private Site(@NonNull final Parcel in) {
-        engineId = in.readInt();
+        //noinspection ConstantConditions
+        engineId = in.readParcelable(Type.class.getClassLoader());
         //noinspection ConstantConditions
         type = in.readParcelable(Type.class.getClassLoader());
         enabled = in.readByte() != 0;
@@ -217,15 +224,20 @@ public final class Site
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeInt(engineId);
+        dest.writeParcelable(engineId, flags);
         dest.writeParcelable(type, flags);
         dest.writeByte((byte) (enabled ? 1 : 0));
     }
 
-    @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
         return 0;
+    }
+
+
+    @NonNull
+    public EngineId getEngineId() {
+        return engineId;
     }
 
     /**
@@ -237,8 +249,7 @@ public final class Site
     @NonNull
     public SearchEngine getSearchEngine() {
         if (searchEngine == null) {
-            searchEngine = SearchEngineRegistry
-                    .getInstance().createSearchEngine(engineId);
+            searchEngine = SearchEngineRegistry.getInstance().createSearchEngine(engineId);
         }
 
         searchEngine.reset();
@@ -265,11 +276,7 @@ public final class Site
      */
     @NonNull
     private String getPrefPrefix() {
-        return PREF_PREFIX
-               + SearchEngineRegistry.getInstance().getByEngineId(engineId).getPreferenceKey()
-               + '.'
-               + type.typeName
-               + '.';
+        return PREF_PREFIX + engineId.getPreferenceKey() + '.' + type.key + '.';
     }
 
     private void loadFromPrefs(@NonNull final SharedPreferences prefs) {
@@ -296,20 +303,22 @@ public final class Site
      *
      * <strong>Note:</strong> the order of the enum values is used as the order
      * of the tabs in {@link SearchAdminFragment}.
+     *
+     * <strong>Note: NEVER change the "key" of the types</strong>.
      */
     public enum Type
             implements Parcelable {
 
         /** {@link SearchEngine} - Generic searches (includes books AND covers). */
-        Data(R.string.lbl_books, "data"),
+        Data("data", R.string.lbl_books),
         /** {@link SearchEngine} - Alternative editions for a given isbn. */
-        AltEditions(R.string.lbl_tab_alternative_editions, "alted"),
+        AltEditions("alted", R.string.lbl_tab_alternative_editions),
 
         /** {@link CoverBrowserDialogFragment} - Dedicated covers searches. */
-        Covers(R.string.lbl_covers, "covers"),
+        Covers("covers", R.string.lbl_covers),
 
         /** List of sites for which we store an id. */
-        ViewOnSite(R.string.menu_view_book_at, "view");
+        ViewOnSite("view", R.string.menu_view_book_at);
 
         /** {@link Parcelable}. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
@@ -333,7 +342,8 @@ public final class Site
         /** Log tag. */
         private static final String TAG = "Site.Type";
         /** Internal name (for prefs). */
-        final String typeName;
+        @NonNull
+        private final String key;
         /** User displayable name. */
         @StringRes
         private final int labelResId;
@@ -342,13 +352,13 @@ public final class Site
         /**
          * Constructor.
          *
+         * @param key        unique key string for internal usage
          * @param labelResId for displaying the type name to the user
-         * @param typeName   for internal usage
          */
-        Type(@StringRes final int labelResId,
-             @NonNull final String typeName) {
+        Type(@NonNull final String key,
+             @StringRes final int labelResId) {
             this.labelResId = labelResId;
-            this.typeName = typeName;
+            this.key = key;
         }
 
         /**
@@ -360,7 +370,7 @@ public final class Site
         @NonNull
         static List<Site> getDataSitesByReliability() {
             return Collections.unmodifiableList(
-                    reorder(Data.getSites(), SearchSites.DATA_RELIABILITY_ORDER));
+                    reorder(Data.getSites(), EngineId.DATA_RELIABILITY_ORDER));
         }
 
         /**
@@ -373,23 +383,21 @@ public final class Site
          * are <strong>NOT</strong> added.
          *
          * @param sites list to reorder
-         * @param order CSV string with site ID's
+         * @param order list with engine id's
          *
          * @return new list instance containing the <strong>original</strong> site objects
          *         in the desired order.
          */
         @VisibleForTesting
         public static List<Site> reorder(@NonNull final Collection<Site> sites,
-                                         @NonNull final String order) {
+                                         @NonNull final List<EngineId> order) {
 
             final List<Site> reorderedList = new ArrayList<>();
 
-            Arrays.stream(order.split(","))
-                  .map(Integer::parseInt)
-                  .forEach(id -> sites.stream()
-                                      .filter(site -> site.engineId == id)
-                                      .findFirst()
-                                      .ifPresent(reorderedList::add));
+            order.forEach(id -> sites.stream()
+                                     .filter(site -> site.engineId == id)
+                                     .findFirst()
+                                     .ifPresent(reorderedList::add));
 
             return reorderedList;
         }
@@ -421,7 +429,7 @@ public final class Site
 
             // re-create the global list for the type
             siteList.clear();
-            SearchSites.createSiteList(systemLocale, userLocale, this);
+            EngineId.createSiteList(systemLocale, userLocale, this);
 
             // apply stored user preferences to the list
             loadPrefs();
@@ -438,7 +446,7 @@ public final class Site
 
             // re-create the global list for the type
             siteList.clear();
-            SearchSites.createSiteList(systemLocale, userLocale, this);
+            EngineId.createSiteList(systemLocale, userLocale, this);
 
             // overwrite stored user preferences with the defaults from the list
             savePrefs();
@@ -465,13 +473,13 @@ public final class Site
          * @return deep-copy instance of the Site
          */
         @NonNull
-        public Site getSite(@SearchSites.EngineId final int engineId) {
-            for (final Site site : siteList) {
-                if (site.engineId == engineId) {
-                    return new Site(site);
-                }
-            }
-            throw new IllegalArgumentException(String.valueOf(engineId));
+        public Site getSite(@NonNull final EngineId engineId) {
+            final Site s = siteList.stream()
+                                   .filter(site -> site.engineId == engineId)
+                                   .findFirst()
+                                   .orElseThrow(() -> new IllegalArgumentException(
+                                           String.valueOf(engineId)));
+            return new Site(s);
         }
 
 
@@ -483,29 +491,27 @@ public final class Site
          */
         @NonNull
         public ArrayList<Site> getSites() {
-            final ArrayList<Site> list = new ArrayList<>();
-            for (final Site site : this.siteList) {
-                list.add(new Site(site));
-            }
-            return list;
+            return siteList.stream()
+                           .map(Site::new)
+                           .collect(Collectors.toCollection(ArrayList::new));
         }
 
         /**
-         * Helper for {@link SearchSites#createSiteList}.
+         * Helper for {@link EngineId#createSiteList}.
          *
          * @param engineId the search engine id
          */
-        public void addSite(@SearchSites.EngineId final int engineId) {
+        public void addSite(@NonNull final EngineId engineId) {
             siteList.add(new Site(this, engineId, true));
         }
 
         /**
-         * Helper for {@link SearchSites#createSiteList}.
+         * Helper for {@link EngineId#createSiteList}.
          *
          * @param engineId the search engine id
          * @param enabled  flag
          */
-        public void addSite(@SearchSites.EngineId final int engineId,
+        public void addSite(@NonNull final EngineId engineId,
                             final boolean enabled) {
             siteList.add(new Site(this, engineId, enabled));
         }
@@ -521,20 +527,26 @@ public final class Site
                 site.loadFromPrefs(prefs);
             }
 
-            final String order = prefs.getString(PREFS_ORDER_PREFIX + typeName, null);
+            final String order = prefs.getString(PREFS_ORDER_PREFIX + key, null);
             if (order != null) {
+                final List<EngineId> list = new ArrayList<>();
+                Arrays.stream(order.split(","))
+                      .forEach(prefKey -> Arrays
+                              .stream(EngineId.values())
+                              .filter(engineId -> engineId.getPreferenceKey().equals(prefKey))
+                              .findFirst()
+                              .ifPresent(list::add));
+
                 // Reorder keeps the original list members.
-                final List<Site> reorderedList = reorder(siteList, order);
+                final List<Site> reorderedList = reorder(siteList, list);
 
                 if (reorderedList.size() < siteList.size()) {
                     // This is a fringe case: a new engine was added, and the user upgraded
                     // this app. The stored order will lack the new engine.
                     // Add any sites not added yet to the end of the list
-                    for (final Site site : siteList) {
-                        if (!reorderedList.contains(site)) {
-                            reorderedList.add(site);
-                        }
-                    }
+                    siteList.stream()
+                            .filter(site -> !reorderedList.contains(site))
+                            .forEach(reorderedList::add);
                     savePrefs();
                 }
 
@@ -548,7 +560,7 @@ public final class Site
          * Save the settings for each site in this list + the order of the sites in the list.
          */
         public void savePrefs() {
-            // Save the order of the given list (ID's) and
+            // Save the order of the given list and
             // the individual site settings to preferences.
             final SharedPreferences.Editor ed = ServiceLocator.getPreferences().edit();
 
@@ -557,11 +569,11 @@ public final class Site
                                              // store individual site settings
                                              site.saveToPrefs(ed);
                                              // and collect the id for the order string
-                                             return String.valueOf(site.engineId);
+                                             return site.getEngineId().getPreferenceKey();
                                          })
                                          .collect(Collectors.joining(","));
 
-            ed.putString(PREFS_ORDER_PREFIX + typeName, order);
+            ed.putString(PREFS_ORDER_PREFIX + key, order);
             ed.apply();
 
             // for reference, the prefs will look somewhat like this:
@@ -581,9 +593,10 @@ public final class Site
             //    <boolean name="search.site.stripinfo.data.enabled" value="false" />
             //
             //  The order includes both enabled and disabled sites!
-            //    <string name="search.siteOrder.alted">4,16</string>
-            //    <string name="search.siteOrder.covers">2,16,32</string>
-            //    <string name="search.siteOrder.data">16,2,128,1,256,32</string>
+            //    <string name="search.siteOrder.alted">librarything,isfdb</string>
+            //    <string name="search.siteOrder.covers">amazon,isfdb,openlibrary</string>
+            //    <string name="search.siteOrder.data">isfdb,amazon,stripinfo,googlebooks,
+            //                                         lastdodo,openlibrary</string>
         }
 
 
@@ -594,7 +607,7 @@ public final class Site
 
         @NonNull
         public String getBundleKey() {
-            return TAG + ":" + typeName;
+            return TAG + ":" + key;
         }
 
         @Override

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,9 +19,9 @@
  */
 
 /**
- * Classes involved:
+ * Classes involved.
  * <ul>
- *     <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites} :
+ *     <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.EngineId} :
  *          Static setup of identifiers and classes. This is where a new engine can be added.
  *     </li>
  *

@@ -39,8 +39,10 @@ import androidx.preference.PreferenceManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -85,7 +87,7 @@ public class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 20;
+    public static final int DATABASE_VERSION = 21;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -724,8 +726,7 @@ public class DBHelper
                             FieldVisibility.getBitValue(DBKey.FK_SERIES)
 
                             | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_COVERS, true)
-                               ? FieldVisibility.getBitValue(
-                                    FieldVisibility.COVER[0]) : 0)
+                               ? FieldVisibility.getBitValue(FieldVisibility.COVER[0]) : 0)
                             | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_AUTHOR, true)
                                ? FieldVisibility.getBitValue(DBKey.FK_AUTHOR) : 0)
                             | (stylePrefs.getBoolean(StyleDataStore.PK_LIST_SHOW_PUBLISHER, true)
@@ -756,6 +757,46 @@ public class DBHelper
 
         if (oldVersion < 20) {
             TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_AUTO_UPDATE);
+        }
+
+        if (oldVersion < 21) {
+            final SharedPreferences prefs = PreferenceManager
+                    .getDefaultSharedPreferences(context);
+
+            // convert the old bit ids to the preference-key of the engine
+            Stream.of("search.siteOrder.data",
+                      "search.siteOrder.covers",
+                      "search.siteOrder.alted")
+                  .forEach(key -> {
+                      final String order = Arrays
+                              .stream(prefs.getString(key, "").split(","))
+                              .map(i -> {
+                                  switch (i) {
+                                      case "1":
+                                          return "googlebooks";
+                                      case "2":
+                                          return "amazon";
+                                      case "4":
+                                          return "librarything";
+                                      case "8":
+                                          return "goodreads";
+                                      case "16":
+                                          return "isfdb";
+                                      case "32":
+                                          return "openlibrary";
+                                      case "64":
+                                          return "kbnl";
+                                      case "128":
+                                          return "stripinfo";
+                                      case "256":
+                                          return "lastdodo";
+                                      default:
+                                          return "";
+                                  }
+                              })
+                              .collect(Collectors.joining(","));
+                      prefs.edit().putString(key, order).apply();
+                  });
         }
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table:

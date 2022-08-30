@@ -27,8 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -39,22 +37,19 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
  * Configuration data for a {@link SearchEngine}.
- * See {@link SearchSites} for more details.
+ *
+ * @see EngineId
+ * @see SearchEngine
+ * @see SearchEngineRegistry
+ * @see Site
  */
-@SuppressWarnings("WeakerAccess")
 public final class SearchEngineConfig {
 
     @NonNull
-    private final Class<? extends SearchEngine> clazz;
-
-    @SearchSites.EngineId
-    private final int id;
+    private final EngineId engineId;
 
     @StringRes
     private final int labelResId;
-
-    @NonNull
-    private final String prefKey;
 
     @NonNull
     private final String hostUrl;
@@ -87,19 +82,14 @@ public final class SearchEngineConfig {
     /** {@link SearchEngine.CoverByIsbn} only. */
     private final boolean supportsMultipleCoverSizes;
 
-    /** file suffix for cover files. */
-    @NonNull
-    private final String filenameSuffix;
-
-
     /**
      * Constructor.
+     *
+     * @param builder with configuration data
      */
     private SearchEngineConfig(@NonNull final Builder builder) {
-        clazz = builder.clazz;
-        id = builder.id;
+        engineId = builder.engineId;
         labelResId = builder.labelResId;
-        prefKey = builder.prefKey;
         hostUrl = builder.hostUrl;
 
         if (builder.lang != null && !builder.lang.isEmpty()
@@ -128,20 +118,6 @@ public final class SearchEngineConfig {
         searchPrefersIsbn10 = builder.searchPrefersIsbn10;
 
         supportsMultipleCoverSizes = builder.supportsMultipleCoverSizes;
-        filenameSuffix = builder.filenameSuffix != null ? builder.filenameSuffix : "";
-    }
-
-    @NonNull
-    SearchEngine createSearchEngine() {
-        try {
-            final Constructor<? extends SearchEngine> c = clazz.getConstructor(
-                    SearchEngineConfig.class);
-            return c.newInstance(this);
-
-        } catch (@NonNull final NoSuchMethodException | IllegalAccessException
-                | InstantiationException | InvocationTargetException e) {
-            throw new IllegalStateException(clazz + " must implement SearchEngine(int)", e);
-        }
     }
 
     /**
@@ -149,9 +125,9 @@ public final class SearchEngineConfig {
      *
      * @return engine id
      */
-    @SearchSites.EngineId
-    public int getEngineId() {
-        return id;
+    @NonNull
+    public EngineId getEngineId() {
+        return engineId;
     }
 
     /**
@@ -175,20 +151,21 @@ public final class SearchEngineConfig {
         return context.getString(labelResId);
     }
 
-    @NonNull
-    public String getPreferenceKey() {
-        return prefKey;
-    }
-
+    /**
+     * Get the file suffix used for cover files.
+     *
+     * @return suffix string
+     */
+    @SuppressWarnings("WeakerAccess")
     @NonNull
     public String getFilenameSuffix() {
-        return filenameSuffix;
+        return engineId.getPreferenceKey();
     }
 
     @NonNull
     public String getHostUrl() {
         return ServiceLocator.getPreferences().getString(
-                prefKey + Prefs.pk_suffix_host_url, hostUrl);
+                engineId.getPreferenceKey() + Prefs.pk_suffix_host_url, hostUrl);
     }
 
     /**
@@ -222,7 +199,8 @@ public final class SearchEngineConfig {
     public boolean isSearchPrefersIsbn10() {
         final SharedPreferences preferences = ServiceLocator.getPreferences();
 
-        final String engineKey = prefKey + "." + Prefs.pk_search_isbn_prefer_10;
+        final String engineKey = engineId.getPreferenceKey() + "."
+                                 + Prefs.pk_search_isbn_prefer_10;
         if (preferences.contains(engineKey)) {
             return preferences.getBoolean(engineKey, searchPrefersIsbn10);
         } else {
@@ -246,7 +224,8 @@ public final class SearchEngineConfig {
      * @return milli seconds
      */
     public int getConnectTimeoutInMs() {
-        return Prefs.getTimeoutValueInMs(prefKey + "." + Prefs.pk_timeout_connect_in_seconds,
+        return Prefs.getTimeoutValueInMs(engineId.getPreferenceKey() + "."
+                                         + Prefs.pk_timeout_connect_in_seconds,
                                          connectTimeoutMs);
     }
 
@@ -256,7 +235,8 @@ public final class SearchEngineConfig {
      * @return milli seconds
      */
     public int getReadTimeoutInMs() {
-        return Prefs.getTimeoutValueInMs(prefKey + "." + Prefs.pk_timeout_read_in_seconds,
+        return Prefs.getTimeoutValueInMs(engineId.getPreferenceKey() + "."
+                                         + Prefs.pk_timeout_read_in_seconds,
                                          readTimeoutMs);
     }
 
@@ -287,10 +267,8 @@ public final class SearchEngineConfig {
     @Override
     public String toString() {
         return "SearchEngineConfig{"
-               + "clazz=" + clazz
-               + ", id=" + id
+               + "engineId=" + engineId
                + ", labelResId=`" + labelResId + '`'
-               + ", prefKey=`" + prefKey + '`'
                + ", hostUrl=`" + hostUrl + '`'
                + ", locale=" + locale
                + ", externalIdDomain=" + externalIdDomain
@@ -301,7 +279,6 @@ public final class SearchEngineConfig {
                + ", throttler=" + throttler
                + ", searchPrefersIsbn10=" + searchPrefersIsbn10
                + ", supportsMultipleCoverSizes=" + supportsMultipleCoverSizes
-               + ", filenameSuffix=`" + filenameSuffix + '`'
                + '}';
     }
 
@@ -311,16 +288,10 @@ public final class SearchEngineConfig {
         static final int TEN_SECONDS = 10_000;
 
         @NonNull
-        private final Class<? extends SearchEngine> clazz;
-
-        @SearchSites.EngineId
-        private final int id;
+        private final EngineId engineId;
 
         @StringRes
         private final int labelResId;
-
-        @NonNull
-        private final String prefKey;
 
         @NonNull
         private final String hostUrl;
@@ -351,23 +322,15 @@ public final class SearchEngineConfig {
         /** {@link SearchEngine.CoverByIsbn} only. */
         private boolean supportsMultipleCoverSizes;
 
-        /** file suffix for cover files. */
-        @Nullable
-        private String filenameSuffix;
-
         /** The DEFAULT for the engine: {@code false}. */
         private boolean searchPrefersIsbn10;
 
 
-        public Builder(@NonNull final Class<? extends SearchEngine> clazz,
-                       @SearchSites.EngineId final int id,
+        public Builder(@NonNull final EngineId engineId,
                        @StringRes final int labelResId,
-                       @NonNull final String prefKey,
                        @NonNull final String hostUrl) {
-            this.clazz = clazz;
-            this.id = id;
+            this.engineId = engineId;
             this.labelResId = labelResId;
-            this.prefKey = prefKey;
             this.hostUrl = hostUrl;
         }
 
@@ -423,12 +386,6 @@ public final class SearchEngineConfig {
         @NonNull
         public Builder setSupportsMultipleCoverSizes(final boolean supportsMultipleCoverSizes) {
             this.supportsMultipleCoverSizes = supportsMultipleCoverSizes;
-            return this;
-        }
-
-        @NonNull
-        public Builder setFilenameSuffix(@NonNull final String filenameSuffix) {
-            this.filenameSuffix = filenameSuffix;
             return this;
         }
 

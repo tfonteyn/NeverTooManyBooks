@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,6 +31,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
@@ -117,13 +118,11 @@ public class SearchBookUpdatesViewModel
     private int currentProgressCounter;
     private int currentCursorCount;
 
-    /** Observable. */
     @NonNull
     LiveData<LiveDataEvent<TaskResult<Bundle>>> onAllDone() {
         return listFinished;
     }
 
-    /** Observable. */
     @NonNull
     LiveData<LiveDataEvent<TaskResult<Exception>>> onAbort() {
         return listFailed;
@@ -216,7 +215,7 @@ public class SearchBookUpdatesViewModel
         SearchEngineRegistry.getInstance().getAll().forEach(seConfig -> {
             final Domain domain = seConfig.getExternalIdDomain();
             if (domain != null) {
-                sidMap.put(context.getString(seConfig.getLabelResId()), domain.getName());
+                sidMap.put(seConfig.getName(context), domain.getName());
             }
         });
         sidMap.forEach((label, key) -> builder.add(label, key, SyncAction.Overwrite));
@@ -372,7 +371,7 @@ public class SearchBookUpdatesViewModel
                     }
 
                     // Collect external ID's we can use
-                    final SparseArray<String> externalIds = new SparseArray<>();
+                    final Map<EngineId, String> externalIds = new EnumMap<>(EngineId.class);
                     for (final SearchEngineConfig config : SearchEngineRegistry
                             .getInstance().getAll()) {
                         final Domain domain = config.getExternalIdDomain();
@@ -384,7 +383,7 @@ public class SearchBookUpdatesViewModel
                         }
                     }
 
-                    if (externalIds.size() > 0) {
+                    if (!externalIds.isEmpty()) {
                         setExternalIds(externalIds);
                         canSearch = true;
                     }

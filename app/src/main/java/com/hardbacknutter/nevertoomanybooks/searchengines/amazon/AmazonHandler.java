@@ -39,8 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 /**
@@ -178,7 +178,7 @@ public class AmazonHandler
         // If we don't the user will not see anything happen / we'd need to popup
         // an explanation why we cannot search.
         final String url = SearchEngineRegistry.getInstance()
-                                               .getByEngineId(SearchSites.AMAZON)
+                                               .getByEngineId(EngineId.Amazon)
                                                .getHostUrl()
                            + ADV_SEARCH_BOOKS
                            + fields.trim();

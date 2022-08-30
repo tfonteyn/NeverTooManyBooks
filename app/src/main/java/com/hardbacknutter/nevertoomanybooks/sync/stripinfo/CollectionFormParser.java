@@ -40,9 +40,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -91,7 +91,7 @@ public class CollectionFormParser
         idAmount = FF_AANTAL;
 
         final SearchEngineConfig config = SearchEngineRegistry
-                .getInstance().getByEngineId(SearchSites.STRIP_INFO_BE);
+                .getInstance().getByEngineId(EngineId.StripInfoBe);
 
         futureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
         futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())
@@ -136,7 +136,7 @@ public class CollectionFormParser
 
         //noinspection ConstantConditions
         final Document response = Objects.requireNonNull(
-                futureHttpPost.post(FORM_URL, postBody, (bis) -> {
+                futureHttpPost.post(FORM_URL, postBody, bis -> {
                     try {
                         return Jsoup.parse(bis, null, FORM_URL);
                     } catch (@NonNull final IOException e) {

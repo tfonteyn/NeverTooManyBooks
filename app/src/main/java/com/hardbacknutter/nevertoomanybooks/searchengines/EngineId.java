@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,11 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
-import androidx.annotation.IntDef;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -44,11 +45,10 @@ import com.hardbacknutter.nevertoomanybooks.settings.sites.IsfdbPreferencesFragm
  * <p>
  * To add a new site to search, follow these steps:
  * <ol>
- *     <li>Add an identifier (bit) in this class.</li>
- *     <li>Add this identifier to {@link EngineId} and {@link #DATA_RELIABILITY_ORDER}.</li>
  *     <li>Add a string resource with the name of the site engine in:
  *          "src/main/res/values/donottranslate.xml" (look for existing entries named 'site_*')
  *     </li>
+ *
  *     <li>Implement {@link SearchEngine} to create the new engine class
  *          extending {@link SearchEngineBase} or {@link JsoupSearchEngineBase}
  *          or a similar setup.<br>
@@ -56,11 +56,21 @@ import com.hardbacknutter.nevertoomanybooks.settings.sites.IsfdbPreferencesFragm
  *          Configure the engine using {@link SearchEngineConfig}.
  *      </li>
  *
+ *     <li>Add an identifier in this class and give it a unique string-id
+ *         and the implementation class.
+ *         <br>The string-id must be all lowercase, no-spaces.
+ *         It will be used in preferences, database settings,...
+ *     </li>
+ *
+ *     <li>Add this identifier to {@link #DATA_RELIABILITY_ORDER}.</li>
+ *
  *     <li>Add the {@link SearchEngine} class to
- *     {@link #registerSearchEngineClasses(SearchEngineRegistry)}</li>
+ *         {@link #registerSearchEngineClasses(SearchEngineRegistry)}
+ *     </li>
  *
  *      <li>Add a new {@link Site} instance to the one or more list(s)
- *          in {@link #createSiteList}</li>
+ *          in {@link #createSiteList}
+ *      </li>
  *
  *      <li>Optional: if the engine/site will store a external book id (or any other specific
  *          fields) in the local database, extra steps will need to be taken.
@@ -69,59 +79,88 @@ import com.hardbacknutter.nevertoomanybooks.settings.sites.IsfdbPreferencesFragm
  *
  *      <li>Optional: Add a preference fragment for the user to configure the engine.
  *          See the {@link IsfdbPreferencesFragment} for an example:
- *          a class, an xml file, and an entry in "src/main/res/xml/preferences.xml"."</li>
+ *          a class, an xml file, and an entry in "src/main/res/xml/preferences.xml"
+ *      </li>
  * </ol>
  * <p>
  *
- * <strong>Note:</strong>
- * <strong>Never change the identifier of the sites</strong>, they get stored in the db.
- * Dev note: there is really only one place where the code relies on this being bit numbers...
- * but we might as well keep them as bits.
+ * <strong>Note: NEVER change the "key" of the sites</strong>.
+ *
+ * @see SearchEngine
+ * @see SearchEngineConfig
+ * @see SearchEngineRegistry
+ * @see Site
  */
-public final class SearchSites {
+public enum EngineId
+        implements Parcelable {
 
-    /** Site: all genres. */
-    public static final int GOOGLE_BOOKS = 1;
-    /** Site: all genres. */
-    public static final int AMAZON = 1 << 1;
-    /** Site: all genres. */
-    public static final int LIBRARY_THING = 1 << 2;
-    /** Site: all genres. */
-    public static final int GOODREADS = 1 << 3;
+    /** All genres. */
+    GoogleBooks("googlebooks", GoogleBooksSearchEngine.class),
 
+    /** All genres. */
+    Amazon("amazon", AmazonSearchEngine.class),
 
-    /** Site: Speculative Fiction only. e.g. Science-Fiction/Fantasy etc... */
-    public static final int ISFDB = 1 << 4;
+    /** All genres. */
+    LibraryThing("librarything", LibraryThingSearchEngine.class),
 
-    /** Site: all genres. */
-    public static final int OPEN_LIBRARY = 1 << 5;
+    /** All genres. */
+    Goodreads("goodreads", GoodreadsSearchEngine.class),
 
+    /** Speculative Fiction only. e.g. Science-Fiction/Fantasy etc... */
+    IsfDb("isfdb", IsfdbSearchEngine.class),
 
-    /** Site: Dutch language books & comics. */
-    public static final int KB_NL = 1 << 6;
-    /** Site: Dutch language (and to an extend French) comics. */
-    public static final int STRIP_INFO_BE = 1 << 7;
-    /** Site: Dutch language (and to an extend French) comics. */
-    public static final int LAST_DODO = 1 << 8;
+    /** All genres. */
+    OpenLibrary("openlibrary", OpenLibrarySearchEngine.class),
+
+    /** Dutch language books & comics. */
+    KbNl("kbnl", KbNlSearchEngine.class),
+
+    /** Dutch language (and to some extend other languages) comics. */
+    StripInfoBe("stripinfo", StripInfoSearchEngine.class),
+
+    /** Dutch language (and to some extend other languages) comics. */
+    LastDodoNl("lastdodo", LastDodoSearchEngine.class);
 
     // NEWTHINGS: adding a new search engine: add the engine id as a new bit
 
+    /** {@link Parcelable}. */
+    public static final Creator<EngineId> CREATOR = new Creator<>() {
+        @Override
+        @NonNull
+        public EngineId createFromParcel(@NonNull final Parcel in) {
+            return values()[in.readInt()];
+        }
+
+        @Override
+        @NonNull
+        public EngineId[] newArray(final int size) {
+            return new EngineId[size];
+        }
+    };
+
     /**
-     * Simple CSV string with the search engine ids in reliability of data order.
+     * The search engine ids in reliability of data order.
      * Order is hardcoded based on experience. ENHANCE: make this user configurable
-     * (Dev.note: it's a CSV because we store these kind of lists as strings in SharedPreferences)
      * NEWTHINGS: adding a new search engine: add the engine id
      */
-    static final String DATA_RELIABILITY_ORDER =
-            ISFDB
-            + "," + STRIP_INFO_BE
-            + "," + AMAZON
-            + "," + GOOGLE_BOOKS
-            + "," + LAST_DODO
-//            + "," + KB_NL
-            + "," + OPEN_LIBRARY;
+    static final List<EngineId> DATA_RELIABILITY_ORDER =
+            List.of(IsfDb,
+                    StripInfoBe,
+                    Amazon,
+                    GoogleBooks,
+                    LastDodoNl,
+                    /* KB_NL, */
+                    OpenLibrary);
 
-    private SearchSites() {
+    @NonNull
+    private final String key;
+    @NonNull
+    private final Class<? extends SearchEngine> clazz;
+
+    EngineId(@NonNull final String key,
+             @NonNull final Class<? extends SearchEngine> clazz) {
+        this.key = key;
+        this.clazz = clazz;
     }
 
     /**
@@ -193,71 +232,71 @@ public final class SearchSites {
 
         switch (type) {
             case Data: {
-                type.addSite(AMAZON);
+                type.addSite(Amazon);
 
                 if (BuildConfig.ENABLE_GOOGLE_BOOKS) {
-                    type.addSite(GOOGLE_BOOKS);
+                    type.addSite(GoogleBooks);
                 }
 
-                type.addSite(ISFDB);
+                type.addSite(IsfDb);
 
                 if (BuildConfig.ENABLE_STRIP_INFO) {
-                    type.addSite(STRIP_INFO_BE, enableIfDutch);
+                    type.addSite(StripInfoBe, enableIfDutch);
                 }
                 if (BuildConfig.ENABLE_LAST_DODO) {
-                    type.addSite(LAST_DODO, enableIfDutch);
+                    type.addSite(LastDodoNl, enableIfDutch);
                 }
                 if (BuildConfig.ENABLE_KB_NL) {
-                    type.addSite(KB_NL, enableIfDutch);
+                    type.addSite(KbNl, enableIfDutch);
                 }
 
                 // Disabled by default as data from this site is not very complete.
-                type.addSite(OPEN_LIBRARY, false);
+                type.addSite(OpenLibrary, false);
                 break;
             }
             case Covers: {
                 // Only add sites here that implement {@link SearchEngine.CoverByIsbn}.
 
-                type.addSite(AMAZON);
+                type.addSite(Amazon);
 
-                type.addSite(ISFDB);
+                type.addSite(IsfDb);
 
                 if (BuildConfig.ENABLE_KB_NL) {
-                    type.addSite(KB_NL, enableIfDutch);
+                    type.addSite(KbNl, enableIfDutch);
                 }
 
                 // Disabled by default as this site lacks many covers.
-                type.addSite(OPEN_LIBRARY, false);
+                type.addSite(OpenLibrary, false);
                 break;
             }
             case AltEditions: {
                 //Only add sites here that implement {@link SearchEngine.AlternativeEditions}.
 
                 if (BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
-                    type.addSite(LIBRARY_THING);
+                    type.addSite(LibraryThing);
                 }
 
-                type.addSite(ISFDB);
+                type.addSite(IsfDb);
                 break;
             }
 
             case ViewOnSite: {
                 // only add sites here that implement {@link SearchEngine.ViewBookByExternalId}.
 
-                type.addSite(GOODREADS);
-                type.addSite(ISFDB);
+                type.addSite(Goodreads);
+                type.addSite(IsfDb);
 
                 if (BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
-                    type.addSite(LIBRARY_THING);
+                    type.addSite(LibraryThing);
                 }
 
-                type.addSite(OPEN_LIBRARY);
+                type.addSite(OpenLibrary);
 
                 if (BuildConfig.ENABLE_STRIP_INFO) {
-                    type.addSite(STRIP_INFO_BE, enableIfDutch);
+                    type.addSite(StripInfoBe, enableIfDutch);
                 }
                 if (BuildConfig.ENABLE_LAST_DODO) {
-                    type.addSite(LAST_DODO, enableIfDutch);
+                    type.addSite(LastDodoNl, enableIfDutch);
                 }
                 break;
             }
@@ -267,13 +306,24 @@ public final class SearchSites {
         }
     }
 
-    // NEWTHINGS: adding a new search engine: add the engine id
-    @IntDef(flag = true, value = {
-            GOOGLE_BOOKS, AMAZON, LIBRARY_THING, GOODREADS,
-            ISFDB, OPEN_LIBRARY,
-            KB_NL, STRIP_INFO_BE, LAST_DODO})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface EngineId {
+    @NonNull
+    public String getPreferenceKey() {
+        return key;
+    }
 
+    @NonNull
+    public Class<? extends SearchEngine> getClazz() {
+        return clazz;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeInt(this.ordinal());
     }
 }

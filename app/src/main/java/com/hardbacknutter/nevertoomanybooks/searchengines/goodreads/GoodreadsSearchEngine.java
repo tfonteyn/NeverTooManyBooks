@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,10 +24,10 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 
 /**
  * <a href="https://www.goodreads.com">https://www.goodreads.com</a>
@@ -49,11 +49,10 @@ public class GoodreadsSearchEngine
         super(config);
     }
 
+    @NonNull
     public static SearchEngineConfig createConfig() {
-        return new SearchEngineConfig.Builder(GoodreadsSearchEngine.class,
-                                              SearchSites.GOODREADS,
+        return new SearchEngineConfig.Builder(EngineId.Goodreads,
                                               R.string.site_goodreads,
-                                              "goodreads",
                                               "https://www.goodreads.com")
 
                 .setDomainKey(DBKey.SID_GOODREADS_BOOK)
@@ -65,7 +64,7 @@ public class GoodreadsSearchEngine
     @NonNull
     @Override
     public String createBrowserUrl(@NonNull final String externalId) {
-        return getSiteUrl() + "/book/show/" + externalId;
+        return getHostUrl() + "/book/show/" + externalId;
     }
 }
 

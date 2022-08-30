@@ -37,8 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -56,7 +56,7 @@ class OpenLibrarySearchEngineTest
             throws ParserConfigurationException, SAXException {
         super.setup();
         searchEngine = (OpenLibrarySearchEngine) Site.Type.Data
-                .getSite(SearchSites.OPEN_LIBRARY).getSearchEngine();
+                .getSite(EngineId.OpenLibrary).getSearchEngine();
         searchEngine.setCaller(new MockCancellable());
     }
 

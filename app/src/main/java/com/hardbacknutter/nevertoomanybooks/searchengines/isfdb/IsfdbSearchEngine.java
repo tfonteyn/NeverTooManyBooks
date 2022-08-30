@@ -73,12 +73,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.network.Throttler;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -103,6 +103,9 @@ public class IsfdbSearchEngine
                    SearchEngine.CoverByIsbn,
                    SearchEngine.AlternativeEditions {
 
+    /** Preferences - Type: {@code boolean}. */
+    public static final String PK_USE_PUBLISHER = EngineId.IsfDb.getPreferenceKey()
+                                                  + ".search.uses.publisher";
     /**
      * The site claims to use ISO-8859-1.
      * <pre>
@@ -119,12 +122,9 @@ public class IsfdbSearchEngine
     static final String CHARSET_ENCODE_URL = "iso-8859-1";
     /** Map ISFDB book types to {@link Book.ContentType}. */
     static final Map<String, Book.ContentType> TYPE_MAP = new HashMap<>();
-    /** Preferences prefix. */
-    private static final String PREF_KEY = "isfdb";
-    /** Type: {@code boolean}. */
-    public static final String PK_USE_PUBLISHER = PREF_KEY + ".search.uses.publisher";
-    /** Type: {@code boolean}. */
-    static final String PK_SERIES_FROM_TOC = PREF_KEY + ".search.toc.series";
+    /** Preferences - Type: {@code boolean}. */
+    static final String PK_SERIES_FROM_TOC = EngineId.IsfDb.getPreferenceKey()
+                                             + ".search.toc.series";
 
     /**
      * As proposed by another user on the ISFDB wiki,
@@ -171,10 +171,13 @@ public class IsfdbSearchEngine
     private static final String CSS_Q_DIV_CONTENTBOX = "div.contentbox";
 
     /**
-     * We TRY to get the books language, but this is not always possible. For those occasions,
-     * default the English.
+     * We TRY to get the books language, but this is not always possible.
+     * For those occasions, default the English.
      */
     private static final String LANGUAGE_DEFAULT = "eng";
+
+    /** Format string for searches. */
+    private static final String USE = "&USE_%1$s=%2$s&O_%1$s=contains&TERM_%1$s=%3$s";
 
     /*
      * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type">
@@ -246,14 +249,11 @@ public class IsfdbSearchEngine
         super(config, CHARSET_DECODE_PAGE);
     }
 
+    @NonNull
     public static SearchEngineConfig createConfig() {
-        return new SearchEngineConfig.Builder(IsfdbSearchEngine.class,
-                                              SearchSites.ISFDB,
+        return new SearchEngineConfig.Builder(EngineId.IsfDb,
                                               R.string.site_isfdb,
-                                              PREF_KEY,
                                               "http://www.isfdb.org")
-                .setFilenameSuffix("ISFDB")
-
                 .setDomainKey(DBKey.SID_ISFDB)
                 .setDomainViewId(R.id.site_isfdb)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB)
@@ -267,7 +267,7 @@ public class IsfdbSearchEngine
     @NonNull
     @Override
     public String createBrowserUrl(@NonNull final String externalId) {
-        return getSiteUrl() + CGI_BIN + CGI_PL + "?" + externalId;
+        return getHostUrl() + CGI_BIN + CGI_PL + "?" + externalId;
     }
 
     @NonNull
@@ -279,7 +279,7 @@ public class IsfdbSearchEngine
 
         final Bundle bookData = ServiceLocator.newBundle();
 
-        final String url = getSiteUrl() + String.format(CGI_BY_EXTERNAL_ID, externalId);
+        final String url = getHostUrl() + String.format(CGI_BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url);
         if (!isCancelled()) {
             parse(context, document, fetchCovers, bookData);
@@ -321,7 +321,7 @@ public class IsfdbSearchEngine
                          @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String url = getSiteUrl() + CGI_BIN + CGI_ADV_SEARCH_RESULTS + "?"
+        final String url = getHostUrl() + CGI_BIN + CGI_ADV_SEARCH_RESULTS + "?"
                            + "ORDERBY=pub_title"
                            + "&ACTION=query"
                            + "&START=0"
@@ -335,16 +335,20 @@ public class IsfdbSearchEngine
         try {
             if (author != null && !author.isEmpty()) {
                 index++;
-                args += "&USE_" + index + "=author_canonical"
-                        + "&O_" + index + "=contains"
-                        + "&TERM_" + index + "=" + URLEncoder.encode(author, CHARSET_ENCODE_URL);
+                args += String.format(USE, index, "author_canonical",
+                                      URLEncoder.encode(author, CHARSET_ENCODE_URL));
+//                        "&USE_" + index + "=author_canonical"
+//                        + "&O_" + index + "=contains"
+//                        + "&TERM_" + index + "=" + URLEncoder.encode(author, CHARSET_ENCODE_URL);
             }
 
             if (title != null && !title.isEmpty()) {
                 index++;
-                args += "&USE_" + index + "=pub_title"
-                        + "&O_" + index + "=contains"
-                        + "&TERM_" + index + "=" + URLEncoder.encode(title, CHARSET_ENCODE_URL);
+                args += String.format(USE, index, "pub_title",
+                                      URLEncoder.encode(title, CHARSET_ENCODE_URL));
+//                        "&USE_" + index + "=pub_title"
+//                        + "&O_" + index + "=contains"
+//                        + "&TERM_" + index + "=" + URLEncoder.encode(title, CHARSET_ENCODE_URL);
             }
 
             // as per user settings.
@@ -352,10 +356,13 @@ public class IsfdbSearchEngine
                                  .getBoolean(PK_USE_PUBLISHER, false)) {
                 if (publisher != null && !publisher.isEmpty()) {
                     index++;
-                    args += "&USE_" + index + "=pub_publisher"
-                            + "&O_" + index + "=contains"
-                            + "&TERM_" + index + "=" + URLEncoder
-                                    .encode(publisher, CHARSET_ENCODE_URL);
+                    args += String.format(USE, index, "pub_publisher",
+                                          URLEncoder
+                                                  .encode(publisher, CHARSET_ENCODE_URL));
+//                            "&USE_" + index + "=pub_publisher"
+//                            + "&O_" + index + "=contains"
+//                            + "&TERM_" + index + "=" + URLEncoder
+//                                    .encode(publisher, CHARSET_ENCODE_URL);
                 }
             }
 
@@ -463,78 +470,83 @@ public class IsfdbSearchEngine
         if (contentBox != null) {
             for (final Element li : contentBox.select("li")) {
 
-            /* LI entries, possibilities:
-            7
-            &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?118799">
-                Introduction (The Days of Perky Pat)</a>
-            &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226">
-                Introductions to the Collected Stories of Philip K. Dick</a> &#8226; 4]
-            &#8226; (1987)
-            &#8226; essay by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?57">James Tiptree, Jr.</a>
+                /* LI entries, possibilities:
+                7
+                &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?118799">
+                    Introduction (The Days of Perky Pat)</a>
+                &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226">
+                    Introductions to the Collected Stories of Philip K. Dick</a> &#8226; 4]
+                &#8226; (1987)
+                &#8226; essay by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?57">
+                    James Tiptree, Jr.</a>
 
-            11
-            &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?53646">Autofac</a>
-            &#8226; (1955)
-            &#8226; novelette by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23">
-                Philip K. Dick</a>
+                11
+                &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?53646">Autofac</a>
+                &#8226; (1955)
+                &#8226; novelette by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23">
+                    Philip K. Dick</a>
 
-            <a href="http://www.isfdb.org/cgi-bin/title.cgi?41613">Beyond Lies the Wub</a>
-            &#8226; (1952)
-            &#8226; short story by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23">
-                Philip K. Dick</a>
+                <a href="http://www.isfdb.org/cgi-bin/title.cgi?41613">Beyond Lies the Wub</a>
+                &#8226; (1952)
+                &#8226; short story by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23">
+                    Philip K. Dick</a>
 
-            <a href="http://www.isfdb.org/cgi-bin/title.cgi?118803">
-            Introduction (Beyond Lies the Wub)</a>
-            &#8226; [ <a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226">
-            Introductions to the Collected Stories of Philip K. Dick</a> &#8226; 1]
-            &#8226; (1987)
-            &#8226; essay by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?69">Roger Zelazny</a>
+                <a href="http://www.isfdb.org/cgi-bin/title.cgi?118803">
+                Introduction (Beyond Lies the Wub)</a>
+                &#8226; [ <a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226">
+                Introductions to the Collected Stories of Philip K. Dick</a> &#8226; 1]
+                &#8226; (1987)
+                &#8226; essay by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?69">Roger Zelazny</a>
 
-            61
-            &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?417331">
-                That Thou Art Mindful of Him</a>
-            &#8226; (1974)
-            &#8226; novelette by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?5">Isaac Asimov</a>
-            (variant of <i><a href="http://www.isfdb.org/cgi-bin/title.cgi?50798">
-                —That Thou Art Mindful of Him!</a></i>)
+                61
+                &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?417331">
+                    That Thou Art Mindful of Him</a>
+                &#8226; (1974)
+                &#8226; novelette by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?5">
+                    Isaac Asimov</a>
+                (variant of <i><a href="http://www.isfdb.org/cgi-bin/title.cgi?50798">
+                    —That Thou Art Mindful of Him!</a></i>)
 
-            A book belonging to a Series will have one content entry with the same title
-            as the book, and potentially have the Series/nr in it:
+                A book belonging to a Series will have one content entry with the same title
+                as the book, and potentially have the Series/nr in it:
 
-            <a href="http://www.isfdb.org/cgi-bin/title.cgi?2210372">
-                The Delirium Brief</a>
-            &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?23081">
-                Laundry Files</a> &#8226; 8]
-            &#8226; (2017)
-            &#8226; novel by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?2200">Charles Stross</a>
+                <a href="http://www.isfdb.org/cgi-bin/title.cgi?2210372">
+                    The Delirium Brief</a>
+                &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?23081">
+                    Laundry Files</a> &#8226; 8]
+                &#8226; (2017)
+                &#8226; novel by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?2200">
+                    Charles Stross</a>
 
-            ENHANCE: type of entry: "short story", "novelette", "essay", "novel"
-            ENHANCE: if type "novel" -> *that* is the one to use for the first publication year
+                ENHANCE: type of entry: "short story", "novelette", "essay", "novel"
+                ENHANCE: if type "novel" -> *that* is the one to use for the first publication year
 
-            2019-07: translation information seems to be added,
-            and a further sub-classification (here: 'juvenile')
+                2019-07: translation information seems to be added,
+                and a further sub-classification (here: 'juvenile')
 
-            <a href="http://www.isfdb.org/cgi-bin/title.cgi?1347238">
-                Zwerftocht Tussen de Sterren</a>
-            &#8226; juvenile
-            &#8226; (1973)
-            &#8226; novel by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?29">Robert A. Heinlein</a>
-            (trans. of <a href="http://www.isfdb.org/cgi-bin/title.cgi?2233">
-                <i>Citizen of the Galaxy</i></a> 1957)
+                <a href="http://www.isfdb.org/cgi-bin/title.cgi?1347238">
+                    Zwerftocht Tussen de Sterren</a>
+                &#8226; juvenile
+                &#8226; (1973)
+                &#8226; novel by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?29">
+                    Robert A. Heinlein</a>
+                (trans. of <a href="http://www.isfdb.org/cgi-bin/title.cgi?2233">
+                    <i>Citizen of the Galaxy</i></a> 1957)
 
-            2019-09-26: this has been there for a longer time, but just noticed these:
-            ISBN: 90-290-1541-1
-            7 • Één Nacht per Jaar • interior artwork by John Stewart
-            9 • Één Nacht per Jaar • [Cyrion] • novelette by Tanith Lee
-                (trans. of One Night of the Year 1980)
-            39 • Aaches Geheim • interior artwork by Jim Pitts
-            41 • Aaches Geheim • [Dilvish] • short story by Roger Zelazny
-                (trans. of The Places of Aache 1980)
+                2019-09-26: this has been there for a longer time, but just noticed these:
+                ISBN: 90-290-1541-1
+                7 • Één Nacht per Jaar • interior artwork by John Stewart
+                9 • Één Nacht per Jaar • [Cyrion] • novelette by Tanith Lee
+                    (trans. of One Night of the Year 1980)
+                39 • Aaches Geheim • interior artwork by Jim Pitts
+                41 • Aaches Geheim • [Dilvish] • short story by Roger Zelazny
+                    (trans. of The Places of Aache 1980)
 
-            iow: each story appears twice due to the extra interior artwork.
-            For now, we will get two entries in the TOC, same title but different author.
-            TODO: avoid duplicate TOC entries when there are two lines.
-             */
+                iow: each story appears twice due to the extra interior artwork.
+                For now, we will get two entries in the TOC, same title but different author.
+                ENHANCE: avoid duplicate TOC entries when there are two lines.
+                         This will require that a TOCEntry can have multiple authors.
+                 */
                 final String liAsString = li.toString();
                 String title = null;
                 Author author = null;
@@ -1088,6 +1100,8 @@ public class IsfdbSearchEngine
      * @param isbn     (optional) ISBN of the book, will be used for the cover filename
      * @param cIdx     0..n image index
      *
+     * @return a list of fileSpec's
+     *
      * @throws StorageException on storage related failures
      */
     @WorkerThread
@@ -1158,7 +1172,7 @@ public class IsfdbSearchEngine
             throws SearchException, CredentialsException {
         searchForIsbn = validIsbn;
 
-        final String url = getSiteUrl() + String.format(CGI_EDITIONS, validIsbn);
+        final String url = getHostUrl() + String.format(CGI_EDITIONS, validIsbn);
         return fetchEditions(context, url);
     }
 
@@ -1295,7 +1309,7 @@ public class IsfdbSearchEngine
         }
 
         // go get it.
-        final String url = getSiteUrl() + String.format(CGI_BY_EXTERNAL_ID, edition.getIsfdbId());
+        final String url = getHostUrl() + String.format(CGI_BY_EXTERNAL_ID, edition.getIsfdbId());
         return loadDocument(context, url);
     }
 
@@ -1426,7 +1440,7 @@ public class IsfdbSearchEngine
         //    return pub[0]
         //  else:
         //    return 0
-        final String url = getSiteUrl() + String.format(REST_BY_EXTERNAL_ID, externalId);
+        final String url = getHostUrl() + String.format(REST_BY_EXTERNAL_ID, externalId);
         final List<Bundle> bookData = fetchPublications(context, url, fetchCovers, 1);
         if (bookData.isEmpty()) {
             return ServiceLocator.newBundle();

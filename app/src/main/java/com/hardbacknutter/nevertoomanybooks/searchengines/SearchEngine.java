@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 /**
  * The interface a search engine for a {@link Site} needs to implement.
  * <p>
- * More details in {@link SearchSites}.
+ * More details in {@link EngineId}.
  * <p>
  * At least one of the sub-interfaces needs to be implemented:
  * <ul>
@@ -92,8 +92,8 @@ public interface SearchEngine
      *
      * @return engine id
      */
-    @SearchSites.EngineId
-    default int getEngineId() {
+    @NonNull
+    default EngineId getEngineId() {
         return getConfig().getEngineId();
     }
 
@@ -110,13 +110,13 @@ public interface SearchEngine
     }
 
     /**
-     * Get the site url.
+     * Get the host url.
      *
      * @return url, including scheme.
      */
     @AnyThread
     @NonNull
-    default String getSiteUrl() {
+    default String getHostUrl() {
         return getConfig().getHostUrl();
     }
 
@@ -124,7 +124,7 @@ public interface SearchEngine
      * Get the Locale for this engine.
      * <p>
      * Override if the Locale needs to be user configurable.
-     * (Presumably depending on the site url: see {@link AmazonSearchEngine} for an example)
+     * (Presumably depending on the host url: see {@link AmazonSearchEngine} for an example)
      *
      * @param context Current context
      *
@@ -141,7 +141,7 @@ public interface SearchEngine
      * this site can be consider for searching.
      * <p>
      * Implementations can for example check for developer keys, ...
-     * <strong>Should NOT run network code / test for connection.</strong>
+     * <strong>MUST NOT run network code / test for connection.</strong>
      *
      * @return {@code true} if we can consider this site for searching.
      */
@@ -210,10 +210,9 @@ public interface SearchEngine
                                            @Nullable final String callerIdString,
                                            @NonNull final Consumer<RegistrationAction> onResult) {
 
-        final SearchEngineConfig config = getConfig();
         final String key;
         if (callerIdString != null) {
-            key = config.getPreferenceKey() + ".hide_alert." + callerIdString;
+            key = getEngineId().getPreferenceKey() + ".hide_alert." + callerIdString;
         } else {
             key = null;
         }
@@ -227,7 +226,7 @@ public interface SearchEngine
         }
 
         if (showAlert) {
-            final String siteName = config.getName(context);
+            final String siteName = getConfig().getName(context);
 
             final AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_warning_24)

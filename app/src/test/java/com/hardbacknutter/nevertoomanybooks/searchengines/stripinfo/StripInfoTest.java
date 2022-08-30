@@ -42,9 +42,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -73,7 +73,7 @@ class StripInfoTest
             throws ParserConfigurationException, SAXException {
         super.setup();
         searchEngine = (StripInfoSearchEngine) Site.Type.Data
-                .getSite(SearchSites.STRIP_INFO_BE).getSearchEngine();
+                .getSite(EngineId.StripInfoBe).getSearchEngine();
         searchEngine.setCaller(new MockCancellable());
     }
 

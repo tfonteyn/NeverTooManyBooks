@@ -43,9 +43,9 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpPost;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -59,7 +59,7 @@ public class StripInfoAuth
         implements ConnectionValidator {
 
     /** Preferences prefix. */
-    public static final String PREF_KEY = "stripinfo";
+    public static final String PREF_KEY = EngineId.StripInfoBe.getPreferenceKey();
     public static final String PK_HOST_USER = PREF_KEY + ".host.user";
     public static final String PK_HOST_PASS = PREF_KEY + ".host.password";
 
@@ -93,7 +93,7 @@ public class StripInfoAuth
     public StripInfoAuth() {
         this(SearchEngineRegistry
                      .getInstance()
-                     .getByEngineId(SearchSites.STRIP_INFO_BE)
+                     .getByEngineId(EngineId.StripInfoBe)
                      .getHostUrl());
 
     }
@@ -105,7 +105,7 @@ public class StripInfoAuth
         cookieManager = ServiceLocator.getInstance().getCookieManager();
 
         final SearchEngineConfig config = SearchEngineRegistry
-                .getInstance().getByEngineId(SearchSites.STRIP_INFO_BE);
+                .getInstance().getByEngineId(EngineId.StripInfoBe);
 
         futureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
         futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())
