@@ -46,6 +46,12 @@ public class PreferredStylesContract
     /**
      * Create the result which {@link #parseResult(int, Intent)} will receive.
      *
+     * @param uuid     Return the currently selected style UUID, so the caller can apply it.
+     *                 This is independent from any modification to this or another style,
+     *                 or the order of the styles.
+     * @param modified flag indicating if <strong>anything at all</strong> was modified.
+     *                 This is independent from the returned style
+     *
      * @return Intent
      */
     @NonNull
@@ -83,18 +89,31 @@ public class PreferredStylesContract
 
     public static final class Output {
 
-        // Return the currently selected style UUID, so the caller can apply it.
-        // This is independent from any modification to this or another style,
-        // or the order of the styles.
         @Nullable
-        public final String uuid;
-        // Same here, this is independent from the returned style
-        public final boolean modified;
+        private final String uuid;
+        private final boolean modified;
 
         private Output(@Nullable final String uuid,
                        final boolean modified) {
             this.uuid = uuid;
             this.modified = modified;
+        }
+
+        /**
+         * Get the UUID.
+         *
+         * @return (Optional) a non-blank UUID
+         */
+        @NonNull
+        public Optional<String> getUuid() {
+            if (uuid == null || uuid.isBlank()) {
+                return Optional.empty();
+            }
+            return Optional.of(uuid);
+        }
+
+        public boolean isModified() {
+            return modified;
         }
     }
 }

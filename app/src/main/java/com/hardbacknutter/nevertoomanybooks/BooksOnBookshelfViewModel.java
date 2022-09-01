@@ -704,12 +704,10 @@ public class BooksOnBookshelfViewModel
     void onEditStylesFinished(@NonNull final Context context,
                               @NonNull final PreferredStylesContract.Output data) {
         // we get the UUID for the selected style back.
-        if (data.uuid != null && !data.uuid.isEmpty()) {
-            onStyleChanged(context, data.uuid);
-        }
+        data.getUuid().ifPresent(uuid -> onStyleChanged(context, uuid));
 
         // This is independent from the above style having been modified ot not.
-        if (data.modified) {
+        if (data.isModified()) {
             forceRebuildInOnResume = true;
         }
     }
