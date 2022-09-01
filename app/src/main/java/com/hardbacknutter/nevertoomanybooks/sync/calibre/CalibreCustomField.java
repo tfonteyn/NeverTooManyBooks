@@ -56,13 +56,9 @@ public class CalibreCustomField
         }
     };
 
-    @Type
     public static final String TYPE_BOOL = "bool";
-    @Type
     public static final String TYPE_DATETIME = "datetime";
-    @Type
     public static final String TYPE_COMMENTS = "comments";
-    @Type
     public static final String TYPE_TEXT = "text";
 
     static final String METADATA_DATATYPE = "datatype";
