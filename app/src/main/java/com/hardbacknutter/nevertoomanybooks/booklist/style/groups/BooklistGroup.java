@@ -92,7 +92,7 @@ public class BooklistGroup {
 
     /**
      * The ID's for the groups.
-     * <strong>Never change these</strong>, they get stored in the db.
+     * <strong>Never change these values</strong>, they get stored in the db.
      * <p>
      * Also: the code relies on BOOK being == 0
      */
