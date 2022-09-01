@@ -446,9 +446,8 @@ public class SyncReaderFragment
                 .setTitle(titleId)
                 .setMessage(createReport(result))
                 .setPositiveButton(R.string.action_done, (d, w) -> {
-                    final Intent resultIntent = new Intent()
-                            .putExtra(SyncContractBase.BKEY_RESULT,
-                                      SyncContractBase.RESULT_READ_DONE);
+                    final Intent resultIntent = SyncContractBase
+                            .createResult(SyncContractBase.Outcome.Read);
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();

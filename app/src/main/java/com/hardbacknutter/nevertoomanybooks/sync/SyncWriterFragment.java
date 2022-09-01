@@ -243,9 +243,8 @@ public class SyncWriterFragment
                         .setTitle(R.string.progress_end_export_successful)
                         .setMessage(itemList)
                         .setPositiveButton(R.string.action_done, (d, w) -> {
-                            final Intent resultIntent = new Intent()
-                                    .putExtra(SyncContractBase.BKEY_RESULT,
-                                              SyncContractBase.RESULT_WRITE_DONE);
+                            final Intent resultIntent = SyncContractBase
+                                    .createResult(SyncContractBase.Outcome.Write);
                             //noinspection ConstantConditions
                             getActivity().setResult(Activity.RESULT_OK, resultIntent);
                             getActivity().finish();

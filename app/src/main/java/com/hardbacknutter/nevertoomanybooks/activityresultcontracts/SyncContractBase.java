@@ -21,11 +21,14 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -35,15 +38,34 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public abstract class SyncContractBase
         extends ActivityResultContract<Void, EnumSet<SyncContractBase.Outcome>> {
 
-    /** No result / cancelled / failed. */
-    private static final int RESULT_NONE = 0;
-    /** Data was exported/written; no local changes done. */
-    public static final int RESULT_WRITE_DONE = 1;
-    /** Data was imported; i.e. local changes were made. */
-    public static final int RESULT_READ_DONE = 1 << 1;
-
     private static final String TAG = "SyncContractBase";
-    public static final String BKEY_RESULT = TAG + ":result";
+    private static final String BKEY_RESULT = TAG + ":result";
+
+    /**
+     * Create the result which {@link #parseResult(int, Intent)} will receive.
+     *
+     * @param outcome the result
+     *
+     * @return Intent
+     */
+    @NonNull
+    public static Intent createResult(@NonNull final Outcome outcome) {
+        return new Intent().putParcelableArrayListExtra(BKEY_RESULT,
+                                                        new ArrayList<>(EnumSet.of(outcome)));
+    }
+
+    /**
+     * Create the result which {@link #parseResult(int, Intent)} will receive.
+     *
+     * @param outcomes the result
+     *
+     * @return Intent
+     */
+    @NonNull
+    public static Intent createResult(@NonNull final EnumSet<Outcome> outcomes) {
+        return new Intent().putParcelableArrayListExtra(BKEY_RESULT,
+                                                        new ArrayList<>(outcomes));
+    }
 
     @Override
     @NonNull
@@ -53,24 +75,48 @@ public abstract class SyncContractBase
             Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
-        final EnumSet<Outcome> outcome = EnumSet.noneOf(Outcome.class);
-
         if (intent == null || resultCode != Activity.RESULT_OK) {
-            return outcome;
+            return EnumSet.noneOf(Outcome.class);
         }
 
-        final int bits = intent.getIntExtra(BKEY_RESULT, RESULT_NONE);
-        if ((bits & RESULT_READ_DONE) != 0) {
-            outcome.add(Outcome.Read);
+        final ArrayList<Outcome> list = intent.getParcelableArrayListExtra(BKEY_RESULT);
+        if (list == null) {
+            return EnumSet.noneOf(Outcome.class);
         }
-        if ((bits & RESULT_WRITE_DONE) != 0) {
-            outcome.add(Outcome.Write);
-        }
-        return outcome;
+        return EnumSet.copyOf(list);
     }
 
-    public enum Outcome {
+    public enum Outcome
+            implements Parcelable {
+        /** Data was imported; i.e. local changes were made. */
         Read,
-        Write
+        /** Data was exported/written; no local changes done. */
+        Write;
+
+        /** {@link Parcelable}. */
+        public static final Creator<Outcome> CREATOR = new Creator<>() {
+            @Override
+            @NonNull
+            public Outcome createFromParcel(@NonNull final Parcel in) {
+                return values()[in.readInt()];
+            }
+
+            @Override
+            @NonNull
+            public Outcome[] newArray(final int size) {
+                return new Outcome[size];
+            }
+        };
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(@NonNull final Parcel dest,
+                                  final int flags) {
+            dest.writeInt(this.ordinal());
+        }
     }
 }
