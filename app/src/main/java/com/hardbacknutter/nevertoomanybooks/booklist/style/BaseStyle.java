@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -428,7 +428,7 @@ public abstract class BaseStyle
     public boolean isShowBooksUnderEachSeries() {
         return getGroupById(BooklistGroup.SERIES)
                 .map(group -> ((SeriesBooklistGroup) group).showBooksUnderEach())
-                .orElse(SeriesBooklistGroup.DEFAULT_SHOW_BOOKS_UNDER_EACH);
+                .orElse(false);
     }
 
     public void setShowBooksUnderEachSeries(final boolean value) {
@@ -447,7 +447,7 @@ public abstract class BaseStyle
     public boolean isShowBooksUnderEachPublisher() {
         return getGroupById(BooklistGroup.PUBLISHER)
                 .map(group -> ((PublisherBooklistGroup) group).showBooksUnderEach())
-                .orElse(PublisherBooklistGroup.DEFAULT_SHOW_BOOKS_UNDER_EACH);
+                .orElse(false);
     }
 
     public void setShowBooksUnderEachPublisher(final boolean value) {
@@ -466,7 +466,7 @@ public abstract class BaseStyle
     public boolean isShowBooksUnderEachBookshelf() {
         return getGroupById(BooklistGroup.BOOKSHELF)
                 .map(group -> ((BookshelfBooklistGroup) group).showBooksUnderEach())
-                .orElse(BookshelfBooklistGroup.DEFAULT_SHOW_BOOKS_UNDER_EACH);
+                .orElse(false);
     }
 
     public void setShowBooksUnderEachBookshelf(final boolean value) {
@@ -485,7 +485,7 @@ public abstract class BaseStyle
     public boolean isShowBooksUnderEachAuthor() {
         return getGroupById(BooklistGroup.AUTHOR)
                 .map(group -> ((AuthorBooklistGroup) group).showBooksUnderEach())
-                .orElse(AuthorBooklistGroup.DEFAULT_SHOW_BOOKS_UNDER_EACH);
+                .orElse(false);
     }
 
     public void setShowBooksUnderEachAuthor(final boolean value) {

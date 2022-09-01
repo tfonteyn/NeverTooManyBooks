@@ -51,8 +51,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 public class BookshelfBooklistGroup
         extends AbstractLinkedTableBooklistGroup {
 
-    public static final boolean DEFAULT_SHOW_BOOKS_UNDER_EACH = false;
-
     /** For sorting. */
     private static final Domain DOM_SORTING;
 
@@ -68,9 +66,7 @@ public class BookshelfBooklistGroup
      * @param style Style reference.
      */
     BookshelfBooklistGroup(@NonNull final Style style) {
-        super(style, BOOKSHELF);
-
-        underEach = DEFAULT_SHOW_BOOKS_UNDER_EACH;
+        super(style, BOOKSHELF, false);
     }
 
     /**

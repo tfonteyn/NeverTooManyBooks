@@ -47,8 +47,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PU
 public class PublisherBooklistGroup
         extends AbstractLinkedTableBooklistGroup {
 
-    public static final boolean DEFAULT_SHOW_BOOKS_UNDER_EACH = false;
-
     /** For sorting. */
     private static final Domain DOM_SORTING;
 
@@ -64,9 +62,7 @@ public class PublisherBooklistGroup
      * @param style Style reference.
      */
     PublisherBooklistGroup(@NonNull final Style style) {
-        super(style, PUBLISHER);
-
-        underEach = DEFAULT_SHOW_BOOKS_UNDER_EACH;
+        super(style, PUBLISHER, false);
     }
 
     /**
