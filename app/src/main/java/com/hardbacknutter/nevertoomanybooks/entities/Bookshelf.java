@@ -23,7 +23,6 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,8 +30,6 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -179,11 +176,12 @@ public class Bookshelf
 
     /**
      * Get the specified bookshelf.
+     * <p>
+     * The caller MUST be sure the 'fallbackId' is an existing shelf!
      *
      * @param context    Current context
      * @param id         of bookshelf to get
      * @param fallbackId to use if the bookshelf does not exist
-     *                   should be one of {@link PredefinedBookshelf}
      *
      * @return the bookshelf.
      */
@@ -508,11 +506,5 @@ public class Bookshelf
                + ", firstVisibleViewOffset=" + firstVisibleViewOffset
                + ", styleUuid=" + styleUuid
                + '}';
-    }
-
-    @IntDef({DEFAULT, ALL_BOOKS, PREFERRED})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface PredefinedBookshelf {
-
     }
 }
