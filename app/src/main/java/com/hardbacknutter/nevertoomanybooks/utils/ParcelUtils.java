@@ -96,15 +96,26 @@ public final class ParcelUtils {
         return list;
     }
 
+    /**
+     * Wrap a {@code List&lt;Long&gt;} in a {@link Parcelable}.
+     *
+     * @param list to wrap
+     *
+     * @return single Parcelable
+     *
+     * @see #unwrap(Bundle, String)
+     */
     @NonNull
     public static Parcelable wrap(@NonNull final List<Long> list) {
         return new ParcelableArrayListLong(list);
     }
 
     /**
-     * Extract a {@code List<Long>} from the given arguments.
+     * Extract a {@code List&lt;Long&gt;} from the given arguments.
      *
      * @return the list, or {@code null} if not found
+     *
+     * @see #wrap(List)
      */
     @Nullable
     public static List<Long> unwrap(@NonNull final Bundle args,
@@ -113,6 +124,13 @@ public final class ParcelUtils {
         return parcelable != null ? ((ParcelableArrayListLong) parcelable).unwrap() : null;
     }
 
+    /**
+     * {@link Bundle} has no builtin support for parceling an {@code ArrayList<Long>}
+     * other then classic serialisation.
+     * <p>
+     * Use {@link #wrap(List)} and {@link #unwrap(Bundle, String)} which will use
+     * this helper class to get around that limitation.
+     */
     public static final class ParcelableArrayListLong
             implements Parcelable {
 
