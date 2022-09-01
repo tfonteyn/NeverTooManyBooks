@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -66,6 +66,8 @@ public interface Notifier
      * @param intent           to use for the {@link PendingIntent}
      * @param message          to show
      * @param dialogTitleResId string resource for the notification title
+     * @param notificationId   A unique identifier for this notification
+     * @param requestCode      Private request code for the sender
      */
     void send(@NonNull Context context,
               @NonNull Channel channel,
