@@ -55,11 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
-
 /**
  * Logic flow is as follows.
  * <p>
@@ -71,18 +66,19 @@ public class BoBTask
     /** Log tag. */
     private static final String TAG = "BoBTask";
 
+    private static final String LOAN_FILTER =
+            "EXISTS(SELECT NULL FROM " + DBDefinitions.TBL_BOOK_LOANEE.ref()
+            + " WHERE " + DBDefinitions.TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME) + "='%1$s'"
+            + " AND " + DBDefinitions.TBL_BOOK_LOANEE.fkMatch(DBDefinitions.TBL_BOOKS) + ')';
+
     /** The fixed list of domains we always need for building the book list. */
     private final Collection<DomainExpression> fixedDomainList = new ArrayList<>();
-
     /** Currently selected bookshelf. */
     private Bookshelf bookshelf;
-
     /** Preferred booklist state in next rebuild. */
     private RebuildBooklist rebuildMode;
-
     /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
     private SearchCriteria searchCriteria;
-
     /** The row id we want the new list to display more-or-less in the center. */
     private long desiredCentralBookId;
 
@@ -200,17 +196,13 @@ public class BoBTask
                             query -> builder.addFilter(new FtsMatchFilter(query)));
 
                     // Add a filter to retrieve only books lend to the given person (exact name).
-                    searchCriteria.getLoanee().ifPresent(
-                            loanee -> builder.addFilter(
-                                    c -> "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
-                                         + " WHERE " + TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME)
-                                         + "='" + SqlEncode.string(loanee) + '\''
-                                         + " AND " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS)
-                                         + ')'));
+                    searchCriteria.getLoanee().ifPresent(loanee -> builder.addFilter(
+                            c -> String.format(LOAN_FILTER, SqlEncode.string(loanee))));
+
                 } else {
                     // Add a where clause for: "AND books._id IN (list)".
                     builder.addFilter(new NumberListFilter<>(
-                            TBL_BOOKS, DBDefinitions.DOM_PK_ID,
+                            DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_PK_ID,
                             searchCriteria.getBookIdList()));
                 }
 
@@ -243,8 +235,9 @@ public class BoBTask
                         pFilter.setValue(list);
 
                     } else {
-                        // Filter os the current one only
-                        builder.addFilter(new NumberListFilter<>(TBL_BOOKSHELF, DOM_PK_ID,
+                        // Filter on the current one only
+                        builder.addFilter(new NumberListFilter<>(DBDefinitions.TBL_BOOKSHELF,
+                                                                 DBDefinitions.DOM_PK_ID,
                                                                  bookshelf.getId()));
                     }
                 }
@@ -320,12 +313,12 @@ public class BoBTask
         }
 
         // for now, don't get the author type.
-//        if (style.isBooklistShowsField(DBKey.BOOK_AUTHOR_TYPE_BITMASK)) {
-//            builder.addDomain(new DomainExpression(
-//                    DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
-//                    DBDefinitions.TBL_BOOK_AUTHOR
-//                            .dot(DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK)));
-//        }
+        // if (style.isBooklistShowsField(DBKey.BOOK_AUTHOR_TYPE_BITMASK)) {
+        //     builder.addDomain(new DomainExpression(
+        //             DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
+        //             DBDefinitions.TBL_BOOK_AUTHOR
+        //                     .dot(DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK)));
+        // }
 
         if (style.isShowField(Style.Screen.List, DBKey.FK_PUBLISHER)) {
             // Collect a CSV list of the publishers of the book
