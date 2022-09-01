@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -389,9 +389,10 @@ public class BooklistNodeDao {
      *
      * <strong>Transaction:</strong> required
      *
-     * @param startRowExcl between this row
-     * @param endRowExcl   and this row
-     * @param nodeLevel    the level which was clicked
+     * @param startRowExcl       between this row
+     * @param endRowExcl         and this row
+     * @param nodeLevel          the level which was clicked
+     * @param relativeChildLevel up to and including this (relative to nodeLevel!) child level.
      */
     private void showAndExpandNodesBetween(final long startRowExcl,
                                            final long endRowExcl,
