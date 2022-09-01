@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,6 +44,8 @@ public class SettingsContract
 
     /**
      * Create the result which {@link #parseResult(int, Intent)} will receive.
+     *
+     * @param requiresRecreation flag indicating if the BoB should be recreated
      *
      * @return Intent
      */
