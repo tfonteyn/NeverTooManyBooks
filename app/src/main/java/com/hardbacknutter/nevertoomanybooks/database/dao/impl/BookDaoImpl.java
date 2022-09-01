@@ -68,7 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
@@ -1318,7 +1318,7 @@ public class BookDaoImpl
                                                     )
 
                            + ',' + TBL_BOOKS.dotAs(
-                        SearchEngineRegistry.getInstance().getExternalIdDomains())
+                        SearchEngineConfig.getExternalIdDomains())
 
                            // COALESCE nulls to "" for the LEFT OUTER JOINed LOANEE name
                            + ",COALESCE(" + TBL_BOOK_LOANEE.dot(LOANEE_NAME) + ", '')"

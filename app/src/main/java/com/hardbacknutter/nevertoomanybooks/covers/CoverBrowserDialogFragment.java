@@ -57,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowCoverBrowserGalleryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 
 /**
@@ -509,10 +508,7 @@ public class CoverBrowserDialogFragment
                     holder.vb.coverImage0.setOnClickListener(
                             v -> positionHandler.onGalleryImageSelected(imageFileInfo));
 
-                    holder.vb.lblSite.setText(SearchEngineRegistry
-                                                      .getInstance()
-                                                      .getByEngineId(imageFileInfo.getEngineId())
-                                                      .getLabelResId());
+                    holder.vb.lblSite.setText(imageFileInfo.getEngineId().getLabelResId());
 
                 } else {
                     // no file. Theoretically we should not get here,

@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -96,12 +95,11 @@ public class StripInfoAuth
         // Setup BEFORE doing first request!
         cookieManager = ServiceLocator.getInstance().getCookieManager();
 
-        final SearchEngineConfig config = SearchEngineRegistry
-                .getInstance().getByEngineId(EngineId.StripInfoBe);
+        final SearchEngineConfig config = EngineId.StripInfoBe.getConfig();
 
         hostUrl = config.getHostUrl();
 
-        futureHttpPost = new FutureHttpPost<>(config.getLabelResId());
+        futureHttpPost = new FutureHttpPost<>(EngineId.StripInfoBe.getLabelResId());
         futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())
                       .setReadTimeout(config.getReadTimeoutInMs())
                       .setThrottler(StripInfoSearchEngine.THROTTLER);

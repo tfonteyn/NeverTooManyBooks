@@ -122,7 +122,7 @@ public class FileManager {
 
         // We will disable sites on the fly for the *current* search without
         // modifying the list by using a simple bitmask.
-        final Set<EngineId> currentSites = enabledSites
+        final Set<EngineId> currentSearch = enabledSites
                 .stream()
                 .map(Site::getEngineId)
                 .collect(Collectors.toSet());
@@ -145,7 +145,7 @@ public class FileManager {
 
             for (final Site site : enabledSites) {
                 // Should we search this site ?
-                if (currentSites.contains(site.getEngineId())) {
+                if (currentSearch.contains(site.getEngineId())) {
 
                     if (caller.isCancelled()) {
                         return new ImageFileInfo(isbn);
@@ -174,7 +174,7 @@ public class FileManager {
                         } catch (@NonNull final SearchException e) {
                             // ignore, don't let a single search break the loop.
                             // disable it for THIS search
-                            currentSites.remove(site.getEngineId());
+                            currentSearch.remove(site.getEngineId());
 
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                                 Log.d(TAG, "search|FAILED"
@@ -212,12 +212,12 @@ public class FileManager {
                         // if the site we just searched only supports one image,
                         // disable it for THIS search
                         if (!searchEngine.supportsMultipleCoverSizes()) {
-                            currentSites.remove(site.getEngineId());
+                            currentSearch.remove(site.getEngineId());
                         }
                     } else {
                         // if the site we just searched was not available,
                         // disable it for THIS search
-                        currentSites.remove(site.getEngineId());
+                        currentSearch.remove(site.getEngineId());
                     }
                 }
                 // loop for next site

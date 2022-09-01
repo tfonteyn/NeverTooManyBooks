@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -51,9 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  */
 public class CollectionFormParser
         extends CollectionBaseParser {
-
-    /** Local ref for convenience. */
-    private static final String FORM_URL = StripInfoSearchEngine.COLLECTION_FORM_URL;
 
     private static final String FORM_MODE = "mode";
 
@@ -70,6 +66,8 @@ public class CollectionFormParser
 
     @NonNull
     private final FutureHttpPost<Document> futureHttpPost;
+    @NonNull
+    private final String postUrl;
 
     /**
      * Constructor.
@@ -90,8 +88,10 @@ public class CollectionFormParser
         idPricePaid = FF_AANKOOP_PRIJS;
         idAmount = FF_AANTAL;
 
-        final SearchEngineConfig config = SearchEngineRegistry
-                .getInstance().getByEngineId(EngineId.StripInfoBe);
+        final SearchEngineConfig config = EngineId.StripInfoBe.getConfig();
+
+        //noinspection ConstantConditions
+        postUrl = config.getHostUrl() + StripInfoSearchEngine.COLLECTION_FORM_URL;
 
         futureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
         futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())
@@ -136,9 +136,9 @@ public class CollectionFormParser
 
         //noinspection ConstantConditions
         final Document response = Objects.requireNonNull(
-                futureHttpPost.post(FORM_URL, postBody, bis -> {
+                futureHttpPost.post(postUrl, postBody, bis -> {
                     try {
-                        return Jsoup.parse(bis, null, FORM_URL);
+                        return Jsoup.parse(bis, null, postUrl);
                     } catch (@NonNull final IOException e) {
                         throw new UncheckedIOException(e);
                     }

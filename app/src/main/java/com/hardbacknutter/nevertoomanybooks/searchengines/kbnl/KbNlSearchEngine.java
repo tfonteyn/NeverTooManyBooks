@@ -39,11 +39,9 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
@@ -103,16 +101,6 @@ public class KbNlSearchEngine
     @Keep
     public KbNlSearchEngine(@NonNull final SearchEngineConfig config) {
         super(config);
-    }
-
-    @NonNull
-    public static SearchEngineConfig createConfig() {
-        return new SearchEngineConfig.Builder(EngineId.KbNl,
-                                              R.string.site_kb_nl,
-                                              "https://opc-kb.oclc.org")
-                .setCountry("NL", "nl")
-                .setSupportsMultipleCoverSizes(true)
-                .build();
     }
 
     @Nullable

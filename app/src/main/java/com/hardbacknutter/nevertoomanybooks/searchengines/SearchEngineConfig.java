@@ -25,9 +25,13 @@ import android.content.SharedPreferences;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -40,34 +44,23 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  *
  * @see EngineId
  * @see SearchEngine
- * @see SearchEngineRegistry
  * @see Site
  */
 public final class SearchEngineConfig {
 
     @NonNull
     private final EngineId engineId;
-
-    @StringRes
-    private final int labelResId;
-
     @NonNull
     private final String hostUrl;
-
-    /** Constructed from language+country. */
     @NonNull
     private final Locale locale;
-
     /** {@link SearchEngine.ByExternalId} only. */
     @Nullable
     private final Domain externalIdDomain;
-
     @IdRes
     private final int domainViewId;
-
     @IdRes
     private final int domainMenuId;
-
     private final int connectTimeoutMs;
     private final int readTimeoutMs;
     /**
@@ -77,8 +70,7 @@ public final class SearchEngineConfig {
     @Nullable
     private final Throttler throttler;
 
-    private final boolean searchPrefersIsbn10;
-
+    private final boolean prefersIsbn10;
     /** {@link SearchEngine.CoverByIsbn} only. */
     private final boolean supportsMultipleCoverSizes;
 
@@ -89,35 +81,86 @@ public final class SearchEngineConfig {
      */
     private SearchEngineConfig(@NonNull final Builder builder) {
         engineId = builder.engineId;
-        labelResId = builder.labelResId;
         hostUrl = builder.hostUrl;
+        locale = builder.locale;
 
-        if (builder.lang != null && !builder.lang.isEmpty()
-            && builder.country != null && !builder.country.isEmpty()) {
-            locale = new Locale(builder.lang, builder.country.toUpperCase(Locale.ENGLISH));
+        prefersIsbn10 = builder.prefersIsbn10;
+        supportsMultipleCoverSizes = builder.supportsMultipleCoverSizes;
 
-        } else {
-            // be lenient...
-            locale = Locale.US;
-        }
-
-        if (builder.domainKey == null || builder.domainKey.isEmpty()) {
-            externalIdDomain = null;
-        } else {
-            externalIdDomain = DBDefinitions.TBL_BOOKS.getDomain(builder.domainKey);
-        }
-
+        externalIdDomain = builder.externalIdDomain;
         domainViewId = builder.domainViewId;
         domainMenuId = builder.domainMenuId;
 
         connectTimeoutMs = builder.connectTimeoutMs;
         readTimeoutMs = builder.readTimeoutMs;
-
         throttler = builder.throttler;
+    }
 
-        searchPrefersIsbn10 = builder.searchPrefersIsbn10;
+    // Called during startup from the App class + from test code
+    public static void createRegistry(@NonNull final Context context) {
+        synchronized (SearchEngineConfig.class) {
+            EngineId.registerSearchEngines();
+            Arrays.stream(Site.Type.values())
+                  .forEach(type -> type.createList(context));
+        }
+    }
 
-        supportsMultipleCoverSizes = builder.supportsMultipleCoverSizes;
+    /**
+     * Search for the {@link SearchEngineConfig} defined by the given viewId.
+     *
+     * @param viewId for the engine
+     *
+     * @return Optional {@link SearchEngineConfig}
+     */
+    @NonNull
+    public static Optional<SearchEngineConfig> getByViewId(@IdRes final int viewId) {
+        return getAll()
+                .stream()
+                .filter(config -> config.getDomainViewId() == viewId)
+                .findFirst();
+    }
+
+    /**
+     * Search for the {@link SearchEngineConfig} defined by the given menuId.
+     *
+     * @param menuId to get
+     *
+     * @return Optional {@link SearchEngineConfig}
+     */
+    @NonNull
+    public static Optional<SearchEngineConfig> getByMenuId(@IdRes final int menuId) {
+        return getAll()
+                .stream()
+                .filter(config -> config.getDomainMenuId() == menuId)
+                .findFirst();
+    }
+
+    /**
+     * Convenience method to get the list of <strong>configured</strong> (i.e. non-null)
+     * external-id domains.
+     *
+     * @return list
+     */
+    @NonNull
+    public static List<Domain> getExternalIdDomains() {
+        return getAll()
+                .stream()
+                .map(SearchEngineConfig::getExternalIdDomain)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Convenience method. Get all configurations (i.e. non-null).
+     *
+     * @return list
+     */
+    @NonNull
+    public static List<SearchEngineConfig> getAll() {
+        return Arrays.stream(EngineId.values())
+                     .map(EngineId::getConfig)
+                     .filter(Objects::nonNull)
+                     .collect(Collectors.toList());
     }
 
     /**
@@ -128,27 +171,6 @@ public final class SearchEngineConfig {
     @NonNull
     public EngineId getEngineId() {
         return engineId;
-    }
-
-    /**
-     * Get the human-readable name of the site.
-     *
-     * @return the displayable name resource id
-     */
-    @StringRes
-    public int getLabelResId() {
-        return labelResId;
-    }
-
-    /**
-     * Get the name for this engine.
-     *
-     * @param context Current context
-     *
-     * @return name
-     */
-    public String getName(@NonNull final Context context) {
-        return context.getString(labelResId);
     }
 
     @NonNull
@@ -176,6 +198,17 @@ public final class SearchEngineConfig {
     }
 
     /**
+     * {@link SearchEngine.CoverByIsbn} only.
+     * <p>
+     * A site can support a single (default) or multiple sizes.
+     *
+     * @return {@code true} if multiple sizes are supported.
+     */
+    boolean supportsMultipleCoverSizes() {
+        return supportsMultipleCoverSizes;
+    }
+
+    /**
      * Indicates if ISBN code should be forced down to ISBN10 (if possible) before a search.
      * <p>
      * By default, we search on the ISBN entered by the user.
@@ -191,10 +224,9 @@ public final class SearchEngineConfig {
     boolean prefersIsbn10() {
         final SharedPreferences preferences = ServiceLocator.getPreferences();
 
-        final String engineKey = engineId.getPreferenceKey() + "."
-                                 + Prefs.pk_search_isbn_prefer_10;
-        if (preferences.contains(engineKey)) {
-            return preferences.getBoolean(engineKey, searchPrefersIsbn10);
+        final String key = engineId.getPreferenceKey() + "." + Prefs.pk_search_isbn_prefer_10;
+        if (preferences.contains(key)) {
+            return preferences.getBoolean(key, prefersIsbn10);
         } else {
             return preferences.getBoolean(Prefs.pk_search_isbn_prefer_10, false);
         }
@@ -244,23 +276,11 @@ public final class SearchEngineConfig {
         return throttler;
     }
 
-    /**
-     * {@link SearchEngine.CoverByIsbn} only.
-     * <p>
-     * A site can support a single (default) or multiple sizes.
-     *
-     * @return {@code true} if multiple sizes are supported.
-     */
-    public boolean supportsMultipleCoverSizes() {
-        return supportsMultipleCoverSizes;
-    }
-
     @NonNull
     @Override
     public String toString() {
         return "SearchEngineConfig{"
                + "engineId=" + engineId
-               + ", labelResId=`" + labelResId + '`'
                + ", hostUrl=`" + hostUrl + '`'
                + ", locale=" + locale
                + ", externalIdDomain=" + externalIdDomain
@@ -269,7 +289,7 @@ public final class SearchEngineConfig {
                + ", connectTimeoutMs=" + connectTimeoutMs
                + ", readTimeoutMs=" + readTimeoutMs
                + ", throttler=" + throttler
-               + ", searchPrefersIsbn10=" + searchPrefersIsbn10
+               + ", searchPrefersIsbn10=" + prefersIsbn10
                + ", supportsMultipleCoverSizes=" + supportsMultipleCoverSizes
                + '}';
     }
@@ -282,20 +302,14 @@ public final class SearchEngineConfig {
         @NonNull
         private final EngineId engineId;
 
-        @StringRes
-        private final int labelResId;
-
         @NonNull
         private final String hostUrl;
 
-        @Nullable
-        private String lang;
+        @NonNull
+        private Locale locale = Locale.US;
 
         @Nullable
-        private String country;
-
-        @Nullable
-        private String domainKey;
+        private Domain externalIdDomain;
 
         @IdRes
         private int domainViewId;
@@ -315,27 +329,25 @@ public final class SearchEngineConfig {
         private boolean supportsMultipleCoverSizes;
 
         /** The DEFAULT for the engine: {@code false}. */
-        private boolean searchPrefersIsbn10;
+        private boolean prefersIsbn10;
 
 
         public Builder(@NonNull final EngineId engineId,
-                       @StringRes final int labelResId,
                        @NonNull final String hostUrl) {
             this.engineId = engineId;
-            this.labelResId = labelResId;
             this.hostUrl = hostUrl;
         }
 
-        @NonNull
-        public SearchEngineConfig build() {
-            return new SearchEngineConfig(this);
+        public void build() {
+            engineId.setConfig(new SearchEngineConfig(this));
         }
 
         @NonNull
         public Builder setCountry(@NonNull final String country,
                                   @NonNull final String lang) {
-            this.country = country;
-            this.lang = lang;
+            if (!lang.isEmpty() && !country.isEmpty()) {
+                locale = new Locale(lang, country.toUpperCase(Locale.ENGLISH));
+            }
             return this;
         }
 
@@ -359,7 +371,11 @@ public final class SearchEngineConfig {
 
         @NonNull
         public Builder setDomainKey(@NonNull final String domainKey) {
-            this.domainKey = domainKey;
+            if (domainKey.isEmpty()) {
+                externalIdDomain = null;
+            } else {
+                externalIdDomain = DBDefinitions.TBL_BOOKS.getDomain(domainKey);
+            }
             return this;
         }
 
@@ -381,8 +397,8 @@ public final class SearchEngineConfig {
             return this;
         }
 
-        public Builder setSearchPrefersIsbn10(final boolean searchPrefersIsbn10) {
-            this.searchPrefersIsbn10 = searchPrefersIsbn10;
+        public Builder setPrefersIsbn10(final boolean prefersIsbn10) {
+            this.prefersIsbn10 = prefersIsbn10;
             return this;
         }
     }

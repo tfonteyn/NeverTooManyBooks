@@ -121,7 +121,7 @@ public abstract class SearchEngineBase
     @NonNull
     @Override
     public String getName(@NonNull final Context context) {
-        return config.getName(context);
+        return config.getEngineId().getName(context);
     }
 
     @NonNull
@@ -218,7 +218,7 @@ public abstract class SearchEngineBase
      */
     @NonNull
     public <T> FutureHttpGet<T> createFutureGetRequest() {
-        final FutureHttpGet<T> httpGet = new FutureHttpGet<>(config.getLabelResId());
+        final FutureHttpGet<T> httpGet = new FutureHttpGet<>(config.getEngineId().getLabelResId());
         httpGet.setConnectTimeout(config.getConnectTimeoutInMs())
                .setReadTimeout(config.getReadTimeoutInMs())
                .setThrottler(config.getThrottler());

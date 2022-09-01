@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -217,7 +217,7 @@ public class BookDaoHelper {
      */
     @VisibleForTesting
     public void processExternalIds() {
-        final List<Domain> domains = SearchEngineRegistry.getInstance().getExternalIdDomains();
+        final List<Domain> domains = SearchEngineConfig.getExternalIdDomains();
 
         domains.stream()
                .filter(domain -> domain.getSqLiteDataType() == SqLiteDataType.Integer)

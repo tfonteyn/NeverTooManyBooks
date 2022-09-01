@@ -41,8 +41,6 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -84,20 +82,6 @@ public class LibraryThingSearchEngine
     @Keep
     public LibraryThingSearchEngine(@NonNull final SearchEngineConfig config) {
         super(config);
-    }
-
-    @NonNull
-    public static SearchEngineConfig createConfig() {
-        return new SearchEngineConfig.Builder(EngineId.LibraryThing,
-                                              R.string.site_library_thing,
-                                              "https://www.librarything.com")
-                .setSupportsMultipleCoverSizes(true)
-
-                .setDomainKey(DBKey.SID_LIBRARY_THING)
-                .setDomainViewId(R.id.site_library_thing)
-                .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING)
-
-                .build();
     }
 
     @NonNull

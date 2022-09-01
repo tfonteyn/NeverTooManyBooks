@@ -39,10 +39,8 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -84,14 +82,6 @@ public class GoogleBooksSearchEngine
     @Keep
     public GoogleBooksSearchEngine(@NonNull final SearchEngineConfig config) {
         super(config);
-    }
-
-    @NonNull
-    public static SearchEngineConfig createConfig() {
-        return new SearchEngineConfig.Builder(EngineId.GoogleBooks,
-                                              R.string.site_google_books,
-                                              "https://books.google.com")
-                .build();
     }
 
     @NonNull

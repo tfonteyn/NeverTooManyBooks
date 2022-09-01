@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 /**
@@ -62,7 +61,7 @@ public class AmazonHandler
      * </ul>
      *
      * @see <a href="https://www.amazon.co.uk/advanced-search/books/">
-     * www.amazon.co.uk/advanced-search/books</a>
+     *         www.amazon.co.uk/advanced-search/books</a>
      */
     private static final String ADV_SEARCH_BOOKS = "/gp/search?index=books";
 
@@ -177,9 +176,7 @@ public class AmazonHandler
         // Start the intent even if for some reason the fields string is empty.
         // If we don't the user will not see anything happen / we'd need to popup
         // an explanation why we cannot search.
-        final String url = SearchEngineRegistry.getInstance()
-                                               .getByEngineId(EngineId.Amazon)
-                                               .getHostUrl()
+        final String url = EngineId.Amazon.getConfig().getHostUrl()
                            + ADV_SEARCH_BOOKS
                            + fields.trim();
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));

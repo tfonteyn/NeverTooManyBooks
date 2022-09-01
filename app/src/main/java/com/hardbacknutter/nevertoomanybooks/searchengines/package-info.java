@@ -19,65 +19,37 @@
  */
 
 /**
- * Classes involved.
  * <ul>
  *     <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.EngineId} :
- *          Static setup of identifiers and classes. This is where a new engine can be added.
+ *          Static setup of identifier, key, name and class.
+ *          This is where a new engine can be added.
  *     </li>
- *
  *      <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine} :
  *          The interface that the engine class implements and responsible for the actual searches.
  *      </li>
  *      <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig} :
- *          The configuration for the engine class.
- *      </li>
- *
- *      <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry} :
- *          A registry of all
- *          {@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine}
- *          classes and their
- *          {@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig}.
- *      </li>
- *
- *      <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig} :
- *          Encapsulates
- *          {@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig},
- *          resolving complex config items (e.g. Locale).
- *      </li>
- *
- *      <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.Site} :
- *          Encapsulates a {@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine}
- *          instance + the current enabled/disabled state.
- *          Implements {@link android.os.Parcelable} as it will be passed around as a member
- *          of a List.
- *          A search will use such a list to perform searches on the desired sites.
- *          Membership is hardcoded at design time (it depends on capabilities of the engine),
- *          but the order and enabling/disabling of the individual sites is user configurable.
- *          Implements {@link android.os.Parcelable} as it will be passed around.
- *      </li>
- *
- *      <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.Site.Type} :
- *        There are 3 types of
- *        {@link com.hardbacknutter.nevertoomanybooks.searchengines.Site} lists.
- *        <ol>
- *          <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.Site.Type#Data} :
- *              search for book data (and cover)</li>
- *          <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.Site.Type#Covers} :
- *              search for book covers only</li>
- *          <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.Site.Type#AltEditions} :
- *              search for alternative editions of a book.</li>
- *        </ol>
- *      </li>
- * *
- *      <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator} and
- *          {@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchTask}
- *          will use all of the above to perform the searches.
+ *          Configuration for the engine class. There is a 1:1 relation with the EngineId.
+ *          Keeps a static registry of all configured engines.
  *      </li>
  * </ul>
- * <p>
+ * <p>{@link com.hardbacknutter.nevertoomanybooks.searchengines.Site} :
+ * Encapsulates a {@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine}
+ * instance, the Site Type and the current enabled/disabled state.
+ * A search will use such a list to perform searches on the desired sites.
+ * Membership is hardcoded at design time (it depends on capabilities of the engine),
+ * but the order and enabling/disabling of the individual sites is user configurable.
+ * <p>{@link com.hardbacknutter.nevertoomanybooks.searchengines.Site.Type} :
+ * <ol>
+ *      <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.Site.Type#Data} :
+ *          search for book data (and cover)</li>
+ *      <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.Site.Type#Covers} :
+ *          search for book covers only</li>
+ *       <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.Site.Type#AltEditions} :
+ *          search for alternative editions of a book.</li>
+ * </ol>
  * Site/SearchEngine pairs are unique PER LIST:
  * <ul>
- *     <li>there is only one copy of a Site inside a single List</li>
+ *     <li>there is only one instance of a Site inside a single List</li>
  *     <li>a SearchEngine is cached by a Site, but re-created each time the Site is Parceled.</li>
  *     <li>two Site for the SAME website (i.e. same engine id),
  *         but in a different List, will have the same SearchEngine class,
@@ -85,11 +57,10 @@
  * </ul>
  * Example:
  * <ul>
- * <li>Site A1 with id=AAA, and type Data, will have a SearchEngine_A1</li>
- * <li>Site B1 with id=BBB, and type Data, will have a SearchEngine_B1</li>
- * <li>...</li>
- * <li>Site C1 with id=AAA, and type Covers, will have a SearchEngine_C1</li>
+ *      <li>Site A1 with id=AAA, and type Data, will have a SearchEngine_A1</li>
+ *      <li>Site B1 with id=BBB, and type Data, will have a SearchEngine_B1</li>
+ *      <li>...</li>
+ *      <li>Site C1 with id=AAA, and type Covers, will have a SearchEngine_C1</li>
  * </ul>
- * <p>
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines;

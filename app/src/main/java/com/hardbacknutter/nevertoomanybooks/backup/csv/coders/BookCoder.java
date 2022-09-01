@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.org.json.JSONException;
 
 /**
@@ -156,7 +156,7 @@ public class BookCoder {
         serviceLocator = ServiceLocator.getInstance();
 
         bookshelfCoder = new StringList<>(new BookshelfCoder(context));
-        externalIdDomains = SearchEngineRegistry.getInstance().getExternalIdDomains();
+        externalIdDomains = SearchEngineConfig.getExternalIdDomains();
     }
 
     private void buildCalibreMappings() {

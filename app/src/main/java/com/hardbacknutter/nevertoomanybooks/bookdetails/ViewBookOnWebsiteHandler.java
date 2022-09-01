@@ -29,6 +29,7 @@ import android.view.SubMenu;
 
 import androidx.annotation.NonNull;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -36,7 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
@@ -70,25 +70,18 @@ public class ViewBookOnWebsiteHandler
             return;
         }
 
-        final SearchEngineRegistry registry = SearchEngineRegistry.getInstance();
         final SubMenu subMenu = subMenuItem.getSubMenu();
         boolean subMenuVisible = false;
         //noinspection ConstantConditions
         for (int i = 0; i < subMenu.size(); i++) {
             final MenuItem menuItem = subMenu.getItem(i);
-            boolean visible = false;
-
-            final Optional<SearchEngineConfig> oConfig =
-                    registry.getByMenuId(menuItem.getItemId());
-            if (oConfig.isPresent()) {
-                final Domain domain = oConfig.get().getExternalIdDomain();
-                if (domain != null) {
-                    final String value = rowData.getString(domain.getName());
-                    if (!value.isEmpty() && !"0".equals(value)) {
-                        visible = true;
-                    }
-                }
-            }
+            final boolean visible =
+                    SearchEngineConfig.getByMenuId(menuItem.getItemId())
+                                      .map(SearchEngineConfig::getExternalIdDomain)
+                                      .filter(Objects::nonNull)
+                                      .map(domain -> rowData.getString(domain.getName()))
+                                      .filter(value -> !value.isEmpty() && !"0".equals(value))
+                                      .isPresent();
 
             menuItem.setVisible(visible);
             if (visible) {
@@ -102,9 +95,8 @@ public class ViewBookOnWebsiteHandler
     public boolean onMenuItemSelected(@NonNull final Context context,
                                       @NonNull final MenuItem menuItem,
                                       @NonNull final DataHolder rowData) {
-
-        final Optional<SearchEngineConfig> oConfig = SearchEngineRegistry
-                .getInstance().getByMenuId(menuItem.getItemId());
+        final Optional<SearchEngineConfig> oConfig =
+                SearchEngineConfig.getByMenuId(menuItem.getItemId());
         if (oConfig.isPresent()) {
             final Domain domain = oConfig.get().getExternalIdDomain();
             if (domain != null) {
@@ -118,7 +110,6 @@ public class ViewBookOnWebsiteHandler
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 return true;
             }
-
         }
         return false;
     }

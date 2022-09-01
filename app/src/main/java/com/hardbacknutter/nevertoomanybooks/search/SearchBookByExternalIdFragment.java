@@ -35,6 +35,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
@@ -44,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExternalIdBinding;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup;
 
@@ -144,9 +144,13 @@ public class SearchBookByExternalIdFragment
 
         // on false->true transition
 
-        //noinspection OptionalGetWithoutIsPresent
-        final SearchEngineConfig config = SearchEngineRegistry
-                .getInstance().getByViewId(viewId).get();
+        final Optional<SearchEngineConfig> oConfig =
+                SearchEngineConfig.getByViewId(viewId);
+        if (oConfig.isEmpty()) {
+            throw new IllegalStateException();
+        }
+        final SearchEngineConfig config = oConfig.get();
+
         searchEngine = (SearchEngine.ByExternalId)
                 Site.Type.Data.getSite(config.getEngineId()).getSearchEngine();
 
@@ -173,6 +177,10 @@ public class SearchBookByExternalIdFragment
             inputType = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
 
         } else {
+            // display a (sort of) numeric keyboard icon
+            keyboardIcon = R.drawable.ic_baseline_apps_24;
+            inputType = InputType.TYPE_CLASS_NUMBER;
+
             // if the user switched from a text input, clean the input
             if ((vb.externalId.getInputType() & InputType.TYPE_CLASS_NUMBER) == 0) {
                 //noinspection ConstantConditions
@@ -181,9 +189,6 @@ public class SearchBookByExternalIdFragment
                     vb.externalId.setText("");
                 }
             }
-            // display a (sort of) numeric keyboard icon
-            keyboardIcon = R.drawable.ic_baseline_apps_24;
-            inputType = InputType.TYPE_CLASS_NUMBER;
         }
 
         vb.externalId.setInputType(inputType);

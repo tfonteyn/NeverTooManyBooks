@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -95,8 +94,8 @@ class UserCollectionTest
         final String locationHeader = "https://www.stripinfo.be/userCollection/index/666/0/0/0000";
         final String filename = "/stripinfo/collection.html";
 
-        final StripInfoSearchEngine searchEngine = (StripInfoSearchEngine) SearchEngineRegistry
-                .getInstance().createSearchEngine(EngineId.StripInfoBe);
+        final StripInfoSearchEngine searchEngine = (StripInfoSearchEngine)
+                EngineId.StripInfoBe.createSearchEngine();
 
         final UserCollection uc = new UserCollection(context, searchEngine, userId,
                                                      bookshelfMapper);
@@ -149,8 +148,8 @@ class UserCollectionTest
         final String locationHeader = "https://www.stripinfo.be/userCollection/index/666/0/3/0000";
         final String filename = "/stripinfo/collection-last-page.html";
 
-        final StripInfoSearchEngine searchEngine = (StripInfoSearchEngine) SearchEngineRegistry
-                .getInstance().createSearchEngine(EngineId.StripInfoBe);
+        final StripInfoSearchEngine searchEngine = (StripInfoSearchEngine)
+                EngineId.StripInfoBe.createSearchEngine();
 
         final UserCollection uc = new UserCollection(context, searchEngine, userId,
                                                      bookshelfMapper);

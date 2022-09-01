@@ -60,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UpgradeFailedException;
 
@@ -487,11 +487,11 @@ public class DBHelper
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName() + " SET ";
 
-        body += SearchEngineRegistry.getInstance()
-                                    .getExternalIdDomains()
-                                    .stream()
-                                    .map(domain -> domain.getName() + "=null")
-                                    .collect(Collectors.joining(","));
+        body += SearchEngineConfig
+                .getExternalIdDomains()
+                .stream()
+                .map(domain -> domain.getName() + "=null")
+                .collect(Collectors.joining(","));
 
         //NEWTHINGS: adding a new search engine: optional: add engine specific keys
 

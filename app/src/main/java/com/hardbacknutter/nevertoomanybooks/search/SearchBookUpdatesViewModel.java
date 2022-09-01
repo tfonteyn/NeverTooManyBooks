@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
@@ -213,10 +212,10 @@ public class SearchBookUpdatesViewModel
         // Add the external-id fields at the end.
         // The label is the search engine name, the value is the external id field name
         final SortedMap<String, String> sidMap = new TreeMap<>();
-        SearchEngineRegistry.getInstance().getAll().forEach(seConfig -> {
+        SearchEngineConfig.getAll().forEach(seConfig -> {
             final Domain domain = seConfig.getExternalIdDomain();
             if (domain != null) {
-                sidMap.put(seConfig.getName(context), domain.getName());
+                sidMap.put(seConfig.getEngineId().getName(context), domain.getName());
             }
         });
         sidMap.forEach((label, key) -> builder.add(label, key, SyncAction.Overwrite));
@@ -373,16 +372,15 @@ public class SearchBookUpdatesViewModel
 
                     // Collect external ID's we can use
                     final Map<EngineId, String> externalIds = new EnumMap<>(EngineId.class);
-                    for (final SearchEngineConfig config : SearchEngineRegistry
-                            .getInstance().getAll()) {
-                        final Domain domain = config.getExternalIdDomain();
+                    SearchEngineConfig.getAll().forEach(seConfig -> {
+                        final Domain domain = seConfig.getExternalIdDomain();
                         if (domain != null) {
                             final String value = currentBook.getString(domain.getName());
                             if (!value.isEmpty() && !"0".equals(value)) {
-                                externalIds.put(config.getEngineId(), value);
+                                externalIds.put(seConfig.getEngineId(), value);
                             }
                         }
-                    }
+                    });
 
                     if (!externalIds.isEmpty()) {
                         setExternalIds(externalIds);

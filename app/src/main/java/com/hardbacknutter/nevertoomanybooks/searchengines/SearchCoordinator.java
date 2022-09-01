@@ -142,8 +142,6 @@ public class SearchCoordinator
     private final Map<EngineId, TaskProgress> searchProgressBySite =
             new EnumMap<>(EngineId.class);
 
-    /** Reference to the registry. */
-    private SearchEngineRegistry searchEngineRegistry;
     /**
      * Sites to search on. If this list is empty, all searches will return {@code false}.
      * This list includes both enabled and disabled sites.
@@ -210,12 +208,14 @@ public class SearchCoordinator
         }
         Objects.requireNonNull(searchTask, () -> ERROR_UNKNOWN_TASK + taskId);
 
+        final EngineId engineId = searchTask.getSearchEngine().getEngineId();
+
         if (BuildConfig.DEBUG && (DEBUG_SWITCHES.SEARCH_COORDINATOR
                                   || DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS)) {
-            debugEnteredOnSearchTaskFinished(context, searchTask);
+            debugEnteredOnSearchTaskFinished(context, engineId);
         }
 
-        final EngineId engineId = searchTask.getSearchEngine().getEngineId();
+
 
         // ALWAYS store, even when null!
         // Presence of the site/task id in the map is an indication that the site was processed
@@ -341,13 +341,12 @@ public class SearchCoordinator
     public void init(@NonNull final Context context,
                      @Nullable final Bundle args) {
 
-        if (searchEngineRegistry == null) {
+        if (resultsAccumulator == null) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
                 searchTasksStartTime = new EnumMap<>(EngineId.class);
                 searchTasksEndTime = new EnumMap<>(EngineId.class);
             }
 
-            searchEngineRegistry = SearchEngineRegistry.getInstance();
             allSites = Site.Type.Data.getSites();
 
             resultsAccumulator = new ResultsAccumulator(context);
@@ -946,15 +945,13 @@ public class SearchCoordinator
     }
 
     private void debugEnteredOnSearchTaskFinished(@NonNull final Context context,
-                                                  @NonNull final SearchTask searchTask) {
+                                                  @NonNull final EngineId engineId) {
         if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
-            searchTasksEndTime.put(searchTask.getSearchEngine().getEngineId(),
-                                   System.nanoTime());
+            searchTasksEndTime.put(engineId, System.nanoTime());
         }
 
         if (DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            Log.d(TAG, "onSearchTaskFinished|finished="
-                       + searchTask.getSearchEngine().getName(context));
+            Log.d(TAG, "onSearchTaskFinished|finished=" + engineId.getName(context));
 
             synchronized (activeTasks) {
                 for (final SearchTask task : activeTasks.values()) {
@@ -1010,9 +1007,7 @@ public class SearchCoordinator
         if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
             for (final Map.Entry<EngineId, Long> entry : searchTasksStartTime.entrySet()) {
                 final EngineId engineId = entry.getKey();
-                final String engineName = searchEngineRegistry
-                        .getByEngineId(engineId)
-                        .getName(context);
+                final String engineName = engineId.getName(context);
 
                 final long start = entry.getValue();
                 final Long end = searchTasksEndTime.get(engineId);

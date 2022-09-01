@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -51,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
@@ -179,20 +177,6 @@ public class OpenLibrarySearchEngine
     @Keep
     public OpenLibrarySearchEngine(@NonNull final SearchEngineConfig config) {
         super(config);
-    }
-
-    @NonNull
-    public static SearchEngineConfig createConfig() {
-        return new SearchEngineConfig.Builder(EngineId.OpenLibrary,
-                                              R.string.site_open_library,
-                                              "https://openlibrary.org")
-
-                .setSupportsMultipleCoverSizes(true)
-
-                .setDomainKey(DBKey.SID_OPEN_LIBRARY)
-                .setDomainViewId(R.id.site_open_library)
-                .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY)
-                .build();
     }
 
     @NonNull

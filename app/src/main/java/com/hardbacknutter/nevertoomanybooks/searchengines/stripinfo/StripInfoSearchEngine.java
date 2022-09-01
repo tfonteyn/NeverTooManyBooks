@@ -50,7 +50,6 @@ import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -61,7 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.network.Throttler;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -128,8 +126,7 @@ public class StripInfoSearchEngine
     /** JSoup selector to get book url tags. */
     private static final String A_HREF_STRIP = "a[href*=/strip/]";
 
-    private static final String WWW_STRIPINFO_BE = "https://www.stripinfo.be";
-    public static final String COLLECTION_FORM_URL = WWW_STRIPINFO_BE + "/ajax_collectie.php";
+    public static final String COLLECTION_FORM_URL = "/ajax_collectie.php";
 
     /** Delegate common Element handling. */
     private final JSoupHelper jSoupHelper = new JSoupHelper();
@@ -146,23 +143,6 @@ public class StripInfoSearchEngine
     @Keep
     public StripInfoSearchEngine(@NonNull final SearchEngineConfig config) {
         super(config);
-    }
-
-    @NonNull
-    public static SearchEngineConfig createConfig() {
-        return new SearchEngineConfig.Builder(EngineId.StripInfoBe,
-                                              R.string.site_stripinfo_be,
-                                              WWW_STRIPINFO_BE)
-                .setCountry("BE", "nl")
-
-                .setDomainKey(DBKey.SID_STRIP_INFO)
-                .setDomainViewId(R.id.site_strip_info_be)
-                .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE)
-
-                .setConnectTimeoutMs(7_000)
-                .setReadTimeoutMs(60_000)
-                .setStaticThrottler(THROTTLER)
-                .build();
     }
 
     @NonNull

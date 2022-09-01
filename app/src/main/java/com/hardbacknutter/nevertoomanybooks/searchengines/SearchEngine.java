@@ -21,6 +21,9 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
+import android.widget.TextView;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
@@ -57,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * </ul>
  * and if the site supports fetching images by ISBN: {@link CoverByIsbn}.
  * <p>
- * ENHANCE: it seems most implementations can return multiple book bundles quite easily.
+ * ENHANCE: most implementations can return multiple book bundles quite easily.
  * <p>
  * The searches can throw 3 Exceptions:
  * <ul>
@@ -220,11 +223,11 @@ public interface SearchEngine
         }
 
         if (showAlert) {
-            final String siteName = getName(context);
+            final String siteName = getHostUrl();
 
             final AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(context.getString(R.string.lbl_registration, siteName))
+                    .setTitle(siteName)
                     .setNegativeButton(R.string.action_not_now, (d, w) ->
                             onResult.accept(RegistrationAction.NotNow))
                     .setPositiveButton(R.string.btn_learn_more, (d, w) ->
@@ -232,12 +235,15 @@ public interface SearchEngine
                     .setOnCancelListener(
                             d -> onResult.accept(RegistrationAction.Cancelled));
 
+            // Use the Dialog's themed context!
+            final TextView messageView = new TextView(dialogBuilder.getContext());
+
             if (required) {
-                dialogBuilder.setMessage(context.getString(
+                messageView.setText(context.getString(
                         R.string.confirm_registration_required, siteName));
 
             } else {
-                dialogBuilder.setMessage(context.getString(
+                messageView.setText(context.getString(
                         R.string.confirm_registration_benefits, siteName,
                         context.getString(R.string.lbl_credentials)));
 
@@ -252,7 +258,13 @@ public interface SearchEngine
                     });
                 }
             }
-            dialogBuilder.create().show();
+
+            messageView.setAutoLinkMask(Linkify.WEB_URLS);
+            messageView.setMovementMethod(LinkMovementMethod.getInstance());
+
+            dialogBuilder.setView(messageView)
+                         .create()
+                         .show();
         }
 
         return showAlert;
@@ -296,6 +308,7 @@ public interface SearchEngine
                        CredentialsException;
     }
 
+    /** Optional. */
     interface ViewBookByExternalId
             extends SearchEngine {
 
@@ -311,7 +324,7 @@ public interface SearchEngine
         String createBrowserUrl(@NonNull String externalId);
     }
 
-    /** Optional. Every engine should really implement this. */
+    /** Optional. But every engine should really implement this. */
     interface ByIsbn
             extends SearchEngine {
 

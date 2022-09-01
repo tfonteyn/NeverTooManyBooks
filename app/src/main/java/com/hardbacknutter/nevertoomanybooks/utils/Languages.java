@@ -442,16 +442,17 @@ public class Languages {
      * this app is running in the specified language.
      * The user can still enable/disable them at will of course.
      *
-     * @param systemLocale device Locale <em>(passed in to allow mocking)</em>
-     * @param userLocale   user Locale <em>(passed in to allow mocking)</em>
-     * @param iso          language code to check
+     * @param context Current context
+     * @param iso     language code to check
      *
      * @return {@code true} if sites should be enabled by default.
      */
-    public boolean isLang(@NonNull final Locale systemLocale,
-                          @NonNull final Locale userLocale,
+    public boolean isLang(final Context context,
                           @SuppressWarnings("SameParameterValue")
                           @NonNull final String iso) {
+        final Locale systemLocale = ServiceLocator.getSystemLocale();
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+
         return iso.equals(systemLocale.getISO3Language())
                || iso.equals(userLocale.getISO3Language());
     }

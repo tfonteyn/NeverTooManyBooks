@@ -60,7 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
@@ -124,8 +123,7 @@ public class StripInfoReader
         bookDao = ServiceLocator.getInstance().getBookDao();
 
         // create a new instance just for our own use
-        searchEngine = (StripInfoSearchEngine) SearchEngineRegistry
-                .getInstance().createSearchEngine(EngineId.StripInfoBe);
+        searchEngine = (StripInfoSearchEngine) EngineId.StripInfoBe.createSearchEngine();
 
         booksString = context.getString(R.string.lbl_books);
     }

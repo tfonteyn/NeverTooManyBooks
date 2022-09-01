@@ -31,7 +31,6 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -81,8 +80,7 @@ public class IsfdbGetEditionsTask
             throws StorageException, SearchException, CredentialsException {
 
         // create a new instance just for our own use
-        searchEngine = (IsfdbSearchEngine)
-                SearchEngineRegistry.getInstance().createSearchEngine(EngineId.IsfDb);
+        searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine();
         searchEngine.setCaller(this);
 
         return searchEngine.fetchEditionsByIsbn(context, isbn);

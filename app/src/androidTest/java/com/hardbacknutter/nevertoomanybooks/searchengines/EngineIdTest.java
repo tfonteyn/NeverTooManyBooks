@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,11 +36,10 @@ public class EngineIdTest {
 
     @Test
     public void dumpEngines() {
-        final Collection<SearchEngineConfig> all = SearchEngineRegistry.getInstance().getAll();
-        for (final SearchEngineConfig config : all) {
+        SearchEngineConfig.getAll().forEach(config -> {
             assertNotNull(config);
             Log.d(TAG, "\n" + config);
-        }
+        });
     }
 
     @Test
@@ -51,8 +49,7 @@ public class EngineIdTest {
             Log.d(TAG, "\n------------------------------------------\n\n" + type);
 
             for (final Site site : sites) {
-                final SearchEngineConfig config =
-                        SearchEngineRegistry.getInstance().getByEngineId(site.getEngineId());
+                final SearchEngineConfig config = site.getEngineId().getConfig();
                 assertNotNull(config);
                 final SearchEngine searchEngine = site.getSearchEngine();
                 assertNotNull(searchEngine);
@@ -70,7 +67,7 @@ public class EngineIdTest {
         assertEquals(List.of(EngineId.Amazon,
                              EngineId.Goodreads,
                              EngineId.GoogleBooks,
-                             EngineId.IsfDb,
+                             EngineId.Isfdb,
                              EngineId.StripInfoBe,
                              EngineId.KbNl,
                              EngineId.LastDodoNl,
@@ -83,7 +80,7 @@ public class EngineIdTest {
                 sites, List.of(EngineId.GoogleBooks,
                                EngineId.Amazon,
                                EngineId.LibraryThing,
-                               EngineId.IsfDb,
+                               EngineId.Isfdb,
                                EngineId.KbNl,
                                EngineId.StripInfoBe,
                                EngineId.LastDodoNl));
@@ -92,7 +89,7 @@ public class EngineIdTest {
         // NOT added as loadPrefs will NOT have been called
         assertEquals(List.of(EngineId.GoogleBooks,
                              EngineId.Amazon,
-                             EngineId.IsfDb,
+                             EngineId.Isfdb,
                              EngineId.KbNl,
                              EngineId.StripInfoBe,
                              EngineId.LastDodoNl),

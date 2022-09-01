@@ -40,7 +40,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -161,18 +160,6 @@ public class AmazonSearchEngine
                 break;
         }
         pagesPattern = Pattern.compile(pagesStr, Pattern.LITERAL);
-    }
-
-    @NonNull
-    public static SearchEngineConfig createConfig() {
-        return new SearchEngineConfig.Builder(EngineId.Amazon,
-                                              R.string.site_amazon,
-                                              "https://www.amazon.com")
-                // ENHANCE: support ASIN
-//                .setDomainKey(DBKey.SID_ASIN)
-//                .setDomainViewId(R.id.site_amazon)
-//                .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_AMAZON)
-                .build();
     }
 
     @NonNull

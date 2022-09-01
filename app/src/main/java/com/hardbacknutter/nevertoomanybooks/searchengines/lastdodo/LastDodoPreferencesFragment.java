@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.settings.sites;
+package com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo;
 
 import android.os.Bundle;
 
@@ -28,13 +28,13 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
 @Keep
-public class IsfdbPreferencesFragment
+public class LastDodoPreferencesFragment
         extends BasePreferenceFragment {
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-        setPreferencesFromResource(R.xml.preferences_site_isfdb, rootKey);
+        setPreferencesFromResource(R.xml.preferences_site_lastdodo, rootKey);
     }
 }

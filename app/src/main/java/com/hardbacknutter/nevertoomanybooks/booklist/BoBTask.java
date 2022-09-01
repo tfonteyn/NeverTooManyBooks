@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 
@@ -147,7 +147,7 @@ public class BoBTask
                         DBDefinitions.TBL_BOOKS.dot(DBKey.BOOK_ISBN)));
 
         // external site ID's
-        for (final Domain domain : SearchEngineRegistry.getInstance().getExternalIdDomains()) {
+        for (final Domain domain : SearchEngineConfig.getExternalIdDomains()) {
             fixedDomainList.add(
                     new DomainExpression(domain, DBDefinitions.TBL_BOOKS.dot(domain.getName())));
         }

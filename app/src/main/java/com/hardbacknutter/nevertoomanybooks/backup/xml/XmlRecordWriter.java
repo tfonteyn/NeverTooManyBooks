@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreVirtualLibrary;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -416,8 +416,7 @@ public class XmlRecordWriter
         int delta = 0;
         long lastUpdate = 0;
 
-        final List<Domain> externalIdDomains = SearchEngineRegistry
-                .getInstance().getExternalIdDomains();
+        final List<Domain> externalIdDomains = SearchEngineConfig.getExternalIdDomains();
 
         final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
         try (Cursor cursor = bookDao.fetchBooksForExport(sinceDateTime)) {

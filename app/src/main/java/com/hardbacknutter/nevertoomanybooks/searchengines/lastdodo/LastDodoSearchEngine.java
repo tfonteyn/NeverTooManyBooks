@@ -36,7 +36,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -44,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -83,20 +81,6 @@ public class LastDodoSearchEngine
     @Keep
     public LastDodoSearchEngine(@NonNull final SearchEngineConfig config) {
         super(config);
-    }
-
-    @NonNull
-    public static SearchEngineConfig createConfig() {
-        return new SearchEngineConfig.Builder(EngineId.LastDodoNl,
-                                              R.string.site_lastdodo_nl,
-                                              "https://www.lastdodo.nl")
-                .setCountry("NL", "nl")
-                .setSearchPrefersIsbn10(true)
-
-                .setDomainKey(DBKey.SID_LAST_DODO_NL)
-                .setDomainViewId(R.id.site_last_dodo_nl)
-                .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LAST_DODO_NL)
-                .build();
     }
 
     @NonNull

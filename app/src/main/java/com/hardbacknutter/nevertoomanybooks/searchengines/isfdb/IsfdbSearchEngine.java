@@ -61,7 +61,6 @@ import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -104,8 +103,15 @@ public class IsfdbSearchEngine
                    SearchEngine.AlternativeEditions {
 
     /** Preferences - Type: {@code boolean}. */
-    public static final String PK_USE_PUBLISHER = EngineId.IsfDb.getPreferenceKey()
+    public static final String PK_USE_PUBLISHER = EngineId.Isfdb.getPreferenceKey()
                                                   + ".search.uses.publisher";
+    /**
+     * As proposed by another user on the ISFDB wiki,
+     * we're only going to send one request a second.
+     *
+     * @see <a href="http://www.isfdb.org/wiki/index.php/ISFDB:Help_desk#Some_Downloading_Questions_and_a_Request">throttling</a>
+     */
+    public static final Throttler THROTTLER = new Throttler(1_000);
     /**
      * The site claims to use ISO-8859-1.
      * <pre>
@@ -123,16 +129,11 @@ public class IsfdbSearchEngine
     /** Map ISFDB book types to {@link Book.ContentType}. */
     static final Map<String, Book.ContentType> TYPE_MAP = new HashMap<>();
     /** Preferences - Type: {@code boolean}. */
-    static final String PK_SERIES_FROM_TOC = EngineId.IsfDb.getPreferenceKey()
+    static final String PK_SERIES_FROM_TOC = EngineId.Isfdb.getPreferenceKey()
                                              + ".search.toc.series";
+    /** Log tag. */
+    private static final String TAG = "IsfdbSearchEngine";
 
-    /**
-     * As proposed by another user on the ISFDB wiki,
-     * we're only going to send one request a second.
-     *
-     * @see <a href="http://www.isfdb.org/wiki/index.php/ISFDB:Help_desk#Some_Downloading_Questions_and_a_Request">throttling</a>
-     */
-    private static final Throttler THROTTLER = new Throttler(1_000);
     /** Common CGI directory. */
     private static final String CGI_BIN = "/cgi-bin";
     /** bibliographic information for one title. */
@@ -147,12 +148,19 @@ public class IsfdbSearchEngine
     private static final String CGI_SE = "/se.cgi";
     /** Advanced search FORM submission (using GET), and the returned results page url. */
     private static final String CGI_ADV_SEARCH_RESULTS = "/adv_search_results.cgi";
-    /** Log tag. */
-    private static final String TAG = "IsfdbSearchEngine";
+    private static final String CGI_ADV_SEARCH_PREFIX = CGI_BIN + CGI_ADV_SEARCH_RESULTS + "?"
+                                                        + "ORDERBY=pub_title"
+                                                        + "&ACTION=query"
+                                                        + "&START=0"
+                                                        + "&TYPE=Publication"
+                                                        + "&C=AND";
+
     /** Param 1: external book ID. */
     private static final String CGI_BY_EXTERNAL_ID = CGI_BIN + CGI_PL + "?%1$s";
     /** Search URL template. */
     private static final String CGI_EDITIONS = CGI_BIN + CGI_SE + "?arg=%s&type=ISBN";
+    /** View in browser. */
+    private static final String CGI_BROWSER = CGI_BIN + CGI_PL + "?";
 
     private static final String REST_BIN = CGI_BIN + "/rest";
     private static final String REST_BY_EXTERNAL_ID = REST_BIN + "/getpub_by_internal_ID.cgi?%1$s";
@@ -250,24 +258,9 @@ public class IsfdbSearchEngine
     }
 
     @NonNull
-    public static SearchEngineConfig createConfig() {
-        return new SearchEngineConfig.Builder(EngineId.IsfDb,
-                                              R.string.site_isfdb,
-                                              "http://www.isfdb.org")
-                .setDomainKey(DBKey.SID_ISFDB)
-                .setDomainViewId(R.id.site_isfdb)
-                .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB)
-
-                .setConnectTimeoutMs(20_000)
-                .setReadTimeoutMs(60_000)
-                .setStaticThrottler(THROTTLER)
-                .build();
-    }
-
-    @NonNull
     @Override
     public String createBrowserUrl(@NonNull final String externalId) {
-        return getHostUrl() + CGI_BIN + CGI_PL + "?" + externalId;
+        return getHostUrl() + CGI_BROWSER + externalId;
     }
 
     @NonNull
@@ -321,12 +314,7 @@ public class IsfdbSearchEngine
                          @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final String url = getHostUrl() + CGI_BIN + CGI_ADV_SEARCH_RESULTS + "?"
-                           + "ORDERBY=pub_title"
-                           + "&ACTION=query"
-                           + "&START=0"
-                           + "&TYPE=Publication"
-                           + "&C=AND";
+        final String url = getHostUrl() + CGI_ADV_SEARCH_PREFIX;
 
         int index = 0;
         String args = "";

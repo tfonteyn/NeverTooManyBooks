@@ -49,11 +49,9 @@ public class GoodreadsSearchEngine
         super(config);
     }
 
-    @NonNull
-    public static SearchEngineConfig createConfig() {
-        return new SearchEngineConfig.Builder(EngineId.Goodreads,
-                                              R.string.site_goodreads,
-                                              "https://www.goodreads.com")
+    public static void createConfig() {
+        new SearchEngineConfig.Builder(EngineId.Goodreads,
+                                       "https://www.goodreads.com")
 
                 .setDomainKey(DBKey.SID_GOODREADS_BOOK)
                 .setDomainViewId(R.id.site_goodreads)

@@ -63,7 +63,7 @@ class IsfdbEditionsHandlerTest
             throws ParserConfigurationException, SAXException {
         super.setup();
         searchEngine = (IsfdbSearchEngine) Site.Type.Data
-                .getSite(EngineId.IsfDb).getSearchEngine();
+                .getSite(EngineId.Isfdb).getSearchEngine();
         searchEngine.setCaller(new MockCancellable());
     }
 

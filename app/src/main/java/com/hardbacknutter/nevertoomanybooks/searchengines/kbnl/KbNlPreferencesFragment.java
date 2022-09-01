@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,36 +17,24 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.settings.sites;
+package com.hardbacknutter.nevertoomanybooks.searchengines.kbnl;
 
 import android.os.Bundle;
-import android.text.InputType;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
-import androidx.preference.EditTextPreference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
 @Keep
-public class LibraryThingPreferencesFragment
+public class KbNlPreferencesFragment
         extends BasePreferenceFragment {
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-        setPreferencesFromResource(R.xml.preferences_site_librarything, rootKey);
-
-        final EditTextPreference etp = findPreference(LibraryThingSearchEngine.PK_HOST_URL);
-        //noinspection ConstantConditions
-        etp.setOnBindEditTextListener(editText -> {
-            editText.setInputType(InputType.TYPE_CLASS_TEXT
-                                  | InputType.TYPE_TEXT_VARIATION_URI);
-            editText.selectAll();
-        });
-        etp.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
+        setPreferencesFromResource(R.xml.preferences_site_kbnl, rootKey);
     }
 }

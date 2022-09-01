@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -51,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminFragment;
  * @see EngineId
  * @see SearchEngine
  * @see SearchEngineConfig
- * @see SearchEngineRegistry
  */
 public final class Site
         implements Parcelable {
@@ -147,9 +145,7 @@ public final class Site
      */
     @NonNull
     public static List<Site> filterForEnabled(@NonNull final Collection<Site> sites) {
-        return sites.stream()
-                    .filter(Site::isEnabled)
-                    .collect(Collectors.toList());
+        return sites.stream().filter(Site::isEnabled).collect(Collectors.toList());
     }
 
     /**
@@ -221,19 +217,18 @@ public final class Site
         }
     }
 
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeParcelable(engineId, flags);
-        dest.writeParcelable(type, flags);
-        dest.writeByte((byte) (enabled ? 1 : 0));
+    @NonNull
+    public Type getType() {
+        return type;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public boolean isEnabled() {
+        return enabled;
     }
 
+    public void setEnabled(final boolean enabled) {
+        this.enabled = enabled;
+    }
 
     @NonNull
     public EngineId getEngineId() {
@@ -249,24 +244,11 @@ public final class Site
     @NonNull
     public SearchEngine getSearchEngine() {
         if (searchEngine == null) {
-            searchEngine = SearchEngineRegistry.getInstance().createSearchEngine(engineId);
+            searchEngine = engineId.createSearchEngine();
         }
 
         searchEngine.reset();
         return searchEngine;
-    }
-
-    @NonNull
-    public Type getType() {
-        return type;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(final boolean enabled) {
-        this.enabled = enabled;
     }
 
     /**
@@ -288,22 +270,31 @@ public final class Site
     }
 
     @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeParcelable(engineId, flags);
+        dest.writeParcelable(type, flags);
+        dest.writeByte((byte) (enabled ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
     @NonNull
     public String toString() {
-        return "Site{"
-               + "engineId=" + engineId
-               + ", type=" + type
-               + ", enabled=" + enabled
-               + ", searchEngine=" + searchEngine
-               + '}';
+        return "Site{" + "engineId=" + engineId + ", type=" + type + ", enabled=" + enabled
+               + ", searchEngine=" + searchEngine + '}';
     }
 
     /**
      * The different types of configurable site lists we maintain.
-     *
+     * <p>
      * <strong>Note:</strong> the order of the enum values is used as the order
      * of the tabs in {@link SearchAdminFragment}.
-     *
+     * <p>
      * <strong>Note: NEVER change the "key" of the types</strong>.
      */
     public enum Type
@@ -311,6 +302,7 @@ public final class Site
 
         /** {@link SearchEngine} - Generic searches (includes books AND covers). */
         Data("data", R.string.lbl_books),
+
         /** {@link SearchEngine} - Alternative editions for a given isbn. */
         AltEditions("alted", R.string.lbl_tab_alternative_editions),
 
@@ -341,12 +333,16 @@ public final class Site
 
         /** Log tag. */
         private static final String TAG = "Site.Type";
+
         /** Internal name (for prefs). */
         @NonNull
         private final String key;
+
         /** User displayable name. */
         @StringRes
         private final int labelResId;
+
+        /** The list of sites in this type. */
         private final Collection<Site> siteList = new ArrayList<>();
 
         /**
@@ -374,7 +370,7 @@ public final class Site
         }
 
         /**
-         * Create a new list, but reordered according to the given order string.
+         * Create a new list, but reordered according to the given order list of EngineId's.
          * The site objects are the <strong>same</strong> as in the original list.
          * The original list order is NOT modified.
          * <p>
@@ -403,33 +399,13 @@ public final class Site
         }
 
         /**
-         * Create the list for <strong>all</strong> types.
+         * Create the list for <strong>this</strong> type.
          *
          * @param context Current context
          */
-        public static void registerAllTypes(@NonNull final Context context) {
-
-            final Locale systemLocale = ServiceLocator.getSystemLocale();
-            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-
-            // configure the site type enums.
-            for (final Type type : values()) {
-                type.createList(systemLocale, userLocale);
-            }
-        }
-
-        /**
-         * Create the list for <strong>this</strong> type.
-         *
-         * @param systemLocale device Locale <em>(passed in to allow mocking)</em>
-         * @param userLocale   user locale <em>(passed in to allow mocking)</em>
-         */
-        private void createList(@NonNull final Locale systemLocale,
-                                @NonNull final Locale userLocale) {
-
-            // re-create the global list for the type
+        void createList(@NonNull final Context context) {
             siteList.clear();
-            EngineId.createSiteList(systemLocale, userLocale, this);
+            EngineId.registerSites(context, this);
 
             // apply stored user preferences to the list
             loadPrefs();
@@ -438,15 +414,11 @@ public final class Site
         /**
          * Reset the list back to the hardcoded defaults.
          *
-         * @param systemLocale device Locale <em>(passed in to allow mocking)</em>
-         * @param userLocale   user locale <em>(passed in to allow mocking)</em>
+         * @param context Current context
          */
-        public void resetList(@NonNull final Locale systemLocale,
-                              @NonNull final Locale userLocale) {
-
-            // re-create the global list for the type
+        public void resetList(@NonNull final Context context) {
             siteList.clear();
-            EngineId.createSiteList(systemLocale, userLocale, this);
+            EngineId.registerSites(context, this);
 
             // overwrite stored user preferences with the defaults from the list
             savePrefs();
@@ -474,9 +446,7 @@ public final class Site
          */
         @NonNull
         public Site getSite(@NonNull final EngineId engineId) {
-            final Site s = siteList.stream()
-                                   .filter(site -> site.engineId == engineId)
-                                   .findFirst()
+            final Site s = siteList.stream().filter(site -> site.engineId == engineId).findFirst()
                                    .orElseThrow(() -> new IllegalArgumentException(
                                            String.valueOf(engineId)));
             return new Site(s);
@@ -491,22 +461,12 @@ public final class Site
          */
         @NonNull
         public ArrayList<Site> getSites() {
-            return siteList.stream()
-                           .map(Site::new)
+            return siteList.stream().map(Site::new)
                            .collect(Collectors.toCollection(ArrayList::new));
         }
 
         /**
-         * Helper for {@link EngineId#createSiteList}.
-         *
-         * @param engineId the search engine id
-         */
-        public void addSite(@NonNull final EngineId engineId) {
-            siteList.add(new Site(this, engineId, true));
-        }
-
-        /**
-         * Helper for {@link EngineId#createSiteList}.
+         * Helper for {@link EngineId#registerSites}.
          *
          * @param engineId the search engine id
          * @param enabled  flag
@@ -521,21 +481,18 @@ public final class Site
          */
         @VisibleForTesting
         public void loadPrefs() {
-
             final SharedPreferences prefs = ServiceLocator.getPreferences();
-            for (final Site site : siteList) {
-                site.loadFromPrefs(prefs);
-            }
+            siteList.forEach(site -> site.loadFromPrefs(prefs));
 
             final String order = prefs.getString(PREFS_ORDER_PREFIX + key, null);
             if (order != null) {
                 final List<EngineId> list = new ArrayList<>();
                 Arrays.stream(order.split(","))
-                      .forEach(prefKey -> Arrays
-                              .stream(EngineId.values())
-                              .filter(engineId -> engineId.getPreferenceKey().equals(prefKey))
-                              .findFirst()
-                              .ifPresent(list::add));
+                      .forEach(prefKey -> Arrays.stream(EngineId.values())
+                                                .filter(engineId -> engineId.getPreferenceKey()
+                                                                            .equals(prefKey))
+                                                .findFirst()
+                                                .ifPresent(list::add));
 
                 // Reorder keeps the original list members.
                 final List<Site> reorderedList = reorder(siteList, list);
@@ -560,18 +517,14 @@ public final class Site
          * Save the settings for each site in this list + the order of the sites in the list.
          */
         public void savePrefs() {
-            // Save the order of the given list and
-            // the individual site settings to preferences.
             final SharedPreferences.Editor ed = ServiceLocator.getPreferences().edit();
 
-            final String order = siteList.stream()
-                                         .map(site -> {
-                                             // store individual site settings
-                                             site.saveToPrefs(ed);
-                                             // and collect the id for the order string
-                                             return site.getEngineId().getPreferenceKey();
-                                         })
-                                         .collect(Collectors.joining(","));
+            final String order = siteList.stream().map(site -> {
+                // store individual site settings
+                site.saveToPrefs(ed);
+                // and collect the id for the order string
+                return site.getEngineId().getPreferenceKey();
+            }).collect(Collectors.joining(","));
 
             ed.putString(PREFS_ORDER_PREFIX + key, order);
             ed.apply();
@@ -598,7 +551,6 @@ public final class Site
             //    <string name="search.siteOrder.data">isfdb,amazon,stripinfo,googlebooks,
             //                                         lastdodo,openlibrary</string>
         }
-
 
         @StringRes
         public int getLabelResId() {

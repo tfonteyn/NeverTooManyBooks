@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
@@ -53,9 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * URGENT: hook up the delete / setRead ... with BoB/ShowBook etc...
  */
 public class CollectionFormUploader {
-
-    /** Local ref for convenience. */
-    private static final String FORM_URL = StripInfoSearchEngine.COLLECTION_FORM_URL;
 
     /**
      * Send a FORM to the site. Used to either upload the full set of
@@ -82,14 +78,18 @@ public class CollectionFormUploader {
 
     @NonNull
     private final FutureHttpPost<Document> futureHttpPost;
+    @NonNull
+    private final String postUrl;
 
     /**
      * Constructor.
      */
     @AnyThread
     public CollectionFormUploader() {
-        final SearchEngineConfig config = SearchEngineRegistry
-                .getInstance().getByEngineId(EngineId.StripInfoBe);
+        final SearchEngineConfig config = EngineId.StripInfoBe.getConfig();
+
+        //noinspection ConstantConditions
+        postUrl = config.getHostUrl() + StripInfoSearchEngine.COLLECTION_FORM_URL;
 
         futureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
         futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())
@@ -386,9 +386,9 @@ public class CollectionFormUploader {
     private Document doPost(@NonNull final String postBody)
             throws IOException, StorageException {
 
-        return Objects.requireNonNull(futureHttpPost.post(FORM_URL, postBody, bis -> {
+        return Objects.requireNonNull(futureHttpPost.post(postUrl, postBody, bis -> {
             try {
-                return Jsoup.parse(bis, null, FORM_URL);
+                return Jsoup.parse(bis, null, postUrl);
             } catch (@NonNull final IOException e) {
                 throw new UncheckedIOException(e);
             }

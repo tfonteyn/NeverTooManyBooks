@@ -30,7 +30,6 @@ import androidx.annotation.WorkerThread;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -101,8 +100,7 @@ public class IsfdbGetBookTask
             throws StorageException, SearchException, CredentialsException {
 
         // create a new instance just for our own use
-        searchEngine = (IsfdbSearchEngine)
-                SearchEngineRegistry.getInstance().createSearchEngine(EngineId.IsfDb);
+        searchEngine = (IsfdbSearchEngine) EngineId.Isfdb.createSearchEngine();
         searchEngine.setCaller(this);
 
         final boolean[] fetchCovers = {false, false};

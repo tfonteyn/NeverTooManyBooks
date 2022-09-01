@@ -38,7 +38,7 @@ import androidx.fragment.app.FragmentManager;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncStripinfoBinding;
-import com.hardbacknutter.nevertoomanybooks.settings.sites.StripInfoBePreferencesFragment;
+import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoBePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterFragment;

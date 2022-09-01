@@ -49,7 +49,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditSearchOrderBinding;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -89,7 +88,6 @@ public class SearchOrderFragment
      */
     private ArrayList<Site> siteList;
 
-    @SuppressWarnings("TypeMayBeWeakened")
     @NonNull
     public static Fragment create(@NonNull final Site.Type type) {
         final Fragment fragment = new SearchOrderFragment();
@@ -136,7 +134,7 @@ public class SearchOrderFragment
         vb.siteList.setHasFixedSize(true);
 
         listAdapter = new SearchSiteListAdapter(getContext(), siteList,
-                                                 vh -> itemTouchHelper.startDrag(vh));
+                                                vh -> itemTouchHelper.startDrag(vh));
         vb.siteList.setAdapter(listAdapter);
 
         final SimpleItemTouchHelperCallback sitHelperCallback =
@@ -207,15 +205,15 @@ public class SearchOrderFragment
             final Context context = getContext();
 
             final Site site = getItem(position);
-            final SearchEngine searchEngine = site.getSearchEngine();
 
-            holder.nameView.setText(searchEngine.getName(context));
+            holder.nameView.setText(site.getEngineId().getName(context));
 
             //noinspection ConstantConditions
             holder.checkableButton.setChecked(site.isEnabled());
 
             // only show the info for Data lists. Irrelevant for others.
             if (site.getType() == Site.Type.Data) {
+                final SearchEngine searchEngine = site.getSearchEngine();
                 // do not list SearchEngine.CoverByIsbn, it's irrelevant to the user.
                 final Collection<String> info = new ArrayList<>();
                 if (searchEngine instanceof SearchEngine.ByIsbn) {
@@ -255,8 +253,8 @@ public class SearchOrderFragment
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             if (menuItem.getItemId() == R.id.MENU_RESET) {
                 // Reset the global/original list for the type.
-                type.resetList(ServiceLocator.getSystemLocale(),
-                               getResources().getConfiguration().getLocales().get(0));
+                //noinspection ConstantConditions
+                type.resetList(getContext());
                 // and replace the content of the local list with the (new) defaults.
                 siteList.clear();
                 siteList.addAll(type.getSites());
