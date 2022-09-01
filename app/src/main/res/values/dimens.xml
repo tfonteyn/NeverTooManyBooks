@@ -125,6 +125,9 @@
           ?attr/textAppearanceLabelMedium -> textSide: 12sp   -->
     <dimen name="btn_open_toc_text_size">12sp</dimen>
 
+    <!-- The width of the BoB on the list/detail embedded screen.-->
+    <dimen name="bob_embedded_list_width">400dp</dimen>
+
     <!-- the margin around the CardView. -->
     <dimen name="bob_book_card_margin">8dp</dimen>
     <!-- The content padding used for the CardView content displaying a Book. -->
@@ -163,8 +166,9 @@
     </array>
 
 
-    <!-- The width for the "@style/TopCentered" -->
-    <dimen name="top_centered_max_width">600dp</dimen>
+    <!-- The width for the "@style/TopCentered" and similar -->
+    <dimen name="centered_max_width">400dp</dimen>
+    <dimen name="centered_max_width_wide">600dp</dimen>
 
     <integer name="span_count_edit_bookshelves">1</integer>
     <integer name="span_count_update_from_internet">1</integer>

@@ -29,7 +29,7 @@
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        style="@style/TopCentered"
+        style="@style/TopCentered.Wide"
         >
 
         <!--suppress LongLine -->

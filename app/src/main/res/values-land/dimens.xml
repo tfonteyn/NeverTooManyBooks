@@ -36,7 +36,7 @@
     <dimen name="btn_open_toc_height">@dimen/wrap_content</dimen>
     <dimen name="btn_open_toc_text_size">14sp</dimen>
 
-    <dimen name="top_centered_max_width">800dp</dimen>
+    <dimen name="centered_max_width_wide">800dp</dimen>
 
     <integer name="span_count_edit_bookshelves">3</integer>
     <integer name="span_count_update_from_internet">2</integer>
