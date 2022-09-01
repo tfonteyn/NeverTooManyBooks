@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -47,49 +47,49 @@
         app:orderingFromXml="false">
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.AmazonPreferencesFragment"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonPreferencesFragment"
             android:key="psk_search_site_amazon"
             android:title="@string/site_amazon">
         </Preference>
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.GoogleBooksPreferencesFragment"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks.GoogleBooksPreferencesFragment"
             android:key="psk_search_site_googlebooks"
             android:title="@string/site_google_books">
         </Preference>
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.IsfdbPreferencesFragment"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbPreferencesFragment"
             android:key="psk_search_site_isfdb"
             android:title="@string/site_isfdb">
         </Preference>
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.KbNlPreferencesFragment"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.kbnl.KbNlPreferencesFragment"
             android:key="psk_search_site_kbnl"
             android:title="@string/site_kb_nl">
         </Preference>
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.LibraryThingPreferencesFragment"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingPreferencesFragment"
             android:key="psk_search_site_librarything"
             android:title="@string/site_library_thing">
         </Preference>
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.OpenLibraryPreferencesFragment"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibraryPreferencesFragment"
             android:key="psk_search_site_openlibrary"
             android:title="@string/site_open_library">
         </Preference>
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.LastDodoPreferencesFragment"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo.LastDodoPreferencesFragment"
             android:key="psk_search_site_lastdodo"
             android:title="@string/site_lastdodo_nl">
         </Preference>
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.StripInfoBePreferencesFragment"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoBePreferencesFragment"
             android:key="psk_search_site_stripinfo"
             android:title="@string/site_stripinfo_be">
         </Preference>
