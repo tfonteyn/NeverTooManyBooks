@@ -44,11 +44,13 @@ public class ImportContract
     /**
      * Create the result which {@link #parseResult(int, Intent)} will receive.
      *
+     * @param importResults the result
+     *
      * @return Intent
      */
     @NonNull
-    public static Intent createResult(@NonNull final ImportResults result) {
-        return new Intent().putExtra(ImportResults.BKEY, result);
+    public static Intent createResult(@NonNull final ImportResults importResults) {
+        return new Intent().putExtra(ImportResults.BKEY, importResults);
     }
 
     @NonNull
