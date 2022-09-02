@@ -832,7 +832,7 @@ public class SearchCoordinator
     /**
      * Search criteria.
      *
-     * @param strictIsbn Flag: set to {@link false} to allow invalid isbn numbers
+     * @param strictIsbn Flag: set to {@code false} to allow invalid isbn numbers
      *                   to be passed to the searches
      */
     public void setStrictIsbn(final boolean strictIsbn) {
