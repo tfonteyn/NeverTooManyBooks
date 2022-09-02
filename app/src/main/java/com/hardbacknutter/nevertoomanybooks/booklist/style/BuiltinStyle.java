@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,8 +27,10 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -40,20 +42,26 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
  * Note the hardcoded negative ID's.
  * These id/uuid's should NEVER be changed as they will get stored
  * in preferences and serialized. Take care not to add duplicates.
+ * <p>
+ * Deprecated styles cannot be removed as we might come across them when importing
+ * older backups. They are however filtered/substituted as needed.
  */
 public final class BuiltinStyle
         extends BaseStyle {
 
-    private static final int ID_AUTHOR_THEN_SERIES = -1;
-    /**
-     * Absolute/initial default.
-     */
-    public static final int DEFAULT_ID = ID_AUTHOR_THEN_SERIES;
+    /** Absolute/initial default. */
+    public static final int DEFAULT_ID;
+    /** Absolute/initial default. */
+    public static final String DEFAULT_UUID;
+    /** We need a random style with a filter for testing. */
+    @VisibleForTesting
+    public static final String UUID_FOR_TESTING_ONLY;
 
-    //FIXME: used to be filtered on being "unread"; remove this style
+
+    private static final int ID_AUTHOR_THEN_SERIES = -1;
     @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
-    private static final int ID_UNREAD_AUTHOR_THEN_SERIES = -2;
+    private static final int ID_DEPRECATED_1 = -2;
     private static final int ID_COMPACT = -3;
     private static final int ID_BOOK_TITLE_FIRST_LETTER = -4;
     private static final int ID_SERIES = -5;
@@ -71,28 +79,23 @@ public final class BuiltinStyle
     private static final int ID_RATING = -17;
     private static final int ID_BOOKSHELF = -18;
     private static final int ID_DATE_LAST_UPDATE = -19;
-
-    private static final int[] Z_INT_ARRAY = new int[0];
     /**
-     * Use the NEGATIVE builtin style id to get the definition for it.
-     * Element 0 is not used.
-     * NEVER change the order.
+     * It's an ordered list - NEVER change the order.
+     * It should only ever be exposed as a {@link Collection};
+     * i.e. no direct access using an index - the id does NOT match the index as it used to.
      * NEVER change the UUID values.
      */
-    public static final List<Definition> ALL = List.of(
-            // not used.
-            new Definition(0, "", 0, Z_INT_ARRAY),
-
+    private static final Collection<Definition> ALL = List.of(
             new Definition(ID_AUTHOR_THEN_SERIES,
                            "6a82c4c0-48f1-4130-8a62-bbf478ffe184",
                            R.string.style_builtin_author_series,
                            new int[]{BooklistGroup.AUTHOR,
                                      BooklistGroup.SERIES}),
-            new Definition(ID_UNREAD_AUTHOR_THEN_SERIES,
+            new Definition(ID_DEPRECATED_1,
+                           true,
                            "f479e979-c43f-4b0b-9c5b-6942964749df",
-                           R.string.style_builtin_unread,
-                           new int[]{BooklistGroup.AUTHOR,
-                                     BooklistGroup.SERIES}),
+                           R.string.disabled,
+                           new int[]{}),
             new Definition(ID_COMPACT,
                            "5e4c3137-a05f-4c4c-853a-bd1dacb6cd16",
                            R.string.style_builtin_compact,
@@ -193,15 +196,23 @@ public final class BuiltinStyle
                            new int[]{BooklistGroup.DATE_LAST_UPDATE_YEAR,
                                      BooklistGroup.DATE_LAST_UPDATE_MONTH,
                                      BooklistGroup.DATE_LAST_UPDATE_DAY})
-                                                      );
+                                                             );
 
-    /**
-     * Absolute/initial default.
-     */
-    public static final String DEFAULT_UUID = ALL.get(-ID_AUTHOR_THEN_SERIES).uuid;
-    /** We need a random style with a filter for testing. */
-    @VisibleForTesting
-    public static final String UUID_FOR_TESTING_ONLY = ALL.get(-ID_PUBLICATION_DATA).uuid;
+    static {
+        DEFAULT_ID = ID_AUTHOR_THEN_SERIES;
+
+        //noinspection OptionalGetWithoutIsPresent
+        DEFAULT_UUID = ALL.stream()
+                          .filter(def -> def.id == ID_AUTHOR_THEN_SERIES)
+                          .findFirst()
+                          .get().uuid;
+
+        //noinspection OptionalGetWithoutIsPresent
+        UUID_FOR_TESTING_ONLY = ALL.stream()
+                                   .filter(def -> def.id == ID_PUBLICATION_DATA)
+                                   .findFirst()
+                                   .get().uuid;
+    }
 
     /**
      * Display name of this style.
@@ -234,6 +245,22 @@ public final class BuiltinStyle
     }
 
     /**
+     * Get the number of builtin styles.
+     * <p>
+     * Deprecated styles are NOT counted.
+     *
+     * @return count
+     */
+    public static int size() {
+        return (int) ALL.stream().filter(def -> !def.deprecated).count();
+    }
+
+    @NonNull
+    public static Collection<Definition> getAll() {
+        return ALL.stream().filter(def -> !def.deprecated).collect(Collectors.toList());
+    }
+
+    /**
      * Check if the given UUID is a builtin Style.
      *
      * @param uuid to check
@@ -241,37 +268,35 @@ public final class BuiltinStyle
      * @return {@code true} if it is
      */
     public static boolean isBuiltin(@NonNull final String uuid) {
-        // Use the definitions-list, not the cache!
-        return !uuid.isEmpty() && ALL.stream()
-                                     .map(definition -> definition.uuid)
-                                     .collect(Collectors.toList())
-                                     .contains(uuid);
+        return !uuid.isEmpty() && ALL.stream().anyMatch(def -> def.uuid.equalsIgnoreCase(uuid));
     }
 
     /**
-     * Only used during App setup to create the styles table.
+     * Construct a BuiltinStyle based on the given database row data.
+     * <p>
+     * This method will return {@code Optional.empty()} if the style is deprecated.
      *
-     * @param id the negative id to lookup
+     * @param rowData from the styles table
      *
-     * @return the uuid
+     * @return style
      */
     @NonNull
-    public static String getUuidById(final int id) {
-        return ALL.get(-id).uuid;
-    }
-
-    @NonNull
-    public static BuiltinStyle createFromDatabase(@NonNull final DataHolder rowData) {
+    public static Optional<BuiltinStyle> createFromDatabase(@NonNull final DataHolder rowData) {
 
         final int id = rowData.getInt(DBKey.PK_ID);
-        if (id >= 0) {
-            throw new IllegalStateException("Style id from the db: " + id + " is >= 0");
+        final Definition styleDef = ALL.stream()
+                                       .filter(def -> def.id == id)
+                                       .findFirst()
+                                       .orElseThrow(() -> new IllegalStateException(
+                                               "Style id from the db: " + id + " is invalid"));
+        if (styleDef.deprecated) {
+            return Optional.empty();
         }
 
         final boolean preferred = rowData.getBoolean(DBKey.STYLE_IS_PREFERRED);
         final int menuPosition = rowData.getInt(DBKey.STYLE_MENU_POSITION);
 
-        final BuiltinStyle style = new BuiltinStyle(ALL.get(-id), preferred, menuPosition);
+        final BuiltinStyle style = new BuiltinStyle(styleDef, preferred, menuPosition);
 
         // NEWTHINGS: BuiltinStyle: add a new builtin style if needed
         if (id == ID_COMPACT) {
@@ -280,7 +305,7 @@ public final class BuiltinStyle
             style.setShowField(Screen.List, FieldVisibility.COVER[0], false);
             style.setShowField(Screen.List, FieldVisibility.COVER[1], false);
         }
-        return style;
+        return Optional.of(style);
     }
 
     @Override
@@ -322,22 +347,43 @@ public final class BuiltinStyle
 
     public static class Definition {
 
-        public final int id;
+        /** The id is always a NEGATIVE value. */
+        private final int id;
         @NonNull
-        public final String uuid;
+        private final String uuid;
         @NonNull
-        public final int[] groupIds;
+        private final int[] groupIds;
         @StringRes
-        final int labelResId;
+        private final int labelResId;
+
+        private final boolean deprecated;
 
         Definition(final int id,
+                   @NonNull final String uuid,
+                   @StringRes final int labelResId,
+                   @NonNull final int[] groupIds) {
+            this(id, false, uuid, labelResId, groupIds);
+        }
+
+        Definition(final int id,
+                   final boolean deprecated,
                    @NonNull final String uuid,
                    @StringRes final int labelResId,
                    @NonNull final int[] groupIds) {
             this.id = id;
             this.uuid = uuid;
             this.labelResId = labelResId;
+            this.deprecated = deprecated;
             this.groupIds = groupIds;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        @NonNull
+        public String getUuid() {
+            return uuid;
         }
     }
 }

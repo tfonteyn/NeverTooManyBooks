@@ -573,7 +573,6 @@
     <string name="style_builtin_read_and_unread">Letto e Non letto</string>
     <string name="style_builtin_read_date">Lettura Data</string>
     <string name="style_builtin_series">Collana</string>
-    <string name="style_builtin_unread">Non letto (Autore/Serie)</string>
     <string name="style_builtin_update_date">Data aggiornamento</string>
     <string name="style_is_builtin">Predefinito</string>
     <string name="style_is_user_defined">Definito dall\'utente</string>

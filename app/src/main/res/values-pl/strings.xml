@@ -571,7 +571,6 @@
     <string name="style_builtin_read_and_unread">Odczyt / nieprzeczytane</string>
     <string name="style_builtin_read_date">Data odczytu</string>
     <string name="style_builtin_series">Seria</string>
-    <string name="style_builtin_unread">Nieprzeczytane (autor / seria)</string>
     <string name="style_builtin_update_date">Data aktualizacji</string>
     <string name="style_is_builtin">Wbudowany</string>
     <string name="style_is_user_defined">Określony przez użytkownika</string>

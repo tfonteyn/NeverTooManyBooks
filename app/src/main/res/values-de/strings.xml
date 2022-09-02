@@ -573,7 +573,6 @@
     <string name="style_builtin_read_and_unread">Gelesen und ungelesen</string>
     <string name="style_builtin_read_date">Gelesen am</string>
     <string name="style_builtin_series">Serie</string>
-    <string name="style_builtin_unread">Ungelesen (Autor/Serie)</string>
     <string name="style_builtin_update_date">Änderungsdatum</string>
     <string name="style_is_builtin">Eingebaut</string>
     <string name="style_is_user_defined">Benutzerdefiniert</string>

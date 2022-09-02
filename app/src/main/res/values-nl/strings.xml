@@ -571,7 +571,6 @@
     <string name="style_builtin_read_and_unread">Gelezen en ongelezen</string>
     <string name="style_builtin_read_date">Datum gelezen</string>
     <string name="style_builtin_series">Reeksen</string>
-    <string name="style_builtin_unread">Ongelezen (Auteur/Reeks)</string>
     <string name="style_builtin_update_date">Datum update</string>
     <string name="style_is_builtin">Ingebouwd</string>
     <string name="style_is_user_defined">Gebruiker-gedefinieerd</string>

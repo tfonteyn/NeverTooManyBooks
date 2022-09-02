@@ -21,6 +21,8 @@ package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
 
 import android.content.Context;
 
+import java.util.Optional;
+
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -29,7 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class PublisherBooklistGroupTest
         extends BaseDBTest {
@@ -37,13 +39,13 @@ public class PublisherBooklistGroupTest
     @Test
     public void cc() {
         final Context context = serviceLocator.getLocalizedAppContext();
-        final StylesHelper stylesHelper = serviceLocator.getStyles();
-        final Style s1 = stylesHelper.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
-        assertNotNull(s1);
+        final StylesHelper helper = serviceLocator.getStyles();
+        final Optional<Style> s1 = helper.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
+        assertTrue(s1.isPresent());
 
-        final BooklistGroup g1 = BooklistGroup.newInstance(BooklistGroup.PUBLISHER, s1);
+        final BooklistGroup g1 = BooklistGroup.newInstance(BooklistGroup.PUBLISHER, s1.get());
 
-        final BooklistGroup g2 = new PublisherBooklistGroup(s1, (PublisherBooklistGroup) g1);
+        final BooklistGroup g2 = new PublisherBooklistGroup(s1.get(), (PublisherBooklistGroup) g1);
         assertEquals(g1, g2);
     }
 }

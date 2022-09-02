@@ -348,9 +348,9 @@ public class BookTest {
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
         final Context context = serviceLocator.getLocalizedAppContext();
 
-        final StylesHelper stylesHelper = serviceLocator.getStyles();
-        final Style style = stylesHelper.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
-        assertNotNull(style);
+        final StylesHelper helper = serviceLocator.getStyles();
+        final Optional<Style> s1 = helper.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
+        assertTrue(s1.isPresent());
 
         final BookDao bookDao = serviceLocator.getBookDao();
         book[0] = prepareAndInsertBook(context, bookDao);
@@ -359,7 +359,7 @@ public class BookTest {
         final Bundle args = ServiceLocator.newBundle();
         args.putLong(DBKey.FK_BOOK, bookId[0]);
 
-        vm.init(context, args, style);
+        vm.init(context, args, s1.get());
         final Book retrieved = vm.getBook();
         assertEquals(bookId[0], retrieved.getId());
         checkBookAfterInitialInsert(retrieved);

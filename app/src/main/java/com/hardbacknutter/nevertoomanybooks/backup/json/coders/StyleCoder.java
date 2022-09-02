@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -129,12 +130,18 @@ public class StyleCoder
         final StylesHelper stylesHelper = ServiceLocator.getInstance().getStyles();
 
         if (BuiltinStyle.isBuiltin(uuid)) {
-            // It's a builtin style
-            final Style style = stylesHelper.getStyle(context, uuid);
-            //noinspection ConstantConditions
-            style.setPreferred(data.getBoolean(DBKey.STYLE_IS_PREFERRED));
-            style.setMenuPosition(data.getInt(DBKey.STYLE_MENU_POSITION));
-            return style;
+            final Optional<Style> oStyle = stylesHelper.getStyle(context, uuid);
+            if (oStyle.isPresent()) {
+                final Style style = oStyle.get();
+                style.setPreferred(data.getBoolean(DBKey.STYLE_IS_PREFERRED));
+                style.setMenuPosition(data.getInt(DBKey.STYLE_MENU_POSITION));
+                return style;
+            } else {
+                // It's a recognized Builtin Style, but it's deprecated.
+                // We return the default builtin style instead.
+                //noinspection OptionalGetWithoutIsPresent
+                return stylesHelper.getStyle(context, BuiltinStyle.DEFAULT_UUID).get();
+            }
 
         } else {
             final UserStyle userStyle = UserStyle.createFromImport(uuid);

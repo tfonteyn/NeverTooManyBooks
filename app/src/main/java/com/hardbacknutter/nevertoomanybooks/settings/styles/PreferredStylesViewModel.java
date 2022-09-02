@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -126,9 +127,9 @@ public class PreferredStylesViewModel
         return Objects.requireNonNull(styleList.get(position), () -> String.valueOf(position));
     }
 
-    @Nullable
-    Style getStyle(@NonNull final Context context,
-                   @NonNull final String uuid) {
+    @NonNull
+    Optional<Style> getStyle(@NonNull final Context context,
+                             @NonNull final String uuid) {
         return stylesHelper.getStyle(context, uuid);
     }
 

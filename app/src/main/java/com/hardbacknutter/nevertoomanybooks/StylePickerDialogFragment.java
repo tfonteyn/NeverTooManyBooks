@@ -189,10 +189,8 @@ public class StylePickerDialogFragment
                     .stream()
                     .noneMatch(style -> currentStyleUuid.equalsIgnoreCase(style.getUuid()))) {
 
-                final Style style = stylesHelper.getStyle(context, currentStyleUuid);
-                if (style != null) {
-                    styleList.add(style);
-                }
+                stylesHelper.getStyle(context, currentStyleUuid)
+                            .ifPresent(style -> styleList.add(style));
             }
         }
 

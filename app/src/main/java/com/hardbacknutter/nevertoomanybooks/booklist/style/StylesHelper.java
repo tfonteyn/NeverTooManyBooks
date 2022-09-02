@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -65,10 +66,11 @@ public class StylesHelper {
      *
      * @return the style, or {@code null} if not found
      */
-    @Nullable
-    public Style getStyle(@NonNull final Context context,
-                          @NonNull final String uuid) {
-        return getAllStyles(context).get(uuid);
+    @NonNull
+    public Optional<Style> getStyle(@NonNull final Context context,
+                                    @NonNull final String uuid) {
+        final Style style = getAllStyles(context).get(uuid);
+        return style == null ? Optional.empty() : Optional.of(style);
     }
 
     /**

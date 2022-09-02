@@ -69,8 +69,9 @@ public class StyleViewModel
             templateUuid = uuid;
 
             final Style dbStyle = ServiceLocator.getInstance().getStyles()
-                                                .getStyle(context, uuid);
-            Objects.requireNonNull(dbStyle, () -> "uuid not found: " + uuid);
+                                                .getStyle(context, uuid)
+                                                .orElseThrow(() -> new IllegalArgumentException(
+                                                        "uuid not found: " + uuid));
 
             @EditStyleContract.EditAction
             final int action = args.getInt(EditStyleContract.BKEY_ACTION,

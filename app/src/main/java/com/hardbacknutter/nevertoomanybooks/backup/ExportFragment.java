@@ -451,7 +451,7 @@ public class ExportFragment
         }
         if (result.styles > 0) {
             // deduct built-in styles
-            final int nr = result.styles - BuiltinStyle.ALL.size() + 1;
+            final int nr = result.styles - BuiltinStyle.size();
             items.add(getString(R.string.name_colon_value, getString(R.string.lbl_styles),
                                 String.valueOf(nr)));
         }

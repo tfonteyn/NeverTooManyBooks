@@ -573,7 +573,6 @@
     <string name="style_builtin_read_and_unread">Αναγνωσμένα και μη αναγνωσμένα</string>
     <string name="style_builtin_read_date">Ημερομηνία Ανάγνωσης</string>
     <string name="style_builtin_series">Σειρά</string>
-    <string name="style_builtin_unread">Μη αναγνωσμένο (Συγγραφέας/Σειρά)</string>
     <string name="style_builtin_update_date">Ημερομηνία ενημέρωσης</string>
     <string name="style_is_builtin">Ενσωματωμένο</string>
     <string name="style_is_user_defined">Καθορισμενο-από-χρήστη</string>

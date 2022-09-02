@@ -444,7 +444,6 @@
     <string name="style_builtin_read_and_unread">Přečteno/Nepřečteno</string>
     <string name="style_builtin_read_date">Datum Čtení</string>
     <string name="style_builtin_series">Série</string>
-    <string name="style_builtin_unread">Nepřečtené (Autor/Série)</string>
     <string name="style_builtin_update_date">Datum aktualizace</string>
     <string name="style_is_builtin">Vestavěný</string>
     <string name="style_is_user_defined">Definován uživatelem</string>

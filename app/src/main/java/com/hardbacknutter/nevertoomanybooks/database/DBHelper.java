@@ -87,7 +87,7 @@ public class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 21;
+    public static final int DATABASE_VERSION = 22;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -797,6 +797,11 @@ public class DBHelper
                               .collect(Collectors.joining(","));
                       prefs.edit().putString(key, order).apply();
                   });
+        }
+
+        if (oldVersion < 22) {
+            // remove builtin style ID_DEPRECATED_1
+            db.execSQL("DELETE FROM " + TBL_BOOKLIST_STYLES.getName() + " WHERE _id=-2");
         }
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table:

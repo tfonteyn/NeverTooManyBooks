@@ -115,11 +115,8 @@ public class PreferredStylesFragment
                 if (data.isModified()) {
                     if (data.getUuid().isPresent()) {
                         //noinspection ConstantConditions
-                        @Nullable
-                        final Style style = vm.getStyle(getContext(), data.getUuid().get());
-                        if (style != null) {
-                            vm.onStyleEdited(style, data.getTemplateUuid());
-                        }
+                        vm.getStyle(getContext(), data.getUuid().get())
+                          .ifPresent(style -> vm.onStyleEdited(style, data.getTemplateUuid()));
                     }
                     // always update ALL rows as the order might have changed
                     listAdapter.notifyDataSetChanged();

@@ -571,7 +571,6 @@
     <string name="style_builtin_read_and_unread">Прочтена и непрочтена</string>
     <string name="style_builtin_read_date">Дата прочтения</string>
     <string name="style_builtin_series">Серии</string>
-    <string name="style_builtin_unread">Непрочтенные (Автор/Серии)</string>
     <string name="style_builtin_update_date">Дата обновления</string>
     <string name="style_is_builtin">Встроенный</string>
     <string name="style_is_user_defined">Определенный пользователем</string>

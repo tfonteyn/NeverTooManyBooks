@@ -572,7 +572,6 @@
     <string name="style_builtin_read_and_unread">Okunmuş ve okunmamış</string>
     <string name="style_builtin_read_date">Okunan günay</string>
     <string name="style_builtin_series">Seriler</string>
-    <string name="style_builtin_unread">Okunmayan (Yazar/Seri)</string>
     <string name="style_builtin_update_date">Gün ve ayı güncelle</string>
     <string name="style_is_builtin">Yerleşik</string>
     <string name="style_is_user_defined">Kullanıcı tanımlı</string>

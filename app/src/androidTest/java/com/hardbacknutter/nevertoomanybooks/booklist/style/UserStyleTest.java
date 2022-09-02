@@ -23,6 +23,8 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import java.util.Optional;
+
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
@@ -31,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class UserStyleTest
         extends BaseDBTest {
@@ -39,14 +41,13 @@ public class UserStyleTest
     @Test
     public void clone01() {
         final Context context = serviceLocator.getLocalizedAppContext();
-        final StylesHelper stylesHelper = serviceLocator.getStyles();
-        final Style s1 = stylesHelper.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
-
-        assertNotNull(s1);
+        final StylesHelper helper = serviceLocator.getStyles();
+        final Optional<Style> s1 = helper.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
+        assertTrue(s1.isPresent());
 
         // clone a BuiltinStyle
-        final UserStyle s2 = s1.clone(context);
-        compare(context, s1, s2);
+        final UserStyle s2 = s1.get().clone(context);
+        compare(context, s1.get(), s2);
         // clone a UserStyle
         compare(context, s2, s2.clone(context));
     }

@@ -29,7 +29,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -129,23 +128,20 @@ public class StyleDaoImpl
      */
     public static void onPostCreate(@NonNull final SQLiteDatabase db) {
         try (SQLiteStatement stmt = db.compileStatement(INSERT_BUILTIN_STYLE)) {
-            final List<BuiltinStyle.Definition> all = BuiltinStyle.ALL;
-            // start at element 1 !
-            for (int i = 1; i < all.size(); i++) {
-                final BuiltinStyle.Definition styleDef = all.get(i);
-                stmt.bindLong(1, styleDef.id);
-                stmt.bindString(2, styleDef.uuid);
+            int menuPos = 1;
+            for (final BuiltinStyle.Definition styleDef : BuiltinStyle.getAll()) {
+                stmt.bindLong(1, styleDef.getId());
+                stmt.bindString(2, styleDef.getUuid());
                 // builtin: true
                 stmt.bindLong(3, 1);
                 // preferred: false
                 stmt.bindLong(4, 0);
                 // menu position, initially just in the order defined.
-                // ( negate the id to get a positive number)
-                stmt.bindLong(5, -styleDef.id);
+                stmt.bindLong(5, menuPos++);
 
-                // after inserting '-1' our debug logging will claim that the insert failed.
+                // after inserting the id '-1' debug logging will claim that the insert failed.
                 if (BuildConfig.DEBUG /* always */) {
-                    if (styleDef.id == -1) {
+                    if (styleDef.getId() == -1) {
                         Log.d(TAG, "onPostCreate|Ignore debug message inserting -1 ^^^");
                     }
                 }
@@ -188,8 +184,8 @@ public class StyleDaoImpl
                                          new String[]{String.valueOf(1)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                final BuiltinStyle style = BuiltinStyle.createFromDatabase(rowData);
-                map.put(style.getUuid(), style);
+                BuiltinStyle.createFromDatabase(rowData).ifPresent(
+                        style -> map.put(style.getUuid(), style));
             }
         }
 

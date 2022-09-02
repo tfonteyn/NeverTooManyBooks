@@ -530,7 +530,7 @@ public class ImportFragment
             items.add(getString(R.string.name_colon_value,
                                 getString(R.string.lbl_styles),
                                 // deduct built-in styles
-                                String.valueOf(result.styles - BuiltinStyle.ALL.size() - 1)));
+                                String.valueOf(result.styles - BuiltinStyle.size())));
         }
         if (result.preferences > 0) {
             items.add(getString(R.string.lbl_settings));

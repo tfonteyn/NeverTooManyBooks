@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -44,9 +46,14 @@ class BooklistGroupTest
         // loop starting at 1 must exclude BOOK
         assertEquals(0, BooklistGroup.BOOK);
 
-        final Style style =
-                new BuiltinStyle(BuiltinStyle.ALL.get(-BuiltinStyle.DEFAULT_ID),
-                                 true, 1);
+        final Optional<BuiltinStyle.Definition> definition =
+                BuiltinStyle.getAll()
+                            .stream()
+                            .filter(def -> def.getId() == BuiltinStyle.DEFAULT_ID)
+                            .findFirst();
+        assertTrue(definition.isPresent());
+
+        final Style style = new BuiltinStyle(definition.get(), true, 1);
 
         final Collection<String> prefixes = new HashSet<>();
         for (int id = 0; id <= BooklistGroup.GROUP_KEY_MAX; id++) {

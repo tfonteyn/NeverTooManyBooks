@@ -1103,7 +1103,6 @@
     <string name="style_builtin_read_and_unread">Read/Unread</string>
     <string name="style_builtin_read_date">Date Read</string>
     <string name="style_builtin_series">Series</string>
-    <string name="style_builtin_unread">Unread (Author/Series)</string>
     <string name="style_builtin_update_date">Date updated</string>
 
     <!-- ####################################################################################### -->

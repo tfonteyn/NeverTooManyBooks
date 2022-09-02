@@ -575,7 +575,6 @@
     <string name="style_builtin_read_and_unread">Lu et non lu</string>
     <string name="style_builtin_read_date">Date de lecture</string>
     <string name="style_builtin_series">Séries</string>
-    <string name="style_builtin_unread">Non lu (auteur / séries)</string>
     <string name="style_builtin_update_date">Date de mise à jour</string>
     <string name="style_is_builtin">Par défaut</string>
     <string name="style_is_user_defined">Défini par l\'utilisateur</string>
