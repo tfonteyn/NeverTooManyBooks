@@ -133,13 +133,15 @@ class StripInfoTest
                 rawData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
         assertNotNull(covers);
         assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith("SI_9789463064385_0_.jpg"));
+        assertTrue(covers.get(0).endsWith(EngineId.StripInfoBe.getPreferenceKey()
+                                          + "_9789463064385_0_.jpg"));
 
         final ArrayList<String> backCovers =
                 rawData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
         assertNotNull(backCovers);
         assertEquals(1, backCovers.size());
-        assertTrue(backCovers.get(0).endsWith("SI_9789463064385_1_.jpg"));
+        assertTrue(backCovers.get(0).endsWith(EngineId.StripInfoBe.getPreferenceKey()
+                                              + "_9789463064385_1_.jpg"));
     }
 
     @Test
@@ -199,13 +201,15 @@ class StripInfoTest
                 rawData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
         assertNotNull(covers);
         assertEquals(1, covers.size());
-        assertTrue(covers.get(0).endsWith("SI_905581315X_0_.jpg"));
+        assertTrue(covers.get(0).endsWith(EngineId.StripInfoBe.getPreferenceKey()
+                                          + "_905581315X_0_.jpg"));
 
         final ArrayList<String> backCovers =
                 rawData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
         assertNotNull(backCovers);
         assertEquals(1, backCovers.size());
-        assertTrue(backCovers.get(0).endsWith("SI_905581315X_1_.jpg"));
+        assertTrue(backCovers.get(0).endsWith(EngineId.StripInfoBe.getPreferenceKey()
+                                              + "_905581315X_1_.jpg"));
     }
 
     @Test
@@ -262,7 +266,8 @@ class StripInfoTest
         assertNotNull(covers);
         assertEquals(1, covers.size());
 
-        assertTrue(covers.get(0).endsWith("SI_9789085522072_0_.jpg"));
+        assertTrue(covers.get(0).endsWith(EngineId.StripInfoBe.getPreferenceKey()
+                                          + "_9789085522072_0_.jpg"));
 
         final ArrayList<String> backCovers =
                 rawData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
