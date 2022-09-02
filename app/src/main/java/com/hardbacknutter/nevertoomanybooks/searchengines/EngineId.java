@@ -418,9 +418,6 @@ public enum EngineId
     }
 
     public void setConfig(@NonNull final SearchEngineConfig config) {
-        if (this.config != null) {
-            throw new IllegalStateException("Configuration already set for engine: " + this);
-        }
         this.config = config;
     }
 
