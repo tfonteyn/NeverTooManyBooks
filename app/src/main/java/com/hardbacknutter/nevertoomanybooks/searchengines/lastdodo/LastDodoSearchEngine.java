@@ -117,7 +117,7 @@ public class LastDodoSearchEngine
         // This is silly...
         // 2022-05-31: searching the site with the ISBN now REQUIRES the dashes between
         // the digits.
-        final String url = getHostUrl() + String.format(BY_ISBN, ISBN.prettyPrint(validIsbn));
+        final String url = getHostUrl() + String.format(BY_ISBN, ISBN.formatIsbn(validIsbn));
         final Document document = loadDocument(context, url);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.

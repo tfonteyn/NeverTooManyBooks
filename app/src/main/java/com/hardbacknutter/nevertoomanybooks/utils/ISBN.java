@@ -272,7 +272,7 @@ public class ISBN {
      * @return dash formatted isbn
      */
     @NonNull
-    public static String prettyPrint(@Nullable final String s) {
+    public static String formatIsbn(@Nullable final String s) {
         if (s == null) {
             return "";
 
