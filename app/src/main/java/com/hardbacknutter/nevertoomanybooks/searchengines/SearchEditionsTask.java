@@ -32,10 +32,10 @@ import java.util.LinkedHashSet;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
-import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
@@ -64,7 +64,7 @@ public class SearchEditionsTask
     public void search(@NonNull final String validIsbn) {
         // sanity check
         if (BuildConfig.DEBUG /* always */) {
-            ISBN.requireValidIsbn(validIsbn);
+            SanityCheck.requireValidIsbn(validIsbn);
         }
 
         isbn = validIsbn;

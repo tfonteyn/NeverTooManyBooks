@@ -517,7 +517,7 @@ public class SearchCoordinator
                 && titleSearchText.isEmpty()
                 && isbnSearchText.isEmpty()
                 && (externalIdSearchText == null || externalIdSearchText.isEmpty())) {
-                throw new SanityCheck.MissingValueException("empty criteria");
+                throw new SanityCheck.SanityException("empty criteria");
             }
         }
 

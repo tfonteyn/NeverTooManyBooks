@@ -314,7 +314,7 @@ public interface BookDao {
      * @return A Book Cursor with 0..n rows; ordered by book id
      *         Only books with {@link DBKey#AUTO_UPDATE} set will be returned.
      *
-     * @throws SanityCheck.MissingValueException if the list is empty
+     * @throws SanityCheck.SanityException if the list is empty
      */
     @NonNull
     TypedCursor fetchForAutoUpdate(@NonNull List<Long> idList);
@@ -326,7 +326,7 @@ public interface BookDao {
      *
      * @return A Book Cursor with 0..n rows; ordered by book id
      *
-     * @throws SanityCheck.MissingValueException if the list is empty
+     * @throws SanityCheck.SanityException if the list is empty
      */
     @NonNull
     TypedCursor fetchByIsbn(@NonNull List<String> isbnList);

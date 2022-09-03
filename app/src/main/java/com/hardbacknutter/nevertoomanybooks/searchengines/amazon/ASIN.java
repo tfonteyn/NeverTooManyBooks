@@ -31,8 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
  * For books, the ASIN is the same as the ISBN-10 number, but for all other products a new ASIN
  * is created when the item is uploaded to their catalogue.
  *
- * <a href="https://www.amazon.com/gp/seller/asin-upc-isbn-info.html">
- * https://www.amazon.com/gp/seller/asin-upc-isbn-info.html</a>
+ * @see <a href="https://en.wikipedia.org/wiki/Amazon_Standard_Identification_Number">ASIN</a>
  */
 public final class ASIN {
 
@@ -51,13 +50,12 @@ public final class ASIN {
      */
     public static boolean isValidAsin(@NonNull final String asin) {
 
-
         if (asin.length() != ASIN_LEN) {
             return false;
         }
 
         // A Book ASIN is basically an ISBN-10.
-        if (ISBN.isValidIsbn(asin)) {
+        if (new ISBN(asin, true).isValid(true)) {
             return true;
         }
 

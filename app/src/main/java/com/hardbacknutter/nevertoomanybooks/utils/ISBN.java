@@ -72,7 +72,6 @@ public class ISBN {
     /** Log tag. */
     private static final String TAG = "ISBN";
 
-    private static final String ERROR_INVALID_ISBN = "isbn must be valid";
     private static final String ERROR_WRONG_SIZE = "Wrong size: ";
     private static final String ERROR_UNABLE_TO_CONVERT =
             "Unable to convert type: %1$s to %2$s";
@@ -291,63 +290,6 @@ public class ISBN {
                    + s.charAt(12);
         } else {
             return s;
-        }
-    }
-
-    /**
-     * Check if two codes are matching.
-     *
-     * @param isbnStr1   first code
-     * @param isbnStr2   second code
-     * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
-     *
-     * @return {@code true} if the 2 codes match.
-     */
-    public static boolean matches(@Nullable final String isbnStr1,
-                                  @Nullable final String isbnStr2,
-                                  final boolean strictIsbn) {
-        if (isbnStr1 == null || isbnStr2 == null) {
-            return false;
-        }
-
-        // Full check needed ...if either one is invalid, we consider them different
-        final ISBN o1 = new ISBN(isbnStr1, strictIsbn);
-        if (!o1.isValid(strictIsbn)) {
-            return false;
-        }
-
-        final ISBN o2 = new ISBN(isbnStr2, strictIsbn);
-        if (!o2.isValid(strictIsbn)) {
-            return false;
-        }
-
-        return o1.equals(o2);
-    }
-
-    /**
-     * Convenience method to check validity when there is no need to keep the object.
-     *
-     * @param text to check
-     *
-     * @return validity
-     */
-    public static boolean isValidIsbn(@Nullable final String text) {
-        if (text == null || text.isEmpty()) {
-            return false;
-        }
-        return new ISBN(text, true).isValid(true);
-    }
-
-    /**
-     * Check the validity of an ISBN string.
-     *
-     * @param text to check
-     *
-     * @throws IllegalStateException if invalid
-     */
-    public static void requireValidIsbn(@Nullable final String text) {
-        if (!isValidIsbn(text)) {
-            throw new IllegalStateException(ERROR_INVALID_ISBN);
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,8 @@ import androidx.annotation.Nullable;
 
 import java.util.Collection;
 
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+
 /**
  * Quick note: this class came into being as a solution to the missing "assert" functionality
  * in Android.
@@ -40,7 +42,7 @@ public final class SanityCheck {
     public static long requireNonZero(final long value,
                                       @Nullable final String message) {
         if (value == 0) {
-            throw new MissingValueException(message);
+            throw new SanityException(message);
         }
         return value;
     }
@@ -49,7 +51,7 @@ public final class SanityCheck {
     public static long requirePositiveValue(final long value,
                                             @Nullable final String message) {
         if (value <= 0) {
-            throw new MissingValueException(message);
+            throw new SanityException(message);
         }
         return value;
     }
@@ -58,7 +60,7 @@ public final class SanityCheck {
     public static float requirePositiveValue(final float value,
                                             @Nullable final String message) {
         if (value <= 0) {
-            throw new MissingValueException(message);
+            throw new SanityException(message);
         }
         return value;
     }
@@ -71,7 +73,7 @@ public final class SanityCheck {
             throw new NullPointerException(message);
         }
         if (value.isEmpty()) {
-            throw new MissingValueException(message);
+            throw new SanityException(message);
         }
         return value;
     }
@@ -84,17 +86,32 @@ public final class SanityCheck {
             throw new NullPointerException(message);
         }
         if (value.isEmpty()) {
-            throw new MissingValueException(message);
+            throw new SanityException(message);
         }
         return value;
     }
 
-    public static class MissingValueException
+    /**
+     * Check the validity of an ISBN string.
+     *
+     * @param text to check
+     *
+     * @throws SanityException if invalid
+     */
+    public static void requireValidIsbn(@Nullable final String text) {
+        if (text == null || text.isEmpty()
+            || !new ISBN(text, true).isValid(true)) {
+
+            throw new SanityException("isbn must be valid");
+        }
+    }
+
+    public static class SanityException
             extends NullPointerException {
 
         private static final long serialVersionUID = 4418513924924222373L;
 
-        public MissingValueException(@Nullable final String message) {
+        public SanityException(@Nullable final String message) {
             super(message);
         }
     }

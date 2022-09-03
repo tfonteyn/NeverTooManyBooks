@@ -273,7 +273,7 @@ public class Bookshelf
      * @param context Current context
      * @param style   to set; must already exist (id != 0)
      *
-     * @throws SanityCheck.MissingValueException if the style is 'new' (id==0)
+     * @throws SanityCheck.SanityException if the style is 'new' (id==0)
      */
     public void setStyle(@NonNull final Context context,
                          @NonNull final Style style) {
