@@ -108,6 +108,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
 
+        resConfigs "en", "en_GB", "de", "fr", "nl", "es", "it", "el", "ru", "tr"
+
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
