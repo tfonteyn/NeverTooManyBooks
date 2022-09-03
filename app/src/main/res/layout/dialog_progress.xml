@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/progress_margin_top"
-        android:background="@drawable/bg_progress_dialog"
+        android:background="@drawable/bg_floating_dialog"
         android:elevation="@dimen/progress_z"
         >
 

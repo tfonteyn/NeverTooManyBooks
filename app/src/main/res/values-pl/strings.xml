@@ -665,7 +665,6 @@
     <string name="X_confirm_continue">Jesteś pewien, że chcesz kontynuować ?</string>
     <string name="X_error_authentication_failed">Uwierzytelnianie nie powiodło się</string>
     <string name="X_error_file_must_contain_column">Plik musi zawierać pole %1$s</string>
-    <string name="X_error_import_csv_column_is_blank">Pole %1$s jest puste w linii %2$d</string>
     <string name="X_error_not_available">%1$s jest niedostępny</string>
     <string name="X_info_authorized_needed">Autoryzuj dostęp</string>
     <string name="X_info_not_authorized">Nieautoryzowany</string>
@@ -688,11 +687,6 @@
     <string name="X_lbl_virtual_library">Wirtualna biblioteka</string>
     <string name="x_of_y">%1$d z %2$d</string>
     <string name="X_pg_general">Ogólne</string>
-    <string name="X_progress_msg_n_books_processed">Książki przetworzonych %1$d</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">Obejmuje przetworzonych %1$d (brak %2$d/%3$d, pominięto %4$d)</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing">Objętych przetworzonych\n%1$d (brak %2$d/%3$d)</string>
-    <string name="X_progress_msg_n_covers_processed">Objętych przetworzonych %1$d</string>
-    <string name="X_progress_msg_x_created_y_updated">%1$s: Utworzono %2$d, zaktualizowano %3$d</string>
     <string name="X_tip_booklist_global_properties">Możesz użyć tego ekranu, aby ustawić domyślną charakterystykę wszystkich stylów listy książek. Większość właściwości może być nadpisana przez poszczególne style, ale tutaj są zdefiniowane wartości domyślne. Możesz zmienić sposób wyświetlania list przy starcie i dostosować różne inne preferencje, które będą stosowane do wszystkich twoich stylów, jeśli to możliwe. Możesz także edytować menu stylów i same style.</string>
     <string name="X_txt_import_books_option_all_books">Nowe książki zostaną dodane. Istniejące książki zostaną zaktualizowane.</string>
     <string name="X_txt_import_books_option_new_and_changed">Importuj tylko książki, które są nowe lub zostały zaktualizowane w archiwum ostatnio. Jest to przydatne podczas synchronizacji dwóch urządzeń.</string>

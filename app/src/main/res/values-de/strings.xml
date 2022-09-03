@@ -667,7 +667,6 @@
     <string name="X_confirm_continue">Sind Sie sicher, dass Sie fortfahren möchten ?</string>
     <string name="X_error_authentication_failed">Authentifizierung fehlgeschlagen</string>
     <string name="X_error_file_must_contain_column">Die Datei muss eine Spalte mit dem Namen %1$s enthalten</string>
-    <string name="X_error_import_csv_column_is_blank">Die Spalte %1$s ist in Zeile %2$d leer</string>
     <string name="X_error_not_available">%1$s ist nicht verfügbar</string>
     <string name="X_info_authorized_needed">Zugriff autorisieren</string>
     <string name="X_info_not_authorized">Nicht autorisiert</string>
@@ -690,11 +689,6 @@
     <string name="X_lbl_virtual_library">Virtuelle Bibliothek</string>
     <string name="x_of_y">%1$d von %2$d</string>
     <string name="X_pg_general">Allgemein</string>
-    <string name="X_progress_msg_n_books_processed">%1$d Bücher verarbeitet</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">%1$d Buchumschläge verarbeitet (%2$d/%3$d fehlen, %4$d übersprungen)</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing">%1$d Buchumschläge verarbeitet\n(%2$d/%3$d fehlen)</string>
-    <string name="X_progress_msg_n_covers_processed">%1$d Buchumschläge verarbeitet</string>
-    <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d erzeugt, %3$d aktualisiert</string>
     <string name="X_tip_booklist_global_properties">In diesem Bildschirm können Sie die Standardeigenschaften aller Buchlistenstile festlegen. Die meisten Eigenschaften können von einzelnen Stilen überschrieben werden, aber die Standardwerte werden hier definiert. Sie können ändern, wie Listen beim Start angezeigt werden, und eine Reihe anderer Einstellungen vornehmen, die nach Möglichkeit auf alle Ihre Stile angewendet werden.</string>
     <string name="X_txt_import_books_option_all_books">Neue Bücher werden hinzugefügt. Vorhandene Bücher werden aktualisiert.</string>
     <string name="X_txt_import_books_option_new_and_changed">Nur neue oder aktuellere Bücher im Archiv. Das ist nützlich, um zwei Geräte zu synchronisieren.</string>

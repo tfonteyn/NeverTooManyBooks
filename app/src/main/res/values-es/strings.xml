@@ -668,7 +668,6 @@
     <string name="X_confirm_continue">Estás seguro de que quieres continuar ?</string>
     <string name="X_error_authentication_failed">Autenticación fallida</string>
     <string name="X_error_file_must_contain_column">El fichero debe tener una columna con el nombre %1$s</string>
-    <string name="X_error_import_csv_column_is_blank">La columna %1$s tiene en blanco la fila %2$d</string>
     <string name="X_error_not_available">%1$s no disponible</string>
     <string name="X_info_authorized_needed">Autorizar acceso</string>
     <string name="X_info_not_authorized">No Autorizado</string>
@@ -691,11 +690,6 @@
     <string name="X_lbl_virtual_library">Biblioteca virtual</string>
     <string name="x_of_y">%1$d de %2$d</string>
     <string name="X_pg_general">General</string>
-    <string name="X_progress_msg_n_books_processed">%1$d libros procesados</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">%1$d portadas procesadas (%2$d/%3$d faltantes, %4$d omitidas)</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing">%1$d portadas procesadas\n(%2$d/%3$d faltantes)</string>
-    <string name="X_progress_msg_n_covers_processed">%1$d portadas procesadas</string>
-    <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d creados, %3$d actualizados</string>
     <string name="X_tip_booklist_global_properties">Puede usar esta pantalla para configurar las características predeterminadas de todos los estilos de listas de libros. La mayoría de las propiedades pueden ser reemplazadas por estilos individuales, pero los valores predeterminados se definen aquí. Puede cambiar la forma en que se muestran las listas al inicio y ajustar una variedad de otras preferencias que se aplicarán a todos sus estilos cuando sea posible.</string>
     <string name="X_txt_import_books_option_all_books">Se agregarán nuevos libros. Los libros existentes serán actualizados.</string>
     <string name="X_txt_import_books_option_new_and_changed">Importar sólo los libros nuevos, o los que tienen fecha de actualización más reciente en el fichero. Esto es útil para sincronizar dispositivos.</string>

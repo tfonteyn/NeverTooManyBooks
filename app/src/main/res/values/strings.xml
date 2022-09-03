@@ -1541,7 +1541,6 @@
     <string name="X_lbl_data_import_export">Backup &amp; Import</string>
     <string name="X_txt_import_books_option_all_books">New books will be added. Existing books will be updated.</string>
     <string name="X_txt_import_books_option_new_and_changed">Only import books that are new, or which have been updated more recently in the archive. This is useful when synchronizing two devices.</string>
-    <string name="X_error_import_csv_column_is_blank">Column “%1$s” is blank at row %2$d.</string>
     <string name="X_lbl_backing_up">Backing up…</string>
     <string name="X_lbl_virtual_library">Virtual Library</string>
 
@@ -1576,13 +1575,6 @@
 
     <string name="X_warning_image_processing_failed">Image could not be processed.</string>
 
-    <string name="X_progress_msg_x_created_y_updated" tools:ignore="PluralsCandidate">%1$s: %2$d created, %3$d updated</string>
-
-    <string name="X_progress_msg_n_books_processed" tools:ignore="PluralsCandidate">%1$d books processed</string>
-    <string name="X_progress_msg_n_covers_processed" tools:ignore="PluralsCandidate">%1$d covers processed</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing" tools:ignore="PluralsCandidate">%1$d covers processed\n(%2$d/%3$d missing)</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped" tools:ignore="PluralsCandidate">%1$d covers processed\n(%2$d/%3$d missing, %4$d skipped)</string>
-
     <!-- Preference Category -->
     <string name="X_pg_general">General</string>
     <string name="X_lbl_thumbnails">Thumbnails</string>
@@ -1604,8 +1596,9 @@
 
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Wishlist mapped bookshelf</string>
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>
+
     <string name="lbl_auto_updates">Allow automatic updates from the internet</string>
-    <string name="action_add_author_with_types">Add details</string>
+    <string name="action_add_with_details">Add details</string>
 
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->

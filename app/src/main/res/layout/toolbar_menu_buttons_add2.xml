@@ -34,7 +34,7 @@
         style="?attr/materialIconButtonOutlinedStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/action_add_author_with_types"
+        android:contentDescription="@string/action_add_with_details"
         app:icon="@drawable/ic_baseline_add_card_24"
         app:iconTint="?attr/colorOnPrimaryContainer"
         />

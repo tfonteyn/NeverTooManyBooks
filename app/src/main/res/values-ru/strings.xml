@@ -665,7 +665,6 @@
     <string name="X_confirm_continue">Вы уверены что хотите продолжить ?</string>
     <string name="X_error_authentication_failed">Ошибка аутентификации</string>
     <string name="X_error_file_must_contain_column">В файле должен быть столбец с названием %1$s</string>
-    <string name="X_error_import_csv_column_is_blank">Столбец %1$s в строке %2$d пуст</string>
     <string name="X_error_not_available">%1$s недоступен</string>
     <string name="X_info_authorized_needed">Авторизация</string>
     <string name="X_info_not_authorized">Не авторизовано</string>
@@ -688,11 +687,6 @@
     <string name="X_lbl_virtual_library">Виртуальная библиотека</string>
     <string name="x_of_y">%1$d из %2$d</string>
     <string name="X_pg_general">Основные</string>
-    <string name="X_progress_msg_n_books_processed">%1$d книг обработано</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">%1$d обложек обработана (%2$d/%3$d отсутствует, %4$d пропущена)</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing">%1$d обложек обработана\n(%2$d/%3$d отсутствует)</string>
-    <string name="X_progress_msg_n_covers_processed">%1$d обложек обработана</string>
-    <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d создано, %3$d обновлено</string>
     <string name="X_tip_booklist_global_properties">Вы можете использовать этот экран, чтобы установить характеристики по умолчанию для всех стилей списка книг. Большинство свойств могут быть переопределены отдельными стилями, но значения по умолчанию определены здесь. Вы можете изменить способ отображения списков при запуске и настроить множество других параметров, которые будут применяться ко всем вашим стилям, когда это возможно.</string>
     <string name="X_txt_import_books_option_all_books">Будут добавлены новые книги. существующие книги будут обновлены.</string>
     <string name="X_txt_import_books_option_new_and_changed">Импортировать только новые книги или только те, что обновлены более поздно. Это удобно, когда синхронизируются несклоько устройств.</string>

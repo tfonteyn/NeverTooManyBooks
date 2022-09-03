@@ -666,7 +666,6 @@
     <string name="X_confirm_continue">Devam etmek istediğine emin misin ?</string>
     <string name="X_error_authentication_failed">Kimlik doğrulama başarısız oldu</string>
     <string name="X_error_file_must_contain_column">Dosya adı %1$s adında bir sütun içermeli</string>
-    <string name="X_error_import_csv_column_is_blank">Sütun %1$s %2$d numaralı satırda boş</string>
     <string name="X_error_not_available">%1$s kullanılamıyor</string>
     <string name="X_info_authorized_needed">Erişime izin ver</string>
     <string name="X_info_not_authorized">Yetkilendirilmemiş</string>
@@ -689,11 +688,6 @@
     <string name="X_lbl_virtual_library">Sanal Kitaplık</string>
     <string name="x_of_y">%1$d (Toplam %2$d)</string>
     <string name="X_pg_general">Genel</string>
-    <string name="X_progress_msg_n_books_processed">%1$d kitap işlendi</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">%1$d kapak işlendi (%2$d/%3$d bulunamadı, %4$d atlandı)</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing">%1$d kapak işlendi\n(%2$d/%3$d bulunamadı)</string>
-    <string name="X_progress_msg_n_covers_processed">%1$d kapak işlendi</string>
-    <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d oluşturuldu, %3$d güncellendi</string>
     <string name="X_tip_booklist_global_properties">Tüm kitap listesi stillerinin varsayılan özelliklerini ayarlamak için bu ekranı kullanabilirsiniz. Çoğu özellik bireysel stiller tarafından geçersiz kılınabilir, ancak varsayılan değerler burada tanımlanır. Listelerin başlangıçta nasıl görüntüleneceğini değiştirebilir ve mümkün olduğunda tüm stillerinize uygulanacak çeşitli diğer tercihleri ayarlayabilirsiniz.</string>
     <string name="X_txt_import_books_option_all_books">Yeni kitaplar eklenecek. Mevcut kitaplar güncellenecek.</string>
     <string name="X_txt_import_books_option_new_and_changed">Yalnızca yeni olan veya son zamanlarda arşivde güncellenmiş kitapları içe aktar. Bu seçenek özellikle örneğin iki aygıtı eşlerken yararlıdır.</string>

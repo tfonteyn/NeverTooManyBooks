@@ -667,7 +667,6 @@
     <string name="X_confirm_continue">Sei sicuro di voler continuare ?</string>
     <string name="X_error_authentication_failed">Autenticazione fallita</string>
     <string name="X_error_file_must_contain_column">Il file deve contenere una colonna con nome %1$s</string>
-    <string name="X_error_import_csv_column_is_blank">La colonna %1$s è vuota alla riga %2$d</string>
     <string name="X_error_not_available">%1$s non disponibile</string>
     <string name="X_info_authorized_needed">Autorizza accesso</string>
     <string name="X_info_not_authorized">Non autorizzato</string>
@@ -690,11 +689,6 @@
     <string name="X_lbl_virtual_library">Biblioteca Virtuale</string>
     <string name="x_of_y">%1$d di %2$d</string>
     <string name="X_pg_general">Generale</string>
-    <string name="X_progress_msg_n_books_processed">%1$d libri elaborati</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">%1$d copertine elaborate (%2$d/%3$d mancanti, %4$d saltate)</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing">%1$d copertine elaborate\n(%2$d/%3$d mancanti)</string>
-    <string name="X_progress_msg_n_covers_processed">%1$d copertine elaborate</string>
-    <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d creati, %3$d aggiornati</string>
     <string name="X_tip_booklist_global_properties">È possibile utilizzare questa schermata per impostare le caratteristiche predefinite di tutti gli stili dell\'elenco libri. La maggior parte delle proprietà può essere sovrascritta dai singoli stili, ma i valori predefiniti sono definiti qui. Puoi cambiare la modalità di visualizzazione degli elenchi all\'avvio e regolare una varietà di altre preferenze che verranno applicate a tutti i tuoi stili quando possibile.</string>
     <string name="X_txt_import_books_option_all_books">Verranno aggiunti nuovi libri. I libri esistenti verranno aggiornati.</string>
     <string name="X_txt_import_books_option_new_and_changed">Importa solo i libri nuovi, o che sono stati aggiornati più di recente nell\'archivio. Utile per sincronizzare due apparecchi.</string>

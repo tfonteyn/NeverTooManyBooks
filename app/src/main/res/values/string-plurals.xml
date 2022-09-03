@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -41,35 +41,5 @@
         <item quantity="zero">%1$s stars</item>
         <item quantity="one">%1$s star</item>
         <item quantity="other">%1$s stars</item>
-    </plurals>
-
-    <!-- simple 1 or more plural. -->
-    <plurals name="lbl_styles" tools:ignore="MissingTranslation">
-        <item quantity="one">@string/lbl_style</item>
-        <item quantity="other">@string/lbl_styles</item>
-    </plurals>
-    <plurals name="lbl_bookshelf" tools:ignore="MissingTranslation">
-        <item quantity="one">@string/lbl_bookshelf</item>
-        <item quantity="other">@string/lbl_bookshelves</item>
-    </plurals>
-    <plurals name="lbl_books" tools:ignore="MissingTranslation">
-        <item quantity="one">@string/lbl_book</item>
-        <item quantity="other">@string/lbl_books</item>
-    </plurals>
-    <plurals name="lbl_covers" tools:ignore="MissingTranslation">
-        <item quantity="one">@string/lbl_cover_front</item>
-        <item quantity="other">@string/lbl_covers</item>
-    </plurals>
-    <plurals name="lbl_author" tools:ignore="MissingTranslation">
-        <item quantity="one">@string/lbl_author</item>
-        <item quantity="other">@string/lbl_authors</item>
-    </plurals>
-    <plurals name="lbl_series" tools:ignore="MissingTranslation">
-        <item quantity="one">@string/lbl_series</item>
-        <item quantity="other">@string/lbl_series_multiple</item>
-    </plurals>
-    <plurals name="lbl_publisher" tools:ignore="MissingTranslation">
-        <item quantity="one">@string/lbl_publisher</item>
-        <item quantity="other">@string/lbl_publishers</item>
     </plurals>
 </resources>

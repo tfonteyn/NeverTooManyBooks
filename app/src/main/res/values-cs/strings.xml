@@ -88,7 +88,6 @@
     <string name="error_auto_toc_population_failed">Automatické naplnění titulů selhalo</string>
     <string name="error_backup_failed">Zálohování selhalo</string>
     <string name="error_import_file_not_supported">Vybraný soubor nelze importovat.</string>
-    <string name="X_error_import_csv_column_is_blank">Sloupec %1$s je prázdný na řádku %2$d</string>
     <string name="error_email_failed">Odeslání e-mailu se nezdařilo.</string>
     <string name="error_unknown_long">Vyskytla se neočekávaná chyba. Pokud problém přetrvává, kontaktujte podporu pomocí možnosti „%1$s“ ve spodní části stránky nastavení.</string>
     <string name="error_import_csv_missing_columns_x">Soubor musí obsahovat sloupec s jedním z následujících jmen: %1$s</string>
@@ -362,11 +361,6 @@
     <string name="progress_msg_connecting">Připojování…</string>
     <string name="progress_msg_searching_editions">Hledání edicí…</string>
     <string name="progress_msg_loading">Načítání…</string>
-    <string name="X_progress_msg_n_books_processed">Zpracované knih %1$d</string>
-    <string name="X_progress_msg_n_covers_processed">Zpracované kryty %1$d</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing">Zpracované kryty %1$d\n(chybí %2$d/%3$d)</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">Zpracované kryty %1$d (chybí %2$d/%3$d, %4$d přeskočeno)</string>
-    <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d vytvořeno, %3$d aktualizováno</string>
     <string name="X_lbl_updated">Aktualizováno</string>
     <string name="progress_msg_optimizing">Optimalizování databáze…</string>
     <string name="progress_msg_please_wait">Prosím čekejte…</string>
