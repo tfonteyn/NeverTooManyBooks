@@ -34,9 +34,9 @@
 
     <integer name="MENU_ORDER_SORT">200</integer>
 
-    <integer name="MENU_ORDER_LEVEL_PREFERRED_COLLAPSE">210</integer>
-    <integer name="MENU_ORDER_LEVEL_EXPAND">211</integer>
-    <integer name="MENU_ORDER_LEVEL_COLLAPSE">212</integer>
+    <integer name="MENU_ORDER_LEVEL_COLLAPSE">210</integer>
+    <integer name="MENU_ORDER_LEVEL_EXPAND_PREFERRED_LEVEL">211</integer>
+    <integer name="MENU_ORDER_LEVEL_EXPAND">212</integer>
 
     <integer name="MENU_ORDER_SYNC_LIST_WITH_DETAILS">400</integer>
 
