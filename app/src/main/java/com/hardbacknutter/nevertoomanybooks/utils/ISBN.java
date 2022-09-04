@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.Editable;
 
@@ -262,7 +261,7 @@ public class ISBN {
     }
 
     /**
-     * Filter a string keeping only digits and 'X'
+     * Filter a string keeping only digits and 'X'.
      *
      * @param text string to parse
      *
@@ -373,7 +372,6 @@ public class ISBN {
      *
      * @throws NumberFormatException on failure
      */
-    @SuppressLint("SwitchIntDef")
     @NonNull
     public String asText(@NonNull final Type type)
             throws NumberFormatException {
@@ -448,6 +446,13 @@ public class ISBN {
             case Issn13: {
                 // No conversions possible
                 if (codeType == Type.Issn13) {
+                    return codeText;
+                }
+                break;
+            }
+            case Ismn: {
+                // No conversions possible
+                if (codeType == Type.Ismn) {
                     return codeText;
                 }
                 break;
