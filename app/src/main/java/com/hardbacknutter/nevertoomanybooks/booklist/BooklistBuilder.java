@@ -183,9 +183,12 @@ class BooklistBuilder {
      */
     void addLeftOuterJoin(@SuppressWarnings("SameParameterValue")
                           @NonNull final TableDefinition tableDefinition) {
-        if (leftOuterJoins.containsKey(tableDefinition.getName())) {
-            // adding a duplicate here is a bug.
-            throw new IllegalArgumentException("Duplicate table=" + tableDefinition.getName());
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
+            if (leftOuterJoins.containsKey(tableDefinition.getName())) {
+                // adding a duplicate here is a bug.
+                throw new IllegalArgumentException("Duplicate table=" + tableDefinition.getName());
+            }
         }
         leftOuterJoins.put(tableDefinition.getName(), tableDefinition);
     }
@@ -197,9 +200,12 @@ class BooklistBuilder {
      */
     void addDomain(@NonNull final DomainExpression domainExpression) {
         final String key = domainExpression.getDomain().getName();
-        if (bookDomains.containsKey(key)) {
-            // adding a duplicate here is a bug.
-            throw new IllegalArgumentException("Duplicate domain=" + key);
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
+            if (bookDomains.containsKey(key)) {
+                // adding a duplicate here is a bug.
+                throw new IllegalArgumentException("Duplicate domain=" + key);
+            }
         }
         bookDomains.put(key, domainExpression);
     }
@@ -536,7 +542,7 @@ class BooklistBuilder {
          */
         @NonNull
         Pair<TableDefinition, TableDefinition> build(@NonNull final SynchronizedDb db) {
-            if (BuildConfig.DEBUG /* always */) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
                 SanityCheck.requireValue(sqlForInitialInsert, "preBuild() must be called first");
 
                 if (!db.inTransaction()) {
@@ -850,7 +856,7 @@ class BooklistBuilder {
          */
         private void addGroup(@NonNull final BooklistGroup group) {
             // dev sanity check
-            if (BuildConfig.DEBUG /* always */) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
                 if (group.getId() == BooklistGroup.BOOK) {
                     throw new IllegalArgumentException("Cannot group by Book");
                 }
