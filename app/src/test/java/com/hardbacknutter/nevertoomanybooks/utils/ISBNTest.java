@@ -232,17 +232,14 @@ class ISBNTest
 
     @Test
     void isbn_matchesValidInvalid() {
-        final String[][] valid = valid_isbn;
-        final String[][] invalid = invalid_isbn;
-        for (int i = 0; i < invalid.length; i++) {
-            assertFalse(matches(valid[i][0], invalid[i][1]));
+        for (int i = 0; i < invalid_isbn.length; i++) {
+            assertFalse(matches(valid_isbn[i][0], invalid_isbn[i][1]));
         }
     }
 
     @Test
     void isbn_equalsValidValid() {
-        final String[][] valid = valid_isbn;
-        for (final String[] isbnPair : valid) {
+        for (final String[] isbnPair : valid_isbn) {
             final ISBN isbn0 = new ISBN(isbnPair[0], true);
             final ISBN isbn1 = new ISBN(isbnPair[1], true);
             assertEquals(isbn0, isbn1);
@@ -260,12 +257,9 @@ class ISBNTest
 
     @Test
     void isbn_equalsValidInvalid() {
-        final String[][] valid = valid_isbn;
-        final String[][] invalid = invalid_isbn;
-
-        for (int i = 0; i < invalid.length; i++) {
-            final ISBN isbn0 = new ISBN(valid[i][0], true);
-            final ISBN isbn1 = new ISBN(invalid[i][1], true);
+        for (int i = 0; i < invalid_isbn.length; i++) {
+            final ISBN isbn0 = new ISBN(valid_isbn[i][0], true);
+            final ISBN isbn1 = new ISBN(invalid_isbn[i][1], true);
             assertNotEquals(isbn0, isbn1);
         }
     }
