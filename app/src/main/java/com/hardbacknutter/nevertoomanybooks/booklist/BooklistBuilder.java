@@ -23,7 +23,6 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import java.util.ArrayList;
@@ -55,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpressio
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
@@ -446,82 +444,64 @@ class BooklistBuilder {
 
             // {@link BooklistGroup#GroupKey}.
             // The actual value is set on a by-group/book basis.
-            addDomain(DOM_BL_NODE_KEY);
-            addIndex(DBKey.BL_NODE_KEY, false, DOM_BL_NODE_KEY);
+            listTable.addDomains(DOM_BL_NODE_KEY)
+                     .addIndex(DBKey.BL_NODE_KEY, false, DOM_BL_NODE_KEY);
 
             // flags used by {@link BooklistNodeDao}.
-            addDomain(DOM_BL_NODE_EXPANDED);
-            addIndex(DBKey.BL_NODE_EXPANDED, false, DOM_BL_NODE_EXPANDED);
-            addDomain(DOM_BL_NODE_VISIBLE);
-            addIndex(DBKey.BL_NODE_VISIBLE, false, DOM_BL_NODE_VISIBLE);
+            listTable.addDomains(DOM_BL_NODE_EXPANDED)
+                     .addIndex(DBKey.BL_NODE_EXPANDED, false, DOM_BL_NODE_EXPANDED)
+                     .addDomains(DOM_BL_NODE_VISIBLE)
+                     .addIndex(DBKey.BL_NODE_VISIBLE, false, DOM_BL_NODE_VISIBLE);
 
             // Always sort by level first; no expression, as this does not represent a value.
-            addDomain(new DomainExpression(DOM_BL_NODE_LEVEL, null, DomainExpression.Sort.Asc));
+            addExpression(new DomainExpression(DOM_BL_NODE_LEVEL, null, Sort.Asc));
 
             // The level expression; for a book this is always 1 below the #groups obviously
-            addDomain(new DomainExpression(
-                    DOM_BL_NODE_LEVEL, String.valueOf(style.getGroupCount() + 1)));
+            addExpression(new DomainExpression(DOM_BL_NODE_LEVEL,
+                                               String.valueOf(style.getGroupCount() + 1)));
 
             // The BooklistGroup for a book is always BooklistGroup.BOOK (duh)
-            addDomain(new DomainExpression(DOM_BL_NODE_GROUP, String.valueOf(BooklistGroup.BOOK)));
-            addIndex(DBKey.BL_NODE_GROUP, false, DOM_BL_NODE_GROUP);
+            addExpression(new DomainExpression(DOM_BL_NODE_GROUP,
+                                               String.valueOf(BooklistGroup.BOOK)));
+            listTable.addIndex(DBKey.BL_NODE_GROUP, false, DOM_BL_NODE_GROUP);
 
             // The book id itself
-            addDomain(new DomainExpression(DOM_FK_BOOK, TBL_BOOKS.dot(DBKey.PK_ID)));
+            addExpression(new DomainExpression(DOM_FK_BOOK, TBL_BOOKS.dot(DBKey.PK_ID)));
 
             // Add style-specified groups
             style.getGroupList().forEach(this::addGroup);
 
             // Add caller-specified domains
-            bookDomains.forEach(this::addDomain);
+            bookDomains.forEach(this::addExpression);
 
             // List of column names for the INSERT INTO... clause
-            final StringBuilder destColumns = new StringBuilder();
+            final StringJoiner destColumns = new StringJoiner(",");
             // List of expressions for the SELECT... clause.
-            final StringBuilder sourceColumns = new StringBuilder();
+            final StringJoiner sourceColumns = new StringJoiner(",");
 
-            // The 'AS' is for SQL readability/debug only
+            // Add the domain expressions
+            domainExpressions.forEach(expression -> {
+                destColumns.add(expression.getDomain().getName());
+                sourceColumns.add(expression.getExpression()
+                                  + _AS_ + expression.getDomain().getName());
+            });
 
-            boolean first = true;
-            for (final DomainExpression domainExpression : domainExpressions) {
-                if (first) {
-                    first = false;
-                } else {
-                    destColumns.append(',');
-                    sourceColumns.append(',');
-                }
+            // Add the node key column
+            destColumns.add(DOM_BL_NODE_KEY.getName());
+            sourceColumns.add(buildNodeKey() + _AS_ + DOM_BL_NODE_KEY.getName());
 
-                destColumns.append(domainExpression.getDomain().getName());
-                sourceColumns.append(domainExpression.getExpression())
-                             .append(_AS_)
-                             .append(domainExpression.getDomain().getName());
-            }
+            // Add the node state columns
+            destColumns.add(DOM_BL_NODE_EXPANDED.getName());
+            destColumns.add(DOM_BL_NODE_VISIBLE.getName());
+            if (rebuildMode == RebuildBooklist.Expanded) {
+                // Expanded nodes must explicitly be set to 1/1
+                sourceColumns.add("1" + _AS_ + DOM_BL_NODE_EXPANDED.getName())
+                             .add("1" + _AS_ + DOM_BL_NODE_VISIBLE.getName());
 
-            // add the node key column
-            destColumns.append(',').append(DBKey.BL_NODE_KEY);
-            sourceColumns.append(',').append(buildNodeKey()).append(_AS_).append(DOM_BL_NODE_KEY);
-
-            // and the node state columns
-            destColumns.append(',').append(DOM_BL_NODE_EXPANDED);
-            destColumns.append(',').append(DOM_BL_NODE_VISIBLE);
-
-            // PREF_REBUILD_EXPANDED must explicitly be set to 1/1
-            // All others must be set to 0/0. The actual state will be set afterwards.
-            switch (rebuildMode) {
-                case Collapsed:
-                case Preferred:
-                case FromSaved:
-                    sourceColumns.append(",0 AS ").append(DOM_BL_NODE_EXPANDED);
-                    sourceColumns.append(",0 AS ").append(DOM_BL_NODE_VISIBLE);
-                    break;
-
-                case Expanded:
-                    sourceColumns.append(",1 AS ").append(DOM_BL_NODE_EXPANDED);
-                    sourceColumns.append(",1 AS ").append(DOM_BL_NODE_VISIBLE);
-                    break;
-
-                default:
-                    throw new IllegalArgumentException(String.valueOf(rebuildMode));
+            } else {
+                // All others must be set to 0/0. The actual state will be set afterwards.
+                sourceColumns.add("0" + _AS_ + DOM_BL_NODE_EXPANDED.getName())
+                             .add("0" + _AS_ + DOM_BL_NODE_VISIBLE.getName());
             }
 
             final String sqlForInitialInsert =
@@ -531,7 +511,7 @@ class BooklistBuilder {
                     + _ORDER_BY_ + buildOrderBy();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-                Log.d(TAG, "preBuild|sqlForInitialInsert=" + sqlForInitialInsert);
+                Log.d(TAG, "build|sqlForInitialInsert=" + sqlForInitialInsert);
 
                 if (!db.inTransaction()) {
                     throw new TransactionException(TransactionException.REQUIRED);
@@ -782,37 +762,20 @@ class BooklistBuilder {
         }
 
         /**
-         * Add a simple domain for the lowest level; i.e. the book.
-         *
-         * @param domain to add
-         *
-         * @return {@code true} if the domain was added, {@code false} if it was already present.
-         */
-        @SuppressWarnings("UnusedReturnValue")
-        private boolean addDomain(@NonNull final Domain domain) {
-            // Add to the table, if not already there
-            return listTable.addDomain(domain);
-        }
-
-        private void addIndex(@NonNull final String nameSuffix,
-                              @SuppressWarnings("SameParameterValue") final boolean unique,
-                              @NonNull final Domain... domains) {
-            listTable.addIndex(nameSuffix, unique, domains);
-        }
-
-        /**
          * Add a DomainExpression.
          * This encapsulates the actual Domain, the expression, and the (optional) sort flag.
          *
          * @param domainExpression DomainExpression to add
          */
-        private void addDomain(@NonNull final DomainExpression domainExpression) {
+        private void addExpression(@NonNull final DomainExpression domainExpression) {
             final Domain domain = domainExpression.getDomain();
-            @Nullable
             final String expression = domainExpression.getExpression();
 
             // Add to the table, if not already there
-            final boolean added = listTable.addDomain(domain);
+            final boolean present = listTable.contains(domain);
+            if (!present) {
+                listTable.addDomains(domain);
+            }
 
             // If the expression is {@code null},
             // then the domain is just meant for the lowest level; i.e. the book.
@@ -820,14 +783,14 @@ class BooklistBuilder {
             if (expression != null) {
                 // If the domain was already present, and it has an expression,
                 // check the expression being different (or not) from the stored expression
-                if (!added && expression.equals(expressionsDupCheck.get(domain))) {
+                if (present && expression.equals(expressionsDupCheck.get(domain))) {
                     // same expression, we do NOT want to add it.
                     // This is NOT a bug, although one could argue it's an efficiency issue.
                     return;
                 }
+                expressionsDupCheck.put(domain, expression);
 
                 domainExpressions.add(domainExpression);
-                expressionsDupCheck.put(domain, expression);
             }
 
             // If required, add to the order-by domains, if not already there
@@ -854,17 +817,17 @@ class BooklistBuilder {
 
             // display domain first
             final DomainExpression displayDomainExpression = group.getDisplayDomainExpression();
-            addDomain(displayDomainExpression);
+            addExpression(displayDomainExpression);
             accumulatedDomains.add(displayDomainExpression.getDomain());
 
             // then how we group
             group.getGroupDomainExpressions().forEach(domainExpression -> {
-                addDomain(domainExpression);
+                addExpression(domainExpression);
                 accumulatedDomains.add(domainExpression.getDomain());
             });
 
             // the base domains we always need/have
-            group.getBaseDomainExpressions().forEach(this::addDomain);
+            group.getBaseDomainExpressions().forEach(this::addExpression);
 
             /*
              * Copy all current groups to this group; this effectively accumulates
