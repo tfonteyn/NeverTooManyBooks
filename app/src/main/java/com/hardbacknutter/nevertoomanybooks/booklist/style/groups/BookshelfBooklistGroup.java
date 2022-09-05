@@ -29,6 +29,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
@@ -92,7 +93,7 @@ public class BookshelfBooklistGroup
                         // We do not sort on the key domain but add the OB column instead
                         new DomainExpression(DOM_SORTING,
                                              TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME),
-                                             DomainExpression.Sort.Asc))
+                                             Sort.Asc))
                 .addGroupDomain(
                         // Group by id (we want the id available)
                         new DomainExpression(DOM_FK_BOOKSHELF,

@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
 
@@ -144,19 +145,19 @@ public class BooklistGroup {
     // Date based groups have to sort on the full date for cases
     // where we don't have all separate year,month,day fields.
     private static final DomainExpression DATE_PUBLISHED =
-            new DomainExpression(DOM_BOOK_DATE_PUBLISHED, null, DomainExpression.Sort.Desc);
+            new DomainExpression(DOM_BOOK_DATE_PUBLISHED, null, Sort.Desc);
     private static final DomainExpression DATE_FIRST_PUBLICATION =
-            new DomainExpression(DOM_DATE_FIRST_PUBLICATION, null, DomainExpression.Sort.Desc);
+            new DomainExpression(DOM_DATE_FIRST_PUBLICATION, null, Sort.Desc);
     private static final DomainExpression BOOK_IS_READ =
-            new DomainExpression(DOM_BOOK_READ, null, DomainExpression.Sort.Desc);
+            new DomainExpression(DOM_BOOK_READ, null, Sort.Desc);
     private static final DomainExpression DATE_READ_END =
-            new DomainExpression(DOM_BOOK_DATE_READ_END, null, DomainExpression.Sort.Desc);
+            new DomainExpression(DOM_BOOK_DATE_READ_END, null, Sort.Desc);
     private static final DomainExpression DATE_ADDED =
-            new DomainExpression(DOM_ADDED__UTC, null, DomainExpression.Sort.Desc);
+            new DomainExpression(DOM_ADDED__UTC, null, Sort.Desc);
     private static final DomainExpression DATE_LAST_UPDATED =
-            new DomainExpression(DOM_LAST_UPDATED__UTC, null, DomainExpression.Sort.Desc);
+            new DomainExpression(DOM_LAST_UPDATED__UTC, null, Sort.Desc);
     private static final DomainExpression DATE_ACQUIRED =
-            new DomainExpression(DOM_BOOK_DATE_ACQUIRED, null, DomainExpression.Sort.Desc);
+            new DomainExpression(DOM_BOOK_DATE_ACQUIRED, null, Sort.Desc);
 
     private static final String CASE_WHEN_ = "CASE WHEN ";
     private static final String _WHEN_ = " WHEN ";
@@ -391,38 +392,38 @@ public class BooklistGroup {
                 return new GroupKey(R.string.lbl_color, "col",
                                     new DomainExpression(DOM_BOOK_COLOR,
                                                          TBL_BOOKS.dot(DBKey.COLOR),
-                                                         DomainExpression.Sort.Asc));
+                                                         Sort.Asc));
             }
             case FORMAT: {
                 return new GroupKey(R.string.lbl_format, "fmt",
                                     new DomainExpression(DOM_BOOK_FORMAT,
                                                          TBL_BOOKS.dot(DBKey.FORMAT),
-                                                         DomainExpression.Sort.Asc));
+                                                         Sort.Asc));
             }
             case GENRE: {
                 return new GroupKey(R.string.lbl_genre, "g",
                                     new DomainExpression(DOM_BOOK_GENRE,
                                                          TBL_BOOKS.dot(DBKey.GENRE),
-                                                         DomainExpression.Sort.Asc));
+                                                         Sort.Asc));
             }
             case LANGUAGE: {
                 // Formatting is done after fetching.
                 return new GroupKey(R.string.lbl_language, "lng",
                                     new DomainExpression(DOM_BOOK_LANGUAGE,
                                                          TBL_BOOKS.dot(DBKey.LANGUAGE),
-                                                         DomainExpression.Sort.Asc));
+                                                         Sort.Asc));
             }
             case LOCATION: {
                 return new GroupKey(R.string.lbl_location, "loc",
                                     new DomainExpression(DOM_BOOK_LOCATION,
                                                          TBL_BOOKS.dot(DBKey.LOCATION),
-                                                         DomainExpression.Sort.Asc));
+                                                         Sort.Asc));
             }
             case CONDITION: {
                 return new GroupKey(R.string.lbl_condition, "bk_cnd",
                                     new DomainExpression(DOM_BOOK_CONDITION,
                                                          TBL_BOOKS.dot(DBKey.BOOK_CONDITION),
-                                                         DomainExpression.Sort.Desc));
+                                                         Sort.Desc));
             }
             case RATING: {
                 // Formatting is done after fetching
@@ -432,14 +433,14 @@ public class BooklistGroup {
                                     new DomainExpression(DOM_BOOK_RATING,
                                                          "CAST(" + TBL_BOOKS.dot(DBKey.RATING)
                                                          + " AS INTEGER)",
-                                                         DomainExpression.Sort.Desc));
+                                                         Sort.Desc));
             }
             case LENDING: {
                 return new GroupKey(R.string.lbl_lend_out, "l",
                                     new DomainExpression(DOM_LOANEE,
                                                          "COALESCE(" + TBL_BOOK_LOANEE.dot(
                                                                  DBKey.LOANEE_NAME) + ",'')",
-                                                         DomainExpression.Sort.Asc));
+                                                         Sort.Asc));
             }
 
             // the others here below are custom key domains
@@ -452,7 +453,7 @@ public class BooklistGroup {
                                                     .notNull()
                                                     .build(),
                                             TBL_BOOKS.dot(DBKey.READ__BOOL),
-                                            DomainExpression.Sort.Asc));
+                                            Sort.Asc));
             }
             case BOOK_TITLE_1ST_LETTER: {
                 // Uses the OrderBy column so we get the re-ordered version if applicable.
@@ -462,7 +463,7 @@ public class BooklistGroup {
                                 .notNull()
                                 .build(),
                         "UPPER(SUBSTR(" + TBL_BOOKS.dot(DBKey.TITLE_OB) + ",1,1))",
-                        DomainExpression.Sort.Asc);
+                        Sort.Asc);
                 return new GroupKey(R.string.style_builtin_first_letter_book_title, "t",
                                     keyDomain);
             }
@@ -474,7 +475,7 @@ public class BooklistGroup {
                                 .notNull()
                                 .build(),
                         "UPPER(SUBSTR(" + TBL_SERIES.dot(DBKey.SERIES_TITLE_OB) + ",1,1))",
-                        DomainExpression.Sort.Asc);
+                        Sort.Asc);
                 return new GroupKey(R.string.style_builtin_first_letter_series_title, "st",
                                     keyDomain);
             }
@@ -484,7 +485,7 @@ public class BooklistGroup {
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_pub_y", SqLiteDataType.Integer).build(),
                         year(TBL_BOOKS.dot(DBKey.BOOK_PUBLICATION__DATE), false),
-                        DomainExpression.Sort.Desc);
+                        Sort.Desc);
                 return new GroupKey(R.string.lbl_publication_year, "yrp", keyDomain)
                         .addBaseDomain(DATE_PUBLISHED);
             }
@@ -493,7 +494,7 @@ public class BooklistGroup {
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_pub_m", SqLiteDataType.Integer).build(),
                         month(TBL_BOOKS.dot(DBKey.BOOK_PUBLICATION__DATE), false),
-                        DomainExpression.Sort.Desc);
+                        Sort.Desc);
                 return new GroupKey(R.string.lbl_publication_month, "mp", keyDomain)
                         .addBaseDomain(DATE_PUBLISHED);
             }
@@ -504,7 +505,7 @@ public class BooklistGroup {
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_1pub_y", SqLiteDataType.Integer).build(),
                         year(TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION__DATE), false),
-                        DomainExpression.Sort.Desc);
+                        Sort.Desc);
                 return new GroupKey(R.string.lbl_first_pub_year, "yfp", keyDomain)
                         .addBaseDomain(DATE_FIRST_PUBLICATION);
             }
@@ -513,7 +514,7 @@ public class BooklistGroup {
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_1pub_m", SqLiteDataType.Integer).build(),
                         month(TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION__DATE), false),
-                        DomainExpression.Sort.Desc);
+                        Sort.Desc);
                 return new GroupKey(R.string.lbl_first_pub_month, "mfp", keyDomain)
                         .addBaseDomain(DATE_FIRST_PUBLICATION);
             }
@@ -524,7 +525,7 @@ public class BooklistGroup {
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_acq_y", SqLiteDataType.Integer).build(),
                         year(TBL_BOOKS.dot(DBKey.DATE_ACQUIRED), true),
-                        DomainExpression.Sort.Desc);
+                        Sort.Desc);
                 return new GroupKey(R.string.lbl_date_acquired_year, "yac", keyDomain)
                         .addBaseDomain(DATE_ACQUIRED);
             }
@@ -533,7 +534,7 @@ public class BooklistGroup {
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_acq_m", SqLiteDataType.Integer).build(),
                         month(TBL_BOOKS.dot(DBKey.DATE_ACQUIRED), true),
-                        DomainExpression.Sort.Desc);
+                        Sort.Desc);
                 return new GroupKey(R.string.lbl_date_acquired_month, "mac", keyDomain)
                         .addBaseDomain(DATE_ACQUIRED);
             }
@@ -542,7 +543,7 @@ public class BooklistGroup {
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_acq_d", SqLiteDataType.Integer).build(),
                         day(TBL_BOOKS.dot(DBKey.DATE_ACQUIRED), true),
-                        DomainExpression.Sort.Desc);
+                        Sort.Desc);
                 return new GroupKey(R.string.lbl_date_acquired_day, "dac", keyDomain)
                         .addBaseDomain(DATE_ACQUIRED);
             }
@@ -553,7 +554,7 @@ public class BooklistGroup {
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_add_y", SqLiteDataType.Integer).build(),
                         year(TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC), true),
-                        DomainExpression.Sort.Desc);
+                        Sort.Desc);
                 return new GroupKey(R.string.lbl_added_year, "ya", keyDomain)
                         .addBaseDomain(DATE_ADDED);
             }
@@ -562,7 +563,7 @@ public class BooklistGroup {
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_add_m", SqLiteDataType.Integer).build(),
                         month(TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC), true),
-                        DomainExpression.Sort.Desc);
+                        Sort.Desc);
                 return new GroupKey(R.string.lbl_added_month, "ma", keyDomain)
                         .addBaseDomain(DATE_ADDED);
             }
@@ -571,7 +572,7 @@ public class BooklistGroup {
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_add_d", SqLiteDataType.Integer).build(),
                         day(TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC), true),
-                        DomainExpression.Sort.Desc);
+                        Sort.Desc);
                 return new GroupKey(R.string.lbl_added_day, "da", keyDomain)
                         .addBaseDomain(DATE_ADDED);
             }
@@ -582,7 +583,7 @@ public class BooklistGroup {
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_upd_y", SqLiteDataType.Integer).build(),
                         year(TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC), true),
-                        DomainExpression.Sort.Desc);
+                        Sort.Desc);
                 return new GroupKey(R.string.lbl_update_year, "yu", keyDomain)
                         .addBaseDomain(DATE_LAST_UPDATED);
             }
@@ -591,7 +592,7 @@ public class BooklistGroup {
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_upd_m", SqLiteDataType.Integer).build(),
                         month(TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC), true),
-                        DomainExpression.Sort.Desc);
+                        Sort.Desc);
                 return new GroupKey(R.string.lbl_update_month, "mu", keyDomain)
                         .addBaseDomain(DATE_LAST_UPDATED);
             }
@@ -600,7 +601,7 @@ public class BooklistGroup {
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_upd_d", SqLiteDataType.Integer).build(),
                         day(TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC), true),
-                        DomainExpression.Sort.Desc);
+                        Sort.Desc);
                 return new GroupKey(R.string.lbl_update_day, "du", keyDomain)
                         .addBaseDomain(DATE_LAST_UPDATED);
             }
@@ -611,7 +612,7 @@ public class BooklistGroup {
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_rd_y", SqLiteDataType.Integer).build(),
                         year(TBL_BOOKS.dot(DBKey.READ_END__DATE), true),
-                        DomainExpression.Sort.Desc);
+                        Sort.Desc);
                 return new GroupKey(R.string.lbl_read_year, "yr", keyDomain)
                         .addBaseDomain(DATE_READ_END)
                         .addGroupDomain(BOOK_IS_READ);
@@ -621,7 +622,7 @@ public class BooklistGroup {
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_rd_m", SqLiteDataType.Integer).build(),
                         month(TBL_BOOKS.dot(DBKey.READ_END__DATE), true),
-                        DomainExpression.Sort.Desc);
+                        Sort.Desc);
                 return new GroupKey(R.string.lbl_read_month, "mr", keyDomain)
                         .addBaseDomain(DATE_READ_END)
                         .addGroupDomain(BOOK_IS_READ);
@@ -631,7 +632,7 @@ public class BooklistGroup {
                 final DomainExpression keyDomain = new DomainExpression(
                         new Domain.Builder("blg_rd_d", SqLiteDataType.Integer).build(),
                         day(TBL_BOOKS.dot(DBKey.READ_END__DATE), true),
-                        DomainExpression.Sort.Desc);
+                        Sort.Desc);
                 return new GroupKey(R.string.lbl_read_day, "dr", keyDomain)
                         .addBaseDomain(DATE_READ_END)
                         .addGroupDomain(BOOK_IS_READ);

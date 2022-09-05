@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
@@ -125,7 +126,7 @@ public class AuthorBooklistGroup
         return new DomainExpression(DOM_SORTING,
                                     AuthorDaoImpl.getSortingDomainExpression(
                                             style.isSortAuthorByGivenName()),
-                                    DomainExpression.Sort.Asc);
+                                    Sort.Asc);
     }
 
     @Override

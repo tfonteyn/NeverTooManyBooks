@@ -30,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
@@ -92,7 +93,7 @@ public class SeriesBooklistGroup
                         // We do not sort on the key domain but add the OB column instead
                         new DomainExpression(DOM_SORTING,
                                              TBL_SERIES.dot(DBKey.SERIES_TITLE_OB),
-                                             DomainExpression.Sort.Asc))
+                                             Sort.Asc))
                 .addGroupDomain(
                         // Group by id (we want the id available and there is
                         // a chance two Series will have the same name)
@@ -111,14 +112,14 @@ public class SeriesBooklistGroup
                                              "CAST("
                                              + TBL_BOOK_SERIES.dot(DBKey.SERIES_BOOK_NUMBER)
                                              + " AS REAL)",
-                                             DomainExpression.Sort.Asc))
+                                             Sort.Asc))
                 .addBaseDomain(
                         // The series number in the base data in sorted order.
                         // This field is displayed.
                         // Covers non-numeric data (where the above float would fail)
                         new DomainExpression(DOM_BOOK_NUM_IN_SERIES,
                                              TBL_BOOK_SERIES.dot(DBKey.SERIES_BOOK_NUMBER),
-                                             DomainExpression.Sort.Asc));
+                                             Sort.Asc));
     }
 
     @Override
