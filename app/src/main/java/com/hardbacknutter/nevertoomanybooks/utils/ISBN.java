@@ -571,7 +571,7 @@ public class ISBN {
                         return Type.Isbn13;
                     }
                 } else if (digits.get(0) == 9 && digits.get(1) == 7 && digits.get(2) == 7) {
-                    // Periodicals; ISSN packed in an EAN-13
+                    // Prefix 977 are periodicals; an ISSN packed in an EAN-13
                     return Type.Issn13;
 
                 } else {
