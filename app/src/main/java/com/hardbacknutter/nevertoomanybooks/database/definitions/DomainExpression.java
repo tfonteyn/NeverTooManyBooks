@@ -28,7 +28,7 @@ import androidx.annotation.Nullable;
 import java.util.Objects;
 
 /**
- * A data class representing a domain + the sql column expression and optional sorting flag.
+ * A data class representing a domain + the sql column expression + a sorting flag.
  * <p>
  * Immutable.
  */
@@ -55,7 +55,7 @@ public class DomainExpression
     @Nullable
     private final String expression;
     @NonNull
-    private final Sort sorted;
+    private final Sort sort;
 
     /**
      * Constructor.
@@ -74,14 +74,14 @@ public class DomainExpression
      *
      * @param domain     underlying domain
      * @param expression to use for fetching the data
-     * @param sorted     flag
+     * @param sort       flag
      */
     public DomainExpression(@NonNull final Domain domain,
                             @Nullable final String expression,
-                            @NonNull final Sort sorted) {
+                            @NonNull final Sort sort) {
         this.domain = domain;
         this.expression = expression;
-        this.sorted = sorted;
+        this.sort = sort;
     }
 
     /**
@@ -94,23 +94,9 @@ public class DomainExpression
         domain = in.readParcelable(Domain.class.getClassLoader());
         expression = in.readString();
         //noinspection ConstantConditions
-        sorted = in.readParcelable(Domain.class.getClassLoader());
+        sort = in.readParcelable(Domain.class.getClassLoader());
     }
 
-    /**
-     * Check if this domain is sorted (asc/desc) or unsorted.
-     *
-     * @return {@code true} for sorted
-     */
-    public boolean isSorted() {
-        return sorted != Sort.Unsorted;
-    }
-
-    /**
-     * Get the underlying domain.
-     *
-     * @return Domain
-     */
     @NonNull
     public Domain getDomain() {
         return domain;
@@ -122,8 +108,8 @@ public class DomainExpression
     }
 
     @NonNull
-    public String getSortedExpression() {
-        return sorted.getExpression();
+    public Sort getSort() {
+        return sort;
     }
 
     @Override
@@ -131,7 +117,7 @@ public class DomainExpression
                               final int flags) {
         dest.writeParcelable(domain, flags);
         dest.writeString(expression);
-        dest.writeParcelable(sorted, flags);
+        dest.writeParcelable(sort, flags);
     }
 
     @Override
@@ -144,18 +130,20 @@ public class DomainExpression
         if (this == o) {
             return true;
         }
+
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
         final DomainExpression that = (DomainExpression) o;
-        return sorted == that.sorted
-               && domain.equals(that.domain)
-               && Objects.equals(expression, that.expression);
+        return domain.equals(that.domain)
+               && Objects.equals(expression, that.expression)
+               && sort == that.sort;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(domain, expression, sorted);
+        return Objects.hash(domain, expression, sort);
     }
 
     @Override
@@ -164,7 +152,7 @@ public class DomainExpression
         return "DomainExpression{"
                + "domain=" + domain
                + ", expression=`" + expression + '`'
-               + ", sorted=" + sorted
+               + ", sort=" + sort
                + '}';
     }
 }

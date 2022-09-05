@@ -794,7 +794,8 @@ class BooklistBuilder {
             }
 
             // If required, add to the order-by domains, if not already there
-            if (domainExpression.isSorted() && !orderByDupCheck.contains(domain.getName())) {
+            if (domainExpression.getSort() != Sort.Unsorted
+                && !orderByDupCheck.contains(domain.getName())) {
                 orderByDomains.add(domainExpression);
                 orderByDupCheck.add(domain.getName());
             }
@@ -1023,7 +1024,7 @@ class BooklistBuilder {
                             // Always use a pre-prepared order-by column as-is
                             orderBy.add(domain.getName()
                                         + domain.getCollationClause()
-                                        + domainExpression.getSortedExpression());
+                                        + domainExpression.getSort().getExpression());
 
                         } else if (collationIsCaseSensitive) {
                             // If {@link DAO#COLLATION} is case-sensitive, lowercase it.
@@ -1032,13 +1033,13 @@ class BooklistBuilder {
                             // This should never happen, but see the DAO method docs.
                             orderBy.add("lower(" + domain.getName() + ')'
                                         + domain.getCollationClause()
-                                        + domainExpression.getSortedExpression());
+                                        + domainExpression.getSort().getExpression());
 
                         } else {
                             // Hope for the best.
                             orderBy.add(domain.getName()
                                         + domain.getCollationClause()
-                                        + domainExpression.getSortedExpression());
+                                        + domainExpression.getSort().getExpression());
                         }
                     });
 
@@ -1060,7 +1061,7 @@ class BooklistBuilder {
                 if (domain.getSqLiteDataType() == SqLiteDataType.Text) {
                     indexCols.append(_COLLATION);
                 }
-                indexCols.append(sd.getSortedExpression()).append(',');
+                indexCols.append(sd.getSort().getExpression()).append(',');
             });
             final int len = indexCols.length();
             return indexCols.delete(len - 1, len).toString();
