@@ -1050,35 +1050,36 @@ class BooklistBuilder {
          */
         @NonNull
         private String buildOrderBy() {
-            // List of column names appropriate for 'ORDER BY' clause
-            final StringBuilder orderBy = new StringBuilder();
-            orderByDomains.forEach(sd -> {
-                final Domain domain = sd.getDomain();
-                if (domain.getSqLiteDataType() == SqLiteDataType.Text) {
-                    // The order of this if/elseif/else is important, don't merge branch 1 and 3!
-                    if (domain.isPrePreparedOrderBy()) {
-                        // always use a pre-prepared order-by column as-is
-                        orderBy.append(domain.getName());
+            final StringJoiner orderBy = new StringJoiner(",");
+            orderByDomains
+                    .forEach(domainExpression -> {
+                        final Domain domain = domainExpression.getDomain();
+                        // The order of this if/elseif/else is important,
+                        // don't merge branch 1 and 3!
+                        if (domain.isPrePreparedOrderBy()) {
+                            // Always use a pre-prepared order-by column as-is
+                            orderBy.add(domain.getName()
+                                        + domain.getCollationClause()
+                                        + domainExpression.getSortedExpression());
 
-                    } else if (collationIsCaseSensitive) {
-                        // If {@link DAO#COLLATION} is case-sensitive, lowercase it.
-                        // This should never happen, but see the DAO method docs.
-                        orderBy.append("lower(").append(domain.getName()).append(')');
+                        } else if (collationIsCaseSensitive) {
+                            // If {@link DAO#COLLATION} is case-sensitive, lowercase it.
+                            // i.e. lowercase the data from that column
+                            // (and not the column name!)
+                            // This should never happen, but see the DAO method docs.
+                            orderBy.add("lower(" + domain.getName() + ')'
+                                        + domain.getCollationClause()
+                                        + domainExpression.getSortedExpression());
 
-                    } else {
-                        // hope for the best. This case might not handle non-[A..Z0..9] as expected
-                        orderBy.append(domain.getName());
-                    }
+                        } else {
+                            // Hope for the best.
+                            orderBy.add(domain.getName()
+                                        + domain.getCollationClause()
+                                        + domainExpression.getSortedExpression());
+                        }
+                    });
 
-                    orderBy.append(_COLLATION);
-                } else {
-                    orderBy.append(domain.getName());
-                }
-                orderBy.append(sd.getSortedExpression()).append(',');
-            });
-
-            final int len = orderBy.length();
-            return orderBy.delete(len - 1, len).toString();
+            return orderBy.toString();
         }
 
         /**
