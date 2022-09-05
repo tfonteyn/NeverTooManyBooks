@@ -35,21 +35,22 @@ class IndexDefinition {
     /** Table to which index applies. */
     @NonNull
     private final TableDefinition table;
-    /** Domains in index. */
-    @NonNull
-    private final List<Domain> domains;
-    /** Flag indicating index is unique. */
-    private final boolean unique;
     /** suffix to add to the table name. */
     @NonNull
     private final String nameSuffix;
+    /** Flag indicating index is unique. */
+    private final boolean unique;
+
+    /** Domains in index. */
+    @NonNull
+    private final List<Domain> domains;
 
     /**
      * Constructor.
      *
      * @param table      Table to which index applies
      * @param nameSuffix suffix to add to the table name; together this will become the full name.
-     *                   The table name is read <strong>at actual creation time</strong>
+     *                   The table name is read <strong>at index creation time</strong>
      * @param unique     Flag indicating index is unique
      * @param domains    Domains in index
      */
@@ -57,47 +58,11 @@ class IndexDefinition {
                     @NonNull final String nameSuffix,
                     final boolean unique,
                     @NonNull final List<Domain> domains) {
+        this.table = table;
         this.nameSuffix = nameSuffix;
         this.unique = unique;
-        this.table = table;
         // take a COPY of the list; but the domains themselves are references only.
         this.domains = new ArrayList<>(domains);
-    }
-
-    /**
-     * Check if this index is unique.
-     *
-     * @return UNIQUE flag.
-     */
-    boolean isUnique() {
-        return unique;
-    }
-
-    /**
-     * Get a copy of the list with domains.
-     *
-     * @return new List
-     */
-    @NonNull
-    List<Domain> getDomains() {
-        return new ArrayList<>(domains);
-    }
-
-    @NonNull
-    String getNameSuffix() {
-        return nameSuffix;
-    }
-
-    /**
-     * Create the index.
-     * <p>
-     * This method is only called during
-     * {@link android.database.sqlite.SQLiteOpenHelper#onCreate(SQLiteDatabase)}
-     *
-     * @param db SQLiteDatabase
-     */
-    public void onCreate(@NonNull final SQLiteDatabase db) {
-        db.execSQL(def());
     }
 
     /**
@@ -106,7 +71,7 @@ class IndexDefinition {
      * @param db Database Access
      */
     public void create(@NonNull final SQLiteDatabase db) {
-        db.execSQL(def());
+        db.execSQL(getCreateStatement());
     }
 
     /**
@@ -115,22 +80,15 @@ class IndexDefinition {
      * @return SQL Fragment
      */
     @NonNull
-    private String def() {
+    private String getCreateStatement() {
         final StringBuilder sql = new StringBuilder("CREATE");
         if (unique) {
             sql.append(" UNIQUE");
         }
         sql.append(" INDEX ").append(table.getName()).append("_IDX_").append(nameSuffix)
            .append(" ON ").append(table.getName())
-           .append('(')
            .append(domains.stream()
-                          .map(domain -> {
-                               if (domain.isCollationLocalized()) {
-                                   return domain.getName() + " COLLATE LOCALIZED";
-                               } else {
-                                   return domain.getName();
-                               }
-                           })
+                          .map(domain -> domain.getCollationClause())
                           .collect(Collectors.joining(",")))
            .append(')');
 
@@ -142,10 +100,9 @@ class IndexDefinition {
     public String toString() {
         return "IndexDefinition{"
                + "table=" + table
-               + ", domains=" + domains
-               + ", unique=" + unique
                + ", nameSuffix=`" + nameSuffix + '`'
-               + ", def=\n" + def()
-               + "\n}";
+               + ", unique=" + unique
+               + ", domains=" + domains
+               + "}";
     }
 }
