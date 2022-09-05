@@ -558,7 +558,7 @@ public class TableDefinition {
      */
     @NonNull
     public String join(@NonNull final TableDefinition to) {
-        return " JOIN " + to.ref() + " ON (" + fkMatch(to) + ')';
+        return " JOIN " + to.ref() + " ON " + fkMatch(to);
     }
 
     /**
@@ -572,13 +572,11 @@ public class TableDefinition {
      */
     @NonNull
     public String leftOuterJoin(@NonNull final TableDefinition to) {
-        return " LEFT OUTER JOIN " + to.ref() + " ON (" + fkMatch(to) + ')';
+        return " LEFT OUTER JOIN " + to.ref() + " ON " + fkMatch(to);
     }
 
     /**
      * Return the FK condition that applies between this table and the 'to' table.
-     * <p>
-     * format: [to-alias].[to-pk] = [from-alias].[from-pk]
      *
      * @param to Table that is other part of FK/PK
      *
@@ -593,9 +591,8 @@ public class TableDefinition {
             fk = parents.get(to);
         }
 
-        // note the use of a Supplier
-        Objects.requireNonNull(fk, () ->
-                "No foreign key between `" + name + "` and `" + to.getName() + '`');
+        Objects.requireNonNull(fk, () -> "No foreign key between `" + name
+                                         + "` and `" + to.getName() + '`');
 
         return fk.getPredicate();
     }
@@ -614,6 +611,7 @@ public class TableDefinition {
         } else {
             sql = TABLE_EXISTS_SQL_TEMP;
         }
+
         try (SQLiteStatement stmt = db.compileStatement(sql)) {
             stmt.bindString(1, name);
             return stmt.simpleQueryForLong() > 0;
