@@ -309,8 +309,10 @@ public class BoBTask
 
         // we fetch ONLY the primary author to show on the Book level
         if (style.isShowField(Style.Screen.List, DBKey.FK_AUTHOR)) {
-            builder.addDomain(AuthorDaoImpl.createDisplayDomainExpression(
-                    style.isShowAuthorByGivenName()));
+            builder.addDomain(new DomainExpression(DBDefinitions.DOM_AUTHOR_FORMATTED_FAMILY_FIRST,
+                                                   AuthorDaoImpl.getDisplayDomainExpression(
+                                                           style.isShowAuthorByGivenName()),
+                                                   Sort.Unsorted));
         }
 
         // for now, don't get the author type.

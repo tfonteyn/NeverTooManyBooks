@@ -30,6 +30,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BookDetailsFieldVisib
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BookshelfBooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.PublisherBooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.SeriesBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
@@ -210,6 +214,8 @@ public final class DBDefinitions {
     public static final Domain DOM_AUTHOR_GIVEN_NAMES_OB;
     /** {@link #TBL_AUTHORS}. */
     public static final Domain DOM_AUTHOR_IS_COMPLETE;
+    /** Virtual: "FamilyName, GivenName". */
+    public static final Domain DOM_AUTHOR_FORMATTED_FAMILY_FIRST;
 
     /** {@link #TBL_SERIES}. */
     public static final Domain DOM_SERIES_TITLE;
@@ -414,6 +420,14 @@ public final class DBDefinitions {
      *  {@link Booklist} domains.
      * ====================================================================================== */
 
+    /** {@link AuthorBooklistGroup} sorting. */
+    public static final Domain DOM_BL_AUTHOR_SORT;
+    /** {@link SeriesBooklistGroup} sorting. */
+    public static final Domain DOM_BL_SERIES_SORT;
+    /** {@link PublisherBooklistGroup} sorting. */
+    public static final Domain DOM_BL_PUBLISHER_SORT;
+    /** {@link BookshelfBooklistGroup} sorting. */
+    public static final Domain DOM_BL_BOOKSHELF_SORT;
 
     /**
      * Series number, cast()'d for sorting purposes in {@link Booklist}
@@ -646,6 +660,11 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.AUTHOR_IS_COMPLETE, SqLiteDataType.Boolean)
                         .notNull()
                         .withDefault(false)
+                        .build();
+
+        DOM_AUTHOR_FORMATTED_FAMILY_FIRST =
+                new Domain.Builder(DBKey.AUTHOR_FORMATTED, SqLiteDataType.Text)
+                        .notNull()
                         .build();
 
         /* ======================================================================================
@@ -1173,6 +1192,16 @@ public final class DBDefinitions {
         /* ======================================================================================
          *  Booklist domains
          * ====================================================================================== */
+
+        DOM_BL_AUTHOR_SORT = new Domain.Builder(DBKey.BL_AUTHOR_SORT, SqLiteDataType.Text)
+                .build();
+        DOM_BL_SERIES_SORT = new Domain.Builder(DBKey.BL_SERIES_SORT, SqLiteDataType.Text)
+                .build();
+        DOM_BL_PUBLISHER_SORT = new Domain.Builder(DBKey.BL_PUBLISHER_SORT, SqLiteDataType.Text)
+                .build();
+        DOM_BL_BOOKSHELF_SORT = new Domain.Builder(DBKey.BL_BOOKSHELF_SORT, SqLiteDataType.Text)
+                .build();
+
 
         DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT =
                 new Domain.Builder(DBKey.BL_SERIES_NUM_FLOAT, SqLiteDataType.Real)

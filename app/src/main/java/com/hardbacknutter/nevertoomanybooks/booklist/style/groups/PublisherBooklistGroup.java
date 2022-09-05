@@ -28,12 +28,11 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Sort;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_PUBLISHER_SORT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
@@ -48,15 +47,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PU
 public class PublisherBooklistGroup
         extends AbstractLinkedTableBooklistGroup {
 
-    /** For sorting. */
-    private static final Domain DOM_SORTING;
-
-    static {
-        DOM_SORTING = new Domain.Builder(DBKey.BL_PUBLISHER_SORT,
-                                         SqLiteDataType.Text)
-                .build();
-    }
-
     /**
      * Constructor.
      *
@@ -69,8 +59,8 @@ public class PublisherBooklistGroup
     /**
      * Copy constructor.
      *
-     * @param style        Style reference.
-     * @param group        to copy from
+     * @param style Style reference.
+     * @param group to copy from
      */
     PublisherBooklistGroup(@NonNull final Style style,
                            @NonNull final PublisherBooklistGroup group) {
@@ -87,7 +77,7 @@ public class PublisherBooklistGroup
                                                  TBL_PUBLISHERS.dot(DBKey.PK_ID)))
                 .addGroupDomain(
                         // We do not sort on the key domain but add the OB column instead
-                        new DomainExpression(DOM_SORTING,
+                        new DomainExpression(DOM_BL_PUBLISHER_SORT,
                                              TBL_PUBLISHERS.dot(DBKey.PUBLISHER_NAME_OB),
                                              Sort.Asc))
                 .addGroupDomain(
@@ -102,7 +92,8 @@ public class PublisherBooklistGroup
     protected DomainExpression createDisplayDomainExpression(@NonNull final Style style) {
         // Not sorted; we sort on the OB domain as defined in #createGroupKey.
         return new DomainExpression(DBDefinitions.DOM_PUBLISHER_NAME,
-                                    DBDefinitions.TBL_PUBLISHERS.dot(DBKey.PUBLISHER_NAME));
+                                    DBDefinitions.TBL_PUBLISHERS.dot(DBKey.PUBLISHER_NAME),
+                                    Sort.Unsorted);
     }
 
     @Override

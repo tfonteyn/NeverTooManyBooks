@@ -26,14 +26,13 @@ import androidx.preference.PreferenceScreen;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Sort;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_BOOKSHELF_SORT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
@@ -51,15 +50,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
  */
 public class BookshelfBooklistGroup
         extends AbstractLinkedTableBooklistGroup {
-
-    /** For sorting. */
-    private static final Domain DOM_SORTING;
-
-    static {
-        DOM_SORTING = new Domain.Builder(DBKey.BL_BOOKSHELF_SORT,
-                                         SqLiteDataType.Text)
-                .build();
-    }
 
     /**
      * Constructor.
@@ -91,7 +81,7 @@ public class BookshelfBooklistGroup
                                                  TBL_BOOKSHELF.dot(DBKey.PK_ID)))
                 .addGroupDomain(
                         // We do not sort on the key domain but add the OB column instead
-                        new DomainExpression(DOM_SORTING,
+                        new DomainExpression(DOM_BL_BOOKSHELF_SORT,
                                              TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME),
                                              Sort.Asc))
                 .addGroupDomain(
@@ -104,8 +94,9 @@ public class BookshelfBooklistGroup
     @NonNull
     protected DomainExpression createDisplayDomainExpression(@NonNull final Style style) {
         // Not sorted; we sort on the OB domain as defined in #createGroupKey.
-        return new DomainExpression(DOM_BOOKSHELF_NAME,
-                                    TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME));
+        return new DomainExpression(DBDefinitions.DOM_BOOKSHELF_NAME,
+                                    DBDefinitions.TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME),
+                                    Sort.Unsorted);
     }
 
     @Override

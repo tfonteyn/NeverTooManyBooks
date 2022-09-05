@@ -30,15 +30,15 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Sort;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_AUTHOR_SORT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
@@ -52,14 +52,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
  */
 public class AuthorBooklistGroup
         extends AbstractLinkedTableBooklistGroup {
-
-    /** For sorting. */
-    private static final Domain DOM_SORTING;
-
-    static {
-        DOM_SORTING = new Domain.Builder(DBKey.BL_AUTHOR_SORT, SqLiteDataType.Text)
-                .build();
-    }
 
     /** DomainExpression for sorting the data - depends on the style used. */
     @NonNull
@@ -117,13 +109,16 @@ public class AuthorBooklistGroup
     @NonNull
     protected DomainExpression createDisplayDomainExpression(@NonNull final Style style) {
         // Not sorted; sort as defined in #createSortingDomainExpression
-        return AuthorDaoImpl.createDisplayDomainExpression(style.isShowAuthorByGivenName());
+        return new DomainExpression(DBDefinitions.DOM_AUTHOR_FORMATTED_FAMILY_FIRST,
+                                    AuthorDaoImpl.getDisplayDomainExpression(
+                                            style.isShowAuthorByGivenName()),
+                                    Sort.Unsorted);
     }
 
     @NonNull
     private DomainExpression createSortingDomainExpression(@NonNull final Style style) {
         // Sorting depends on user preference
-        return new DomainExpression(DOM_SORTING,
+        return new DomainExpression(DOM_BL_AUTHOR_SORT,
                                     AuthorDaoImpl.getSortingDomainExpression(
                                             style.isSortAuthorByGivenName()),
                                     Sort.Asc);

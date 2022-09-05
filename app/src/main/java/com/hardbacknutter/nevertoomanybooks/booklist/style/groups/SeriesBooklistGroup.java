@@ -28,13 +28,12 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Sort;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_SERIES_SORT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_NUM_IN_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
@@ -51,15 +50,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
  */
 public class SeriesBooklistGroup
         extends AbstractLinkedTableBooklistGroup {
-
-    /** For sorting. */
-    private static final Domain DOM_SORTING;
-
-    static {
-        DOM_SORTING = new Domain.Builder(DBKey.BL_SERIES_SORT,
-                                         SqLiteDataType.Text)
-                .build();
-    }
 
     /**
      * Constructor.
@@ -91,7 +81,7 @@ public class SeriesBooklistGroup
                                                  TBL_SERIES.dot(DBKey.PK_ID)))
                 .addGroupDomain(
                         // We do not sort on the key domain but add the OB column instead
-                        new DomainExpression(DOM_SORTING,
+                        new DomainExpression(DOM_BL_SERIES_SORT,
                                              TBL_SERIES.dot(DBKey.SERIES_TITLE_OB),
                                              Sort.Asc))
                 .addGroupDomain(
@@ -127,7 +117,8 @@ public class SeriesBooklistGroup
     protected DomainExpression createDisplayDomainExpression(@NonNull final Style style) {
         // Not sorted; we sort on the OB domain as defined in #createGroupKey.
         return new DomainExpression(DBDefinitions.DOM_SERIES_TITLE,
-                                    DBDefinitions.TBL_SERIES.dot(DBKey.SERIES_TITLE));
+                                    DBDefinitions.TBL_SERIES.dot(DBKey.SERIES_TITLE),
+                                    Sort.Unsorted);
     }
 
     @Override

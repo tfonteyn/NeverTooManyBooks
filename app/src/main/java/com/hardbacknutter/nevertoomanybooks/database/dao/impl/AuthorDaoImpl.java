@@ -43,9 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
@@ -251,17 +248,7 @@ public class AuthorDaoImpl
             + ',' + DBKey.AUTHOR_FAMILY_NAME_OB + _COLLATION
             + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB + _COLLATION;
 
-
-    /** Virtual: "FamilyName, GivenName". */
-    private static final Domain DOM_AUTHOR_FORMATTED_FAMILY_FIRST;
     private static final String[] Z_ARRAY_STRING = new String[0];
-
-    static {
-        DOM_AUTHOR_FORMATTED_FAMILY_FIRST =
-                new Domain.Builder(DBKey.AUTHOR_FORMATTED, SqLiteDataType.Text)
-                        .notNull()
-                        .build();
-    }
 
     /**
      * Constructor.
@@ -306,30 +293,12 @@ public class AuthorDaoImpl
      * @return column expression
      */
     @NonNull
-    private static String getDisplayAuthor(final boolean givenNameFirst) {
+    public static String getDisplayDomainExpression(final boolean givenNameFirst) {
         if (givenNameFirst) {
             return DISPLAY_AUTHOR_GIVEN_FIRST;
         } else {
             return DISPLAY_AUTHOR_FAMILY_FIRST;
         }
-    }
-
-    /**
-     * Create a {@link DomainExpression} for displaying the formatted name of the Author.
-     *
-     * @param givenNameFirst {@code true}
-     *                       If no given name -> "FamilyName"
-     *                       otherwise -> "GivenNames FamilyName"
-     *                       {@code false}
-     *                       If no given name -> "FamilyName"
-     *                       otherwise -> "FamilyName, GivenNames"
-     *
-     * @return DomainExpression
-     */
-    @NonNull
-    public static DomainExpression createDisplayDomainExpression(final boolean givenNameFirst) {
-        return new DomainExpression(DOM_AUTHOR_FORMATTED_FAMILY_FIRST,
-                                    getDisplayAuthor(givenNameFirst));
     }
 
     @Override
