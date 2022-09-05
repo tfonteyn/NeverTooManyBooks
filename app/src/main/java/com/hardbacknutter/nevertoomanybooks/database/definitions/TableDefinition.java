@@ -299,116 +299,40 @@ public class TableDefinition {
     }
 
     /**
-     * Common code to add a foreign key (FK) references to another (parent) table.
+     * Add a FOREIGN KEY (FK) references to another (parent) table.
      *
-     * @param fk The FK object
+     * @param primaryKeyTable   The referenced table (with the PK)
+     * @param foreignKeyDomains Domains in <strong>this</strong> table that reference
+     *                          the PK in the primaryKeyTable
      *
      * @return {@code this} (for chaining)
      */
     @NonNull
-    private TableDefinition addReference(@NonNull final FkReference fk) {
-        if (fk.child != this) {
-            throw new IllegalArgumentException("Foreign key does not include this table as child");
+    public TableDefinition addReference(@NonNull final TableDefinition primaryKeyTable,
+                                        @NonNull final Domain... foreignKeyDomains) {
+        final FkReference fk = new FkReference(primaryKeyTable, this, foreignKeyDomains);
+
+        if (BuildConfig.DEBUG /* always */) {
+            if (fk.getForeignKeyTable() != this) {
+                throw new IllegalArgumentException(
+                        "Foreign key does not include this table as child");
+            }
         }
-        parents.put(fk.parent, fk);
-        fk.parent.addChildReference(this, fk);
+        parents.put(fk.primaryKeyTable, fk);
+        if (!fk.primaryKeyTable.children.containsKey(this)) {
+            fk.primaryKeyTable.children.put(this, fk);
+        }
         return this;
-    }
-
-    /**
-     * Add a foreign key (FK) references to another (parent) table.
-     *
-     * @param parent  The referenced table (with the PK)
-     * @param domains Domains in this table that reference Primary Key (PK) in parent
-     *
-     * @return {@code this} (for chaining)
-     */
-    @NonNull
-    public TableDefinition addReference(@NonNull final TableDefinition parent,
-                                        @NonNull final Domain... domains) {
-        final FkReference fk = new FkReference(parent, this, domains);
-        return addReference(fk);
-    }
-
-    /**
-     * Add a foreign key (FK) references to another (parent) table.
-     *
-     * @param parent  The referenced table (with the PK)
-     * @param domains Domains in this table that reference Primary Key (PK) in parent
-     *
-     * @return {@code this} (for chaining)
-     */
-    @SuppressWarnings({"UnusedReturnValue", "unused"})
-    @NonNull
-    private TableDefinition addReference(@NonNull final TableDefinition parent,
-                                         @NonNull final List<Domain> domains) {
-        final FkReference fk = new FkReference(parent, this, domains);
-        return addReference(fk);
-    }
-
-    /**
-     * Add a foreign key (FK) references to another (parent) table.
-     *
-     * @param parent    The referenced table
-     * @param parentKey single Domain key in the parent table
-     * @param domain    single Domain in child table that references parentKey in parent
-     *
-     * @return {@code this} (for chaining)
-     */
-    @SuppressWarnings("unused")
-    @NonNull
-    public TableDefinition addReference(@NonNull final TableDefinition parent,
-                                        @NonNull final Domain parentKey,
-                                        @NonNull final Domain domain) {
-        final FkReference fk = new FkReference(parent, parentKey, this, domain);
-        return addReference(fk);
     }
 
     /**
      * Remove FK reference to parent table.
      *
      * @param parent The referenced Table
-     *
-     * @return {@code this} (for chaining)
      */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    private TableDefinition removeReference(@NonNull final TableDefinition parent) {
+    private void removeReference(@NonNull final TableDefinition parent) {
         parents.remove(parent);
-        parent.removeChildReference(this);
-        return this;
-    }
-
-    /**
-     * Add a child table reference to this table.
-     *
-     * @param child Child table
-     * @param fk    FK object
-     *
-     * @return {@code this} (for chaining)
-     */
-    @NonNull
-    @SuppressWarnings("UnusedReturnValue")
-    private TableDefinition addChildReference(@NonNull final TableDefinition child,
-                                              @NonNull final FkReference fk) {
-        if (!children.containsKey(child)) {
-            children.put(child, fk);
-        }
-        return this;
-    }
-
-    /**
-     * Remove a child FK reference from this table.
-     *
-     * @param child Child table
-     *
-     * @return {@code this} (for chaining)
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    private TableDefinition removeChildReference(@NonNull final TableDefinition child) {
-        children.remove(child);
-        return this;
+        parent.children.remove(this);
     }
 
     /**
