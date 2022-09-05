@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -51,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Sort;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -249,17 +251,17 @@ class BooklistBuilder {
     public Booklist build(@NonNull final Context context) {
         final int instanceId = ID_COUNTER.incrementAndGet();
 
-        // Construct the list table and all needed structures.
+        final SynchronizedDb db = ServiceLocator.getInstance().getDb();
+
         final TableBuilder tableBuilder = new TableBuilder(
                 instanceId, style, !bookshelf.isAllBooks(), rebuildMode);
-        tableBuilder.preBuild(context, leftOuterJoins.values(), bookDomains.values(), filters);
-
-        final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
         final Synchronizer.SyncLock txLock = db.beginTransaction(true);
         try {
-            // create the tables and populate them
-            final Pair<TableDefinition, TableDefinition> tables = tableBuilder.build(db);
+            // Construct the list table and all needed structures.
+            final Pair<TableDefinition, TableDefinition> tables = tableBuilder
+                    .build(context, db, leftOuterJoins.values(), bookDomains.values(), filters);
+
             final TableDefinition listTable = tables.first;
             final TableDefinition navTable = tables.second;
             final BooklistNodeDao rowStateDAO =
@@ -363,8 +365,6 @@ class BooklistBuilder {
         @NonNull
         private final RebuildBooklist rebuildMode;
 
-        private String sqlForInitialInsert;
-
         /** Table used by the triggers to track the most recent/current row headings. */
         private TableDefinition triggerHelperTable;
         /** Trigger name - inserts headers for each level during the initial insert. */
@@ -424,18 +424,22 @@ class BooklistBuilder {
         /**
          * Using the collected domain info, create the various SQL phrases used to build
          * the resulting flat list table and build the SQL that does the initial table load.
-         * <p>
-         * This method does not access the database.
          *
          * @param context        Current context
+         * @param db             Underlying database
          * @param leftOuterJoins tables to be added as a LEFT OUTER JOIN
          * @param bookDomains    list of domains to add on the book level
          * @param filters        to use for the WHERE clause
-         **/
-        void preBuild(@NonNull final Context context,
-                      @NonNull final Collection<TableDefinition> leftOuterJoins,
-                      @NonNull final Collection<DomainExpression> bookDomains,
-                      @NonNull final Collection<Filter> filters) {
+         *
+         * @return a Pair with the fully populated list-table and the navigation-table
+         */
+        @NonNull
+        Pair<TableDefinition, TableDefinition> build(
+                @NonNull final Context context,
+                @NonNull final SynchronizedDb db,
+                @NonNull final Collection<TableDefinition> leftOuterJoins,
+                @NonNull final Collection<DomainExpression> bookDomains,
+                @NonNull final Collection<Filter> filters) {
 
             // Store for later use in #buildFrom
             this.leftOuterJoins = leftOuterJoins;
@@ -520,33 +524,22 @@ class BooklistBuilder {
                     throw new IllegalArgumentException(String.valueOf(rebuildMode));
             }
 
-            sqlForInitialInsert =
+            final String sqlForInitialInsert =
                     INSERT_INTO_ + listTable.getName() + " (" + destColumns + ") "
                     + SELECT_ + sourceColumns
                     + _FROM_ + buildFrom() + buildWhere(context, filters)
                     + _ORDER_BY_ + buildOrderBy();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-                Log.d(TAG, "build|sql=" + sqlForInitialInsert);
-            }
-        }
-
-        /**
-         * Create the table and data.
-         *
-         * @param db Underlying database
-         *
-         * @return a Pair with the fully populated list-table and the navigation-table
-         */
-        @NonNull
-        Pair<TableDefinition, TableDefinition> build(@NonNull final SynchronizedDb db) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-                SanityCheck.requireValue(sqlForInitialInsert, "preBuild() must be called first");
+                Log.d(TAG, "preBuild|sqlForInitialInsert=" + sqlForInitialInsert);
 
                 if (!db.inTransaction()) {
                     throw new TransactionException(TransactionException.REQUIRED);
                 }
             }
+
+            // All structures are in place now
+            // Create the list table and populate it.
 
             //IMPORTANT: withDomainConstraints MUST BE false
             db.recreate(listTable, false);
@@ -565,6 +558,7 @@ class BooklistBuilder {
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
+                // only measure the insert... all other operations are very fast compared to it
                 Log.d(TAG, "build|insert(" + initialInsertCount + "): "
                            + ((System.nanoTime() - t0) / NANO_TO_MILLIS) + " ms");
             }
@@ -607,12 +601,11 @@ class BooklistBuilder {
          */
         private void createTriggers(@NonNull final SynchronizedDb db) {
 
-            triggerHelperTable = new TableDefinition(listTable + "_th")
-                    .setAlias("tht")
+            triggerHelperTable = new TableDefinition(listTable + "_th", "tht")
                     .setType(TableDefinition.TableType.Temporary);
 
-            // SQL statement to update the 'current' table
-            final StringBuilder valuesColumns = new StringBuilder();
+            // VALUES clause to update the 'current' table
+            final StringJoiner valuesColumns = new StringJoiner(",");
             // List of domain names for sorting
             final Collection<String> sortedDomainNames = new HashSet<>();
 
@@ -623,12 +616,9 @@ class BooklistBuilder {
                           .filter(domain -> !sortedDomainNames.contains(domain.getName()))
                           .forEachOrdered(domain -> {
                               sortedDomainNames.add(domain.getName());
-                              if (valuesColumns.length() > 0) {
-                                  valuesColumns.append(",");
-                              }
-                              valuesColumns.append("NEW.").append(domain.getName());
+                              valuesColumns.add("NEW." + domain.getName());
 
-                              triggerHelperTable.addDomain(domain);
+                              triggerHelperTable.addDomains(domain);
                           });
 
             /*
