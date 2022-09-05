@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Sort;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
@@ -109,7 +110,7 @@ public class BoBTask
                 new DomainExpression(
                         DBDefinitions.DOM_TITLE_OB,
                         DBDefinitions.TBL_BOOKS.dot(DBKey.TITLE_OB),
-                        DomainExpression.Sort.Asc));
+                        Sort.Asc));
 
         fixedDomainList.add(
                 // the book language is needed for reordering titles
