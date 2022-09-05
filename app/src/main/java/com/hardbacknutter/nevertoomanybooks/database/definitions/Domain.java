@@ -207,8 +207,13 @@ public class Domain
         return notBlank;
     }
 
-    boolean isCollationLocalized() {
-        return collationLocalized;
+    @NonNull
+    public String getCollationClause() {
+        if (collationLocalized) {
+            return " COLLATE LOCALIZED";
+        } else {
+            return "";
+        }
     }
 
     public boolean hasDefault() {
@@ -438,6 +443,11 @@ public class Domain
             return this;
         }
 
+        /**
+         * Specify this domain is Localized.
+         *
+         * @return {@code this} (for chaining)
+         */
         @NonNull
         public Builder localized() {
             collationLocalized = true;
