@@ -22,13 +22,15 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * A trivial wrapper for {@link PackageInfoWrapper} to hide the different API versions
@@ -129,6 +131,8 @@ public final class PackageInfoWrapper {
      *          SHA256: D4:98:1C:F7:...    <= this one
      *     }
      * </pre>
+     *
+     * @return human readable hash-code or error-message
      */
     @NonNull
     public String getSignedBy() {
@@ -136,37 +140,23 @@ public final class PackageInfoWrapper {
             return "Not signed, likely development version";
         }
 
-        final StringBuilder signedBy = new StringBuilder();
+        final StringJoiner signedBy = new StringJoiner("/");
         try {
-            // concat the signature chain.
-            for (final Signature sig : info.signatures) {
-                if (sig != null) {
-                    final MessageDigest md = MessageDigest.getInstance("SHA256");
-                    final byte[] publicKey = md.digest(sig.toByteArray());
-                    // Turn the hex bytes into a more traditional string representation.
-                    final StringBuilder hexString = new StringBuilder();
-                    boolean first = true;
-                    for (final byte aPublicKey : publicKey) {
-                        if (first) {
-                            first = false;
-                        } else {
-                            hexString.append(':');
-                        }
-                        final String byteString = Integer.toHexString(0xFF & aPublicKey);
-                        if (byteString.length() == 1) {
-                            hexString.append('0');
-                        }
-                        hexString.append(byteString);
-                    }
-                    final String fingerprint = hexString.toString();
+            final MessageDigest md = MessageDigest.getInstance("SHA256");
 
-                    if (signedBy.length() == 0) {
-                        signedBy.append(fingerprint);
-                    } else {
-                        signedBy.append('/').append(fingerprint);
-                    }
-                }
-            }
+            // concat the signature chain.
+            Arrays.stream(info.signatures)
+                  .filter(Objects::nonNull)
+                  .forEach(sig -> {
+                      md.reset();
+                      final StringJoiner hexString = new StringJoiner(":");
+                      for (final byte aPublicKey : md.digest(sig.toByteArray())) {
+                          final String byteString = Integer.toHexString(0xFF & aPublicKey);
+                          hexString.add(byteString.length() == 1 ? '0' + byteString : byteString);
+                      }
+                      signedBy.add(hexString.toString());
+                  });
+
         } catch (@NonNull final NoSuchAlgorithmException | RuntimeException e) {
             return e.toString();
         }
