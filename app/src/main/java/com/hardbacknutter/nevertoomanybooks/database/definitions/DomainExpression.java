@@ -85,15 +85,6 @@ public class DomainExpression
     }
 
     /**
-     * Copy constructor.
-     *
-     * @param that to copy from
-     */
-    public DomainExpression(@NonNull final DomainExpression that) {
-        this(that.domain, that.expression, that.sorted);
-    }
-
-    /**
      * {@link Parcelable} Constructor.
      *
      * @param in Parcel to construct the object from
@@ -104,19 +95,6 @@ public class DomainExpression
         expression = in.readString();
         //noinspection ConstantConditions
         sorted = in.readParcelable(Domain.class.getClassLoader());
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeParcelable(domain, flags);
-        dest.writeString(expression);
-        dest.writeParcelable(sorted, flags);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     /**
@@ -145,11 +123,20 @@ public class DomainExpression
 
     @NonNull
     public String getSortedExpression() {
-        if (sorted == Sort.Desc) {
-            return " DESC";
-        } else {
-            return "";
-        }
+        return sorted.getExpression();
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeParcelable(domain, flags);
+        dest.writeString(expression);
+        dest.writeParcelable(sorted, flags);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     @Override
@@ -179,38 +166,5 @@ public class DomainExpression
                + ", expression=`" + expression + '`'
                + ", sorted=" + sorted
                + '}';
-    }
-
-    public enum Sort
-            implements Parcelable {
-        Unsorted,
-        Asc,
-        Desc;
-
-
-        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
-        public static final Creator<Sort> CREATOR = new Creator<>() {
-            @Override
-            @NonNull
-            public Sort createFromParcel(@NonNull final Parcel in) {
-                return values()[in.readInt()];
-            }
-
-            @Override
-            public Sort[] newArray(final int size) {
-                return new Sort[size];
-            }
-        };
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(@NonNull final Parcel dest,
-                                  final int flags) {
-            dest.writeInt(ordinal());
-        }
     }
 }
