@@ -88,9 +88,8 @@ class IndexDefinition {
         sql.append(" INDEX ").append(table.getName()).append("_IDX_").append(nameSuffix)
            .append(" ON ").append(table.getName())
            .append(domains.stream()
-                          .map(domain -> domain.getCollationClause())
-                          .collect(Collectors.joining(",")))
-           .append(')');
+                          .map(domain -> domain.getName() + domain.getCollationClause())
+                          .collect(Collectors.joining(",", "(", ")")));
 
         return sql.toString();
     }
