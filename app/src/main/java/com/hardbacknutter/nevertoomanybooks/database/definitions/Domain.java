@@ -30,6 +30,8 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+
 /**
  * Defines a domain; name, type, ...
  * Immutable.
@@ -56,6 +58,13 @@ public class Domain
     /** standard SQL keyword. **/
     private static final String CURRENT_TIMESTAMP = "current_timestamp";
 
+    /** Supposed to be {@code false}. */
+    private static final boolean COLLATION_IS_CASE_SENSITIVE;
+
+    static {
+        COLLATION_IS_CASE_SENSITIVE = ServiceLocator.getInstance().isCollationCaseSensitive();
+    }
+
     @NonNull
     private final String name;
     /** This domain represents a primary key. */
@@ -81,8 +90,8 @@ public class Domain
      * i.e. the values are stripped of spaces etc.. before being stored.
      */
     private final boolean prePreparedOrderBy;
-
-    private final boolean collationLocalized;
+    @NonNull
+    private final String collationClause;
 
     /**
      * Full, private constructor.
@@ -96,8 +105,13 @@ public class Domain
         notNull = builder.notNull;
         defaultClause = builder.defaultClause;
         references = builder.references;
-        collationLocalized = builder.collationLocalized;
         prePreparedOrderBy = builder.prePreparedOrderBy;
+
+        if (builder.collationLocalized) {
+            collationClause = " COLLATE LOCALIZED";
+        } else {
+            collationClause = "";
+        }
 
         notBlank = defaultClause != null && !"''".equals(defaultClause);
     }
@@ -114,8 +128,8 @@ public class Domain
         notNull = from.notNull;
         defaultClause = from.defaultClause;
         references = from.references;
-        collationLocalized = from.collationLocalized;
         prePreparedOrderBy = from.prePreparedOrderBy;
+        collationClause = from.collationClause;
 
         notBlank = from.notBlank;
     }
@@ -134,10 +148,15 @@ public class Domain
         notNull = in.readByte() != 0;
         defaultClause = in.readString();
         references = in.readString();
-        collationLocalized = in.readByte() != 0;
         prePreparedOrderBy = in.readByte() != 0;
+        //noinspection ConstantConditions
+        collationClause = in.readString();
 
         notBlank = defaultClause != null && !"''".equals(defaultClause);
+    }
+
+    public static boolean isCollationCaseSensitive() {
+        return COLLATION_IS_CASE_SENSITIVE;
     }
 
     @Override
@@ -149,8 +168,8 @@ public class Domain
         dest.writeByte((byte) (notNull ? 1 : 0));
         dest.writeString(defaultClause);
         dest.writeString(references);
-        dest.writeByte((byte) (collationLocalized ? 1 : 0));
         dest.writeByte((byte) (prePreparedOrderBy ? 1 : 0));
+        dest.writeString(collationClause);
     }
 
     /**
@@ -163,17 +182,20 @@ public class Domain
         return name;
     }
 
-    /**
-     * Get the name of this domain with " COLLATE LOCALIZED" appended if required.
-     *
-     * @return name
-     */
     @NonNull
-    public String getNameWithCollation() {
-        if (collationLocalized) {
-            return name + " COLLATE LOCALIZED";
+    public String getCollationClause() {
+        return collationClause;
+    }
+
+    @NonNull
+    public String getOrderByString(@NonNull final Sort sort) {
+        if (COLLATION_IS_CASE_SENSITIVE) {
+            // Lowercase the DATA from the name column
+            // but not the column name itself!
+            // This should never happen, but see the DAO method docs.
+            return "lower(" + name + ')' + collationClause + sort.getExpression();
         } else {
-            return name;
+            return name + collationClause + sort.getExpression();
         }
     }
 
@@ -207,14 +229,6 @@ public class Domain
         return notBlank;
     }
 
-    @NonNull
-    public String getCollationClause() {
-        if (collationLocalized) {
-            return " COLLATE LOCALIZED";
-        } else {
-            return "";
-        }
-    }
 
     public boolean hasDefault() {
         return defaultClause != null;
@@ -301,7 +315,7 @@ public class Domain
                && notNull == domain.notNull
                && notBlank == domain.notBlank
                && prePreparedOrderBy == domain.prePreparedOrderBy
-               && collationLocalized == domain.collationLocalized
+               && collationClause.equals(domain.collationClause)
                && name.equals(domain.name)
                && sqLiteDataType == domain.sqLiteDataType
                && Objects.equals(defaultClause, domain.defaultClause)
@@ -313,7 +327,7 @@ public class Domain
         return Objects
                 .hash(name, primaryKey, sqLiteDataType, notNull, notBlank, defaultClause,
                       references,
-                      prePreparedOrderBy, collationLocalized);
+                      prePreparedOrderBy, collationClause);
     }
 
     public static class Builder {
