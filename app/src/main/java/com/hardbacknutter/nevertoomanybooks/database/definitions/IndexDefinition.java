@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+
 /**
  * Class to store an index using a table name and a list of domain definitions.
  */
@@ -81,6 +83,8 @@ class IndexDefinition {
      */
     @NonNull
     private String getCreateStatement() {
+        final boolean collationIsCaseSensitive = ServiceLocator.getInstance()
+                                                               .isCollationCaseSensitive();
         final StringBuilder sql = new StringBuilder("CREATE");
         if (unique) {
             sql.append(" UNIQUE");
@@ -88,7 +92,8 @@ class IndexDefinition {
         sql.append(" INDEX ").append(table.getName()).append("_IDX_").append(nameSuffix)
            .append(" ON ").append(table.getName())
            .append(domains.stream()
-                          .map(domain -> domain.getOrderByString(Sort.Unsorted))
+                          .map(domain -> domain.getOrderByString(Sort.Unsorted,
+                                                                 collationIsCaseSensitive))
                           .collect(Collectors.joining(",", "(", ")")));
 
         return sql.toString();

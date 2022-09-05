@@ -30,8 +30,6 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-
 /**
  * Defines a domain; name, type, ...
  * Immutable.
@@ -57,13 +55,6 @@ public class Domain
 
     /** standard SQL keyword. **/
     private static final String CURRENT_TIMESTAMP = "current_timestamp";
-
-    /** Supposed to be {@code false}. */
-    private static final boolean COLLATION_IS_CASE_SENSITIVE;
-
-    static {
-        COLLATION_IS_CASE_SENSITIVE = ServiceLocator.getInstance().isCollationCaseSensitive();
-    }
 
     @NonNull
     private final String name;
@@ -155,10 +146,6 @@ public class Domain
         notBlank = defaultClause != null && !"''".equals(defaultClause);
     }
 
-    public static boolean isCollationCaseSensitive() {
-        return COLLATION_IS_CASE_SENSITIVE;
-    }
-
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
@@ -188,8 +175,9 @@ public class Domain
     }
 
     @NonNull
-    public String getOrderByString(@NonNull final Sort sort) {
-        if (COLLATION_IS_CASE_SENSITIVE) {
+    public String getOrderByString(@NonNull final Sort sort,
+                                   final boolean collationIsCaseSensitive) {
+        if (collationIsCaseSensitive) {
             // Lowercase the DATA from the name column
             // but not the column name itself!
             // This should never happen, but see the DAO method docs.

@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Sort;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -307,7 +306,6 @@ class BooklistBuilder {
         private static final String INSERT_INTO_ = "INSERT INTO ";
         private static final String _ORDER_BY_ = " ORDER BY ";
         private static final String _AS_ = " AS ";
-        private static final String _COLLATION = " COLLATE LOCALIZED";
 
         private static final String DROP_TRIGGER_IF_EXISTS_ = "DROP TRIGGER IF EXISTS ";
 
@@ -352,7 +350,7 @@ class BooklistBuilder {
          * These are typically a reduced set of the group domains since the group domains
          * may contain more than just the key
          */
-        private final List<DomainExpression> orderByDomains = new ArrayList<>();
+        private final List<DomainExpression> orderByDomainExpressions = new ArrayList<>();
 
         /** Guards from adding duplicates. */
         private final Map<Domain, String> expressionsDupCheck = new HashMap<>();
@@ -544,11 +542,14 @@ class BooklistBuilder {
             }
 
             if (!collationIsCaseSensitive) {
-                // can't do this, IndexDefinition class does not support DESC columns for now.
-                //  listTable.addIndex("SDI", false, helper.getSortedDomains());
-                db.execSQL(
-                        "CREATE INDEX " + listTable.getName() + "_SDI ON " + listTable.getName()
-                        + "(" + getSortedDomainsIndexColumns() + ")");
+                // can't use IndexDefinition class as it does not support sorting clause for now.
+                final String indexCols = orderByDomainExpressions
+                        .stream()
+                        .map(de -> de.getDomain().getOrderByString(de.getSort(), false))
+                        .collect(Collectors.joining(",", "(", ")"));
+
+                db.execSQL("CREATE INDEX " + listTable.getName() + "_SDI ON "
+                           + listTable.getName() + indexCols);
             }
 
             // The list table is now fully populated.
@@ -585,21 +586,21 @@ class BooklistBuilder {
                     .setType(TableDefinition.TableType.Temporary);
 
             // VALUES clause to update the 'current' table
-            final StringJoiner valuesColumns = new StringJoiner(",");
+            final StringJoiner currentValues = new StringJoiner(",", "(", ")");
             // List of domain names for sorting
             final Collection<String> sortedDomainNames = new HashSet<>();
 
             // Build the 'current' header table definition and the sort column list
-            orderByDomains.stream()
-                          .map(DomainExpression::getDomain)
-                          // don't add duplicate domains
-                          .filter(domain -> !sortedDomainNames.contains(domain.getName()))
-                          .forEachOrdered(domain -> {
-                              sortedDomainNames.add(domain.getName());
-                              valuesColumns.add("NEW." + domain.getName());
+            orderByDomainExpressions.stream()
+                                    .map(DomainExpression::getDomain)
+                                    // don't add duplicate domains
+                                    .filter(domain -> !sortedDomainNames.contains(domain.getName()))
+                                    .forEachOrdered(domain -> {
+                                        sortedDomainNames.add(domain.getName());
+                                        currentValues.add("NEW." + domain.getName());
 
-                              triggerHelperTable.addDomains(domain);
-                          });
+                                        triggerHelperTable.addDomains(domain);
+                                    });
 
             /*
              * Create a temp table to store the most recent header details from the last row.
@@ -627,47 +628,42 @@ class BooklistBuilder {
                 final BooklistGroup group = style.getGroupByLevel(level);
 
                 // Create the INSERT columns clause for the next level up
-                final StringBuilder listColumns = new StringBuilder()
-                        .append(DBKey.BL_NODE_LEVEL)
-                        .append(',').append(DBKey.BL_NODE_GROUP)
-                        .append(',').append(DBKey.BL_NODE_KEY)
-                        .append(',').append(DBKey.BL_NODE_EXPANDED)
-                        .append(',').append(DBKey.BL_NODE_VISIBLE);
+                final StringJoiner listColumns = new StringJoiner(",", "(", ")")
+                        .add(DBKey.BL_NODE_LEVEL)
+                        .add(DBKey.BL_NODE_GROUP)
+                        .add(DBKey.BL_NODE_KEY)
+                        .add(DBKey.BL_NODE_EXPANDED)
+                        .add(DBKey.BL_NODE_VISIBLE);
 
                 // PREF_REBUILD_EXPANDED must explicitly be set to 1/1
                 // All others must be set to 0/0. The actual state will be set afterwards.
-                final int expVis = (rebuildMode == RebuildBooklist.Expanded) ? 1 : 0;
+                final String expVis = (rebuildMode == RebuildBooklist.Expanded) ? "1" : "0";
 
                 // Create the VALUES clause for the next level up
-                final StringBuilder listValues = new StringBuilder()
-                        .append(level)
-                        .append(',').append(group.getId())
-                        .append(",NEW.").append(DBKey.BL_NODE_KEY)
-                        .append(",").append(expVis)
+                final StringJoiner listValues = new StringJoiner(",", "(", ")")
+                        .add(String.valueOf(level))
+                        .add(String.valueOf(group.getId()))
+                        .add("NEW." + DBKey.BL_NODE_KEY)
+                        .add(expVis)
                         // level 1 is always visible. THIS IS CRITICAL!
-                        .append(",").append(level == 1 ? 1 : expVis);
+                        .add(level == 1 ? "1" : expVis);
 
                 // Create the where-clause to detect if the next level up is already defined
                 // (by checking the 'current' record/table)
-                final StringBuilder whereClause = new StringBuilder();
+                final StringJoiner whereClause = new StringJoiner(_AND_);
 
-                group.getAccumulatedDomains().stream()
-                     .map(Domain::getName)
-                     .forEach(domainName -> {
-                         listColumns.append(',').append(domainName);
-                         listValues.append(",NEW.").append(domainName);
+                group.getAccumulatedDomains()
+                     .forEach(domain -> {
+                         final String domainName = domain.getName();
+                         listColumns.add(domainName);
+                         listValues.add("NEW." + domainName);
 
                          // Only add to the where-clause if the group is part of the SORT list
                          if (sortedDomainNames.contains(domainName)) {
-                             if (whereClause.length() > 0) {
-                                 whereClause.append(_AND_);
-                             }
-                             whereClause.append("COALESCE(")
-                                        .append(triggerHelperTable.dot(domainName))
-                                        .append(",'')=COALESCE(NEW.")
-                                        .append(domainName)
-                                        .append(",'')")
-                                        .append(_COLLATION);
+                             whereClause.add(
+                                     "COALESCE(" + triggerHelperTable.dot(domainName) + ",'')"
+                                     + "=COALESCE(NEW." + domainName + ",'')"
+                                     + domain.getCollationClause());
                          }
                      });
 
@@ -682,8 +678,8 @@ class BooklistBuilder {
                         + /* */ "SELECT 1 FROM " + triggerHelperTable.ref() + _WHERE_ + whereClause
                         + /* */ ')'
                         + "\n BEGIN"
-                        + "\n  INSERT INTO " + listTable.getName() + " (" + listColumns + ")"
-                        + /*             */ " VALUES(" + listValues + ");"
+                        + "\n  INSERT INTO "
+                        + listTable.getName() + ' ' + listColumns + " VALUES " + listValues + ';'
                         + "\n END";
 
                 db.execSQL(levelTgSql);
@@ -735,8 +731,8 @@ class BooklistBuilder {
                     + "\n WHEN NEW." + DBKey.BL_NODE_LEVEL + '=' + groupCount
                     + "\n BEGIN"
                     + "\n  DELETE FROM " + triggerHelperTable.getName() + ';'
-                    + "\n  INSERT INTO " + triggerHelperTable.getName()
-                    + /*              */ " VALUES (" + valuesColumns + ");"
+                    + "\n  INSERT INTO "
+                    + triggerHelperTable.getName() + " VALUES " + currentValues + ";"
                     + "\n END";
 
             db.execSQL(currentValueTgSql);
@@ -762,41 +758,41 @@ class BooklistBuilder {
         }
 
         /**
-         * Add a DomainExpression.
-         * This encapsulates the actual Domain, the expression, and the (optional) sort flag.
+         * Add a {@link DomainExpression}.
          *
-         * @param domainExpression DomainExpression to add
+         * @param domainExpression to add
          */
         private void addExpression(@NonNull final DomainExpression domainExpression) {
             final Domain domain = domainExpression.getDomain();
-            final String expression = domainExpression.getExpression();
-
-            // Add to the table, if not already there
-            final boolean present = listTable.contains(domain);
-            if (!present) {
+            // Add the domain itself to the table, if it's not already there
+            final boolean domainAlreadyPresent = listTable.contains(domain);
+            if (!domainAlreadyPresent) {
                 listTable.addDomains(domain);
             }
 
             // If the expression is {@code null},
             // then the domain is just meant for the lowest level; i.e. the book.
             // otherwise, we check and add it here
+            final String expression = domainExpression.getExpression();
             if (expression != null) {
-                // If the domain was already present, and it has an expression,
-                // check the expression being different (or not) from the stored expression
-                if (present && expression.equals(expressionsDupCheck.get(domain))) {
-                    // same expression, we do NOT want to add it.
+                // If the domain was already present, check if the expression is different
+                // from the stored expression
+                if (domainAlreadyPresent && expression.equals(expressionsDupCheck.get(domain))) {
+                    // If it's the same expression, we do NOT want to add it again.
                     // This is NOT a bug, although one could argue it's an efficiency issue.
                     return;
                 }
                 expressionsDupCheck.put(domain, expression);
 
+                // add it
                 domainExpressions.add(domainExpression);
             }
 
-            // If required, add to the order-by domains, if not already there
+            // If required, add the domainExpression to the order-by domains, if not already there
             if (domainExpression.getSort() != Sort.Unsorted
                 && !orderByDupCheck.contains(domain.getName())) {
-                orderByDomains.add(domainExpression);
+
+                orderByDomainExpressions.add(domainExpression);
                 orderByDupCheck.add(domain.getName());
             }
         }
@@ -883,39 +879,38 @@ class BooklistBuilder {
          */
         @NonNull
         private String buildFrom() {
-            // Text of join statement
-            final StringBuilder sql = new StringBuilder();
+            final StringBuilder sb = new StringBuilder();
 
             // If there is a bookshelf specified (either as group or as a filter),
             // we start the join there.
             if (style.hasGroup(BooklistGroup.BOOKSHELF) || filteredOnBookshelf) {
-                sql.append(TBL_BOOKSHELF.startJoin(TBL_BOOK_BOOKSHELF, TBL_BOOKS));
+                sb.append(TBL_BOOKSHELF.startJoin(TBL_BOOK_BOOKSHELF, TBL_BOOKS));
             } else {
                 // Otherwise, we start with the BOOKS table.
-                sql.append(TBL_BOOKS.ref());
+                sb.append(TBL_BOOKS.ref());
             }
 
-            joinWithAuthors(sql);
+            joinWithAuthors(sb);
 
             if (style.hasGroup(BooklistGroup.SERIES)
                 || style.isShowField(Style.Screen.List, DBKey.FK_SERIES)) {
-                joinWithSeries(sql);
+                joinWithSeries(sb);
             }
 
             if (style.hasGroup(BooklistGroup.PUBLISHER)
                 || style.isShowField(Style.Screen.List, DBKey.FK_PUBLISHER)) {
-                joinWithPublishers(sql);
+                joinWithPublishers(sb);
             }
 
             // Add LEFT OUTER JOIN tables as needed
-            leftOuterJoins.forEach(table -> sql.append(TBL_BOOKS.leftOuterJoin(table)));
+            leftOuterJoins.forEach(table -> sb.append(TBL_BOOKS.leftOuterJoin(table)));
 
-            return sql.toString();
+            return sb.toString();
         }
 
-        private void joinWithAuthors(@NonNull final StringBuilder sql) {
+        private void joinWithAuthors(@NonNull final StringBuilder sb) {
             // Join with the link table between Book and Author.
-            sql.append(TBL_BOOKS.join(TBL_BOOK_AUTHOR));
+            sb.append(TBL_BOOKS.join(TBL_BOOK_AUTHOR));
             // Extend the join filtering on the primary Author unless
             // the user wants the book to show under all its Authors
             if (!style.isShowBooksUnderEachAuthor()) {
@@ -923,53 +918,53 @@ class BooklistBuilder {
                 final int primaryAuthorType = style.getPrimaryAuthorType();
                 if (primaryAuthorType == Author.TYPE_UNKNOWN) {
                     // don't care about Author type, so just grab the first one (i.e. pos==1)
-                    sql.append(_AND_)
-                       .append(TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_POSITION))
-                       .append("=1");
+                    sb.append(_AND_)
+                      .append(TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_POSITION))
+                      .append("=1");
                 } else {
                     // grab the desired type, or if no such type, grab the first one
                     //   AND (((type & TYPE)<>0) OR (((type &~ TYPE)=0) AND pos=1))
-                    sql.append(" AND (((")
-                       .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR_TYPE__BITMASK))
-                       .append(" & ").append(primaryAuthorType).append(")<>0)")
-                       .append(" OR (((")
-                       .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR_TYPE__BITMASK))
-                       .append(" &~ ").append(primaryAuthorType).append(")=0)")
-                       .append(_AND_)
-                       .append(TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_POSITION))
-                       .append("=1))");
+                    sb.append(" AND (((")
+                      .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR_TYPE__BITMASK))
+                      .append(" & ").append(primaryAuthorType).append(")<>0)")
+                      .append(" OR (((")
+                      .append(TBL_BOOK_AUTHOR.dot(DBKey.AUTHOR_TYPE__BITMASK))
+                      .append(" &~ ").append(primaryAuthorType).append(")=0)")
+                      .append(_AND_)
+                      .append(TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_POSITION))
+                      .append("=1))");
                 }
             }
             // Join with Authors to make the names available
-            sql.append(TBL_BOOK_AUTHOR.join(TBL_AUTHORS));
+            sb.append(TBL_BOOK_AUTHOR.join(TBL_AUTHORS));
         }
 
-        private void joinWithSeries(@NonNull final StringBuilder sql) {
+        private void joinWithSeries(@NonNull final StringBuilder sb) {
             // Join with the link table between Book and Series.
-            sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_SERIES));
+            sb.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_SERIES));
             // Extend the join filtering on the primary Series unless
             // the user wants the book to show under all its Series
             if (!style.isShowBooksUnderEachSeries()) {
-                sql.append(_AND_)
-                   .append(TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_POSITION))
-                   .append("=1");
+                sb.append(_AND_)
+                  .append(TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_POSITION))
+                  .append("=1");
             }
             // Join with Series to make the titles available
-            sql.append(TBL_BOOK_SERIES.leftOuterJoin(TBL_SERIES));
+            sb.append(TBL_BOOK_SERIES.leftOuterJoin(TBL_SERIES));
         }
 
-        private void joinWithPublishers(@NonNull final StringBuilder sql) {
+        private void joinWithPublishers(@NonNull final StringBuilder sb) {
             // Join with the link table between Book and Publishers.
-            sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_PUBLISHER));
+            sb.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_PUBLISHER));
             // Extend the join filtering on the primary Publisher unless
             // the user wants the book to show under all its Publishers
             if (!style.isShowBooksUnderEachPublisher()) {
-                sql.append(_AND_)
-                   .append(TBL_BOOK_PUBLISHER.dot(DBKey.BOOK_PUBLISHER_POSITION))
-                   .append("=1");
+                sb.append(_AND_)
+                  .append(TBL_BOOK_PUBLISHER.dot(DBKey.BOOK_PUBLISHER_POSITION))
+                  .append("=1");
             }
             // Join with Publishers to make the names available
-            sql.append(TBL_BOOK_PUBLISHER.leftOuterJoin(TBL_PUBLISHERS));
+            sb.append(TBL_BOOK_PUBLISHER.leftOuterJoin(TBL_PUBLISHERS));
         }
 
         /**
@@ -983,88 +978,32 @@ class BooklistBuilder {
         @NonNull
         private String buildWhere(@NonNull final Context context,
                                   @NonNull final Collection<Filter> filters) {
-            final StringBuilder where = new StringBuilder();
-
             //noinspection ConstantConditions
-            filters.stream()
-                   // ONLY APPLY ACTIVE FILTERS!
-                   .filter(filter -> filter.isActive(context))
-                   .map(filter -> filter.getExpression(context))
-                   // sanity checks
-                   .filter(Objects::nonNull)
-                   .filter(expression -> !expression.isEmpty())
-                   .forEach(expression -> {
-                       if (where.length() != 0) {
-                           where.append(_AND_);
-                       }
-                       where.append(' ').append(expression);
-                   });
+            final String where = filters
+                    .stream()
+                    // ONLY APPLY ACTIVE FILTERS!
+                    .filter(filter -> filter.isActive(context))
+                    .map(filter -> filter.getExpression(context))
+                    // sanity checks
+                    .filter(Objects::nonNull)
+                    .filter(expression -> !expression.isEmpty())
+                    .collect(Collectors.joining(_AND_));
 
-            if (where.length() > 0) {
-                return _WHERE_ + where;
-            } else {
-                return "";
-            }
+            return where.isEmpty() ? "" : _WHERE_ + where;
         }
 
         /**
-         * Process the 'sort-by' columns into a list suitable for an ORDER-BY statement.
+         * Create the ORDER BY clause.
          *
          * @return ORDER BY clause
          */
         @NonNull
         private String buildOrderBy() {
-            final StringJoiner orderBy = new StringJoiner(",");
-            orderByDomains
-                    .forEach(domainExpression -> {
-                        final Domain domain = domainExpression.getDomain();
-                        // The order of this if/elseif/else is important,
-                        // don't merge branch 1 and 3!
-                        if (domain.isPrePreparedOrderBy()) {
-                            // Always use a pre-prepared order-by column as-is
-                            orderBy.add(domain.getName()
-                                        + domain.getCollationClause()
-                                        + domainExpression.getSort().getExpression());
-
-                        } else if (collationIsCaseSensitive) {
-                            // If {@link DAO#COLLATION} is case-sensitive, lowercase it.
-                            // i.e. lowercase the data from that column
-                            // (and not the column name!)
-                            // This should never happen, but see the DAO method docs.
-                            orderBy.add("lower(" + domain.getName() + ')'
-                                        + domain.getCollationClause()
-                                        + domainExpression.getSort().getExpression());
-
-                        } else {
-                            // Hope for the best.
-                            orderBy.add(domain.getName()
-                                        + domain.getCollationClause()
-                                        + domainExpression.getSort().getExpression());
-                        }
-                    });
-
-            return orderBy.toString();
-        }
-
-        /**
-         * Process the 'sort-by' columns into a list suitable for an CREATE-INDEX statement.
-         *
-         * @return column list clause
-         */
-        @NonNull
-        private String getSortedDomainsIndexColumns() {
-            final StringBuilder indexCols = new StringBuilder();
-
-            orderByDomains.forEach(sd -> {
-                final Domain domain = sd.getDomain();
-                indexCols.append(domain.getName());
-                if (domain.getSqLiteDataType() == SqLiteDataType.Text) {
-                    indexCols.append(_COLLATION);
-                }
-                indexCols.append(sd.getSort().getExpression()).append(',');
-            });
-            final int len = indexCols.length();
-            return indexCols.delete(len - 1, len).toString();
+            return orderByDomainExpressions
+                    .stream()
+                    .map(de -> de.getDomain()
+                                 .getOrderByString(de.getSort(), collationIsCaseSensitive))
+                    .collect(Collectors.joining(","));
         }
     }
 }
