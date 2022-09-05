@@ -862,110 +862,65 @@ public class TableDefinition {
     }
 
     /**
-     * Class used to represent a foreign key reference.
+     * Represents a FOREIGN KEY reference.
      */
     private static class FkReference {
 
-        /** Owner of primary key that the FK references. */
+        /** Owner of PRIMARY KEY that the FK references. */
         @NonNull
-        private final TableDefinition parent;
-        /** Table owning FK. */
+        private final TableDefinition primaryKeyTable;
+        /** Table owning FOREIGN KEY. */
         @NonNull
-        private final TableDefinition child;
-        /** Domains in the FK that reference the parent PK. */
+        private final TableDefinition foreignKeyTable;
+        /** Domains in the FOREIGN KEY that reference the parent PRIMARY KEY. */
         @NonNull
-        private final List<Domain> domains;
-        /** Optional key in the parent to use instead of the PK. */
-        @Nullable
-        private Domain parentKey;
+        private final List<Domain> foreignKeyDomains;
 
         /**
          * Constructor.
-         * <p>
-         * Create a reference to a parent table's Primary Key
          *
-         * @param parent  Parent table (with PK that the FK references)
-         * @param child   Child table (owner of the FK)
-         * @param domains Domains in child table that reference PK in parent
+         * @param primaryKeyTable   Parent table with PRIMARY KEY that the FOREIGN KEY references
+         * @param foreignKeyTable   Child table which owns the FOREIGN KEY
+         * @param foreignKeyDomains Domains in child table that reference PRIMARY KEY in parent
          */
-        FkReference(@NonNull final TableDefinition parent,
-                    @NonNull final TableDefinition child,
-                    @NonNull final Domain... domains) {
+        FkReference(@NonNull final TableDefinition primaryKeyTable,
+                    @NonNull final TableDefinition foreignKeyTable,
+                    @NonNull final Domain... foreignKeyDomains) {
+            this.primaryKeyTable = primaryKeyTable;
+            this.foreignKeyTable = foreignKeyTable;
             // take a COPY
-            this.domains = new ArrayList<>(Arrays.asList(domains));
-            this.parent = parent;
-            this.child = child;
+            this.foreignKeyDomains = new ArrayList<>(Arrays.asList(foreignKeyDomains));
+        }
+
+        @NonNull
+        TableDefinition getPrimaryKeyTable() {
+            return primaryKeyTable;
+        }
+
+        @NonNull
+        TableDefinition getForeignKeyTable() {
+            return foreignKeyTable;
         }
 
         /**
-         * Constructor.
+         * Get an SQL fragment that matches the PRIMARY KEY of the parent
+         * to the FOREIGN KEY of the child.
          * <p>
-         * Create a reference to a parent table's Primary Key
-         *
-         * @param parent  Parent table (with PK that FK references)
-         * @param child   Child table (owner of the FK)
-         * @param domains Domains in child table that reference PK in parent
-         */
-        FkReference(@NonNull final TableDefinition parent,
-                    @NonNull final TableDefinition child,
-                    @NonNull final List<Domain> domains) {
-            // take a COPY
-            this.domains = new ArrayList<>(domains);
-            this.parent = parent;
-            this.child = child;
-        }
-
-        /**
-         * Constructor.
-         * <p>
-         * Create a 1:1 reference to a parent table's specific domain.
-         *
-         * @param parent    Parent table
-         * @param parentKey single Domain key in the parent table
-         * @param child     Child table (owner of the FK)
-         * @param domain    single Domain in child table that references parentKey in parent
-         */
-        FkReference(@NonNull final TableDefinition parent,
-                    @NonNull final Domain parentKey,
-                    @NonNull final TableDefinition child,
-                    @NonNull final Domain domain) {
-            domains = new ArrayList<>();
-            domains.add(domain);
-            this.parent = parent;
-            this.parentKey = parentKey;
-            this.child = child;
-        }
-
-        /**
-         * Get an SQL fragment that matches the PK of the parent to the FK of the child.
-         * <p>
-         * format: [parent alias].[column] = [child alias].[column]
+         * format: ([parent alias].[column] = [child alias].[column] [ AND ...])
          *
          * @return SQL fragment
          */
         @NonNull
         String getPredicate() {
-            if (parentKey != null) {
-                return parent.getAlias() + '.' + parentKey.getName()
-                       + '=' + child.getAlias() + '.' + domains.get(0).getName();
+            final List<Domain> pk = primaryKeyTable.getPrimaryKey();
+            SanityCheck.requireValue(pk, () -> "No primary key for table: " + primaryKeyTable);
 
-            } else {
-                final List<Domain> pk = parent.getPrimaryKey();
-                if (pk.isEmpty()) {
-                    // Should never happen... flw
-                    throw new IllegalStateException("No primary key for table: " + parent);
-                }
-                final StringBuilder sql = new StringBuilder();
-                for (int i = 0; i < pk.size(); i++) {
-                    if (i > 0) {
-                        sql.append(" AND ");
-                    }
-                    sql.append(parent.getAlias()).append('.').append(pk.get(i).getName());
-                    sql.append('=');
-                    sql.append(child.getAlias()).append('.').append(domains.get(i).getName());
-                }
-                return sql.toString();
+            final StringJoiner sql = new StringJoiner(" AND ", "(", ")");
+            for (int i = 0; i < pk.size(); i++) {
+                sql.add(primaryKeyTable.dot(pk.get(i))
+                        + '=' + foreignKeyTable.dot(foreignKeyDomains.get(i)));
             }
+            return sql.toString();
         }
 
         /**
@@ -976,26 +931,25 @@ public class TableDefinition {
          */
         @NonNull
         String def() {
-            if (parentKey != null) {
-                return "FOREIGN KEY (" + domains.get(0)
-                       + ") REFERENCES " + parent + '(' + parentKey + ')';
-            } else {
-                return "FOREIGN KEY (" + TextUtils.join(",", domains)
-                       + ") REFERENCES " + parent
-                       + '(' + TextUtils.join(",", parent.getPrimaryKey()) + ')';
-            }
+            return "FOREIGN KEY ("
+                   + foreignKeyDomains.stream()
+                                      .map(Domain::getName)
+                                      .collect(Collectors.joining(","))
+                   + ") REFERENCES " + primaryKeyTable.getName() + '('
+                   + primaryKeyTable.getPrimaryKey().stream()
+                                    .map(Domain::getName)
+                                    .collect(Collectors.joining(","))
+                   + ')';
         }
 
         @Override
         @NonNull
         public String toString() {
             return "FkReference{"
-                   + "parent=" + parent
-                   + ", parentKey=" + parentKey
-                   + ", child=" + child
-                   + ", domains=" + domains
-                   + ", def=\n" + def()
-                   + "\n}";
+                   + "parent=" + primaryKeyTable
+                   + ", child=" + foreignKeyTable
+                   + ", domains=" + foreignKeyDomains
+                   + '}';
         }
     }
 }
