@@ -58,8 +58,8 @@ public class TableDefinition {
 
     /** List of index definitions for this table. */
     private final Collection<IndexDefinition> indexes = new ArrayList<>();
-    /** Used for checking if an index has already been added. */
-    private final Collection<String> indexNameCheck = new HashSet<>();
+    /** Used for checking if an index has already been added. Only used in DEBUG. */
+    private final Collection<Integer> debugIndexNameDuplicates = new HashSet<>();
 
     /** List of domains in this table. */
     private final List<Domain> domains = new ArrayList<>();
@@ -150,7 +150,7 @@ public class TableDefinition {
         domainCheck.clear();
         domainNameCheck.clear();
         indexes.clear();
-        indexNameCheck.clear();
+        debugIndexNameDuplicates.clear();
         primaryKey.clear();
 
         // Need to make local copies to avoid 'collection modified' errors
@@ -437,30 +437,17 @@ public class TableDefinition {
     public TableDefinition addIndex(@NonNull final String nameSuffix,
                                     final boolean unique,
                                     @NonNull final Domain... domains) {
-        return addIndex(nameSuffix, unique, Arrays.asList(domains));
-    }
-
-    /**
-     * Add an index to this table.
-     *
-     * @param nameSuffix unique (for this table) suffix to add to the name of this index.
-     *                   Alphanumeric Only.
-     * @param unique     FLag indicating index is UNIQUE
-     * @param domains    List of domains index
-     *
-     * @return {@code this} (for chaining)
-     */
-    @NonNull
-    private TableDefinition addIndex(@NonNull final String nameSuffix,
-                                     final boolean unique,
-                                     @NonNull final List<Domain> domains) {
-        // Make sure not already defined
-        if (indexNameCheck.contains(nameSuffix)) {
-            throw new IllegalStateException("Index suffix '" + nameSuffix + "' already defined");
+        if (BuildConfig.DEBUG /* always */) {
+            // Make sure not already defined
+            final int nameHash = nameSuffix.hashCode();
+            if (debugIndexNameDuplicates.contains(nameHash)) {
+                throw new IllegalStateException("Duplicate nameSuffix: " + nameSuffix);
+            }
+            debugIndexNameDuplicates.add(nameHash);
         }
+
         indexes.add(new IndexDefinition(this, nameSuffix + "_" + (indexes.size() + 1),
-                                        unique, domains));
-        indexNameCheck.add(nameSuffix);
+                                        unique, Arrays.asList(domains)));
         return this;
     }
 
