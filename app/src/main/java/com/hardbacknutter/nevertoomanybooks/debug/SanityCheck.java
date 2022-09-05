@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Collection;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
@@ -58,7 +59,7 @@ public final class SanityCheck {
 
     @SuppressWarnings("UnusedReturnValue")
     public static float requirePositiveValue(final float value,
-                                            @Nullable final String message) {
+                                             @Nullable final String message) {
         if (value <= 0) {
             throw new SanityException(message);
         }
@@ -76,6 +77,15 @@ public final class SanityCheck {
             throw new SanityException(message);
         }
         return value;
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    @NonNull
+    public static <T extends Collection<?>> T requireValue(
+            @Nullable final T value,
+            @NonNull final Supplier<String> message) {
+
+        return requireValue(value, message.get());
     }
 
     @SuppressWarnings("UnusedReturnValue")
