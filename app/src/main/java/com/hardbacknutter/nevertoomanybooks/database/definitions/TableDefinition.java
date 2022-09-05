@@ -63,10 +63,8 @@ public class TableDefinition {
 
     /** List of domains in this table. */
     private final List<Domain> domains = new ArrayList<>();
-    /** Used for checking if a domain has already been added. */
-    private final Collection<Domain> domainCheck = new HashSet<>();
-    /** Used for checking if a domain NAME has already been added. */
-    private final Collection<Integer> domainNameCheck = new HashSet<>();
+    /** Used for checking if a domain has already been added. Only used in DEBUG. */
+    private final Collection<Integer> debugDomainNameDuplicates = new HashSet<>();
 
     /** List of domains forming primary key. */
     private final List<Domain> primaryKey = new ArrayList<>();
@@ -147,8 +145,7 @@ public class TableDefinition {
      */
     public void clear() {
         domains.clear();
-        domainCheck.clear();
-        domainNameCheck.clear();
+        debugDomainNameDuplicates.clear();
         indexes.clear();
         debugIndexNameDuplicates.clear();
         primaryKey.clear();
@@ -228,37 +225,28 @@ public class TableDefinition {
      */
     @NonNull
     public TableDefinition addDomains(@NonNull final Domain... domains) {
-        for (final Domain d : domains) {
-            addDomain(d);
+        if (BuildConfig.DEBUG /* always */) {
+            Arrays.stream(domains).forEach(domain -> {
+                final int nameHash = domain.getName().hashCode();
+                if (debugDomainNameDuplicates.contains(nameHash)) {
+                    throw new IllegalArgumentException("Duplicate domain: " + domain);
+                }
+                debugDomainNameDuplicates.add(nameHash);
+            });
         }
+        Collections.addAll(this.domains, domains);
         return this;
     }
 
     /**
-     * Add a domain to this table. Domains already present are silently ignored.
+     * Check if a domain is present.
      *
-     * @param domain Domain object to add
+     * @param domain to check
      *
-     * @return {@code true} if the domain was added, {@code false} if it was already present.
+     * @return {@code true} if present.
      */
-    public boolean addDomain(@NonNull final Domain domain) {
-        // Make sure it's not already in the table, silently ignore if it is.
-        if (domainCheck.contains(domain)) {
-            return false;
-        }
-
-        // avoid toLowerCase
-        final int nameHash = domain.getName().hashCode();
-        // Make sure one with the same name is not already in table, can't ignore that, go crash.
-        if (domainNameCheck.contains(nameHash)) {
-            throw new IllegalArgumentException("Duplicate domain=" + domain);
-        }
-        // Add it
-        domains.add(domain);
-
-        domainCheck.add(domain);
-        domainNameCheck.add(nameHash);
-        return true;
+    public boolean contains(@NonNull final Domain domain) {
+        return domains.contains(domain);
     }
 
     /**
