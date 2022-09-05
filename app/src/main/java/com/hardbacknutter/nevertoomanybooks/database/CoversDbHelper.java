@@ -76,7 +76,7 @@ public class CoversDbHelper
                     .build();
 
     /** table definitions. */
-    public static final TableDefinition TBL_IMAGE = new TableDefinition("image")
+    public static final TableDefinition TBL_IMAGE = new TableDefinition("image", "image")
             .addDomains(DOM_PK_ID, DOM_IMAGE, DOM_UTC_DATETIME, DOM_CACHE_ID)
             .setPrimaryKey(DOM_PK_ID);
 

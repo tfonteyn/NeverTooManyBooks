@@ -26,6 +26,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +39,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
+
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 /**
  * Class to store table name and a list of domain definitions.
@@ -75,15 +79,13 @@ public class TableDefinition {
     private final Map<TableDefinition, FkReference> children =
             Collections.synchronizedMap(new HashMap<>());
 
-    /** Table name. */
     @NonNull
-    private String name;
-    /** Table alias. */
-    @Nullable
-    private String alias;
-    /** Table type. */
+    private final String name;
+    @NonNull
+    private final String alias;
     @NonNull
     private TableType type = TableType.Standard;
+
     /** Cached table structure info. */
     @Nullable
     private TableInfo tableInfo;
@@ -91,11 +93,13 @@ public class TableDefinition {
     /**
      * Constructor.
      *
-     * @param name Table name; also used as alias unless the latter is overridden.
+     * @param name  Table name
+     * @param alias name for the table
      */
-    public TableDefinition(@NonNull final String name) {
+    public TableDefinition(@NonNull final String name,
+                           @NonNull final String alias) {
         this.name = name;
-        alias = name;
+        this.alias = alias;
     }
 
     /**
@@ -124,7 +128,7 @@ public class TableDefinition {
      */
     public void create(@NonNull final SQLiteDatabase db,
                        final boolean withDomainConstraints) {
-        db.execSQL(def(name, withDomainConstraints));
+        db.execSQL(getCreateStatement(name, withDomainConstraints));
     }
 
     /**
@@ -182,6 +186,17 @@ public class TableDefinition {
     }
 
     /**
+     * Get the alias name.
+     *
+     * @return the table alias name
+     */
+    @VisibleForTesting
+    @NonNull
+    public String getAlias() {
+        return alias;
+    }
+
+    /**
      * Get the table name.
      *
      * @return table name.
@@ -189,20 +204,6 @@ public class TableDefinition {
     @NonNull
     public String getName() {
         return name;
-    }
-
-    /**
-     * Set the table name. Useful for cloned tables.
-     *
-     * @param newName New table name
-     *
-     * @return {@code this} (for chaining)
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    public TableDefinition setName(@NonNull final String newName) {
-        name = newName;
-        return this;
     }
 
     /**
@@ -216,53 +217,6 @@ public class TableDefinition {
     @NonNull
     public String toString() {
         return name;
-    }
-
-
-    @SuppressWarnings({"WeakerAccess", "unused"})
-    @NonNull
-    public String toDebugString() {
-        return "TableDefinition{"
-               + "name=`" + name + '`'
-               + ", alias=`" + alias + '`'
-               + ", type=" + type
-               + ", domains=" + domains
-               + ", primaryKey=" + primaryKey
-               + "\nparents=" + parents
-               + "\nchildren=" + children
-               + "\nindexes=" + indexes
-               + "\nindexNameCheck=" + indexNameCheck
-               + "\ndomainCheck=" + domainCheck
-               + "\ndomainNameCheck=" + domainNameCheck
-               + "\ntableInfo=" + tableInfo
-               + '}';
-    }
-
-    /**
-     * Get the alias name.
-     *
-     * @return the table alias, or if blank, return the table name.
-     */
-    @NonNull
-    public String getAlias() {
-        if (alias == null || alias.isEmpty()) {
-            return name;
-        } else {
-            return alias;
-        }
-    }
-
-    /**
-     * Set the table alias. Useful for cloned tables.
-     *
-     * @param newAlias New table alias
-     *
-     * @return {@code this} (for chaining)
-     */
-    @NonNull
-    public TableDefinition setAlias(@Nullable final String newAlias) {
-        alias = newAlias;
-        return this;
     }
 
     /**
@@ -694,7 +648,7 @@ public class TableDefinition {
     public void alterTableAddColumns(@NonNull final SQLiteDatabase db,
                                      @NonNull final Domain... domains) {
         for (final Domain domain : domains) {
-            db.execSQL("ALTER TABLE " + getName() + " ADD " + domain.def(true));
+            db.execSQL("ALTER TABLE " + name + " ADD " + domain.def(true));
         }
     }
 
@@ -802,15 +756,26 @@ public class TableDefinition {
      * @return SQL to create table
      */
     @NonNull
-    private String def(@NonNull final String tableName,
-                       final boolean withDomainConstraints) {
+    private String getCreateStatement(@NonNull final String tableName,
+                                      final boolean withDomainConstraints) {
 
-        final StringBuilder sql = new StringBuilder("CREATE")
-                .append(type.getCreateModifier())
-                .append(" TABLE ")
-                .append(tableName)
-                .append(type.getUsingModifier())
-                .append("\n(");
+        final StringBuilder sql;
+        switch (type) {
+            case FTS:
+                sql = new StringBuilder("CREATE VIRTUAL TABLE " + tableName + " USING fts4");
+                break;
+
+            case Temporary:
+                sql = new StringBuilder("CREATE TEMPORARY TABLE " + tableName);
+                break;
+
+            case Standard:
+            default:
+                sql = new StringBuilder("CREATE TABLE " + tableName);
+                break;
+        }
+
+        sql.append("\n(");
 
         // add the columns
         boolean hasPrimaryKey = false;
@@ -825,7 +790,9 @@ public class TableDefinition {
         // add the primary key if not already added / needed.
         if (!hasPrimaryKey && !primaryKey.isEmpty()) {
             sql.append("\n,PRIMARY KEY (")
-               .append(TextUtils.join(",", primaryKey))
+               .append(primaryKey.stream()
+                                 .map(Domain::getName)
+                                 .collect(Collectors.joining(",")))
                .append(')');
         }
 
@@ -834,7 +801,7 @@ public class TableDefinition {
             sql.append("\n,")
                .append(parents.values().stream()
                               .map(FkReference::def)
-                              .collect(Collectors.joining("\n,")));
+                              .collect(Collectors.joining(",")));
         }
 
         // end of column/constraint list
@@ -885,43 +852,13 @@ public class TableDefinition {
 
     /**
      * Supported/used table types.
-     * <p>
-     * <a href=https://sqlite.org/fts3.html">https://sqlite.org/fts3.html</a>
+     *
+     * @see <a href=https://sqlite.org/fts3.html">https://sqlite.org/fts3.html</a>
      */
     public enum TableType {
-        Standard, Temporary, FTS3, FTS4;
-
-        @SuppressWarnings("unused")
-        boolean isVirtual() {
-            return this == FTS3 || this == FTS4;
-        }
-
-        String getCreateModifier() {
-            switch (this) {
-                case FTS3:
-                case FTS4:
-                    return " VIRTUAL";
-                case Standard:
-                    return "";
-                case Temporary:
-                    return " TEMPORARY";
-            }
-            return "";
-        }
-
-        String getUsingModifier() {
-            switch (this) {
-                case Standard:
-                case Temporary:
-                    return "";
-
-                case FTS3:
-                    return " USING fts3";
-                case FTS4:
-                    return " USING fts4";
-            }
-            return "";
-        }
+        Standard,
+        Temporary,
+        FTS
     }
 
     /**

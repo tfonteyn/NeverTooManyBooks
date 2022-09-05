@@ -466,43 +466,36 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         // never change the "authors" "a" alias. It's hardcoded elsewhere.
-        TBL_AUTHORS = new TableDefinition("authors").setAlias("a");
+        TBL_AUTHORS = new TableDefinition("authors", "a");
         // never change the "books" "b" alias. It's hardcoded elsewhere.
-        TBL_BOOKS = new TableDefinition("books").setAlias("b");
+        TBL_BOOKS = new TableDefinition("books", "b");
         // never change the "series" "s" alias. It's hardcoded elsewhere.
-        TBL_SERIES = new TableDefinition("series").setAlias("s");
+        TBL_SERIES = new TableDefinition("series", "s");
         // never change the "publishers" "p" alias. It's hardcoded elsewhere.
-        TBL_PUBLISHERS = new TableDefinition("publishers").setAlias("p");
+        TBL_PUBLISHERS = new TableDefinition("publishers", "p");
 
-        TBL_BOOKSHELF = new TableDefinition("bookshelf").setAlias("bsh");
-        TBL_BOOKSHELF_FILTERS = new TableDefinition("bookshelf_filters").setAlias("bshf");
+        TBL_BOOKSHELF = new TableDefinition("bookshelf", "bsh");
+        TBL_BOOKSHELF_FILTERS = new TableDefinition("bookshelf_filters", "bshf");
 
-        TBL_TOC_ENTRIES = new TableDefinition("anthology").setAlias("an");
+        TBL_TOC_ENTRIES = new TableDefinition("anthology", "an");
 
-        TBL_BOOK_BOOKSHELF = new TableDefinition("book_bookshelf").setAlias("bbsh");
-        TBL_BOOK_AUTHOR = new TableDefinition("book_author").setAlias("ba");
-        TBL_BOOK_SERIES = new TableDefinition("book_series").setAlias("bs");
-        TBL_BOOK_PUBLISHER = new TableDefinition("book_publisher").setAlias("bp");
-        TBL_BOOK_LOANEE = new TableDefinition("loan").setAlias("l");
-        TBL_BOOK_TOC_ENTRIES = new TableDefinition("book_anthology").setAlias("bat");
+        TBL_BOOK_BOOKSHELF = new TableDefinition("book_bookshelf", "bbsh");
+        TBL_BOOK_AUTHOR = new TableDefinition("book_author", "ba");
+        TBL_BOOK_SERIES = new TableDefinition("book_series", "bs");
+        TBL_BOOK_PUBLISHER = new TableDefinition("book_publisher", "bp");
+        TBL_BOOK_LOANEE = new TableDefinition("loan", "l");
+        TBL_BOOK_TOC_ENTRIES = new TableDefinition("book_anthology", "bat");
 
-        TBL_CALIBRE_LIBRARIES = new TableDefinition("calibre_lib")
-                .setAlias("clb_l");
-        TBL_CALIBRE_VIRTUAL_LIBRARIES = new TableDefinition("calibre_vlib")
-                .setAlias("clb_vl");
-        TBL_CALIBRE_CUSTOM_FIELDS = new TableDefinition("calibre_custom_fields")
-                .setAlias("clb_cf");
-        TBL_CALIBRE_BOOKS = new TableDefinition("calibre_books")
-                .setAlias("clb_b");
+        TBL_CALIBRE_LIBRARIES = new TableDefinition("calibre_lib", "clb_l");
+        TBL_CALIBRE_VIRTUAL_LIBRARIES = new TableDefinition("calibre_vlib", "clb_vl");
+        TBL_CALIBRE_CUSTOM_FIELDS = new TableDefinition("calibre_custom_fields", "clb_cf");
+        TBL_CALIBRE_BOOKS = new TableDefinition("calibre_books", "clb_b");
 
-        TBL_BOOKLIST_STYLES = new TableDefinition("book_list_styles")
-                .setAlias("bls");
+        TBL_BOOKLIST_STYLES = new TableDefinition("book_list_styles", "bls");
 
-        TBL_BOOK_LIST_NODE_STATE = new TableDefinition("book_list_node_settings")
-                .setAlias("bl_ns");
+        TBL_BOOK_LIST_NODE_STATE = new TableDefinition("book_list_node_settings", "bl_ns");
 
-        TBL_STRIPINFO_COLLECTION = new TableDefinition("stripinfo_collection")
-                .setAlias("si_c");
+        TBL_STRIPINFO_COLLECTION = new TableDefinition("stripinfo_collection", "si_c");
 
         /* ======================================================================================
          *  Primary and Foreign Key definitions
@@ -1603,8 +1596,8 @@ public final class DBDefinitions {
 
     @NonNull
     public static TableDefinition createFtsTableDefinition(@NonNull final String name) {
-        return new TableDefinition(name)
-                .setType(TableDefinition.TableType.FTS4)
+        return new TableDefinition(name, name)
+                .setType(TableDefinition.TableType.FTS)
                 .addDomains(DOM_TITLE,
                             DOM_FTS_AUTHOR_NAME,
                             DOM_SERIES_TITLE,

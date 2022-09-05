@@ -403,13 +403,11 @@ class BooklistBuilder {
              *
              * We setup the tables here, but don't create them yet.
              */
-            listTable = new TableDefinition("tmp_book_list_" + instanceId)
-                    .setAlias("bl")
+            listTable = new TableDefinition("tmp_book_list_" + instanceId, "bl")
                     .addDomains(DOM_PK_ID)
                     .setPrimaryKey(DOM_PK_ID);
 
-            navTable = new TableDefinition("tmp_book_nav_" + instanceId)
-                    .setAlias("nav")
+            navTable = new TableDefinition("tmp_book_nav_" + instanceId, "nav")
                     .addDomains(DOM_PK_ID, DOM_FK_BOOK, DOM_FK_BL_ROW_ID)
                     .setPrimaryKey(DOM_PK_ID);
 
