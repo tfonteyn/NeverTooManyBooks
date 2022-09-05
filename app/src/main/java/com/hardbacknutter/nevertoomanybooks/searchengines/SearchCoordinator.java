@@ -48,6 +48,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -457,35 +458,29 @@ public class SearchCoordinator
     @NonNull
     private TaskProgress accumulateProgress() {
 
-        // Sum the current & max values for each active task.
         int progressMax = 0;
         int progressCount = 0;
 
+        final StringJoiner sb = new StringJoiner("\n");
         // Start with the base message if we have one.
-        final StringBuilder sb;
         if (baseMessage != null && !baseMessage.isEmpty()) {
-            sb = new StringBuilder(baseMessage);
-        } else {
-            sb = new StringBuilder();
+            sb.add(baseMessage);
         }
 
         synchronized (searchProgressBySite) {
             if (!searchProgressBySite.isEmpty()) {
-                // if there was a baseMessage, add a linefeed to it.
-                if (sb.length() > 0) {
-                    sb.append('\n');
-                }
                 // Append each task message
-                sb.append(searchProgressBySite
-                                  .values().stream()
-                                  .map(msg -> String.format(listElementPrefixString, msg.text))
-                                  .collect(Collectors.joining("\n")));
+                searchProgressBySite
+                        .values()
+                        .stream()
+                        .map(msg -> String.format(listElementPrefixString, msg.text))
+                        .forEach(sb::add);
 
+                // Accumulate the current & max values for each active task.
                 for (final TaskProgress taskProgress : searchProgressBySite.values()) {
                     progressMax += taskProgress.maxPosition;
                     progressCount += taskProgress.position;
                 }
-
             }
         }
 
@@ -1252,8 +1247,6 @@ public class SearchCoordinator
         }
     }
 
-
-
     private static class CoverFilter {
 
         /**
@@ -1332,5 +1325,4 @@ public class SearchCoordinator
             return null;
         }
     }
-
 }
