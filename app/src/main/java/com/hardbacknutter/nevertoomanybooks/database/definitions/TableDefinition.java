@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.database.definitions;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -150,23 +149,31 @@ public class TableDefinition {
         debugIndexNameDuplicates.clear();
         primaryKey.clear();
 
-        // Need to make local copies to avoid 'collection modified' errors
-        final Collection<TableDefinition> tmpParents = new ArrayList<>();
-        for (final FkReference fk : parents.values()) {
-            tmpParents.add(fk.parent);
-        }
-        for (final TableDefinition parent : tmpParents) {
-            removeReference(parent);
-        }
+//        // Need to make local copies to avoid 'collection modified' errors
+//        final Collection<TableDefinition> tmpParents = new ArrayList<>();
+//        for (final FkReference fk : parents.values()) {
+//            tmpParents.add(fk.primaryKeyTable);
+//        }
+//        for (final TableDefinition parent : tmpParents) {
+//            removeReference(parent);
+//        }
+//
+//        // Need to make local copies to avoid 'collection modified' errors
+//        final Collection<TableDefinition> tmpChildren = new ArrayList<>();
+//        for (final FkReference fk : children.values()) {
+//            tmpChildren.add(fk.foreignKeyTable);
+//        }
+//        for (final TableDefinition child : tmpChildren) {
+//            child.removeReference(this);
+//        }
 
-        // Need to make local copies to avoid 'collection modified' errors
-        final Collection<TableDefinition> tmpChildren = new ArrayList<>();
-        for (final FkReference fk : children.values()) {
-            tmpChildren.add(fk.child);
-        }
-        for (final TableDefinition child : tmpChildren) {
-            child.removeReference(this);
-        }
+        parents.values().stream()
+               .map(FkReference::getPrimaryKeyTable)
+               .forEach(this::removeReference);
+
+        children.values().stream()
+                .map(FkReference::getForeignKeyTable)
+                .forEach(child -> child.removeReference(this));
     }
 
     /**
