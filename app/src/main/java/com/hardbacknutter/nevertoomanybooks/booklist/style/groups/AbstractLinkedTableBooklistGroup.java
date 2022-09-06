@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpressio
 abstract class AbstractLinkedTableBooklistGroup
         extends BooklistGroup {
 
-    /** DomainExpression for displaying the data. */
+    /** DomainExpression for displaying the data. Style dependent. */
     @NonNull
     private final DomainExpression displayDomainExpression;
 
@@ -47,14 +47,6 @@ abstract class AbstractLinkedTableBooklistGroup
         displayDomainExpression = createDisplayDomainExpression(style);
 
         this.underEach = underEach;
-    }
-
-    AbstractLinkedTableBooklistGroup(@NonNull final Style style,
-                                     @NonNull final AbstractLinkedTableBooklistGroup group) {
-        super(group);
-        displayDomainExpression = createDisplayDomainExpression(style);
-
-        underEach = group.underEach;
     }
 
     @NonNull

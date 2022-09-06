@@ -60,17 +60,6 @@ public class BookshelfBooklistGroup
         super(style, BOOKSHELF, false);
     }
 
-    /**
-     * Copy constructor.
-     *
-     * @param style        Style reference.
-     * @param group        to copy from
-     */
-    BookshelfBooklistGroup(@NonNull final Style style,
-                           @NonNull final BookshelfBooklistGroup group) {
-        super(style, group);
-    }
-
     @Override
     @NonNull
     public GroupKey createGroupKey() {

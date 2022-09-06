@@ -69,21 +69,6 @@ public class AuthorBooklistGroup
         sortingDomainExpression = createSortingDomainExpression(style);
     }
 
-    /**
-     * Copy constructor.
-     *
-     * @param style        Style reference.
-     * @param group        to copy from
-     */
-    AuthorBooklistGroup(@NonNull final Style style,
-                        @NonNull final AuthorBooklistGroup group) {
-        super(style, group);
-        sortingDomainExpression = createSortingDomainExpression(style);
-
-        primaryAuthorType = group.primaryAuthorType;
-    }
-
-
     @Override
     @NonNull
     public GroupKey createGroupKey() {

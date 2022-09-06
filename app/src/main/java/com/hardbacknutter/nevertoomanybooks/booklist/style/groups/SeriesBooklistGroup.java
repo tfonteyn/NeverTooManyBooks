@@ -60,17 +60,6 @@ public class SeriesBooklistGroup
         super(style, SERIES, false);
     }
 
-    /**
-     * Copy constructor.
-     *
-     * @param style Style reference.
-     * @param group to copy from
-     */
-    SeriesBooklistGroup(@NonNull final Style style,
-                        @NonNull final SeriesBooklistGroup group) {
-        super(style, group);
-    }
-
     @Override
     @NonNull
     public GroupKey createGroupKey() {

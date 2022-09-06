@@ -56,17 +56,6 @@ public class PublisherBooklistGroup
         super(style, PUBLISHER, false);
     }
 
-    /**
-     * Copy constructor.
-     *
-     * @param style Style reference.
-     * @param group to copy from
-     */
-    PublisherBooklistGroup(@NonNull final Style style,
-                           @NonNull final PublisherBooklistGroup group) {
-        super(style, group);
-    }
-
     @Override
     @NonNull
     public GroupKey createGroupKey() {

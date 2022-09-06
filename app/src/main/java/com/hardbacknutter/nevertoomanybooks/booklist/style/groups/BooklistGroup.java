@@ -191,17 +191,6 @@ public class BooklistGroup {
     }
 
     /**
-     * Copy constructor.
-     *
-     * @param group to copy from
-     */
-    @SuppressWarnings("CopyConstructorMissesField")
-    public BooklistGroup(@NonNull final BooklistGroup group) {
-        id = group.id;
-        groupKey = group.groupKey;
-    }
-
-    /**
      * Create a new BooklistGroup of the specified id, creating any specific
      * subclasses as necessary.
      *
