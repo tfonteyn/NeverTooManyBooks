@@ -520,6 +520,7 @@ public class DBHelper
      */
     @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
+        initCollation(db);
 
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
@@ -549,6 +550,7 @@ public class DBHelper
     public void onUpgrade(@NonNull final SQLiteDatabase db,
                           final int oldVersion,
                           final int newVersion) {
+        initCollation(db);
 
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
@@ -823,13 +825,22 @@ public class DBHelper
 
     @Override
     public void onOpen(@NonNull final SQLiteDatabase db) {
-        if (sIsCollationCaseSensitive == null) {
-            sIsCollationCaseSensitive = collationIsCaseSensitive(db);
-        }
+        initCollation(db);
 
         // Turn ON foreign key support so that CASCADE etc. works.
         // This is the same as db.execSQL("PRAGMA foreign_keys = ON");
         db.setForeignKeyConstraintsEnabled(true);
+    }
+
+    /**
+     * MUST be called as the first line from {@link #onCreate(SQLiteDatabase)},
+     * {@link #onUpgrade(SQLiteDatabase, int, int)} nd {@link #onOpen(SQLiteDatabase)}
+     * to cover all possible startup paths.
+     */
+    private void initCollation(@NonNull final SQLiteDatabase db) {
+        if (sIsCollationCaseSensitive == null) {
+            sIsCollationCaseSensitive = collationIsCaseSensitive(db);
+        }
     }
 
     /**
