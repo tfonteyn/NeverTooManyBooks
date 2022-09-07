@@ -25,13 +25,8 @@ import android.view.LayoutInflater;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-
 public abstract class MultiColumnRecyclerViewAdapter<HOLDER extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<HOLDER> {
-
-    private static final String TAG = "MultiColumnRecyclerView";
 
     /** Cached inflater. */
     @NonNull
@@ -62,15 +57,6 @@ public abstract class MultiColumnRecyclerViewAdapter<HOLDER extends RecyclerView
             listIndex = -1;
         }
 
-        if (BuildConfig.DEBUG) {
-            Logger.d(TAG, "transpose",
-                     "realItemCount=" + realItemCount
-                     + ", rowCount=" + rowCount
-                     + ", position=" + position
-                     + ", column=" + column
-                     + ", row=" + row
-                     + ", listIndex=" + listIndex);
-        }
         return listIndex;
     }
 
@@ -81,14 +67,7 @@ public abstract class MultiColumnRecyclerViewAdapter<HOLDER extends RecyclerView
         final int column = listIndex % rowCount;
         final int row = listIndex / rowCount;
 
-        final int position = (column * columnCount) + row;
-
-        if (BuildConfig.DEBUG) {
-            Logger.d(TAG, "revert",
-                     "listIndex=" + listIndex
-                     + ", position=" + position);
-        }
-        return position;
+        return (column * columnCount) + row;
     }
 
 
