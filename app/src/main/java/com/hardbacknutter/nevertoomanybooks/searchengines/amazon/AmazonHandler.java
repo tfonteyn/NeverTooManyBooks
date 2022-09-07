@@ -60,6 +60,9 @@ public class AmazonHandler
      *      <li>&field-keywords</li>
      * </ul>
      *
+     * ENHANCE: add "Find by ISBN" menu item;
+     * ENHANCE: add "Find by Title+author" menu item
+     *
      * @see <a href="https://www.amazon.co.uk/advanced-search/books/">
      *         www.amazon.co.uk/advanced-search/books</a>
      */
