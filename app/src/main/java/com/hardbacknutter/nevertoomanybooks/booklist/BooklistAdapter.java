@@ -112,29 +112,41 @@ public class BooklistAdapter
     /** Cached locale. */
     @NonNull
     private final Locale userLocale;
+
     /** The padding indent (in pixels) added for each level: padding = (level-1) * levelIndent. */
     private final int levelIndent;
+
     /** Cached inflater. */
     @NonNull
     private final LayoutInflater inflater;
+
     /** caching the book condition strings. */
     private final String[] conditionDescriptions;
+
     /** Whether to use the covers DAO caching. */
     private boolean imageCachingEnabled;
+
     private boolean reorderTitleForDisplaying;
+
     /** List style to apply. */
     private Style style;
+
     private int groupRowHeight;
+
     /** Top margin to use for Level 1 <strong>if</strong> the {@link #groupRowHeight} is wrap. */
     private int groupLevel1topMargin;
+
     /** Longest side for a cover in pixels. */
     private int coverLongestSide;
+
     /** The cursor is the equivalent of the 'list of items'. */
     @Nullable
     private Cursor cursor;
+
     /** provides read only access to the row data. */
     @Nullable
     private DataHolder nodeData;
+
     @Nullable
     private OnRowClickListener rowClickListener;
     @Nullable
@@ -267,7 +279,7 @@ public class BooklistAdapter
         // NEWTHINGS: BooklistGroup.KEY add a new holder type if needed
         switch (groupId) {
             case BooklistGroup.BOOK:
-                holder = new BookHolder(this, itemView, coverLongestSide);
+                holder = new BookHolder(this, itemView);
                 break;
 
             case BooklistGroup.AUTHOR:
@@ -558,22 +570,6 @@ public class BooklistAdapter
         }
     }
 
-    /**
-     * Get the level for the given position.
-     *
-     * @param position Adapter position to query
-     *
-     * @return the level, or {@code 0} if unknown
-     */
-    int getLevel(final int position) {
-        if (cursor != null && cursor.moveToPosition(position)) {
-            //noinspection ConstantConditions
-            return nodeData.getInt(DBKey.BL_NODE_LEVEL);
-        } else {
-            return 0;
-        }
-    }
-
     @NonNull
     public Locale getUserLocale() {
         return userLocale;
@@ -790,21 +786,17 @@ public class BooklistAdapter
         /** The parent adapter. */
         @NonNull
         private final BooklistAdapter adapter;
+
         /** Format string. */
         @NonNull
         private final String a_bracket_b_bracket;
 
-        /** Size in pixels. */
-        @IntRange(from = 0)
-        private final int coverLongestSide;
-
-        @NonNull
-        private final String[] bookCondition;
         @NonNull
         private final BooksonbookshelfRowBookBinding vb;
         /** Only active when running in debug mode; displays the "position/rowId" for a book. */
         @Nullable
         private TextView dbgRowIdView;
+        /** each holder has its own loader - the more cores the cpu has, the faster we load. */
         @Nullable
         private ImageViewLoader imageLoader;
 
@@ -814,13 +806,11 @@ public class BooklistAdapter
          * <strong>Note:</strong> the itemView can be re-used.
          * Hence make sure to explicitly set visibility.
          *
-         * @param adapter          the hosting adapter
-         * @param itemView         the view specific for this holder
-         * @param coverLongestSide Longest side for a cover in pixels.
+         * @param adapter  the hosting adapter
+         * @param itemView the view specific for this holder
          */
         BookHolder(@NonNull final BooklistAdapter adapter,
-                   @NonNull final View itemView,
-                   @IntRange(from = 0) final int coverLongestSide) {
+                   @NonNull final View itemView) {
             super(itemView);
             this.adapter = adapter;
 
@@ -829,17 +819,15 @@ public class BooklistAdapter
             final Context context = itemView.getContext();
 
             a_bracket_b_bracket = context.getString(R.string.a_bracket_b_bracket);
-            bookCondition = context.getResources()
-                                   .getStringArray(R.array.conditions_book);
 
-            this.coverLongestSide = coverLongestSide;
             if (adapter.style.isShowField(Style.Screen.List, FieldVisibility.COVER[0])) {
                 // Do not go overkill here by adding a full-blown CoverHandler.
                 // We only provide zooming by clicking on the image.
                 vb.coverImage0.setOnClickListener(this::onZoomCover);
 
                 imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
-                                                  this.coverLongestSide, this.coverLongestSide);
+                                                  adapter.coverLongestSide,
+                                                  adapter.coverLongestSide);
             } else {
                 // hide it if not in use.
                 vb.coverImage0.setVisibility(View.GONE);
@@ -972,7 +960,8 @@ public class BooklistAdapter
 
             if (style.isShowField(Style.Screen.List, DBKey.BOOK_CONDITION)
                 && rowData.contains(DBKey.BOOK_CONDITION)) {
-                showOrHide(vb.condition, bookCondition[rowData.getInt(DBKey.BOOK_CONDITION)]);
+                showOrHide(vb.condition,
+                           adapter.conditionDescriptions[rowData.getInt(DBKey.BOOK_CONDITION)]);
             }
 
             // {@link BoBTask#fixedDomainList}
@@ -1121,8 +1110,9 @@ public class BooklistAdapter
             if (adapter.isImageCachingEnabled()) {
                 final CoverCacheDao coverCacheDao = ServiceLocator.getInstance().getCoverCacheDao();
                 if (!coverCacheDao.isBusy()) {
-                    final Bitmap bitmap = coverCacheDao
-                            .getCover(context, uuid, 0, coverLongestSide, coverLongestSide);
+                    final Bitmap bitmap = coverCacheDao.getCover(context, uuid, 0,
+                                                                 adapter.coverLongestSide,
+                                                                 adapter.coverLongestSide);
 
                     if (bitmap != null) {
                         //noinspection ConstantConditions
@@ -1138,7 +1128,7 @@ public class BooklistAdapter
             if (file.isEmpty()) {
                 // leave the space blank, but preserve the width BASED on the coverLongestSide!
                 final ViewGroup.LayoutParams lp = vb.coverImage0.getLayoutParams();
-                lp.width = (int) (coverLongestSide * HW_RATIO);
+                lp.width = (int) (adapter.coverLongestSide * HW_RATIO);
                 lp.height = 0;
                 vb.coverImage0.setLayoutParams(lp);
                 vb.coverImage0.setImageDrawable(null);
@@ -1153,7 +1143,9 @@ public class BooklistAdapter
                 imageLoader.fromFile(vb.coverImage0, file.get(), bitmap -> {
                     if (bitmap != null) {
                         ServiceLocator.getInstance().getCoverCacheDao().saveCover(
-                                uuid, 0, bitmap, coverLongestSide, coverLongestSide);
+                                uuid, 0, bitmap,
+                                adapter.coverLongestSide,
+                                adapter.coverLongestSide);
                     }
                 });
             } else {
