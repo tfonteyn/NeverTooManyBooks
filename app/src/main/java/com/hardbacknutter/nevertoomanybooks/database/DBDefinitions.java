@@ -30,10 +30,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BookDetailsFieldVisib
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BookshelfBooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.PublisherBooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.SeriesBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
@@ -181,12 +177,6 @@ public final class DBDefinitions {
      * {@link BuiltinStyle#DEFAULT_ID}
      */
     public static final Domain DOM_FK_STYLE;
-
-    /**
-     * Foreign key between the list table {@link Booklist}
-     * and the navigator table used in the ViewPager displaying individual books.
-     */
-    public static final Domain DOM_FK_BL_ROW_ID;
 
     /* ======================================================================================
      * Domain definitions.
@@ -417,30 +407,11 @@ public final class DBDefinitions {
 
 
     /* ======================================================================================
-     *  {@link Booklist} domains.
+     *  {@link BooklistNodeDao} domains.
      * ====================================================================================== */
 
-    /** {@link AuthorBooklistGroup} sorting. */
-    public static final Domain DOM_BL_AUTHOR_SORT;
-    /** {@link SeriesBooklistGroup} sorting. */
-    public static final Domain DOM_BL_SERIES_SORT;
-    /** {@link PublisherBooklistGroup} sorting. */
-    public static final Domain DOM_BL_PUBLISHER_SORT;
-    /** {@link BookshelfBooklistGroup} sorting. */
-    public static final Domain DOM_BL_BOOKSHELF_SORT;
-
     /**
-     * Series number, cast()'d for sorting purposes in {@link Booklist}
-     * so we can sort it numerically regardless of content.
-     */
-    public static final Domain DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT;
-
-    /** {@link Booklist}. */
-    public static final Domain DOM_BL_PRIMARY_SERIES_COUNT;
-
-    /**
-     * {@link #TBL_BOOK_LIST_NODE_STATE}
-     * {@link Booklist}.
+     * {@link #TBL_BOOK_LIST_NODE_STATE} {@link Booklist}.
      * <p>
      * Expression from the original tables that represent the hierarchical key for the node.
      * Stored in each row and used to determine the expand/collapse results.
@@ -448,16 +419,17 @@ public final class DBDefinitions {
     public static final Domain DOM_BL_NODE_KEY;
     /** {@link #TBL_BOOK_LIST_NODE_STATE} {@link Booklist}. */
     public static final Domain DOM_BL_NODE_GROUP;
-    /** {@link Booklist}. */
+    /** {@link #TBL_BOOK_LIST_NODE_STATE} {@link Booklist}. */
     public static final Domain DOM_BL_NODE_LEVEL;
 
-    /**
-     * {@link Booklist}.
-     * An expanded node, should always be visible!
-     */
+    /** {@link #TBL_BOOK_LIST_NODE_STATE} {@link Booklist}. Should always be visible! */
     public static final Domain DOM_BL_NODE_EXPANDED;
-    /** {@link Booklist}. */
+    /** {@link #TBL_BOOK_LIST_NODE_STATE} {@link Booklist}. */
     public static final Domain DOM_BL_NODE_VISIBLE;
+
+    /* ======================================================================================
+     *  {@link TBL_FTS_BOOKS}.
+     * ====================================================================================== */
 
     /**
      * reminder: no need for a type nor constraints: https://sqlite.org/fts3.html
@@ -506,8 +478,6 @@ public final class DBDefinitions {
         TBL_CALIBRE_BOOKS = new TableDefinition("calibre_books", "clb_b");
 
         TBL_BOOKLIST_STYLES = new TableDefinition("book_list_styles", "bls");
-
-        TBL_BOOK_LIST_NODE_STATE = new TableDefinition("book_list_node_settings", "bl_ns");
 
         TBL_STRIPINFO_COLLECTION = new TableDefinition("stripinfo_collection", "si_c");
 
@@ -1190,57 +1160,6 @@ public final class DBDefinitions {
                         .build();
 
         /* ======================================================================================
-         *  Booklist domains
-         * ====================================================================================== */
-
-        DOM_BL_AUTHOR_SORT = new Domain.Builder(DBKey.BL_AUTHOR_SORT, SqLiteDataType.Text)
-                .build();
-        DOM_BL_SERIES_SORT = new Domain.Builder(DBKey.BL_SERIES_SORT, SqLiteDataType.Text)
-                .build();
-        DOM_BL_PUBLISHER_SORT = new Domain.Builder(DBKey.BL_PUBLISHER_SORT, SqLiteDataType.Text)
-                .build();
-        DOM_BL_BOOKSHELF_SORT = new Domain.Builder(DBKey.BL_BOOKSHELF_SORT, SqLiteDataType.Text)
-                .build();
-
-
-        DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT =
-                new Domain.Builder(DBKey.BL_SERIES_NUM_FLOAT, SqLiteDataType.Real)
-                        .build();
-
-        DOM_BL_PRIMARY_SERIES_COUNT =
-                new Domain.Builder(DBKey.BL_PRIMARY_SERIES_COUNT, SqLiteDataType.Integer)
-                        .build();
-
-        DOM_BL_NODE_KEY =
-                new Domain.Builder(DBKey.BL_NODE_KEY, SqLiteDataType.Text)
-                        .build();
-
-        DOM_BL_NODE_GROUP =
-                new Domain.Builder(DBKey.BL_NODE_GROUP, SqLiteDataType.Integer)
-                        .notNull()
-                        .build();
-
-        DOM_BL_NODE_LEVEL =
-                new Domain.Builder(DBKey.BL_NODE_LEVEL, SqLiteDataType.Integer)
-                        .notNull()
-                        .build();
-
-        DOM_BL_NODE_VISIBLE =
-                new Domain.Builder(DBKey.BL_NODE_VISIBLE, SqLiteDataType.Integer)
-                        .withDefault(0)
-                        .build();
-
-        DOM_BL_NODE_EXPANDED =
-                new Domain.Builder(DBKey.BL_NODE_EXPANDED, SqLiteDataType.Integer)
-                        .withDefault(0)
-                        .build();
-
-        DOM_FK_BL_ROW_ID =
-                new Domain.Builder(DBKey.FK_BL_ROW_ID, SqLiteDataType.Integer)
-                        .notNull()
-                        .build();
-
-        /* ======================================================================================
          *  app tables
          * ====================================================================================== */
 
@@ -1588,7 +1507,35 @@ public final class DBDefinitions {
         ALL_TABLES.put(TBL_STRIPINFO_COLLECTION.getName(),
                        TBL_STRIPINFO_COLLECTION);
 
+    }
 
+    static {
+
+        TBL_BOOK_LIST_NODE_STATE = new TableDefinition("book_list_node_settings", "bl_ns");
+
+        DOM_BL_NODE_KEY =
+                new Domain.Builder(DBKey.BL_NODE_KEY, SqLiteDataType.Text)
+                        .build();
+
+        DOM_BL_NODE_GROUP =
+                new Domain.Builder(DBKey.BL_NODE_GROUP, SqLiteDataType.Integer)
+                        .notNull()
+                        .build();
+
+        DOM_BL_NODE_LEVEL =
+                new Domain.Builder(DBKey.BL_NODE_LEVEL, SqLiteDataType.Integer)
+                        .notNull()
+                        .build();
+
+        DOM_BL_NODE_VISIBLE =
+                new Domain.Builder(DBKey.BL_NODE_VISIBLE, SqLiteDataType.Integer)
+                        .withDefault(0)
+                        .build();
+
+        DOM_BL_NODE_EXPANDED =
+                new Domain.Builder(DBKey.BL_NODE_EXPANDED, SqLiteDataType.Integer)
+                        .withDefault(0)
+                        .build();
 
         TBL_BOOK_LIST_NODE_STATE
                 .addDomains(DOM_PK_ID,

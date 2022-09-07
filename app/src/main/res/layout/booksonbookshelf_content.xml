@@ -37,7 +37,7 @@
         android:paddingEnd="@dimen/scrollbar_padding"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:listitem="@layout/booksonbookshelf_row_book_scale_2"
+        tools:listitem="@layout/booksonbookshelf_row_book"
         tools:showIn="@layout/booksonbookshelf"
         />
 

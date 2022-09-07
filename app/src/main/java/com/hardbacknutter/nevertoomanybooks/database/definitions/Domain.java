@@ -30,11 +30,13 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+
 /**
  * Defines a domain; name, type, ...
  * Immutable.
  * <p>
- * Parcelable: needed by BooklistGroup
+ * URGENT: is this still true?? Parcelable: needed by {@link BooklistGroup}
  */
 @SuppressWarnings({"FieldNotUsedInToString", "NegativelyNamedBooleanVariable"})
 public class Domain

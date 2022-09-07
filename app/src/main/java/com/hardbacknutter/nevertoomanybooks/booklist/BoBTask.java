@@ -42,13 +42,13 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.FtsMatchFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Sort;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -74,6 +74,9 @@ public class BoBTask
 
     /** The fixed list of domains we always need for building the book list. */
     private final Collection<DomainExpression> fixedDomainList = new ArrayList<>();
+    /** The fixed list of domains we always need if sync with Calibre is enabled. */
+    private final Collection<DomainExpression> calibreDomainList = new ArrayList<>();
+
     /** Currently selected bookshelf. */
     private Bookshelf bookshelf;
     /** Preferred booklist state in next rebuild. */
@@ -88,66 +91,7 @@ public class BoBTask
      */
     public BoBTask() {
         super(R.id.TASK_ID_BOOKLIST_BUILDER, TAG);
-        initFixedDomainList();
-    }
-
-    private void initFixedDomainList() {
-        fixedDomainList.add(
-                // Title for displaying; do NOT sort on it
-                // Example: "The Dream Master"
-                new DomainExpression(
-                        DBDefinitions.DOM_TITLE,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.TITLE)));
-        fixedDomainList.add(
-                // Title for sorting
-                // Example: "dreammasterthe" OR "thedreammaster"
-                // i.e. depending on user preference, the first format
-                // consists of the original title stripped of whitespace and any special characters,
-                // and with the article/prefix moved to the end.
-                // The second format leaves the article/prefix in its original location.
-                // The choice between the two formats is a user preference which, when changed,
-                // updates ALL rows in the database with the newly formatted title.
-                new DomainExpression(
-                        DBDefinitions.DOM_TITLE_OB,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.TITLE_OB),
-                        Sort.Asc));
-
-        fixedDomainList.add(
-                // the book language is needed for reordering titles
-                new DomainExpression(
-                        DBDefinitions.DOM_BOOK_LANGUAGE,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.LANGUAGE)));
-
-        fixedDomainList.add(
-                // Always get the read flag
-                new DomainExpression(
-                        DBDefinitions.DOM_BOOK_READ,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.READ__BOOL)));
-
-        fixedDomainList.add(
-                // Always get the Author ID
-                // (the need for the name will depend on the style).
-                new DomainExpression(
-                        DBDefinitions.DOM_FK_AUTHOR,
-                        DBDefinitions.TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR)));
-
-        fixedDomainList.add(
-                // We want the UUID for the book so we can get thumbnails
-                new DomainExpression(
-                        DBDefinitions.DOM_BOOK_UUID,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.BOOK_UUID)));
-
-        fixedDomainList.add(
-                // Always get the ISBN
-                new DomainExpression(
-                        DBDefinitions.DOM_BOOK_ISBN,
-                        DBDefinitions.TBL_BOOKS.dot(DBKey.BOOK_ISBN)));
-
-        // external site ID's
-        for (final Domain domain : SearchEngineConfig.getExternalIdDomains()) {
-            fixedDomainList.add(
-                    new DomainExpression(domain, DBDefinitions.TBL_BOOKS.dot(domain.getName())));
-        }
+        Log.d(TAG, "NEW TASK_ID_BOOKLIST_BUILDER");
     }
 
     public void build(@NonNull final Bookshelf bookshelf,
@@ -171,19 +115,22 @@ public class BoBTask
 
         Booklist booklist = null;
         try {
-            // get a new builder and add the required domains
             final BooklistBuilder builder = new BooklistBuilder(style, bookshelf, rebuildMode);
 
-            // Add the fixed list of domains we always need.
-            for (final DomainExpression domainDetails : fixedDomainList) {
-                builder.addDomain(domainDetails);
+            if (fixedDomainList.isEmpty()) {
+                initFixedDomainExpressions();
             }
+            fixedDomainList.forEach(builder::addDomain);
 
             if (CalibreHandler.isSyncEnabled()) {
-                addCalibreDomains(builder);
+                if (calibreDomainList.isEmpty()) {
+                    initCalibreDomainExpressions();
+                }
+                builder.addLeftOuterJoin(DBDefinitions.TBL_CALIBRE_BOOKS);
+                calibreDomainList.forEach(builder::addDomain);
             }
 
-            addConditionalDomains(builder, style);
+            addBookLevelDomainExpressions(builder, style);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
                 Log.d(TAG, "searchCriteria=" + searchCriteria);
@@ -271,106 +218,152 @@ public class BoBTask
         }
     }
 
-    private void addConditionalDomains(@NonNull final BooklistBuilder builder,
-                                       @NonNull final Style style) {
+    /**
+     * Add fields which are (depending on Style) shown on the Book level.
+     *
+     * @param builder to use
+     * @param style   to use
+     */
+    private void addBookLevelDomainExpressions(@NonNull final BooklistBuilder builder,
+                                               @NonNull final Style style) {
+
+        if (style.isShowField(Style.Screen.List, FieldVisibility.COVER[0])) {
+            // We need the UUID for the book to get covers
+            builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_UUID,
+                                                   DBDefinitions.TBL_BOOKS));
+        }
+
         if (style.isShowField(Style.Screen.List, DBKey.EDITION__BITMASK)) {
-            // The edition bitmask
-            builder.addDomain(new DomainExpression(
-                    DBDefinitions.DOM_BOOK_EDITION,
-                    DBDefinitions.TBL_BOOKS.dot(DBKey.EDITION__BITMASK)));
+            builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_EDITION,
+                                                   DBDefinitions.TBL_BOOKS));
         }
 
         if (style.isShowField(Style.Screen.List, DBKey.SIGNED__BOOL)) {
-            builder.addDomain(new DomainExpression(
-                    DBDefinitions.DOM_BOOK_SIGNED,
-                    DBDefinitions.TBL_BOOKS.dot(DBKey.SIGNED__BOOL)));
+            builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_SIGNED,
+                                                   DBDefinitions.TBL_BOOKS));
         }
 
         if (style.isShowField(Style.Screen.List, DBKey.BOOK_CONDITION)) {
-            builder.addDomain(new DomainExpression(
-                    DBDefinitions.DOM_BOOK_CONDITION,
-                    DBDefinitions.TBL_BOOKS.dot(DBKey.BOOK_CONDITION)));
+            builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_CONDITION,
+                                                   DBDefinitions.TBL_BOOKS));
         }
 
         if (style.isShowField(Style.Screen.List, DBKey.LOANEE_NAME)) {
             // Used to display/hide the 'lend' icon for each book.
             builder.addLeftOuterJoin(DBDefinitions.TBL_BOOK_LOANEE);
-            builder.addDomain(new DomainExpression(
-                    DBDefinitions.DOM_LOANEE,
-                    DBDefinitions.TBL_BOOK_LOANEE.dot(DBKey.LOANEE_NAME)));
+            builder.addDomain(new DomainExpression(DBDefinitions.DOM_LOANEE,
+                                                   DBDefinitions.TBL_BOOK_LOANEE));
         }
 
         if (style.isShowField(Style.Screen.List, DBKey.FK_BOOKSHELF)) {
             // This collects a CSV list of the bookshelves the book is on.
-            builder.addDomain(new DomainExpression(
-                    DBDefinitions.DOM_BOOKSHELF_NAME_CSV,
-                    BooklistBuilder.EXP_BOOKSHELF_NAME_CSV));
+            builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOKSHELF_NAME_CSV,
+                                                   BooklistBuilder.EXP_BOOKSHELF_NAME_CSV,
+                                                   Sort.Unsorted));
         }
 
         // we fetch ONLY the primary author to show on the Book level
         if (style.isShowField(Style.Screen.List, DBKey.FK_AUTHOR)) {
-            builder.addDomain(new DomainExpression(DBDefinitions.DOM_AUTHOR_FORMATTED_FAMILY_FIRST,
-                                                   AuthorDaoImpl.getDisplayDomainExpression(
-                                                           style.isShowAuthorByGivenName()),
-                                                   Sort.Unsorted));
+            builder.addDomain(new DomainExpression(
+                    DBDefinitions.DOM_AUTHOR_FORMATTED_FAMILY_FIRST,
+                    AuthorDaoImpl.getDisplayDomainExpression(style.isShowAuthorByGivenName()),
+                    Sort.Unsorted));
         }
 
         // for now, don't get the author type.
-        // if (style.isBooklistShowsField(DBKey.BOOK_AUTHOR_TYPE_BITMASK)) {
-        //     builder.addDomain(new DomainExpression(
-        //             DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
-        //             DBDefinitions.TBL_BOOK_AUTHOR
-        //                     .dot(DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK)));
+        // if (style.isShowField(Style.Screen.List, DBKey.AUTHOR_TYPE__BITMASK)) {
+        //    builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
+        //                                           DBDefinitions.TBL_BOOK_AUTHOR));
         // }
+
+        if (style.isShowField(Style.Screen.List, DBKey.FK_SERIES)) {
+            // We only collect the primary series!
+            builder.addDomain(new DomainExpression(DBDefinitions.DOM_SERIES_TITLE,
+                                                   DBDefinitions.TBL_SERIES));
+            builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_NUM_IN_SERIES,
+                                                   DBDefinitions.TBL_BOOK_SERIES));
+        }
 
         if (style.isShowField(Style.Screen.List, DBKey.FK_PUBLISHER)) {
             // Collect a CSV list of the publishers of the book
-            builder.addDomain(new DomainExpression(
-                    DBDefinitions.DOM_PUBLISHER_NAME_CSV,
-                    BooklistBuilder.EXP_PUBLISHER_NAME_CSV));
+            builder.addDomain(new DomainExpression(DBDefinitions.DOM_PUBLISHER_NAME_CSV,
+                                                   BooklistBuilder.EXP_PUBLISHER_NAME_CSV,
+                                                   Sort.Unsorted));
         }
 
         if (style.isShowField(Style.Screen.List, DBKey.BOOK_PUBLICATION__DATE)) {
-            builder.addDomain(new DomainExpression(
-                    DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
-                    DBDefinitions.TBL_BOOKS.dot(DBKey.BOOK_PUBLICATION__DATE)));
+            builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
+                                                   DBDefinitions.TBL_BOOKS));
         }
 
         if (style.isShowField(Style.Screen.List, DBKey.FORMAT)) {
-            builder.addDomain(new DomainExpression(
-                    DBDefinitions.DOM_BOOK_FORMAT,
-                    DBDefinitions.TBL_BOOKS.dot(DBKey.FORMAT)));
+            builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_FORMAT,
+                                                   DBDefinitions.TBL_BOOKS));
         }
 
         if (style.isShowField(Style.Screen.List, DBKey.LOCATION)) {
-            builder.addDomain(new DomainExpression(
-                    DBDefinitions.DOM_BOOK_LOCATION,
-                    DBDefinitions.TBL_BOOKS.dot(DBKey.LOCATION)));
+            builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_LOCATION,
+                                                   DBDefinitions.TBL_BOOKS));
         }
 
         if (style.isShowField(Style.Screen.List, DBKey.RATING)) {
-            builder.addDomain(new DomainExpression(
-                    DBDefinitions.DOM_BOOK_RATING,
-                    DBDefinitions.TBL_BOOKS.dot(DBKey.RATING)));
+            builder.addDomain(new DomainExpression(DBDefinitions.DOM_BOOK_RATING,
+                                                   DBDefinitions.TBL_BOOKS));
         }
     }
 
-    private void addCalibreDomains(@NonNull final BooklistBuilder builder) {
-        builder.addLeftOuterJoin(DBDefinitions.TBL_CALIBRE_BOOKS);
+    private void initFixedDomainExpressions() {
+        // Title for displaying; do NOT sort on it
+        // Example: "The Dream Master"
+        fixedDomainList.add(new DomainExpression(DBDefinitions.DOM_TITLE,
+                                                 DBDefinitions.TBL_BOOKS));
 
-        builder.addDomain(new DomainExpression(
-                DBDefinitions.DOM_CALIBRE_BOOK_ID,
-                DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBKey.CALIBRE_BOOK_ID)));
-        builder.addDomain(new DomainExpression(
-                DBDefinitions.DOM_CALIBRE_BOOK_UUID,
-                DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBKey.CALIBRE_BOOK_UUID)));
-        builder.addDomain(new DomainExpression(
-                DBDefinitions.DOM_CALIBRE_BOOK_MAIN_FORMAT,
-                DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBKey.CALIBRE_BOOK_MAIN_FORMAT)));
+        // Title for sorting
+        // Example: "dreammasterthe" OR "thedreammaster"
+        // i.e. depending on user preference, the first format
+        // consists of the original title stripped of whitespace and any special characters,
+        // and with the article/prefix moved to the end.
+        // The second format leaves the article/prefix in its original location.
+        // The choice between the two formats is a user preference which, when changed,
+        // updates ALL rows in the database with the newly formatted title.
+        fixedDomainList.add(new DomainExpression(DBDefinitions.DOM_TITLE_OB,
+                                                 DBDefinitions.TBL_BOOKS,
+                                                 Sort.Asc));
 
-        builder.addDomain(new DomainExpression(
-                DBDefinitions.DOM_FK_CALIBRE_LIBRARY,
-                DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBKey.FK_CALIBRE_LIBRARY)));
+        // the book language is needed for reordering titles in BooklistGroup rows.
+        fixedDomainList.add(new DomainExpression(DBDefinitions.DOM_BOOK_LANGUAGE,
+                                                 DBDefinitions.TBL_BOOKS));
+
+        // Always get the read flag
+        fixedDomainList.add(new DomainExpression(DBDefinitions.DOM_BOOK_READ,
+                                                 DBDefinitions.TBL_BOOKS));
+
+        // Always get the Author ID (the need for the name will depend on the style).
+        fixedDomainList.add(new DomainExpression(DBDefinitions.DOM_FK_AUTHOR,
+                                                 DBDefinitions.TBL_BOOK_AUTHOR));
+
+        // Always get the ISBN
+        fixedDomainList.add(new DomainExpression(DBDefinitions.DOM_BOOK_ISBN,
+                                                 DBDefinitions.TBL_BOOKS));
+
+        // external site ID's; needed for the context menu "View on..."
+        SearchEngineConfig.getExternalIdDomains()
+                          .stream()
+                          .map(domain -> new DomainExpression(
+                                  domain, DBDefinitions.TBL_BOOKS.dot(domain),
+                                  Sort.Unsorted))
+                          .forEach(fixedDomainList::add);
+    }
+
+    private void initCalibreDomainExpressions() {
+        calibreDomainList.add(new DomainExpression(DBDefinitions.DOM_CALIBRE_BOOK_ID,
+                                                   DBDefinitions.TBL_CALIBRE_BOOKS));
+        calibreDomainList.add(new DomainExpression(DBDefinitions.DOM_CALIBRE_BOOK_UUID,
+                                                   DBDefinitions.TBL_CALIBRE_BOOKS));
+        calibreDomainList.add(new DomainExpression(DBDefinitions.DOM_CALIBRE_BOOK_MAIN_FORMAT,
+                                                   DBDefinitions.TBL_CALIBRE_BOOKS));
+        calibreDomainList.add(new DomainExpression(DBDefinitions.DOM_FK_CALIBRE_LIBRARY,
+                                                   DBDefinitions.TBL_CALIBRE_BOOKS));
     }
 
     public static class Outcome {

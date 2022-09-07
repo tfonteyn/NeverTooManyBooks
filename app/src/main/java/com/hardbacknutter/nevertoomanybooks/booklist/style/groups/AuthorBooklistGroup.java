@@ -33,15 +33,11 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Sort;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_AUTHOR_SORT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 
 /**
  * Specialized BooklistGroup representing an {@link Author} group.
@@ -76,18 +72,19 @@ public class AuthorBooklistGroup
         // We override the display domain in #createDisplayDomainExpression.
         // Sorting is defined in #createSortingDomainExpression
         return new GroupKey(R.string.lbl_author, "a",
-                            new DomainExpression(DOM_FK_AUTHOR,
-                                                 TBL_AUTHORS.dot(DBKey.PK_ID)))
+                            new DomainExpression(DBDefinitions.DOM_FK_AUTHOR,
+                                                 DBDefinitions.TBL_AUTHORS.dot(DBKey.PK_ID),
+                                                 Sort.Unsorted))
 
                 .addGroupDomain(
                         // Group by id (we want the id available and there is
                         // a chance two Authors will have the same name)
-                        new DomainExpression(DOM_FK_AUTHOR,
-                                             TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR)))
+                        new DomainExpression(DBDefinitions.DOM_FK_AUTHOR,
+                                             DBDefinitions.TBL_BOOK_AUTHOR))
                 .addGroupDomain(
                         // Group by complete-flag
-                        new DomainExpression(DOM_AUTHOR_IS_COMPLETE,
-                                             TBL_AUTHORS.dot(DBKey.AUTHOR_IS_COMPLETE)));
+                        new DomainExpression(DBDefinitions.DOM_AUTHOR_IS_COMPLETE,
+                                             DBDefinitions.TBL_AUTHORS));
     }
 
     @Override
@@ -103,7 +100,8 @@ public class AuthorBooklistGroup
     @NonNull
     private DomainExpression createSortingDomainExpression(@NonNull final Style style) {
         // Sorting depends on user preference
-        return new DomainExpression(DOM_BL_AUTHOR_SORT,
+        return new DomainExpression(new Domain.Builder("blg_aut_sort", SqLiteDataType.Text)
+                                            .build(),
                                     AuthorDaoImpl.getSortingDomainExpression(
                                             style.isSortAuthorByGivenName()),
                                     Sort.Asc);

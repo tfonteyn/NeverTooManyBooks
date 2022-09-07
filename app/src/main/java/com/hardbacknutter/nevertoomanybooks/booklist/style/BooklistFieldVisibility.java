@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,16 +39,16 @@ public class BooklistFieldVisibility
             FieldVisibility.COVER[1],
             DBKey.FK_AUTHOR,
             DBKey.FK_SERIES,
-
-            DBKey.BOOK_ISBN,
             DBKey.FK_PUBLISHER,
+            DBKey.FK_BOOKSHELF,
+
+            DBKey.BOOK_CONDITION,
+            DBKey.BOOK_ISBN,
             DBKey.BOOK_PUBLICATION__DATE,
             DBKey.FORMAT,
-
-            DBKey.FK_BOOKSHELF,
+            DBKey.LANGUAGE,
             DBKey.LOCATION,
-            DBKey.RATING,
-            DBKey.BOOK_CONDITION);
+            DBKey.RATING);
 
     /**
      * Constructor.

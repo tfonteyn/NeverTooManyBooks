@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -102,11 +102,21 @@
         />
 
     <TextView
-        android:id="@+id/format"
+        android:id="@+id/language"
         style="@style/Field.Generic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_publication"
         app:layout_constraintTop_toBottomOf="@id/price_listed"
+        tools:ignore="SelectableText"
+        tools:text="@sample/data.json/language/name"
+        />
+
+    <TextView
+        android:id="@+id/format"
+        style="@style/Field.Generic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/lbl_publication"
+        app:layout_constraintTop_toBottomOf="@id/language"
         tools:ignore="SelectableText"
         tools:text="@string/book_format_hardcover"
         />
@@ -131,21 +141,11 @@
         />
 
     <TextView
-        android:id="@+id/language"
-        style="@style/Field.Generic"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/lbl_publication"
-        app:layout_constraintTop_toBottomOf="@id/color"
-        tools:ignore="SelectableText"
-        tools:text="@sample/data.json/language/name"
-        />
-
-    <TextView
         android:id="@+id/pages"
         style="@style/Field.Generic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_publication"
-        app:layout_constraintTop_toBottomOf="@id/language"
+        app:layout_constraintTop_toBottomOf="@id/color"
         tools:ignore="SelectableText"
         tools:text="1073 pages"
         />

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -133,6 +133,9 @@
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
         <item name="android:textStyle">italic</item>
         <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
+    </style>
+
+    <style name="BoB.Group.Book.SeriesTitle" parent="Base.BoB.Group.Book">
     </style>
 
     <style name="BoB.Group.Book.SeriesNum" parent="Base.BoB.Group.Book">

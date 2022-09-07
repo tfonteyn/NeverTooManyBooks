@@ -39,7 +39,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintEnd_toStartOf="@id/details_frame"
         app:layout_constraintStart_toStartOf="parent"
-        tools:listitem="@layout/booksonbookshelf_row_book_scale_2"
+        tools:listitem="@layout/booksonbookshelf_row_book"
         tools:showIn="@layout/booksonbookshelf"
         />
 

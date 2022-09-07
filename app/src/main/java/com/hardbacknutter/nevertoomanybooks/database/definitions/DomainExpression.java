@@ -27,6 +27,8 @@ import androidx.annotation.Nullable;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+
 /**
  * A data class representing a domain + the sql column expression + a sorting flag.
  * <p>
@@ -59,18 +61,63 @@ public class DomainExpression
 
     /**
      * Constructor.
-     * By default unsorted.
+     * <p>
+     * Auto-generates the expression using {@link TableDefinition#dot(Domain)}
+     * No sorting.
      *
-     * @param domain     underlying domain
-     * @param expression to use for fetching the data
+     * @param domain underlying domain
+     * @param table  table owning the domain
      */
     public DomainExpression(@NonNull final Domain domain,
-                            @Nullable final String expression) {
-        this(domain, expression, Sort.Unsorted);
+                            @NonNull final TableDefinition table) {
+        this.domain = domain;
+        this.expression = table.dot(domain);
+        this.sort = Sort.Unsorted;
     }
 
     /**
      * Constructor.
+     * <p>
+     * Auto-generates the expression using {@link TableDefinition#dot(Domain)}
+     * Sorting as required.
+     *
+     * @param domain underlying domain
+     * @param table  table owning the domain
+     * @param sort   flag
+     */
+    public DomainExpression(@NonNull final Domain domain,
+                            @NonNull final TableDefinition table,
+                            @NonNull final Sort sort) {
+        this.domain = domain;
+        this.expression = table.dot(domain);
+        this.sort = sort;
+    }
+
+    /**
+     * Constructor.
+     * <p>
+     * No expression; the domain will <strong>only</strong> be added to the ORDER BY clause .
+     *
+     * @param domain underlying domain
+     * @param sort   flag; must be either {@link Sort#Asc} or {@link Sort#Desc}.
+     */
+    public DomainExpression(@NonNull final Domain domain,
+                            @NonNull final Sort sort) {
+        if (BuildConfig.DEBUG /* Always */) {
+            if (sort == Sort.Unsorted) {
+                throw new IllegalArgumentException("Must be Asc/Desc sorted");
+            }
+        }
+        this.domain = domain;
+        this.expression = null;
+        this.sort = sort;
+    }
+
+    /**
+     * Constructor.
+     * <p>
+     * Customized expressions.
+     * Sorting as required.
      *
      * @param domain     underlying domain
      * @param expression to use for fetching the data

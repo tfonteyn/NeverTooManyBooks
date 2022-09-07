@@ -36,7 +36,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -45,6 +44,8 @@ import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.math.MathUtils;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
@@ -69,13 +70,13 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
+import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfRowBookBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
@@ -121,15 +122,11 @@ public class BooklistAdapter
     /** Whether to use the covers DAO caching. */
     private boolean imageCachingEnabled;
     private boolean reorderTitleForDisplaying;
-    /** A collection of 'in-use' flags for the fields we might display. */
-    private FieldsInUse fieldsInUse;
     /** List style to apply. */
     private Style style;
     private int groupRowHeight;
     /** Top margin to use for Level 1 <strong>if</strong> the {@link #groupRowHeight} is wrap. */
     private int groupLevel1topMargin;
-    @LayoutRes
-    private int bookLayoutId;
     /** Longest side for a cover in pixels. */
     private int coverLongestSide;
     /** The cursor is the equivalent of the 'list of items'. */
@@ -173,7 +170,6 @@ public class BooklistAdapter
         reorderTitleForDisplaying = ReorderHelper.forDisplay(context);
 
         this.style = style;
-        fieldsInUse = new FieldsInUse(this.style);
         groupRowHeight = this.style.getGroupRowHeight(context);
 
         final Resources resources = context.getResources();
@@ -193,21 +189,8 @@ public class BooklistAdapter
                     .obtainTypedArray(R.array.cover_book_list_longest_side);
             coverLongestSide = coverSizes.getDimensionPixelSize(frontCoverScale, 0);
             coverSizes.recycle();
-
-            // The thumbnail scale defines the Book layout file to use.
-            // The layout names ending in 2/3 are ONLY as reference,
-            // with the hardcoded values in them always replaced at runtime.
-            if (frontCoverScale > Style.COVER_SCALE_MEDIUM) {
-                // Large
-                bookLayoutId = R.layout.booksonbookshelf_row_book_scale_3;
-            } else {
-                // Small and Medium
-                bookLayoutId = R.layout.booksonbookshelf_row_book_scale_2;
-            }
         } else {
             coverLongestSide = 0;
-            fieldsInUse.cover = false;
-            bookLayoutId = R.layout.booksonbookshelf_row_book_scale_2;
         }
     }
 
@@ -284,7 +267,7 @@ public class BooklistAdapter
         // NEWTHINGS: BooklistGroup.KEY add a new holder type if needed
         switch (groupId) {
             case BooklistGroup.BOOK:
-                holder = new BookHolder(this, itemView, fieldsInUse, coverLongestSide);
+                holder = new BookHolder(this, itemView, coverLongestSide);
                 break;
 
             case BooklistGroup.AUTHOR:
@@ -340,7 +323,7 @@ public class BooklistAdapter
         @LayoutRes
         final int layoutId;
         if (groupKeyId == BooklistGroup.BOOK) {
-            layoutId = bookLayoutId;
+            layoutId = R.layout.booksonbookshelf_row_book;
 
         } else if (groupKeyId == BooklistGroup.RATING) {
             layoutId = R.layout.booksonbookshelf_group_rating;
@@ -756,101 +739,6 @@ public class BooklistAdapter
     }
 
     /**
-     * Value class, initialized by the adapter, updated when the first rowData is fetched.
-     * Reused by the holders.
-     * <p>
-     * These are the fields optionally shown on the Book level (row).
-     */
-    private static class FieldsInUse {
-
-        /** Book row details. Shown in icon-bar. Based on global visibility user preference. */
-        boolean edition;
-        /** Book row details. Shown in icon-bar. Based on global visibility user preference. */
-        boolean lending;
-        /** Book row details. Shown in icon-bar. Based on global visibility user preference. */
-        boolean signed;
-
-        /** Book row details - Based on style. */
-        boolean author;
-        /** Book row details - Based on style. */
-        boolean series;
-        /** Book row details - Based on style. */
-        boolean bookshelf;
-        /** Book row details - Based on style. */
-        boolean cover;
-        /** Book row details - Based on style. */
-        boolean format;
-        /** Book row details - Based on style. */
-        boolean condition;
-        /** Book row details - Based on style. */
-        boolean isbn;
-        /** Book row details - Based on style. */
-        boolean location;
-        /** Book row details - Based on style; combined with publisher as one view. */
-        boolean pubDate;
-        /** Book row details - Based on style. */
-        boolean publisher;
-        /** Book row details - Based on style. */
-        boolean rating;
-
-        /** Set to true after {@link #set} is called. */
-        boolean isSet;
-
-        /**
-         * Constructor. Initialized by the adapter.
-         *
-         * @param style Style reference.
-         */
-        FieldsInUse(@NonNull final Style style) {
-
-            edition = style.isShowField(Style.Screen.List, DBKey.EDITION__BITMASK);
-            lending = style.isShowField(Style.Screen.List, DBKey.LOANEE_NAME);
-            series = style.isShowField(Style.Screen.List, DBKey.FK_SERIES);
-            signed = style.isShowField(Style.Screen.List, DBKey.SIGNED__BOOL);
-
-            author = style.isShowField(Style.Screen.List, DBKey.FK_AUTHOR);
-            bookshelf = style.isShowField(Style.Screen.List, DBKey.FK_BOOKSHELF);
-            cover = style.isShowField(Style.Screen.List, FieldVisibility.COVER[0]);
-            format = style.isShowField(Style.Screen.List, DBKey.FORMAT);
-            condition = style.isShowField(Style.Screen.List, DBKey.BOOK_CONDITION);
-            isbn = style.isShowField(Style.Screen.List, DBKey.BOOK_ISBN);
-            location = style.isShowField(Style.Screen.List, DBKey.LOCATION);
-            pubDate = style.isShowField(Style.Screen.List, DBKey.BOOK_PUBLICATION__DATE);
-            publisher = style.isShowField(Style.Screen.List, DBKey.FK_PUBLISHER);
-            rating = style.isShowField(Style.Screen.List, DBKey.RATING);
-        }
-
-        /**
-         * Update the in-use flags with row-data available fields.
-         * Call this once only.
-         *
-         * @param rowData to read fields from
-         */
-        void set(@NonNull final DataHolder rowData) {
-            if (isSet) {
-                return;
-            }
-            isSet = true;
-
-            edition = edition && rowData.contains(DBKey.EDITION__BITMASK);
-            lending = lending && rowData.contains(DBKey.LOANEE_NAME);
-            series = series && rowData.contains(DBKey.SERIES_BOOK_NUMBER);
-            signed = signed && rowData.contains(DBKey.SIGNED__BOOL);
-
-            author = author && rowData.contains(DBKey.AUTHOR_FORMATTED);
-            bookshelf = bookshelf && rowData.contains(DBKey.BOOKSHELF_NAME_CSV);
-            cover = cover && rowData.contains(DBKey.BOOK_UUID);
-            format = format && rowData.contains(DBKey.FORMAT);
-            condition = condition && rowData.contains(DBKey.BOOK_CONDITION);
-            isbn = isbn && rowData.contains(DBKey.BOOK_ISBN);
-            location = location && rowData.contains(DBKey.LOCATION);
-            pubDate = pubDate && rowData.contains(DBKey.BOOK_PUBLICATION__DATE);
-            publisher = publisher && rowData.contains(DBKey.PUBLISHER_NAME);
-            rating = rating && rowData.contains(DBKey.RATING);
-        }
-    }
-
-    /**
      * Base for all {@link BooklistGroup} ViewHolder classes.
      */
     abstract static class RowViewHolder
@@ -872,6 +760,7 @@ public class BooklistAdapter
         RowViewHolder(@NonNull final View itemView) {
             super(itemView);
             // if present, redirect all clicks to this view
+            // 2022-09-07: not used for now, but keeping for future usage
             onClickTargetView = itemView.findViewById(R.id.ROW_ONCLICK_TARGET);
             if (onClickTargetView == null) {
                 // if not, then just let the main view get them.
@@ -894,6 +783,7 @@ public class BooklistAdapter
     /**
      * ViewHolder for a {@link BooklistGroup#BOOK} row.
      */
+    @SuppressWarnings("WeakerAccess")
     static class BookHolder
             extends RowViewHolder {
 
@@ -902,55 +792,19 @@ public class BooklistAdapter
         private final BooklistAdapter adapter;
         /** Format string. */
         @NonNull
-        private final String x_bracket_y_bracket;
+        private final String a_bracket_b_bracket;
 
         /** Size in pixels. */
         @IntRange(from = 0)
         private final int coverLongestSide;
 
-        /** Whether to re-order the title. */
-        private final boolean reorderTitle;
-        /** A collection of 'in-use' flags for the fields we might display. */
-        private final FieldsInUse inUse;
-
-
-        /** View that stores the related book field. */
-        private final TextView titleView;
-        /** The "I've read it" icon. */
-        private final ImageView readIconView;
-        /** The "signed" icon. */
-        private final ImageView signedIconView;
-        /** The "1th edition" icon. */
-        private final ImageView editionIconView;
-        /** The "lend out" icon. */
-        private final ImageView lendOutIconView;
-        /** View that stores the related book field. */
-        private final ImageView coverView;
-        /** View that stores the Series number when it is a short piece of text. */
-        private final TextView seriesNumView;
-        /** View that stores the Series number when it is a long piece of text. */
-        private final TextView seriesNumLongView;
-        /** View that stores the related book field. */
-        private final RatingBar ratingBar;
-        /** View that stores the related book field. */
-        private final TextView authorView;
-        /** View that stores the related book field. */
-        private final TextView publisherView;
-        /** View that stores the related book field. */
-        private final TextView isbnView;
-        /** View that stores the related book field. */
-        private final TextView formatView;
-        /** View that stores the related book field. */
-        private final TextView conditionView;
-        /** View that stores the related book field. */
-        private final TextView locationView;
-        /** View that stores the related book field. */
-        private final TextView bookshelvesView;
-
+        @NonNull
+        private final String[] bookCondition;
+        @NonNull
+        private final BooksonbookshelfRowBookBinding vb;
         /** Only active when running in debug mode; displays the "position/rowId" for a book. */
         @Nullable
         private TextView dbgRowIdView;
-
         @Nullable
         private ImageViewLoader imageLoader;
 
@@ -962,60 +816,33 @@ public class BooklistAdapter
          *
          * @param adapter          the hosting adapter
          * @param itemView         the view specific for this holder
-         * @param fieldsInUse      which fields are used
          * @param coverLongestSide Longest side for a cover in pixels.
          */
         BookHolder(@NonNull final BooklistAdapter adapter,
                    @NonNull final View itemView,
-                   @NonNull final FieldsInUse fieldsInUse,
                    @IntRange(from = 0) final int coverLongestSide) {
             super(itemView);
+            this.adapter = adapter;
+
+            vb = BooksonbookshelfRowBookBinding.bind(itemView);
 
             final Context context = itemView.getContext();
 
-            this.adapter = adapter;
-
-            // disabled (for now?) as it makes less sense in this particular view/holder,
-            // and slows down scrolling.
-            reorderTitle = false;
-
-            inUse = fieldsInUse;
-
-            x_bracket_y_bracket = context.getString(R.string.a_bracket_b_bracket);
-
-            // always visible
-            titleView = itemView.findViewById(R.id.title);
-
-            // hidden by default
-            readIconView = itemView.findViewById(R.id.icon_read);
-            signedIconView = itemView.findViewById(R.id.icon_signed);
-            editionIconView = itemView.findViewById(R.id.icon_first_edition);
-            lendOutIconView = itemView.findViewById(R.id.icon_lend_out);
-
-            seriesNumView = itemView.findViewById(R.id.series_num);
-            seriesNumLongView = itemView.findViewById(R.id.series_num_long);
-
-            ratingBar = itemView.findViewById(R.id.rating);
-            authorView = itemView.findViewById(R.id.author);
-            publisherView = itemView.findViewById(R.id.publisher);
-            isbnView = itemView.findViewById(R.id.isbn);
-            formatView = itemView.findViewById(R.id.format);
-            conditionView = itemView.findViewById(R.id.condition);
-            locationView = itemView.findViewById(R.id.location);
-            bookshelvesView = itemView.findViewById(R.id.shelves);
+            a_bracket_b_bracket = context.getString(R.string.a_bracket_b_bracket);
+            bookCondition = context.getResources()
+                                   .getStringArray(R.array.conditions_book);
 
             this.coverLongestSide = coverLongestSide;
-            coverView = itemView.findViewById(R.id.cover_image_0);
-            if (inUse.cover) {
+            if (adapter.style.isShowField(Style.Screen.List, FieldVisibility.COVER[0])) {
                 // Do not go overkill here by adding a full-blown CoverHandler.
                 // We only provide zooming by clicking on the image.
-                coverView.setOnClickListener(this::onZoomCover);
+                vb.coverImage0.setOnClickListener(this::onZoomCover);
 
                 imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
                                                   this.coverLongestSide, this.coverLongestSide);
             } else {
                 // hide it if not in use.
-                coverView.setVisibility(View.GONE);
+                vb.coverImage0.setVisibility(View.GONE);
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
@@ -1023,13 +850,22 @@ public class BooklistAdapter
                 dbgRowIdView = new TextView(context);
                 dbgRowIdView.setId(View.generateViewId());
                 dbgRowIdView.setTextColor(Color.BLUE);
-                dbgRowIdView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                dbgRowIdView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
 
-                final LinearLayout parentLayout = itemView.findViewById(R.id.icon_sidebar);
-                dbgRowIdView.setLayoutParams(new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT));
-                parentLayout.addView(dbgRowIdView);
+                final ConstraintLayout parentLayout = itemView.findViewById(R.id.card_frame);
+                parentLayout.addView(dbgRowIdView, 0);
+
+                final ConstraintSet set = new ConstraintSet();
+                set.clone(parentLayout);
+                set.connect(dbgRowIdView.getId(), ConstraintSet.TOP,
+                            R.id.cover_image_0, ConstraintSet.BOTTOM);
+                set.connect(dbgRowIdView.getId(), ConstraintSet.BOTTOM,
+                            ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM);
+                set.connect(dbgRowIdView.getId(), ConstraintSet.END,
+                            R.id.col1, ConstraintSet.START);
+                set.setVerticalBias(dbgRowIdView.getId(), 1.0f);
+
+                set.applyTo(parentLayout);
             }
         }
 
@@ -1050,96 +886,112 @@ public class BooklistAdapter
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
                               @NonNull final Style style) {
-            // update the in-use flags with row-data available fields. Do this once only.
-            if (!inUse.isSet) {
-                inUse.set(rowData);
-            }
+            // Titles (book/series) are NOT reordered here.
+            // It does not make much sense in this particular view/holder,
+            // and slows down scrolling to much.
 
-            final String title;
-            if (reorderTitle) {
-                final Context context = itemView.getContext();
-                final String language = rowData.getString(DBKey.LANGUAGE);
-                final Locale locale = Languages.toLocale(context, language);
+            // {@link BoBTask#fixedDomainList}
+            vb.title.setText(rowData.getString(DBKey.TITLE));
 
-                title = ReorderHelper.reorder(context, rowData.getString(DBKey.TITLE), locale);
-            } else {
-                title = rowData.getString(DBKey.TITLE);
-            }
-            titleView.setText(title);
+            // {@link BoBTask#fixedDomainList}
+            vb.iconRead.setVisibility(rowData.getBoolean(DBKey.READ__BOOL) ? View.VISIBLE
+                                                                           : View.GONE);
 
-            readIconView.setVisibility(rowData.getBoolean(DBKey.READ__BOOL) ? View.VISIBLE
-                                                                            : View.GONE);
-
-            if (inUse.signed) {
+            if (style.isShowField(Style.Screen.List, DBKey.SIGNED__BOOL)
+                && rowData.contains(DBKey.SIGNED__BOOL)) {
                 final boolean isSet = rowData.getBoolean(DBKey.SIGNED__BOOL);
-                signedIconView.setVisibility(isSet ? View.VISIBLE : View.GONE);
+                vb.iconSigned.setVisibility(isSet ? View.VISIBLE : View.GONE);
             }
 
-            if (inUse.edition) {
+            if (style.isShowField(Style.Screen.List, DBKey.EDITION__BITMASK)
+                && rowData.contains(DBKey.EDITION__BITMASK)) {
                 final boolean isSet = (rowData.getLong(DBKey.EDITION__BITMASK)
                                        & Book.Edition.FIRST) != 0;
-                editionIconView.setVisibility(isSet ? View.VISIBLE : View.GONE);
+                vb.iconFirstEdition.setVisibility(isSet ? View.VISIBLE : View.GONE);
             }
 
-            if (inUse.lending) {
+            if (style.isShowField(Style.Screen.List, DBKey.LOANEE_NAME)
+                && rowData.contains(DBKey.LOANEE_NAME)) {
                 final boolean isSet = !rowData.getString(DBKey.LOANEE_NAME).isEmpty();
-                lendOutIconView.setVisibility(isSet ? View.VISIBLE : View.GONE);
+                vb.iconLendOut.setVisibility(isSet ? View.VISIBLE : View.GONE);
             }
 
-            if (inUse.cover) {
+            if (style.isShowField(Style.Screen.List, FieldVisibility.COVER[0])
+                && rowData.contains(DBKey.BOOK_UUID)) {
                 setImageView(rowData.getString(DBKey.BOOK_UUID));
             }
 
-            if (inUse.series) {
-                final String number = rowData.getString(DBKey.SERIES_BOOK_NUMBER);
-                if (number.isEmpty()) {
-                    seriesNumView.setVisibility(View.GONE);
-                    seriesNumLongView.setVisibility(View.GONE);
+            if (style.isShowField(Style.Screen.List, DBKey.FK_SERIES)) {
+                if (style.hasGroup(BooklistGroup.SERIES)) {
+                    vb.seriesTitle.setVisibility(View.GONE);
+                    showOrHideSeriesNumber(rowData);
                 } else {
-                    // Display it in one of the views, based on the size of the text.
-                    // 4 characters is based on e.g. "1.12" being considered short
-                    // and e.g. "1|omnibus" being long.
-                    if (number.length() > 4) {
-                        seriesNumView.setVisibility(View.GONE);
-                        seriesNumLongView.setText(number);
-                        seriesNumLongView.setVisibility(View.VISIBLE);
-                    } else {
-                        seriesNumView.setText(number);
-                        seriesNumView.setVisibility(View.VISIBLE);
-                        seriesNumLongView.setVisibility(View.GONE);
-                    }
+                    vb.seriesNum.setVisibility(View.GONE);
+                    vb.seriesNumLong.setVisibility(View.GONE);
+                    showOrHideSeriesText(rowData);
                 }
             }
 
-            if (inUse.rating) {
+            if (style.isShowField(Style.Screen.List, DBKey.RATING)
+                && rowData.contains(DBKey.RATING)) {
                 final float rating = rowData.getFloat(DBKey.RATING);
                 if (rating > 0) {
-                    ratingBar.setRating(rating);
-                    ratingBar.setVisibility(View.VISIBLE);
+                    vb.rating.setRating(rating);
+                    vb.rating.setVisibility(View.VISIBLE);
                 } else {
-                    ratingBar.setVisibility(View.GONE);
+                    vb.rating.setVisibility(View.GONE);
                 }
             }
-            if (inUse.author) {
-                showOrHide(authorView, rowData.getString(DBKey.AUTHOR_FORMATTED));
+
+            if (style.isShowField(Style.Screen.List, DBKey.FK_AUTHOR)
+                && rowData.contains(DBKey.AUTHOR_FORMATTED)) {
+                showOrHide(vb.author, rowData.getString(DBKey.AUTHOR_FORMATTED));
             }
-            if (inUse.publisher || inUse.pubDate) {
-                showOrHide(publisherView, getPublisherAndPubDateText(rowData));
+
+
+            final boolean usePub =
+                    style.isShowField(Style.Screen.List, DBKey.FK_PUBLISHER)
+                    && rowData.contains(DBKey.PUBLISHER_NAME_CSV);
+            final boolean usePubDate =
+                    style.isShowField(Style.Screen.List, DBKey.BOOK_PUBLICATION__DATE)
+                    && rowData.contains(DBKey.BOOK_PUBLICATION__DATE);
+
+            if (usePub || usePubDate) {
+                showOrHidePublisher(rowData, usePub, usePubDate);
             }
-            if (inUse.isbn) {
-                showOrHide(isbnView, rowData.getString(DBKey.BOOK_ISBN));
+
+            // {@link BoBTask#fixedDomainList}
+            if (style.isShowField(Style.Screen.List, DBKey.BOOK_ISBN)) {
+                showOrHide(vb.isbn, rowData.getString(DBKey.BOOK_ISBN));
             }
-            if (inUse.format) {
-                showOrHide(formatView, rowData.getString(DBKey.FORMAT));
+
+            if (style.isShowField(Style.Screen.List, DBKey.FORMAT)
+                && rowData.contains(DBKey.FORMAT)) {
+                showOrHide(vb.format, rowData.getString(DBKey.FORMAT));
             }
-            if (inUse.condition) {
-                showOrHide(conditionView, rowData.getString(DBKey.BOOK_CONDITION));
+
+            if (style.isShowField(Style.Screen.List, DBKey.BOOK_CONDITION)
+                && rowData.contains(DBKey.BOOK_CONDITION)) {
+                showOrHide(vb.condition, bookCondition[rowData.getInt(DBKey.BOOK_CONDITION)]);
             }
-            if (inUse.location) {
-                showOrHide(locationView, rowData.getString(DBKey.LOCATION));
+
+            // {@link BoBTask#fixedDomainList}
+            if (style.isShowField(Style.Screen.List, DBKey.LANGUAGE)) {
+                final String language =
+                        ServiceLocator.getInstance().getLanguages()
+                                      .getDisplayNameFromISO3(vb.language.getContext(),
+                                                              rowData.getString(DBKey.LANGUAGE));
+                showOrHide(vb.language, language);
             }
-            if (inUse.bookshelf) {
-                showOrHide(bookshelvesView, rowData.getString(DBKey.BOOKSHELF_NAME_CSV));
+
+            if (style.isShowField(Style.Screen.List, DBKey.LOCATION)
+                && rowData.contains(DBKey.LOCATION)) {
+                showOrHide(vb.location, rowData.getString(DBKey.LOCATION));
+            }
+
+            if (style.isShowField(Style.Screen.List, DBKey.FK_BOOKSHELF)
+                && rowData.contains(DBKey.BOOKSHELF_NAME_CSV)) {
+                showOrHide(vb.shelves, rowData.getString(DBKey.BOOKSHELF_NAME_CSV));
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
@@ -1151,38 +1003,87 @@ public class BooklistAdapter
             }
         }
 
-        @Nullable
-        String getPublisherAndPubDateText(@NonNull final DataHolder rowData) {
-            final String name;
-            if (inUse.publisher) {
-                name = rowData.getString(DBKey.PUBLISHER_NAME);
-            } else {
-                name = null;
+        /**
+         * The combined (primary) Series title + number.
+         * Shown if we're NOT grouping by title AND the user enabled this.
+         * <p>
+         * The views {@code vb.seriesNum} and {@code vb.seriesNumLong} will are hidden.
+         *
+         * @param rowData with the data
+         */
+        private void showOrHideSeriesText(@NonNull final DataHolder rowData) {
+            if (rowData.contains(DBKey.SERIES_TITLE)) {
+                String seriesTitle = rowData.getString(DBKey.SERIES_TITLE);
+                if (!seriesTitle.isBlank()) {
+                    if (rowData.contains(DBKey.SERIES_BOOK_NUMBER)) {
+                        final String number = rowData.getString(DBKey.SERIES_BOOK_NUMBER);
+                        if (!number.isBlank()) {
+                            seriesTitle = String.format(a_bracket_b_bracket, seriesTitle, number);
+                        }
+                    }
+                    vb.seriesTitle.setVisibility(View.VISIBLE);
+                    vb.seriesTitle.setText(seriesTitle);
+                    return;
+                }
+            }
+            vb.seriesTitle.setVisibility(View.GONE);
+        }
+
+        /**
+         * Shown the Series number if we're grouping by Series AND the user enabled this.
+         * The view {@code vb.seriesTitle} is hidden.
+         * <p>
+         * If the Series number is a short piece of text (len <= 4 characters).
+         * we show it in {@code vb.seriesNum}.
+         * If it is a long piece of text (len > 4 characters)
+         * we show it in {@code vb.seriesNumLong}.
+         *
+         * @param rowData with the data
+         */
+        private void showOrHideSeriesNumber(@NonNull final DataHolder rowData) {
+            if (rowData.contains(DBKey.SERIES_BOOK_NUMBER)) {
+                final String number = rowData.getString(DBKey.SERIES_BOOK_NUMBER);
+                if (!number.isBlank()) {
+                    // Display it in one of the views, based on the size of the text.
+                    // 4 characters is based on e.g. "1.12" being considered short
+                    // and e.g. "1|omnibus" being long.
+                    if (number.length() > 4) {
+                        vb.seriesNum.setVisibility(View.GONE);
+                        vb.seriesNumLong.setText(number);
+                        vb.seriesNumLong.setVisibility(View.VISIBLE);
+                    } else {
+                        vb.seriesNum.setText(number);
+                        vb.seriesNum.setVisibility(View.VISIBLE);
+                        vb.seriesNumLong.setVisibility(View.GONE);
+                    }
+                    return;
+                }
+            }
+            vb.seriesNum.setVisibility(View.GONE);
+            vb.seriesNumLong.setVisibility(View.GONE);
+        }
+
+        private void showOrHidePublisher(@NonNull final DataHolder rowData,
+                                         final boolean usePub,
+                                         final boolean usePubDate) {
+            String text = null;
+            if (usePub) {
+                text = rowData.getString(DBKey.PUBLISHER_NAME_CSV);
             }
 
-            final String date;
-            if (inUse.pubDate) {
+            String date = null;
+            if (usePubDate) {
                 final String dateStr = rowData.getString(DBKey.BOOK_PUBLICATION__DATE);
                 date = new PartialDate(dateStr).toDisplay(adapter.getUserLocale(), dateStr);
-            } else {
-                date = null;
             }
 
-            if (name != null && !name.isEmpty() && date != null && !date.isEmpty()) {
+            if (text != null && !text.isBlank() && date != null && !date.isBlank()) {
                 // Combine Publisher and date
-                return String.format(x_bracket_y_bracket, name, date);
-
-            } else if (name != null && !name.isEmpty()) {
-                // there was no date, just use the publisher
-                return name;
-
-            } else if (date != null && !date.isEmpty()) {
-                // there was no publisher, just use the date
-                return date;
+                showOrHide(vb.publisher, String.format(a_bracket_b_bracket, text, date));
 
             } else {
-                // Neither is present
-                return null;
+                // there was no publisher, just use the date
+                showOrHide(vb.publisher, date);
             }
         }
 
@@ -1212,9 +1113,9 @@ public class BooklistAdapter
          */
         void setImageView(@NonNull final String uuid) {
             // store the uuid for use in the OnClickListener
-            coverView.setTag(R.id.TAG_THUMBNAIL_UUID, uuid);
+            vb.coverImage0.setTag(R.id.TAG_THUMBNAIL_UUID, uuid);
 
-            final Context context = coverView.getContext();
+            final Context context = vb.coverImage0.getContext();
 
             // 1. If caching is used, and we don't have cache building happening, check it.
             if (adapter.isImageCachingEnabled()) {
@@ -1225,7 +1126,7 @@ public class BooklistAdapter
 
                     if (bitmap != null) {
                         //noinspection ConstantConditions
-                        imageLoader.fromBitmap(coverView, bitmap);
+                        imageLoader.fromBitmap(vb.coverImage0, bitmap);
                         return;
                     }
                 }
@@ -1236,11 +1137,11 @@ public class BooklistAdapter
             // Check if the file exists; if it does not...
             if (file.isEmpty()) {
                 // leave the space blank, but preserve the width BASED on the coverLongestSide!
-                final ViewGroup.LayoutParams lp = coverView.getLayoutParams();
+                final ViewGroup.LayoutParams lp = vb.coverImage0.getLayoutParams();
                 lp.width = (int) (coverLongestSide * HW_RATIO);
                 lp.height = 0;
-                coverView.setLayoutParams(lp);
-                coverView.setImageDrawable(null);
+                vb.coverImage0.setLayoutParams(lp);
+                vb.coverImage0.setImageDrawable(null);
                 return;
             }
 
@@ -1249,7 +1150,7 @@ public class BooklistAdapter
                 // 1. Gets the image from the file system and display it.
                 // 2. Start a subsequent task to send it to the cache.
                 //noinspection ConstantConditions
-                imageLoader.fromFile(coverView, file.get(), bitmap -> {
+                imageLoader.fromFile(vb.coverImage0, file.get(), bitmap -> {
                     if (bitmap != null) {
                         ServiceLocator.getInstance().getCoverCacheDao().saveCover(
                                 uuid, 0, bitmap, coverLongestSide, coverLongestSide);
@@ -1258,7 +1159,7 @@ public class BooklistAdapter
             } else {
                 // Cache not used: Get the image from the file system and display it.
                 //noinspection ConstantConditions
-                imageLoader.fromFile(coverView, file.get(), null);
+                imageLoader.fromFile(vb.coverImage0, file.get(), null);
             }
         }
     }
@@ -1361,6 +1262,7 @@ public class BooklistAdapter
                 final String dbgText = " " + position + '/'
                                        + rowData.getLong(DBKey.BL_LIST_VIEW_NODE_ROW_ID);
 
+                // just hang it of the existing text view.
                 final CharSequence text = textView.getText();
                 final SpannableString dbg = new SpannableString(text + dbgText);
                 dbg.setSpan(new ForegroundColorSpan(Color.BLUE), text.length(), dbg.length(), 0);

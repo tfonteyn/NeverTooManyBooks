@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Sort;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -61,7 +62,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_KEY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_LEVEL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_VISIBLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BL_ROW_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -95,6 +95,24 @@ class BooklistBuilder {
     private static final String _FROM_ = " FROM ";
     private static final String _WHERE_ = " WHERE ";
 
+    /** Foreign key owned by the . */
+    static final String FK_BL_ROW_ID = "bl_row_id";
+
+    /**
+     * Foreign key between the {@link Booklist} list table
+     * and the {@link Booklist} navigator table
+     * as used in the ViewPager displaying individual books.
+     */
+    private static final Domain DOM_FK_BL_ROW_ID;
+
+    static {
+        DOM_FK_BL_ROW_ID =
+                new Domain.Builder(FK_BL_ROW_ID, SqLiteDataType.Integer)
+                        .notNull()
+                        .build();
+    }
+
+
     /**
      * Expression for the domain {@link DBDefinitions#DOM_BOOKSHELF_NAME_CSV}.
      * <p>
@@ -108,6 +126,7 @@ class BooklistBuilder {
             + TBL_BOOKS.dot(DBKey.PK_ID) + "=" + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOK)
             + ")";
 
+
     /**
      * Expression for the domain {@link DBDefinitions#DOM_PUBLISHER_NAME_CSV}.
      * <p>
@@ -120,6 +139,7 @@ class BooklistBuilder {
             + _WHERE_
             + TBL_BOOKS.dot(DBKey.PK_ID) + "=" + TBL_BOOK_PUBLISHER.dot(DBKey.FK_BOOK)
             + ")";
+
     /**
      * Counter for generating ID's. Only increments.
      * Used to create unique names for the temporary tables.
@@ -198,15 +218,14 @@ class BooklistBuilder {
      * @param domainExpression Domain to add
      */
     void addDomain(@NonNull final DomainExpression domainExpression) {
-        final String key = domainExpression.getDomain().getName();
-
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
+            final String key = domainExpression.getDomain().getName();
             if (bookDomains.containsKey(key)) {
                 // adding a duplicate here is a bug.
                 throw new IllegalArgumentException("Duplicate domain=" + key);
             }
         }
-        bookDomains.put(key, domainExpression);
+        bookDomains.put(domainExpression.getDomain().getName(), domainExpression);
     }
 
     /**
@@ -452,25 +471,29 @@ class BooklistBuilder {
                      .addIndex(DBKey.BL_NODE_VISIBLE, false, DOM_BL_NODE_VISIBLE);
 
             // Always sort by level first; no expression, as this does not represent a value.
-            addExpression(new DomainExpression(DOM_BL_NODE_LEVEL, null, Sort.Asc));
+            addDomainExpression(new DomainExpression(DOM_BL_NODE_LEVEL, Sort.Asc));
 
             // The level expression; for a book this is always 1 below the #groups obviously
-            addExpression(new DomainExpression(DOM_BL_NODE_LEVEL,
-                                               String.valueOf(style.getGroupCount() + 1)));
+            addDomainExpression(new DomainExpression(DOM_BL_NODE_LEVEL,
+                                                     String.valueOf(style.getGroupCount() + 1),
+                                                     Sort.Unsorted));
 
             // The BooklistGroup for a book is always BooklistGroup.BOOK (duh)
-            addExpression(new DomainExpression(DOM_BL_NODE_GROUP,
-                                               String.valueOf(BooklistGroup.BOOK)));
+            addDomainExpression(new DomainExpression(DOM_BL_NODE_GROUP,
+                                                     String.valueOf(BooklistGroup.BOOK),
+                                                     Sort.Unsorted));
             listTable.addIndex(DBKey.BL_NODE_GROUP, false, DOM_BL_NODE_GROUP);
 
             // The book id itself
-            addExpression(new DomainExpression(DOM_FK_BOOK, TBL_BOOKS.dot(DBKey.PK_ID)));
+            addDomainExpression(new DomainExpression(DOM_FK_BOOK,
+                                                     TBL_BOOKS.dot(DBKey.PK_ID),
+                                                     Sort.Unsorted));
 
             // Add style-specified groups
             style.getGroupList().forEach(this::addGroup);
 
             // Add caller-specified domains
-            bookDomains.forEach(this::addExpression);
+            bookDomains.forEach(this::addDomainExpression);
 
             // List of column names for the INSERT INTO... clause
             final StringJoiner destColumns = new StringJoiner(",");
@@ -564,7 +587,7 @@ class BooklistBuilder {
             // Don't apply constraints (no need)
             db.recreate(navTable, false);
             db.execSQL(INSERT_INTO_ + navTable.getName()
-                       + " (" + DBKey.FK_BOOK + ',' + DBKey.FK_BL_ROW_ID + ") "
+                       + " (" + DBKey.FK_BOOK + ',' + FK_BL_ROW_ID + ") "
                        + SELECT_ + DBKey.FK_BOOK + ',' + DBKey.PK_ID
                        + _FROM_ + listTable.getName()
                        + _WHERE_ + DBKey.BL_NODE_GROUP + "=" + BooklistGroup.BOOK
@@ -762,7 +785,7 @@ class BooklistBuilder {
          *
          * @param domainExpression to add
          */
-        private void addExpression(@NonNull final DomainExpression domainExpression) {
+        private void addDomainExpression(@NonNull final DomainExpression domainExpression) {
             final Domain domain = domainExpression.getDomain();
             // Add the domain itself to the table, if it's not already there
             final boolean domainAlreadyPresent = listTable.contains(domain);
@@ -814,17 +837,17 @@ class BooklistBuilder {
 
             // display domain first
             final DomainExpression displayDomainExpression = group.getDisplayDomainExpression();
-            addExpression(displayDomainExpression);
+            addDomainExpression(displayDomainExpression);
             accumulatedDomains.add(displayDomainExpression.getDomain());
 
             // then how we group
             group.getGroupDomainExpressions().forEach(domainExpression -> {
-                addExpression(domainExpression);
+                addDomainExpression(domainExpression);
                 accumulatedDomains.add(domainExpression.getDomain());
             });
 
             // the base domains we always need/have
-            group.getBaseDomainExpressions().forEach(this::addExpression);
+            group.getBaseDomainExpressions().forEach(this::addDomainExpression);
 
             /*
              * Copy all current groups to this group; this effectively accumulates

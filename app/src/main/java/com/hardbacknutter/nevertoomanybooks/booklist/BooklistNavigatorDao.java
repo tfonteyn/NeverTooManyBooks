@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -90,7 +90,7 @@ public final class BooklistNavigatorDao {
         // This method is only called once to get the initial row number
         try (SynchronizedStatement stmt = ServiceLocator.getInstance().getDb().compileStatement(
                 SELECT_ + DBKey.PK_ID + _FROM_ + listTableName
-                + _WHERE_ + DBKey.FK_BL_ROW_ID + "=?")) {
+                + _WHERE_ + BooklistBuilder.FK_BL_ROW_ID + "=?")) {
             stmt.bindLong(1, listTableRowId);
             return (int) stmt.simpleQueryForLongOrZero();
         }

@@ -46,8 +46,6 @@ public final class DBKey {
     /** Foreign key. */
     public static final String FK_STYLE = "style";
     /** Foreign key. */
-    public static final String FK_BL_ROW_ID = "bl_row_id";
-    /** Foreign key. */
     public static final String FK_CALIBRE_LIBRARY = "clb_lib_id";
 
     /*
@@ -239,13 +237,6 @@ public final class DBKey {
 
     /** Alias. */
     public static final String BOOK_COUNT = "book_count";
-    /** Booklist. Virtual domains. */
-    public static final String BL_AUTHOR_SORT = "bl_aut_sort";
-    public static final String BL_SERIES_SORT = "bl_ser_sort";
-    public static final String BL_PUBLISHER_SORT = "bl_pub_sort";
-    public static final String BL_BOOKSHELF_SORT = "bl_shelf_sort";
-    public static final String BL_SERIES_NUM_FLOAT = "bl_ser_num_float";
-    public static final String BL_PRIMARY_SERIES_COUNT = "bl_prim_ser_cnt";
 
 
     /** {@link DBDefinitions#TBL_BOOK_LIST_NODE_STATE}. */

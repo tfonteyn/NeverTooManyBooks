@@ -270,6 +270,10 @@ public class StyleCoder
             style.setShowField(Style.Screen.List, DBKey.FORMAT,
                                source.getBoolean(StyleDataStore.PK_LIST_SHOW_FORMAT));
         }
+        if (source.has(StyleDataStore.PK_LIST_SHOW_LANGUAGE)) {
+            style.setShowField(Style.Screen.List, DBKey.LANGUAGE,
+                               source.getBoolean(StyleDataStore.PK_LIST_SHOW_LANGUAGE));
+        }
         if (source.has(StyleDataStore.PK_LIST_SHOW_LOCATION)) {
             style.setShowField(Style.Screen.List, DBKey.LOCATION,
                                source.getBoolean(StyleDataStore.PK_LIST_SHOW_LOCATION));

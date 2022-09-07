@@ -28,18 +28,11 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Sort;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_SERIES_SORT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_NUM_IN_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
-
 
 /**
  * Specialized BooklistGroup representing a {@link Series} group.
@@ -66,39 +59,45 @@ public class SeriesBooklistGroup
         // We use the foreign ID to create the key domain.
         // We override the display domain in #createDisplayDomainExpression.
         return new GroupKey(R.string.lbl_series, "s",
-                            new DomainExpression(DOM_FK_SERIES,
-                                                 TBL_SERIES.dot(DBKey.PK_ID)))
+                            new DomainExpression(DBDefinitions.DOM_FK_SERIES,
+                                                 DBDefinitions.TBL_SERIES.dot(DBKey.PK_ID),
+                                                 Sort.Unsorted))
                 .addGroupDomain(
                         // We do not sort on the key domain but add the OB column instead
-                        new DomainExpression(DOM_BL_SERIES_SORT,
-                                             TBL_SERIES.dot(DBKey.SERIES_TITLE_OB),
-                                             Sort.Asc))
+                        new DomainExpression(
+                                new Domain.Builder("blg_ser_sort", SqLiteDataType.Text)
+                                        .build(),
+                                DBDefinitions.TBL_SERIES.dot(DBKey.SERIES_TITLE_OB),
+                                Sort.Asc))
                 .addGroupDomain(
                         // Group by id (we want the id available and there is
                         // a chance two Series will have the same name)
-                        new DomainExpression(DOM_FK_SERIES,
-                                             TBL_BOOK_SERIES.dot(DBKey.FK_SERIES)))
+                        new DomainExpression(DBDefinitions.DOM_FK_SERIES,
+                                             DBDefinitions.TBL_BOOK_SERIES))
                 .addGroupDomain(
                         // Group by complete-flag
-                        new DomainExpression(DOM_SERIES_IS_COMPLETE,
-                                             TBL_SERIES.dot(DBKey.SERIES_IS_COMPLETE)))
+                        new DomainExpression(DBDefinitions.DOM_SERIES_IS_COMPLETE,
+                                             DBDefinitions.TBL_SERIES))
                 .addBaseDomain(
                         // The series number in the base data in sorted order.
                         // This field is NOT displayed.
                         // Casting it as a float allows for the possibility of 3.1,
                         // or even 3.1|Omnibus 3-10" as a series number.
-                        new DomainExpression(DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT,
-                                             "CAST("
-                                             + TBL_BOOK_SERIES.dot(DBKey.SERIES_BOOK_NUMBER)
-                                             + " AS REAL)",
-                                             Sort.Asc))
+                        new DomainExpression(
+                                new Domain.Builder("blg_ser_num_float", SqLiteDataType.Real)
+                                        .build(),
+                                "CAST("
+                                + DBDefinitions.TBL_BOOK_SERIES.dot(DBKey.SERIES_BOOK_NUMBER)
+                                + " AS REAL)",
+                                Sort.Asc))
                 .addBaseDomain(
                         // The series number in the base data in sorted order.
                         // This field is displayed.
                         // Covers non-numeric data (where the above float would fail)
-                        new DomainExpression(DOM_BOOK_NUM_IN_SERIES,
-                                             TBL_BOOK_SERIES.dot(DBKey.SERIES_BOOK_NUMBER),
-                                             Sort.Asc));
+                        new DomainExpression(
+                                DBDefinitions.DOM_BOOK_NUM_IN_SERIES,
+                                DBDefinitions.TBL_BOOK_SERIES.dot(DBKey.SERIES_BOOK_NUMBER),
+                                Sort.Asc));
     }
 
     @Override
@@ -106,8 +105,7 @@ public class SeriesBooklistGroup
     protected DomainExpression createDisplayDomainExpression(@NonNull final Style style) {
         // Not sorted; we sort on the OB domain as defined in #createGroupKey.
         return new DomainExpression(DBDefinitions.DOM_SERIES_TITLE,
-                                    DBDefinitions.TBL_SERIES.dot(DBKey.SERIES_TITLE),
-                                    Sort.Unsorted);
+                                    DBDefinitions.TBL_SERIES);
     }
 
     @Override

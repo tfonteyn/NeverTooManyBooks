@@ -91,6 +91,7 @@ public class StyleDataStore
     public static final String PK_LIST_SHOW_SERIES = "style.booklist.show.series";
     public static final String PK_LIST_SHOW_PUB_DATE = "style.booklist.show.publication.date";
     public static final String PK_LIST_SHOW_FORMAT = "style.booklist.show.format";
+    public static final String PK_LIST_SHOW_LANGUAGE = "style.booklist.show.language";
     public static final String PK_LIST_SHOW_LOCATION = "style.booklist.show.location";
     public static final String PK_LIST_SHOW_CONDITION = "style.booklist.show.condition";
     public static final String PK_LIST_SHOW_RATING = "style.booklist.show.rating";
@@ -239,6 +240,9 @@ public class StyleDataStore
             case PK_LIST_SHOW_FORMAT:
                 style.setShowField(Style.Screen.List, DBKey.FORMAT, value);
                 break;
+            case PK_LIST_SHOW_LANGUAGE:
+                style.setShowField(Style.Screen.List, DBKey.LANGUAGE, value);
+                break;
             case PK_LIST_SHOW_LOCATION:
                 style.setShowField(Style.Screen.List, DBKey.LOCATION, value);
                 break;
@@ -317,6 +321,9 @@ public class StyleDataStore
 
             case PK_LIST_SHOW_FORMAT:
                 return style.isShowField(Style.Screen.List, DBKey.FORMAT);
+
+            case PK_LIST_SHOW_LANGUAGE:
+                return style.isShowField(Style.Screen.List, DBKey.LANGUAGE);
 
             case PK_LIST_SHOW_LOCATION:
                 return style.isShowField(Style.Screen.List, DBKey.LOCATION);
