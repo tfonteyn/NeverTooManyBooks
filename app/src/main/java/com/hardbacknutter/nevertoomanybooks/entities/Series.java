@@ -31,6 +31,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -418,12 +419,11 @@ public class Series
     @NonNull
     public String getLabel(@NonNull final Context context) {
         // Using the locale here is overkill;  see #getLocale(..)
-        final String title = getLabel(context, this.title, () -> null);
-
+        final String label = getLabel(context, this.title, () -> null);
         if (number.isEmpty()) {
-            return title;
+            return label;
         } else {
-            return title + " (" + number + ')';
+            return context.getString(R.string.a_bracket_b_bracket, label, number);
         }
     }
 
