@@ -23,6 +23,8 @@ plugins {
 }
 
 android {
+    namespace "com.hardbacknutter.fastscroller"
+
     compileSdk rootProject.ext.compileSdk
 
     defaultConfig {
