@@ -27,16 +27,22 @@ import androidx.core.content.FileProvider;
 
 import java.io.File;
 
+import com.hardbacknutter.nevertoomanybooks.R;
+
 /**
  * Note that the only reason we create this subclass is to have a central point to manage the
  * authority string transparently to the rest of the app.
- * <p>
- * The {@link #AUTHORITY} must match the Manifest attribute {@code "android:authorities"}:
  * <pre>
+ * gradle.build
+ * {@code
+ *      android.buildTypes.[type].resValue("string", "fileProviderAuthority", "[value]")
+ * }
+ *
+ * AndroidManifest.xml
  * {@code
  * <provider
  *     android:name=".utils.GenericFileProvider"
- *     android:authorities="com.hardbacknutter.nevertoomanybooks.GenericFileProvider"
+ *     android:authorities="@string/fileProviderAuthority"
  *     android:exported="false"
  *     android:grantUriPermissions="true">
  *     <meta-data
@@ -44,7 +50,8 @@ import java.io.File;
  *         android:resource="@xml/provider_paths" />
  * </provider>
  * }
- *  res/xml/provider_paths.xml
+ *
+ * res/xml/provider_paths.xml
  * {@code
  * <paths>
  *     <!-- Access limited to the Pictures directory. -->
@@ -72,14 +79,6 @@ public class GenericFileProvider
         extends FileProvider {
 
     /**
-     * The authorities value must match:
-     * - AndroidManifest.xml/provider/android:authorities
-     * - GenericFileProvider.java/AUTHORITY
-     */
-    private static final String AUTHORITY =
-            "com.hardbacknutter.nevertoomanybooks.GenericFileProvider";
-
-    /**
      * Get a FileProvider URI for the given file.
      *
      * @param context Current context
@@ -90,7 +89,7 @@ public class GenericFileProvider
     @NonNull
     public static Uri createUri(@NonNull final Context context,
                                 @NonNull final File file) {
-        return getUriForFile(context, AUTHORITY, file);
+        return getUriForFile(context, context.getString(R.string.fileProviderAuthority), file);
     }
 
     /**
@@ -106,6 +105,7 @@ public class GenericFileProvider
     public static Uri createUri(@NonNull final Context context,
                                 @NonNull final File file,
                                 @NonNull final String displayName) {
-        return getUriForFile(context, AUTHORITY, file, displayName);
+        return getUriForFile(context, context.getString(R.string.fileProviderAuthority), file,
+                             displayName);
     }
 }

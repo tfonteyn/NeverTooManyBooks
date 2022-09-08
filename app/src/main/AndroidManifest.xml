@@ -64,26 +64,21 @@
         tools:ignore="UnusedAttribute">
 
         <!--
-            Using ${} in authorities tags does not seem to work consistently, hence we use full names.
-
-            The authorities value must match:
-            - AndroidManifest.xml/provider/android:authorities
-            - src/main/res/xml/searchable.xml/searchSuggestAuthority
-            - SearchSuggestionProvider.java/AUTHORITY
+            The authorities value is defined in gradle.build:
+            android.buildTypes.[type].resValue("string", "searchSuggestAuthority", "[value]")
         -->
         <provider
             android:name=".database.SearchSuggestionProvider"
-            android:authorities="com.hardbacknutter.nevertoomanybooks.SearchSuggestionProvider"
+            android:authorities="@string/searchSuggestAuthority"
             android:exported="false" />
 
         <!--
-            The authorities value must match:
-            - AndroidManifest.xml/provider/android:authorities
-            - GenericFileProvider.java/AUTHORITY
+            The authorities value is defined in gradle.build:
+            android.buildTypes.[type].resValue("string", "fileProviderAuthority", "[value]")
          -->
         <provider
             android:name=".utils.GenericFileProvider"
-            android:authorities="com.hardbacknutter.nevertoomanybooks.GenericFileProvider"
+            android:authorities="@string/fileProviderAuthority"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

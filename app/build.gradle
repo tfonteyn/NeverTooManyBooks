@@ -101,7 +101,7 @@ android {
     compileSdk rootProject.ext.compileSdk
 
     defaultConfig {
-        applicationId "com.hardbacknutter.nevertoomanybooks"
+        applicationId rootProject.ext.applicationId
         versionCode 19
         versionName = '3.2'
 
@@ -149,6 +149,11 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"),
                     "proguard-rules.pro"
 
+            resValue("string", "searchSuggestAuthority",
+                    "${applicationId}.SearchSuggestionProvider")
+            resValue("string", "fileProviderAuthority",
+                    "${applicationId}.GenericFileProvider")
+
             // under development
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "false")
             // under development
@@ -158,11 +163,21 @@ android {
             initWith release
             versionNameSuffix "-beta"
             // applicationIdSuffix: same as release to be able to update rel->beta
+
+            resValue("string", "searchSuggestAuthority",
+                    "${applicationId}.SearchSuggestionProvider.beta")
+            resValue("string", "fileProviderAuthority",
+                    "${applicationId}.GenericFileProvider.beta")
         }
         debug {
             debuggable true
             versionNameSuffix "-debug"
             applicationIdSuffix ".debug"
+
+            resValue("string", "searchSuggestAuthority",
+                    "${applicationId}.SearchSuggestionProvider.debug")
+            resValue("string", "fileProviderAuthority",
+                    "${applicationId}.GenericFileProvider.debug")
 
             // under development
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "true")

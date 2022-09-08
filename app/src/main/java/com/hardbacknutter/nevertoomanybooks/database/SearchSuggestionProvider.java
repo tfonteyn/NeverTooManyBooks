@@ -31,23 +31,27 @@ import android.view.Menu;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
-
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 
 /**
  * We're using the default search action view and the standard "SUGGEST" Uri and MIME types.
  * <p>
  * Our query returns book titles as the {@link SearchManager#SUGGEST_COLUMN_INTENT_DATA}.
  * <p>
- * The {@link #AUTHORITY} must match the Manifest attribute {@code "android:authorities"}:
  * <pre>
+ * gradle.build
+ * {@code
+ *      android.buildTypes.[type].resValue("string", "searchSuggestAuthority", "[value]")
+ * }
+ *
+ * AndroidManifest.xml
  * {@code
  * <provider
  *      android:name=".database.SearchSuggestionProvider"
- *      android:authorities="com.hardbacknutter.nevertoomanybooks.SearchSuggestionProvider"
+ *      android:authorities="@string/searchSuggestAuthority"
  *      android:exported="false" />
  * }
  *
@@ -57,7 +61,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FT
  *     xmlns:android="http://schemas.android.com/apk/res/android"
  *     android:hint="@string/lbl_search_for_books"
  *     android:label="@string/lbl_search_for_books"
- *     android:searchSuggestAuthority="com.hardbacknutter.nevertoomanybooks.SearchSuggestionProvider"
+ *     android:searchSuggestAuthority="@string/searchSuggestAuthority"
  *     android:searchSuggestIntentAction="android.intent.action.VIEW"
  *     android:searchSuggestThreshold="2"
  *     android:searchSuggestSelection=" ?"
@@ -74,41 +78,33 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FT
 public class SearchSuggestionProvider
         extends ContentProvider {
 
-    /**
-     * The authority value must match:
-     * - AndroidManifest.xml/provider/android:authorities
-     * - src/main/res/xml/searchable.xml/searchSuggestAuthority
-     * - SearchSuggestionProvider.java/AUTHORITY
-     */
-    private static final String AUTHORITY =
-            "com.hardbacknutter.nevertoomanybooks.SearchSuggestionProvider";
-
     /** Standard Local-search. */
     private static final String SEARCH_SUGGESTIONS =
             // FTS_BOOK_ID is the _id into the books table.
             "SELECT " + DBKey.FTS_BOOK_ID + " AS " + DBKey.PK_ID
-            + ',' + (TBL_FTS_BOOKS.dot(DBKey.TITLE)
+            + ',' + (DBDefinitions.TBL_FTS_BOOKS.dot(DBKey.TITLE)
                      + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1)
-            + ',' + (TBL_FTS_BOOKS.dot(DBKey.FTS_AUTHOR_NAME)
+            + ',' + (DBDefinitions.TBL_FTS_BOOKS.dot(DBKey.FTS_AUTHOR_NAME)
                      + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_2)
-            + ',' + (TBL_FTS_BOOKS.dot(DBKey.TITLE)
+            + ',' + (DBDefinitions.TBL_FTS_BOOKS.dot(DBKey.TITLE)
                      + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA)
-            + " FROM " + TBL_FTS_BOOKS.getName()
-            + " WHERE " + TBL_FTS_BOOKS.getName() + " MATCH ?";
+            + " FROM " + DBDefinitions.TBL_FTS_BOOKS.getName()
+            + " WHERE " + DBDefinitions.TBL_FTS_BOOKS.getName() + " MATCH ?";
 
     /** Uri and query support. Arbitrary code to indicate a match. */
     private static final int SUGGEST_URI_PATH_ID = 1;
 
     /** Uri and query support. */
-    private static final UriMatcher URI_MATCHER;
-
-    static {
-        URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
-        URI_MATCHER.addURI(AUTHORITY, SearchManager.SUGGEST_URI_PATH_QUERY, SUGGEST_URI_PATH_ID);
-    }
+    private UriMatcher uriMatcher;
 
     @Override
     public boolean onCreate() {
+        uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        //noinspection ConstantConditions
+        uriMatcher.addURI(getContext().getString(R.string.searchSuggestAuthority),
+                          SearchManager.SUGGEST_URI_PATH_QUERY,
+                          SUGGEST_URI_PATH_ID);
+
         return true;
     }
 
@@ -120,7 +116,7 @@ public class SearchSuggestionProvider
                         @Nullable final String[] selectionArgs,
                         @Nullable final String sortOrder) {
 
-        if (URI_MATCHER.match(uri) == SUGGEST_URI_PATH_ID) {
+        if (uriMatcher.match(uri) == SUGGEST_URI_PATH_ID) {
             if (selectionArgs == null || selectionArgs[0] == null || selectionArgs[0].isEmpty()) {
                 return null;
             }
@@ -138,7 +134,7 @@ public class SearchSuggestionProvider
     @Nullable
     @Override
     public String getType(@NonNull final Uri uri) {
-        if (URI_MATCHER.match(uri) == SUGGEST_URI_PATH_ID) {
+        if (uriMatcher.match(uri) == SUGGEST_URI_PATH_ID) {
             return SearchManager.SUGGEST_MIME_TYPE;
         }
 
