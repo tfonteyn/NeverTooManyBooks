@@ -426,32 +426,6 @@ public class CoverHandler {
         final File dstFile = getTempFile();
         FileUtils.delete(dstFile);
 
-        // <manifest ...>
-        //
-        // Needed since Android 11:
-        // https://developer.android.com/training/basics/intents/package-visibility#intent-signature
-        //       <queries>
-        //        <intent>
-        //            <action android:name="android.intent.action.EDIT" />
-        //            <data android:mimeType="image/*" />
-        //        </intent>
-        //    </queries>
-        //    <application ...>
-        //
-        // Needed for all Android versions:
-        // Do NOT set exported="true"; the app will fail to start.
-        // We handle this using grantUriPermissions.
-        //
-        //        <provider
-        //            android:name=".utils.GenericFileProvider"
-        //            android:authorities="${applicationId}.GenericFileProvider"
-        //            android:exported="false"
-        //            android:grantUriPermissions="true">
-        //            <meta-data
-        //                android:name="android.support.FILE_PROVIDER_PATHS"
-        //                android:resource="@xml/provider_paths" />
-        //        </provider>
-
         final Uri srcUri = GenericFileProvider.createUri(context, srcFile);
         final Uri dstUri = GenericFileProvider.createUri(context, dstFile);
         final Intent intent = new Intent(Intent.ACTION_EDIT)
@@ -707,7 +681,7 @@ public class CoverHandler {
         /** After taking a picture, start an editor. */
         Edit(2);
 
-        public final int value;
+        private final int value;
 
         NextAction(final int value) {
             this.value = value;
