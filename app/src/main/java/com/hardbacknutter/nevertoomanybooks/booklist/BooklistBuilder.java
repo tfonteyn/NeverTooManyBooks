@@ -89,29 +89,15 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
  */
 class BooklistBuilder {
 
+    /** Foreign key between the list and navigation table. */
+    static final String FK_BL_ROW_ID = "bl_row_id";
+
     /** Log tag. */
     private static final String TAG = "BooklistBuilder";
+
     private static final String SELECT_ = "SELECT ";
     private static final String _FROM_ = " FROM ";
     private static final String _WHERE_ = " WHERE ";
-
-    /** Foreign key owned by the . */
-    static final String FK_BL_ROW_ID = "bl_row_id";
-
-    /**
-     * Foreign key between the {@link Booklist} list table
-     * and the {@link Booklist} navigator table
-     * as used in the ViewPager displaying individual books.
-     */
-    private static final Domain DOM_FK_BL_ROW_ID;
-
-    static {
-        DOM_FK_BL_ROW_ID =
-                new Domain.Builder(FK_BL_ROW_ID, SqLiteDataType.Integer)
-                        .notNull()
-                        .build();
-    }
-
 
     /**
      * Expression for the domain {@link DBDefinitions#DOM_BOOKSHELF_NAME_CSV}.
@@ -125,7 +111,6 @@ class BooklistBuilder {
             + _WHERE_
             + TBL_BOOKS.dot(DBKey.PK_ID) + "=" + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOK)
             + ")";
-
 
     /**
      * Expression for the domain {@link DBDefinitions#DOM_PUBLISHER_NAME_CSV}.
@@ -141,13 +126,26 @@ class BooklistBuilder {
             + ")";
 
     /**
+     * Foreign key between the {@link Booklist} list table
+     * and the {@link Booklist} navigator table
+     * as used in the ViewPager displaying individual books.
+     */
+    private static final Domain DOM_FK_BL_ROW_ID;
+
+    /**
      * Counter for generating ID's. Only increments.
      * Used to create unique names for the temporary tables.
      */
     @NonNull
     private static final AtomicInteger ID_COUNTER = new AtomicInteger();
-
     private static final String _AND_ = " AND ";
+
+    static {
+        DOM_FK_BL_ROW_ID =
+                new Domain.Builder(FK_BL_ROW_ID, SqLiteDataType.Integer)
+                        .notNull()
+                        .build();
+    }
 
     /** Style to use while building the list. */
     @NonNull
@@ -387,8 +385,6 @@ class BooklistBuilder {
         /** Trigger name - maintain the 'current' value during the initial insert. */
         private String triggerHelperCurrentValueTriggerName;
 
-        private Collection<TableDefinition> leftOuterJoins;
-
         /**
          * Constructor.
          *
@@ -455,9 +451,6 @@ class BooklistBuilder {
                 @NonNull final Collection<TableDefinition> leftOuterJoins,
                 @NonNull final Collection<DomainExpression> bookDomains,
                 @NonNull final Collection<Filter> filters) {
-
-            // Store for later use in #buildFrom
-            this.leftOuterJoins = leftOuterJoins;
 
             // {@link BooklistGroup#GroupKey}.
             // The actual value is set on a by-group/book basis.
@@ -528,7 +521,7 @@ class BooklistBuilder {
             final String sqlForInitialInsert =
                     INSERT_INTO_ + listTable.getName() + " (" + destColumns + ") "
                     + SELECT_ + sourceColumns
-                    + _FROM_ + buildFrom() + buildWhere(context, filters)
+                    + _FROM_ + buildFrom(leftOuterJoins) + buildWhere(context, filters)
                     + _ORDER_BY_ + buildOrderBy();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
@@ -658,7 +651,7 @@ class BooklistBuilder {
                         .add(DBKey.BL_NODE_EXPANDED)
                         .add(DBKey.BL_NODE_VISIBLE);
 
-                // PREF_REBUILD_EXPANDED must explicitly be set to 1/1
+                // RebuildBooklist.Expanded must explicitly be set to 1/1
                 // All others must be set to 0/0. The actual state will be set afterwards.
                 final String expVis = (rebuildMode == RebuildBooklist.Expanded) ? "1" : "0";
 
@@ -898,10 +891,12 @@ class BooklistBuilder {
          *      <li>{@link #leftOuterJoins}</li>
          * </ul>
          *
+         * @param leftOuterJoins tables to be added as a LEFT OUTER JOIN
+         *
          * @return FROM clause
          */
         @NonNull
-        private String buildFrom() {
+        private String buildFrom(@NonNull final Collection<TableDefinition> leftOuterJoins) {
             final StringBuilder sb = new StringBuilder();
 
             // If there is a bookshelf specified (either as group or as a filter),
@@ -936,7 +931,7 @@ class BooklistBuilder {
             sb.append(TBL_BOOKS.join(TBL_BOOK_AUTHOR));
             // Extend the join filtering on the primary Author unless
             // the user wants the book to show under all its Authors
-            if (!style.isShowBooksUnderEachAuthor()) {
+            if (!style.isShowBooks(Style.UnderEach.Author)) {
                 @Author.Type
                 final int primaryAuthorType = style.getPrimaryAuthorType();
                 if (primaryAuthorType == Author.TYPE_UNKNOWN) {
@@ -967,7 +962,7 @@ class BooklistBuilder {
             sb.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_SERIES));
             // Extend the join filtering on the primary Series unless
             // the user wants the book to show under all its Series
-            if (!style.isShowBooksUnderEachSeries()) {
+            if (!style.isShowBooks(Style.UnderEach.Series)) {
                 sb.append(_AND_)
                   .append(TBL_BOOK_SERIES.dot(DBKey.BOOK_SERIES_POSITION))
                   .append("=1");
@@ -981,7 +976,7 @@ class BooklistBuilder {
             sb.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_PUBLISHER));
             // Extend the join filtering on the primary Publisher unless
             // the user wants the book to show under all its Publishers
-            if (!style.isShowBooksUnderEachPublisher()) {
+            if (!style.isShowBooks(Style.UnderEach.Publisher)) {
                 sb.append(_AND_)
                   .append(TBL_BOOK_PUBLISHER.dot(DBKey.BOOK_PUBLISHER_POSITION))
                   .append("=1");
