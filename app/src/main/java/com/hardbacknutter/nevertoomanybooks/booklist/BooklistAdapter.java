@@ -960,8 +960,13 @@ public class BooklistAdapter
 
             if (style.isShowField(Style.Screen.List, DBKey.BOOK_CONDITION)
                 && rowData.contains(DBKey.BOOK_CONDITION)) {
-                showOrHide(vb.condition,
-                           adapter.conditionDescriptions[rowData.getInt(DBKey.BOOK_CONDITION)]);
+                final int condition = rowData.getInt(DBKey.BOOK_CONDITION);
+                if (condition > 0) {
+                    showOrHide(vb.condition, adapter.conditionDescriptions[condition]);
+                } else {
+                    // Hide "Unknown" condition
+                    vb.condition.setVisibility(View.GONE);
+                }
             }
 
             // {@link BoBTask#fixedDomainList}
