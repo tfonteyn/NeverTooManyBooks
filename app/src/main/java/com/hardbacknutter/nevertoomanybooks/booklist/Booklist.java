@@ -610,8 +610,6 @@ public class Booklist
     /**
      * Cleanup.
      * <p>
-     * RuntimeException are caught and ignored.
-     * <p>
      * We cleanup temporary tables to free up no longer needed resources NOW.
      */
     @Override
