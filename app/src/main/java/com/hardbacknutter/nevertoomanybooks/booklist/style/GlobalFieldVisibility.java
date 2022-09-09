@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,9 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 //TODO: remove the isUsed method, and use this class properly + migrate the dozen prefs to just one
+// however.. we'd then need to implement a DataStore to use in the Preferences class,
+// to convert them into a single preference... and setting a DataStore
+// on individual preferences is permanently broken https://issuetracker.google.com/issues/232206237
 public class GlobalFieldVisibility
         extends FieldVisibility {
 
