@@ -38,11 +38,9 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AbstractLinkedTableBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BookshelfBooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.PublisherBooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.SeriesBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
@@ -406,7 +404,6 @@ public abstract class BaseStyle
      */
     @Override
     public int getPrimaryAuthorType() {
-
         return getGroupById(BooklistGroup.AUTHOR)
                 .map(group -> ((AuthorBooklistGroup) group).getPrimaryType())
                 .orElse(Author.TYPE_UNKNOWN);
@@ -418,60 +415,10 @@ public abstract class BaseStyle
         });
     }
 
-    /**
-     * Wrapper that gets the show-book-under-each from {@link SeriesBooklistGroup}
-     * if we have this group; or the default.
-     *
-     * @return {@code true} if we want to show a book under each of its Series.
-     */
-    @Override
-    public boolean isShowBooksUnderEachSeries() {
-        return getGroupById(BooklistGroup.SERIES)
-                .map(group -> ((SeriesBooklistGroup) group).showBooksUnderEach())
-                .orElse(false);
-    }
-
-    public void setShowBooksUnderEachSeries(final boolean value) {
-        getGroupById(BooklistGroup.SERIES).ifPresent(group -> {
-            ((SeriesBooklistGroup) group).setShowBooksUnderEach(value);
-        });
-    }
-
-    /**
-     * Wrapper that gets the show-book-under-each from {@link PublisherBooklistGroup}
-     * if we have this group; or the default.
-     *
-     * @return {@code true} if we want to show a book under each of its Publishers.
-     */
-    @Override
-    public boolean isShowBooksUnderEachPublisher() {
-        return getGroupById(BooklistGroup.PUBLISHER)
-                .map(group -> ((PublisherBooklistGroup) group).showBooksUnderEach())
-                .orElse(false);
-    }
-
-    public void setShowBooksUnderEachPublisher(final boolean value) {
-        getGroupById(BooklistGroup.PUBLISHER).ifPresent(group -> {
-            ((PublisherBooklistGroup) group).setShowBooksUnderEach(value);
-        });
-    }
-
-    /**
-     * Wrapper that gets the show-book-under-each from {@link BookshelfBooklistGroup}
-     * if we have this group; or the default.
-     *
-     * @return {@code true} if we want to show a book under each of its Publishers.
-     */
-    @Override
-    public boolean isShowBooksUnderEachBookshelf() {
-        return getGroupById(BooklistGroup.BOOKSHELF)
-                .map(group -> ((BookshelfBooklistGroup) group).showBooksUnderEach())
-                .orElse(false);
-    }
-
-    public void setShowBooksUnderEachBookshelf(final boolean value) {
-        getGroupById(BooklistGroup.BOOKSHELF).ifPresent(group -> {
-            ((BookshelfBooklistGroup) group).setShowBooksUnderEach(value);
+    public void setShowBooks(@NonNull final UnderEach item,
+                             final boolean value) {
+        getGroupById(item.getBooklistGroup()).ifPresent(group -> {
+            ((AbstractLinkedTableBooklistGroup) group).setShowBooksUnderEach(value);
         });
     }
 
@@ -482,18 +429,11 @@ public abstract class BaseStyle
      * @return {@code true} if we want to show a book under each of its Authors
      */
     @Override
-    public boolean isShowBooksUnderEachAuthor() {
-        return getGroupById(BooklistGroup.AUTHOR)
-                .map(group -> ((AuthorBooklistGroup) group).showBooksUnderEach())
+    public boolean isShowBooks(@NonNull final UnderEach item) {
+        return getGroupById(item.getBooklistGroup())
+                .map(group -> ((AbstractLinkedTableBooklistGroup) group).showBooksUnderEach())
                 .orElse(false);
     }
-
-    public void setShowBooksUnderEachAuthor(final boolean value) {
-        getGroupById(BooklistGroup.AUTHOR).ifPresent(group -> {
-            ((AuthorBooklistGroup) group).setShowBooksUnderEach(value);
-        });
-    }
-
 
     @Override
     public boolean equals(final Object o) {

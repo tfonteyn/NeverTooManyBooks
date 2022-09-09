@@ -272,19 +272,19 @@ public class StyleDataStore
                 break;
 
             case PK_GROUPS_AUTHOR_SHOW_BOOKS_UNDER_EACH:
-                style.setShowBooksUnderEachAuthor(value);
+                style.setShowBooks(Style.UnderEach.Author, value);
                 break;
 
             case PK_GROUPS_SERIES_SHOW_BOOKS_UNDER_EACH:
-                style.setShowBooksUnderEachSeries(value);
+                style.setShowBooks(Style.UnderEach.Series, value);
                 break;
 
             case PK_GROUPS_PUBLISHER_SHOW_BOOKS_UNDER_EACH:
-                style.setShowBooksUnderEachPublisher(value);
+                style.setShowBooks(Style.UnderEach.Publisher, value);
                 break;
 
             case PK_GROUPS_BOOKSHELF_SHOW_BOOKS_UNDER_EACH:
-                style.setShowBooksUnderEachBookshelf(value);
+                style.setShowBooks(Style.UnderEach.Bookshelf, value);
                 break;
 
             default:
@@ -350,16 +350,16 @@ public class StyleDataStore
                 return style.isSortAuthorByGivenName();
 
             case PK_GROUPS_AUTHOR_SHOW_BOOKS_UNDER_EACH:
-                return style.isShowBooksUnderEachAuthor();
+                return style.isShowBooks(Style.UnderEach.Author);
 
             case PK_GROUPS_SERIES_SHOW_BOOKS_UNDER_EACH:
-                return style.isShowBooksUnderEachSeries();
+                return style.isShowBooks(Style.UnderEach.Series);
 
             case PK_GROUPS_PUBLISHER_SHOW_BOOKS_UNDER_EACH:
-                return style.isShowBooksUnderEachPublisher();
+                return style.isShowBooks(Style.UnderEach.Publisher);
 
             case PK_GROUPS_BOOKSHELF_SHOW_BOOKS_UNDER_EACH:
-                return style.isShowBooksUnderEachBookshelf();
+                return style.isShowBooks(Style.UnderEach.Bookshelf);
 
             default:
                 if (key.equals(PK_DETAILS_SHOW_COVER[0])) {

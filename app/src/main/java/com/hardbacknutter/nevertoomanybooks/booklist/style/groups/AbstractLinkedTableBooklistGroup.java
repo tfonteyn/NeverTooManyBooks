@@ -30,7 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpressio
 /**
  * Support for Foreign Key fields.
  */
-abstract class AbstractLinkedTableBooklistGroup
+public abstract class AbstractLinkedTableBooklistGroup
         extends BooklistGroup {
 
     /** DomainExpression for displaying the data. Style dependent. */

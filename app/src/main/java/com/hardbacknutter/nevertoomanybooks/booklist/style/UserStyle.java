@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -81,15 +81,11 @@ public class UserStyle
             groupIds = List.of(BooklistGroup.AUTHOR);
         }
         setGroupIds(groupIds);
-        setShowBooksUnderEachAuthor(rowData.getBoolean(
-                DBKey.STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH));
         setPrimaryAuthorTypes(rowData.getInt(DBKey.STYLE_GROUPS_AUTHOR_PRIMARY_TYPE));
-        setShowBooksUnderEachSeries(rowData.getBoolean(
-                DBKey.STYLE_GROUPS_SERIES_SHOW_UNDER_EACH));
-        setShowBooksUnderEachPublisher(rowData.getBoolean(
-                DBKey.STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH));
-        setShowBooksUnderEachBookshelf(rowData.getBoolean(
-                DBKey.STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH));
+
+        for (final Style.UnderEach item : Style.UnderEach.values()) {
+            setShowBooks(item, rowData.getBoolean(item.getDbKey()));
+        }
 
         expansionLevel = rowData.getInt(DBKey.STYLE_EXP_LEVEL);
         groupRowUsesPreferredHeight = rowData.getBoolean(DBKey.STYLE_ROW_USES_PREF_HEIGHT);
@@ -130,11 +126,11 @@ public class UserStyle
         name = style.getLabel(context);
 
         setGroupList(style.getGroupList());
-        setShowBooksUnderEachAuthor(style.isShowBooksUnderEachAuthor());
         setPrimaryAuthorTypes(style.getPrimaryAuthorType());
-        setShowBooksUnderEachSeries(style.isShowBooksUnderEachSeries());
-        setShowBooksUnderEachPublisher(style.isShowBooksUnderEachPublisher());
-        setShowBooksUnderEachBookshelf(style.isShowBooksUnderEachBookshelf());
+
+        for (final Style.UnderEach item : Style.UnderEach.values()) {
+            setShowBooks(item, style.isShowBooks(item));
+        }
 
         expansionLevel = style.expansionLevel;
         groupRowUsesPreferredHeight = style.groupRowUsesPreferredHeight;

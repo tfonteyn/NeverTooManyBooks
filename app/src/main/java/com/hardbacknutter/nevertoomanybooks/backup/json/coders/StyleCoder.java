@@ -83,18 +83,12 @@ public class StyleCoder
                              .stream()
                              .map(BooklistGroup::getId)
                              .collect(Collectors.toList())));
-            dest.put(StyleDataStore.PK_GROUPS_AUTHOR_SHOW_BOOKS_UNDER_EACH,
-                     userStyle.isShowBooksUnderEachAuthor());
             dest.put(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE,
                      userStyle.getPrimaryAuthorType());
-            dest.put(StyleDataStore.PK_GROUPS_SERIES_SHOW_BOOKS_UNDER_EACH,
-                     userStyle.isShowBooksUnderEachSeries());
-            dest.put(StyleDataStore.PK_GROUPS_PUBLISHER_SHOW_BOOKS_UNDER_EACH,
-                     userStyle.isShowBooksUnderEachPublisher());
-            dest.put(StyleDataStore.PK_GROUPS_BOOKSHELF_SHOW_BOOKS_UNDER_EACH,
-                     userStyle.isShowBooksUnderEachBookshelf());
 
-
+            for (final Style.UnderEach item : Style.UnderEach.values()) {
+                dest.put(item.getPrefKey(), userStyle.isShowBooks(item));
+            }
             dest.put(StyleDataStore.PK_EXPANSION_LEVEL,
                      userStyle.getExpansionLevel());
             dest.put(StyleDataStore.PK_GROUP_ROW_HEIGHT,
@@ -212,25 +206,15 @@ public class StyleCoder
                                                 .collect(Collectors.toList());
         userStyle.setGroupIds(groupIds);
 
-        if (source.has(StyleDataStore.PK_GROUPS_AUTHOR_SHOW_BOOKS_UNDER_EACH)) {
-            userStyle.setShowBooksUnderEachAuthor(
-                    source.getBoolean(StyleDataStore.PK_GROUPS_AUTHOR_SHOW_BOOKS_UNDER_EACH));
-        }
         if (source.has(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE)) {
             userStyle.setPrimaryAuthorTypes(
                     source.getInt(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE));
         }
-        if (source.has(StyleDataStore.PK_GROUPS_SERIES_SHOW_BOOKS_UNDER_EACH)) {
-            userStyle.setShowBooksUnderEachSeries(
-                    source.getBoolean(StyleDataStore.PK_GROUPS_SERIES_SHOW_BOOKS_UNDER_EACH));
-        }
-        if (source.has(StyleDataStore.PK_GROUPS_BOOKSHELF_SHOW_BOOKS_UNDER_EACH)) {
-            userStyle.setShowBooksUnderEachBookshelf(
-                    source.getBoolean(StyleDataStore.PK_GROUPS_BOOKSHELF_SHOW_BOOKS_UNDER_EACH));
-        }
-        if (source.has(StyleDataStore.PK_GROUPS_PUBLISHER_SHOW_BOOKS_UNDER_EACH)) {
-            userStyle.setShowBooksUnderEachPublisher(
-                    source.getBoolean(StyleDataStore.PK_GROUPS_PUBLISHER_SHOW_BOOKS_UNDER_EACH));
+
+        for (final Style.UnderEach item : Style.UnderEach.values()) {
+            if (source.has(item.getPrefKey())) {
+                userStyle.setShowBooks(item, source.getBoolean(item.getPrefKey()));
+            }
         }
     }
 

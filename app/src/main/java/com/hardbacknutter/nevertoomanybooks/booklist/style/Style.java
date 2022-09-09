@@ -305,26 +305,15 @@ public interface Style {
     @Author.Type
     int getPrimaryAuthorType();
 
-    /**
-     * {@link AuthorBooklistGroup} property.
-     */
-    boolean isShowBooksUnderEachAuthor();
 
     /**
-     * {@link SeriesBooklistGroup} property.
+     * Should books be shown under each of the given row type.
+     *
+     * @param underEach row type
+     *
+     * @return flag
      */
-    boolean isShowBooksUnderEachSeries();
-
-    /**
-     * {@link PublisherBooklistGroup} property.
-     */
-    boolean isShowBooksUnderEachPublisher();
-
-    /**
-     * {@link BookshelfBooklistGroup} property.
-     */
-    boolean isShowBooksUnderEachBookshelf();
-
+    boolean isShowBooks(@NonNull UnderEach underEach);
 
     /**
      * Convenience method for use in the Preferences screen.
@@ -344,6 +333,61 @@ public interface Style {
     enum Screen {
         List,
         Detail
+    }
+
+    /**
+     * See {@link #isShowBooks(UnderEach)}.
+     */
+    enum UnderEach {
+        /** {@link AuthorBooklistGroup}. */
+        Author(DBKey.STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH,
+               StyleDataStore.PK_GROUPS_AUTHOR_SHOW_BOOKS_UNDER_EACH,
+               BooklistGroup.AUTHOR),
+
+        /** {@link SeriesBooklistGroup} . */
+        Series(DBKey.STYLE_GROUPS_SERIES_SHOW_UNDER_EACH,
+               StyleDataStore.PK_GROUPS_SERIES_SHOW_BOOKS_UNDER_EACH,
+               BooklistGroup.SERIES),
+
+        /** {@link PublisherBooklistGroup}. */
+        Publisher(DBKey.STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH,
+                  StyleDataStore.PK_GROUPS_PUBLISHER_SHOW_BOOKS_UNDER_EACH,
+                  BooklistGroup.PUBLISHER),
+
+        /** {@link BookshelfBooklistGroup}. */
+        Bookshelf(DBKey.STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH,
+                  StyleDataStore.PK_GROUPS_BOOKSHELF_SHOW_BOOKS_UNDER_EACH,
+                  BooklistGroup.BOOKSHELF);
+
+        @NonNull
+        private final String dbKey;
+        @NonNull
+        private final String prefKey;
+        @BooklistGroup.Id
+        private final int booklistGroup;
+
+        UnderEach(@NonNull final String dbKey,
+                  @NonNull final String prefKey,
+                  @BooklistGroup.Id final int booklistGroup) {
+            this.dbKey = dbKey;
+            this.prefKey = prefKey;
+            this.booklistGroup = booklistGroup;
+        }
+
+        @NonNull
+        public String getDbKey() {
+            return dbKey;
+        }
+
+        @NonNull
+        public String getPrefKey() {
+            return prefKey;
+        }
+
+        @BooklistGroup.Id
+        public int getBooklistGroup() {
+            return booklistGroup;
+        }
     }
 
     @IntDef({TEXT_SCALE_0_VERY_SMALL,
