@@ -77,21 +77,17 @@ public class UserStyleTest
 
         assertEquals(s1.getGroupRowHeight(context), s2.getGroupRowHeight(context));
         assertEquals(s1.getExpansionLevel(), s2.getExpansionLevel());
-
-        assertEquals(s1.isShowBooksUnderEachAuthor(), s2.isShowBooksUnderEachAuthor());
-        assertEquals(s1.isShowBooksUnderEachBookshelf(), s2.isShowBooksUnderEachBookshelf());
-        assertEquals(s1.isShowBooksUnderEachPublisher(), s2.isShowBooksUnderEachPublisher());
-        assertEquals(s1.isShowBooksUnderEachSeries(), s2.isShowBooksUnderEachSeries());
-
         assertEquals(s1.getPrimaryAuthorType(), s2.getPrimaryAuthorType());
-
         assertEquals(s1.getTextScale(), s2.getTextScale());
-
-        assertEquals(s1.getFieldVisibility(Style.Screen.List),
-                     s2.getFieldVisibility(Style.Screen.List));
-        assertEquals(s1.getFieldVisibility(Style.Screen.Detail),
-                     s2.getFieldVisibility(Style.Screen.Detail));
-
         assertEquals(s1.getGroupList(), s2.getGroupList());
+
+        for (final Style.UnderEach item : Style.UnderEach.values()) {
+            assertEquals(s1.isShowBooks(item), s2.isShowBooks(item));
+        }
+
+        for (final Style.Screen item : Style.Screen.values()) {
+            assertEquals(s1.getFieldVisibility(item), s2.getFieldVisibility(item));
+        }
+
     }
 }
