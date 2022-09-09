@@ -409,7 +409,6 @@ public class BooklistAdapter
      * @return Formatted string,
      *         or original string when no special format was needed or on any failure
      */
-    @SuppressLint("SwitchIntDef")
     @NonNull
     private String format(@NonNull final Context context,
                           @BooklistGroup.Id final int groupKeyId,
@@ -555,11 +554,15 @@ public class BooklistAdapter
                 }
             }
 
+            // BooklistGroup.BOOK only here to please lint
+            case BooklistGroup.BOOK:
             case BooklistGroup.FORMAT:
             case BooklistGroup.GENRE:
             case BooklistGroup.LOCATION:
             case BooklistGroup.BOOKSHELF:
             case BooklistGroup.COLOR:
+            case BooklistGroup.BOOK_TITLE_1ST_LETTER:
+            case BooklistGroup.SERIES_TITLE_1ST_LETTER:
             default: {
                 if (text == null || text.isEmpty()) {
                     return context.getString(R.string.bob_empty_field);
