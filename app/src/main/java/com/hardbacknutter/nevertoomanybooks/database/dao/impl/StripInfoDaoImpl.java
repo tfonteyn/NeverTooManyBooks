@@ -22,14 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
 
 public class StripInfoDaoImpl
         extends BaseDaoImpl
@@ -38,7 +37,7 @@ public class StripInfoDaoImpl
     private static final String TAG = "StripInfoDaoImpl";
 
     private static final String INSERT =
-            INSERT_INTO_ + TBL_STRIPINFO_COLLECTION.getName()
+            INSERT_INTO_ + DBDefinitions.TBL_STRIPINFO_COLLECTION.getName()
             + '(' + DBKey.FK_BOOK
             + ',' + DBKey.SID_STRIP_INFO
             + ',' + DBKey.STRIP_INFO_COLL_ID
@@ -46,7 +45,7 @@ public class StripInfoDaoImpl
             + ',' + DBKey.STRIP_INFO_WANTED
             + ',' + DBKey.STRIP_INFO_AMOUNT
             + ',' + DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC
-            + ") VALUES (?,?,?,?,?,?,?)";
+            + ")" + values(7);
 
     /**
      * Constructor.
@@ -96,7 +95,7 @@ public class StripInfoDaoImpl
 
     @Override
     public void delete(@NonNull final Book book) {
-        db.delete(TBL_STRIPINFO_COLLECTION.getName(), DBKey.FK_BOOK + "=?",
+        db.delete(DBDefinitions.TBL_STRIPINFO_COLLECTION.getName(), DBKey.FK_BOOK + "=?",
                   new String[]{String.valueOf(book.getId())});
     }
 }

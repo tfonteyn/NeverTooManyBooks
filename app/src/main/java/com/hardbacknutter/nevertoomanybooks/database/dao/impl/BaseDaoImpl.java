@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -98,6 +99,21 @@ abstract class BaseDaoImpl {
         }
 
         db = ServiceLocator.getInstance().getDb();
+    }
+
+    /**
+     * Create the VALUES clause with 'count' number of '?'.
+     *
+     * @param count number of '?'
+     *
+     * @return a full " VALUES(?,...)" clause
+     */
+    public static String values(final int count) {
+        final StringJoiner sj = new StringJoiner(",", " VALUES (", ")");
+        for (int i = 0; i < count; i++) {
+            sj.add("?");
+        }
+        return sj.toString();
     }
 
     /**

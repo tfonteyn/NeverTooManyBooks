@@ -95,7 +95,7 @@ public class FtsDaoImpl
             + ',' + FTS_TOC_ENTRY_TITLE
 
             + ',' + FTS_BOOK_ID
-            + ") VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+            + ")" + values(11);
 
     /**
      * The full UPDATE statement.
