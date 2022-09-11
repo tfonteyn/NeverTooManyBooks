@@ -320,24 +320,24 @@ public class BooklistAdapter
     /**
      * Create the View for the specified group.
      *
-     * @param parent     The ViewGroup into which the new View will be added after it is bound to
-     *                   an adapter position.
-     * @param groupKeyId The view type of the new View == the group id
+     * @param parent  The ViewGroup into which the new View will be added after it is bound to
+     *                an adapter position.
+     * @param groupId The view type of the new View == the group id
      *
      * @return the view
      */
     @NonNull
     private View createView(@NonNull final ViewGroup parent,
-                            @BooklistGroup.Id final int groupKeyId) {
+                            @BooklistGroup.Id final int groupId) {
         //noinspection ConstantConditions
         final int level = nodeData.getInt(DBKey.BL_NODE_LEVEL);
 
         @LayoutRes
         final int layoutId;
-        if (groupKeyId == BooklistGroup.BOOK) {
+        if (groupId == BooklistGroup.BOOK) {
             layoutId = R.layout.booksonbookshelf_row_book;
 
-        } else if (groupKeyId == BooklistGroup.RATING) {
+        } else if (groupId == BooklistGroup.RATING) {
             layoutId = R.layout.booksonbookshelf_group_rating;
 
         } else {
@@ -359,7 +359,7 @@ public class BooklistAdapter
 
         final View view = inflater.inflate(layoutId, parent, false);
 
-        if (groupKeyId == BooklistGroup.BOOK) {
+        if (groupId == BooklistGroup.BOOK) {
             // Don't indent books
             view.setPaddingRelative(0, 0, 0, 0);
 
@@ -1214,7 +1214,7 @@ public class BooklistAdapter
          * It's ok to store this as it's intrinsically linked with the ViewType.
          */
         @BooklistGroup.Id
-        final int groupKeyId;
+        final int groupId;
         /*** View to populate. */
         @NonNull
         final TextView textView;
@@ -1240,7 +1240,7 @@ public class BooklistAdapter
                             @NonNull final BooklistGroup group) {
             super(itemView);
             this.adapter = adapter;
-            groupKeyId = group.getId();
+            groupId = group.getId();
             key = group.getDisplayDomainExpression().getDomain().getName();
             textView = itemView.findViewById(textViewId);
         }
@@ -1281,7 +1281,7 @@ public class BooklistAdapter
          */
         @NonNull
         public String format(@Nullable final String text) {
-            return adapter.format(itemView.getContext(), groupKeyId, text, null);
+            return adapter.format(itemView.getContext(), groupId, text, null);
         }
     }
 
@@ -1395,7 +1395,7 @@ public class BooklistAdapter
             @Nullable
             final Locale bookLocale = ServiceLocator.getInstance().getAppLocale()
                                                     .getLocale(context, bookLanguage);
-            return adapter.format(context, groupKeyId, text, bookLocale);
+            return adapter.format(context, groupId, text, bookLocale);
         }
     }
 }
