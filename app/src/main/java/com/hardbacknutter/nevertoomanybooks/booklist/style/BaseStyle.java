@@ -38,9 +38,9 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AbstractLinkedTableBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.UnderEachGroup;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
@@ -50,15 +50,15 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
  * Individual {@link BooklistGroup} objects are added to a {@link BaseStyle} in order
  * to describe the resulting list style.
  */
-@SuppressWarnings({"OverlyStrongTypeCast", "CodeBlock2Expr", "ClassReferencesSubclass"})
+@SuppressWarnings({"OverlyStrongTypeCast", "CodeBlock2Expr"})
 public abstract class BaseStyle
         implements Style {
 
     /** Configuration for the fields shown on the Book level in the book list. */
-    final BooklistFieldVisibility listFieldVisibility;
+    private final BooklistFieldVisibility listFieldVisibility;
 
     /** Configuration for the fields shown on the Book details screen. */
-    final BookDetailsFieldVisibility detailsFieldVisibility;
+    private final BookDetailsFieldVisibility detailsFieldVisibility;
 
     /** All groups; <strong>ordered</strong>. */
     private final Map<Integer, BooklistGroup> groups = new LinkedHashMap<>();
@@ -71,47 +71,47 @@ public abstract class BaseStyle
      * A '0' is for an as yet unsaved user-style.
      * Always NEGATIVE (e.g. <0 ) for a build-in style
      */
-    long id;
+    private long id;
 
     /**
      * The menu position of this style as sorted by the user.
      * Preferred styles will be at the top.
      */
-    int menuPosition;
+    private int menuPosition;
 
     /**
      * Is this style preferred by the user; i.e. should it be shown in the preferred-list.
      */
-    boolean preferred;
+    private boolean preferred;
 
     /** Relative scaling factor for text on the list screen. */
     @Style.TextScale
-    int textScale = Style.DEFAULT_TEXT_SCALE;
+    private int textScale = Style.DEFAULT_TEXT_SCALE;
 
     /** Relative scaling factor for covers on the list screen. */
     @Style.CoverScale
-    int coverScale = Style.DEFAULT_COVER_SCALE;
+    private int coverScale = Style.DEFAULT_COVER_SCALE;
 
     /** Local override. */
-    boolean sortAuthorByGivenName;
+    private boolean sortAuthorByGivenName;
 
     /** Local override. */
-    boolean showAuthorByGivenName;
+    private boolean showAuthorByGivenName;
 
     /** The default number of levels to expand the list tree to. */
-    int expansionLevel = 1;
+    private int expansionLevel = 1;
 
     /**
      * Show list header info.
      */
-    int headerFieldVisibility = BooklistHeader.BITMASK_ALL;
+    private int headerFieldVisibility = BooklistHeader.BITMASK_ALL;
 
     /**
      * Should rows be shown using
      * {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT} (false),
      * or as system "?attr/listPreferredItemHeightSmall" (true).
      */
-    boolean groupRowUsesPreferredHeight = true;
+    private boolean groupRowUsesPreferredHeight = true;
 
     /** Cached pixel value. */
     private int listPreferredItemHeightSmall;
@@ -120,10 +120,13 @@ public abstract class BaseStyle
      * Base constructor.
      *
      * @param uuid style UUID string
+     * @param id   style id; can be {@code 0} for new styles (e.g. when importing)
      */
-    BaseStyle(@NonNull final String uuid) {
+    BaseStyle(@NonNull final String uuid,
+              @IntRange(from = 0) final long id) {
         SanityCheck.requireValue(uuid, "uuid");
         this.uuid = uuid;
+        this.id = id;
 
         listFieldVisibility = new BooklistFieldVisibility();
         detailsFieldVisibility = new BookDetailsFieldVisibility();
@@ -136,6 +139,7 @@ public abstract class BaseStyle
      *
      * @return cloned/new instance
      */
+    @SuppressWarnings("ClassReferencesSubclass")
     @Override
     @NonNull
     public UserStyle clone(@NonNull final Context context) {
@@ -311,8 +315,15 @@ public abstract class BaseStyle
 
     @Override
     @NonNull
-    public String getFieldVisibilitySummaryText(@NonNull final Context context) {
-        return listFieldVisibility.getSummaryText(context);
+    public String getFieldVisibilitySummaryText(@NonNull final Context context,
+                                                @NonNull final Screen screen) {
+        switch (screen) {
+            case List:
+                return listFieldVisibility.getSummaryText(context);
+            case Detail:
+                return detailsFieldVisibility.getSummaryText(context);
+        }
+        throw new IllegalArgumentException();
     }
 
     @Override
@@ -417,8 +428,8 @@ public abstract class BaseStyle
 
     public void setShowBooks(@NonNull final UnderEach item,
                              final boolean value) {
-        getGroupById(item.getBooklistGroup()).ifPresent(group -> {
-            ((AbstractLinkedTableBooklistGroup) group).setShowBooksUnderEach(value);
+        getGroupById(item.getGroupId()).ifPresent(group -> {
+            ((UnderEachGroup) group).setShowBooksUnderEach(value);
         });
     }
 
@@ -430,13 +441,13 @@ public abstract class BaseStyle
      */
     @Override
     public boolean isShowBooks(@NonNull final UnderEach item) {
-        return getGroupById(item.getBooklistGroup())
-                .map(group -> ((AbstractLinkedTableBooklistGroup) group).showBooksUnderEach())
+        return getGroupById(item.getGroupId())
+                .map(group -> ((UnderEachGroup) group).isShowBooksUnderEach())
                 .orElse(false);
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(@Nullable final Object o) {
         if (this == o) {
             return true;
         }
@@ -456,10 +467,8 @@ public abstract class BaseStyle
                && coverScale == style.coverScale
                && textScale == style.textScale
 
-               && Objects.equals(listFieldVisibility,
-                                 style.listFieldVisibility)
-               && Objects.equals(detailsFieldVisibility,
-                                 style.detailsFieldVisibility)
+               && Objects.equals(listFieldVisibility, style.listFieldVisibility)
+               && Objects.equals(detailsFieldVisibility, style.detailsFieldVisibility)
                && Objects.equals(groups, style.groups);
     }
 

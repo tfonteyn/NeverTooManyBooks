@@ -326,8 +326,18 @@ public interface Style {
     @NonNull
     String getGroupsSummaryText(@NonNull Context context);
 
+    /**
+     * Convenience method for use in the Preferences screen.
+     * Get the summary text for the visible fields as a CSV String.
+     *
+     * @param context Current context
+     * @param screen  to get the setting for
+     *
+     * @return summary text
+     */
     @NonNull
-    String getFieldVisibilitySummaryText(@NonNull Context context);
+    String getFieldVisibilitySummaryText(@NonNull Context context,
+                                         @NonNull Screen screen);
 
 
     enum Screen {
@@ -340,38 +350,42 @@ public interface Style {
      */
     enum UnderEach {
         /** {@link AuthorBooklistGroup}. */
-        Author(DBKey.STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH,
-               StyleDataStore.PK_GROUPS_AUTHOR_SHOW_BOOKS_UNDER_EACH,
-               BooklistGroup.AUTHOR),
+        Author(BooklistGroup.AUTHOR,
+               DBKey.STYLE_GROUPS_AUTHOR_SHOW_UNDER_EACH,
+               StyleDataStore.PK_GROUPS_AUTHOR_SHOW_BOOKS_UNDER_EACH
+        ),
 
         /** {@link SeriesBooklistGroup} . */
-        Series(DBKey.STYLE_GROUPS_SERIES_SHOW_UNDER_EACH,
-               StyleDataStore.PK_GROUPS_SERIES_SHOW_BOOKS_UNDER_EACH,
-               BooklistGroup.SERIES),
+        Series(BooklistGroup.SERIES,
+               DBKey.STYLE_GROUPS_SERIES_SHOW_UNDER_EACH,
+               StyleDataStore.PK_GROUPS_SERIES_SHOW_BOOKS_UNDER_EACH
+        ),
 
         /** {@link PublisherBooklistGroup}. */
-        Publisher(DBKey.STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH,
-                  StyleDataStore.PK_GROUPS_PUBLISHER_SHOW_BOOKS_UNDER_EACH,
-                  BooklistGroup.PUBLISHER),
+        Publisher(BooklistGroup.PUBLISHER,
+                  DBKey.STYLE_GROUPS_PUBLISHER_SHOW_UNDER_EACH,
+                  StyleDataStore.PK_GROUPS_PUBLISHER_SHOW_BOOKS_UNDER_EACH
+        ),
 
         /** {@link BookshelfBooklistGroup}. */
-        Bookshelf(DBKey.STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH,
-                  StyleDataStore.PK_GROUPS_BOOKSHELF_SHOW_BOOKS_UNDER_EACH,
-                  BooklistGroup.BOOKSHELF);
+        Bookshelf(BooklistGroup.BOOKSHELF,
+                  DBKey.STYLE_GROUPS_BOOKSHELF_SHOW_UNDER_EACH,
+                  StyleDataStore.PK_GROUPS_BOOKSHELF_SHOW_BOOKS_UNDER_EACH
+        );
 
         @NonNull
         private final String dbKey;
         @NonNull
         private final String prefKey;
         @BooklistGroup.Id
-        private final int booklistGroup;
+        private final int groupId;
 
-        UnderEach(@NonNull final String dbKey,
-                  @NonNull final String prefKey,
-                  @BooklistGroup.Id final int booklistGroup) {
+        UnderEach(@BooklistGroup.Id final int groupId,
+                  @NonNull final String dbKey,
+                  @NonNull final String prefKey) {
+            this.groupId = groupId;
             this.dbKey = dbKey;
             this.prefKey = prefKey;
-            this.booklistGroup = booklistGroup;
         }
 
         @NonNull
@@ -385,8 +399,8 @@ public interface Style {
         }
 
         @BooklistGroup.Id
-        public int getBooklistGroup() {
-            return booklistGroup;
+        public int getGroupId() {
+            return groupId;
         }
     }
 

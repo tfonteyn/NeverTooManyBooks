@@ -163,6 +163,7 @@ public class BooklistGroup {
     private static final String _WHEN_ = " WHEN ";
     private static final String _ELSE_ = " ELSE ";
     private static final String _END = " END";
+
     /** Cache for the static GroupKey instances. */
     private static final Map<Integer, GroupKey> GROUP_KEYS = new UniqueMap<>();
 
@@ -207,11 +208,11 @@ public class BooklistGroup {
             case AUTHOR:
                 return new AuthorBooklistGroup(style);
             case SERIES:
-                return new SeriesBooklistGroup(style);
+                return new SeriesBooklistGroup();
             case PUBLISHER:
-                return new PublisherBooklistGroup(style);
+                return new PublisherBooklistGroup();
             case BOOKSHELF:
-                return new BookshelfBooklistGroup(style);
+                return new BookshelfBooklistGroup();
 
             default:
                 return new BooklistGroup(id);

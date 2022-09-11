@@ -224,20 +224,19 @@ public final class BuiltinStyle
      * Constructor.
      *
      * @param definition   to use
-     * @param isPreferred  flag
+     * @param preferred    flag
      * @param menuPosition to set
      */
     @VisibleForTesting
     public BuiltinStyle(@NonNull final Definition definition,
-                        final boolean isPreferred,
+                        final boolean preferred,
                         final int menuPosition) {
-        super(definition.uuid);
-        this.id = definition.id;
+        super(definition.uuid, definition.id);
 
         this.labelResId = definition.labelResId;
 
-        preferred = isPreferred;
-        this.menuPosition = menuPosition;
+        setPreferred(preferred);
+        setMenuPosition(menuPosition);
 
         setGroupIds(Arrays.stream(definition.groupIds)
                           .boxed()

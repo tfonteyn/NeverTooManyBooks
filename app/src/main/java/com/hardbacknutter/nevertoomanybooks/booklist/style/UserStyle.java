@@ -53,8 +53,7 @@ public class UserStyle
      * @see StyleCoder
      */
     private UserStyle(@NonNull final String uuid) {
-        super(uuid);
-        id = 0;
+        super(uuid, 0);
     }
 
     /**
@@ -63,11 +62,10 @@ public class UserStyle
      * @param rowData with data
      */
     private UserStyle(@NonNull final DataHolder rowData) {
-        super(rowData.getString(DBKey.STYLE_UUID));
+        super(rowData.getString(DBKey.STYLE_UUID), rowData.getLong(DBKey.PK_ID));
 
-        id = rowData.getLong(DBKey.PK_ID);
-        preferred = rowData.getBoolean(DBKey.STYLE_IS_PREFERRED);
-        menuPosition = rowData.getInt(DBKey.STYLE_MENU_POSITION);
+        setPreferred(rowData.getBoolean(DBKey.STYLE_IS_PREFERRED));
+        setMenuPosition(rowData.getInt(DBKey.STYLE_MENU_POSITION));
 
         name = rowData.getString(DBKey.STYLE_NAME);
 
@@ -87,18 +85,18 @@ public class UserStyle
             setShowBooks(item, rowData.getBoolean(item.getDbKey()));
         }
 
-        expansionLevel = rowData.getInt(DBKey.STYLE_EXP_LEVEL);
-        groupRowUsesPreferredHeight = rowData.getBoolean(DBKey.STYLE_ROW_USES_PREF_HEIGHT);
+        setExpansionLevel(rowData.getInt(DBKey.STYLE_EXP_LEVEL));
+        setGroupRowUsesPreferredHeight(rowData.getBoolean(DBKey.STYLE_ROW_USES_PREF_HEIGHT));
 
-        sortAuthorByGivenName = rowData.getBoolean(DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME);
-        showAuthorByGivenName = rowData.getBoolean(DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME);
+        setSortAuthorByGivenName(rowData.getBoolean(DBKey.STYLE_AUTHOR_SORT_BY_GIVEN_NAME));
+        setShowAuthorByGivenName(rowData.getBoolean(DBKey.STYLE_AUTHOR_SHOW_BY_GIVEN_NAME));
 
-        textScale = rowData.getInt(DBKey.STYLE_TEXT_SCALE);
-        coverScale = rowData.getInt(DBKey.STYLE_COVER_SCALE);
+        setTextScale(rowData.getInt(DBKey.STYLE_TEXT_SCALE));
+        setCoverScale(rowData.getInt(DBKey.STYLE_COVER_SCALE));
 
-        headerFieldVisibility = rowData.getInt(DBKey.STYLE_LIST_HEADER);
-        listFieldVisibility.setValue(rowData.getInt(DBKey.STYLE_LIST_SHOW_FIELDS));
-        detailsFieldVisibility.setValue(rowData.getInt(DBKey.STYLE_DETAILS_SHOW_FIELDS));
+        setHeaderFieldVisibility(rowData.getInt(DBKey.STYLE_LIST_HEADER));
+        setFieldVisibility(Screen.List, rowData.getInt(DBKey.STYLE_LIST_SHOW_FIELDS));
+        setFieldVisibility(Screen.Detail, rowData.getInt(DBKey.STYLE_DETAILS_SHOW_FIELDS));
     }
 
     /**
@@ -116,11 +114,10 @@ public class UserStyle
                         @NonNull final BaseStyle style,
                         final long id,
                         @NonNull final String uuid) {
-        super(uuid);
+        super(uuid, id);
 
-        this.id = id;
-        preferred = style.preferred;
-        menuPosition = style.menuPosition;
+        setPreferred(style.isPreferred());
+        setMenuPosition(style.getMenuPosition());
 
         // Store the new name.
         name = style.getLabel(context);
@@ -132,18 +129,19 @@ public class UserStyle
             setShowBooks(item, style.isShowBooks(item));
         }
 
-        expansionLevel = style.expansionLevel;
-        groupRowUsesPreferredHeight = style.groupRowUsesPreferredHeight;
+        setExpansionLevel(style.getExpansionLevel());
+        setGroupRowUsesPreferredHeight(style.isGroupRowUsesPreferredHeight());
 
-        showAuthorByGivenName = style.showAuthorByGivenName;
-        sortAuthorByGivenName = style.sortAuthorByGivenName;
+        setShowAuthorByGivenName(style.isShowAuthorByGivenName());
+        setSortAuthorByGivenName(style.isSortAuthorByGivenName());
 
-        textScale = style.textScale;
-        coverScale = style.coverScale;
+        setTextScale(style.getTextScale());
+        setCoverScale(style.getCoverScale());
 
-        headerFieldVisibility = style.headerFieldVisibility;
-        listFieldVisibility.setValue(style.listFieldVisibility.getValue());
-        detailsFieldVisibility.setValue(style.detailsFieldVisibility.getValue());
+        setHeaderFieldVisibility(style.getHeaderFieldVisibility());
+        for (final Screen screen : Screen.values()) {
+            setFieldVisibility(screen, style.getFieldVisibility(screen));
+        }
     }
 
     @NonNull

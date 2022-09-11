@@ -47,11 +47,17 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
  * {@link #getGroupDomainExpressions} adds the group/sorted domain based on the OB column.
  */
 public class AuthorBooklistGroup
-        extends AbstractLinkedTableBooklistGroup {
+        extends BooklistGroup
+        implements UnderEachGroup {
 
+    /** DomainExpression for displaying the data. Style dependent. */
+    @NonNull
+    private final DomainExpression displayDomainExpression;
     /** DomainExpression for sorting the data - depends on the style used. */
     @NonNull
     private final DomainExpression sortingDomainExpression;
+    /** Show a book under each item it is linked to. */
+    private boolean underEach;
     /** The primary author type the user prefers. */
     private int primaryAuthorType = Author.TYPE_UNKNOWN;
 
@@ -61,16 +67,28 @@ public class AuthorBooklistGroup
      * @param style Style reference.
      */
     AuthorBooklistGroup(@NonNull final Style style) {
-        super(style, AUTHOR, false);
-        sortingDomainExpression = createSortingDomainExpression(style);
+        super(AUTHOR);
+        // Not sorted
+        displayDomainExpression =
+                new DomainExpression(DBDefinitions.DOM_AUTHOR_FORMATTED_FAMILY_FIRST,
+                                     AuthorDaoImpl.getDisplayDomainExpression(
+                                             style.isShowAuthorByGivenName()),
+                                     Sort.Unsorted);
+        // Sorting depends on user preference
+        sortingDomainExpression =
+                new DomainExpression(new Domain.Builder("blg_aut_sort", SqLiteDataType.Text)
+                                             .build(),
+                                     AuthorDaoImpl.getSortingDomainExpression(
+                                             style.isSortAuthorByGivenName()),
+                                     Sort.Asc);
     }
 
     @Override
     @NonNull
     public GroupKey createGroupKey() {
         // We use the foreign ID to create the key domain.
-        // We override the display domain in #createDisplayDomainExpression.
-        // Sorting is defined in #createSortingDomainExpression
+        // We override the display domain in #displayDomainExpression.
+        // Sorting is done with #sortingDomainExpression
         return new GroupKey(R.string.lbl_author, "a",
                             new DomainExpression(DBDefinitions.DOM_FK_AUTHOR,
                                                  DBDefinitions.TBL_AUTHORS.dot(DBKey.PK_ID),
@@ -89,22 +107,8 @@ public class AuthorBooklistGroup
 
     @Override
     @NonNull
-    protected DomainExpression createDisplayDomainExpression(@NonNull final Style style) {
-        // Not sorted; sort as defined in #createSortingDomainExpression
-        return new DomainExpression(DBDefinitions.DOM_AUTHOR_FORMATTED_FAMILY_FIRST,
-                                    AuthorDaoImpl.getDisplayDomainExpression(
-                                            style.isShowAuthorByGivenName()),
-                                    Sort.Unsorted);
-    }
-
-    @NonNull
-    private DomainExpression createSortingDomainExpression(@NonNull final Style style) {
-        // Sorting depends on user preference
-        return new DomainExpression(new Domain.Builder("blg_aut_sort", SqLiteDataType.Text)
-                                            .build(),
-                                    AuthorDaoImpl.getSortingDomainExpression(
-                                            style.isSortAuthorByGivenName()),
-                                    Sort.Asc);
+    public DomainExpression getDisplayDomainExpression() {
+        return displayDomainExpression;
     }
 
     @Override
@@ -115,6 +119,16 @@ public class AuthorBooklistGroup
         list.add(0, sortingDomainExpression);
         list.addAll(super.getGroupDomainExpressions());
         return list;
+    }
+
+    @Override
+    public boolean isShowBooksUnderEach() {
+        return underEach;
+    }
+
+    @Override
+    public void setShowBooksUnderEach(final boolean value) {
+        underEach = value;
     }
 
     @Override
@@ -145,17 +159,26 @@ public class AuthorBooklistGroup
 
     @Override
     public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         if (!super.equals(o)) {
             return false;
         }
         final AuthorBooklistGroup that = (AuthorBooklistGroup) o;
-        return Objects.equals(sortingDomainExpression, that.sortingDomainExpression)
-               && primaryAuthorType == that.primaryAuthorType;
+        return underEach == that.underEach
+               && primaryAuthorType == that.primaryAuthorType
+               && displayDomainExpression.equals(that.displayDomainExpression)
+               && sortingDomainExpression.equals(that.sortingDomainExpression);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), sortingDomainExpression, primaryAuthorType);
+        return Objects.hash(super.hashCode(), underEach, displayDomainExpression,
+                            sortingDomainExpression, primaryAuthorType);
     }
 
     @Override
@@ -163,8 +186,10 @@ public class AuthorBooklistGroup
     public String toString() {
         return "AuthorBooklistGroup{"
                + super.toString()
+               + ", displayDomainExpression=" + displayDomainExpression
                + ", sortingDomainExpression=" + sortingDomainExpression
                + ", primaryAuthorType=" + primaryAuthorType
+               + ", underEach=" + underEach
                + '}';
     }
 }

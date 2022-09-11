@@ -20,11 +20,13 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -42,22 +44,31 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  * {@link #getGroupDomainExpressions} adds the group/sorted domain based on the OB column.
  */
 public class SeriesBooklistGroup
-        extends AbstractLinkedTableBooklistGroup {
+        extends BooklistGroup
+        implements UnderEachGroup {
+
+    /** DomainExpression for displaying the data. */
+    @NonNull
+    private final DomainExpression displayDomainExpression;
+    /** Show a book under each item it is linked to. */
+    private boolean underEach;
 
     /**
      * Constructor.
-     *
-     * @param style Style reference.
      */
-    SeriesBooklistGroup(@NonNull final Style style) {
-        super(style, SERIES, false);
+    SeriesBooklistGroup() {
+        super(SERIES);
+        // Not sorted; we sort on the OB domain as defined in #createGroupKey.
+        displayDomainExpression = new DomainExpression(DBDefinitions.DOM_SERIES_TITLE,
+                                                       DBDefinitions.TBL_SERIES,
+                                                       Sort.Unsorted);
     }
 
     @Override
     @NonNull
     public GroupKey createGroupKey() {
         // We use the foreign ID to create the key domain.
-        // We override the display domain in #createDisplayDomainExpression.
+        // We override the display domain in #displayDomainExpression.
         return new GroupKey(R.string.lbl_series, "s",
                             new DomainExpression(DBDefinitions.DOM_FK_SERIES,
                                                  DBDefinitions.TBL_SERIES.dot(DBKey.PK_ID),
@@ -102,10 +113,18 @@ public class SeriesBooklistGroup
 
     @Override
     @NonNull
-    protected DomainExpression createDisplayDomainExpression(@NonNull final Style style) {
-        // Not sorted; we sort on the OB domain as defined in #createGroupKey.
-        return new DomainExpression(DBDefinitions.DOM_SERIES_TITLE,
-                                    DBDefinitions.TBL_SERIES);
+    public DomainExpression getDisplayDomainExpression() {
+        return displayDomainExpression;
+    }
+
+    @Override
+    public boolean isShowBooksUnderEach() {
+        return underEach;
+    }
+
+    @Override
+    public void setShowBooksUnderEach(final boolean value) {
+        underEach = value;
     }
 
     @Override
@@ -120,10 +139,33 @@ public class SeriesBooklistGroup
     }
 
     @Override
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        final SeriesBooklistGroup that = (SeriesBooklistGroup) o;
+        return underEach == that.underEach
+               && displayDomainExpression.equals(that.displayDomainExpression);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), underEach, displayDomainExpression);
+    }
+
+    @Override
     @NonNull
     public String toString() {
         return "SeriesBooklistGroup{"
                + super.toString()
+               + ", displayDomainExpression=" + displayDomainExpression
+               + ", underEach=" + underEach
                + '}';
     }
 }

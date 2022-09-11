@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,6 +38,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDataStore;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -203,7 +204,8 @@ public class StyleFragment
         final Context context = getContext();
 
         //noinspection ConstantConditions
-        pListFieldVisibility.setSummary(style.getFieldVisibilitySummaryText(context));
+        pListFieldVisibility.setSummary(style.getFieldVisibilitySummaryText(context,
+                                                                            Style.Screen.List));
 
         pGroups.setSummary(style.getGroupsSummaryText(context));
 
