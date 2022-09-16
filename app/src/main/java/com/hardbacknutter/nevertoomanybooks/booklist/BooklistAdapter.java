@@ -398,24 +398,24 @@ public class BooklistAdapter
     }
 
     /**
-     * Format the source string according to the GroupKey (id).
+     * Format the source string according to the BooklistGroup id.
      *
-     * @param context    Current context
-     * @param groupKeyId the GroupKey id
-     * @param text       value (as a String) to reformat
-     * @param locale     optional, if a locale is needed but not passed in,
-     *                   the user-locale will be used.
+     * @param context Current context
+     * @param groupId the BooklistGroup id
+     * @param text    value (as a String) to reformat
+     * @param locale  optional, if a locale is needed but not passed in,
+     *                the user-locale will be used.
      *
      * @return Formatted string,
      *         or original string when no special format was needed or on any failure
      */
     @NonNull
     private String format(@NonNull final Context context,
-                          @BooklistGroup.Id final int groupKeyId,
+                          @BooklistGroup.Id final int groupId,
                           @Nullable final String text,
                           @Nullable final Locale locale) {
 
-        switch (groupKeyId) {
+        switch (groupId) {
             case BooklistGroup.AUTHOR: {
                 if (text == null || text.isEmpty()) {
                     return context.getString(R.string.bob_empty_author);
