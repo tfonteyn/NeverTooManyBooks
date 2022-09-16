@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
  * Individual {@link BooklistGroup} objects are added to a {@link BaseStyle} in order
  * to describe the resulting list style.
  */
-@SuppressWarnings({"OverlyStrongTypeCast", "CodeBlock2Expr"})
 public abstract class BaseStyle
         implements Style {
 
@@ -421,16 +420,14 @@ public abstract class BaseStyle
     }
 
     public void setPrimaryAuthorTypes(final int value) {
-        getGroupById(BooklistGroup.AUTHOR).ifPresent(group -> {
-            ((AuthorBooklistGroup) group).setPrimaryType(value);
-        });
+        getGroupById(BooklistGroup.AUTHOR)
+                .ifPresent(group -> ((AuthorBooklistGroup) group).setPrimaryType(value));
     }
 
     public void setShowBooks(@NonNull final UnderEach item,
                              final boolean value) {
-        getGroupById(item.getGroupId()).ifPresent(group -> {
-            ((UnderEachGroup) group).setShowBooksUnderEach(value);
-        });
+        getGroupById(item.getGroupId())
+                .ifPresent(group -> ((UnderEachGroup) group).setShowBooksUnderEach(value));
     }
 
     /**
