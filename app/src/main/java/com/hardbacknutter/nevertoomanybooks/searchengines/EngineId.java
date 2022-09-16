@@ -198,7 +198,7 @@ public enum EngineId
                  .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS)
                  .build();
 
-        Isfdb.createConfiguration("http://www.isfdb.org")
+        Isfdb.createConfiguration("https://www.isfdb.org")
              .setDomainKey(DBKey.SID_ISFDB)
              .setDomainViewId(R.id.site_isfdb)
              .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB)

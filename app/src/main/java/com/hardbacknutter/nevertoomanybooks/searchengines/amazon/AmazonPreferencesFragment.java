@@ -20,18 +20,16 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.amazon;
 
 import android.os.Bundle;
-import android.text.InputType;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
-import androidx.preference.EditTextPreference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.searchengines.BaseSearchEnginePreferenceFragment;
 
 @Keep
 public class AmazonPreferencesFragment
-        extends BasePreferenceFragment {
+        extends BaseSearchEnginePreferenceFragment {
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -39,13 +37,6 @@ public class AmazonPreferencesFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_amazon, rootKey);
 
-        final EditTextPreference etp = findPreference(AmazonSearchEngine.PK_HOST_URL);
-        //noinspection ConstantConditions
-        etp.setOnBindEditTextListener(editText -> {
-            editText.setInputType(InputType.TYPE_CLASS_TEXT
-                                  | InputType.TYPE_TEXT_VARIATION_URI);
-            editText.selectAll();
-        });
-        etp.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
+        initHostUrlPreference(AmazonSearchEngine.PK_HOST_URL);
     }
 }

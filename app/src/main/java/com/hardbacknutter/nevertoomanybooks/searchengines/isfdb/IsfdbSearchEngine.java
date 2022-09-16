@@ -78,6 +78,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -89,9 +90,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedSAXExcepti
 
 /**
  * See notes in the package-info.java file.
- * <p>
- * 2020-01-04: "http://www.isfdb.org" is not available on https.
- * see "src/main/res/xml/network_security_config.xml"
  */
 public class IsfdbSearchEngine
         extends JsoupSearchEngineBase
@@ -101,6 +99,10 @@ public class IsfdbSearchEngine
                    SearchEngine.ViewBookByExternalId,
                    SearchEngine.CoverByIsbn,
                    SearchEngine.AlternativeEditions {
+
+    /** Preferences - Type: {@code String}. */
+    static final String PK_HOST_URL = EngineId.Isfdb.getPreferenceKey()
+                                      + Prefs.pk_suffix_host_url;
 
     /** Preferences - Type: {@code boolean}. */
     public static final String PK_USE_PUBLISHER = EngineId.Isfdb.getPreferenceKey()

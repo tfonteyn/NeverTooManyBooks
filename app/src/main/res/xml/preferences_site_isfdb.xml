@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -24,6 +24,13 @@
 
     <PreferenceCategory
         android:title="@string/site_isfdb">
+
+        <EditTextPreference
+            android:defaultValue="https://www.isfdb.org"
+            android:icon="@drawable/ic_baseline_link_24"
+            android:key="isfdb.host.url"
+            android:summary="@string/preference_not_set"
+            android:title="@string/lbl_website_address" />
 
         <SwitchPreference
             android:defaultValue="false"

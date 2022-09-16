@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -22,9 +22,6 @@
 <network-security-config xmlns:tools="http://schemas.android.com/tools"
     tools:keep="@xml/network_security_config">
     <domain-config cleartextTrafficPermitted="true">
-        <!-- No https - Last checked: 2021-04-26. -->
-        <domain includeSubdomains="true">isfdb.org</domain>
-
         <!-- Added 2020-07-08.
         http://ecx.images-amazon.com/images/I/41lQH44CfyL.jpg
 
@@ -32,9 +29,5 @@
         Allowing cleartext as a workaround.
         -->
         <domain includeSubdomains="true">images-amazon.com</domain>
-
-        <!-- RELEASE: remove this.
-            The developers home network unprotected Calibre Content Server for testing... -->
-        <domain includeSubdomains="true">192.168.0.203</domain>
     </domain-config>
 </network-security-config>
