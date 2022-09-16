@@ -85,8 +85,6 @@ public class StyleFragment
     private Preference pCoverScale;
     private Preference pTextScale;
     private SeekBarPreference pExpansionLevel;
-    private Preference pListHeader;
-    private Preference pPrimaryAuthorType;
     private Preference pListFieldVisibility;
     private Preference pGroups;
 
@@ -96,7 +94,6 @@ public class StyleFragment
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
 
-
         setPreferencesFromResource(R.xml.preferences_style, rootKey);
 
         if (savedInstanceState != null) {
@@ -104,29 +101,26 @@ public class StyleFragment
         }
 
         pName = findPreference(StyleDataStore.PK_NAME);
+        pName.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
+        pName.setOnBindEditTextListener(editText -> {
+            editText.setInputType(InputType.TYPE_CLASS_TEXT);
+            editText.selectAll();
+        });
+
         pExpansionLevel = findPreference(StyleDataStore.PK_EXPANSION_LEVEL);
         pCoverScale = findPreference(StyleDataStore.PK_COVER_SCALE);
         pTextScale = findPreference(StyleDataStore.PK_TEXT_SCALE);
-        pListHeader = findPreference(StyleDataStore.PK_LIST_HEADER);
-        pPrimaryAuthorType = findPreference(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE);
+
         pListFieldVisibility = findPreference(PSK_LIST_SHOWS_BOOK_DETAILS);
         pGroups = findPreference(StyleDataStore.PK_GROUPS);
 
-        pShowCoversOnDetailsScreen[0] = findPreference(
-                StyleDataStore.PK_DETAILS_SHOW_COVER[0]);
-        pShowCoversOnDetailsScreen[1] = findPreference(
-                StyleDataStore.PK_DETAILS_SHOW_COVER[1]);
+        findPreference(StyleDataStore.PK_LIST_HEADER)
+                .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
+        findPreference(StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE)
+                .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
 
-        pName.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
-        pListHeader.setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
-        pPrimaryAuthorType.setSummaryProvider(
-                MultiSelectListPreferenceSummaryProvider.getInstance());
-
-        pName.setOnBindEditTextListener(editText -> {
-            editText.setInputType(InputType.TYPE_CLASS_TEXT
-                                  | InputType.TYPE_TEXT_VARIATION_URI);
-            editText.selectAll();
-        });
+        pShowCoversOnDetailsScreen[0] = findPreference(StyleDataStore.PK_DETAILS_SHOW_COVER[0]);
+        pShowCoversOnDetailsScreen[1] = findPreference(StyleDataStore.PK_DETAILS_SHOW_COVER[1]);
 
         pShowCoversOnDetailsScreen[0].setOnPreferenceChangeListener((preference, newValue) -> {
             // Covers on DETAIL screen:
