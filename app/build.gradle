@@ -31,68 +31,24 @@ plugins {
 
 /*
     $HOME/.gradle/gradle.properties:
-    hbn.signing=$HOME/blah/blah/hbn.signing
+        NeverTooManyBooks.properties=$HOME/blah/blah/NeverTooManyBooks.properties
 
-    $HOME/blah/blah/hbn.signing:
-    android {
-        signingConfigs {
-            debug {
-                storeFile file("/path/to/keystore.jks")
-                storePassword "myPassword"
-                keyAlias = "myDebugKey"
-                keyPassword "myPassword"
-            }
-            beta {
-                storeFile file("/path/to/keystore.jks")
-                storePassword "myPassword"
-                keyAlias = "myBetaKey"
-                keyPassword "myPassword"
-            }
-            release {
-                storeFile file("/path/to/keystore.jks")
-                storePassword "myPassword"
-                keyAlias = "myReleaseKey"
-                keyPassword "myPassword"
-            }
-        }
+    $HOME/blah/blah/NeverTooManyBooks.properties:
+        sign.storeFile=$HOME/blah/blah/keystore.jks
+        sign.storePassword=MyStorePassword
+        sign.keyAlias=MyKeyAlias
+        sign.keyPassword=MyKeyPassword
+        # These can be empty but must exist
+        email.support=support@somewhere.com
+        email.acra=acra@somewhere.com
 
-        buildTypes {
-            debug {
-                signingConfig signingConfigs.debug
-            }
-            beta {
-                signingConfig signingConfigs.beta
-            }
-            release {
-                signingConfig signingConfigs.release
-            }
-        }
-    }
  */
-if (project.hasProperty("hbn.signing")
-        && new File(project.property("hbn.signing")).exists()) {
-    apply from: project.property("hbn.signing")
-}
-
-/*
-    $HOME/.gradle/gradle.properties:
-    NeverTooManyBooks.email=$HOME/blah/blah/NeverTooManyBooks.email
-
-    $HOME/blah/blah/NeverTooManyBooks.email:
-    android {
-        defaultConfig {
-            // ACRA crash reports
-            buildConfigField("String", "EMAIL_ACRA", '"acra@somewhere.com"')
-            // Manual debug reports
-            buildConfigField("String", "EMAIL_DEBUG_REPORT", '"debug@somewhere.com"')
-            // About-page contact
-            buildConfigField("String", "EMAIL_CONTACT", '"info@somewhere.com"')
-        }
+final def ntmbProps = new Properties()
+if (project.hasProperty("NeverTooManyBooks.properties")) {
+    final def file = new File(project.property("NeverTooManyBooks.properties"))
+    if (file.exists()) {
+        ntmbProps.load(new FileInputStream(file))
     }
- */
-if (project.hasProperty("NeverTooManyBooks.email")
-        && new File(project.property("NeverTooManyBooks.email")).exists()) {
-    apply from: project.property("NeverTooManyBooks.email")
 }
 
 android {
@@ -113,16 +69,8 @@ android {
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        // Email address placeholders. Their values should be empty, i.e. '""'.
-        // The real values are in "NeverTooManyBooks.email"; see above
-        if (getBuildConfigFields().get("EMAIL_ACRA") == null) {
-            // ACRA crash reports
-            buildConfigField("String", "EMAIL_ACRA", '""')
-            // Manual debug reports
-            buildConfigField("String", "EMAIL_DEBUG_REPORT", '""')
-            // About-page contact
-            buildConfigField("String", "EMAIL_CONTACT", '""')
-        }
+        buildConfigField("String", "EMAIL_ACRA", '"' + ntmbProps['email.acra'] + '"')
+        buildConfigField("String", "EMAIL_DEBUG_REPORT", '"' + ntmbProps['email.support'] + '"')
 
         // Add the build UTC DateTime; ISO formatted
         buildConfigField("String", "TIMESTAMP",
@@ -142,10 +90,21 @@ android {
         buildConfigField("boolean", "ENABLE_LIBRARY_THING_ALT_ED", "true")
     }
 
+    signingConfigs {
+        release {
+            storeFile file(ntmbProps['sign.storeFile'])
+            storePassword ntmbProps['sign.storePassword']
+            keyAlias ntmbProps['sign.keyAlias']
+            keyPassword ntmbProps['sign.keyPassword']
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources true
+            signingConfig signingConfigs.release
+
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"),
                     "proguard-rules.pro"
 
@@ -173,6 +132,7 @@ android {
             debuggable true
             versionNameSuffix "-debug"
             applicationIdSuffix ".debug"
+            signingConfig signingConfigs.release
 
             resValue("string", "searchSuggestAuthority",
                     "${applicationId}.SearchSuggestionProvider.debug")
