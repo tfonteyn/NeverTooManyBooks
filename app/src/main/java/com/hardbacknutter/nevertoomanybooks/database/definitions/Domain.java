@@ -19,9 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.definitions;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -30,33 +27,16 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-
 /**
  * Defines a domain; name, type, ...
  * Immutable.
- * <p>
- * URGENT: is this still true?? Parcelable: needed by {@link BooklistGroup}
  */
 @SuppressWarnings({"FieldNotUsedInToString", "NegativelyNamedBooleanVariable"})
-public class Domain
-        implements Parcelable {
-
-    /** {@link Parcelable}. */
-    public static final Creator<Domain> CREATOR = new Creator<>() {
-        @Override
-        public Domain createFromParcel(@NonNull final Parcel source) {
-            return new Domain(source);
-        }
-
-        @Override
-        public Domain[] newArray(final int size) {
-            return new Domain[size];
-        }
-    };
+public class Domain {
 
     /** standard SQL keyword. **/
     private static final String CURRENT_TIMESTAMP = "current_timestamp";
+    private static final String SQL_EMPTY_STRING = "''";
 
     @NonNull
     private final String name;
@@ -106,7 +86,7 @@ public class Domain
             collationClause = "";
         }
 
-        notBlank = defaultClause != null && !"''".equals(defaultClause);
+        notBlank = defaultClause != null && !SQL_EMPTY_STRING.equals(defaultClause);
     }
 
     /**
@@ -125,40 +105,6 @@ public class Domain
         collationClause = from.collationClause;
 
         notBlank = from.notBlank;
-    }
-
-    /**
-     * {@link Parcelable} Constructor.
-     *
-     * @param in Parcel to construct the object from
-     */
-    private Domain(@NonNull final Parcel in) {
-        //noinspection ConstantConditions
-        name = in.readString();
-        //noinspection ConstantConditions
-        sqLiteDataType = in.readParcelable(Domain.class.getClassLoader());
-        primaryKey = in.readByte() != 0;
-        notNull = in.readByte() != 0;
-        defaultClause = in.readString();
-        references = in.readString();
-        prePreparedOrderBy = in.readByte() != 0;
-        //noinspection ConstantConditions
-        collationClause = in.readString();
-
-        notBlank = defaultClause != null && !"''".equals(defaultClause);
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeString(name);
-        dest.writeParcelable(sqLiteDataType, flags);
-        dest.writeByte((byte) (primaryKey ? 1 : 0));
-        dest.writeByte((byte) (notNull ? 1 : 0));
-        dest.writeString(defaultClause);
-        dest.writeString(references);
-        dest.writeByte((byte) (prePreparedOrderBy ? 1 : 0));
-        dest.writeString(collationClause);
     }
 
     /**
@@ -204,16 +150,20 @@ public class Domain
     }
 
     /**
-     * {@code null} values are not allowed.
+     * Check if {@code NULL} values are allowed.
+     *
+     * @return {@code true} if {@code NULL} values are NOT allowed.
      */
     public boolean isNotNull() {
         return notNull;
     }
 
     /**
-     * Blank values are not allowed.
+     * Check if blank values are allowed.
      * <p>
      * This is basically domains which have a DEFAULT clause which is not the empty string.
+     *
+     * @return {@code true} if blank values are NOT allowed.
      */
     public boolean isNotBlank() {
         return notBlank;
@@ -246,11 +196,6 @@ public class Domain
      */
     public boolean isPrePreparedOrderBy() {
         return prePreparedOrderBy;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     /**
@@ -443,7 +388,7 @@ public class Domain
          */
         @NonNull
         public Builder withDefaultEmptyString() {
-            defaultClause = "''";
+            defaultClause = SQL_EMPTY_STRING;
             return this;
         }
 
@@ -477,6 +422,8 @@ public class Domain
          * @param actions 'on delete...' etc...
          *
          * @return {@code this} (for chaining)
+         *
+         * @throws IllegalStateException if this method is called more than once
          */
         @NonNull
         public Builder references(@NonNull final TableDefinition table,

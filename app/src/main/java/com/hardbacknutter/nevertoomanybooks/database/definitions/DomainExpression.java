@@ -19,9 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.definitions;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -34,21 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
  * <p>
  * Immutable.
  */
-public class DomainExpression
-        implements Parcelable {
-
-    /** {@link Parcelable}. */
-    public static final Creator<DomainExpression> CREATOR = new Creator<>() {
-        @Override
-        public DomainExpression createFromParcel(@NonNull final Parcel in) {
-            return new DomainExpression(in);
-        }
-
-        @Override
-        public DomainExpression[] newArray(final int size) {
-            return new DomainExpression[size];
-        }
-    };
+public class DomainExpression {
 
     /** Domain. */
     @NonNull
@@ -100,6 +83,8 @@ public class DomainExpression
      *
      * @param domain underlying domain
      * @param sort   flag; must be either {@link Sort#Asc} or {@link Sort#Desc}.
+     *
+     * @throws IllegalArgumentException on passing in the wrong sort flag
      */
     public DomainExpression(@NonNull final Domain domain,
                             @NonNull final Sort sort) {
@@ -131,19 +116,6 @@ public class DomainExpression
         this.sort = sort;
     }
 
-    /**
-     * {@link Parcelable} Constructor.
-     *
-     * @param in Parcel to construct the object from
-     */
-    private DomainExpression(@NonNull final Parcel in) {
-        //noinspection ConstantConditions
-        domain = in.readParcelable(Domain.class.getClassLoader());
-        expression = in.readString();
-        //noinspection ConstantConditions
-        sort = in.readParcelable(Domain.class.getClassLoader());
-    }
-
     @NonNull
     public Domain getDomain() {
         return domain;
@@ -157,19 +129,6 @@ public class DomainExpression
     @NonNull
     public Sort getSort() {
         return sort;
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeParcelable(domain, flags);
-        dest.writeString(expression);
-        dest.writeParcelable(sort, flags);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     @Override
