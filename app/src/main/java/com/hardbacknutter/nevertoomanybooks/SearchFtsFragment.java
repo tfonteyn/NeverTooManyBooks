@@ -25,18 +25,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.List;
@@ -114,12 +108,12 @@ public class SearchFtsFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Toolbar toolbar = getToolbar();
-        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
-        toolbar.setTitle(R.string.lbl_local_search);
+        getToolbar().setTitle(R.string.lbl_local_search);
 
         vm.onSearchCriteriaUpdate().observe(getViewLifecycleOwner(), this::onSearchCriteriaUpdate);
         vm.onBooklistUpdate().observe(getViewLifecycleOwner(), this::onBooklistUpdate);
+
+        vb.btnSearch.setOnClickListener(v -> showFullResults());
 
         // Detect when user touches something.
         vb.content.setOnTouchListener((v, event) -> {
@@ -149,7 +143,8 @@ public class SearchFtsFragment
     private void onBooklistUpdate(@NonNull final List<Long> idList) {
         final int count = idList.size();
         final String s = getResources().getQuantityString(R.plurals.n_books_found, count, count);
-        getToolbar().setSubtitle(s);
+        vb.booksFound.setText(s);
+        vb.btnSearch.setEnabled(count > 0);
     }
 
     /**
@@ -283,30 +278,6 @@ public class SearchFtsFragment
                 viewToModel();
                 vm.search();
             }
-        }
-    }
-
-    private class ToolbarMenuProvider
-            implements MenuProvider {
-
-        @Override
-        public void onCreateMenu(@NonNull final Menu menu,
-                                 @NonNull final MenuInflater menuInflater) {
-            menuInflater.inflate(R.menu.toolbar_action_start, menu);
-
-            final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
-            //noinspection ConstantConditions
-            final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
-            button.setOnClickListener(v -> onMenuItemSelected(menuItem));
-        }
-
-        @Override
-        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-                showFullResults();
-                return true;
-            }
-            return false;
         }
     }
 }

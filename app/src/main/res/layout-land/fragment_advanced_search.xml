@@ -29,14 +29,25 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/content"
         style="@style/TopCentered.Wide"
+        android:layout_height="wrap_content"
         >
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/col1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="start"
+            app:constraint_referenced_ids="btn_search,books_found"
+
+            />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_author"
             style="@style/TIL.Text"
-            app:endIconMode="clear_text"
+            android:layout_marginEnd="@dimen/column_margin_end"
             android:hint="@string/lbl_author"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:endIconMode="clear_text"
+            app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             >
@@ -54,8 +65,9 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_title"
             style="@style/TIL.Text.Title"
+            android:layout_marginEnd="@dimen/column_margin_end"
             app:endIconMode="clear_text"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_author"
             >
@@ -73,9 +85,10 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_series"
             style="@style/TIL.Text"
-            app:endIconMode="clear_text"
+            android:layout_marginEnd="@dimen/column_margin_end"
             android:hint="@string/lbl_series"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:endIconMode="clear_text"
+            app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_title"
             >
@@ -93,9 +106,10 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_publisher"
             style="@style/TIL.Text"
-            app:endIconMode="clear_text"
+            android:layout_marginEnd="@dimen/column_margin_end"
             android:hint="@string/lbl_publisher"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:endIconMode="clear_text"
+            app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_series"
             >
@@ -115,7 +129,8 @@
         <!--        style="@style/TIL.Text"-->
         <!--        app:endIconMode="clear_text"-->
         <!--        android:hint="@string/lbl_lend_out"-->
-        <!--        app:layout_constraintEnd_toEndOf="parent"-->
+        <!--        android:layout_marginEnd="@dimen/column_margin_end"-->
+        <!--        app:layout_constraintEnd_toStartOf="@id/col1"-->
         <!--        app:layout_constraintStart_toStartOf="parent"-->
         <!--        app:layout_constraintTop_toBottomOf="@id/lbl_publisher"-->
         <!--        >-->
@@ -133,9 +148,10 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_keywords"
             style="@style/TIL.Text"
-            app:endIconMode="clear_text"
+            android:layout_marginEnd="@dimen/column_margin_end"
             android:hint="@string/lbl_keywords"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:endIconMode="clear_text"
+            app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_publisher"
             >
@@ -154,11 +170,13 @@
             android:id="@+id/books_found"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/field_margin_end"
             android:textAppearance="?attr/textAppearanceTitleMedium"
             android:textIsSelectable="true"
-            app:layout_constraintBaseline_toBaselineOf="@id/btn_search"
-            app:layout_constraintEnd_toStartOf="@id/btn_search"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/btn_search"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
             tools:ignore="TouchTargetSizeCheck"
             tools:text="# books found"
             />
@@ -166,9 +184,11 @@
         <Button
             android:id="@+id/btn_search"
             style="@style/Button.Action.Submit"
+            android:layout_marginTop="@dimen/section_margin_top"
             android:text="@string/X_btn_show_list"
-            app:layout_constraintEnd_toEndOf="@id/lbl_keywords"
-            app:layout_constraintTop_toBottomOf="@id/lbl_keywords"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_keywords"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/books_found"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
