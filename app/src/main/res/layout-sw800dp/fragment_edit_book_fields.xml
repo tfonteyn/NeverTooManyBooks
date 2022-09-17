@@ -33,12 +33,12 @@
         android:layout_margin="@dimen/container_margin"
         >
 
-        <androidx.constraintlayout.widget.Guideline
+        <androidx.constraintlayout.widget.Barrier
             android:id="@+id/col1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.3"
+            app:barrierDirection="end"
+            app:constraint_referenced_ids="cover_image_0,cover_image_1"
             />
 
         <androidx.constraintlayout.widget.Guideline
@@ -54,8 +54,8 @@
             style="@style/CoverImage.Edit.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@sample/covers"
             tools:ignore="ContentDescription"
+            tools:src="@sample/covers"
             />
 
         <ImageView
@@ -63,8 +63,8 @@
             style="@style/CoverImage.Edit.1"
             app:layout_constraintStart_toEndOf="@id/cover_image_0"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@sample/covers"
             tools:ignore="ContentDescription"
+            tools:src="@sample/covers"
             />
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
@@ -82,6 +82,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_author"
             style="@style/TIL.ListPicker"
+            android:layout_marginStart="@dimen/field_margin_start"
             android:hint="@string/lbl_author"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col1"
@@ -99,6 +100,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_title"
             style="@style/TIL.Text.Title"
+            android:layout_marginStart="@dimen/field_margin_start"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/lbl_author"
@@ -117,6 +119,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_language"
             style="@style/TIL.Language"
+            android:layout_marginStart="@dimen/field_margin_start"
             app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/lbl_title"
             >
