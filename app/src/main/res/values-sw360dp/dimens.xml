@@ -34,6 +34,8 @@
     <dimen name="field_margin_end">8dp</dimen>
     <dimen name="field_margin_inline">12dp</dimen>
 
+    <dimen name="column_margin_end">32dp</dimen>
+
     <!-- fixed width TIL fields -->
     <dimen name="til_fixed_width_personal_name">360dp</dimen>
     <dimen name="til_fixed_width_year">120dp</dimen>

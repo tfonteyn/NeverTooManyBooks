@@ -23,4 +23,7 @@
     <dimen name="til_margin">4dp</dimen>
 
     <dimen name="container_margin">8dp</dimen>
+
+    <dimen name="column_margin_end">64dp</dimen>
+
 </resources>

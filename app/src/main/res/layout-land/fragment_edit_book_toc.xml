@@ -68,7 +68,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="@dimen/field_margin_start"
-            android:layout_marginEnd="@dimen/field_margin_end"
+            android:layout_marginEnd="@dimen/column_margin_end"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintBottom_toBottomOf="parent"
