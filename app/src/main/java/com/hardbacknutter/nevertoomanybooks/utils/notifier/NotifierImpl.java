@@ -78,9 +78,9 @@ public final class NotifierImpl
             channelsCreated = true;
         }
 
-        final Notification notification = new NotificationCompat.Builder(context, channel.id)
-                .setPriority(channel.priority)
-                .setSmallIcon(channel.drawableId)
+        final Notification notification = new NotificationCompat.Builder(context, channel.getId())
+                .setPriority(channel.getPriority())
+                .setSmallIcon(channel.getIcon())
                 .setContentTitle(context.getString(dialogTitleResId))
                 .setContentText(message)
                 .setAutoCancel(true)
@@ -96,7 +96,7 @@ public final class NotifierImpl
         final List<NotificationChannel> channels =
                 Arrays.stream(Channel.values())
                       .map(channel -> new NotificationChannel(
-                              channel.id, context.getString(channel.stringId), channel.importance))
+                              channel.getId(), channel.getName(context), channel.importance))
                       .collect(Collectors.toList());
 
         notificationManager.createNotificationChannels(channels);
@@ -109,7 +109,7 @@ public final class NotifierImpl
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         Arrays.stream(Channel.values())
-              .forEach(channel -> notificationManager.getNotificationChannel(channel.id)
-                                                     .setName(context.getString(channel.stringId)));
+              .forEach(channel -> notificationManager.getNotificationChannel(channel.getId())
+                                                     .setName(channel.getName(context)));
     }
 }

@@ -68,6 +68,8 @@ public interface Notifier
      * @param dialogTitleResId string resource for the notification title
      * @param notificationId   A unique identifier for this notification
      * @param requestCode      Private request code for the sender
+     * @param withParentStack  flag, whether the parent stack should be
+     *                         attached to the pending-intent
      */
     void send(@NonNull Context context,
               @NonNull Channel channel,
@@ -96,22 +98,45 @@ public interface Notifier
              NotificationCompat.PRIORITY_LOW);
 
         @NonNull
-        final String id;
-        final int stringId;
-        final int drawableId;
+        private final String id;
+        private final int stringId;
+        @DrawableRes
+        private final int iconId;
         final int importance;
-        final int priority;
+        private final int priority;
 
         Channel(@NonNull final String id,
                 @StringRes final int stringId,
-                @DrawableRes final int drawableId,
+                @DrawableRes final int iconId,
                 final int importance,
                 final int priority) {
             this.id = id;
             this.stringId = stringId;
-            this.drawableId = drawableId;
+            this.iconId = iconId;
             this.importance = importance;
             this.priority = priority;
+        }
+
+        String getName(@NonNull final Context context) {
+            return context.getString(stringId);
+        }
+
+        @NonNull
+        public String getId() {
+            return id;
+        }
+
+        @DrawableRes
+        public int getIcon() {
+            return iconId;
+        }
+
+        public int getImportance() {
+            return importance;
+        }
+
+        public int getPriority() {
+            return priority;
         }
     }
 }
