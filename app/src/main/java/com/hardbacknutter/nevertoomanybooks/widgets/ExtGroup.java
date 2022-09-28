@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -104,12 +104,9 @@ public class ExtGroup
         mUseViewMeasure = false;
 
         if (attrs != null) {
-            final TypedArray ta = getContext().getTheme().obtainStyledAttributes(
-                    attrs, R.styleable.ExtGroup, 0, 0);
-            try {
+            try (TypedArray ta = getContext().getTheme().obtainStyledAttributes(
+                    attrs, R.styleable.ExtGroup, 0, 0)) {
                 mApplyFlags = ta.getInteger(R.styleable.ExtGroup_groupApply, 0);
-            } finally {
-                ta.recycle();
             }
         } else {
             mApplyFlags = 0;
