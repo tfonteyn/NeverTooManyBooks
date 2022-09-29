@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,6 +30,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
@@ -125,15 +127,18 @@ public class ZipArchiveWriter
                         final boolean compress)
             throws IOException {
 
+        final BasicFileAttributes fileAttr =
+                Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+
         final ZipEntry entry = new ZipEntry(name);
-        entry.setTime(file.lastModified());
+        entry.setTime(fileAttr.lastModifiedTime().toMillis());
         if (compress) {
             entry.setMethod(ZipEntry.DEFLATED);
 
         } else {
             entry.setMethod(ZipEntry.STORED);
-            entry.setSize(file.length());
-            entry.setCompressedSize(file.length());
+            entry.setSize(fileAttr.size());
+            entry.setCompressedSize(fileAttr.size());
             final CRC32 crc32 = FileUtils.getCrc32(file);
             entry.setCrc(crc32.getValue());
         }

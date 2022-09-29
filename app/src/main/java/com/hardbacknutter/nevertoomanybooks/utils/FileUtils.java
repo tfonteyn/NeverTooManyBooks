@@ -38,6 +38,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.CRC32;
@@ -200,10 +202,12 @@ public final class FileUtils {
                 if (cancellable != null && cancellable.isCancelled()) {
                     return;
                 }
-                if (file.isFile()) {
+                final BasicFileAttributes fileAttr =
+                        Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+                if (fileAttr.isRegularFile()) {
                     copy(file, new File(destDir, file.getName()));
 
-                } else if (file.isDirectory()) {
+                } else if (fileAttr.isDirectory()) {
                     final File destSubDir = new File(destDir, file.getName());
                     //noinspection ResultOfMethodCallIgnored
                     destSubDir.mkdir();
