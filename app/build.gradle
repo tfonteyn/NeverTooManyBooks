@@ -221,7 +221,7 @@ dependencies {
     implementation project(path: ":repacked-org-json")
     implementation project(path: ":fastscroller")
 
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:${desugar_version}")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:${desugar_version}")
 
     implementation("androidx.activity:activity:${androidx_activity_version}")
     implementation("androidx.annotation:annotation:${androidx_annotation_version}")

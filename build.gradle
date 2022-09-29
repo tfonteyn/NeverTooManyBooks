@@ -36,8 +36,7 @@ buildscript {
         compileSdk = 33
 
         // https://github.com/google/desugar_jdk_libs
-        // 1.2.0 requires a bleeding-edge Android Studio with AGP 7.4
-        desugar_version = '1.1.8'
+        desugar_version = '2.0.0'
 
         kotlin_version = '1.7.0'
 
@@ -103,7 +102,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath('com.android.tools.build:gradle:7.3.0')
+        classpath('com.android.tools.build:gradle:7.4.0-beta01')
         classpath("de.mannodermaus.gradle.plugins:android-junit5:1.8.2.1")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10")
     }
