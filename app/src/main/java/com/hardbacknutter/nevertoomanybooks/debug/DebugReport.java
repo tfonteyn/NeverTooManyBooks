@@ -44,7 +44,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -96,8 +95,7 @@ public class DebugReport {
         return this;
     }
 
-    @NonNull
-    public DebugReport addDatabase()
+    public void addDatabase()
             throws IOException {
 
         final File file = new File(context.getCacheDir(), "nevertoomanybooks.db");
@@ -107,39 +105,34 @@ public class DebugReport {
         FileUtils.copy(DBHelper.getDatabasePath(context), file);
         files.add(file);
 
-        return this;
     }
 
-    @NonNull
-    public DebugReport addDatabaseUpgrades(final int maxFiles)
+    public void addDatabaseUpgrades(final int maxFiles)
             throws IOException {
         files.addAll(collectFiles(ServiceLocator.getUpgradesDir(), maxFiles));
-        return this;
     }
 
-    @NonNull
-    public DebugReport addLogs(final int maxFiles)
+    public void addLogs(final int maxFiles)
             throws IOException {
         files.addAll(collectFiles(ServiceLocator.getLogDir(), maxFiles));
-        return this;
     }
 
-    @NonNull
-    public DebugReport addPreferences()
+    public void addPreferences()
             throws FileNotFoundException {
         final Map<String, ?> map = PreferenceManager
                 .getDefaultSharedPreferences(context).getAll();
-        final List<String> keyList = new ArrayList<>(map.keySet());
-        Collections.sort(keyList);
 
-        final StringBuilder sb = new StringBuilder();
-        for (final String key : keyList) {
-            sb.append(key).append('=').append(map.get(key)).append('\n');
-        }
-
-        preferences = sb.toString();
-
-        return this;
+        preferences = map.keySet()
+                         .stream()
+                         .sorted()
+                         .map(k -> {
+                             if (k.contains("password")) {
+                                 return k + "=********";
+                             } else {
+                                 return k + "=" + map.get(k);
+                             }
+                         })
+                         .collect(Collectors.joining("\n"));
     }
 
     public void sendAsEmail()
@@ -156,7 +149,7 @@ public class DebugReport {
             files.add(file);
         }
 
-        final Uri uri = zip();
+        final Uri uri = zipFiles();
 
         // the user should (hopefully) add their comment to the email
         final StringBuilder sb = new StringBuilder();
@@ -171,9 +164,6 @@ public class DebugReport {
         final String subject = "[" + context.getString(R.string.app_name) + "] "
                                + context.getString(R.string.debug_subject);
 
-        // Reminder, to send multiple Uri's use:
-        //    Intent.ACTION_SEND_MULTIPLE
-        //     .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList)
         final Intent intent = new Intent(Intent.ACTION_SEND)
                 .setType("text/plain")
                 .putExtra(Intent.EXTRA_EMAIL, to)
@@ -183,7 +173,7 @@ public class DebugReport {
         context.startActivity(intent);
     }
 
-    private Uri zip()
+    private Uri zipFiles()
             throws IOException {
         final File zipFile = new File(context.getCacheDir(),
                                       String.format("NTMBBugReport-%s.zip", dateTime));
