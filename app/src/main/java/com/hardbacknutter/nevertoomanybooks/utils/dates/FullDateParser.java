@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
  * <p>
  * This object is thread-safe, but user locale specific at creation time.
  * <p>
- * TEST: DateTimeParseException https://issuetracker.google.com/issues/158417777
+ * TEST: <a href="https://issuetracker.google.com/issues/158417777">DateTimeParseException</a>
  * seems to be fixed, but the bug was never closed?
  * <p>
  * TODO: performance: create all parsers, then parse (and reuse the parsers)...

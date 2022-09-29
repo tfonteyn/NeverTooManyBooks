@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
- * TEST: DateTimeParseException https://issuetracker.google.com/issues/158417777
+ * TEST: <a href="https://issuetracker.google.com/issues/158417777">DateTimeParseException</a>
  * seems to be fixed, but the bug was never closed?
  */
 public class PartialDate

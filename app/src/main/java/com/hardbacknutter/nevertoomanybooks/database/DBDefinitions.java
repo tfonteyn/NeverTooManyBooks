@@ -432,7 +432,8 @@ public final class DBDefinitions {
      * ====================================================================================== */
 
     /**
-     * reminder: no need for a type nor constraints: https://sqlite.org/fts3.html
+     * reminder: no need for a type nor constraints:
+     * <a href="https://sqlite.org/fts3.html">SqLite FTS3</a>
      */
     public static final TableDefinition TBL_FTS_BOOKS;
 

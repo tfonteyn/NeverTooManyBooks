@@ -31,8 +31,6 @@ public enum Sort
     Asc(""),
     Desc(" DESC");
 
-
-    @SuppressWarnings("InnerClassFieldHidesOuterClassField")
     public static final Creator<Sort> CREATOR = new Creator<>() {
         @Override
         @NonNull
