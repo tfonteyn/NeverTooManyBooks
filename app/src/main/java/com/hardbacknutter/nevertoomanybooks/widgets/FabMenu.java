@@ -143,25 +143,24 @@ public class FabMenu {
 
         final Resources res = fabButton.getResources();
 
-        final TypedArray baseX = res.obtainTypedArray(R.array.fab_menu_translationX_all);
-        final TypedArray baseY = res.obtainTypedArray(R.array.fab_menu_translationY_all);
+        try (TypedArray baseX = res.obtainTypedArray(R.array.fab_menu_translationX_all);
+             TypedArray baseY = res.obtainTypedArray(R.array.fab_menu_translationY_all)) {
 
-        for (int i = 0; i < fabMenuItems.length; i++) {
-            final ExtendedFloatingActionButton fab = fabMenuItems[i];
-            // allow for null items
-            if (fab != null && fab.isEnabled()) {
-                if (show) {
-                    fab.show();
-                    fab.animate().translationX(baseX.getDimensionPixelSize(i, 0));
-                    fab.animate().translationY(baseY.getDimensionPixelSize(i, 0));
-                } else {
-                    fab.animate().translationX(0);
-                    fab.animate().translationY(0);
-                    fab.hide();
+            for (int i = 0; i < fabMenuItems.length; i++) {
+                final ExtendedFloatingActionButton fab = fabMenuItems[i];
+                // allow for null items
+                if (fab != null && fab.isEnabled()) {
+                    if (show) {
+                        fab.show();
+                        fab.animate().translationX(baseX.getDimensionPixelSize(i, 0));
+                        fab.animate().translationY(baseY.getDimensionPixelSize(i, 0));
+                    } else {
+                        fab.animate().translationX(0);
+                        fab.animate().translationY(0);
+                        fab.hide();
+                    }
                 }
             }
         }
-        baseX.recycle();
-        baseY.recycle();
     }
 }

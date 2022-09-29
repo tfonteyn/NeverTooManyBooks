@@ -243,9 +243,8 @@ public class ShowBookDetailsFragment
                 getView().findViewById(R.id.cover_operation_progress_bar);
 
         final Resources res = getResources();
-        final TypedArray width = res.obtainTypedArray(R.array.cover_details_width);
-        final TypedArray height = res.obtainTypedArray(R.array.cover_details_height);
-        try {
+        try (TypedArray width = res.obtainTypedArray(R.array.cover_details_width);
+             TypedArray height = res.obtainTypedArray(R.array.cover_details_height)) {
             for (int cIdx = 0; cIdx < width.length(); cIdx++) {
                 if (aVm.getStyle().isShowField(Style.Screen.Detail, FieldVisibility.COVER[cIdx])) {
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
@@ -257,9 +256,6 @@ public class ShowBookDetailsFragment
                             .onFragmentViewCreated(this);
                 }
             }
-        } finally {
-            width.recycle();
-            height.recycle();
         }
     }
 
@@ -396,8 +392,7 @@ public class ShowBookDetailsFragment
     }
 
     private void bindCoverImages() {
-        final TypedArray coverResIds = getResources().obtainTypedArray(R.array.cover_images);
-        try {
+        try (TypedArray coverResIds = getResources().obtainTypedArray(R.array.cover_images)) {
             for (int cIdx = 0; cIdx < coverResIds.length(); cIdx++) {
                 //noinspection ConstantConditions
                 final ImageView view = getView().findViewById(coverResIds.getResourceId(cIdx, 0));
@@ -408,8 +403,6 @@ public class ShowBookDetailsFragment
                     view.setVisibility(View.GONE);
                 }
             }
-        } finally {
-            coverResIds.recycle();
         }
     }
 
