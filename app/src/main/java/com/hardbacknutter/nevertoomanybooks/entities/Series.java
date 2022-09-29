@@ -101,13 +101,13 @@ public class Series
             + "("
 
             // numeric numerals allowing for .-_ but must start with a digit.
-            + /* */ "[0-9][0-9.\\-_]*"
+            + /* */ "\\d[\\d.\\-_]*"
             // no alphanumeric suffix
 
             + "|"
 
             // numeric numerals allowing for .-_ but must start with a digit.
-            + /* */ "[0-9][0-9.\\-_]*"
+            + /* */ "\\d[\\d.\\-_]*"
             // optional alphanumeric suffix if separated by a '|'
             + /* */ "\\|\\S*?"
 
@@ -138,7 +138,7 @@ public class Series
             // Capture the title group(1)
             + "(.*?)"
             // delimiter ',' and/or whitespace
-            + "\\s*[,]*\\s*"
+            + "\\s*,*\\s*"
             // Capture the number group(2)
             + /* */ NUMBER_REGEXP
             // whitespace to the end
@@ -153,7 +153,7 @@ public class Series
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /** Remove any leading zeros from Series number. */
-    private static final Pattern PURE_NUMERICAL_PATTERN = Pattern.compile("^[0-9]+$");
+    private static final Pattern PURE_NUMERICAL_PATTERN = Pattern.compile("^\\d+$");
     /** Row ID. */
     private long id;
     /** Series title. */
