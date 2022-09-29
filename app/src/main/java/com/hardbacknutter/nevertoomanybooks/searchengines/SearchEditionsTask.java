@@ -92,7 +92,7 @@ public class SearchEditionsTask
             searchEngine.setCaller(this);
             try {
                 // can we reach the site ?
-                NetworkUtils.ping(searchEngine.getHostUrl());
+                searchEngine.ping();
 
                 isbnList.addAll(((SearchEngine.AlternativeEditions) searchEngine)
                                         .searchAlternativeEditions(context, isbn));

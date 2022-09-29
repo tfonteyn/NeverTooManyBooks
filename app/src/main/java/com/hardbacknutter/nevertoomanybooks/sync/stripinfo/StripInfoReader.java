@@ -201,7 +201,7 @@ public class StripInfoReader
         }
 
         // can we reach the site ?
-        NetworkUtils.ping(searchEngine.getHostUrl());
+        searchEngine.ping();
 
         progressListener.setIndeterminate(true);
         progressListener.publishProgress(0, context.getString(R.string.progress_msg_connecting));

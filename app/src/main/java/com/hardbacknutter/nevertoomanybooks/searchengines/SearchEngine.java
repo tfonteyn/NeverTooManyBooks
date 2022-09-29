@@ -36,6 +36,10 @@ import androidx.preference.PreferenceManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -43,6 +47,7 @@ import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
+import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -519,5 +524,15 @@ public interface SearchEngine
                                                @NonNull String validIsbn)
                 throws SearchException,
                        CredentialsException;
+    }
+
+    @WorkerThread
+    default void ping()
+            throws UnknownHostException,
+                   IOException,
+                   SocketTimeoutException,
+                   MalformedURLException {
+        //noinspection ConstantConditions
+        NetworkUtils.ping(getHostUrl(), getEngineId().getConfig().getConnectTimeoutInMs());
     }
 }

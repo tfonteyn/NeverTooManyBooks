@@ -57,11 +57,8 @@ public final class NetworkUtils {
     /** Log tag. */
     private static final String TAG = "NetworkUtils";
 
-    /** Timeout for {@link #ping(String)}; connection to the DNS server. */
+    /** Timeout for {@link #ping(String, int)}; connection to the DNS server. */
     private static final long DNS_TIMEOUT_MS = 5_000L;
-
-    /** Timeout for {@link #ping(String)}; connection to the host. */
-    private static final int PING_TIMEOUT_MS = 5_000;
 
     private NetworkUtils() {
     }
@@ -136,7 +133,8 @@ public final class NetworkUtils {
      * <p>
      * A call to {@link #isNetworkAvailable(Context)} should be made before calling this method.
      *
-     * @param urlStr url to check
+     * @param urlStr      url to check
+     * @param timeoutInMs timeout to use for the connect call
      *
      * @throws UnknownHostException   the IP address of a host could not be determined.
      * @throws IOException            if we cannot reach the site
@@ -144,7 +142,8 @@ public final class NetworkUtils {
      * @throws MalformedURLException  if the URL does not start with {@code http} or {@code https}
      */
     @WorkerThread
-    public static void ping(@NonNull final String urlStr)
+    public static void ping(@NonNull final String urlStr,
+                            final int timeoutInMs)
             throws UnknownHostException,
                    IOException,
                    SocketTimeoutException,
@@ -172,7 +171,7 @@ public final class NetworkUtils {
         final InetAddress inetAddress = new DNSService().lookup(host, DNS_TIMEOUT_MS);
 
         final Socket sock = new Socket();
-        sock.connect(new InetSocketAddress(inetAddress, port), PING_TIMEOUT_MS);
+        sock.connect(new InetSocketAddress(inetAddress, port), timeoutInMs);
         sock.close();
     }
 

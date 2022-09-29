@@ -194,7 +194,7 @@ public class SearchTask
         }
 
         // can we reach the site ?
-        NetworkUtils.ping(searchEngine.getHostUrl());
+        searchEngine.ping();
 
         // sanity check, see #setFetchCovers
         if (fetchCovers == null) {
