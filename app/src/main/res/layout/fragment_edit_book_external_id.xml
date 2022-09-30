@@ -34,6 +34,7 @@
         android:layout_margin="@dimen/container_margin"
         >
 
+        <!--suppress LongLine -->
         <androidx.constraintlayout.helper.widget.Flow
             android:id="@+id/flow_site_ids"
             android:layout_width="match_parent"
