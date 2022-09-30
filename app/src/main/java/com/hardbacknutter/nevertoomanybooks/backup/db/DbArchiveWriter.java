@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,14 +25,15 @@ import androidx.annotation.NonNull;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * Export the main database file.
@@ -67,9 +68,9 @@ public class DbArchiveWriter
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (FileChannel ic = new FileInputStream(databasePath).getChannel();
-             FileChannel oc = exportHelper.createOutputStream(context).getChannel()) {
-            ic.transferTo(0, ic.size(), oc);
+        try (FileInputStream fis = new FileInputStream(databasePath);
+             FileOutputStream fos = exportHelper.createOutputStream(context)) {
+            FileUtils.copy(fis, fos);
         }
 
         final ExportResults results = new ExportResults();

@@ -120,9 +120,9 @@ public final class FileUtils {
     public static void copy(@NonNull final File source,
                             @NonNull final File destination)
             throws IOException {
-        try (FileChannel inChannel = new FileInputStream(source).getChannel();
-             FileChannel outChannel = new FileOutputStream(destination).getChannel()) {
-            inChannel.transferTo(0, inChannel.size(), outChannel);
+        try (FileInputStream fis = new FileInputStream(source);
+             FileOutputStream fos = new FileOutputStream(destination)) {
+            copy(fis, fos);
         }
     }
 
