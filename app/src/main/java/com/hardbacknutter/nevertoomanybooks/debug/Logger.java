@@ -39,6 +39,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -194,6 +196,14 @@ public final class Logger {
         } catch (@NonNull final Exception ignore) {
             // do nothing - we can't log an error in the logger
         }
+    }
+
+    @NonNull
+    public static String getErrorLog()
+            throws IOException {
+        return String.join("\n", Files.readAllLines(
+                Paths.get(ServiceLocator.getLogDir().getAbsolutePath(),
+                          ERROR_LOG_FILE), StandardCharsets.UTF_8));
     }
 
     /**
