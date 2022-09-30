@@ -43,11 +43,11 @@ plugins {
         email.acra=acra@somewhere.com
 
  */
-final def ntmbProps = new Properties()
+final def props = new Properties()
 if (project.hasProperty("NeverTooManyBooks.properties")) {
     final def file = new File(project.property("NeverTooManyBooks.properties"))
     if (file.exists()) {
-        ntmbProps.load(new FileInputStream(file))
+        props.load(new FileInputStream(file))
     }
 }
 
@@ -69,8 +69,8 @@ android {
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "EMAIL_ACRA", '"' + ntmbProps['email.acra'] + '"')
-        buildConfigField("String", "EMAIL_DEBUG_REPORT", '"' + ntmbProps['email.support'] + '"')
+        buildConfigField("String", "EMAIL_ACRA", '"' + props['email.acra'] + '"')
+        buildConfigField("String", "EMAIL_DEBUG_REPORT", '"' + props['email.support'] + '"')
 
         // Add the build UTC DateTime; ISO formatted
         buildConfigField("String", "TIMESTAMP",
@@ -92,10 +92,10 @@ android {
 
     signingConfigs {
         release {
-            storeFile file(ntmbProps['sign.storeFile'])
-            storePassword ntmbProps['sign.storePassword']
-            keyAlias ntmbProps['sign.keyAlias']
-            keyPassword ntmbProps['sign.keyPassword']
+            storeFile file(props['sign.storeFile'])
+            storePassword props['sign.storePassword']
+            keyAlias props['sign.keyAlias']
+            keyPassword props['sign.keyPassword']
         }
     }
 
