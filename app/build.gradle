@@ -56,10 +56,20 @@ android {
 
     compileSdk rootProject.ext.compileSdk
 
+    signingConfigs {
+        release {
+            storeFile file(props['sign.storeFile'])
+            storePassword props['sign.storePassword']
+            keyAlias props['sign.keyAlias']
+            keyPassword props['sign.keyPassword']
+        }
+    }
+
     defaultConfig {
         applicationId rootProject.ext.applicationId
         versionCode 20
         versionName = '3.2.1'
+        signingConfig signingConfigs.release
 
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
@@ -90,20 +100,10 @@ android {
         buildConfigField("boolean", "ENABLE_LIBRARY_THING_ALT_ED", "true")
     }
 
-    signingConfigs {
-        release {
-            storeFile file(props['sign.storeFile'])
-            storePassword props['sign.storePassword']
-            keyAlias props['sign.keyAlias']
-            keyPassword props['sign.keyPassword']
-        }
-    }
-
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources true
-            signingConfig signingConfigs.release
 
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"),
                     "proguard-rules.pro"
@@ -132,7 +132,6 @@ android {
             debuggable true
             versionNameSuffix "-debug"
             applicationIdSuffix ".debug"
-            signingConfig signingConfigs.release
 
             resValue("string", "searchSuggestAuthority",
                     "${applicationId}.SearchSuggestionProvider.debug")
