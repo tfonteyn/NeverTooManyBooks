@@ -49,11 +49,14 @@ public final class AttrUtils {
     static int getColorInt(@NonNull final Context context,
                            @SuppressWarnings("SameParameterValue") @AttrRes final int attr)
             throws Resources.NotFoundException {
-        try (TypedArray a = context.obtainStyledAttributes(new int[]{attr})) {
+        final TypedArray a = context.obtainStyledAttributes(new int[]{attr});
+        try {
             final int color = a.getColor(0, 0);
             if (color != 0) {
                 return color;
             }
+        } finally {
+            a.recycle();
         }
         throw new Resources.NotFoundException(ERR_FAILED_TO_RESOLVE_ATTRIBUTE + attr);
     }
@@ -72,11 +75,14 @@ public final class AttrUtils {
     static Drawable getDrawable(@NonNull final Context context,
                                 @AttrRes final int attr)
             throws Resources.NotFoundException {
-        try (TypedArray a = context.obtainStyledAttributes(new int[]{attr})) {
+        final TypedArray a = context.obtainStyledAttributes(new int[]{attr});
+        try {
             final Drawable drawable = a.getDrawable(0);
             if (drawable != null) {
                 return drawable;
             }
+        } finally {
+            a.recycle();
         }
         throw new Resources.NotFoundException(ERR_FAILED_TO_RESOLVE_ATTRIBUTE + attr);
     }

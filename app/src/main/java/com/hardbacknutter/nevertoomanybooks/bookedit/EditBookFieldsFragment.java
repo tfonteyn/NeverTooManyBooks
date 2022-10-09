@@ -179,8 +179,9 @@ public class EditBookFieldsFragment
 
     private void createCoverDelegates() {
         final Resources res = getResources();
-        try (TypedArray width = res.obtainTypedArray(R.array.cover_edit_width);
-             TypedArray height = res.obtainTypedArray(R.array.cover_edit_height)) {
+        final TypedArray width = res.obtainTypedArray(R.array.cover_edit_width);
+        final TypedArray height = res.obtainTypedArray(R.array.cover_edit_height);
+        try {
             for (int cIdx = 0; cIdx < width.length(); cIdx++) {
                 // in edit mode, always show both covers unless globally disabled
                 if (GlobalFieldVisibility.isUsed(FieldVisibility.COVER[cIdx])) {
@@ -203,6 +204,9 @@ public class EditBookFieldsFragment
                     }
                 }
             }
+        } finally {
+            width.recycle();
+            height.recycle();
         }
     }
 

@@ -104,9 +104,12 @@ public class ExtGroup
         mUseViewMeasure = false;
 
         if (attrs != null) {
-            try (TypedArray ta = getContext().getTheme().obtainStyledAttributes(
-                    attrs, R.styleable.ExtGroup, 0, 0)) {
+            final TypedArray ta = getContext().getTheme().obtainStyledAttributes(
+                    attrs, R.styleable.ExtGroup, 0, 0);
+            try {
                 mApplyFlags = ta.getInteger(R.styleable.ExtGroup_groupApply, 0);
+            } finally {
+                ta.recycle();
             }
         } else {
             mApplyFlags = 0;

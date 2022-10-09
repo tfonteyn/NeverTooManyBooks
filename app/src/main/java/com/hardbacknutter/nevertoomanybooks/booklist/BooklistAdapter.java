@@ -197,9 +197,12 @@ public class BooklistAdapter
 
             // The thumbnail scale is used to retrieve the cover dimensions
             // We use a square space for the image so both portrait/landscape images work out.
-            try (TypedArray coverSizes =
-                         resources.obtainTypedArray(R.array.cover_book_list_longest_side)) {
+            final TypedArray coverSizes = resources
+                    .obtainTypedArray(R.array.cover_book_list_longest_side);
+            try {
                 coverLongestSide = coverSizes.getDimensionPixelSize(frontCoverScale, 0);
+            } finally {
+                coverSizes.recycle();
             }
         } else {
             coverLongestSide = 0;
@@ -585,14 +588,21 @@ public class BooklistAdapter
     private void scaleTextViews(@NonNull final View view,
                                 @Style.TextScale final int textScale) {
         final Resources res = view.getContext().getResources();
+        TypedArray ta;
         final float fontSizeInSpUnits;
-        try (TypedArray ta = res.obtainTypedArray(R.array.bob_text_size_in_sp)) {
+        ta = res.obtainTypedArray(R.array.bob_text_size_in_sp);
+        try {
             fontSizeInSpUnits = ta.getFloat(textScale, 0);
+        } finally {
+            ta.recycle();
         }
 
         final float paddingFactor;
-        try (TypedArray ta = res.obtainTypedArray(R.array.bob_text_padding_in_percent)) {
+        ta = res.obtainTypedArray(R.array.bob_text_padding_in_percent);
+        try {
             paddingFactor = ta.getFloat(textScale, 0);
+        } finally {
+            ta.recycle();
         }
 
         if (BuildConfig.DEBUG /* always */) {

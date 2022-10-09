@@ -143,9 +143,9 @@ public class FabMenu {
 
         final Resources res = fabButton.getResources();
 
-        try (TypedArray baseX = res.obtainTypedArray(R.array.fab_menu_translationX_all);
-             TypedArray baseY = res.obtainTypedArray(R.array.fab_menu_translationY_all)) {
-
+        final TypedArray baseX = res.obtainTypedArray(R.array.fab_menu_translationX_all);
+        final TypedArray baseY = res.obtainTypedArray(R.array.fab_menu_translationY_all);
+        try {
             for (int i = 0; i < fabMenuItems.length; i++) {
                 final ExtendedFloatingActionButton fab = fabMenuItems[i];
                 // allow for null items
@@ -161,6 +161,9 @@ public class FabMenu {
                     }
                 }
             }
+        } finally {
+            baseX.recycle();
+            baseY.recycle();
         }
     }
 }
