@@ -105,7 +105,7 @@ public final class CoverDir {
 
     /**
      * Get the *temporary* directory where we store covers.
-     * Currently this is a sun directory of the permanent one to facilitate move==renames.
+     * Currently this is a sub directory of the permanent one to facilitate move==renames.
      *
      * @param context Current context
      *
