@@ -36,7 +36,7 @@ public interface Notifier
         extends AppLocale.OnLocaleChangedListener {
 
     /** Notification id. */
-    int ID_GENERIC = 0;
+    int ID_GENERIC = 1;
 
     /** RequestCode. For now, we always use 0. */
     int RC_DEFAULT = 0;
