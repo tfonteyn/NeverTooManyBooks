@@ -1,5 +1,5 @@
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -18,21 +18,11 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!--
-    This is the original vector icon used for about screen / navigation drawer
-    and as the origin for building the actual launcher icons.
-    The background for the launcher should be set to "@color/white".
-
-    Warning: when changing this icon, and then regenerating the mipmap etc files,
-    after a reinstall the icon might not have changed.
-    REBOOT the phone/emulator: https://stackoverflow.com/questions/45234620
--->
-
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="460"
-    android:viewportHeight="460">
+        android:width="24dp"
+        android:height="24dp"
+        android:viewportWidth="460"
+        android:viewportHeight="460">
 
     <!-- feet -->
     <path
