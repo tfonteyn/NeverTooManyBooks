@@ -699,5 +699,6 @@
     <string name="action_select_none">Odznačit vše</string>
     <string name="warning_nothing_selected">Nebylo vybráno nic</string>
     <string name="tip_authors_works_single_book">Název je obsažen v jediné knize.</string>
+    <string name="fab_add_book_by_barcode_scan_batch">Skenování čárových kódů v dávce</string>
 
 </resources>

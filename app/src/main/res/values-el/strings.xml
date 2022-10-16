@@ -701,5 +701,6 @@
     <string name="yes">Ναι</string>
     <string name="warning_nothing_selected">Τίποτα επιλεγμένο</string>
     <string name="tip_authors_works_single_book">Ο τίτλος υπάρχει σε ένα μόνο βιβλίο.</string>
+    <string name="fab_add_book_by_barcode_scan_batch">Σάρωση γραμμικών κωδίκων σε παρτίδα</string>
 
 </resources>

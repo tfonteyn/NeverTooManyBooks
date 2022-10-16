@@ -170,7 +170,6 @@ public class BooksOnBookshelf
         extends BaseActivity
         implements BookChangedListener {
 
-    private static final int FAB_4_SEARCH_EXTERNAL_ID = 4;
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
 
@@ -526,6 +525,7 @@ public class BooksOnBookshelf
     private void createFabMenu() {
         fabMenu = new FabMenu(vb.fab, vb.fabOverlay,
                               vb.fab0ScanBarcode,
+                              vb.fab0ScanBarcodeBatch,
                               vb.fab1SearchIsbn,
                               vb.fab2SearchText,
                               vb.fab3AddManually,
@@ -533,8 +533,8 @@ public class BooksOnBookshelf
 
         fabMenu.attach(vb.content.list);
         fabMenu.setOnClickListener(view -> onFabMenuItemSelected(view.getId()));
-        fabMenu.getItem(FAB_4_SEARCH_EXTERNAL_ID)
-               .setEnabled(EditBookExternalIdFragment.isShowTab());
+        fabMenu.getItem(vb.fab4SearchExternalId.getId())
+               .ifPresent(item -> item.setEnabled(EditBookExternalIdFragment.isShowTab()));
     }
 
     /**
@@ -682,8 +682,8 @@ public class BooksOnBookshelf
         setNavIcon();
 
         updateSyncMenuVisibility();
-        fabMenu.getItem(FAB_4_SEARCH_EXTERNAL_ID)
-               .setEnabled(EditBookExternalIdFragment.isShowTab());
+        fabMenu.getItem(vb.fab4SearchExternalId.getId())
+               .ifPresent(item -> item.setEnabled(EditBookExternalIdFragment.isShowTab()));
 
         // Initialize/Update the list of bookshelves
         vm.reloadBookshelfList(this);
@@ -1258,6 +1258,9 @@ public class BooksOnBookshelf
 
         if (itemId == R.id.fab0_scan_barcode) {
             addBookBySearchLauncher.launch(AddBookBySearchContract.By.Scan);
+
+        } else if (itemId == R.id.fab0_scan_barcode_batch) {
+            addBookBySearchLauncher.launch(AddBookBySearchContract.By.ScanBatch);
 
         } else if (itemId == R.id.fab1_search_isbn) {
             addBookBySearchLauncher.launch(AddBookBySearchContract.By.Isbn);

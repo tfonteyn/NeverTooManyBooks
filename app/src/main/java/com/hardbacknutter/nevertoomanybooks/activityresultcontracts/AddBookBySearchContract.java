@@ -59,6 +59,12 @@ public class AddBookBySearchContract
                         .putExtra(SearchBookByIsbnViewModel.BKEY_SCAN_MODE,
                                   (Parcelable) SearchBookByIsbnViewModel.ScanMode.Single);
 
+            case ScanBatch:
+                return FragmentHostActivity
+                        .createIntent(context, SearchBookByIsbnFragment.class)
+                        .putExtra(SearchBookByIsbnViewModel.BKEY_SCAN_MODE,
+                                  (Parcelable) SearchBookByIsbnViewModel.ScanMode.Batch);
+
             case ExternalId:
                 return FragmentHostActivity
                         .createIntent(context, SearchBookByExternalIdFragment.class);
@@ -89,6 +95,7 @@ public class AddBookBySearchContract
     public enum By {
         Isbn,
         Scan,
+        ScanBatch,
         Text,
         ExternalId
     }

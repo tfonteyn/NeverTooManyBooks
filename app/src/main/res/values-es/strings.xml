@@ -702,5 +702,6 @@
     <string name="yes">Sí</string>
     <string name="warning_nothing_selected">Nada seleccionado</string>
     <string name="tip_authors_works_single_book">El título está presente en un solo libro.</string>
+    <string name="fab_add_book_by_barcode_scan_batch">Escanear códigos de barras por lotes</string>
 
 </resources>

@@ -150,6 +150,17 @@
             tools:visibility="visible"
             />
 
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fab0_scan_barcode_batch"
+            style="@style/Widget.App.ExtendedFloatingActionButton"
+            android:text="@string/fab_add_book_by_barcode_scan_batch"
+            app:icon="@drawable/ic_baseline_photo_camera_24"
+            app:layout_anchor="@id/fab"
+            tools:translationX="@dimen/fab_menu_translationX_0"
+            tools:translationY="@dimen/fab_menu_translationY_0"
+            tools:visibility="visible"
+            />
+
         <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton
             android:id="@+id/fab"
             style="@style/Widget.App.FloatingActionButton"

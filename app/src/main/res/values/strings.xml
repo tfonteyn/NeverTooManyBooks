@@ -812,6 +812,7 @@
     <!-- ####################################################################################### -->
     <!-- Booklist FAB menu option -->
     <string name="fab_add_book_by_barcode_scan">Scan Barcode</string>
+    <string name="fab_add_book_by_barcode_scan_batch">Scan Barcodes in batch</string>
     <!-- Booklist FAB menu option -->
     <string name="fab_add_book_by_isbn">Enter ISBN</string>
     <!-- Booklist FAB menu option -->
@@ -1598,7 +1599,7 @@
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>
 
     <string name="lbl_auto_updates">Allow automatic updates from the internet</string>
-    <string name="action_add_with_details">Add details</string>
+    <string name="action_add_with_details">Add with details</string>
 
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->

@@ -23,12 +23,16 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.view.View;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
@@ -98,8 +102,8 @@ public class FabMenu {
     }
 
     @NonNull
-    public ExtendedFloatingActionButton getItem(final int index) {
-        return fabMenuItems[index];
+    public Optional<ExtendedFloatingActionButton> getItem(@IdRes final int id) {
+        return Arrays.stream(fabMenuItems).filter(item -> item.getId() == id).findFirst();
     }
 
     public void attach(@NonNull final RecyclerView recyclerView) {
@@ -143,7 +147,10 @@ public class FabMenu {
 
         final Resources res = fabButton.getResources();
 
+        // try-with-res requires Android 13
+        @SuppressWarnings("resource")
         final TypedArray baseX = res.obtainTypedArray(R.array.fab_menu_translationX_all);
+        @SuppressWarnings("resource")
         final TypedArray baseY = res.obtainTypedArray(R.array.fab_menu_translationY_all);
         try {
             for (int i = 0; i < fabMenuItems.length; i++) {

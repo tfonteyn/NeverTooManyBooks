@@ -703,5 +703,6 @@
     <string name="yes">Oui</string>
     <string name="warning_nothing_selected">Rien de sélectionné</string>
     <string name="tip_authors_works_single_book">Le titre est présent dans un seul livre.</string>
+    <string name="fab_add_book_by_barcode_scan_batch">Scanner les codes-barres par lots</string>
 
 </resources>
