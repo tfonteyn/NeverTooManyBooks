@@ -61,7 +61,7 @@ public class ScannerContract
     public static void onValidBarcodeBeep(@NonNull final Context context) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
                              .getBoolean(Prefs.pk_sounds_scan_isbn_valid, false)) {
-            SoundManager.playFile(context, R.raw.beep_high);
+            SoundManager.beep(SoundManager.POSITIVE);
         }
     }
 
@@ -73,7 +73,7 @@ public class ScannerContract
     public static void onInvalidBarcodeBeep(@NonNull final Context context) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
                              .getBoolean(Prefs.pk_sounds_scan_isbn_invalid, true)) {
-            SoundManager.playFile(context, R.raw.beep_low);
+            SoundManager.beep(SoundManager.NEGATIVE);
         }
     }
 

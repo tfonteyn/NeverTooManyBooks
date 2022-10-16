@@ -19,42 +19,67 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.content.Context;
-import android.content.res.AssetFileDescriptor;
-import android.content.res.Resources;
-import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.ToneGenerator;
+import android.os.Handler;
+import android.os.Looper;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.annotation.RawRes;
+import androidx.fragment.app.FragmentActivity;
+
+import com.google.zxing.client.android.BeepManager;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 public final class SoundManager {
 
-    private static final AudioAttributes AUDIO_ATTRIBUTES = new AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
-            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-            .build();
+    public static final int POSITIVE = ToneGenerator.TONE_PROP_ACK;
+    public static final int NEGATIVE = ToneGenerator.TONE_PROP_NACK;
+    private static final int MAX_LEN = 500;
 
     private SoundManager() {
     }
 
-    public static void playFile(@NonNull final Context context,
-                                @RawRes final int resId) {
+    /**
+     * Play a generic tone. If as tone is longer than 500ms, it will be cutoff.
+     *
+     * @param tone one of {@link #POSITIVE} or {@link #NEGATIVE}
+     *             or any of the {@link ToneGenerator} predefined tones.
+     */
+    public static void beep(@Tone final int tone) {
         try {
-            final AssetFileDescriptor file = context.getResources().openRawResourceFd(resId);
-            final MediaPlayer player = new MediaPlayer();
-            player.setAudioAttributes(AUDIO_ATTRIBUTES);
-            // When the beep has finished playing, rewind to queue up another one.
-            player.setOnCompletionListener(MediaPlayer::release);
-            player.setDataSource(file.getFileDescriptor(), file.getStartOffset(), file.getLength());
-            file.close();
-            player.setVolume(0.2f, 0.2f);
-            player.prepare();
-            player.start();
-        } catch (@NonNull final Resources.NotFoundException e) {
-            throw new IllegalStateException(e);
+            final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,
+                                                       ToneGenerator.MAX_VOLUME);
+            tg.startTone(tone);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                tg.stopTone();
+                tg.release();
+            }, MAX_LEN);
+
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
             // No sound is critical.
         }
+    }
+
+    /**
+     * Play the builtin ZXing beep.
+     */
+    public static void zxingBeep(@NonNull final FragmentActivity activity) {
+        final MediaPlayer mp = new BeepManager(activity).playBeepSound();
+        if (mp != null) {
+            new Handler(Looper.getMainLooper()).postDelayed(mp::release, MAX_LEN);
+        }
+    }
+
+    @IntDef({
+            POSITIVE,
+            NEGATIVE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface Tone {
+
     }
 }

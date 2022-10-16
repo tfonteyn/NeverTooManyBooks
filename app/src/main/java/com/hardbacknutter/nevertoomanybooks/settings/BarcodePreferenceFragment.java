@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -91,7 +91,8 @@ public class BarcodePreferenceFragment
         findPreference(Prefs.pk_sounds_scan_found_barcode)
                 .setOnPreferenceChangeListener((preference, newValue) -> {
                     if (newValue instanceof Boolean && (Boolean) newValue) {
-                        SoundManager.playFile(getContext(), R.raw.zxing_beep);
+                        //noinspection ConstantConditions
+                        SoundManager.zxingBeep(getActivity());
                     }
                     return true;
                 });
@@ -99,7 +100,7 @@ public class BarcodePreferenceFragment
         findPreference(Prefs.pk_sounds_scan_isbn_valid)
                 .setOnPreferenceChangeListener((preference, newValue) -> {
                     if (newValue instanceof Boolean && (Boolean) newValue) {
-                        SoundManager.playFile(getContext(), R.raw.beep_high);
+                        SoundManager.beep(SoundManager.POSITIVE);
                     }
                     return true;
                 });
@@ -107,7 +108,7 @@ public class BarcodePreferenceFragment
         findPreference(Prefs.pk_sounds_scan_isbn_invalid)
                 .setOnPreferenceChangeListener((preference, newValue) -> {
                     if (newValue instanceof Boolean && (Boolean) newValue) {
-                        SoundManager.playFile(getContext(), R.raw.beep_low);
+                        SoundManager.beep(SoundManager.NEGATIVE);
                     }
                     return true;
                 });
