@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -89,7 +89,7 @@ public final class OverlayProviderFactory {
         popupView.setIncludeFontPadding(false);
         popupView.setSingleLine(false);
 
-        popupView.setTextAppearance(R.style.TextAppearance_Material3_TitleMedium);
+        popupView.setTextAppearance(R.style.OverlayTextStyle);
     };
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -112,7 +112,7 @@ public final class OverlayProviderFactory {
         popupView.setIncludeFontPadding(false);
         popupView.setSingleLine(false);
 
-        popupView.setTextAppearance(R.style.TextAppearance_Material3_TitleMedium);
+        popupView.setTextAppearance(R.style.OverlayTextStyle);
     };
 
     private static final Consumer<TextView> MD2 = popupView -> {
@@ -128,7 +128,8 @@ public final class OverlayProviderFactory {
 
         final Context context = popupView.getContext();
         //reminder: don't use colorSurface; that's already used for the list view background.
-        popupView.setBackground(new Md2PopupBackground(context, R.attr.colorBackgroundFloating));
+        final int bgColor = AttrUtils.getColorInt(context, R.attr.colorBackgroundFloating);
+        popupView.setBackground(new Md2PopupBackground(context, bgColor));
         popupView.setElevation(res.getDimensionPixelOffset(R.dimen.fs_md2_popup_elevation));
 
         popupView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
@@ -136,7 +137,7 @@ public final class OverlayProviderFactory {
         popupView.setIncludeFontPadding(false);
         popupView.setSingleLine(false);
 
-        popupView.setTextAppearance(R.style.TextAppearance_Material3_TitleMedium);
+        popupView.setTextAppearance(R.style.OverlayTextStyle);
     };
 
 

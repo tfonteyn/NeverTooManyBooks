@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,7 +49,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
 
-import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -72,10 +72,10 @@ class Md2PopupBackground
     private final Matrix mTempMatrix = new Matrix();
 
     Md2PopupBackground(@NonNull final Context context,
-                       @AttrRes final int bgColorAttr) {
+                       @ColorInt final int color) {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setColor(AttrUtils.getColorInt(context, bgColorAttr));
+        mPaint.setColor(color);
         mPaint.setStyle(Paint.Style.FILL);
 
         final Resources res = context.getResources();
