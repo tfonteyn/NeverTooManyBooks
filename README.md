@@ -1,5 +1,5 @@
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -18,11 +18,10 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-This is an open source Android application. Please feel free to fork, bug fix
-and commit back.
-
-This is a simple book catalogue application, to store a list of your books.
+This is a book catalogue application, to keep track of your books and comics.
 Books can be added either manually, by ISBN, or by barcode.
+
+Data is fetched from multiple internet sites.
 
 Requires minimal Android 8.0 (API 26)
 

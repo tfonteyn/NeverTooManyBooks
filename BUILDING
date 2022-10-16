@@ -1,0 +1,14 @@
+* Use Android Studio Electric Eel or whichever later non-broken version of Studio that works at all...
+* Use Java 17 to run Studio, and set Gradle to the same.
+* Coding is in Java 11 with desugaring as per Android needs.
+
+* Tags used; always followed with a colon
+  - URGENT: not a show-stopper, but really needs attention
+  - TEST: work done and minimal testing shows it works; but full testing wasn't done (yet)
+
+  - RELEASE: things that must be checked before doing a public release
+  - NEWTHINGS: where a list of 'items' is processed -> you can/should add 'items' to that list
+
+  - FIXME: work around present or situation acceptable, but should be properly fixed
+  - TODO: time...
+  - ENHANCE: more time...
