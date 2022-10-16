@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -20,19 +20,20 @@
   -->
 
 <resources>
-    <!-- in portrait, the start of the fab-menu is shown on the left of the fab button -->
-    <dimen name="fab_menu_translationX">-70dp</dimen>
+    <dimen name="fab_menu_translationX_0">-30dp</dimen>
+    <dimen name="fab_menu_translationX_1">-30dp</dimen>
+    <dimen name="fab_menu_translationX_2">-30dp</dimen>
+    <!-- show in a second column -->
+    <dimen name="fab_menu_translationX_3">-270dp</dimen>
+    <dimen name="fab_menu_translationX_4">-270dp</dimen>
+    <dimen name="fab_menu_translationX_5">-270dp</dimen>
 
-    <!-- on the smallest screen, the 5 buttons are split in two columns -->
-    <dimen name="fab_menu_translationX_0">@dimen/fab_menu_translationX</dimen>
-    <dimen name="fab_menu_translationX_1">@dimen/fab_menu_translationX</dimen>
-    <dimen name="fab_menu_translationX_2">-260dp</dimen>
-    <dimen name="fab_menu_translationX_3">@dimen/fab_menu_translationX</dimen>
-    <dimen name="fab_menu_translationX_4">-260dp</dimen>
-
-    <dimen name="fab_menu_translationY_0">10dp</dimen>
-    <dimen name="fab_menu_translationY_1">-55dp</dimen>
-    <dimen name="fab_menu_translationY_2">-20dp</dimen>
-    <dimen name="fab_menu_translationY_3">-120dp</dimen>
-    <dimen name="fab_menu_translationY_4">-85dp</dimen>
+    <!-- add "-65" to place each button above the previous one -->
+    <dimen name="fab_menu_translationY_0">0dp</dimen>
+    <dimen name="fab_menu_translationY_1">-65dp</dimen>
+    <dimen name="fab_menu_translationY_2">-130dp</dimen>
+    <!-- the second column has a small offset -->
+    <dimen name="fab_menu_translationY_3">-10dp</dimen>
+    <dimen name="fab_menu_translationY_4">-75dp</dimen>
+    <dimen name="fab_menu_translationY_5">-140dp</dimen>
 </resources>
