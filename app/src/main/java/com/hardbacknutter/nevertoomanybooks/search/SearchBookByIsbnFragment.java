@@ -83,6 +83,22 @@ public class SearchBookByIsbnFragment
     private ISBN.CleanupTextWatcher isbnCleanupTextWatcher;
     private SearchBookByIsbnViewModel vm;
 
+    /** After a successful scan/search, the data is offered for editing. */
+    private final ActivityResultLauncher<Long> editExistingBookLauncher =
+            registerForActivityResult(new EditBookByIdContract(),
+                                      o -> o.ifPresent(this::onBookEditingDone));
+
+    /** Importing a list of ISBN. */
+    private final ActivityResultLauncher<String> openUriLauncher =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), this::onOpenUri);
+
+    /** The scanner. */
+    private final ActivityResultLauncher<Fragment> scannerLauncher =
+            registerForActivityResult(new ScannerContract(), o -> {
+                scannerStarted = false;
+                o.ifPresent(this::onBarcodeScanned);
+            });
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,8 +112,6 @@ public class SearchBookByIsbnFragment
     }
 
     private void onBarcodeScanned(@NonNull String barCode) {
-        scannerStarted = false;
-
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.FAKE_BARCODE_SCANNER) {
             final String[] testCodes = {
                     // random == 0 -> cancel scanning
@@ -164,11 +178,6 @@ public class SearchBookByIsbnFragment
             vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Off);
         }
     }
-
-    /** After a successful scan/search, the data is offered for editing. */
-    private final ActivityResultLauncher<Long> editExistingBookLauncher =
-            registerForActivityResult(new EditBookByIdContract(),
-                                      o -> o.ifPresent(this::onBookEditingDone));
 
     @Override
     @NonNull
@@ -243,10 +252,6 @@ public class SearchBookByIsbnFragment
         }
     }
 
-    /** Importing a list of ISBN. */
-    private final ActivityResultLauncher<String> openUriLauncher =
-            registerForActivityResult(new ActivityResultContracts.GetContent(), this::onOpenUri);
-
     private void afterOnViewCreated() {
         if (vm.isAutoStart()) {
             scan();
@@ -261,11 +266,6 @@ public class SearchBookByIsbnFragment
         // Quit scan mode until the user manually starts it again
         vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Off);
     }
-
-    /** The scanner. */
-    private final ActivityResultLauncher<Fragment> scannerLauncher =
-            registerForActivityResult(new ScannerContract(),
-                                      o -> o.ifPresent(this::onBarcodeScanned));
 
     @Override
     void onBookEditingDone(@NonNull final EditBookOutput data) {
@@ -359,7 +359,6 @@ public class SearchBookByIsbnFragment
         }
     }
 
-
     @Override
     void onSearchResults(@NonNull final Bundle bookData) {
         // A non-empty result will have a title, or at least 3 fields:
@@ -374,7 +373,6 @@ public class SearchBookByIsbnFragment
         // edit book
         super.onSearchResults(bookData);
     }
-
 
     private void onOpenUri(@Nullable final Uri uri) {
         if (uri != null) {
@@ -473,5 +471,4 @@ public class SearchBookByIsbnFragment
             return false;
         }
     }
-
 }
