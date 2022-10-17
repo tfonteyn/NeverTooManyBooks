@@ -23,6 +23,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -101,6 +102,31 @@ public class ScannerContract
                                         @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+        }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.FAKE_BARCODE_SCANNER) {
+            final String[] testCodes = {
+                    // random == 0 -> cancel scanning
+                    null,
+                    "9780316310420",
+                    "9781250762849",
+                    "9781524763169",
+                    "9780062868930",
+                    "9781786892713",
+                    "9780349701462",
+                    "9781635574043",
+                    "9781538719985",
+                    "9780593230251",
+                    "9780063032491",
+                    };
+            final int random = (int) Math.floor(Math.random() * 10);
+            final String barCode = testCodes[random];
+            Log.d(TAG, "onBarcodeScanned|Faking barcode=" + barCode);
+            if (barCode == null) {
+                return Optional.empty();
+            } else {
+                return Optional.of(barCode);
+            }
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
