@@ -26,7 +26,6 @@ import android.content.SharedPreferences;
 import android.content.UriPermission;
 import android.net.Uri;
 import android.util.Base64;
-import android.webkit.MimeTypeMap;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -1306,11 +1305,7 @@ public class CalibreContentServer
             if (creating) {
                 // when creating, we must NOT directly use the extension,
                 // but deduce the mime type from the extension.
-                String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExt);
-                if (mimeType == null) {
-                    // shouldn't be needed, ... flw
-                    mimeType = "application/" + fileExt;
-                }
+                final String mimeType = FileUtils.getMimeTypeFromExtension(fileExt);
                 bookFile = authorFolder.createFile(mimeType, fileName);
             }
             if (bookFile == null) {

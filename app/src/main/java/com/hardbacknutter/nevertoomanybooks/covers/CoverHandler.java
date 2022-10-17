@@ -63,6 +63,7 @@ import java.util.function.Supplier;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -164,13 +165,13 @@ public class CoverHandler {
                 new ActivityResultContracts.TakePicture(), this::onTakePictureResult);
 
         getFromFileLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
-                new ActivityResultContracts.GetContent(), this::onGetContentResult);
+                new GetContentUriForReadingContract(), o -> o.ifPresent(this::onGetContentResult));
 
         editPictureLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), this::onEditPictureResult);
 
         cropPictureLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
-                new CropImageActivity.ResultContract(), this::onGetContentResult);
+                new CropImageActivity.ResultContract(), o -> o.ifPresent(this::onGetContentResult));
 
 
         final LifecycleOwner lifecycleOwner = fragment.getViewLifecycleOwner();
@@ -479,28 +480,26 @@ public class CoverHandler {
      *
      * @param uri to load the image from
      */
-    private void onGetContentResult(@Nullable final Uri uri) {
-        if (uri != null) {
-            final Context context = fragmentView.getContext();
-            try (InputStream is = context.getContentResolver().openInputStream(uri)) {
-                // copy the data, and retrieve the (potentially) resolved file
-                final File file = ImageUtils.copy(is, getTempFile());
+    private void onGetContentResult(@NonNull final Uri uri) {
+        final Context context = fragmentView.getContext();
+        try (InputStream is = context.getContentResolver().openInputStream(uri)) {
+            // copy the data, and retrieve the (potentially) resolved file
+            final File file = ImageUtils.copy(is, getTempFile());
 
-                showProgress();
-                vm.execute(new Transformation(file).setScale(true), file);
+            showProgress();
+            vm.execute(new Transformation(file).setScale(true), file);
 
-            } catch (@NonNull final StorageException e) {
-                StandardDialogs.showError(context, e.getUserMessage(context));
+        } catch (@NonNull final StorageException e) {
+            StandardDialogs.showError(context, e.getUserMessage(context));
 
-            } catch (@NonNull final IOException e) {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "Unable to copy content to file", e);
-                }
-
-                StandardDialogs.showError(context, ExMsg
-                        .map(context, e)
-                        .orElse(context.getString(R.string.warning_image_copy_failed)));
+        } catch (@NonNull final IOException e) {
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "Unable to copy content to file", e);
             }
+
+            StandardDialogs.showError(context, ExMsg
+                    .map(context, e)
+                    .orElse(context.getString(R.string.warning_image_copy_failed)));
         }
     }
 

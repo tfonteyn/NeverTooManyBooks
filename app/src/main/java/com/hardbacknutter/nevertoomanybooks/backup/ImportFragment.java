@@ -34,7 +34,6 @@ import android.widget.Button;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -58,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
@@ -118,7 +118,15 @@ public class ImportFragment
      * Android docs</a> : use a GetContent
      */
     private final ActivityResultLauncher<String> openUriLauncher =
-            registerForActivityResult(new ActivityResultContracts.GetContent(), this::onOpenUri);
+            registerForActivityResult(new GetContentUriForReadingContract(), o -> {
+                if (o.isPresent()) {
+                    onOpenUri(o.get());
+                } else {
+                    // nothing selected, just quit
+                    //noinspection ConstantConditions
+                    getActivity().finish();
+                }
+            });
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -212,53 +220,46 @@ public class ImportFragment
      *
      * @param uri file to read from
      */
-    private void onOpenUri(@Nullable final Uri uri) {
-        if (uri == null) {
-            // nothing selected, just quit
+    private void onOpenUri(@NonNull final Uri uri) {
+        final ImportHelper helper;
+        try {
             //noinspection ConstantConditions
-            getActivity().finish();
+            helper = vm.createDataReaderHelper(getContext(), uri);
 
-        } else {
-            final ImportHelper helper;
-            try {
+        } catch (@NonNull final DataReaderException e) {
+            onImportNotSupported(e.getUserMessage(getContext()));
+            return;
+        } catch (@NonNull final FileNotFoundException e) {
+            onImportNotSupported(getString(R.string.error_file_not_found, uri.getPath()));
+            return;
+        }
+
+        switch (helper.getEncoding()) {
+            case Csv:
+                // CsvArchiveReader will make a database backup before importing.
                 //noinspection ConstantConditions
-                helper = vm.createDataReaderHelper(getContext(), uri);
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setTitle(R.string.lbl_import_books)
+                        .setMessage(R.string.warning_import_csv)
+                        .setNegativeButton(android.R.string.cancel,
+                                           (d, w) -> getActivity().finish())
+                        .setPositiveButton(android.R.string.ok, (d, w) -> showOptions())
+                        .create()
+                        .show();
+                break;
 
-            } catch (@NonNull final DataReaderException e) {
-                onImportNotSupported(e.getUserMessage(getContext()));
-                return;
-            } catch (@NonNull final FileNotFoundException e) {
-                onImportNotSupported(getString(R.string.error_file_not_found, uri.getPath()));
-                return;
-            }
+            case Zip:
+            case Tar:
+            case SqLiteDb:
+            case Json:
+                showOptions();
+                break;
 
-            switch (helper.getEncoding()) {
-                case Csv:
-                    // CsvArchiveReader will make a database backup before importing.
-                    //noinspection ConstantConditions
-                    new MaterialAlertDialogBuilder(getContext())
-                            .setIcon(R.drawable.ic_baseline_warning_24)
-                            .setTitle(R.string.lbl_import_books)
-                            .setMessage(R.string.warning_import_csv)
-                            .setNegativeButton(android.R.string.cancel,
-                                               (d, w) -> getActivity().finish())
-                            .setPositiveButton(android.R.string.ok, (d, w) -> showOptions())
-                            .create()
-                            .show();
-                    break;
-
-                case Zip:
-                case Tar:
-                case SqLiteDb:
-                case Json:
-                    showOptions();
-                    break;
-
-                case Xml:
-                default:
-                    onImportNotSupported(getString(R.string.error_import_file_not_supported));
-                    break;
-            }
+            case Xml:
+            default:
+                onImportNotSupported(getString(R.string.error_import_file_not_supported));
+                break;
         }
     }
 

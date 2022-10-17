@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,6 +59,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -200,7 +201,7 @@ public class CropImageActivity
     }
 
     public static class ResultContract
-            extends ActivityResultContract<ResultContract.Input, Uri> {
+            extends ActivityResultContract<ResultContract.Input, Optional<Uri>> {
 
         private File dstFile;
 
@@ -218,19 +219,24 @@ public class CropImageActivity
                     .putExtra(BKEY_DESTINATION, dstFile.getAbsolutePath());
         }
 
-        @Nullable
+        @NonNull
         @Override
-        public final Uri parseResult(final int resultCode,
-                                     @Nullable final Intent intent) {
+        public final Optional<Uri> parseResult(final int resultCode,
+                                               @Nullable final Intent intent) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                 Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
             }
 
             if (intent == null || resultCode != Activity.RESULT_OK) {
                 FileUtils.delete(dstFile);
-                return null;
+                return Optional.empty();
             }
-            return intent.getData();
+            final Uri uri = intent.getData();
+            if (uri != null) {
+                return Optional.of(uri);
+            } else {
+                return Optional.empty();
+            }
         }
 
         static class Input {

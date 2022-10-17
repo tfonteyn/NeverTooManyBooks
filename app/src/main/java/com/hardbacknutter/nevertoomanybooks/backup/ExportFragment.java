@@ -33,7 +33,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -56,6 +55,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForWritingContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentExportBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -82,20 +82,11 @@ public class ExportFragment
     /** The ViewModel. */
     private ExportViewModel vm;
 
-    /**
-     * The launcher for picking a Uri to write to.
-     * <p>
-     * Android: CreateDocument() is deprecated and we should use CreateDocument(mimeType).
-     * <p>
-     * Problem: we don't know the mimeType before the user decides on it and we cannot
-     * postpone calling registerForActivityResult or we get an exception:
-     * "Fragments must call registerForActivityResult() before they are created"
-     * <p>
-     * Solution: deep sigh... keep using deprecated constructor
-     */
-    private final ActivityResultLauncher<String> createDocumentLauncher =
-            registerForActivityResult(new ActivityResultContracts.CreateDocument(),
-                                      this::exportToUri);
+    /** The launcher for picking a Uri to write to. */
+    private final ActivityResultLauncher<GetContentUriForWritingContract.Input>
+            createDocumentLauncher =
+            registerForActivityResult(new GetContentUriForWritingContract(),
+                                      o -> o.ifPresent(uri -> vm.startExport(uri)));
 
     /** View Binding. */
     private FragmentExportBinding vb;
@@ -300,24 +291,15 @@ public class ExportFragment
 
     /**
      * Export Step 2: prompt the user for a uri to export to.
-     * After picking, we continue in {@link #exportToUri(Uri)}.
      */
     private void exportPickUri() {
         // Create the proposed name for the archive. The user can change it.
-        final String defName = "ntmb-" + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
-                               + "." + vm.getExportHelper().getEncoding().getFileExt();
-        createDocumentLauncher.launch(defName);
-    }
+        final String defName = "ntmb-" + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        final String mimeType = FileUtils.getMimeTypeFromExtension(
+                vm.getExportHelper().getEncoding().getFileExt());
 
-    /**
-     * Export Step 3: Called after the user selected a uri to write to.
-     *
-     * @param uri to write to
-     */
-    private void exportToUri(@Nullable final Uri uri) {
-        if (uri != null) {
-            vm.startExport(uri);
-        }
+        createDocumentLauncher.launch(new GetContentUriForWritingContract
+                .Input(mimeType, defName));
     }
 
     private void onExportCancelled(

@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import android.content.Context;
 import android.os.Build;
 import android.os.StatFs;
+import android.webkit.MimeTypeMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -519,5 +520,14 @@ public final class FileUtils {
             default:
                 return true;
         }
+    }
+
+    public static String getMimeTypeFromExtension(@NonNull final String fileExt) {
+        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExt);
+        if (mimeType == null) {
+            // shouldn't be needed, ... flw
+            mimeType = "application/" + fileExt;
+        }
+        return mimeType;
     }
 }

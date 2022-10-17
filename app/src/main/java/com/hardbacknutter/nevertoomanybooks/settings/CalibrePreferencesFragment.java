@@ -25,7 +25,6 @@ import android.text.InputType;
 import android.view.View;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,6 +40,8 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetDirectoryUriContract;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 
@@ -59,7 +60,8 @@ public class CalibrePreferencesFragment
     private Preference folderPref;
     private Preference caPref;
     private final ActivityResultLauncher<String> openCaUriLauncher =
-            registerForActivityResult(new ActivityResultContracts.GetContent(), this::onOpenCaUri);
+            registerForActivityResult(new GetContentUriForReadingContract(),
+                                      o -> o.ifPresent(this::onOpenCaUri));
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -133,11 +135,9 @@ public class CalibrePreferencesFragment
         super.onViewCreated(view, savedInstanceState);
 
         pickFolderLauncher = registerForActivityResult(
-                new ActivityResultContracts.OpenDocumentTree(), uri -> {
-                    if (uri != null) {
-                        //noinspection ConstantConditions
-                        CalibreContentServer.setFolderUri(getContext(), uri);
-                    }
+                new GetDirectoryUriContract(), o -> {
+                    //noinspection ConstantConditions
+                    o.ifPresent(uri -> CalibreContentServer.setFolderUri(getContext(), uri));
                     setFolderSummary(folderPref);
                 });
     }
@@ -171,25 +171,23 @@ public class CalibrePreferencesFragment
         }
     }
 
-    private void onOpenCaUri(@Nullable final Uri uri) {
-        if (uri != null) {
-            //noinspection ConstantConditions
-            try (InputStream is = getContext().getContentResolver().openInputStream(uri)) {
-                if (is != null) {
-                    final X509Certificate ca;
-                    try (BufferedInputStream bis = new BufferedInputStream(is)) {
-                        ca = (X509Certificate) CertificateFactory
-                                .getInstance("X.509").generateCertificate(bis);
-                    }
-                    CalibreContentServer.setCertificate(getContext(), ca);
+    private void onOpenCaUri(@NonNull final Uri uri) {
+        //noinspection ConstantConditions
+        try (InputStream is = getContext().getContentResolver().openInputStream(uri)) {
+            if (is != null) {
+                final X509Certificate ca;
+                try (BufferedInputStream bis = new BufferedInputStream(is)) {
+                    ca = (X509Certificate) CertificateFactory
+                            .getInstance("X.509").generateCertificate(bis);
                 }
-            } catch (@NonNull final IOException | CertificateException e) {
-                caPref.setSummary(R.string.error_certificate_invalid);
-                return;
+                CalibreContentServer.setCertificate(getContext(), ca);
             }
-
-            caPref.setSummary(createCaSummary());
+        } catch (@NonNull final IOException | CertificateException e) {
+            caPref.setSummary(R.string.error_certificate_invalid);
+            return;
         }
+
+        caPref.setSummary(createCaSummary());
     }
 
     /**

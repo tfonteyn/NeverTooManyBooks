@@ -30,7 +30,6 @@ import android.view.Window;
 
 import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,6 +47,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetDirectoryUriContract;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -153,12 +153,10 @@ public class CalibreHandler {
         hostView = view;
 
         folderPickerLauncher = caller.registerForActivityResult(
-                new ActivityResultContracts.OpenDocumentTree(), uri -> {
-                    if (uri != null) {
-                        CalibreContentServer.setFolderUri(hostView.getContext(), uri);
-                        vm.startDownload(vm.getAndResetTempBook(), uri);
-                    }
-                });
+                new GetDirectoryUriContract(), o -> o.ifPresent(uri -> {
+                    CalibreContentServer.setFolderUri(hostView.getContext(), uri);
+                    vm.startDownload(vm.getAndResetTempBook(), uri);
+                }));
 
         vm.onFinished().observe(lifecycleOwner, this::onFinished);
         vm.onCancelled().observe(lifecycleOwner, this::onCancelled);
