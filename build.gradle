@@ -83,7 +83,7 @@ buildscript {
         acra_version = '5.9.6'
 
         // https://github.com/mockito/mockito
-        mockito_version = '4.8.0'
+        mockito_version = '4.8.1'
 
         // https://junit.org/junit5/docs/current/user-guide/#overview
         jupiter_version = '5.9.1'
