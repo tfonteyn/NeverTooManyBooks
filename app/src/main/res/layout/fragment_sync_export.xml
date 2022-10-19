@@ -30,7 +30,7 @@
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        style="@style/TopCentered.Wide"
+        style="@style/TopCentered"
         >
 
         <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup

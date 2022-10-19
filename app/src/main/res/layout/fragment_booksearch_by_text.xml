@@ -28,7 +28,7 @@
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        style="@style/TopCentered.Wide"
+        style="@style/TopCentered"
         >
 
         <TextView

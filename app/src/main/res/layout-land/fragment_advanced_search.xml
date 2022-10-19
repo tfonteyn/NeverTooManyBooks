@@ -28,7 +28,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/content"
-        style="@style/TopCentered.Wide"
+        style="@style/TopCentered"
         android:layout_height="wrap_content"
         >
 

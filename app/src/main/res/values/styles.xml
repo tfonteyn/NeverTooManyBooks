@@ -277,8 +277,4 @@
         <item name="android:maxWidth">@dimen/centered_max_width</item>
     </style>
 
-    <style name="TopCentered.Wide">
-        <item name="android:maxWidth">@dimen/centered_max_width_wide</item>
-    </style>
-
 </resources>

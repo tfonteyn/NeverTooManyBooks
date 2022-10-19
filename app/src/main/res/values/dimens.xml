@@ -169,8 +169,7 @@
 
 
     <!-- The width for the "@style/TopCentered" and similar -->
-    <dimen name="centered_max_width">400dp</dimen>
-    <dimen name="centered_max_width_wide">600dp</dimen>
+    <dimen name="centered_max_width">600dp</dimen>
 
     <integer name="span_count_edit_bookshelves">1</integer>
     <integer name="span_count_update_from_internet">1</integer>
