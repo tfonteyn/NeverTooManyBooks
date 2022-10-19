@@ -28,7 +28,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:contentDescription="@string/action_save"
-    app:icon="@drawable/ic_baseline_check_24"
+    app:icon="@drawable/ic_baseline_save_24"
     app:iconTint="?attr/colorOnPrimaryContainer"
     tools:viewBindingIgnore="true"
     />
