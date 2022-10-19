@@ -670,11 +670,9 @@
     <string name="X_info_not_authorized">Не авторизовано</string>
     <string name="X_info_site_authorization_successful">Авторизация %1$s прошла успешно</string>
     <string name="X_lbl_about_sourcecode">Исходный код:</string>
-    <string name="X_lbl_backing_up">Делаю бэкап…</string>
     <string name="X_lbl_clear_search_filters">Сбросить фильтры</string>
     <string name="X_lbl_completed">Завершено</string>
     <string name="X_lbl_cover_long">Эскиз обложки</string>
-    <string name="X_lbl_data_import_export">Резервное копирование и импорт</string>
     <string name="X_lbl_delete_book">Удалить книгу</string>
     <string name="X_lbl_failed">Неудача</string>
     <string name="X_lbl_preferred_styles">Предпочитаемые стили</string>

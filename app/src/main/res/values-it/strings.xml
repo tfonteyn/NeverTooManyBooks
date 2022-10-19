@@ -672,11 +672,9 @@
     <string name="X_info_not_authorized">Non autorizzato</string>
     <string name="X_info_site_authorization_successful">Autorizzazione %1$s concessa</string>
     <string name="X_lbl_about_sourcecode">Codice sorgente:</string>
-    <string name="X_lbl_backing_up">Creazione backup in corso…</string>
     <string name="X_lbl_clear_search_filters">Cancella filtri</string>
     <string name="X_lbl_completed">Completato</string>
     <string name="X_lbl_cover_long">Immagine di copertina</string>
-    <string name="X_lbl_data_import_export">Backup e importazione</string>
     <string name="X_lbl_delete_book">Cancella libro</string>
     <string name="X_lbl_failed">Errore</string>
     <string name="X_lbl_preferred_styles">Stili preferiti</string>

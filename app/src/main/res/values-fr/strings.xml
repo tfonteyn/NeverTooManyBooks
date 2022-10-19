@@ -674,11 +674,9 @@
     <string name="X_info_not_authorized">Non autorisé</string>
     <string name="X_info_site_authorization_successful">Autorisation %1$s accordée</string>
     <string name="X_lbl_about_sourcecode">Code source :</string>
-    <string name="X_lbl_backing_up">Sauvegarde de…</string>
     <string name="X_lbl_clear_search_filters">Effacer les filtres</string>
     <string name="X_lbl_completed">Terminé</string>
     <string name="X_lbl_cover_long">Image de couverture</string>
-    <string name="X_lbl_data_import_export">Sauvegarde et importation</string>
     <string name="X_lbl_delete_book">Supprimer un livre</string>
     <string name="X_lbl_failed">Échoué</string>
     <string name="X_lbl_preferred_styles">Styles favoris</string>

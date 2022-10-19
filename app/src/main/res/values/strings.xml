@@ -1539,10 +1539,8 @@
     <string name="X_lbl_failed">Failed</string>
     <string name="X_lbl_queued">Queued</string>
     <string name="X_lbl_updated">Updated</string>
-    <string name="X_lbl_data_import_export">Backup &amp; Import</string>
     <string name="X_txt_import_books_option_all_books">New books will be added. Existing books will be updated.</string>
     <string name="X_txt_import_books_option_new_and_changed">Only import books that are new, or which have been updated more recently in the archive. This is useful when synchronizing two devices.</string>
-    <string name="X_lbl_backing_up">Backing up…</string>
     <string name="X_lbl_virtual_library">Virtual Library</string>
 
     <string name="X_lbl_about_sourcecode">Source Code</string>

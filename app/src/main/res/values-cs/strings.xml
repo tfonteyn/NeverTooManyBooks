@@ -28,7 +28,6 @@
     <string name="X_error_file_must_contain_column">Soubor musí obsahovat sloupec jménem %1$s</string>
     <string name="progress_end_export_report">Soubor %3$s nazvaný „%2$s“ byl vytvořen v adresáři „%1$s“ a měli byste jej ručně zkopírovat jinam, aby byla data chráněna v případě poškození, ztráty nebo odcizení zařízení.</string>
     <string name="lbl_available">Dostupná</string>
-    <string name="X_lbl_data_import_export">Zálohování a import</string>
     <string name="X_lbl_select_fields_to_update">Zvolit pole k aktualizaci</string>
     <string name="X_action_swap">Vyměnit</string>
     <string name="X_tip_booklist_global_properties">Na této obrazovce můžete nastavit výchozí charakteristiky všech stylů seznamu knih. Většina vlastností může být potlačena jednotlivými styly, ale zde jsou definovány výchozí hodnoty. Můžete změnit způsob zobrazení seznamů při spuštění a upravit řadu dalších preferencí, které budou použity na všechny vaše styly, pokud to bude možné.</string>
@@ -467,7 +466,6 @@
     <string name="lbl_add_book">Přidat knihu</string>
     <string name="info_authorized">Autorizováno</string>
     <string name="X_info_authorized_needed">Autorizovat přístup</string>
-    <string name="X_lbl_backing_up">Zálohování…</string>
     <string name="lbl_clone_style">Klonovat styl</string>
     <string name="X_lbl_delete_book">Smazat knihu</string>
     <string name="lbl_details_have_changed">Podrobnosti se změnily</string>

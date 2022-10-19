@@ -670,11 +670,9 @@
     <string name="X_info_not_authorized">Niet geautoriseerd</string>
     <string name="X_info_site_authorization_successful">%1$s autorisatie gelukt</string>
     <string name="X_lbl_about_sourcecode">Broncode:</string>
-    <string name="X_lbl_backing_up">Aan \'t Back-uppen…</string>
     <string name="X_lbl_clear_search_filters">Filters verwijderen</string>
     <string name="X_lbl_completed">Gereed</string>
     <string name="X_lbl_cover_long">Omslagafbeelding</string>
-    <string name="X_lbl_data_import_export">Back-up &amp; import</string>
     <string name="X_lbl_delete_book">Boek verwijderen</string>
     <string name="X_lbl_failed">Mislukt</string>
     <string name="X_lbl_preferred_styles">Voorkeursstijlen</string>

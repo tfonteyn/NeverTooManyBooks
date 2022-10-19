@@ -672,11 +672,9 @@
     <string name="X_info_not_authorized">Χωρίς άδεια</string>
     <string name="X_info_site_authorization_successful">Επιτυχής η αδειοδότηση %1$s</string>
     <string name="X_lbl_about_sourcecode">Πηγαίος Κώδικας:</string>
-    <string name="X_lbl_backing_up">Δημιουργείται Αντίγραφο Ασφαλείας…</string>
     <string name="X_lbl_clear_search_filters">Διαγραφή φίλτρων</string>
     <string name="X_lbl_completed">Ολοκληρώθηκαν</string>
     <string name="X_lbl_cover_long">εξώφυλλο βιβλίου</string>
-    <string name="X_lbl_data_import_export">Δημιουργία αντιγράφων ασφαλείας &amp; εισαγωγή</string>
     <string name="X_lbl_delete_book">Διαγραφή Βιβλίου</string>
     <string name="X_lbl_failed">Απέτυχαν</string>
     <string name="X_lbl_preferred_styles">Προτιμώμενα στυλ</string>

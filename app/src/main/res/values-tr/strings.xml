@@ -671,11 +671,9 @@
     <string name="X_info_not_authorized">Yetkilendirilmemiş</string>
     <string name="X_info_site_authorization_successful">%1$s yetkilendirmesi başarılı</string>
     <string name="X_lbl_about_sourcecode">Kaynak kodu</string>
-    <string name="X_lbl_backing_up">Yedekleniyor…</string>
     <string name="X_lbl_clear_search_filters">Filtreleri Temizle</string>
     <string name="X_lbl_completed">Tamamlandı</string>
     <string name="X_lbl_cover_long">Kitap kapağı</string>
-    <string name="X_lbl_data_import_export">Yedekleme ve İçe Aktarma</string>
     <string name="X_lbl_delete_book">Kitap sil</string>
     <string name="X_lbl_failed">Başarısız</string>
     <string name="X_lbl_preferred_styles">Yeğlenen biçemler</string>
