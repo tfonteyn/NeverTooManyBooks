@@ -165,7 +165,7 @@
     </style>
 
     <!-- A button to save/submit some form. Meant to be placed on the 'end' & 'bottom' of the form. -->
-    <style name="Button.Action.Submit" parent="Widget.Material3.Button.TonalButton">
+    <style name="Button.Action.Submit" parent="Widget.Material3.Button">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">4dp</item>
