@@ -31,24 +31,24 @@
 
         <!-- feet -->
         <path
-            android:fillColor="@color/grey_900"
+            android:fillColor="@color/m3grey_10"
             android:pathData="
           M 50,420 h70 L110,430 h-50 z
           M350,420 h70 L410,430 h-50 z" />
 
         <!-- shelf -->
         <path
-            android:fillColor="@color/grey_200"
+            android:fillColor="@color/m3grey_80"
             android:pathData="M0,400 h459 L439,350 L19,350 z" />
 
         <!-- front of shelf -->
         <path
-            android:fillColor="@color/grey_600"
+            android:fillColor="@color/m3grey_40"
             android:pathData="M0,420 h459 v-20 h-459 z" />
 
         <!-- book 1 -->
         <path
-            android:fillColor="@color/grey_500"
+            android:fillColor="@color/m3grey_50"
             android:pathData="M145,0
           v385
           c0,5  -1,10   -5, 10
@@ -63,7 +63,7 @@
 
         <path
             android:fillAlpha="1"
-            android:fillColor="@color/grey_600"
+            android:fillColor="@color/m3grey_40"
             android:pathData="M80,65 h65 v20 h-65z"
             android:strokeWidth="1"
             android:strokeAlpha="1"
@@ -72,7 +72,7 @@
             android:strokeLineJoin="miter" />
         <path
             android:fillAlpha="1"
-            android:fillColor="@color/grey_600"
+            android:fillColor="@color/m3grey_40"
             android:pathData="M80,340 h65 v20 h-65z"
             android:strokeWidth="1"
             android:strokeAlpha="1"
@@ -83,7 +83,7 @@
 
         <!-- book 2 -->
         <path
-            android:fillColor="@color/grey_600"
+            android:fillColor="@color/m3grey_40"
             android:pathData="M235,115
           v270
           c 0, 4   -5, 8   -12, 8
@@ -98,7 +98,7 @@
 
         <path
             android:fillAlpha="1"
-            android:fillColor="@color/grey_500"
+            android:fillColor="@color/m3grey_50"
             android:pathData="M160,145 h67 v145 h-67z"
             android:strokeWidth="1"
             android:strokeAlpha="1"
@@ -108,7 +108,7 @@
 
         <path
             android:fillAlpha="1"
-            android:fillColor="@color/grey_800"
+            android:fillColor="@color/m3grey_20"
             android:pathData="M193,310
            l 10,21
             24,4
@@ -127,7 +127,7 @@
 
         <!-- book 3 -->
         <path
-            android:fillColor="@color/grey_600"
+            android:fillColor="@color/m3grey_40"
             android:pathData="M285,0
           v385
           c 0, 5 -2, 10     -5, 10

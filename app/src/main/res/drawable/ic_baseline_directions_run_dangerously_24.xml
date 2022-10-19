@@ -1,5 +1,5 @@
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -26,7 +26,7 @@
     android:viewportHeight="24">
 
     <path
-        android:fillColor="@color/red_500"
+        android:fillColor="@color/m3red_50"
         android:pathData="M15.73,3 H8.27 L3,8.27 v7.46 L8.27,21 h7.46 L21,15.73 V8.27 L15.73,3z" />
     <!--suppress LongLine -->
     <path

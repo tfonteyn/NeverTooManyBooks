@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -23,60 +23,9 @@
     <color name="black">#ff000000</color>
     <color name="white">#ffffffff</color>
 
-    <!-- M3 defaults
+    <!-- Material Design 3:
          https://m3.material.io/libraries/mdc-android/color-theming
     -->
-    <color name="m3_light_error">#ffb3261e</color>
-    <color name="m3_light_on_error">@color/white</color>
-    <color name="m3_light_error_container">#fff9dedc</color>
-    <color name="m3_light_on_error_container">#ff410e0b</color>
-    <color name="m3_light_outline">@color/m3grey_600</color>
-    <color name="m3_light_background">@color/m3grey_50</color>
-    <color name="m3_light_on_background">@color/m3grey_900</color>
-    <color name="m3_light_surface">@color/m3grey_50</color>
-    <color name="m3_light_on_surface">@color/m3grey_900</color>
-    <color name="m3_light_surface_variant">@color/m3grey_200</color>
-    <color name="m3_light_on_surface_variant">@color/m3grey_700</color>
-    <color name="m3_light_surface_inverse">@color/m3grey_800</color>
-    <color name="m3_light_on_surface_inverse">@color/m3grey_100</color>
-
-    <color name="m3_dark_error">#fff2b8b5</color>
-    <color name="m3_dark_on_error">#ff601410</color>
-    <color name="m3_dark_error_container">#ff8c1d18</color>
-    <color name="m3_dark_on_error_container">#fff2b8b5</color>
-    <color name="m3_dark_outline">@color/m3grey_500</color>
-    <color name="m3_dark_background">@color/m3grey_900</color>
-    <color name="m3_dark_on_background">@color/m3grey_300</color>
-    <color name="m3_dark_surface">@color/m3grey_900</color>
-    <color name="m3_dark_on_surface">@color/m3grey_300</color>
-    <color name="m3_dark_surface_variant">@color/m3grey_700</color>
-    <color name="m3_dark_on_surface_variant">@color/m3grey_400</color>
-    <color name="m3_dark_surface_inverse">@color/m3grey_300</color>
-    <color name="m3_dark_on_surface_inverse">@color/m3grey_800</color>
-
-    <!-- the M3 default greys retrofitted to use M2 color numbers 50..900 for ease of transitioning -->
-    <color name="m3grey_50">#fffffbfe</color>
-    <color name="m3grey_100">#fff4eff4</color>
-    <color name="m3grey_200">#ffe7e0ec</color>
-    <color name="m3grey_300">#ffe6e1e5</color>
-    <color name="m3grey_400">#ffcac4d0</color>
-    <color name="m3grey_500">#ff938f99</color>
-    <color name="m3grey_600">#ff79747e</color>
-    <color name="m3grey_700">#ff49454f</color>
-    <color name="m3grey_800">#ff313033</color>
-    <color name="m3grey_900">#ff1c1b1f</color>
-
-    <!--    <color name="m3blue_grey_50">#fff1f0f5</color>-->
-    <!--    <color name="m3blue_grey_100">#ffced2db</color>-->
-    <!--    <color name="m3blue_grey_200">#ffa9b0c3</color>-->
-    <!--    <color name="m3blue_grey_300">#ff96a5b3</color>-->
-    <!--    <color name="m3blue_grey_400">#ff8597af</color>-->
-    <!--    <color name="m3blue_grey_500">#ff556e86</color>-->
-    <!--    <color name="m3blue_grey_600">#ff586d83</color>-->
-    <!--    <color name="m3blue_grey_700">#ff2d3e52</color>-->
-    <!--    <color name="m3blue_grey_800">#ff263540</color>-->
-    <!--    <color name="m3blue_grey_900">#ff212c36</color>-->
-
     <!-- Material Design 2:
          http://www.google.com/design/spec/style/color.html#color-color-palette
      -->
@@ -97,6 +46,18 @@
     <color name="red_a400">#FF1744</color>
     <color name="red_a700">#D50000</color>
     <!-- Red -->
+
+    <color name="m3red_10">#B71C1C</color>
+    <color name="m3red_20">#C62828</color>
+    <color name="m3red_30">#D32F2F</color>
+    <color name="m3red_40">#E53935</color>
+    <color name="m3red_50">#F44336</color>
+    <color name="m3red_60">#EF5350</color>
+    <color name="m3red_70">#E57373</color>
+    <color name="m3red_80">#EF9A9A</color>
+    <color name="m3red_90">#FFCDD2</color>
+    <color name="m3red_95">#FFDDDF</color>
+    <color name="m3red_99">#FFEBEE</color>
 
     <!-- Pink -->
     <color name="pink_50">#FCE4EC</color>
@@ -233,6 +194,18 @@
     <color name="teal_a400">#1DE9B6</color>
     <color name="teal_a700">#00BFA5</color>
     <!-- Teal -->
+
+    <color name="m3teal_10">#004D40</color>
+    <color name="m3teal_20">#00695C</color>
+    <color name="m3teal_30">#00796B</color>
+    <color name="m3teal_40">#00897B</color>
+    <color name="m3teal_50">#009688</color>
+    <color name="m3teal_60">#26A69A</color>
+    <color name="m3teal_70">#4DB6AC</color>
+    <color name="m3teal_80">#80CBC4</color>
+    <color name="m3teal_90">#B2DFDB</color>
+    <color name="m3teal_95">#C2EFEB</color>
+    <color name="m3teal_99">#E0F2F1</color>
 
     <!-- Green -->
     <color name="green_50">#E8F5E9</color>
@@ -379,6 +352,18 @@
     <color name="grey_900">#212121</color>
     <!-- Grey -->
 
+    <color name="m3grey_10">#ff1c1b1f</color>
+    <color name="m3grey_20">#ff313033</color>
+    <color name="m3grey_30">#ff49454f</color>
+    <color name="m3grey_40">#ff79747e</color>
+    <color name="m3grey_50">#ff938f99</color>
+    <color name="m3grey_60">#ffcac4d0</color>
+    <color name="m3grey_70">#ffe6e1e5</color>
+    <color name="m3grey_80">#ffe7e0ec</color>
+    <color name="m3grey_90">#fff0e7f0</color>
+    <color name="m3grey_95">#fff4eff4</color>
+    <color name="m3grey_99">#fffffbfe</color>
+
     <!-- Blue Grey -->
     <color name="blue_grey_50">#ECEFF1</color>
     <color name="blue_grey_100">#CFD8DC</color>
@@ -392,5 +377,15 @@
     <color name="blue_grey_900">#263238</color>
     <!-- Blue Grey -->
 
-
+    <color name="m3blue_grey_10">#ff212c36</color>
+    <color name="m3blue_grey_20">#ff263540</color>
+    <color name="m3blue_grey_30">#ff2d3e52</color>
+    <color name="m3blue_grey_40">#ff586d83</color>
+    <color name="m3blue_grey_50">#ff556e86</color>
+    <color name="m3blue_grey_60">#ff8597af</color>
+    <color name="m3blue_grey_70">#ff96a5b3</color>
+    <color name="m3blue_grey_80">#ffa9b0c3</color>
+    <color name="m3blue_grey_90">#ffced2db</color>
+    <color name="m3blue_grey_95">#ffdee2eb</color>
+    <color name="m3blue_grey_99">#fff1f0f5</color>
 </resources>
