@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -34,7 +34,9 @@
         android:layout_marginStart="8dp"
         android:contentDescription="@string/app_name"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:src="@drawable/ic_nevertoomanybooks_about"
+        android:scaleX="2"
+        android:scaleY="2"
+        android:src="@drawable/ic_launcher_foreground"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
