@@ -1015,7 +1015,7 @@
     <string name="btn_show_toc_long">Show Table Of Content</string>
 
     <!-- generic response button texts -->
-    <string name="btn_disable_message">Disable Message</string>
+    <string name="btn_disable_message">Disable message</string>
 
     <string name="btn_this_book">This book only</string>
     <string name="btn_all_books">All books</string>
@@ -1558,16 +1558,16 @@
     <string name="X_btn_customize">Customize…</string>
     <string name="X_btn_do_not_show_again">Do not show again</string>
     <!-- when warned you have unsaved edits -->
-    <string name="X_btn_continue_edit">Continue Editing</string>
+    <string name="X_btn_continue_edit">Continue editing</string>
 
     <string name="X_lbl_select_style">Select Style</string>
 
-    <string name="X_lbl_delete_book">Delete Book</string>
+    <string name="X_lbl_delete_book">Delete book</string>
 
-    <string name="X_lbl_clear_search_filters">Clear Filters</string>
+    <string name="X_lbl_clear_search_filters">Clear filters</string>
 
     <string name="X_lbl_preferred_styles">Preferred styles</string>
-    <string name="X_lbl_select_fields_to_update">Select Fields to Update</string>
+    <string name="X_lbl_select_fields_to_update">Select fields to update</string>
 
     <string name="X_error_not_available">%1$s is not available.</string>
     <string name="X_error_file_must_contain_column">File must contain column named “%1$s”</string>
