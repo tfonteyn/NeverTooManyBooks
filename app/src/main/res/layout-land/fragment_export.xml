@@ -41,7 +41,7 @@
             />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/middle"
+            android:id="@+id/col0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -112,7 +112,7 @@
             android:layout_marginStart="@dimen/field_margin_start"
             android:layout_marginTop="@dimen/field_margin_top"
             android:hint="@string/lbl_archive_format"
-            app:layout_constraintStart_toEndOf="@id/middle"
+            app:layout_constraintStart_toEndOf="@id/col0"
             app:layout_constraintTop_toBottomOf="@id/header"
             >
 
@@ -132,6 +132,7 @@
             style="@style/Text.Body"
             android:layout_width="0dp"
             android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginEnd="@dimen/field_margin_end"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/lbl_archive_format"
             app:layout_constraintTop_toBottomOf="@id/lbl_archive_format"
@@ -144,6 +145,7 @@
             style="@style/Text.Body"
             android:layout_width="0dp"
             android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginEnd="@dimen/field_margin_end"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/lbl_archive_format"
             app:layout_constraintTop_toBottomOf="@id/archive_format_info"
@@ -151,5 +153,18 @@
             tools:text="@string/lbl_archive_is_export_only"
             />
 
+        <Button
+            android:id="@+id/btnStart"
+            style="@style/Button.Action.Submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_margin_top"
+            android:text="@string/btn_start_export"
+            app:icon="@drawable/ic_baseline_start_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.9"
+            app:layout_constraintStart_toEndOf="@id/col0"
+            app:layout_constraintTop_toBottomOf="@id/cbx_covers"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

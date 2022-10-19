@@ -24,17 +24,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -104,9 +98,7 @@ public class SyncWriterFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Toolbar toolbar = getToolbar();
-        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
-        toolbar.setTitle(vm.getSyncWriterHelper().getSyncServer().getLabelResId());
+        getToolbar().setTitle(vm.getSyncWriterHelper().getSyncServer().getLabelResId());
 
         vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         vm.onWriteDataCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
@@ -127,6 +119,8 @@ public class SyncWriterFragment
 
         vb.cbxDeleteRemovedBooks.setOnCheckedChangeListener((v, isChecked) -> vm
                 .getSyncWriterHelper().setDeleteLocalBooks(isChecked));
+
+        vb.btnStart.setOnClickListener(v -> startWriting());
 
         if (!vm.isRunning()) {
             // The task is NOT yet running.
@@ -160,7 +154,7 @@ public class SyncWriterFragment
     }
 
     /**
-     * Export Step 1b: Show the full options screen to the user.
+     * Show the full options screen to the user.
      */
     private void showOptions() {
         final SyncWriterHelper helper = vm.getSyncWriterHelper();
@@ -173,6 +167,17 @@ public class SyncWriterFragment
         vb.rbExportNewAndUpdated.setChecked(incremental);
 
         vb.getRoot().setVisibility(View.VISIBLE);
+    }
+
+    private void startWriting() {
+        if (vm.isReadyToGo()) {
+            vm.startExport();
+        } else {
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), R.string.warning_nothing_selected,
+                          Snackbar.LENGTH_SHORT)
+                    .show();
+        }
     }
 
     private void onExportCancelled(
@@ -291,37 +296,6 @@ public class SyncWriterFragment
             //noinspection ConstantConditions
             progressDelegate.dismiss(getActivity().getWindow());
             progressDelegate = null;
-        }
-    }
-
-    private class ToolbarMenuProvider
-            implements MenuProvider {
-
-        @Override
-        public void onCreateMenu(@NonNull final Menu menu,
-                                 @NonNull final MenuInflater menuInflater) {
-            menuInflater.inflate(R.menu.toolbar_action_start, menu);
-
-            final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
-            menuItem.setEnabled(vm.isReadyToGo());
-            //noinspection ConstantConditions
-            final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
-            button.setOnClickListener(v -> onMenuItemSelected(menuItem));
-        }
-
-        @Override
-        public void onPrepareMenu(@NonNull final Menu menu) {
-            menu.findItem(R.id.MENU_ACTION_CONFIRM)
-                .setEnabled(vm.isReadyToGo());
-        }
-
-        @Override
-        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-                vm.startExport();
-                return true;
-            }
-            return false;
         }
     }
 }

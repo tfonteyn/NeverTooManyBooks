@@ -25,20 +25,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -151,9 +145,7 @@ public class ImportFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Toolbar toolbar = getToolbar();
-        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
-        toolbar.setTitle(R.string.lbl_import);
+        getToolbar().setTitle(R.string.lbl_import);
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
@@ -200,6 +192,8 @@ public class ImportFragment
                 helper.setUpdateOption(DataReader.Updates.Overwrite);
             }
         });
+
+        vb.btnStart.setOnClickListener(v -> startImport());
 
         if (!vm.isRunning()) {
             if (vm.hasUri()) {
@@ -395,6 +389,25 @@ public class ImportFragment
         }
     }
 
+    private void startImport() {
+        if (vm.isReadyToGo()) {
+            if (progressDelegate == null) {
+                progressDelegate = new ProgressDelegate(getProgressFrame())
+                        .setTitle(R.string.lbl_importing)
+                        .setPreventSleep(true)
+                        .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_IMPORT));
+            }
+            //noinspection ConstantConditions
+            progressDelegate.show(() -> getActivity().getWindow());
+            vm.readData();
+        } else {
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), R.string.warning_nothing_selected,
+                          Snackbar.LENGTH_SHORT)
+                    .show();
+        }
+    }
+
     private void onImportNotSupported(@NonNull final CharSequence msg) {
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
@@ -578,45 +591,6 @@ public class ImportFragment
             //noinspection ConstantConditions
             progressDelegate.dismiss(getActivity().getWindow());
             progressDelegate = null;
-        }
-    }
-
-    private class ToolbarMenuProvider
-            implements MenuProvider {
-
-        @Override
-        public void onCreateMenu(@NonNull final Menu menu,
-                                 @NonNull final MenuInflater menuInflater) {
-            menuInflater.inflate(R.menu.toolbar_action_start, menu);
-
-            final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
-            //noinspection ConstantConditions
-            final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
-            button.setOnClickListener(v -> onMenuItemSelected(menuItem));
-        }
-
-        @Override
-        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-                if (vm.isReadyToGo()) {
-                    if (progressDelegate == null) {
-                        progressDelegate = new ProgressDelegate(getProgressFrame())
-                                .setTitle(R.string.lbl_importing)
-                                .setPreventSleep(true)
-                                .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_IMPORT));
-                    }
-                    //noinspection ConstantConditions
-                    progressDelegate.show(() -> getActivity().getWindow());
-                    vm.readData();
-                } else {
-                    //noinspection ConstantConditions
-                    Snackbar.make(getView(), R.string.warning_nothing_selected,
-                                  Snackbar.LENGTH_SHORT)
-                            .show();
-                }
-                return true;
-            }
-            return false;
         }
     }
 }

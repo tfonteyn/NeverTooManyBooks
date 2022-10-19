@@ -25,20 +25,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.util.Pair;
-import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -116,9 +110,7 @@ public class ExportFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Toolbar toolbar = getToolbar();
-        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
-        toolbar.setTitle(R.string.menu_backup_and_export);
+        getToolbar().setTitle(R.string.menu_backup_and_export);
 
         vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         vm.onWriteDataCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
@@ -139,6 +131,8 @@ public class ExportFragment
                 (p, v, position, id) -> updateFormatSelection(vm.getEncoding(position)));
 
         vb.infExportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
+
+        vb.btnStart.setOnClickListener(v -> startExport());
 
         if (!vm.isRunning()) {
             // The task is NOT yet running.
@@ -176,7 +170,7 @@ public class ExportFragment
     }
 
     /**
-     * Export Step 1b: Show the full options screen to the user.
+     * Show the full options screen to the user.
      */
     private void showOptions() {
         final ExportHelper helper = vm.getExportHelper();
@@ -289,17 +283,28 @@ public class ExportFragment
         }
     }
 
+    private void startExport() {
+        if (vm.isReadyToGo()) {
+            exportPickUri();
+        } else {
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), R.string.warning_nothing_selected,
+                          Snackbar.LENGTH_SHORT)
+                    .show();
+        }
+    }
+
     /**
-     * Export Step 2: prompt the user for a uri to export to.
+     * Prompt the user for a uri to export to.
      */
     private void exportPickUri() {
         // Create the proposed name for the archive. The user can change it.
-        final String defName = "ntmb-" + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        final String fileName = "ntmb-" + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
         final String mimeType = FileUtils.getMimeTypeFromExtension(
                 vm.getExportHelper().getEncoding().getFileExt());
 
         createDocumentLauncher.launch(new GetContentUriForWritingContract
-                .Input(mimeType, defName));
+                .Input(mimeType, fileName));
     }
 
     private void onExportCancelled(
@@ -504,37 +509,6 @@ public class ExportFragment
             //noinspection ConstantConditions
             progressDelegate.dismiss(getActivity().getWindow());
             progressDelegate = null;
-        }
-    }
-
-    private class ToolbarMenuProvider
-            implements MenuProvider {
-
-        @Override
-        public void onCreateMenu(@NonNull final Menu menu,
-                                 @NonNull final MenuInflater menuInflater) {
-            menuInflater.inflate(R.menu.toolbar_action_start, menu);
-
-            final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
-            //noinspection ConstantConditions
-            final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
-            button.setOnClickListener(v -> onMenuItemSelected(menuItem));
-        }
-
-        @Override
-        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-                if (vm.isReadyToGo()) {
-                    exportPickUri();
-                } else {
-                    //noinspection ConstantConditions
-                    Snackbar.make(getView(), R.string.warning_nothing_selected,
-                                  Snackbar.LENGTH_SHORT)
-                            .show();
-                }
-                return true;
-            }
-            return false;
         }
     }
 }

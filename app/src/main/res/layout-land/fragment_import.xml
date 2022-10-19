@@ -32,6 +32,22 @@
         style="@style/TopCentered.Wide"
         >
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/col0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.33"
+            />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/col1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.66"
+            />
+
         <!--suppress LongLine -->
         <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
             android:id="@+id/rb_books_group"
@@ -45,7 +61,7 @@
             android:id="@+id/header"
             style="@style/Text.Header"
             android:text="@string/lbl_import_options"
-            app:layout_constraintEnd_toStartOf="@id/middle"
+            app:layout_constraintEnd_toStartOf="@id/col0"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -71,18 +87,10 @@
             android:textAppearance="?attr/textAppearanceBodyLarge"
             android:textIsSelectable="true"
             app:layout_constraintStart_toStartOf="@id/archive_name"
-            app:layout_constraintEnd_toStartOf="@id/middle"
+            app:layout_constraintEnd_toStartOf="@id/col0"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintTop_toBottomOf="@id/archive_name"
             tools:text="May 26, 2022, 11:37 AM\nBooks: 123\nCovers: 456"
-            />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/middle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.45"
             />
 
         <CheckBox
@@ -92,8 +100,8 @@
             android:layout_marginStart="@dimen/field_margin_start"
             android:checked="true"
             android:text="@string/lbl_books"
-            app:layout_constraintStart_toEndOf="@id/middle"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/col0"
+            app:layout_constraintTop_toBottomOf="@id/header"
             />
 
         <RadioButton
@@ -155,10 +163,12 @@
             android:id="@+id/cbx_covers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+
             android:checked="true"
             android:text="@string/lbl_covers_long"
-            app:layout_constraintStart_toStartOf="@id/cbx_books"
-            app:layout_constraintTop_toBottomOf="@id/rb_import_all"
+            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintTop_toBottomOf="@id/header"
             />
 
         <CheckBox
@@ -166,8 +176,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
+            android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/lbl_settings"
-            app:layout_constraintStart_toStartOf="@id/cbx_books"
+            app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/cbx_covers"
             />
 
@@ -175,10 +186,25 @@
             android:id="@+id/cbx_styles"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
             android:checked="true"
             android:text="@string/lbl_styles"
-            app:layout_constraintStart_toStartOf="@id/cbx_books"
+            app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/cbx_prefs"
+            />
+
+        <Button
+            android:id="@+id/btnStart"
+            style="@style/Button.Action.Submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_margin_top"
+            android:text="@string/btn_start_import"
+            app:icon="@drawable/ic_baseline_start_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.9"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rb_import_all"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

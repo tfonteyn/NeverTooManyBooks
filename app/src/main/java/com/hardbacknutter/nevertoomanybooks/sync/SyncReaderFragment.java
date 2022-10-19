@@ -24,19 +24,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -132,9 +126,7 @@ public class SyncReaderFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Toolbar toolbar = getToolbar();
-        toolbar.addMenuProvider(new ToolbarMenuProvider(), getViewLifecycleOwner());
-        toolbar.setTitle(vm.getDataReaderHelper().getSyncServer().getLabelResId());
+        getToolbar().setTitle(vm.getDataReaderHelper().getSyncServer().getLabelResId());
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
@@ -181,6 +173,8 @@ public class SyncReaderFragment
         vb.syncDate.setOnClickListener(v -> syncDatePicker.launch(
                 vm.getDataReaderHelper().getSyncDate(), this::onSyncDateSet));
 
+        vb.btnStart.setOnClickListener(v -> startReading());
+
         if (!vm.isRunning()) {
             showOptions();
         }
@@ -223,6 +217,25 @@ public class SyncReaderFragment
         updateSyncDateVisibility();
 
         vb.getRoot().setVisibility(View.VISIBLE);
+    }
+
+    private void startReading() {
+        if (vm.isReadyToGo()) {
+            if (progressDelegate == null) {
+                progressDelegate = new ProgressDelegate(getProgressFrame())
+                        .setTitle(R.string.lbl_importing)
+                        .setPreventSleep(true)
+                        .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_IMPORT));
+            }
+            //noinspection ConstantConditions
+            progressDelegate.show(() -> getActivity().getWindow());
+            vm.readData();
+        } else {
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), R.string.warning_nothing_selected,
+                          Snackbar.LENGTH_SHORT)
+                    .show();
+        }
     }
 
     private void readMetaData() {
@@ -495,44 +508,4 @@ public class SyncReaderFragment
             progressDelegate = null;
         }
     }
-
-    private class ToolbarMenuProvider
-            implements MenuProvider {
-
-        @Override
-        public void onCreateMenu(@NonNull final Menu menu,
-                                 @NonNull final MenuInflater menuInflater) {
-            menuInflater.inflate(R.menu.toolbar_action_start, menu);
-
-            final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
-            //noinspection ConstantConditions
-            final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
-            button.setOnClickListener(v -> onMenuItemSelected(menuItem));
-        }
-
-        @Override
-        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-                if (vm.isReadyToGo()) {
-                    if (progressDelegate == null) {
-                        progressDelegate = new ProgressDelegate(getProgressFrame())
-                                .setTitle(R.string.lbl_importing)
-                                .setPreventSleep(true)
-                                .setOnCancelListener(v -> vm.cancelTask(R.id.TASK_ID_IMPORT));
-                    }
-                    //noinspection ConstantConditions
-                    progressDelegate.show(() -> getActivity().getWindow());
-                    vm.readData();
-                } else {
-                    //noinspection ConstantConditions
-                    Snackbar.make(getView(), R.string.warning_nothing_selected,
-                                  Snackbar.LENGTH_SHORT)
-                            .show();
-                }
-                return true;
-            }
-            return false;
-        }
-    }
-
 }
