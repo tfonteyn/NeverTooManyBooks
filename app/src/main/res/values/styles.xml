@@ -174,14 +174,12 @@
         <item name="android:layout_marginEnd">8dp</item>
     </style>
 
-    <!-- The confirmation button placed in toolbars. -->
-    <style name="Button.Action.Toolbar" parent="Widget.Material3.Button.TextButton.Dialog">
+    <!-- The confirmation button placed in toolbars. (parent is '?attr/materialIconButtonFilledTonalStyle). -->
+    <style name="Button.Action.Toolbar" parent="@style/Widget.Material3.Button.IconButton.Filled.Tonal">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">?android:attr/textColorPrimary</item>
-        <item name="android:backgroundTint">?attr/colorButtonNormal</item>
-        <item name="android:insetLeft">4dp</item>
-        <item name="android:insetRight">4dp</item>
+        <item name="iconTint">?attr/colorOnPrimaryContainer</item>
     </style>
 
     <!-- The "show toc" button. -->

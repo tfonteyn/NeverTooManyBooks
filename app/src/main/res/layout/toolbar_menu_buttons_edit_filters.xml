@@ -19,8 +19,27 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- Generic 10.1" (800 x 1280) - 160dpi - sw800 -->
-<resources>
-    <dimen name="floating_dialog_generic_height">600dp</dimen>
-    <dimen name="floating_dialogs_cover_browser_width">700dp</dimen>
-</resources>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    tools:viewBindingIgnore="true"
+    >
+
+    <Button
+        android:id="@+id/btn_action_2"
+        style="@style/Button.Action.Toolbar"
+        android:contentDescription="@string/action_clear"
+        android:text="@string/action_clear"
+        />
+
+    <Button
+        android:id="@+id/btn_action"
+        style="@style/Button.Action.Toolbar"
+        android:contentDescription="@string/action_add"
+        app:icon="@drawable/ic_baseline_add_24"
+        />
+</LinearLayout>

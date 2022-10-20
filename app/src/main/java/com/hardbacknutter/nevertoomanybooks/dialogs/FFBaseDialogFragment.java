@@ -69,15 +69,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
  * with an icon-Button using the outline style.
  * <p>
  * Only alternative is to use an icon with outline builtin... which makes the actual icon to small.
- * <p>
- * 2020-10-10: experiments done to reverse fullscreen/floating coding produced MORE problems...
- * In onViewCreated set MATCH_PARENT when running fullscreen, and do nothing when floating.
- * Set the width of the CoordinatorLayout to 360dp
- * -> the action view is set to invisible, and the AppBarLayout gets shorter,
- * -> leaving a white space on the right
- * Set the width of the CoordinatorLayout to 360dp AND the AppBarLayout to 360dp
- * -> a small white space is seen on the right of the AppBarLayout
- * -> layout inspector shows that AppBarLayout=360dp.. BUT CoordinatorLayout==367dp  ???
  */
 public abstract class FFBaseDialogFragment
         extends DialogFragment {
@@ -244,14 +235,38 @@ public abstract class FFBaseDialogFragment
                 if (menuItem != null) {
                     // Always hide the menu item
                     menuItem.setVisible(false);
-                    // the ok-button is a simple button on the button panel.
-                    // We copy the title/listener from the toolbar confirm menuItem
+
+                    // The ok-button is a simple button on the button panel.
+                    // The ok-button is ignored, and the toolbar button is passed to
+                    // the onToolbarMenuItemClick method.
                     final Button okButton = buttonPanel.findViewById(R.id.btn_ok);
                     if (okButton != null) {
                         okButton.setVisibility(View.VISIBLE);
-                        okButton.setText(menuItem.getTitle());
-                        okButton.setOnClickListener(
-                                v -> onToolbarMenuItemClick(menuItem, (Button) v));
+
+                        final View actionView = menuItem.getActionView();
+                        if (actionView instanceof Button) {
+                            if (actionView.getId() == R.id.btn_action) {
+                                hookupButton(okButton, menuItem, (Button) actionView);
+                            }
+                        } else if (actionView instanceof ViewGroup) {
+                            final ViewGroup av = (ViewGroup) actionView;
+                            for (int c = 0; c < av.getChildCount(); c++) {
+                                final View child = av.getChildAt(c);
+                                if (child instanceof Button) {
+                                    if (child.getId() == R.id.btn_action) {
+                                        hookupButton(okButton, menuItem, (Button) child);
+
+                                    } else if (child.getId() == R.id.btn_action_2) {
+                                        final Button nBtn =
+                                                buttonPanel.findViewById(R.id.btn_neutral);
+                                        hookupButton(nBtn, menuItem, (Button) child);
+
+                                    } else {
+                                        throw new IllegalStateException("Max 2 buttons");
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -284,6 +299,29 @@ public abstract class FFBaseDialogFragment
                 lp.setMargins(0, 0, 0, marginBottom);
             }
         }
+    }
+
+    /**
+     * Use the ContentDescription of the actionView as the text for the button.
+     * Set the button click listener to match the menuItem click.
+     *
+     * @param button       on the dialog's bottom button bar to hookup
+     * @param menuItem     to pass to the listener
+     * @param actionButton from the toolbar; to use the content-description from,
+     *                     and to pass to the listener
+     */
+    private void hookupButton(@NonNull final Button button,
+                              @NonNull final MenuItem menuItem,
+                              @NonNull final Button actionButton) {
+        // We copy the title/listener from the toolbar button
+        final CharSequence text = actionButton.getContentDescription();
+        if (text == null) {
+            throw new IllegalStateException("Missing ContentDescription");
+        }
+
+        button.setVisibility(View.VISIBLE);
+        button.setText(text);
+        button.setOnClickListener(v -> onToolbarMenuItemClick(menuItem, actionButton));
     }
 
     /**

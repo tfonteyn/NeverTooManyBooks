@@ -28,10 +28,12 @@
     Also: MENU_ACTION_CONFIRM must be used to have "FFBaseDialogFragment" handle some mapping automatically.
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools">
     <item
         android:id="@id/MENU_ACTION_CONFIRM"
-        android:title="@string/action_add"
+        android:title="x"
         app:actionLayout="@layout/toolbar_menu_buttons_add"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        tools:ignore="HardcodedText" />
 </menu>

@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PStringEqualityFilt
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogBookshelfFiltersBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfFiltersBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterBitmaskBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterBooleanBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterEntityListBinding;
@@ -83,7 +83,7 @@ public class BookshelfFiltersDialogFragment
     private FilterListAdapter listAdapter;
     /** View Binding. */
     @SuppressWarnings("FieldCanBeLocal")
-    private DialogBookshelfFiltersBinding vb;
+    private DialogEditBookshelfFiltersBinding vb;
     /** FragmentResultListener request key to use for our response. */
     private String requestKey;
     private boolean modified;
@@ -95,7 +95,9 @@ public class BookshelfFiltersDialogFragment
      * No-arg constructor for OS use.
      */
     public BookshelfFiltersDialogFragment() {
-        super(R.layout.dialog_bookshelf_filters);
+        super(R.layout.dialog_edit_bookshelf_filters);
+        setFloatingDialogMarginBottom(0);
+        setFloatingDialogHeight(R.dimen.floating_dialog_generic_height);
     }
 
     @Override
@@ -115,7 +117,7 @@ public class BookshelfFiltersDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        vb = DialogBookshelfFiltersBinding.bind(view);
+        vb = DialogEditBookshelfFiltersBinding.bind(view);
 
         vb.toolbar.setSubtitle(bookshelf.getName());
 
@@ -145,9 +147,19 @@ public class BookshelfFiltersDialogFragment
     protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item,
                                              @Nullable final Button button) {
         final int itemId = item.getItemId();
-        if (itemId == R.id.MENU_ACTION_CONFIRM) {
-            onAdd();
-            return true;
+        if (itemId == R.id.MENU_ACTION_CONFIRM && button != null) {
+            final int buttonId = button.getId();
+            if (buttonId == R.id.btn_action_2) {
+                modified = true;
+                filterList.clear();
+                saveChanges();
+                dismiss();
+                return true;
+
+            } else if (buttonId == R.id.btn_action) {
+                onAdd();
+                return true;
+            }
         }
         return false;
     }

@@ -76,7 +76,7 @@ public class StylePickerDialogFragment
     public StylePickerDialogFragment() {
         super(R.layout.dialog_styles_menu);
         setFloatingDialogMarginBottom(0);
-        setFloatingDialogHeight(R.dimen.floating_dialogs_styles_picker_height);
+        setFloatingDialogHeight(R.dimen.floating_dialog_generic_height);
     }
 
 

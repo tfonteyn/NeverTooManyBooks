@@ -198,8 +198,10 @@ public class EditBookAuthorListDialogFragment
     @Override
     protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item,
                                              @Nullable final Button button) {
-        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-            onAdd(button != null && button.getId() == R.id.btn_add_details);
+        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM && button != null) {
+            // R.id.btn_action: no extra details
+            // R.id.btn_action_2: with details
+            onAdd(button.getId() == R.id.btn_action_2);
             return true;
         }
         return false;

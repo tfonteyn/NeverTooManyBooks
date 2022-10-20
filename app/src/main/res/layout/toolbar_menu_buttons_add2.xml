@@ -30,22 +30,16 @@
     >
 
     <Button
-        android:id="@+id/btn_add_details"
-        style="?attr/materialIconButtonOutlinedStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/btn_action_2"
+        style="@style/Button.Action.Toolbar"
         android:contentDescription="@string/action_add_with_details"
         app:icon="@drawable/ic_baseline_add_card_24"
-        app:iconTint="?attr/colorOnPrimaryContainer"
         />
 
     <Button
-        android:id="@+id/btn_confirm"
-        style="?attr/materialIconButtonOutlinedStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/btn_action"
+        style="@style/Button.Action.Toolbar"
         android:contentDescription="@string/action_add"
         app:icon="@drawable/ic_baseline_add_24"
-        app:iconTint="?attr/colorOnPrimaryContainer"
         />
 </LinearLayout>

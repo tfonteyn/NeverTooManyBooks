@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -22,9 +22,9 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -36,7 +36,7 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             style="@style/Toolbar.Dialog"
-            app:menu="@menu/toolbar_action_add"
+            app:menu="@menu/toolbar_edit_filters"
             app:navigationIcon="?attr/homeAsUpIndicator"
             app:title="@string/pg_filters"
             />
@@ -46,8 +46,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/body_frame"
         style="@style/Dialog.Frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         >
 
         <androidx.recyclerview.widget.RecyclerView

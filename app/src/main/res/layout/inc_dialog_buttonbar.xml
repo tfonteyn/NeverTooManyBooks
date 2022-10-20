@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -33,6 +33,19 @@
     android:paddingBottom="4dp"
     tools:viewBindingIgnore="true"
     >
+
+    <Button
+        android:id="@+id/btn_neutral"
+        style="?attr/buttonBarNeutralButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/floating_dialogs_button_height"
+        android:text="@android:string/untitled"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible"
+        />
+
     <Button
         android:id="@+id/btn_cancel"
         style="?attr/buttonBarNegativeButtonStyle"
