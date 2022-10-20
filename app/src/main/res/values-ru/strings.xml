@@ -29,7 +29,7 @@
     <string name="acra_resDialogText">&APP_NAME; завершился с ошибкой. Пожалуйста, если хотите, опишите что-нибудь, что, по вашему мнению, могло быть связано с этим. Нажмите «ОК», чтобы отправить по почте. Вы увидите e-mail перед отправлением.</string>
     <string name="X_acra_resToastText">&APP_NAME;" завершилось с ошибкой. Пожалуйста, помогите нам сделать приложение лучше, отправив эту ошибку."</string>
     <string name="action_add">Добавить</string>
-    <string name="X_action_clear">Очистить</string>
+    <string name="action_clear">Очистить</string>
     <string name="action_create">Создайте</string>
     <string name="action_delete">Удалить</string>
     <string name="action_discard">Отменить</string>
@@ -670,7 +670,7 @@
     <string name="X_info_not_authorized">Не авторизовано</string>
     <string name="X_info_site_authorization_successful">Авторизация %1$s прошла успешно</string>
     <string name="X_lbl_about_sourcecode">Исходный код:</string>
-    <string name="X_lbl_clear_search_filters">Сбросить фильтры</string>
+    <string name="lbl_clear_filters">Сбросить фильтры</string>
     <string name="X_lbl_completed">Завершено</string>
     <string name="X_lbl_cover_long">Эскиз обложки</string>
     <string name="X_lbl_delete_book">Удалить книгу</string>

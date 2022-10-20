@@ -65,7 +65,7 @@
     <string name="btn_learn_more">Další informace</string>
     <string name="btn_this_book">Tato kniha</string>
     <string name="bytes">%.0fB</string>
-    <string name="X_action_clear">Vymazat</string>
+    <string name="action_clear">Vymazat</string>
     <string name="confirm_scope_for_change">Změnili jste:\n „%1$s“\n na\n „%2$s“\n\nJak si přejete aplikovat tuto změnu?\n\nUpozornění: Volba „%3$s“ bude aplikována okamžitě.</string>
     <string name="confirm_delete_book">Tímto kompletně odstraníte knihu „%1$s“ od %2$s.\n\n Určitě chcete pokračovat?</string>
     <string name="confirm_delete_series">Opravdu chcete smazat série „%1$s“?\n\nSamotná kniha nebude smazána.\n\nZvažte prosím úpravu série a změnu názvu série s ohledem na korektnost dat.</string>
@@ -288,7 +288,7 @@
     <string name="menu_author_works_book">Pouze knihy</string>
     <string name="menu_author_works_toc">Pouze tituly obsahu</string>
     <string name="lbl_styles_long">Styly pro seznam knih</string>
-    <string name="X_lbl_clear_search_filters">Vymazat filtry</string>
+    <string name="lbl_clear_filters">Vymazat filtry</string>
     <string name="menu_cover_crop">Oříznout</string>
     <string name="menu_cover_edit">Spusťte editor</string>
     <string name="menu_cover_replace">Nahradit…</string>

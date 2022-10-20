@@ -30,7 +30,7 @@
     <string name="acra_resDialogText">Parece que &APP_NAME; se ha detenido. Si es posible, indique cualquier detalle que usted considere relevante y pulse OK para enviarnos un correo electrónico sobre el problema. Podrá revisar el correo antes de que se envíe.</string>
     <string name="X_acra_resToastText">&APP_NAME; se ha detenido de forma inesperada. Por favor, ayúdenos a mejorar la aplicación reportando este problema.</string>
     <string name="action_add">Añadir</string>
-    <string name="X_action_clear">Borrar</string>
+    <string name="action_clear">Borrar</string>
     <string name="action_create">Crear</string>
     <string name="action_delete">Eliminar</string>
     <string name="action_discard">Descartar</string>
@@ -673,7 +673,7 @@
     <string name="X_info_not_authorized">No Autorizado</string>
     <string name="X_info_site_authorization_successful">Autorización satisfactoria en %1$s</string>
     <string name="X_lbl_about_sourcecode">Código fuente</string>
-    <string name="X_lbl_clear_search_filters">Borrar filtros</string>
+    <string name="lbl_clear_filters">Borrar filtros</string>
     <string name="X_lbl_completed">Completado</string>
     <string name="X_lbl_cover_long">Portada</string>
     <string name="X_lbl_delete_book">Eliminar libro</string>

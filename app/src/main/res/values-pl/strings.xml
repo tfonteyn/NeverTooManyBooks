@@ -29,7 +29,7 @@
     <string name="acra_resDialogText">Vypadá to, že &APP_NAME; havaroval. Pokud je to možné, popište cokoliv, o čem si myslíte, že mohou být relevantní níže, a stiskněte „OK”, abyste nám poslali e-mail o havárii. E-mail se zobrazí před odesláním.</string>
     <string name="X_acra_resToastText">&APP_NAME; niespodziewanie się zawiesił. Pomóż nam ulepszyć aplikację, zgłaszając tę awarię.</string>
     <string name="action_add">Dodaj</string>
-    <string name="X_action_clear">Wyczyść</string>
+    <string name="action_clear">Wyczyść</string>
     <string name="action_create">Stwórz</string>
     <string name="action_delete">Usuń</string>
     <string name="action_discard">Odrzuć</string>
@@ -670,7 +670,7 @@
     <string name="X_info_not_authorized">Nieautoryzowany</string>
     <string name="X_info_site_authorization_successful">Autoryzacja %1$s powiodła się</string>
     <string name="X_lbl_about_sourcecode">Kod źródłowy:</string>
-    <string name="X_lbl_clear_search_filters">Wyczyść filtry</string>
+    <string name="lbl_clear_filters">Wyczyść filtry</string>
     <string name="X_lbl_completed">Zakończony</string>
     <string name="X_lbl_cover_long">Okładka</string>
     <string name="X_lbl_delete_book">Usuń książkę</string>

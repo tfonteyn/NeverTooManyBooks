@@ -936,7 +936,7 @@
     <!-- [VERIFIED] -->
     <string name="action_not_now">Not now</string>
     <!-- [VERIFIED] e.g. clearing a form. -->
-    <string name="X_action_clear">Clear</string>
+    <string name="action_clear">Clear</string>
     <!-- [VERIFIED] -->
     <string name="action_show_all">Show all</string>
     <!-- [VERIFIED] -->
@@ -1564,7 +1564,7 @@
 
     <string name="X_lbl_delete_book">Delete book</string>
 
-    <string name="X_lbl_clear_search_filters">Clear filters</string>
+    <string name="lbl_clear_filters">Clear filters</string>
 
     <string name="X_lbl_preferred_styles">Preferred styles</string>
     <string name="X_lbl_select_fields_to_update">Select fields to update</string>

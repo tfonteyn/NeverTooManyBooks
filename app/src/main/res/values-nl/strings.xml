@@ -27,7 +27,7 @@
     <string name="acra_resDialogText">Het lijkt er op dat &APP_NAME; is gecrasht. Beschrijf indien mogelijk hieronder wat de oorzaak kan zijn en druk op „OK” om ons een e-mail te sturen over deze crash. Je kan het bericht inzien voordat het wordt verzonden.</string>
     <string name="X_acra_resToastText">&APP_NAME; is onverwacht gecrasht. Help ons aub de toepassing beter te maken door deze crash te melden.</string>
     <string name="action_add">Toevoegen</string>
-    <string name="X_action_clear">Wissen</string>
+    <string name="action_clear">Wissen</string>
     <string name="action_create">Creëer</string>
     <string name="action_delete">Verwijderen</string>
     <string name="action_discard">Weggooien</string>
@@ -670,7 +670,7 @@
     <string name="X_info_not_authorized">Niet geautoriseerd</string>
     <string name="X_info_site_authorization_successful">%1$s autorisatie gelukt</string>
     <string name="X_lbl_about_sourcecode">Broncode:</string>
-    <string name="X_lbl_clear_search_filters">Filters verwijderen</string>
+    <string name="lbl_clear_filters">Filters wissen</string>
     <string name="X_lbl_completed">Gereed</string>
     <string name="X_lbl_cover_long">Omslagafbeelding</string>
     <string name="X_lbl_delete_book">Boek verwijderen</string>

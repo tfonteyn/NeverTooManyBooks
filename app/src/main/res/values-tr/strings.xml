@@ -30,7 +30,7 @@
     <string name="acra_resDialogText">Sanırız &APP_NAME; çöktü. Eğer bu çökme ile ilgili olabileceğini düşündüğünüz bir şeyler varsa lütfen “Tamam”a basarak bu çökme hakkında bir e-posta gönderin. Göndermeden önce e-postayı göreceksiniz.</string>
     <string name="X_acra_resToastText">&APP_NAME; bilinmeyen bir nedenle çöktü. Uygulamanın kalitesini iyileştirebilmemiz için lütfen bu çökmeyi rapor edin.</string>
     <string name="action_add">Ekle</string>
-    <string name="X_action_clear">Temizle</string>
+    <string name="action_clear">Temizle</string>
     <string name="action_create">Oluşturmak</string>
     <string name="action_delete">Sil</string>
     <string name="action_discard">Sil</string>
@@ -671,7 +671,7 @@
     <string name="X_info_not_authorized">Yetkilendirilmemiş</string>
     <string name="X_info_site_authorization_successful">%1$s yetkilendirmesi başarılı</string>
     <string name="X_lbl_about_sourcecode">Kaynak kodu</string>
-    <string name="X_lbl_clear_search_filters">Filtreleri Temizle</string>
+    <string name="lbl_clear_filters">Filtreleri Temizle</string>
     <string name="X_lbl_completed">Tamamlandı</string>
     <string name="X_lbl_cover_long">Kitap kapağı</string>
     <string name="X_lbl_delete_book">Kitap sil</string>

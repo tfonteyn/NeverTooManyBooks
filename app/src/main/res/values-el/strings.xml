@@ -29,7 +29,7 @@
     <string name="acra_resDialogText">Φαίνεται πως το &APP_NAME; σταμάτησε να λειτουργεί. Εαν είναι δυνατό περιγράψτε παρακάτω ό,τι πιστεύετε πως είναι σχετικό και πατήστε ΟΚ για μας στείλετε email με πληροφορίες για την βλάβη. Θα δείτε το e-mail πρωτού αποσταλεί.</string>
     <string name="X_acra_resToastText">Η λειτουργία του &APP_NAME; διακόπηκε. Παρακαλούμε βοηθήστε μας να βελτιώσουμε την εφαρμογή στέλνοντας την αναφορά της διακοπής.</string>
     <string name="action_add">Προσθήκη</string>
-    <string name="X_action_clear">Διαγραφή</string>
+    <string name="action_clear">Διαγραφή</string>
     <string name="action_create">Δημιουργώ</string>
     <string name="action_delete">Διαγραφή</string>
     <string name="action_discard">Απόρριψη</string>
@@ -672,7 +672,7 @@
     <string name="X_info_not_authorized">Χωρίς άδεια</string>
     <string name="X_info_site_authorization_successful">Επιτυχής η αδειοδότηση %1$s</string>
     <string name="X_lbl_about_sourcecode">Πηγαίος Κώδικας:</string>
-    <string name="X_lbl_clear_search_filters">Διαγραφή φίλτρων</string>
+    <string name="lbl_clear_filters">Διαγραφή φίλτρων</string>
     <string name="X_lbl_completed">Ολοκληρώθηκαν</string>
     <string name="X_lbl_cover_long">εξώφυλλο βιβλίου</string>
     <string name="X_lbl_delete_book">Διαγραφή Βιβλίου</string>

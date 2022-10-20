@@ -29,7 +29,7 @@
     <string name="acra_resDialogText">Anscheinend ist &APP_NAME; abgestürzt. Beschreiben Sie nach Möglichkeit alle relevanten Hinweise und drücken Sie „OK“, um uns eine E-Mail zu diesem Absturz zu senden. Sie werden das E-Mail vor dem Versand sehen können.</string>
     <string name="X_acra_resToastText">&APP_NAME; ist abgestürzt. Bitte helfen Sie uns bei der Verbesserung der App, indem Sie diesen Absturz melden.</string>
     <string name="action_add">Hinzufügen</string>
-    <string name="X_action_clear">Löschen</string>
+    <string name="action_clear">Löschen</string>
     <string name="action_create">Erstellen</string>
     <string name="action_delete">Löschen</string>
     <string name="action_discard">Verwerfen</string>
@@ -672,7 +672,7 @@
     <string name="X_info_not_authorized">Nicht autorisiert</string>
     <string name="X_info_site_authorization_successful">Autorisierung bei %1$s erfolgreich</string>
     <string name="X_lbl_about_sourcecode">Quellcode:</string>
-    <string name="X_lbl_clear_search_filters">Filter löschen</string>
+    <string name="lbl_clear_filters">Filter löschen</string>
     <string name="X_lbl_completed">Abgeschlossen</string>
     <string name="X_lbl_cover_long">Buchumschlag</string>
     <string name="X_lbl_delete_book">Buch löschen</string>
