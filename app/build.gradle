@@ -67,8 +67,8 @@ android {
 
     defaultConfig {
         applicationId rootProject.ext.applicationId
-        versionCode 21
-        versionName = '3.3.0'
+        versionCode 22
+        versionName = '3.4.0'
         signingConfig signingConfigs.release
 
         minSdkVersion rootProject.ext.minSdkVersion
