@@ -51,17 +51,10 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/filter_list"
-            style="@style/Dialog.Body"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:fadeScrollbars="false"
-            android:scrollbarAlwaysDrawVerticalTrack="true"
-            android:scrollbars="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            style="@style/Dialog.Body.RecyclerView"
             app:layout_constraintBottom_toTopOf="@id/buttonPanel"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
+            tools:ignore="MissingConstraints"
             tools:listitem="@layout/row_edit_bookshelf_filter_boolean"
             />
 
