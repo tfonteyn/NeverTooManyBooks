@@ -33,6 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.2"
+        android:clickable="true"
         android:background="?attr/colorOnBackground"
         android:elevation="@dimen/progress_z_backdrop"
         />
