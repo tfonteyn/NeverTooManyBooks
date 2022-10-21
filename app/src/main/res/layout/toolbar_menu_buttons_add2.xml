@@ -30,15 +30,16 @@
     >
 
     <Button
-        android:id="@+id/btn_action_2"
-        style="@style/Button.Action.Toolbar"
+        android:id="@+id/btn_add_details"
+        style="@style/Toolbar.Button"
         android:contentDescription="@string/action_add_with_details"
         app:icon="@drawable/ic_baseline_add_card_24"
         />
 
     <Button
-        android:id="@+id/btn_action"
-        style="@style/Button.Action.Toolbar"
+        android:id="@+id/btn_add"
+        style="@style/Toolbar.Button"
+        android:layout_marginStart="@dimen/toolbar_button_start_margin_last_button"
         android:contentDescription="@string/action_add"
         app:icon="@drawable/ic_baseline_add_24"
         />

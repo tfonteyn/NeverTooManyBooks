@@ -209,16 +209,16 @@ public abstract class FFBaseDialogFragment
                 final View actionView = menuItem.getActionView();
 
                 if (actionView instanceof Button) {
-                    actionView.setOnClickListener(v -> onToolbarMenuItemClick(
-                            menuItem, (Button) v));
+                    actionView.setOnClickListener(
+                            v -> onToolbarMenuItemClick(menuItem, (Button) v));
 
                 } else if (actionView instanceof ViewGroup) {
                     final ViewGroup av = (ViewGroup) actionView;
                     for (int c = 0; c < av.getChildCount(); c++) {
                         final View child = av.getChildAt(c);
                         if (child instanceof Button) {
-                            child.setOnClickListener(v -> onToolbarMenuItemClick(
-                                    menuItem, (Button) v));
+                            child.setOnClickListener(
+                                    v -> onToolbarMenuItemClick(menuItem, (Button) v));
                         }
                     }
                 }
@@ -229,56 +229,35 @@ public abstract class FFBaseDialogFragment
                 // Always show the button bar
                 buttonPanel.setVisibility(View.VISIBLE);
 
-                // Hookup the button-bar 'cancel' and 'ok' buttons.
-                final MenuItem menuItem =
-                        dialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
-                if (menuItem != null) {
-                    // Always hide the menu item
-                    menuItem.setVisible(false);
-
-                    // The ok-button is a simple button on the button panel.
-                    // The ok-button is ignored, and the toolbar button is passed to
-                    // the onToolbarMenuItemClick method.
-                    final Button okButton = buttonPanel.findViewById(R.id.btn_ok);
-                    if (okButton != null) {
-                        okButton.setVisibility(View.VISIBLE);
-
-                        final View actionView = menuItem.getActionView();
-                        if (actionView instanceof Button) {
-                            if (actionView.getId() == R.id.btn_action) {
-                                hookupButton(okButton, menuItem, (Button) actionView);
-                            }
-                        } else if (actionView instanceof ViewGroup) {
-                            final ViewGroup av = (ViewGroup) actionView;
-                            for (int c = 0; c < av.getChildCount(); c++) {
-                                final View child = av.getChildAt(c);
-                                if (child instanceof Button) {
-                                    if (child.getId() == R.id.btn_action) {
-                                        hookupButton(okButton, menuItem, (Button) child);
-
-                                    } else if (child.getId() == R.id.btn_action_2) {
-                                        final Button nBtn =
-                                                buttonPanel.findViewById(R.id.btn_neutral);
-                                        hookupButton(nBtn, menuItem, (Button) child);
-
-                                    } else {
-                                        throw new IllegalStateException("Max 2 buttons");
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Toolbar navigation icon is mapped to the cancel button. Both are visible.
+                // Toolbar navigation icon is always mapped to the cancel button. Both are visible.
                 final Button cancelBtn = buttonPanel.findViewById(R.id.btn_cancel);
                 if (cancelBtn != null) {
-                    // If the nav button has a description, use it for the 'cancel' button.
+                    // If the nav button has a ContentDescription,
+                    // use it for the 'cancel' button text.
                     final CharSequence text = dialogToolbar.getNavigationContentDescription();
                     if (text != null) {
                         cancelBtn.setText(text);
                     }
                     cancelBtn.setOnClickListener(this::onToolbarNavigationClick);
+                }
+
+                // Hookup all Buttons in the action-view.
+                final MenuItem menuItem =
+                        dialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
+                if (menuItem != null) {
+                    final View actionView = menuItem.getActionView();
+                    if (actionView instanceof Button) {
+                        hookupButton(menuItem, (Button) actionView, buttonPanel);
+
+                    } else if (actionView instanceof ViewGroup) {
+                        final ViewGroup av = (ViewGroup) actionView;
+                        for (int c = 0; c < av.getChildCount(); c++) {
+                            final View child = av.getChildAt(c);
+                            if (child instanceof Button) {
+                                hookupButton(menuItem, (Button) child, buttonPanel);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -305,24 +284,46 @@ public abstract class FFBaseDialogFragment
      * Use the ContentDescription of the actionView as the text for the button.
      * Set the button click listener to match the menuItem click.
      *
-     * @param button       on the dialog's bottom button bar to hookup
-     * @param menuItem     to pass to the listener
-     * @param actionButton from the toolbar; to use the content-description from,
-     *                     and to pass to the listener
+     * @param menuItem     to pass to the listener; this is always R.id.MENU_ACTION_CONFIRM
+     * @param actionButton from the toolbar
+     * @param buttonPanel  on the dialog's bottom
      */
-    private void hookupButton(@NonNull final Button button,
-                              @NonNull final MenuItem menuItem,
-                              @NonNull final Button actionButton) {
-        // We copy the title/listener from the toolbar button
-        final CharSequence text = actionButton.getContentDescription();
-        if (text == null) {
-            throw new IllegalStateException("Missing ContentDescription");
-        }
+    private void hookupButton(@NonNull final MenuItem menuItem,
+                              @NonNull final Button actionButton,
+                              @NonNull final View buttonPanel) {
 
-        button.setVisibility(View.VISIBLE);
-        button.setText(text);
-        button.setOnClickListener(v -> onToolbarMenuItemClick(menuItem, actionButton));
+        final Button button = mapButton(actionButton, buttonPanel);
+        if (button != null) {
+            // There is a mapping
+            actionButton.setVisibility(View.GONE);
+            button.setVisibility(View.VISIBLE);
+
+            // Use the action button's ContentDescription for the Button text
+            final CharSequence text = actionButton.getContentDescription();
+            if (text == null) {
+                throw new IllegalStateException("Missing ContentDescription");
+            }
+            button.setText(text);
+            button.setOnClickListener(v -> onToolbarMenuItemClick(menuItem, actionButton));
+
+        } else {
+            // no mapping, keep the actionButton
+            actionButton.setOnClickListener(v -> onToolbarMenuItemClick(menuItem, actionButton));
+        }
     }
+
+    /**
+     * Map the given action button to a button on the (bottom) button panel.
+     *
+     * @param actionButton to map
+     * @param buttonPanel  a View(Group) which contains the available buttons
+     *                     Normally these will be "btn_positive", "btn_negative" and "btn_neutral"
+     *
+     * @return the mapped Button, or {@code null} if there is none.
+     */
+    @Nullable
+    protected abstract Button mapButton(@NonNull final Button actionButton,
+                                        @NonNull final View buttonPanel);
 
     /**
      * Set the title of the toolbar.
@@ -348,13 +349,13 @@ public abstract class FFBaseDialogFragment
      * Called when the user selects a menu item from the toolbar menu.
      * The default action ignores the selection.
      *
-     * @param item   {@link MenuItem} that was clicked
-     * @param button the actual button if the menu-item has an action-view
-     *               otherwise {@code null}
+     * @param menuItem {@link MenuItem} that was clicked
+     * @param button   If the menuItem was an ActionView, the action-button
+     *                 If the menuItem was a plain menu-item, {@code null}
      *
      * @return {@code true} if the event was handled, {@code false} otherwise.
      */
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item,
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem menuItem,
                                              @Nullable final Button button) {
         return false;
     }

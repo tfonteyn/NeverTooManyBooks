@@ -136,28 +136,39 @@ public class BookshelfFiltersDialogFragment
         }
     }
 
+    @Nullable
     @Override
-    protected void onToolbarNavigationClick(@NonNull final View v) {
-        if (saveChanges()) {
-            dismiss();
+    protected Button mapButton(@NonNull final Button actionButton,
+                               @NonNull final View buttonPanel) {
+        if (actionButton.getId() == R.id.btn_select) {
+            return buttonPanel.findViewById(R.id.btn_positive);
+
+        } else if (actionButton.getId() == R.id.btn_clear) {
+            return buttonPanel.findViewById(R.id.btn_neutral);
         }
+        return null;
     }
 
     @Override
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item,
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem menuItem,
                                              @Nullable final Button button) {
-        final int itemId = item.getItemId();
+        final int itemId = menuItem.getItemId();
         if (itemId == R.id.MENU_ACTION_CONFIRM && button != null) {
-            final int buttonId = button.getId();
-            if (buttonId == R.id.btn_action_2) {
+            if (button.getId() == R.id.btn_clear) {
                 modified = true;
                 filterList.clear();
                 saveChanges();
                 dismiss();
                 return true;
 
-            } else if (buttonId == R.id.btn_action) {
+            } else if (button.getId() == R.id.btn_add) {
                 onAdd();
+                return true;
+
+            } else if (button.getId() == R.id.btn_select) {
+                if (saveChanges()) {
+                    dismiss();
+                }
                 return true;
             }
         }

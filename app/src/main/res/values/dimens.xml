@@ -171,6 +171,12 @@
     <!-- The width for the "@style/TopCentered" and similar -->
     <dimen name="centered_max_width">600dp</dimen>
 
+    <!-- Buttons *on* the toolbar get extra spacing for ease of use. -->
+    <dimen name="toolbar_button_start_margin">4dp</dimen>
+    <!-- The confirm/select (etc) button at the "end" gets more space. -->
+    <dimen name="toolbar_button_start_margin_last_button">8dp</dimen>
+
+
     <integer name="span_count_edit_bookshelves">1</integer>
     <integer name="span_count_update_from_internet">1</integer>
 </resources>

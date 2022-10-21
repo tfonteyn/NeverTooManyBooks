@@ -190,13 +190,21 @@ public class EditBookPublisherListDialogFragment
         }
     }
 
+    @Nullable
     @Override
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item,
+    protected Button mapButton(@NonNull final Button actionButton,
+                               @NonNull final View buttonPanel) {
+        // we're always fullscreen
+        return null;
+    }
+
+    @Override
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem menuItem,
                                              @Nullable final Button button) {
-        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM && button != null) {
-            // R.id.btn_action: no extra details
-            // R.id.btn_action_2: with details
-            onAdd(button.getId() == R.id.btn_action_2);
+        if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM && button != null) {
+            // R.id.btn_add
+            // R.id.btn_add_details
+            onAdd(button.getId() == R.id.btn_add_details);
             return true;
         }
         return false;

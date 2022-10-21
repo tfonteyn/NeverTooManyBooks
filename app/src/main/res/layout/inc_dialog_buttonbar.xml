@@ -39,25 +39,26 @@
         style="?attr/buttonBarNeutralButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/floating_dialogs_button_height"
-        android:text="@android:string/untitled"
+        android:text="x"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:visibility="visible"
+        tools:ignore="HardcodedText"
         />
 
     <Button
-        android:id="@+id/btn_cancel"
+        android:id="@+id/btn_negative"
         style="?attr/buttonBarNegativeButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/floating_dialogs_button_height"
         android:text="@android:string/cancel"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btn_ok"
+        app:layout_constraintEnd_toStartOf="@id/btn_positive"
         />
 
     <Button
-        android:id="@+id/btn_ok"
+        android:id="@+id/btn_positive"
         style="?attr/buttonBarPositiveButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/floating_dialogs_button_height"

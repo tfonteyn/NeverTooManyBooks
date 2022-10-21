@@ -89,6 +89,15 @@
         <item name="navigationIcon">@drawable/ic_baseline_close_24</item>
     </style>
 
+    <!-- The confirmation button placed in toolbars. (parent is '?attr/materialIconButtonFilledTonalStyle). -->
+    <style name="Toolbar.Button" parent="@style/Widget.Material3.Button.IconButton.Filled.Tonal">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/toolbar_button_start_margin</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="iconTint">?attr/colorOnPrimaryContainer</item>
+    </style>
+
     <style name="NavigationView" parent="Widget.Material3.NavigationView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
@@ -172,14 +181,6 @@
         <item name="android:layout_marginStart">4dp</item>
         <item name="android:layout_marginBottom">4dp</item>
         <item name="android:layout_marginEnd">8dp</item>
-    </style>
-
-    <!-- The confirmation button placed in toolbars. (parent is '?attr/materialIconButtonFilledTonalStyle). -->
-    <style name="Button.Action.Toolbar" parent="@style/Widget.Material3.Button.IconButton.Filled.Tonal">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
-        <item name="iconTint">?attr/colorOnPrimaryContainer</item>
     </style>
 
     <!-- The "show toc" button. -->

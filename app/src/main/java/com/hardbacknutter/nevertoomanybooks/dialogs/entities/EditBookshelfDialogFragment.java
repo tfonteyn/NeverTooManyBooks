@@ -104,14 +104,26 @@ public class EditBookshelfDialogFragment
         vb.bookshelf.requestFocus();
     }
 
+    @Nullable
     @Override
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item,
+    protected Button mapButton(@NonNull final Button actionButton,
+                               @NonNull final View buttonPanel) {
+        if (actionButton.getId() == R.id.btn_save) {
+            return buttonPanel.findViewById(R.id.btn_positive);
+        }
+        return null;
+    }
+
+    @Override
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem menuItem,
                                              @Nullable final Button button) {
-        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-            if (saveChanges()) {
-                dismiss();
+        if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM && button != null) {
+            if (button.getId() == R.id.btn_save) {
+                if (saveChanges()) {
+                    dismiss();
+                }
+                return true;
             }
-            return true;
         }
         return false;
     }

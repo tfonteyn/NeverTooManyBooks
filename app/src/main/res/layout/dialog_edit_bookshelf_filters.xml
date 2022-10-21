@@ -37,7 +37,6 @@
             android:id="@+id/toolbar"
             style="@style/Toolbar.Dialog"
             app:menu="@menu/toolbar_edit_filters"
-            app:navigationIcon="?attr/homeAsUpIndicator"
             app:title="@string/pg_filters"
             />
 
@@ -46,6 +45,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/body_frame"
         style="@style/Dialog.Frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         >
 
         <androidx.recyclerview.widget.RecyclerView

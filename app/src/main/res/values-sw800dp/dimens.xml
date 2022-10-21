@@ -26,4 +26,6 @@
 
     <dimen name="column_margin_end">64dp</dimen>
 
+    <dimen name="toolbar_button_start_margin">8dp</dimen>
+    <dimen name="toolbar_button_start_margin_last_button">16dp</dimen>
 </resources>

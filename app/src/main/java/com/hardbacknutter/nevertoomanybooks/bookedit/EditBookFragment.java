@@ -173,7 +173,7 @@ public class EditBookFragment
      *                             "save" when prompted, this method will call itself
      *                             with {@code false}
      */
-    public void prepareSave(final boolean checkUnfinishedEdits) {
+    private void prepareSave(final boolean checkUnfinishedEdits) {
         final Context context = requireContext();
 
         final Book book = vm.getBook();
@@ -374,7 +374,7 @@ public class EditBookFragment
 
             final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
             //noinspection ConstantConditions
-            final Button button = menuItem.getActionView().findViewById(R.id.btn_action);
+            final Button button = menuItem.getActionView().findViewById(R.id.btn_save);
             button.setOnClickListener(v -> onMenuItemSelected(menuItem));
         }
 

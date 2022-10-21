@@ -108,14 +108,26 @@ public class StylePickerDialogFragment
         stylesListView.setAdapter(adapter);
     }
 
+    @Nullable
     @Override
-    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item,
-                                             @Nullable final Button button) {
-        final int itemId = item.getItemId();
+    protected Button mapButton(@NonNull final Button actionButton,
+                               @NonNull final View buttonPanel) {
+        if (actionButton.getId() == R.id.btn_select) {
+            return buttonPanel.findViewById(R.id.btn_positive);
+        }
+        return null;
+    }
 
-        if (itemId == R.id.MENU_ACTION_CONFIRM) {
-            onStyleSelected();
-            return true;
+    @Override
+    protected boolean onToolbarMenuItemClick(@NonNull final MenuItem menuItem,
+                                             @Nullable final Button button) {
+        final int itemId = menuItem.getItemId();
+
+        if (itemId == R.id.MENU_ACTION_CONFIRM && button != null) {
+            if (button.getId() == R.id.btn_select) {
+                onStyleSelected();
+                return true;
+            }
 
         } else if (itemId == R.id.MENU_EDIT) {
             onEditStyle();
@@ -124,11 +136,11 @@ public class StylePickerDialogFragment
         } else if (itemId == R.id.MENU_STYLE_LIST_TOGGLE) {
             showAllStyles = !showAllStyles;
             if (showAllStyles) {
-                item.setTitle(R.string.btn_less_ellipsis);
-                item.setIcon(R.drawable.ic_baseline_unfold_less_24);
+                menuItem.setTitle(R.string.btn_less_ellipsis);
+                menuItem.setIcon(R.drawable.ic_baseline_unfold_less_24);
             } else {
-                item.setTitle(R.string.btn_more_ellipsis);
-                item.setIcon(R.drawable.ic_baseline_unfold_more_24);
+                menuItem.setTitle(R.string.btn_more_ellipsis);
+                menuItem.setIcon(R.drawable.ic_baseline_unfold_more_24);
             }
             loadStyles();
             adapter.notifyDataSetChanged();
