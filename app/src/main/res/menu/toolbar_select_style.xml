@@ -27,7 +27,7 @@
         android:id="@id/MENU_STYLE_LIST_TOGGLE"
         android:icon="@drawable/ic_baseline_unfold_more_24"
         android:title="@string/btn_more_ellipsis"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
     <item
         android:id="@id/MENU_EDIT"
         android:icon="@drawable/ic_baseline_edit_24"
