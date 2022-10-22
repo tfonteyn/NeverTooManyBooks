@@ -24,7 +24,6 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Debug;
 import android.util.Log;
@@ -95,7 +94,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfHeaderBinding;
@@ -730,14 +728,11 @@ public class BooksOnBookshelf
      */
     private void onRowClicked(final int position) {
         //noinspection ConstantConditions
-        final Cursor cursor = adapter.getCursor();
-        // Move the cursor, so we can read the data for this row.
-        // Paranoia: if the user can click it, then this move should be fine.
-        if (!cursor.moveToPosition(position)) {
+        final DataHolder rowData = adapter.readDataAt(position);
+        // Paranoia: if the user can click it, then the row exists.
+        if (rowData == null) {
             return;
         }
-
-        final DataHolder rowData = new CursorRow(cursor);
 
         if (rowData.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
             // It's a book, open the details page.
@@ -779,16 +774,12 @@ public class BooksOnBookshelf
      */
     private boolean onCreateContextMenu(@NonNull final View v,
                                         final int position) {
-
         //noinspection ConstantConditions
-        final Cursor cursor = adapter.getCursor();
-        // Move the cursor, so we can read the data for this row.
-        // Paranoia: if the user can click it, then this move should be fine.
-        if (!cursor.moveToPosition(position)) {
+        final DataHolder rowData = adapter.readDataAt(position);
+        // Paranoia: if the user can click it, then the row exists.
+        if (rowData == null) {
             return false;
         }
-
-        final DataHolder rowData = new CursorRow(cursor);
 
         final ExtPopupMenu contextMenu = new ExtPopupMenu(this)
                 .setGroupDividerEnabled();
@@ -982,19 +973,14 @@ public class BooksOnBookshelf
      */
     private boolean onRowContextMenuItemSelected(@NonNull final MenuItem menuItem,
                                                  final int position) {
-        final int itemId = menuItem.getItemId();
-
-        // Move the cursor, so we can read the data for this row.
-        // The majority of the time this is not needed, but a fringe case (toggle node)
-        // showed it should indeed be done.
-        // Paranoia: if the user can click it, then this should be fine.
-        Objects.requireNonNull(adapter, "adapter");
-        final Cursor cursor = adapter.getCursor();
-        if (!cursor.moveToPosition(position)) {
+        //noinspection ConstantConditions
+        final DataHolder rowData = adapter.readDataAt(position);
+        // Paranoia: if the user can click it, then the row exists.
+        if (rowData == null) {
             return false;
         }
 
-        final DataHolder rowData = new CursorRow(cursor);
+        final int itemId = menuItem.getItemId();
 
         // Check for row-group independent options first.
 
@@ -1507,11 +1493,11 @@ public class BooksOnBookshelf
                 //noinspection UseOfObsoleteDateTimeApi
                 Debug.startMethodTracing("trace-" + dateFormat.format(new Date()));
             }
-            // force the adapter to stop displaying by disabling its cursor.
+            // force the adapter to stop displaying by disabling the list.
             // DO NOT REMOVE THE ADAPTER FROM FROM THE VIEW;
             // i.e. do NOT call mVb.list.setAdapter(null)... crashes assured when doing so.
             if (adapter != null) {
-                adapter.setCursor(null);
+                adapter.setBooklist(null);
             }
             vm.buildBookList();
         }
@@ -1578,10 +1564,8 @@ public class BooksOnBookshelf
      * @param positions to update
      */
     private void updateListPositions(@NonNull final int[] positions) {
-        // Yes, requery() is deprecated but see BooklistCursor were we do the right thing.
-        //noinspection ConstantConditions,deprecation
-        adapter.getCursor().requery();
-
+        //noinspection ConstantConditions
+        adapter.requery();
         for (final int pos : positions) {
             adapter.notifyItemChanged(pos);
         }
@@ -1656,7 +1640,7 @@ public class BooksOnBookshelf
         adapter.setRowLongClickListener(this::onCreateContextMenu);
 
         adapter.setStyle(this, vm.getStyle(this));
-        adapter.setCursor(vm.getNewListCursor());
+        adapter.setBooklist(vm.getBooklist());
 
         // Combine the adapters for the list header and the actual list
         final ConcatAdapter concatAdapter = new ConcatAdapter(

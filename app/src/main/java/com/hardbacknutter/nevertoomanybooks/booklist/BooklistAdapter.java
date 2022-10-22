@@ -39,6 +39,7 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
@@ -142,6 +143,9 @@ public class BooklistAdapter
     /** The cursor is the equivalent of the 'list of items'. */
     @Nullable
     private Cursor cursor;
+    @Nullable
+    private Booklist booklist;
+
 
     /** provides read only access to the row data. */
     @Nullable
@@ -210,28 +214,51 @@ public class BooklistAdapter
     }
 
     /**
-     * Get the cursor.
+     * Read the data row on the given position.
      *
-     * @return cursor
+     * @param position The position of the item within the adapter's data set.
      *
-     * @throws NullPointerException if the cursor is not initialised - which would be a bug.
+     * @return the active DataHolder
      */
-    @NonNull
-    public Cursor getCursor() {
-        return Objects.requireNonNull(cursor, "cursor");
+    @Nullable
+    public DataHolder readDataAt(final int position) {
+        //noinspection ConstantConditions
+        if (!cursor.moveToPosition(position)) {
+            // We should never get here... flw
+            return null;
+        }
+        return nodeData;
     }
 
     /**
-     * Set the Cursor.
+     * Refresh the list data.
+     *
+     * @throws NullPointerException if the cursor is not initialised - which would be a bug.
+     */
+    public void requery() {
+        // Yes, requery() is deprecated but see BooklistCursor were we do the right thing.
+        //noinspection deprecation,ConstantConditions
+        cursor.requery();
+    }
+
+    /**
+     * Set the Booklist.
      * <p>
      * This will trigger a {@link #notifyDataSetChanged()}.
      *
-     * @param cursor cursor with the 'list of items' or {@code null} to clear
+     * @param booklist the 'list of items' or {@code null} to clear
      */
     @SuppressLint("NotifyDataSetChanged")
-    public void setCursor(@Nullable final Cursor cursor) {
-        this.cursor = cursor;
-        nodeData = this.cursor != null ? new CursorRow(this.cursor) : null;
+    public void setBooklist(@Nullable final Booklist booklist) {
+        if (booklist == null) {
+            this.booklist = null;
+            cursor = null;
+            nodeData = null;
+        } else {
+            this.booklist = booklist;
+            cursor = booklist.getNewListCursor();
+            nodeData = new CursorRow(cursor);
+        }
         notifyDataSetChanged();
     }
 
@@ -712,6 +739,30 @@ public class BooklistAdapter
 
     public void setRowLongClickListener(@Nullable final OnRowLongClickListener listener) {
         this.rowLongClickListener = listener;
+    }
+
+    /**
+     * DEBUG.
+     * <p>
+     * Get a ColorInt for the given row.
+     * Green: expanded
+     * Transparent: collapsed.
+     *
+     * @param rowId to check
+     *
+     * @return color
+     */
+    @ColorInt
+    private int getDbgRowColor(final int rowId) {
+        if (BuildConfig.DEBUG /* always */) {
+            Objects.requireNonNull(booklist);
+            if (booklist.isNodeExpanded(rowId)) {
+                return Color.GREEN;
+            } else {
+                return Color.TRANSPARENT;
+            }
+        }
+        throw new IllegalStateException("Not in debug");
     }
 
     @FunctionalInterface
@@ -1256,9 +1307,7 @@ public class BooklistAdapter
 
             // Debugger help: color the row according to state
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
-                final int rowId = rowData.getInt(DBKey.PK_ID);
-                final BooklistCursor cursor = (BooklistCursor) adapter.getCursor();
-                itemView.setBackgroundColor(cursor.getDbgRowColor(rowId));
+                itemView.setBackgroundColor(adapter.getDbgRowColor(rowData.getInt(DBKey.PK_ID)));
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {

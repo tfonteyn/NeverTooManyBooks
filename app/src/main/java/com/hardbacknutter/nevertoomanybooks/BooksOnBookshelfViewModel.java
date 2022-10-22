@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.annotation.IntRange;
@@ -503,20 +502,15 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
+    public Booklist getBooklist() {
+        Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+        return booklist;
+    }
+
+    @NonNull
     String getBookNavigationTableName() {
         Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
         return booklist.getNavigationTableName();
-    }
-
-    /**
-     * Wrapper to get the list cursor.
-     *
-     * @return cursor
-     */
-    @NonNull
-    Cursor getNewListCursor() {
-        Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-        return booklist.getNewListCursor();
     }
 
     @NonNull

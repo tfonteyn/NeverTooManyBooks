@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,17 +21,13 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.database.AbstractCursor;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.util.LruCache;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.function.Function;
-
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 
 /**
  * TODO: https://developer.android.com/topic/libraries/architecture/paging.html
@@ -157,29 +153,6 @@ public class BooklistCursor
     public void close() {
         cursorCache.evictAll();
         super.close();
-    }
-
-    /**
-     * Get a ColorInt for the given row.
-     * Green: expanded
-     * Transparent: collapsed.
-     * <p>
-     * Only exposed for debug purposes.
-     *
-     * @param rowId to check
-     *
-     * @return color
-     */
-    @ColorInt
-    int getDbgRowColor(final int rowId) {
-        if (BuildConfig.DEBUG /* always */) {
-            if (booklist.isNodeExpanded(rowId)) {
-                return Color.GREEN;
-            } else {
-                return Color.TRANSPARENT;
-            }
-        }
-        throw new IllegalStateException("Not in debug");
     }
 
     @Override
