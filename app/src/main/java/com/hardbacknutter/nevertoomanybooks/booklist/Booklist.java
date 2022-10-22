@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
@@ -66,6 +67,8 @@ public class Booklist
     private static final String _ORDER_BY_ = " ORDER BY ";
     private static final String UPDATE_ = "UPDATE ";
     private static final String _SET_ = " SET ";
+
+    private static final String[] Z_ARRAY_STRING = new String[0];
 
     /** Log tag. */
     private static final String TAG = "Booklist";
@@ -245,9 +248,9 @@ public class Booklist
 
         if (sqlGetOffsetCursor == null) {
             sqlGetOffsetCursor =
+                    // keep in sync with column list in #getListColumnNames() !
                     SELECT_ + listTable.getDomains()
                                        .stream()
-                                       .map(Domain::getName)
                                        .map(listTable::dot)
                                        .collect(Collectors.joining(","))
                     + ',' + (listTable.dot(DBKey.PK_ID)
@@ -270,16 +273,12 @@ public class Booklist
      */
     @NonNull
     String[] getListColumnNames() {
-        // Get the domains
-        final List<Domain> domains = listTable.getDomains();
-        // Make the array +1 so we can add BL_LIST_VIEW_ROW_ID
-        final String[] names = new String[domains.size() + 1];
-        for (int i = 0; i < domains.size(); i++) {
-            names[i] = domains.get(i).getName();
-        }
-
-        names[domains.size()] = DBKey.BL_LIST_VIEW_NODE_ROW_ID;
-        return names;
+        final List<String> columnNames = listTable.getDomains()
+                                                  .stream()
+                                                  .map(Domain::getName)
+                                                  .collect(Collectors.toList());
+        columnNames.add(DBKey.BL_LIST_VIEW_NODE_ROW_ID);
+        return columnNames.toArray(Z_ARRAY_STRING);
     }
 
     /**
@@ -487,11 +486,7 @@ public class Booklist
     @NonNull
     public List<BooklistNode> updateBookRead(@IntRange(from = 1) final long bookId,
                                              final boolean read) {
-        final boolean hasDomain = listTable.getDomains()
-                                           .stream()
-                                           .map(Domain::getName)
-                                           .anyMatch(name -> name.equals(DBKey.READ__BOOL));
-        if (hasDomain) {
+        if (listTable.contains(DBDefinitions.DOM_BOOK_READ)) {
             if (sqlUpdateBookRead == null) {
                 sqlUpdateBookRead = UPDATE_ + listTable.getName()
                                     + _SET_ + DBKey.READ__BOOL + "=?"
@@ -520,11 +515,7 @@ public class Booklist
     @NonNull
     public List<BooklistNode> updateBookLoanee(@IntRange(from = 1) final long bookId,
                                                @Nullable final String loanee) {
-        final boolean hasDomain = listTable.getDomains()
-                                           .stream()
-                                           .map(Domain::getName)
-                                           .anyMatch(name -> name.equals(DBKey.LOANEE_NAME));
-        if (hasDomain) {
+        if (listTable.contains(DBDefinitions.DOM_LOANEE)) {
             if (sqlUpdateBookLoanee == null) {
                 sqlUpdateBookLoanee = UPDATE_ + listTable.getName()
                                       + _SET_ + DBKey.LOANEE_NAME + "=?"
