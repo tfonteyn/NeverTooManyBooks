@@ -224,7 +224,7 @@ public class Booklist
      * @return cursor
      */
     @NonNull
-    public Cursor getNewListCursor() {
+    Cursor getNewListCursor() {
         if (listCursor != null) {
             listCursor.close();
         }
