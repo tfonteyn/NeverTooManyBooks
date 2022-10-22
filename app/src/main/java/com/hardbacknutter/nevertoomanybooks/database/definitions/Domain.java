@@ -58,11 +58,6 @@ public class Domain {
     @Nullable
     private final String references;
 
-    /**
-     * This domain is pre-prepared for sorting;
-     * i.e. the values are stripped of spaces etc.. before being stored.
-     */
-    private final boolean prePreparedOrderBy;
     @NonNull
     private final String collationClause;
 
@@ -78,7 +73,6 @@ public class Domain {
         notNull = builder.notNull;
         defaultClause = builder.defaultClause;
         references = builder.references;
-        prePreparedOrderBy = builder.prePreparedOrderBy;
 
         if (builder.collationLocalized) {
             collationClause = " COLLATE LOCALIZED";
@@ -101,7 +95,6 @@ public class Domain {
         notNull = from.notNull;
         defaultClause = from.defaultClause;
         references = from.references;
-        prePreparedOrderBy = from.prePreparedOrderBy;
         collationClause = from.collationClause;
 
         notBlank = from.notBlank;
@@ -190,15 +183,6 @@ public class Domain {
     }
 
     /**
-     * Check if this domain is pre-prepared for sorting.
-     *
-     * @return {@code true} if this field should be used as-is for sorting.
-     */
-    public boolean isPrePreparedOrderBy() {
-        return prePreparedOrderBy;
-    }
-
-    /**
      * toString() <strong>NOT DEBUG, must only ever return the column name</strong>.
      *
      * @return the name of the domain.
@@ -249,7 +233,6 @@ public class Domain {
         return primaryKey == domain.primaryKey
                && notNull == domain.notNull
                && notBlank == domain.notBlank
-               && prePreparedOrderBy == domain.prePreparedOrderBy
                && collationClause.equals(domain.collationClause)
                && name.equals(domain.name)
                && sqLiteDataType == domain.sqLiteDataType
@@ -262,7 +245,7 @@ public class Domain {
         return Objects
                 .hash(name, primaryKey, sqLiteDataType, notNull, notBlank, defaultClause,
                       references,
-                      prePreparedOrderBy, collationClause);
+                      collationClause);
     }
 
     public static class Builder {
@@ -279,7 +262,6 @@ public class Domain {
         private String defaultClause;
         @Nullable
         private String references;
-        private boolean prePreparedOrderBy;
         private boolean collationLocalized;
 
         /**
@@ -400,18 +382,6 @@ public class Domain {
         @NonNull
         public Builder localized() {
             collationLocalized = true;
-            return this;
-        }
-
-        /**
-         * if this domain is in fact pre-prepared for sorting.
-         * i.e. the values are stripped of spaces etc.. before being stored.
-         *
-         * @return {@code this} (for chaining)
-         */
-        @NonNull
-        public Builder prePreparedOrderBy() {
-            prePreparedOrderBy = true;
             return this;
         }
 

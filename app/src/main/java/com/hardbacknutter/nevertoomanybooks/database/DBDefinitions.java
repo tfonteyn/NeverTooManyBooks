@@ -546,7 +546,6 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.TITLE_OB, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
-                        .prePreparedOrderBy()
                         .build();
 
         DOM_DATE_FIRST_PUBLICATION =
@@ -610,7 +609,6 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.AUTHOR_FAMILY_NAME_OB, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
-                        .prePreparedOrderBy()
                         .build();
 
         DOM_AUTHOR_GIVEN_NAMES =
@@ -624,7 +622,6 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.AUTHOR_GIVEN_NAMES_OB, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
-                        .prePreparedOrderBy()
                         .build();
 
         DOM_AUTHOR_IS_COMPLETE =
@@ -652,7 +649,6 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.SERIES_TITLE_OB, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
-                        .prePreparedOrderBy()
                         .build();
 
         DOM_SERIES_IS_COMPLETE =
@@ -674,7 +670,6 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.PUBLISHER_NAME_OB, SqLiteDataType.Text)
                         .notNull()
                         .withDefaultEmptyString()
-                        .prePreparedOrderBy()
                         .build();
 
         DOM_PUBLISHER_NAME_CSV =
