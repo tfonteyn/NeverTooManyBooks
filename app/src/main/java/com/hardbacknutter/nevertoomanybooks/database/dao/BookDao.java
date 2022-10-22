@@ -94,7 +94,7 @@ public interface BookDao {
      * Update the given {@link Book}.
      * This will update <strong>ONLY</strong> the fields present in the passed in Book.
      * Non-present fields will not be touched. i.e. this is a delta operation.
-     *
+     * <p>
      * <strong>Transaction:</strong> participate, or runs in new.
      *
      * @param context Current context
@@ -142,7 +142,7 @@ public interface BookDao {
      * <p>
      * The list is pruned before storage.
      * New authors are added to the Author table, existing ones are NOT updated.
-     *
+     * <p>
      * <strong>Transaction:</strong> required
      *
      * @param context      Current context
@@ -170,7 +170,7 @@ public interface BookDao {
      * <p>
      * The list is pruned before storage.
      * New series are added to the Series table, existing ones are NOT updated.
-     *
+     * <p>
      * <strong>Transaction:</strong> required
      *
      * @param context      Current context
@@ -198,7 +198,7 @@ public interface BookDao {
      * <p>
      * The list is pruned before storage.
      * New Publishers are added to the Publisher table, existing ones are NOT updated.
-     *
+     * <p>
      * <strong>Transaction:</strong> required
      *
      * @param context      Current context
@@ -229,7 +229,6 @@ public interface BookDao {
      *     <li>Creates the links between {@link Book} and {@link TocEntry}
      *         in {@link DBDefinitions#TBL_BOOK_TOC_ENTRIES}</li>
      * </ol>
-     *
      * <strong>Transaction:</strong> required
      *
      * @param context      Current context

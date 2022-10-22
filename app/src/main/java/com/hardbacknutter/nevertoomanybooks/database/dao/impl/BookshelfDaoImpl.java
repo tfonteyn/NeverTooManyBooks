@@ -258,9 +258,9 @@ public class BookshelfDaoImpl
      * @param bookshelfId the Bookshelf id; passed separately to allow clean inserts
      * @param bookshelf   to store
      */
-    public void storeFilters(final Context context,
-                             final long bookshelfId,
-                             @NonNull final Bookshelf bookshelf) {
+    private void storeFilters(final Context context,
+                              final long bookshelfId,
+                              @NonNull final Bookshelf bookshelf) {
 
         // prune the filters so we only keep the active ones
         final List<PFilter<?>> list = bookshelf.pruneFilters(context);

@@ -328,7 +328,7 @@ public class FtsDaoImpl
      * <strong>Note:</strong> This assumes a specific order for query parameters.
      * If modified, also modify {@link FtsDaoImpl#INSERT_BODY}
      * and {@link FtsDaoImpl#UPDATE}
-     *
+     * <p>
      * <strong>Transaction:</strong> required
      *
      * @param cursor Cursor of books to update

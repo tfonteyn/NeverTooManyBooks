@@ -509,7 +509,7 @@ public class BookDaoImpl
      * <p>
      * The list is pruned before storage.
      * New shelves are added, existing ones are NOT updated.
-     *
+     * <p>
      * <strong>Transaction:</strong> required
      *
      * @param context Current context
