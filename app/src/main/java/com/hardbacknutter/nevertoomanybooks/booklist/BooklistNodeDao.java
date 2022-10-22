@@ -100,7 +100,7 @@ public class BooklistNodeDao {
 
     /**
      * Expand or collapse <strong>all</strong> nodes.
-     *
+     * <p>
      * <strong>Transaction:</strong> participate, or runs in new.
      *
      * @param topLevel the desired top-level which must be kept visible
@@ -153,7 +153,7 @@ public class BooklistNodeDao {
 
     /**
      * {@link #setAllNodes} 1. Update the status/visibility of all nodes for the given level.
-     *
+     * <p>
      * <strong>Transaction:</strong> required
      *
      * @param levelOperand one of "<", "=", ">", "<=" or ">="
@@ -202,9 +202,9 @@ public class BooklistNodeDao {
     /**
      * {@link #setAllNodes} 2. Save the state for all nodes to permanent storage.
      * We only store visible nodes and their expansion state.
-     *
+     * <p>
      * <strong>Note:</strong> always use the current bookshelf/style
-     *
+     * <p>
      * <strong>Transaction:</strong> participate, or runs in new.
      */
     private void saveAllNodes() {
@@ -263,7 +263,7 @@ public class BooklistNodeDao {
      * 'Expand': we set the children to the desired child state/visibility
      * (recurse up to the desired max child level)<br>
      * 'Collapse': all children will be set to Collapse/hidden
-     *
+     * <p>
      * <strong>Transaction:</strong> participate, or runs in new.
      *
      * @param nodeRowId          of the node in the list
@@ -321,7 +321,7 @@ public class BooklistNodeDao {
 
     /**
      * {@link #setNode} 1. Update a single node.
-     *
+     * <p>
      * <strong>Transaction:</strong> required
      *
      * @param rowId  the row/node to update
@@ -352,7 +352,7 @@ public class BooklistNodeDao {
 
     /**
      * {@link #setNode} 2. Find the next row ('after' the given row) at the given level (or lower).
-     *
+     * <p>
      * <strong>Transaction:</strong> required
      *
      * @param rowId     from where to start looking
@@ -386,7 +386,7 @@ public class BooklistNodeDao {
     /**
      * {@link #setNode} 3. Update the nodes <strong>between</strong> the two given rows;
      * i.e. <strong>excluding</strong> the start and end row.
-     *
+     * <p>
      * <strong>Transaction:</strong> required
      *
      * @param startRowExcl       between this row
@@ -449,7 +449,7 @@ public class BooklistNodeDao {
     /**
      * {@link #setNode} 3. Collapse/hide the nodes <strong>between</strong> the two given rows;
      * i.e. <strong>excluding</strong> the start and end row.
-     *
+     * <p>
      * <strong>Transaction:</strong> required
      *
      * @param startRowExcl between this row
@@ -480,9 +480,9 @@ public class BooklistNodeDao {
 
     /**
      * {@link #setNode} 4. Save the state for a single node (and below) to permanent storage.
-     *
+     * <p>
      * <strong>Note:</strong> always uses the current bookshelf/style
-     *
+     * <p>
      * <strong>Transaction:</strong> required
      *
      * @param startRowIncl between this row (inclusive)
@@ -556,7 +556,7 @@ public class BooklistNodeDao {
      * Restore the expanded and/or visible node status.
      * The logic here assumes the target table {@link #listTable} will have ALL rows
      * set to "0/0". It will update ONLY rows from storage that have "-/1" and/or "1/-"
-     *
+     * <p>
      * <strong>Transaction:</strong> required
      */
     void restoreSavedState() {
