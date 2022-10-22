@@ -8,66 +8,20 @@ Amazon...
  * LibraryThing is 40% owned by AbeBooks which is owned by Amazon and the API is already shut down.
 ----------------------------------------------------------------------------------------------------
 
-Issues checked: 834 down to 677 (inc)
+ENHANCE: add field for translated title
 
-New fields:
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/813 - detailed authorship and original title/language
+ENHANCE: ISSN (serials) lookups?
 
-Searches
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/348 - ISSN (serials)
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/723 - add book by search: allow publisher + present list of finds instead of using first found.
-
+ENHANCE: add book by search: allow publisher + present list of finds instead of using first found.
 ==> SearchCoordinator.search when isbn not provided, will run a search until it finds an isbn,
     and then redo the search WITH the isbn
 ==> so this is why we only ever get ONE result back.
 
 ----------------------------------------------------------------------------------------------------
 
-Implemented:
-https://github.com/eleybourn/Book-Catalogue/issues/834 - 820..834: all screen orientation change issues
-https://github.com/eleybourn/Book-Catalogue/issues/809 - same as 740
-https://github.com/eleybourn/Book-Catalogue/issues/804 - custom location for cover images
-https://github.com/eleybourn/Book-Catalogue/issues/800 - Bulk edit (language,publisher)
-https://github.com/eleybourn/Book-Catalogue/issues/779 - Unneeded comma at end of line in CSV export
-https://github.com/eleybourn/Book-Catalogue/issues/770 - Set as read from long press
-https://github.com/eleybourn/Book-Catalogue/issues/763 - Feature request: Series/Author complete/done checkbox
-https://github.com/eleybourn/Book-Catalogue/issues/761 - Surround ISBN with quotes on CSV export?
-https://github.com/eleybourn/Book-Catalogue/issues/753 - Add Edition, Print, and condition
-https://github.com/eleybourn/Book-Catalogue/issues/751 - Different decimal separator for price (German)
-https://github.com/eleybourn/Book-Catalogue/issues/742 - Cannot Delete Title in Anthologies
-https://github.com/eleybourn/Book-Catalogue/issues/740 - Date prompt appears to be UCT, not local time
-https://github.com/eleybourn/Book-Catalogue/issues/732 - Mark as read from the main list
-https://github.com/eleybourn/Book-Catalogue/issues/728 - Option to re-download the cover
-https://github.com/eleybourn/Book-Catalogue/issues/725 - share-function
-https://github.com/eleybourn/Book-Catalogue/issues/721 - The application directory should be cleaned
-https://github.com/eleybourn/Book-Catalogue/issues/720 - Moving user-created styles doesn't work
-https://github.com/eleybourn/Book-Catalogue/issues/719 - "Language" field content should be translated
-https://github.com/eleybourn/Book-Catalogue/issues/713 - Completely switch to Android Studio project hierarchy
-https://github.com/eleybourn/Book-Catalogue/issues/709 - Add 'date acquired' field
-https://github.com/eleybourn/Book-Catalogue/issues/696 - Order by author first name
-https://github.com/eleybourn/Book-Catalogue/issues/690 - Currency for each book
-https://github.com/eleybourn/Book-Catalogue/issues/678 - List price needs to be listed to two decimal points.
-https://github.com/eleybourn/Book-Catalogue/issues/653 - Allow users to select a default Amazon site
-https://github.com/eleybourn/Book-Catalogue/issues/597 - Merging of bookshelves
-https://github.com/eleybourn/Book-Catalogue/issues/587 - residual thumbnail after Cancel entry-by-isbn
-https://github.com/eleybourn/Book-Catalogue/issues/567 - Read-only display does not display anthology titles
-https://github.com/eleybourn/Book-Catalogue/issues/561 - Make title/series mangling optional
-https://github.com/eleybourn/Book-Catalogue/issues/547 - UPC bar-codes
-https://github.com/eleybourn/Book-Catalogue/issues/542 - Feature request: collapsed series
-https://github.com/eleybourn/Book-Catalogue/issues/534 - Display Anthology Titles in Read-only view
-https://github.com/eleybourn/Book-Catalogue/issues/519 - == 721
-https://github.com/eleybourn/Book-Catalogue/issues/493 - auto fill 'read end date' when checkbox "I've read this book" is clicked.
-https://github.com/eleybourn/Book-Catalogue/issues/481 - field for the number of a limited series -> "print run"
-https://github.com/eleybourn/Book-Catalogue/issues/451 - Suffixed in names not handled well. eg "William F. Buckley, Jr
-https://github.com/eleybourn/Book-Catalogue/issues/325 - Add an optional extra 'On Loan' indicator to booklist
-https://github.com/eleybourn/Book-Catalogue/issues/317 - Add statistics to 'About' tab
-https://github.com/eleybourn/Book-Catalogue/issues/323 - Add Field for Editions
-https://github.com/eleybourn/Book-Catalogue/issues/281 - A field for copyright date
-https://github.com/eleybourn/Book-Catalogue/issues/239 - Currency field in list price
-https://github.com/eleybourn/Book-Catalogue/issues/113 - Add a 'Date Bought' Field
-https://github.com/eleybourn/Book-Catalogue/issues/67  - https://openlibrary.org/developers/api
+Known issues:
 
-https://github.com/eleybourn/Book-Catalogue/issues/812 - syn Goodreads notes
--> Goodreads is removing their public API.
-https://github.com/eleybourn/Book-Catalogue/issues/546 - WorldCat support
--> their 2.0 API is... no, just no.
+The node-management, i.e. storing the tree-state of the nodes in the booklist
+is by design not foolproof. The nodes 'expanded' flag WILL get out of sync with
+ the display from time to time.
+
