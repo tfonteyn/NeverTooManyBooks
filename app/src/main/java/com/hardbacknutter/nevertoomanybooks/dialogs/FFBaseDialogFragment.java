@@ -322,8 +322,10 @@ public abstract class FFBaseDialogFragment
      * @return the mapped Button, or {@code null} if there is none.
      */
     @Nullable
-    protected abstract Button mapButton(@NonNull final Button actionButton,
-                                        @NonNull final View buttonPanel);
+    protected Button mapButton(@NonNull final Button actionButton,
+                               @NonNull final View buttonPanel) {
+        return null;
+    }
 
     /**
      * Set the title of the toolbar.

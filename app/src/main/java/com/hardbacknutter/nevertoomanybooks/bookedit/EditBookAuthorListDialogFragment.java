@@ -195,14 +195,6 @@ public class EditBookAuthorListDialogFragment
         }
     }
 
-    @Nullable
-    @Override
-    protected Button mapButton(@NonNull final Button actionButton,
-                               @NonNull final View buttonPanel) {
-        // we're always fullscreen
-        return null;
-    }
-
     @Override
     protected boolean onToolbarMenuItemClick(@NonNull final MenuItem menuItem,
                                              @Nullable final Button button) {

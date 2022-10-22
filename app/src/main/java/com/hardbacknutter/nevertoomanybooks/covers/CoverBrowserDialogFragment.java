@@ -28,7 +28,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -211,14 +210,6 @@ public class CoverBrowserDialogFragment
     public void onCancel(@NonNull final DialogInterface dialog) {
         vm.cancelAllTasks();
         super.onCancel(dialog);
-    }
-
-    @Nullable
-    @Override
-    protected Button mapButton(@NonNull final Button actionButton,
-                               @NonNull final View buttonPanel) {
-        // we're not using a button bar
-        return null;
     }
 
     @Override
