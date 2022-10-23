@@ -65,6 +65,9 @@
         <ANNO name="androidx.annotation.StringRes" />
       </REPEAT_ANNOTATIONS>
     </JavaCodeStyleSettings>
+    <JetCodeStyleSettings>
+      <option name="CODE_STYLE_DEFAULTS" value="KOTLIN_OFFICIAL" />
+    </JetCodeStyleSettings>
     <XML>
       <option name="XML_ATTRIBUTE_WRAP" value="2" />
       <option name="XML_KEEP_LINE_BREAKS" value="true" />
@@ -219,6 +222,9 @@
           </section>
         </rules>
       </arrangement>
+    </codeStyleSettings>
+    <codeStyleSettings language="kotlin">
+      <option name="CODE_STYLE_DEFAULTS" value="KOTLIN_OFFICIAL" />
     </codeStyleSettings>
   </code_scheme>
 </component>
