@@ -35,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
- * A replacement for ActivityResultContracts.GetContent().
+ * A replacement for {@link androidx.activity.result.contract.ActivityResultContracts.GetContent}.
  * This allows us to use an Optional as the return type.
  */
 public class GetContentUriForReadingContract
