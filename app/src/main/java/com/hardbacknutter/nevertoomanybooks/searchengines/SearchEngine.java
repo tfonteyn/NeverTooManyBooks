@@ -532,7 +532,6 @@ public interface SearchEngine
                    IOException,
                    SocketTimeoutException,
                    MalformedURLException {
-        //noinspection ConstantConditions
-        NetworkUtils.ping(getHostUrl(), getEngineId().getConfig().getConnectTimeoutInMs());
+        NetworkUtils.ping(getHostUrl(), getEngineId().requireConfig().getConnectTimeoutInMs());
     }
 }

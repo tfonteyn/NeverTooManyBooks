@@ -92,7 +92,7 @@ public class SearchCoordinator
         extends ViewModel
         implements Cancellable {
 
-    public static final String ERROR_UNKNOWN_TASK = "Unknown task=";
+    private static final String ERROR_UNKNOWN_TASK = "Unknown task=";
 
     /** Log tag. */
     private static final String TAG = "SearchCoordinator";
@@ -667,7 +667,7 @@ public class SearchCoordinator
      *                    The key is the engine id,
      *                    The value us the value of the external domain for that engine
      */
-    public void setExternalIds(@Nullable final Map<EngineId, String> externalIds) {
+    protected void setExternalIds(@Nullable final Map<EngineId, String> externalIds) {
         externalIdSearchText = externalIds;
     }
 

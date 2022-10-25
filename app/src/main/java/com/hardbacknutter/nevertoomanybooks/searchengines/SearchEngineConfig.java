@@ -233,12 +233,12 @@ public final class SearchEngineConfig {
     }
 
     @IdRes
-    public int getDomainViewId() {
+    private int getDomainViewId() {
         return domainViewId;
     }
 
     @IdRes
-    public int getDomainMenuId() {
+    private int getDomainMenuId() {
         return domainMenuId;
     }
 
@@ -331,7 +331,6 @@ public final class SearchEngineConfig {
         /** The DEFAULT for the engine: {@code false}. */
         private boolean prefersIsbn10;
 
-
         public Builder(@NonNull final EngineId engineId,
                        @NonNull final String hostUrl) {
             this.engineId = engineId;
@@ -343,8 +342,8 @@ public final class SearchEngineConfig {
         }
 
         @NonNull
-        public Builder setCountry(@NonNull final String country,
-                                  @NonNull final String lang) {
+        Builder setCountry(@NonNull final String country,
+                           @SuppressWarnings("SameParameterValue") @NonNull final String lang) {
             if (!lang.isEmpty() && !country.isEmpty()) {
                 locale = new Locale(lang, country.toUpperCase(Locale.ENGLISH));
             }
@@ -352,19 +351,20 @@ public final class SearchEngineConfig {
         }
 
         @NonNull
-        public Builder setStaticThrottler(@Nullable final Throttler staticThrottler) {
+        Builder setStaticThrottler(@Nullable final Throttler staticThrottler) {
             throttler = staticThrottler;
             return this;
         }
 
         @NonNull
-        public Builder setConnectTimeoutMs(final int timeoutInMillis) {
+        Builder setConnectTimeoutMs(final int timeoutInMillis) {
             connectTimeoutMs = timeoutInMillis;
             return this;
         }
 
         @NonNull
-        public Builder setReadTimeoutMs(final int timeoutInMillis) {
+        Builder setReadTimeoutMs(
+                @SuppressWarnings("SameParameterValue") final int timeoutInMillis) {
             readTimeoutMs = timeoutInMillis;
             return this;
         }
@@ -392,12 +392,15 @@ public final class SearchEngineConfig {
         }
 
         @NonNull
-        public Builder setSupportsMultipleCoverSizes(final boolean supportsMultipleCoverSizes) {
+        Builder setSupportsMultipleCoverSizes(
+                @SuppressWarnings("SameParameterValue") final boolean supportsMultipleCoverSizes) {
             this.supportsMultipleCoverSizes = supportsMultipleCoverSizes;
             return this;
         }
 
-        public Builder setPrefersIsbn10(final boolean prefersIsbn10) {
+        @NonNull
+        Builder setPrefersIsbn10(
+                @SuppressWarnings("SameParameterValue") final boolean prefersIsbn10) {
             this.prefersIsbn10 = prefersIsbn10;
             return this;
         }

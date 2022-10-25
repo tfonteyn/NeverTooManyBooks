@@ -76,7 +76,8 @@ import com.hardbacknutter.org.json.JSONObject;
  * Other Amazon sites should work for basic info (e.g. title) only.
  * <p>
  * Should really implement the Amazon API.
- * https://docs.aws.amazon.com/en_pv/AWSECommerceService/latest/DG/becomingAssociate.html
+ * <a href="https://docs.aws.amazon.com/en_pv/AWSECommerceService/latest/DG/becomingAssociate.html">
+ *     becomingAssociate</a>
  * <p>
  * Implementing SearchEngine.ByText using
  * <pre>

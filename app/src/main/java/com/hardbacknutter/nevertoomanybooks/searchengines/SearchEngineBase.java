@@ -82,7 +82,7 @@ public abstract class SearchEngineBase
      *
      * @param bookData Bundle to update
      */
-    public static void checkForSeriesNameInTitle(@NonNull final Bundle bookData) {
+    protected static void checkForSeriesNameInTitle(@NonNull final Bundle bookData) {
         final String fullTitle = bookData.getString(DBKey.TITLE);
         if (fullTitle != null) {
             final Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);

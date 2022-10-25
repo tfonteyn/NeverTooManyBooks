@@ -85,10 +85,9 @@ public class CollectionFormUploader {
      * Constructor.
      */
     @AnyThread
-    public CollectionFormUploader() {
-        final SearchEngineConfig config = EngineId.StripInfoBe.getConfig();
+    CollectionFormUploader() {
+        final SearchEngineConfig config = EngineId.StripInfoBe.requireConfig();
 
-        //noinspection ConstantConditions
         postUrl = config.getHostUrl() + StripInfoSearchEngine.COLLECTION_FORM_URL;
 
         futureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
@@ -314,7 +313,7 @@ public class CollectionFormUploader {
      *
      * @param book to remove from
      */
-    public void removeFields(@NonNull final Book book) {
+    void removeFields(@NonNull final Book book) {
         book.remove(DBKey.SID_STRIP_INFO);
         book.remove(DBKey.STRIP_INFO_AMOUNT);
         book.remove(DBKey.STRIP_INFO_COLL_ID);

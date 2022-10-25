@@ -103,7 +103,7 @@ public class SearchTask
     }
 
     @NonNull
-    public By getSearchBy() {
+    By getSearchBy() {
         return by;
     }
 

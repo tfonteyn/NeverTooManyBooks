@@ -52,8 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedSAXExcepti
  * ENHANCE: migrate to new googlebooks API or drop Google altogether?
  * <p>
  * The urls and xml formats used here are deprecated (but still works fine)
- * https://developers.google.com/gdata/docs/directory
- * https://developers.google.com/gdata/docs/2.0/reference
+ * <a href="https://developers.google.com/gdata/docs/directory">gdata directory</a>
+ * <a href="https://developers.google.com/gdata/docs/2.0/reference">gdata reference</a>
  * <p>
  * The new API:
  * <a href="https://developers.google.com/books/docs/v1/getting_started?csw=1">Getting started</a>

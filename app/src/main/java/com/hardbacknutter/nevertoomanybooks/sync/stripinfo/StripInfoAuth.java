@@ -29,11 +29,11 @@ import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.StringJoiner;
 
@@ -80,8 +80,6 @@ public class StripInfoAuth
     private static final String COOKIE_SI_USERDATA = "si_userdata";
     private static final String COOKIE_DOMAIN = "stripinfo.be";
 
-    private static final String UTF_8 = "UTF-8";
-
     @NonNull
     private final FutureHttpPost<Void> futureHttpPost;
 
@@ -95,7 +93,7 @@ public class StripInfoAuth
         // Setup BEFORE doing first request!
         cookieManager = ServiceLocator.getInstance().getCookieManager();
 
-        final SearchEngineConfig config = EngineId.StripInfoBe.getConfig();
+        final SearchEngineConfig config = EngineId.StripInfoBe.requireConfig();
 
         hostUrl = config.getHostUrl();
 
@@ -131,7 +129,7 @@ public class StripInfoAuth
      * @return {@code true} if at least the username has been setup in preferences
      */
     @AnyThread
-    public static boolean isUsernameSet(@NonNull final Context context) {
+    static boolean isUsernameSet(@NonNull final Context context) {
         return !PreferenceManager.getDefaultSharedPreferences(context)
                                  .getString(PK_HOST_USER, "")
                                  .isEmpty();
@@ -163,16 +161,15 @@ public class StripInfoAuth
             final HttpCookie cookie = oCookie.get();
             if (!cookie.hasExpired()) {
                 try {
-                    // Charset needs API 33
-                    //noinspection CharsetObjectCanBeUsed
-                    final String cookieValue = URLDecoder.decode(cookie.getValue(), UTF_8);
+                    final String cookieValue = URLDecoder.decode(cookie.getValue(),
+                                                                 StandardCharsets.UTF_8);
                     // {"userid":"66","password":"blah","settings":{"acceptCookies":true}}
                     final JSONObject jsonCookie = new JSONObject(cookieValue);
                     final String userId = jsonCookie.optString("userid");
                     if (userId != null && !userId.isEmpty()) {
                         return Optional.of(userId);
                     }
-                } catch (@NonNull final UnsupportedEncodingException | JSONException e) {
+                } catch (@NonNull final JSONException e) {
                     if (BuildConfig.DEBUG /* always */) {
                         Logger.e(TAG, e, "cookie.getValue()=" + cookie.getValue());
                     }
@@ -225,11 +222,9 @@ public class StripInfoAuth
         }
 
         final String url = hostUrl + USER_LOGIN_URL;
-        // Charset needs API 33
-        //noinspection CharsetObjectCanBeUsed
         final String postBody = new StringJoiner("&")
-                .add("userName=" + URLEncoder.encode(username, UTF_8))
-                .add("passw=" + URLEncoder.encode(password, UTF_8))
+                .add("userName=" + URLEncoder.encode(username, StandardCharsets.UTF_8))
+                .add("passw=" + URLEncoder.encode(password, StandardCharsets.UTF_8))
                 .add("submit=Inloggen")
                 .add("frmName=login")
                 .toString();

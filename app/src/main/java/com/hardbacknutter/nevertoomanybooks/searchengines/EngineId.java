@@ -30,6 +30,7 @@ import androidx.annotation.StringRes;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -417,6 +418,11 @@ public enum EngineId
         return config;
     }
 
+    @NonNull
+    public SearchEngineConfig requireConfig() {
+        return Objects.requireNonNull(config);
+    }
+
     public void setConfig(@NonNull final SearchEngineConfig config) {
         this.config = config;
     }
@@ -428,11 +434,10 @@ public enum EngineId
      */
     @NonNull
     public SearchEngine createSearchEngine() {
-        final SearchEngineConfig searchEngineConfig = getConfig();
         try {
             final Constructor<? extends SearchEngine> c =
                     clazz.getConstructor(SearchEngineConfig.class);
-            return c.newInstance(searchEngineConfig);
+            return c.newInstance(config);
 
         } catch (@NonNull final NoSuchMethodException | IllegalAccessException
                 | InstantiationException | InvocationTargetException e) {

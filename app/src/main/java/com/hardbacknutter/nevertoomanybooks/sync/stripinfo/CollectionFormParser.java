@@ -88,9 +88,8 @@ public class CollectionFormParser
         idPricePaid = FF_AANKOOP_PRIJS;
         idAmount = FF_AANTAL;
 
-        final SearchEngineConfig config = EngineId.StripInfoBe.getConfig();
+        final SearchEngineConfig config = EngineId.StripInfoBe.requireConfig();
 
-        //noinspection ConstantConditions
         postUrl = config.getHostUrl() + StripInfoSearchEngine.COLLECTION_FORM_URL;
 
         futureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
