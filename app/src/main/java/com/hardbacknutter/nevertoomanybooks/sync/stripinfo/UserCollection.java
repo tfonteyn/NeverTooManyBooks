@@ -170,9 +170,9 @@ public class UserCollection {
     @SuppressLint("DefaultLocale")
     @WorkerThread
     @NonNull
-    public Optional<List<Bundle>> fetchPage(@NonNull final Context context,
-                                            final int pageNr,
-                                            @NonNull final ProgressListener progressListener)
+    Optional<List<Bundle>> fetchPage(@NonNull final Context context,
+                                     final int pageNr,
+                                     @NonNull final ProgressListener progressListener)
             throws SearchException, StorageException, IOException {
 
         if (!(pageNr == 0 || maxPages > pageNr)) {
