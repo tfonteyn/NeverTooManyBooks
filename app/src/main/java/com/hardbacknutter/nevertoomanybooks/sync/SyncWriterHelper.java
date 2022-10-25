@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -64,11 +64,11 @@ public class SyncWriterHelper
     }
 
     @NonNull
-    public SyncServer getSyncServer() {
+    SyncServer getSyncServer() {
         return Objects.requireNonNull(syncServer, "syncServer");
     }
 
-    public void setSyncServer(@NonNull final SyncServer syncServer) {
+    void setSyncServer(@NonNull final SyncServer syncServer) {
         this.syncServer = syncServer;
     }
 
@@ -81,7 +81,7 @@ public class SyncWriterHelper
         return deleteLocalBooks;
     }
 
-    public void setDeleteLocalBooks(final boolean deleteLocalBooks) {
+    void setDeleteLocalBooks(final boolean deleteLocalBooks) {
         this.deleteLocalBooks = deleteLocalBooks;
     }
 

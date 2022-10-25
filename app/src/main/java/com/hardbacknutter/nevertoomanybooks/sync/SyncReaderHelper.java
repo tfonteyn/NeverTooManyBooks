@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -72,7 +72,7 @@ public final class SyncReaderHelper
      * Get the location to read from.
      */
     @NonNull
-    public SyncServer getSyncServer() {
+    SyncServer getSyncServer() {
         return syncServer;
     }
 
@@ -105,7 +105,7 @@ public final class SyncReaderHelper
      * or new-books-and-updates {@link DataReader.Updates#OnlyNewer},
      * we limit the fetch to the sync-date.
      */
-    public void setSyncDate(@Nullable final LocalDateTime syncDate) {
+    void setSyncDate(@Nullable final LocalDateTime syncDate) {
         this.syncDate = syncDate;
     }
 
