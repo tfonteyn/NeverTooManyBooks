@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,7 +63,7 @@ public class CalibreLibraryMappingViewModel
         return libraries;
     }
 
-    public void extractLibraryData(@Nullable final SyncReaderMetaData metaData) {
+    void extractLibraryData(@Nullable final SyncReaderMetaData metaData) {
         Objects.requireNonNull(metaData);
 
         // at this moment, all server libs have been synced with our database

@@ -195,7 +195,7 @@ public class CalibreLibrary
         this.lastSyncDate = lastSyncDate;
     }
 
-    public void setLastSyncDate(@Nullable final LocalDateTime lastSyncDate) {
+    void setLastSyncDate(@Nullable final LocalDateTime lastSyncDate) {
         if (lastSyncDate != null) {
             this.lastSyncDate = lastSyncDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         } else {
@@ -217,7 +217,7 @@ public class CalibreLibrary
      * @return an immutable Set
      */
     @NonNull
-    public Set<CalibreCustomField> getCustomFields() {
+    Set<CalibreCustomField> getCustomFields() {
         return Set.copyOf(calibreCustomFields);
     }
 

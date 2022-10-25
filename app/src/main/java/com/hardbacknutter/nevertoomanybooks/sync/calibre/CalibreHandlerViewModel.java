@@ -77,8 +77,8 @@ public class CalibreHandlerViewModel
      *
      * @return {@code true} if we have the file
      */
-    public boolean existsLocally(@NonNull final Context context,
-                                 @NonNull final Book book) {
+    boolean existsLocally(@NonNull final Context context,
+                          @NonNull final Book book) {
         try {
             getDocumentUri(context, book);
             return true;
@@ -100,8 +100,8 @@ public class CalibreHandlerViewModel
      * @throws FileNotFoundException on ...
      */
     @NonNull
-    public Uri getDocumentUri(@NonNull final Context context,
-                              @NonNull final Book book)
+    Uri getDocumentUri(@NonNull final Context context,
+                       @NonNull final Book book)
             throws FileNotFoundException {
 
         final Optional<Uri> optFolderUri = CalibreContentServer.getFolderUri(context);
@@ -123,8 +123,8 @@ public class CalibreHandlerViewModel
      * @param book   to download
      * @param folder to save to
      */
-    public void startDownload(@NonNull final Book book,
-                              @NonNull final Uri folder) {
+    void startDownload(@NonNull final Book book,
+                       @NonNull final Uri folder) {
         singleFileDownloadTask.download(book, folder);
     }
 

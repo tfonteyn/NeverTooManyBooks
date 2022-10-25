@@ -617,9 +617,8 @@ public class CalibreContentServer
         library.setCustomFields(fields);
     }
 
-    @SuppressWarnings("unused")
     @AnyThread
-    public boolean isExtensionInstalled() {
+    boolean isExtensionInstalled() {
         return calibreExtensionInstalled;
     }
 
@@ -640,7 +639,7 @@ public class CalibreContentServer
      * @return library
      */
     @NonNull
-    public CalibreLibrary getDefaultLibrary() {
+    CalibreLibrary getDefaultLibrary() {
         return Objects.requireNonNull(defaultLibrary, "defaultLibrary");
     }
 
@@ -671,8 +670,8 @@ public class CalibreContentServer
      */
     @WorkerThread
     @Nullable
-    public JSONObject getVirtualLibrariesForBooks(@NonNull final String libraryStringId,
-                                                  @NonNull final JSONArray calibreIds)
+    JSONObject getVirtualLibrariesForBooks(@NonNull final String libraryStringId,
+                                           @NonNull final JSONArray calibreIds)
             throws IOException,
                    StorageException,
                    JSONException {
@@ -1050,8 +1049,8 @@ public class CalibreContentServer
      */
     @WorkerThread
     @NonNull
-    public JSONObject getBooks(@NonNull final String libraryStringId,
-                               @NonNull final JSONArray calibreIds)
+    JSONObject getBooks(@NonNull final String libraryStringId,
+                        @NonNull final JSONArray calibreIds)
             throws StorageException,
                    IOException,
                    JSONException {
@@ -1125,8 +1124,8 @@ public class CalibreContentServer
 
     @WorkerThread
     @NonNull
-    public Optional<File> getCover(final int calibreId,
-                                   @NonNull final String coverUrl)
+    Optional<File> getCover(final int calibreId,
+                            @NonNull final String coverUrl)
             throws StorageException {
 
         synchronized (this) {
@@ -1366,9 +1365,9 @@ public class CalibreContentServer
      * @throws IOException      on generic/other IO failures
      * @throws StorageException on storage related failures
      */
-    public void pushChanges(@NonNull final String libraryStringId,
-                            final int calibreId,
-                            @NonNull final JSONObject changes)
+    void pushChanges(@NonNull final String libraryStringId,
+                     final int calibreId,
+                     @NonNull final JSONObject changes)
             throws IOException, JSONException, StorageException {
 
         final JSONArray loadedBookIds = new JSONArray()

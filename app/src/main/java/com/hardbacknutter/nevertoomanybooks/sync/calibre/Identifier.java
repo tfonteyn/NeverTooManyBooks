@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,23 +26,21 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
-@SuppressWarnings("WeakerAccess")
-public class Identifier {
+public final class Identifier {
 
-    public static final String AMAZON = "amazon";
-    static final String GOODREADS = "goodreads";
-    static final String GOOGLE = "google";
-    static final String ISBN = "isbn";
-    static final String ISFDB = "isfdb";
-    static final String LASTDODO = "lastdodo";
-    static final String LCCN = "lccn";
-    static final String LIBRARYTHING = "librarything";
-    static final String OCLC = "oclc";
-    static final String OPENLIBRARY = "openlibrary";
-    static final String STRIPINFO = "stripinfo";
-
+    static final String AMAZON = "amazon";
     /** Key is the remote (Calibre) identifier. */
-    public static final Map<String, Identifier> MAP = new HashMap<>();
+    static final Map<String, Identifier> MAP = new HashMap<>();
+    private static final String GOODREADS = "goodreads";
+    private static final String GOOGLE = "google";
+    private static final String ISBN = "isbn";
+    private static final String ISFDB = "isfdb";
+    private static final String LASTDODO = "lastdodo";
+    private static final String LCCN = "lccn";
+    private static final String LIBRARYTHING = "librarything";
+    private static final String OCLC = "oclc";
+    private static final String OPENLIBRARY = "openlibrary";
+    private static final String STRIPINFO = "stripinfo";
 
     static {
         Identifier identifier;
@@ -78,24 +76,23 @@ public class Identifier {
     public final String remote;
     @NonNull
     public final String local;
+    final boolean isLocalLong;
 
-    public final boolean isLocalLong;
+    final boolean isStoredLocally;
 
-    public final boolean isStoredLocally;
-
-    public Identifier(@NonNull final String remote,
-                      @NonNull final String local,
-                      final boolean isLocalLong) {
+    private Identifier(@NonNull final String remote,
+                       @NonNull final String local,
+                       final boolean isLocalLong) {
         this.remote = remote;
         this.local = local;
         this.isLocalLong = isLocalLong;
         this.isStoredLocally = true;
     }
 
-    public Identifier(@NonNull final String remote,
-                      @NonNull final String local,
-                      final boolean isLocalLong,
-                      final boolean isStoredLocally) {
+    private Identifier(@NonNull final String remote,
+                       @NonNull final String local,
+                       final boolean isLocalLong,
+                       final boolean isStoredLocally) {
         this.remote = remote;
         this.local = local;
         this.isLocalLong = isLocalLong;
