@@ -93,7 +93,7 @@ public class StyleViewModel
     }
 
     @NonNull
-    public MutableLiveData<Void> onModified() {
+    MutableLiveData<Void> onModified() {
         return onModified;
     }
 
@@ -103,12 +103,12 @@ public class StyleViewModel
     }
 
     @Nullable
-    public StyleDataStore getStyleDataStore() {
+    StyleDataStore getStyleDataStore() {
         return styleDataStore;
     }
 
     @NonNull
-    public String getTemplateUuid() {
+    String getTemplateUuid() {
         return Objects.requireNonNull(templateUuid, "templateUuid");
     }
 

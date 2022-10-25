@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 /**
  * All keys <strong>MUST</strong> be kept in sync with "src/main/res/xml/preferences*.xml"
  */
+@SuppressWarnings("WeakerAccess")
 public final class Prefs {
 
     /** The locale the user is running our app in (which can be different from the device). */
