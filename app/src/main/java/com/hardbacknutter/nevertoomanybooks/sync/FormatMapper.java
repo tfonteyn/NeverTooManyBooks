@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 /**
  * System wide book format representation.
  * <p>
- * Good description:  http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Format
+ * Good description at
+ * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Format">isfdb</a>
  */
 public final class FormatMapper
         extends MapperBase {
