@@ -27,6 +27,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
+@SuppressWarnings("WeakerAccess")
 public class SearchBookByExternalIdViewModel
         extends ViewModel {
 
@@ -35,7 +36,7 @@ public class SearchBookByExternalIdViewModel
     private final Bundle resultData = ServiceLocator.newBundle();
 
     @NonNull
-    public Bundle getResultData() {
+    Bundle getResultData() {
         return resultData;
     }
 }

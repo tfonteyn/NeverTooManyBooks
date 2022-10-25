@@ -74,7 +74,7 @@ public class SearchBookByIsbnViewModel
     private boolean firstStart = true;
 
     @NonNull
-    public Bundle getResultData() {
+    Bundle getResultData() {
         return resultData;
     }
 
