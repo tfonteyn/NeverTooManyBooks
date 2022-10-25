@@ -122,12 +122,11 @@ public class EditTextField<T, V extends EditText>
         return this;
     }
 
-    public boolean removeOnFocusChangeListener(
+    public void removeOnFocusChangeListener(
             @NonNull final View.OnFocusChangeListener listener) {
         if (focusChangeListeners != null) {
-            return focusChangeListeners.remove(listener);
+            focusChangeListeners.remove(listener);
         }
-        return false;
     }
 
     @NonNull

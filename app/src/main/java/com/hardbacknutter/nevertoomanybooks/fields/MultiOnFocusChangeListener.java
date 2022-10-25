@@ -32,7 +32,7 @@ public interface MultiOnFocusChangeListener<T, V extends View>
     @NonNull
     Field<T, V> addOnFocusChangeListener(@NonNull View.OnFocusChangeListener listener);
 
-    boolean removeOnFocusChangeListener(@NonNull View.OnFocusChangeListener listener);
+    void removeOnFocusChangeListener(@NonNull View.OnFocusChangeListener listener);
 
     @Nullable
     List<View.OnFocusChangeListener> getOnFocusChangeListeners();
