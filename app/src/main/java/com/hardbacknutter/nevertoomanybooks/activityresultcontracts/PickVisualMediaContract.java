@@ -39,9 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * A replacement for the broken java API of ActivityResultContracts.PickVisualMedia.
- * <p>
- * This is really a more limited version of {@link GetContentUriForReadingContract}
- * as it does not offer access to the Downloads folder.
  */
 public class PickVisualMediaContract
         extends ActivityResultContract<String, Optional<Uri>> {

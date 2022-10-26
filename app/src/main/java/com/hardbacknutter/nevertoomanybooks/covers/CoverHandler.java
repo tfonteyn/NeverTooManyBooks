@@ -63,7 +63,7 @@ import java.util.function.Supplier;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForReadingContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PickVisualMediaContract;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -165,7 +165,7 @@ public class CoverHandler {
                 new ActivityResultContracts.TakePicture(), this::onTakePictureResult);
 
         getFromFileLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
-                new GetContentUriForReadingContract(), o -> o.ifPresent(this::onGetContentResult));
+                new PickVisualMediaContract(), o -> o.ifPresent(this::onGetContentResult));
 
         editPictureLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), this::onEditPictureResult);
