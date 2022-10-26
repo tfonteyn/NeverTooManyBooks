@@ -105,12 +105,8 @@ public class ImportFragment
     private FragmentImportBinding vb;
     @Nullable
     private ProgressDelegate progressDelegate;
-    /**
-     * The launcher for picking a Uri to read from.
-     *
-     * <a href="https://developer.android.com/guide/topics/providers/document-provider.html#client">
-     * Android docs</a> : use a GetContent
-     */
+
+    /** The launcher for picking a Uri to read from. */
     private final ActivityResultLauncher<String> openUriLauncher =
             registerForActivityResult(new GetContentUriForReadingContract(), o -> {
                 if (o.isPresent()) {
