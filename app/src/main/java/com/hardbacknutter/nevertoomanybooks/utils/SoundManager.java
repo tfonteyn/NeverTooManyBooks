@@ -20,24 +20,31 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.media.ToneGenerator;
 import android.os.Handler;
 import android.os.Looper;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
-
-import com.google.zxing.client.android.BeepManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 public final class SoundManager {
 
+    /**
+     * Positive event; e.g. a scanned barcode is a valid ISBN.
+     */
     public static final int POSITIVE = ToneGenerator.TONE_PROP_ACK;
+    /**
+     * Negative event; e.g. a scanned barcode is NOT a valid ISBN.
+     */
     public static final int NEGATIVE = ToneGenerator.TONE_PROP_NACK;
+    /**
+     * Roadrunner ran by...
+     */
+    public static final int EVENT = ToneGenerator.TONE_PROP_BEEP;
+
     private static final int MAX_LEN = 500;
 
     private SoundManager() {
@@ -64,19 +71,10 @@ public final class SoundManager {
         }
     }
 
-    /**
-     * Play the builtin ZXing beep.
-     */
-    public static void zxingBeep(@NonNull final FragmentActivity activity) {
-        final MediaPlayer mp = new BeepManager(activity).playBeepSound();
-        if (mp != null) {
-            new Handler(Looper.getMainLooper()).postDelayed(mp::release, MAX_LEN);
-        }
-    }
-
     @IntDef({
             POSITIVE,
-            NEGATIVE
+            NEGATIVE,
+            EVENT
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface Tone {

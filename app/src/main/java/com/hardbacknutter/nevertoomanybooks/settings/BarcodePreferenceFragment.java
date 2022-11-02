@@ -91,8 +91,7 @@ public class BarcodePreferenceFragment
         findPreference(Prefs.pk_sounds_scan_found_barcode)
                 .setOnPreferenceChangeListener((preference, newValue) -> {
                     if (newValue instanceof Boolean && (Boolean) newValue) {
-                        //noinspection ConstantConditions
-                        SoundManager.zxingBeep(getActivity());
+                        SoundManager.beep(SoundManager.EVENT);
                     }
                     return true;
                 });
