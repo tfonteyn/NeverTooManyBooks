@@ -54,6 +54,8 @@ public class ScannerContract
 
     private static final String TAG = "ScannerContract";
 
+    private boolean beep;
+
     /**
      * Optionally beep if the scan succeeded.
      *
@@ -82,11 +84,9 @@ public class ScannerContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Fragment fragment) {
-
+        // Beep in parseResult if a barcode was returned
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
-        // Beep when a barcode was recognised
-        final boolean beep = prefs.getBoolean(Prefs.pk_sounds_scan_found_barcode, true);
+        beep = prefs.getBoolean(Prefs.pk_sounds_scan_found_barcode, true);
 
         return new ScanOptions()
                 .setCameraId(CameraDetection.getPreferredCameraId(context))
@@ -125,6 +125,9 @@ public class ScannerContract
             if (barCode == null) {
                 return Optional.empty();
             } else {
+                if (beep) {
+                    SoundManager.beep(SoundManager.EVENT);
+                }
                 return Optional.of(barCode);
             }
         }
@@ -132,7 +135,6 @@ public class ScannerContract
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();
         }
-        // parse and return the barcode
         return Optional.of(ScanIntentResult.parseActivityResult(resultCode, intent).getContents());
     }
 }
