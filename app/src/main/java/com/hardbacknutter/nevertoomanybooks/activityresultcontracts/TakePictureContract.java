@@ -23,40 +23,49 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.provider.MediaStore;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.File;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 
 /**
  * A replacement for
- * {@link androidx.activity.result.contract.ActivityResultContracts.GetContent}.
+ * {@link androidx.activity.result.contract.ActivityResultContracts.TakePicture}.
  * <p>
- * Allows us to use an Optional as the return type.
+ * Allows us to handle the result transparently and use an Optional as the return type.
  */
-public class GetContentUriForReadingContract
-        extends ActivityResultContract<String, Optional<Uri>> {
+public class TakePictureContract
+        extends ActivityResultContract<File, Optional<File>> {
 
-    private static final String TAG = "GetContentUriForReading";
+    private static final String TAG = "TakePictureContract";
+
+    private File dstFile;
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final String mimeType) {
-        return new Intent(Intent.ACTION_GET_CONTENT)
-                .addCategory(Intent.CATEGORY_OPENABLE)
-                .setType(mimeType);
+                               @NonNull final File dstFile) {
+        // MediaStore.ACTION_IMAGE_CAPTURE does not produce output, so keep a reference here
+        this.dstFile = Objects.requireNonNull(dstFile, "dstFile");
+
+        final Uri dstUri = GenericFileProvider.createUri(context, dstFile);
+        return new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                .putExtra(MediaStore.EXTRA_OUTPUT, dstUri);
     }
 
     @Override
-    public Optional<Uri> parseResult(final int resultCode,
-                                     @Nullable final Intent intent) {
+    public Optional<File> parseResult(final int resultCode,
+                                      @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
@@ -65,11 +74,6 @@ public class GetContentUriForReadingContract
             return Optional.empty();
         }
 
-        final Uri uri = intent.getData();
-        if (uri != null) {
-            return Optional.of(uri);
-        } else {
-            return Optional.empty();
-        }
+        return Optional.of(dstFile);
     }
 }

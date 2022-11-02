@@ -35,9 +35,10 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
- * A replacement for ActivityResultContracts.CreateDocument().
- * This allows us to set the mimeType properly,
- * and use an Optional as the return type.
+ * A replacement for
+ * {@link androidx.activity.result.contract.ActivityResultContracts.CreateDocument()}.
+ * <p>
+ * Allows us to set the mimeType properly, and use an Optional as the return type.
  */
 public class GetContentUriForWritingContract
         extends ActivityResultContract<GetContentUriForWritingContract.Input, Optional<Uri>> {

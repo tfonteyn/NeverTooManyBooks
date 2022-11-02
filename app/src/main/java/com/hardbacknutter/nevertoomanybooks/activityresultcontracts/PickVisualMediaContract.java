@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.ext.SdkExtensions;
+import android.provider.MediaStore;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -38,7 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
- * A replacement for the broken java API of ActivityResultContracts.PickVisualMedia.
+ * A replacement for the broken java API of
+ * {@link androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia}.
  */
 public class PickVisualMediaContract
         extends ActivityResultContract<String, Optional<Uri>> {
@@ -54,21 +56,21 @@ public class PickVisualMediaContract
         if (Build.VERSION.SDK_INT >= 33) {
             // Android 13
             return true;
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            // Android 11/12 but with the SdkExtensions level 2 or up
+        } else if (Build.VERSION.SDK_INT >= 30) {
+            // Android 11/12 with SdkExtensions level 2 or up
             return SdkExtensions.getExtensionVersion(Build.VERSION_CODES.R) >= 2;
         } else {
             return false;
         }
     }
 
+    @SuppressLint("NewApi")
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final String mimeType) {
         if (isPhotoPickerAvailable()) {
-            // MediaStore.ACTION_PICK_IMAGES
-            return new Intent("android.provider.action.PICK_IMAGES")
+            return new Intent(MediaStore.ACTION_PICK_IMAGES)
                     .setType(mimeType);
         } else {
             return new Intent(Intent.ACTION_GET_CONTENT)

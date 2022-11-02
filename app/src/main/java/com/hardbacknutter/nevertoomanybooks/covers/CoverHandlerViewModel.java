@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,6 +28,7 @@ import java.io.File;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 
+@SuppressWarnings("WeakerAccess")
 public class CoverHandlerViewModel
         extends ViewModel {
 
@@ -36,27 +37,26 @@ public class CoverHandlerViewModel
     private boolean showTipAboutRotating = true;
 
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<TransFormTask.TransformedData>>>
-    onFinished() {
+    LiveData<LiveDataEvent<TaskResult<TransFormTask.TransformedData>>> onFinished() {
         return transFormTask.onFinished();
     }
 
-    public void execute(@NonNull final Transformation transformation,
-                        @NonNull final File destFile) {
+    void execute(@NonNull final Transformation transformation,
+                 @NonNull final File destFile) {
         transFormTask.transform(transformation, destFile, CoverHandler.NextAction.Done);
     }
 
-    public void execute(@NonNull final Transformation transformation,
-                        @NonNull final File destFile,
-                        @NonNull final CoverHandler.NextAction action) {
+    void execute(@NonNull final Transformation transformation,
+                 @NonNull final File destFile,
+                 @NonNull final CoverHandler.NextAction action) {
         transFormTask.transform(transformation, destFile, action);
     }
 
-    public boolean isShowTipAboutRotating() {
+    boolean isShowTipAboutRotating() {
         return showTipAboutRotating;
     }
 
-    public void setShowTipAboutRotating(final boolean show) {
+    void setShowTipAboutRotating(final boolean show) {
         showTipAboutRotating = show;
     }
 }

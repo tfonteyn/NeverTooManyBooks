@@ -20,22 +20,18 @@
 package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.Manifest;
-import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
-import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -55,7 +51,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -63,7 +58,9 @@ import java.util.function.Supplier;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditPictureContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PickVisualMediaContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.TakePictureContract;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -74,7 +71,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -110,10 +106,10 @@ public class CoverHandler {
     /** The fragment root view; used for context, resources, Snackbar. */
     private View fragmentView;
     private ActivityResultLauncher<String> cameraPermissionLauncher;
-    private ActivityResultLauncher<Uri> takePictureLauncher;
+    private ActivityResultLauncher<File> takePictureLauncher;
     private ActivityResultLauncher<CropImageActivity.ResultContract.Input> cropPictureLauncher;
     private ActivityResultLauncher<String> getFromFileLauncher;
-    private ActivityResultLauncher<Intent> editPictureLauncher;
+    private ActivityResultLauncher<EditPictureContract.Input> editPictureLauncher;
     private Supplier<Book> bookSupplier;
     /** Using a Supplier so we can get the <strong>current</strong> value (e.g. when editing). */
     private Supplier<String> coverBrowserIsbnSupplier;
@@ -161,17 +157,18 @@ public class CoverHandler {
                         takePicture(true);
                     }
                 });
+
         takePictureLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
-                new ActivityResultContracts.TakePicture(), this::onTakePictureResult);
+                new TakePictureContract(), o -> o.ifPresent(this::onTakePictureResult));
 
         getFromFileLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
-                new PickVisualMediaContract(), o -> o.ifPresent(this::onGetContentResult));
+                new PickVisualMediaContract(), o -> o.ifPresent(this::onPictureResult));
 
         editPictureLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(), this::onEditPictureResult);
+                new EditPictureContract(), o -> o.ifPresent(this::onEditPictureResult));
 
         cropPictureLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
-                new CropImageActivity.ResultContract(), o -> o.ifPresent(this::onGetContentResult));
+                new CropImageActivity.ResultContract(), o -> o.ifPresent(this::onPictureResult));
 
 
         final LifecycleOwner lifecycleOwner = fragment.getViewLifecycleOwner();
@@ -320,7 +317,7 @@ public class CoverHandler {
 
         } else if (itemId == R.id.MENU_EDIT) {
             try {
-                editPicture(context, book.createTempCoverFile(cIdx));
+                editPicture(book.createTempCoverFile(cIdx));
 
             } catch (@NonNull final StorageException e) {
                 StandardDialogs.showError(context, e.getUserMessage(context));
@@ -415,60 +412,33 @@ public class CoverHandler {
     /**
      * Edit the image using an external application.
      *
-     * @param context Current context
      * @param srcFile to edit
      *
      * @throws StorageException The covers directory is not available
      */
-    private void editPicture(@NonNull final Context context,
-                             @NonNull final File srcFile)
+    private void editPicture(@NonNull final File srcFile)
             throws StorageException {
 
         final File dstFile = getTempFile();
         FileUtils.delete(dstFile);
-
-        final Uri srcUri = GenericFileProvider.createUri(context, srcFile);
-        final Uri dstUri = GenericFileProvider.createUri(context, dstFile);
-        final Intent intent = new Intent(Intent.ACTION_EDIT)
-                .setDataAndType(srcUri, IMAGE_MIME_TYPE)
-                // read access to the input uri
-                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                // write access see below
-                .putExtra(MediaStore.EXTRA_OUTPUT, dstUri);
-
-        final List<ResolveInfo> resInfoList =
-                context.getPackageManager()
-                       .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        if (resInfoList.isEmpty()) {
+        try {
+            editPictureLauncher.launch(new EditPictureContract.Input(srcFile, dstFile));
+        } catch (@NonNull final ActivityNotFoundException e) {
             Snackbar.make(fragmentView, R.string.error_no_image_editor, Snackbar.LENGTH_LONG)
                     .show();
-        } else {
-            // We do not know which app will be used, so need to grant permission to all.
-            for (final ResolveInfo resolveInfo : resInfoList) {
-                final String packageName = resolveInfo.activityInfo.packageName;
-                context.grantUriPermission(packageName, dstUri,
-                                           Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            }
-
-            final String prompt = context.getString(R.string.whichEditApplication);
-            editPictureLauncher.launch(Intent.createChooser(intent, prompt));
-
         }
     }
 
-    private void onEditPictureResult(@NonNull final ActivityResult activityResult) {
-        final Context context = fragmentView.getContext();
-        if (activityResult.getResultCode() == Activity.RESULT_OK) {
-            try {
-                final File file = getTempFile();
-                if (file.exists()) {
-                    showProgress();
-                    vm.execute(new Transformation(file).setScale(true), file);
-                    return;
-                }
-            } catch (@NonNull final StorageException e) {
-                StandardDialogs.showError(context, e.getUserMessage(context));
-            }
+    /**
+     * Called when the user edited an image.
+     *
+     * @param file edited image file
+     */
+    private void onEditPictureResult(@NonNull final File file) {
+        if (file.exists()) {
+            showProgress();
+            vm.execute(new Transformation(file).setScale(true), file);
+            return;
         }
 
         removeTempFile();
@@ -476,11 +446,11 @@ public class CoverHandler {
 
     /**
      * Called when the user selected an image from storage,
-     * or after the cropping an image.
+     * or after cropping an image.
      *
-     * @param uri to load the image from
+     * @param uri to load the new image from
      */
-    private void onGetContentResult(@NonNull final Uri uri) {
+    private void onPictureResult(@NonNull final Uri uri) {
         final Context context = fragmentView.getContext();
         try (InputStream is = context.getContentResolver().openInputStream(uri)) {
             // copy the data, and retrieve the (potentially) resolved file
@@ -518,11 +488,15 @@ public class CoverHandler {
             try {
                 final File dstFile = getTempFile();
                 FileUtils.delete(dstFile);
-                final Uri uri = GenericFileProvider.createUri(context, dstFile);
-                takePictureLauncher.launch(uri);
+                takePictureLauncher.launch(dstFile);
 
             } catch (@NonNull final StorageException e) {
                 StandardDialogs.showError(context, e.getUserMessage(context));
+
+            } catch (@NonNull final ActivityNotFoundException e) {
+                // No Camera? we should not get here... flw
+                Snackbar.make(fragmentView, R.string.error_unknown, Snackbar.LENGTH_LONG)
+                        .show();
             }
 
         } else {
@@ -530,43 +504,34 @@ public class CoverHandler {
         }
     }
 
-    private void onTakePictureResult(final boolean result) {
-        if (result) {
+    private void onTakePictureResult(@NonNull final File file) {
+        if (file.exists()) {
             final Context context = fragmentView.getContext();
-            File file = null;
-            try {
-                file = getTempFile();
 
-            } catch (@NonNull final StorageException e) {
-                StandardDialogs.showError(context, e.getUserMessage(context));
+            final int surfaceRotation;
+            if (Build.VERSION.SDK_INT >= 30) {
+                //noinspection ConstantConditions
+                surfaceRotation = context.getDisplay().getRotation();
+            } else {
+                final WindowManager wm = (WindowManager)
+                        context.getSystemService(Context.WINDOW_SERVICE);
+                surfaceRotation = wm.getDefaultDisplay().getRotation();
             }
 
-            if (file != null && file.exists()) {
-                // Should we apply an explicit rotation angle?
-                final int explicitRotation = Prefs
-                        .getIntListPref(context, Prefs.pk_camera_image_autorotate, 0);
+            // Should we apply an explicit rotation angle?
+            final int explicitRotation = Prefs
+                    .getIntListPref(context, Prefs.pk_camera_image_autorotate, 0);
 
-                final int surfaceRotation;
-                if (Build.VERSION.SDK_INT >= 30) {
-                    //noinspection ConstantConditions
-                    surfaceRotation = context.getDisplay().getRotation();
-                } else {
-                    final WindowManager wm = (WindowManager)
-                            context.getSystemService(Context.WINDOW_SERVICE);
-                    surfaceRotation = wm.getDefaultDisplay().getRotation();
-                }
+            // What action (if any) should we take after we're done?
+            final NextAction action = NextAction.getLevel(context);
 
-                // What action (if any) should we take after we're done?
-                final NextAction action = NextAction.getLevel(context);
-
-                showProgress();
-                vm.execute(new Transformation(file)
-                                   .setScale(true)
-                                   .setSurfaceRotation(surfaceRotation)
-                                   .setRotation(explicitRotation),
-                           file,
-                           action);
-            }
+            showProgress();
+            vm.execute(new Transformation(file)
+                               .setScale(true)
+                               .setSurfaceRotation(surfaceRotation)
+                               .setRotation(explicitRotation),
+                       file,
+                       action);
         }
     }
 
@@ -609,7 +574,7 @@ public class CoverHandler {
                         return;
 
                     case Edit:
-                        editPicture(fragmentView.getContext(), result.getFile());
+                        editPicture(result.getFile());
                         return;
 
                     case Done:

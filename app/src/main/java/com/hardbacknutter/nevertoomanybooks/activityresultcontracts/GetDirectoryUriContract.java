@@ -36,8 +36,10 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
- * A replacement for ActivityResultContracts.OpenDocumentTree().
- * This allows us to use an Optional as the return type.
+ * A replacement for
+ * {@link androidx.activity.result.contract.ActivityResultContracts.OpenDocumentTree()}.
+ * <p>
+ * Allows us to use an Optional as the return type.
  */
 public class GetDirectoryUriContract
         extends ActivityResultContract<Uri, Optional<Uri>> {
