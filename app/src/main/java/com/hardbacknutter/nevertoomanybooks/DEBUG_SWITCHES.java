@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -101,8 +101,6 @@ public final class DEBUG_SWITCHES {
 
     /** Enable strict mode reporting on network,disc,... */
     public static final boolean STRICT_MODE_THREADING = false;
-
-    public static final boolean FAKE_BARCODE_SCANNER = false;
 
     private DEBUG_SWITCHES() {
     }
