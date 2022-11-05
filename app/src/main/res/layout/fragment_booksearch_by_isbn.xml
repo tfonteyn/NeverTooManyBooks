@@ -33,13 +33,48 @@
         android:layout_gravity="center_horizontal"
         >
 
+        <FrameLayout
+            android:id="@+id/camera_frame"
+            android:layout_width="@dimen/camera_preview_width"
+            android:layout_height="@dimen/camera_preview_height"
+            android:padding="@dimen/camera_preview_padding"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            >
+
+            <androidx.camera.view.PreviewView
+                android:id="@+id/camera_preview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/btn_stop_scanning"
+            style="@style/IsbnKeyPad.StopScanButton"
+            android:text="@string/btn_stop_scanning"
+            app:layout_constraintEnd_toEndOf="@id/camera_frame"
+            app:layout_constraintStart_toStartOf="@id/camera_frame"
+            app:layout_constraintTop_toBottomOf="@id/camera_frame"
+            />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/camera_gui"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="btn_stop_scanning,camera_frame"
+            tools:visibility="visible"
+            />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_isbn"
             style="@style/TIL.Text.Isbn"
             app:endIconMode="clear_text"
             app:layout_constraintEnd_toStartOf="@id/isbn_del"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_stop_scanning"
             >
 
             <com.hardbacknutter.nevertoomanybooks.widgets.IsbnTextInputEditText
@@ -189,7 +224,9 @@
             android:id="@+id/queue_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:constraint_referenced_ids="btn_clear_queue,queue"
+            tools:visibility="visible"
             />
 
         <Button

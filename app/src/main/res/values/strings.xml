@@ -1600,6 +1600,7 @@
     <string name="action_add_with_details">Add with details</string>
     <string name="btn_start_export">Start export</string>
     <string name="btn_start_import">Start import</string>
+    <string name="btn_stop_scanning">Stop scanning</string>
 
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->

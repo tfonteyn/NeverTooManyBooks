@@ -30,6 +30,19 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+
+        ivy {
+            url "https://github.com/tfonteyn/"
+            metadataSources {
+                artifact()
+            }
+            patternLayout {
+                // gradle dependency string:
+                // com.hardbacknutter.tinyzxingwrapper:TinyZXingWrapper:0.2.0:release@aar
+                artifact "/[module]/releases/download/v[revision]/" +
+                        "[module]-[classifier]-[revision].[ext]"
+            }
+        }
     }
 }
 

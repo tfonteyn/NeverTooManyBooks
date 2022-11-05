@@ -164,10 +164,6 @@
             android:finishOnTaskLaunch="true"
             android:launchMode="singleInstance" />
 
-        <activity
-            android:name="com.journeyapps.barcodescanner.CaptureActivity"
-            android:screenOrientation="fullSensor"
-            tools:replace="screenOrientation" />
     </application>
 
 </manifest>

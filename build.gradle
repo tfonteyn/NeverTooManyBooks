@@ -82,8 +82,11 @@ ext {
     // https://jsoup.org/
     jsoup_version = '1.15.3'
 
-    // https://github.com/journeyapps/zxing-android-embedded
-    zxing_android_embedded_version = '4.3.0'
+    // https://github.com/tfonteyn/TinyZXingWrapper
+    tiny_zxing_wrapper_version = '0.3.0'
+
+    // https://github.com/zxing/zxing
+    zxing_core_version = '3.5.1'
 
     // https://commons.apache.org/proper/commons-compress/
     apache_commons_compress = '1.22'

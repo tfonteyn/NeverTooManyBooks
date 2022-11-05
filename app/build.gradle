@@ -272,8 +272,20 @@ dependencies {
     // jsoup HTML parser library @ https://jsoup.org/
     implementation("org.jsoup:jsoup:${jsoup_version}")
 
-    // Embedded ZXing: https://github.com/journeyapps/zxing-android-embedded
-    implementation("com.journeyapps:zxing-android-embedded:${zxing_android_embedded_version}")
+    // New CameraX based scanner code from "TinyZXingWrapper"
+    releaseImplementation("com.hardbacknutter.tinyzxingwrapper:TinyZXingWrapper:" +
+            "${tiny_zxing_wrapper_version}:release@aar")
+    betaImplementation("com.hardbacknutter.tinyzxingwrapper:TinyZXingWrapper:" +
+            "${tiny_zxing_wrapper_version}:release@aar")
+    debugImplementation("com.hardbacknutter.tinyzxingwrapper:TinyZXingWrapper:" +
+            "${tiny_zxing_wrapper_version}:debug@aar")
+
+    implementation "com.google.zxing:core:${zxing_core_version}"
+
+    implementation("androidx.camera:camera-core:${androidx_camerax_version}")
+    implementation("androidx.camera:camera-camera2:${androidx_camerax_version}")
+    implementation("androidx.camera:camera-lifecycle:${androidx_camerax_version}")
+    implementation("androidx.camera:camera-view:${androidx_camerax_version}")
 
     // https://www.acra.ch/docs/Setup/
     implementation("ch.acra:acra-core:${acra_version}")

@@ -89,6 +89,10 @@
     <!-- layout_margin for top level layouts. -->
     <dimen name="container_margin">4dp</dimen>
 
+    <!-- inline barcode scanner preview -->
+    <dimen name="camera_preview_width">300dp</dimen>
+    <dimen name="camera_preview_height">140dp</dimen>
+    <dimen name="camera_preview_padding">4dp</dimen>
 
     <!-- The margin on top of a generic section/group of data on a screen. -->
     <dimen name="section_margin_top">4dp</dimen>

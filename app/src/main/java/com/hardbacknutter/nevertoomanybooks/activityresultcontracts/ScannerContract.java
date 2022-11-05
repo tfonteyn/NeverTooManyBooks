@@ -23,7 +23,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -34,13 +33,11 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.CameraDetection;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
-import com.journeyapps.barcodescanner.ScanIntentResult;
-import com.journeyapps.barcodescanner.ScanOptions;
+import com.hardbacknutter.tinyzxingwrapper.ScanIntentResult;
+import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
 
 /**
  * <ul>
@@ -62,12 +59,7 @@ public class ScannerContract
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         beep = prefs.getBoolean(Prefs.pk_sounds_scan_found_barcode, true);
 
-        return new ScanOptions()
-                .setCameraId(CameraDetection.getPreferredCameraId(context))
-                .setOrientationLocked(false)
-                .setPrompt(context.getString(R.string.zxing_msg_default_status))
-                .setBeepEnabled(beep)
-                .createScanIntent(context);
+        return new ScanOptions().createScanIntent(context);
     }
 
     @NonNull
