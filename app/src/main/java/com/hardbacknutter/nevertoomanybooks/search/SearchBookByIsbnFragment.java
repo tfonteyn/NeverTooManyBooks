@@ -35,7 +35,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.util.Pair;
 import androidx.core.view.MenuProvider;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.chip.Chip;
@@ -44,6 +43,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
@@ -65,13 +65,12 @@ public class SearchBookByIsbnFragment
 
     /** Log tag. */
     private static final String TAG = "BookSearchByIsbnFrag";
-    private static final String BKEY_STARTED = TAG + ":started";
-    /** See remarks in {@link com.hardbacknutter.nevertoomanybooks.backup.ImportFragment}. */
-    private static final String MIME_TYPES = "*/*";
+    private static final String BKEY_SCANNER_ACTIVITY_STARTED = TAG + ":started";
+    // Experimental on-screen barcode scanner.. works fine, but GUI layout needs tuning.
+    private static boolean SCAN_EMBEDDED = true;
 
-    /** flag indicating the scanner is already started. */
-    private boolean scannerStarted;
-
+    /** flag indicating the scanner Activity is already started. */
+    private boolean scannerActivityStarted;
     /** View Binding. */
     private FragmentBooksearchByIsbnBinding vb;
 
@@ -94,6 +93,15 @@ public class SearchBookByIsbnFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        if (savedInstanceState != null) {
+            scannerActivityStarted = savedInstanceState.getBoolean(BKEY_SCANNER_ACTIVITY_STARTED,
+                                                                   false);
+        }
+
+        vm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
+        vm.init(getArguments());
+        vm.onScanQueueUpdate().observe(getViewLifecycleOwner(), this::onQueueUpdated);
 
         final Toolbar toolbar = getToolbar();
         toolbar.addMenuProvider(new SearchSitesToolbarMenuProvider(), getViewLifecycleOwner());
@@ -135,11 +143,7 @@ public class SearchBookByIsbnFragment
         vb.btnSearch.setOnClickListener(
                 btn -> onBarcodeEntered(vb.isbn.getText().toString().trim()));
 
-        vb.btnClearQueue.setOnClickListener(v -> {
-            vm.getScanQueue().clear();
-            vb.queue.removeAllViews();
-            vb.queueGroup.setVisibility(View.GONE);
-        });
+        vb.btnClearQueue.setOnClickListener(v -> vm.clearQueue());
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
@@ -312,11 +316,11 @@ public class SearchBookByIsbnFragment
         if (code.isValid(strictIsbn)) {
             if (strictIsbn) {
                 //noinspection ConstantConditions
-                ScannerContract.onValidBarcodeBeep(getContext());
+                SoundManager.onValidBarcodeBeep(getContext());
             }
 
             if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Batch) {
-                // batch mode, queue the code, and scan next book
+                // batch mode, queue the code, go scan next book
                 vm.addToQueue(code);
                 scan();
 
@@ -327,7 +331,7 @@ public class SearchBookByIsbnFragment
             }
         } else {
             //noinspection ConstantConditions
-            ScannerContract.onInvalidBarcodeBeep(getContext());
+            SoundManager.onInvalidBarcodeBeep(getContext());
             showError(vb.lblIsbn, getString(R.string.warning_x_is_not_a_valid_code,
                                             code.asText()));
 
@@ -343,15 +347,39 @@ public class SearchBookByIsbnFragment
     }
 
     private void onOpenUri(@NonNull final Uri uri) {
-        try {
-            //noinspection ConstantConditions
-            vm.readQueue(getContext(), uri, coordinator.isStrictIsbn());
-        } catch (@NonNull final IOException ignore) {
+        //noinspection ConstantConditions
+        if (!vm.readQueue(getContext(), uri, coordinator.isStrictIsbn())) {
             Snackbar.make(vb.getRoot(), R.string.error_import_failed,
                           Snackbar.LENGTH_LONG).show();
         }
+    }
 
-        populateQueueView();
+    /**
+     * Refresh the queue view(s) and show/hide the 'clear' button.
+     *
+     * @param queue to display; can be empty
+     */
+    private void onQueueUpdated(@NonNull final List<ISBN> queue) {
+        if (vb.queue.getChildCount() > 0) {
+            vb.queue.removeAllViews();
+        }
+
+        queue.forEach(code -> {
+            final Chip chip = new Chip(getContext(), null, R.attr.appChipInputStyle);
+            // RTL-friendly Chip Layout
+            chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
+            chip.setOnClickListener(v -> {
+                final ISBN clickedCode = removeFromQueue(v);
+                vb.isbn.setText(clickedCode.asText());
+                prepareSearch(clickedCode);
+            });
+            chip.setOnCloseIconClickListener(this::removeFromQueue);
+            chip.setTag(code);
+            chip.setText(code.asText());
+            vb.queue.addView(chip);
+        });
+
+        updateQueueViewsVisibility();
     }
 
     @Override
@@ -369,36 +397,19 @@ public class SearchBookByIsbnFragment
         super.onSearchResults(bookData);
     }
 
-
-
-    private void populateQueueView() {
-        if (vb.queue.getChildCount() > 0) {
-            vb.queue.removeAllViews();
-        }
-
-        vm.getScanQueue().forEach(code -> {
-            final Chip chip = new Chip(getContext(), null, R.attr.appChipInputStyle);
-            // RTL-friendly Chip Layout
-            chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
-            chip.setOnClickListener(v -> {
-                final ISBN clickedCode = removeFromQueue(v);
-                vb.isbn.setText(clickedCode.asText());
-                prepareSearch(clickedCode);
-            });
-            chip.setOnCloseIconClickListener(this::removeFromQueue);
-            chip.setTag(code);
-            chip.setText(code.asText());
-            vb.queue.addView(chip);
-        });
-
-        vb.queueGroup.setVisibility(vb.queue.getChildCount() > 0 ? View.VISIBLE : View.GONE);
+    private void updateQueueViewsVisibility() {
+        final int visibility = vb.queue.getChildCount() > 0 ? View.VISIBLE : View.GONE;
+        // The queue Chips and the 'clear queue' button
+        vb.queueGroup.setVisibility(visibility);
     }
 
+    @NonNull
     private ISBN removeFromQueue(@NonNull final View chip) {
         final ISBN code = (ISBN) chip.getTag();
+        // remove and update view manually to avoid flicker
+        vm.removeFromQueue(code);
         vb.queue.removeView(chip);
-        vb.queueGroup.setVisibility(vb.queue.getChildCount() > 0 ? View.VISIBLE : View.GONE);
-        vm.getScanQueue().remove(code);
+        updateQueueViewsVisibility();
         return code;
     }
 
