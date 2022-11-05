@@ -38,7 +38,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 
 import java.util.ArrayList;
@@ -97,7 +96,7 @@ public class EditBookFieldsFragment
             };
 
     /** The scanner. */
-    private final ActivityResultLauncher<Fragment> scanLauncher =
+    private final ActivityResultLauncher<Void> scanLauncher =
             registerForActivityResult(new ScannerContract(), o -> o.ifPresent(
                     barCode -> vm.getBook().putString(DBKey.BOOK_ISBN, barCode)));
 
@@ -174,7 +173,7 @@ public class EditBookFieldsFragment
         isbnValidationTextWatcher = new ISBN.ValidationTextWatcher(
                 vb.lblIsbn, vb.isbn, isbnValidityCheck);
         vb.isbn.addTextChangedListener(isbnValidationTextWatcher);
-        vb.lblIsbn.setEndIconOnClickListener(v -> scanLauncher.launch(this));
+        vb.lblIsbn.setEndIconOnClickListener(v -> scanLauncher.launch(null));
     }
 
     private void createCoverDelegates() {

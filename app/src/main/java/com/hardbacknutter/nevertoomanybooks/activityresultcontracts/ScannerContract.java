@@ -28,7 +28,6 @@ import android.util.Log;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
 import java.util.Optional;
@@ -45,12 +44,11 @@ import com.journeyapps.barcodescanner.ScanOptions;
 
 /**
  * <ul>
- *     <li>param: the hosting Fragment</li>
- *     <li>return: the barcode as a String, can be {@code null}</li>
+ *     <li>return: the barcode String</li>
  * </ul>
  */
 public class ScannerContract
-        extends ActivityResultContract<Fragment, Optional<String>> {
+        extends ActivityResultContract<Void, Optional<String>> {
 
     private static final String TAG = "ScannerContract";
 
@@ -59,7 +57,7 @@ public class ScannerContract
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final Fragment fragment) {
+                               @Nullable final Void aVoid) {
         // Beep in parseResult if a barcode was returned
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         beep = prefs.getBoolean(Prefs.pk_sounds_scan_found_barcode, true);
@@ -83,6 +81,15 @@ public class ScannerContract
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return Optional.empty();
         }
-        return Optional.of(ScanIntentResult.parseActivityResult(resultCode, intent).getContents());
+
+        final String text = ScanIntentResult.parseActivityResult(resultCode, intent).getText();
+        if (text != null && !text.isBlank()) {
+            if (beep) {
+                SoundManager.beep(SoundManager.EVENT);
+            }
+            return Optional.of(text);
+        } else {
+            return Optional.empty();
+        }
     }
 }
