@@ -24,9 +24,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:installLocation="auto">
 
-    <!-- scanning bar codes / cover images... -->
+    <!-- ideally we would add
+         android:requiresSmallestWidthDp="360"
+         but we just about can work on 320 (WVGA hdpi) although it won't be nice.
+    -->
+    <supports-screens
+        android:smallScreens="false"
+        />
+    <!--
+     scanning bar codes / cover images...
+     https://developer.android.com/guide/topics/manifest/uses-feature-element#camera-hw-features
+    -->
+    <uses-feature
+        android:name="android.hardware.camera.any"
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.flash"
         android:required="false" />
 
     <uses-permission android:name="android.permission.INTERNET" />
