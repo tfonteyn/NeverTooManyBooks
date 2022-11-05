@@ -56,30 +56,6 @@ public class ScannerContract
 
     private boolean beep;
 
-    /**
-     * Optionally beep if the scan succeeded.
-     *
-     * @param context Current context
-     */
-    public static void onValidBarcodeBeep(@NonNull final Context context) {
-        if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(Prefs.pk_sounds_scan_isbn_valid, false)) {
-            SoundManager.beep(SoundManager.POSITIVE);
-        }
-    }
-
-    /**
-     * Optionally beep if the scan failed.
-     *
-     * @param context Current context
-     */
-    public static void onInvalidBarcodeBeep(@NonNull final Context context) {
-        if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(Prefs.pk_sounds_scan_isbn_invalid, true)) {
-            SoundManager.beep(SoundManager.NEGATIVE);
-        }
-    }
-
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,

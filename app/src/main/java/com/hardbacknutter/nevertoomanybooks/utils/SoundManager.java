@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.content.Context;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Handler;
@@ -26,9 +27,12 @@ import android.os.Looper;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public final class SoundManager {
 
@@ -68,6 +72,30 @@ public final class SoundManager {
 
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
             // No sound is critical.
+        }
+    }
+
+    /**
+     * Optionally beep if the scan succeeded.
+     *
+     * @param context Current context
+     */
+    public static void onValidBarcodeBeep(@NonNull final Context context) {
+        if (PreferenceManager.getDefaultSharedPreferences(context)
+                             .getBoolean(Prefs.pk_sounds_scan_isbn_valid, false)) {
+            beep(POSITIVE);
+        }
+    }
+
+    /**
+     * Optionally beep if the scan failed.
+     *
+     * @param context Current context
+     */
+    public static void onInvalidBarcodeBeep(@NonNull final Context context) {
+        if (PreferenceManager.getDefaultSharedPreferences(context)
+                             .getBoolean(Prefs.pk_sounds_scan_isbn_invalid, true)) {
+            beep(NEGATIVE);
         }
     }
 
