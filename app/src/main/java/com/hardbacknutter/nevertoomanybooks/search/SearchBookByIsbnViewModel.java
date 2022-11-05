@@ -31,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.io.BufferedReader;
@@ -63,7 +64,7 @@ public class SearchBookByIsbnViewModel
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
     private final Bundle resultData = ServiceLocator.newBundle();
-
+    private final MutableLiveData<List<ISBN>> scanQueueUpdate = new MutableLiveData<>();
     /** Database Access. */
     private BookDao bookDao;
 
@@ -94,6 +95,8 @@ public class SearchBookByIsbnViewModel
                 }
             }
         }
+
+        scanQueueUpdate.setValue(scanQueue);
     }
 
     /**
@@ -110,27 +113,27 @@ public class SearchBookByIsbnViewModel
     }
 
     @NonNull
-    List<ISBN> getScanQueue() {
-        return scanQueue;
+    MutableLiveData<List<ISBN>> onScanQueueUpdate() {
+        return scanQueueUpdate;
     }
 
-    @NonNull
-    ScanMode getScannerMode() {
-        return scannerMode;
-    }
-
-    void setScannerMode(@NonNull final ScanMode scannerMode) {
-        this.scannerMode = scannerMode;
-        if (this.scannerMode == ScanMode.Single || this.scannerMode == ScanMode.Batch) {
-            scanQueue.clear();
-        }
+    void clearQueue() {
+        scanQueue.clear();
+        scanQueueUpdate.setValue(scanQueue);
     }
 
     void addToQueue(@NonNull final ISBN code) {
         if (!scanQueue.contains(code)) {
+            // don't trigger scanQueueUpdate here as we're scanning in a loop
             scanQueue.add(code);
         }
     }
+
+    void removeFromQueue(@NonNull final ISBN code) {
+        // don't trigger scanQueueUpdate here as we're updating the queue views manually
+        scanQueue.remove(code);
+    }
+
 
     /**
      * Import a list of ISBN numbers from a text file.
@@ -143,12 +146,11 @@ public class SearchBookByIsbnViewModel
      * @param uri        to read from
      * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
      *
-     * @throws IOException on generic/other IO failures
+     * @return {@code true} on success.
      */
-    void readQueue(@NonNull final Context context,
-                   @NonNull final Uri uri,
-                   final boolean strictIsbn)
-            throws IOException {
+    boolean readQueue(@NonNull final Context context,
+                      @NonNull final Uri uri,
+                      final boolean strictIsbn) {
         //TODO: should be run as background task, and use LiveData to update the view...
         // ... but it's so fast for any reasonable length list....
         try (InputStream is = context.getContentResolver().openInputStream(uri)) {
@@ -164,13 +166,32 @@ public class SearchBookByIsbnViewModel
                                   .filter(isbn -> !scanQueue.contains(isbn))
                                   .collect(Collectors.toList()));
 
+                    scanQueueUpdate.setValue(scanQueue);
+
                 } catch (@NonNull final UncheckedIOException e) {
                     // caused by lines()
-                    //noinspection ConstantConditions
-                    throw e.getCause();
+                    return false;
                 }
             }
+
+            return true;
+
+        } catch (@NonNull final IOException e) {
+            return false;
         }
+    }
+
+    @NonNull
+    ScanMode getScannerMode() {
+        return scannerMode;
+    }
+
+    void setScannerMode(@NonNull final ScanMode scannerMode) {
+        this.scannerMode = scannerMode;
+        if (this.scannerMode == ScanMode.Single || this.scannerMode == ScanMode.Batch) {
+            scanQueue.clear();
+        }
+        scanQueueUpdate.setValue(scanQueue);
     }
 
     @NonNull
