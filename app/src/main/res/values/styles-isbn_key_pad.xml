@@ -23,37 +23,41 @@
 <resources
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="Base.IsbnKeyPad" parent="Widget.Material3.Button.ElevatedButton">
+    <!-- 0..9 and X -->
+    <style name="IsbnKeyPad.NumberButton" parent="Widget.Material3.Button.OutlinedButton">
         <item name="android:layout_width">@dimen/isbn_keypad_key_width</item>
         <item name="android:layout_height">@dimen/isbn_keypad_key_height</item>
         <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>
         <item name="android:layout_marginEnd">@dimen/isbn_keypad_key_margin</item>
-        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
-        <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
-    </style>
 
-    <!-- 0..9 and X -->
-    <style name="IsbnKeyPad.NumberButton" parent="Base.IsbnKeyPad">
+        <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
+        <item name="android:textAppearance">?attr/textAppearanceButton</item>
         <item name="android:textSize">@dimen/isbn_keypad_number_text_size</item>
     </style>
 
-    <style name="IsbnKeyPad.SearchButton" parent="Base.IsbnKeyPad">
-        <item name="android:textAppearance">?attr/textAppearanceButton</item>
-        <item name="android:textSize">@dimen/isbn_keypad_search_text_size</item>
-        <item name="android:text">@android:string/search_go</item>
+    <style name="IsbnKeyPad.SearchButton" parent="Widget.Material3.Button.IconButton.Outlined">
+        <item name="android:layout_width">@dimen/isbn_keypad_key_width</item>
+        <item name="android:layout_height">@dimen/isbn_keypad_key_height</item>
+        <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>
+        <item name="android:layout_marginEnd">@dimen/isbn_keypad_key_margin</item>
+        <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
+
+        <item name="strokeWidth">@dimen/isbn_keypad_search_stroke_width</item>
+        <item name="icon">@drawable/ic_baseline_search_24</item>
+        <item name="iconSize">@dimen/isbn_keypad_search_icon_size</item>
+        <item name="iconGravity">textTop</item>
     </style>
 
-    <style name="IsbnKeyPad.BackspaceButton" parent="Widget.Material3.Button.IconButton">
+    <style name="IsbnKeyPad.BackspaceButton" parent="Widget.Material3.Button.IconButton.Outlined">
         <item name="android:layout_width">@dimen/isbn_keypad_backspace_key_width</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:scaleX">1.5</item>
-        <item name="android:scaleY">1.5</item>
         <item name="icon">@drawable/ic_baseline_backspace_24</item>
         <item name="iconTint">?attr/colorOnSurfaceVariant</item>
         <item name="android:contentDescription">@string/action_delete</item>
+        <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
     </style>
 
-    <style name="IsbnKeyPad.ClearQueueButton" parent="Widget.Material3.Button.ElevatedButton.Icon">
+    <style name="IsbnKeyPad.ClearQueueButton" parent="Widget.Material3.Button.OutlinedButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>
