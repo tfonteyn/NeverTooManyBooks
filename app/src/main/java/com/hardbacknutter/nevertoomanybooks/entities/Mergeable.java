@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,7 @@ interface Mergeable {
     void setId(long id);
 
     /**
-     * Diacritic neutral version of {@link  #hashCode()} <strong>without the id</strong>.
+     * Diacritic neutral version of {@link Object#hashCode()} <strong>without the id</strong>.
      *
      * @return hashcode
      */
