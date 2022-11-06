@@ -148,9 +148,7 @@ public class FabMenu {
         final Resources res = fabButton.getResources();
 
         // try-with-res requires Android 13
-        @SuppressWarnings("resource")
         final TypedArray baseX = res.obtainTypedArray(R.array.fab_menu_translationX_all);
-        @SuppressWarnings("resource")
         final TypedArray baseY = res.obtainTypedArray(R.array.fab_menu_translationY_all);
         try {
             for (int i = 0; i < fabMenuItems.length; i++) {
