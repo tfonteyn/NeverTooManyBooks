@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
  * Hardcoded to only write {@link RecordType#Books} into an CSV file.
- *
+ * <p>
  * <strong>LIMITATIONS:</strong> see {@link BookCoder}.
  */
 public class CsvArchiveWriter

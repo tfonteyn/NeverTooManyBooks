@@ -246,7 +246,7 @@ public class SynchronizedDb
 
     /**
      * Locking-aware wrapper for underlying database method.
-     *
+     * <p>
      * <strong>Note:</strong> SQLite maintains a Statement cache based on sql string matching.
      * However, to avoid the overhead, loops should use {@link #rawQuery(String, String[])} instead.
      *
@@ -564,7 +564,7 @@ public class SynchronizedDb
 
     /**
      * Locking-aware wrapper for underlying database method.
-     *
+     * <p>
      * <strong>MUST</strong> be called from a 'finally' block.
      *
      * @param txLock Lock returned from {@link #beginTransaction(boolean)}.

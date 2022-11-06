@@ -29,7 +29,7 @@ import androidx.annotation.Nullable;
 
 /**
  * A listener/template class for the {@link android.widget.Spinner} widget.
- *
+ * <p>
  * <a href="https://stackoverflow.com/questions/27745948/">
  * android-spinner-onitemselected-called-multiple-times-after-screen-rotation#28466764</a>
  * <em>

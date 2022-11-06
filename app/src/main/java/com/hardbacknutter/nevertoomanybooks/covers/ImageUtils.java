@@ -58,7 +58,7 @@ public final class ImageUtils {
      * <p>
      * This is a slow check, use only when import/saving.
      * When displaying do a simple {@code srcFile.exists()} instead.
-     *
+     * <p>
      * <strong>If the file is not acceptable, then it will be deleted.</strong>
      *
      * @param srcFile to check

@@ -167,7 +167,7 @@ public class BookDaoHelper {
      * to verify/correct as an SQLite datetime string.
      * It is assumed that during normal logic flow this is already done.
      * The 'T' is the exception as that is easier to handle here for all fields.
-     *
+     * <p>
      * <strong>Note 2:</strong>: such a full parse should be done during import operations.
      */
     @VisibleForTesting

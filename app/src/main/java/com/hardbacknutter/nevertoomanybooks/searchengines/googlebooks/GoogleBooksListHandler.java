@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,9 +32,9 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * 2019-11: this needs scrapping. See {@link GoogleBooksSearchEngine} class doc.
- *
+ * <p>
  * THIS CLASS IS OBSOLETE (but still in use and working fine).
- *
+ * <p>
  * An XML handler for the Google Books return.
  * Gets the total number of books found, and their id (which is a URL)
  * <p>

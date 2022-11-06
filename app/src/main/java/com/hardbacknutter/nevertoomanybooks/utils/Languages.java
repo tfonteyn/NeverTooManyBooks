@@ -215,7 +215,7 @@ public class Languages {
 
     /**
      * Convert the 3-char terminology code to bibliographic code.
-     *
+     * <p>
      * <a href="https://www.loc.gov/standards/iso639-2/php/code_list.php">iso639-2</a>
      * <p>
      * This is the entire set correct as on 2019-08-22.
@@ -299,7 +299,7 @@ public class Languages {
 
     /**
      * Convert the 3-char bibliographic code to terminology code.
-     *
+     * <p>
      * <a href="https://www.loc.gov/standards/iso639-2/php/code_list.php">iso639-2</a>
      * <p>
      * This is the entire set correct as on 2019-08-22.

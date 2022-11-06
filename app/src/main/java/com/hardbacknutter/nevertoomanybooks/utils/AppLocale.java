@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -70,7 +70,7 @@ public interface AppLocale {
     /**
      * Get a Locale for the given language.
      * This method accepts ISO codes (2 or 3 char), or a display-string (4+ characters).
-     *
+     * <p>
      * <strong>Note:</strong> language with a display string of 1,2 or 3 character long
      * will be presumed to be an ISO code.
      * Example: display:"asu", has an actual iso3 code of "asa" but we will wrongly take "asu"
@@ -80,7 +80,7 @@ public interface AppLocale {
      * @param inputLang to use for Locale
      *
      * @return the Locale for the passed language OR the user locale if the inputLang was empty,
-     * OR {@code null} if the inputLang was invalid.
+     *         OR {@code null} if the inputLang was invalid.
      */
     @Nullable
     Locale getLocale(@NonNull Context context,

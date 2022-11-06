@@ -551,7 +551,7 @@ public class SearchCoordinator
 
     /**
      * Called when all is said and done. Accumulate data from all sites.
-     *
+     * <p>
      * <strong>Developer note:</strong> before you think you can simplify this method
      * by working directly with engine-id and SearchEngines... DON'T
      * Read class docs for {@link EngineId} and {@link Site.Type#getDataSitesByReliability}.

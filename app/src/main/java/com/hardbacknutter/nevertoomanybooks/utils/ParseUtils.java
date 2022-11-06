@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
  * Known issue. Stated to be fixed in Android O == 8.0
  * <a href="https://issuetracker.google.com/issues/36907764">36907764</a>
  * <a href="https://issuetracker.google.com/issues/37015783">37015783</a>
- *
+ * <p>
  * <a href="https://stackoverflow.com/questions/3821539#28466764">
  * decimal-separator-comma-with-numberdecimal-inputtype-in-edittext</a>
  * <p>

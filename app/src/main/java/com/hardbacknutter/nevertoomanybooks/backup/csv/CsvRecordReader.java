@@ -73,7 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * <p>
  * A CSV file which was not written by this app, should be careful about encoding the following
  * characters:
- *
+ * <p>
  * <strong>DOUBLE escape the '*' character; i.e. '*' should be encoded as \\\\*</strong>
  *
  * <ul>Always <strong>escape:</strong>

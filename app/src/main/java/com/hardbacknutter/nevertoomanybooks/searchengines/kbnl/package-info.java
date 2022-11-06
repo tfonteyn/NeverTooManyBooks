@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,14 +21,14 @@
 /**
  * Koninklijke Bibliotheek | Nationale Bibliotheek van Nederland.
  * (Royal/National Library of The Netherlands)
- *
+ * <p>
  * We get the data from KBNL, but get the covers (if any) from the Belgian Library site.
- *
+ * <p>
  * Dutch books are complete (or should be).
  * Covers: unknown.
- *
+ * <p>
  * Dutch comics: a bit hit and miss sadly.
- *
+ * <p>
  * Covers:
  * <p>
  * https://webservices.bibliotheek.be/index.php?func=cover&ISBN=9789463731454&coversize=large

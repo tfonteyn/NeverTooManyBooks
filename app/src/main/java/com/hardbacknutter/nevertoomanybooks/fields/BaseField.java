@@ -143,7 +143,7 @@ public abstract class BaseField<T, V extends View>
 
     /**
      * set the field ID's which should follow visibility with this Field.
-     *
+     * <p>
      * <strong>Dev. note:</strong> this could be done using
      * {@link androidx.constraintlayout.widget.Group}
      * but that means creating a group for EACH field. That would be overkill.

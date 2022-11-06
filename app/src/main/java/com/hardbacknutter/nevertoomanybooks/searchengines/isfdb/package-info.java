@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,7 +32,7 @@
  * without joins:
  * https://sourceforge.net/p/isfdb/code-svn/HEAD/tree/trunk/common/SQLparsing.py#l576
  * https://sourceforge.net/p/isfdb/code-svn/HEAD/tree/trunk/common/SQLparsing.py#l1254
- *
+ * <p>
  *
  * <p>
  * 2019-07: it seems the site developers have started to make some changes in the output

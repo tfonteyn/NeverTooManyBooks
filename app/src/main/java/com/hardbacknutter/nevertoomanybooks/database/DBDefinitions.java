@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 /**
  * Static definitions of database objects.
  * This is a <strong>mostly</strong> complete representation of the application database.
- *
+ * <p>
  * <strong>Note:</strong> Fields 'name' attribute must be in LOWER CASE.
  * <p>
  * TODO: Collated indexes need to be done manually. See {@link DBHelper#recreateIndices()}

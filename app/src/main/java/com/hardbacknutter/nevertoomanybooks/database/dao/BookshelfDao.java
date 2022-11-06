@@ -78,7 +78,7 @@ public interface BookshelfDao {
 
     /**
      * Convenience method, fetch all shelves, and return them as a List.
-     *
+     * <p>
      * <strong>Note:</strong> we do not include the 'All Books' shelf.
      *
      * @return a list of all bookshelves in the database.

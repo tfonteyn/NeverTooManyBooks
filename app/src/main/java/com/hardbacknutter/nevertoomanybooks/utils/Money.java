@@ -130,14 +130,14 @@ public class Money
 
     /**
      * Takes a combined price field, e.g. "Bf459", "$9.99", "66 EUR", etc.
-     *
+     * <p>
      * <strong>Note:</strong>
      * The UK (GBP), pre-decimal 1971, had Shilling/Pence as subdivisions of the pound.
      * UK Shilling was written as "1/-", for example:
      * three shillings and six pence => 3/6
      * It's used on the ISFDB web site. We convert it to GBP.
      * <a href="https://en.wikipedia.org/wiki/Decimal_Day">Decimal_Day</a>
-     *
+     * <p>
      * <strong>If any conversion fails, the currency and the value will be {@code null}</strong>
      *
      * @param locale            <strong>Must</strong> be the Locale for the source data.

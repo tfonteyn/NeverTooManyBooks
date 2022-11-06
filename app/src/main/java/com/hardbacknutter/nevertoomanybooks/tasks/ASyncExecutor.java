@@ -43,7 +43,7 @@ public final class ASyncExecutor {
     /**
      * An {@link Executor} that can be used to execute tasks in parallel.
      * This is also where the serialized tasks run.
-     *
+     * <p>
      * <strong>Note:</strong> this executor uses an unbounded {@link LinkedBlockingQueue}.
      */
     public static final Executor MAIN;

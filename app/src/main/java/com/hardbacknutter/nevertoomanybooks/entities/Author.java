@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * Represents an Author.
- *
+ * <p>
  * <strong>Note:</strong> "type" is a column of {@link DBDefinitions#TBL_BOOK_AUTHOR}
  * So this class does not strictly represent an Author, but a "BookAuthor"
  * When the type is disregarded, it is a real Author representation.

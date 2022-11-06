@@ -104,7 +104,7 @@ public class ZipArchiveReader
 
     /**
      * Get the input stream; (re)creating as needed.
-     *
+     * <p>
      * <strong>Note:</strong> ZipInputStream does not support marking,
      * so we let {@link #closeInputStream()} close/null the stream,
      * and (re)create it here when needed.

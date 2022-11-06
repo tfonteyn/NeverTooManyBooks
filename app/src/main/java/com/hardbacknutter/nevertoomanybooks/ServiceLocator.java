@@ -415,7 +415,7 @@ public final class ServiceLocator {
 
     /**
      * Main entry point for clients to get the main database.
-     *
+     * <p>
      * <strong>Dev. note:</strong>
      * This method always returns the same object for the duration of the apps life!
      * our DBHelper caches a single SynchronizedDb,

@@ -20,7 +20,7 @@
 
 /**
  * This package contains all date related classes and information.
- *
+ * <p>
  * <strong>VERY IMPORTANT:</strong> SQLite date functions:
  * <a href="https://sqlite.org/lang_datefunc.html">https://sqlite.org/lang_datefunc.html</a>
  * <p>

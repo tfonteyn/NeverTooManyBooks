@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * Represents a Bookshelf.
- *
+ * <p>
  * <strong>Warning:</strong> the {@link Style} association is LAZY.
  * i.o.w. the stored style UUID will/must always be validated before being used.
  * See {@link #getStyle(Context)}.

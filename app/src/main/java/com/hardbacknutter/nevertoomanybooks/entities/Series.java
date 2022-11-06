@@ -275,7 +275,7 @@ public class Series
      * "Some Title (II) 13"  ==> "Some Title", "2.13"
      * "Some Title (III) 14"  ==> "Some Title", "3.14"
      * "Some Title (Special) 15"  ==> "Some Title (Special)", "15"
-     *
+     * <p>
      * <strong>Note:</strong> we could make this method the default {@link Series#from}
      * but that would add overhead for most sites.
      *

@@ -362,7 +362,7 @@ public class ISBN {
 
     /**
      * Get the ISBN as a text string converted to the given type.
-     *
+     * <p>
      * <strong>WARNING:</strong> when converting an ISBN-13 to ISBN-10,
      * you must call {@link #isIsbn10Compat()} prior to avoid this method throwing an exception.
      *

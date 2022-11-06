@@ -859,7 +859,7 @@ public class BooklistAdapter
 
         /**
          * Constructor.
-         *
+         * <p>
          * <strong>Note:</strong> the itemView can be re-used.
          * Hence make sure to explicitly set visibility.
          *

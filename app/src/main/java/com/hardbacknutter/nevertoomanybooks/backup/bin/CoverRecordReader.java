@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * FIXME: currently we import covers without checking if we actually have the book.
- *
+ * <p>
  * <strong>Warning:</strong> this class will be reused for reading multiple covers.
  * Do not add/use class globals.
  */

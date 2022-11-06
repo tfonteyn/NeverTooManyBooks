@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
  * <p>
  * The search gets the ID's of matching books, and returns this list when the 'show' button
  * is tapped. <strong>Only this list is returned</strong>; the original fields are not.
- *
+ * <p>
  * <strong>Note:</strong> when the fab is clicked, we <strong>RETURN</strong>
  * to the {@link BooksOnBookshelf} Activity.
  * This is intentionally different from the behaviour of {@link AuthorWorksFragment}.

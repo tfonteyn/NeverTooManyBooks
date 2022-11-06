@@ -123,7 +123,7 @@ public class ShowBookDetailsViewModel
 
     /**
      * The book was returned, remove the loanee.
-     *
+     * <p>
      * <strong>Important:</strong> we're not using {@link #onBookLoaded}.
      * The caller MUST manually update the display and result-data.
      *
@@ -139,7 +139,7 @@ public class ShowBookDetailsViewModel
 
     /**
      * Delete the current book.
-     *
+     * <p>
      * <strong>Important:</strong> we're not using {@link #onBookLoaded}.
      * The caller MUST manually update the display and result-data.
      *

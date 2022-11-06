@@ -181,7 +181,7 @@ public final class SearchEngineConfig {
 
     /**
      * Get the <strong>standard</strong> Locale for this engine.
-     *
+     * <p>
      * <strong>MUST NOT be called directly;
      * instead use {@link SearchEngine#getLocale(Context)}</strong>
      *

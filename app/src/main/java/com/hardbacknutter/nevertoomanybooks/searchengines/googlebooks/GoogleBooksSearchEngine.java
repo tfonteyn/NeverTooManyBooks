@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedSAXExcepti
  * <p>
  * The new API:
  * <a href="https://developers.google.com/books/docs/v1/getting_started?csw=1">Getting started</a>
- *
+ * <p>
  * <a href="https://developers.google.com/books/terms.html">T&C</a>
  * You may not charge users any fee for the use of your application,...
  * => so it seems if this SearchEngine is included, the entire app has to be free.

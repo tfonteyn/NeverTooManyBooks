@@ -50,7 +50,7 @@ import com.hardbacknutter.org.json.JSONException;
  * due to backward compatibility.
  * TODO: make the current ones LEGACY, and start using the Books keys, but still support reading
  * the old ones.
- *
+ * <p>
  * <strong>LIMITATIONS:</strong> Calibre book data is handled, but Calibre library is NOT.
  * The Calibre native string-id is written out with the book.
  * <p>

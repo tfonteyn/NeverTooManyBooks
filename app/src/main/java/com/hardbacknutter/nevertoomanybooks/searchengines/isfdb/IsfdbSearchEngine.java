@@ -376,7 +376,7 @@ public class IsfdbSearchEngine
 
     /**
      * Search for edition data.
-     *
+     * <p>
      * <strong>Note:</strong> we assume the isbn numbers retrieved from the site are valid.
      * No extra checks are made at this point.
      *

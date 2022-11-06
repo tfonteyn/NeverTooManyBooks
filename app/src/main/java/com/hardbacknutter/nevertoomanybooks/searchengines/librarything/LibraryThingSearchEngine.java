@@ -111,7 +111,7 @@ public class LibraryThingSearchEngine
      * Search for edition data.
      * <p>
      * No dev-key needed for this call.
-     *
+     * <p>
      * <strong>Note:</strong> we assume the isbn numbers retrieved from the site are valid.
      * No extra checks are made at this point.
      *

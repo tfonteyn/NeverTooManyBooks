@@ -68,7 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 /**
  * Display all {@link TocEntry}'s for an Author.
  * Selecting an entry will take you to the book(s) that contain that entry.
- *
+ * <p>
  * <strong>Note:</strong> when an item is clicked, we start a <strong>NEW</strong> Activity.
  * Doing a 'back' will then get the user back here.
  * This is intentionally different from the behaviour of {@link SearchFtsFragment}.

@@ -29,10 +29,10 @@ import java.util.Optional;
  * Prevent acting twice on a delivered {@link androidx.lifecycle.LiveData} event.
  * <p>
  * See <a href="https://medium.com/androiddevelopers/ac2622673150">this Medium post</a>
- *
+ * <p>
  * <a href="https://medium.com/androiddevelopers/viewmodel-one-off-event-antipatterns-16a1da869b95">
  * *     ViewModel: One-off event antipatterns</a>
- *
+ * <p>
  * <a href = "https://developer.android.com/topic/architecture/ui-layer/events#consuming-trigger-updates">
  * consuming-trigger-updates</a>
  * Problem: the UI layer must perform a handshake with the VM for each and every UI update.

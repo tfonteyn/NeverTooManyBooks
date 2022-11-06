@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,7 +50,7 @@ public interface DataEditor<T extends DataManager> {
      * <p>
      * Independent of the data stored in {@link #onSaveFields}, an editor
      * can have fields with data in it which are not directly linked with a {@link DataManager}.
-     *
+     * <p>
      * <strong>Important:</strong> this method can and will access Views when called.
      * It should only be called while a fragment is in resumed state.
      *

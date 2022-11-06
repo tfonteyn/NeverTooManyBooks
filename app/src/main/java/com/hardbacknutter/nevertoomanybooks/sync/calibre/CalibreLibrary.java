@@ -163,7 +163,7 @@ public class CalibreLibrary
 
     /**
      * Get the UUID for this library as defined/created by the Calibre Content Server.
-     *
+     * <p>
      * <strong>Will be {@code ""} if our extension is not installed on the CSS</strong>
      *
      * @return CSS uuid, or ""

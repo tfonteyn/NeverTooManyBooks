@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,7 +51,7 @@ public interface AuthorDao {
     /**
      * Find a {@link Author} by using the appropriate fields of the passed {@link Author}.
      * The incoming object is not modified.
-     *
+     * <p>
      * <strong>IMPORTANT:</strong> the query can return more than one row if the
      * given-name of the author is empty. e.g. "Asimov" and "Asimov"+"Isaac"
      * We only return the id of the  <strong>first row found</strong>.
