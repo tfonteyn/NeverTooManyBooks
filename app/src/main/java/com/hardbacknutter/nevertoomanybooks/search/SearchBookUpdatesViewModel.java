@@ -164,11 +164,14 @@ public class SearchBookUpdatesViewModel
         final SyncReaderProcessor.Builder builder =
                 new SyncReaderProcessor.Builder(SYNC_PROCESSOR_PREFIX);
 
+        // Cover fields will be at the top of the list.
+        builder.add(context.getString(R.string.lbl_cover_front),
+                    new String[]{FieldVisibility.COVER[0]});
+        builder.add(context.getString(R.string.lbl_cover_back),
+                    new String[]{FieldVisibility.COVER[1]});
+
+        // These fields will be locally sorted and come next on the list
         final SortedMap<String, String[]> map = new TreeMap<>();
-        map.put(context.getString(R.string.lbl_cover_front),
-                new String[]{FieldVisibility.COVER[0]});
-        map.put(context.getString(R.string.lbl_cover_back),
-                new String[]{FieldVisibility.COVER[1]});
         map.put(context.getString(R.string.lbl_title),
                 new String[]{DBKey.TITLE});
         map.put(context.getString(R.string.lbl_isbn),
@@ -209,7 +212,7 @@ public class SearchBookUpdatesViewModel
                .addRelatedField(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY);
 
 
-        // Add the external-id fields at the end.
+        // The (locally sorted) external-id fields are added at the end of the list.
         // The label is the search engine name, the value is the external id field name
         final SortedMap<String, String> sidMap = new TreeMap<>();
         SearchEngineConfig.getAll().forEach(seConfig -> {
