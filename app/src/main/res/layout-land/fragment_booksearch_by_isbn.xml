@@ -30,16 +30,22 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal"
         >
 
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/barcode_scanner_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="barcode_scanner,btn_stop_scanning"
+            tools:visibility="visible"
+            />
+
         <FrameLayout
-            android:id="@+id/camera_frame"
+            android:id="@+id/barcode_scanner"
             android:layout_width="@dimen/camera_preview_width"
             android:layout_height="@dimen/camera_preview_height"
-            android:layout_marginStart="@dimen/isbn_keypad_key_margin"
-
-            android:padding="@dimen/camera_preview_padding"
+            android:layout_marginTop="@dimen/isbn_keypad_section_top_margin"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             >
@@ -49,73 +55,79 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 />
+
+            <com.hardbacknutter.tinyzxingwrapper.scanner.TzwViewfinderView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
         </FrameLayout>
 
         <Button
             android:id="@+id/btn_stop_scanning"
             style="@style/IsbnKeyPad.StopScanButton"
             android:text="@string/btn_stop_scanning"
-            app:layout_constraintEnd_toEndOf="@id/camera_frame"
-            app:layout_constraintStart_toStartOf="@id/camera_frame"
-            app:layout_constraintTop_toBottomOf="@id/camera_frame"
+            app:layout_constraintEnd_toEndOf="@id/barcode_scanner"
+            app:layout_constraintStart_toStartOf="@id/barcode_scanner"
+            app:layout_constraintTop_toBottomOf="@id/barcode_scanner"
             />
 
         <androidx.constraintlayout.widget.Group
-            android:id="@+id/camera_gui"
+            android:id="@+id/queue_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:constraint_referenced_ids="btn_stop_scanning,camera_frame"
+            app:constraint_referenced_ids="queue,btn_clear_queue"
             tools:visibility="visible"
-            />
-
-        <Button
-            android:id="@+id/btn_clear_queue"
-            style="@style/IsbnKeyPad.ClearQueueButton"
-            android:text="@string/btn_clear_queue"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_stop_scanning"
             />
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/queue"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
             android:layout_marginTop="@dimen/section_margin_top"
-            android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/lbl_isbn"
+            app:layout_constraintEnd_toStartOf="@id/keypad"
+            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_clear_queue"
-            tools:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@id/btn_stop_scanning"
             >
-            <!--                <com.google.android.material.chip.Chip-->
-            <!--                    style="?attr/appChipQueueStyle"-->
-            <!--                    android:layout_width="wrap_content"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    tools:text="@sample/data.json/isbn/d13"-->
-            <!--                    />-->
+            <!-- chips will be added here dynamically -->
+            <!--            <com.google.android.material.chip.Chip-->
+            <!--                style="?attr/appChipInputStyle"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                tools:text="@sample/data.json/isbn/d13"-->
+            <!--                />-->
 
-            <!--                <com.google.android.material.chip.Chip-->
-            <!--                    style="?attr/appChipQueueStyle"-->
-            <!--                    android:layout_width="wrap_content"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    tools:text="@sample/data.json/isbn/d13"-->
-            <!--                    />-->
+            <!--            <com.google.android.material.chip.Chip-->
+            <!--                style="?attr/appChipInputStyle"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                tools:text="@sample/data.json/isbn/d13"-->
+            <!--                />-->
 
-            <!--                <com.google.android.material.chip.Chip-->
-            <!--                    style="?attr/appChipQueueStyle"-->
-            <!--                    android:layout_width="wrap_content"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    tools:text="@sample/data.json/isbn/d13"-->
-            <!--                    />-->
+            <!--            <com.google.android.material.chip.Chip-->
+            <!--                style="?attr/appChipInputStyle"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                tools:text="@sample/data.json/isbn/d13"-->
+            <!--                />-->
         </com.google.android.material.chip.ChipGroup>
+
+        <Button
+            android:id="@+id/btn_clear_queue"
+            style="@style/IsbnKeyPad.ClearQueueButton"
+            android:text="@string/btn_clear_queue"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/queue"
+            />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_isbn"
             style="@style/TIL.Text.Isbn"
             app:endIconMode="clear_text"
             app:layout_constraintEnd_toStartOf="@id/isbn_del"
-            app:layout_constraintStart_toStartOf="@id/key_1"
+            app:layout_constraintStart_toStartOf="@id/keypad"
             app:layout_constraintTop_toTopOf="parent"
             >
 
@@ -136,125 +148,14 @@
             app:layout_constraintTop_toTopOf="@id/lbl_isbn"
             />
 
-        <android.widget.Space
-            android:id="@+id/keypadSpacer"
-            android:layout_width="0dp"
-            android:layout_height="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
-            />
-
-        <Button
-            android:id="@+id/key_1"
-            style="@style/IsbnKeyPad.NumberButton"
-            android:text="1"
-            app:layout_constraintEnd_toStartOf="@id/key_2"
-            app:layout_constraintTop_toBottomOf="@id/keypadSpacer"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/key_2"
-            style="@style/IsbnKeyPad.NumberButton"
-            android:text="2"
-            app:layout_constraintEnd_toStartOf="@id/key_3"
-            app:layout_constraintTop_toBottomOf="@id/keypadSpacer"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/key_3"
-            style="@style/IsbnKeyPad.NumberButton"
-            android:text="3"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/keypadSpacer"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/key_4"
-            style="@style/IsbnKeyPad.NumberButton"
-            android:text="4"
-            app:layout_constraintEnd_toStartOf="@id/key_5"
-            app:layout_constraintTop_toBottomOf="@id/key_1"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/key_5"
-            style="@style/IsbnKeyPad.NumberButton"
-            android:text="5"
-            app:layout_constraintEnd_toStartOf="@id/key_6"
-            app:layout_constraintTop_toBottomOf="@id/key_2"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/key_6"
-            style="@style/IsbnKeyPad.NumberButton"
-            android:text="6"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/key_3"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/key_7"
-            style="@style/IsbnKeyPad.NumberButton"
-            android:text="7"
-            app:layout_constraintEnd_toStartOf="@id/key_8"
-            app:layout_constraintTop_toBottomOf="@id/key_4"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/key_8"
-            style="@style/IsbnKeyPad.NumberButton"
-            android:text="8"
-            app:layout_constraintEnd_toStartOf="@id/key_9"
-            app:layout_constraintTop_toBottomOf="@id/key_5"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/key_9"
-            style="@style/IsbnKeyPad.NumberButton"
-            android:text="9"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/key_6"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/key_X"
-            style="@style/IsbnKeyPad.NumberButton"
-            android:text="X"
-            app:layout_constraintEnd_toStartOf="@id/key_0"
-            app:layout_constraintTop_toBottomOf="@id/key_7"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/key_0"
-            style="@style/IsbnKeyPad.NumberButton"
-            android:text="0"
-            app:layout_constraintEnd_toStartOf="@id/btn_search"
-            app:layout_constraintTop_toBottomOf="@id/key_8"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/btn_search"
-            style="@style/IsbnKeyPad.SearchButton"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/key_9"
-            />
-
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/queue_group"
+        <include
+            android:id="@+id/keypad"
+            layout="@layout/fragment_booksearch_by_isbn_keypad"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="btn_clear_queue,queue"
+            android:layout_marginTop="@dimen/isbn_keypad_section_top_margin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

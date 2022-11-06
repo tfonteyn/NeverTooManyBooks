@@ -139,17 +139,17 @@ public class SearchBookByIsbnFragment
 
         vb.isbn.setText(coordinator.getIsbnSearchText());
 
-        vb.key0.setOnClickListener(v -> vb.isbn.onKey('0'));
-        vb.key1.setOnClickListener(v -> vb.isbn.onKey('1'));
-        vb.key2.setOnClickListener(v -> vb.isbn.onKey('2'));
-        vb.key3.setOnClickListener(v -> vb.isbn.onKey('3'));
-        vb.key4.setOnClickListener(v -> vb.isbn.onKey('4'));
-        vb.key5.setOnClickListener(v -> vb.isbn.onKey('5'));
-        vb.key6.setOnClickListener(v -> vb.isbn.onKey('6'));
-        vb.key7.setOnClickListener(v -> vb.isbn.onKey('7'));
-        vb.key8.setOnClickListener(v -> vb.isbn.onKey('8'));
-        vb.key9.setOnClickListener(v -> vb.isbn.onKey('9'));
-        vb.keyX.setOnClickListener(v -> vb.isbn.onKey('X'));
+        vb.keypad.key0.setOnClickListener(v -> vb.isbn.onKey('0'));
+        vb.keypad.key1.setOnClickListener(v -> vb.isbn.onKey('1'));
+        vb.keypad.key2.setOnClickListener(v -> vb.isbn.onKey('2'));
+        vb.keypad.key3.setOnClickListener(v -> vb.isbn.onKey('3'));
+        vb.keypad.key4.setOnClickListener(v -> vb.isbn.onKey('4'));
+        vb.keypad.key5.setOnClickListener(v -> vb.isbn.onKey('5'));
+        vb.keypad.key6.setOnClickListener(v -> vb.isbn.onKey('6'));
+        vb.keypad.key7.setOnClickListener(v -> vb.isbn.onKey('7'));
+        vb.keypad.key8.setOnClickListener(v -> vb.isbn.onKey('8'));
+        vb.keypad.key9.setOnClickListener(v -> vb.isbn.onKey('9'));
+        vb.keypad.keyX.setOnClickListener(v -> vb.isbn.onKey('X'));
 
         vb.isbnDel.setOnClickListener(v -> vb.isbn.onKey(KeyEvent.KEYCODE_DEL));
         vb.isbnDel.setOnLongClickListener(v -> {
@@ -169,7 +169,7 @@ public class SearchBookByIsbnFragment
         vb.isbn.addTextChangedListener(isbnValidationTextWatcher);
 
         //noinspection ConstantConditions
-        vb.btnSearch.setOnClickListener(
+        vb.keypad.btnSearch.setOnClickListener(
                 btn -> onBarcodeEntered(vb.isbn.getText().toString().trim()));
 
         vb.btnClearQueue.setOnClickListener(v -> vm.clearQueue());
@@ -240,11 +240,12 @@ public class SearchBookByIsbnFragment
     }
 
     private void startScannerEmbedded() {
-        vb.cameraGui.setVisibility(View.VISIBLE);
+        vb.barcodeScannerGroup.setVisibility(View.VISIBLE);
         if (scanner == null) {
             //noinspection ConstantConditions
             scanner = new BarcodeScanner.Builder().build(
-                    getContext(), getViewLifecycleOwner(), vb.cameraPreview.getSurfaceProvider());
+                    getContext(), getViewLifecycleOwner(),
+                    vb.cameraPreview.getSurfaceProvider());
             //noinspection ConstantConditions
             getLifecycle().addObserver(scanner);
         }
@@ -280,11 +281,11 @@ public class SearchBookByIsbnFragment
     }
 
     private void stopScanner() {
-        if (!SCAN_EMBEDDED) {
+        if (SCAN_EMBEDDED) {
             if (scanner != null) {
                 scanner.stopScanning();
             }
-            vb.cameraGui.setVisibility(View.GONE);
+            vb.barcodeScannerGroup.setVisibility(View.GONE);
         }
         vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Off);
     }
