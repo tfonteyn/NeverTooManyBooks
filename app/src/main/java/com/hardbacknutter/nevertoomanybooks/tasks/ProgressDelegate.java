@@ -121,7 +121,7 @@ public class ProgressDelegate {
 
         // if we have no new text, we leave the progress message text untouched.
         if (message.text != null
-            && !((CharSequence) message.text).equals(vb.progressMessage.getText())) {
+            && !message.text.equals(vb.progressMessage.getText().toString())) {
             vb.progressMessage.setText(message.text);
         }
     }
