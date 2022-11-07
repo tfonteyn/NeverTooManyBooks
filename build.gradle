@@ -83,7 +83,7 @@ ext {
     jsoup_version = '1.15.3'
 
     // https://github.com/tfonteyn/TinyZXingWrapper
-    tiny_zxing_wrapper_version = '0.3.0'
+    tiny_zxing_wrapper_version = '0.5.0'
 
     // https://github.com/zxing/zxing
     zxing_core_version = '3.5.1'

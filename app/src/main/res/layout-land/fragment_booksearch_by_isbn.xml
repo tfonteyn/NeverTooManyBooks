@@ -57,6 +57,7 @@
                 />
 
             <com.hardbacknutter.tinyzxingwrapper.scanner.TzwViewfinderView
+                android:id="@+id/camera_view_finder"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 />
