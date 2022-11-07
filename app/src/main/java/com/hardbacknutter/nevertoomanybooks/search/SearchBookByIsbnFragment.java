@@ -165,50 +165,6 @@ public class SearchBookByIsbnFragment
             registerForActivityResult(new EditBookByIdContract(),
                     o -> o.ifPresent(this::onBookEditingDone));
 
-    private void startScannerEmbedded() {
-        vb.barcodeScannerGroup.setVisibility(View.VISIBLE);
-        if (scanner == null) {
-            //noinspection ConstantConditions
-            scanner = new BarcodeScanner.Builder()
-                    .setCodeFamily(BarcodeFamily.Product)
-                    .build(getContext(), getViewLifecycleOwner(),
-                            vb.cameraPreview.getSurfaceProvider());
-
-            if (vb.cameraViewFinder.isShowResultPoints()) {
-                scanner.setResultPointListener(vb.cameraViewFinder);
-            }
-
-            //noinspection ConstantConditions
-            getLifecycle().addObserver(scanner);
-        }
-
-        scanner.startScan(new DecoderResultListener() {
-            @Nullable
-            private String lastCode;
-
-            @Override
-            public void onResult(@NonNull final Result result) {
-                final String barCode = result.getText();
-                if (barCode != null && !barCode.isBlank()) {
-                    if (!barCode.equals(lastCode)) {
-                        lastCode = barCode;
-                        onBarcodeScanned(barCode);
-                    }
-                } else {
-                    stopScanner();
-                }
-            }
-
-            @Override
-            public void onError(@NonNull final String s,
-                                @NonNull final Exception e) {
-                stopScanner();
-                getLifecycle().removeObserver(scanner);
-                scanner = null;
-            }
-        });
-    }
-
     private final ActivityResultLauncher<Void> scannerActivityLauncher =
             registerForActivityResult(new ScannerContract(), o -> {
                 scannerActivityStarted = false;
@@ -306,6 +262,13 @@ public class SearchBookByIsbnFragment
         outState.putBoolean(BKEY_SCANNER_ACTIVITY_STARTED, scannerActivityStarted);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        //noinspection ConstantConditions
+        coordinator.setIsbnSearchText(vb.isbn.getText().toString().trim());
+    }
+
     private void startScanner() {
         if (SCAN_EMBEDDED) {
             startScannerEmbedded();
@@ -314,12 +277,49 @@ public class SearchBookByIsbnFragment
         }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        //noinspection ConstantConditions
-        coordinator.setIsbnSearchText(vb.isbn.getText().toString().trim());
+    private void startScannerEmbedded() {
+        vb.barcodeScannerGroup.setVisibility(View.VISIBLE);
+        if (scanner == null) {
+            //noinspection ConstantConditions
+            scanner = new BarcodeScanner.Builder()
+                    .setCodeFamily(BarcodeFamily.Product)
+                    .build(getContext(), getViewLifecycleOwner(),
+                            vb.cameraPreview.getSurfaceProvider());
+
+            if (vb.cameraViewFinder.isShowResultPoints()) {
+                scanner.setResultPointListener(vb.cameraViewFinder);
+            }
+
+            getLifecycle().addObserver(scanner);
+        }
+
+        scanner.startScan(new DecoderResultListener() {
+            @Nullable
+            private String lastCode;
+
+            @Override
+            public void onResult(@NonNull final Result result) {
+                final String barCode = result.getText();
+                if (barCode != null && !barCode.isBlank()) {
+                    if (!barCode.equals(lastCode)) {
+                        lastCode = barCode;
+                        onBarcodeScanned(barCode);
+                    }
+                } else {
+                    stopScanner();
+                }
+            }
+
+            @Override
+            public void onError(@NonNull final String s,
+                                @NonNull final Exception e) {
+                stopScanner();
+                getLifecycle().removeObserver(scanner);
+                scanner = null;
+            }
+        });
     }
+
 
     /**
      * Start scanner activity.
