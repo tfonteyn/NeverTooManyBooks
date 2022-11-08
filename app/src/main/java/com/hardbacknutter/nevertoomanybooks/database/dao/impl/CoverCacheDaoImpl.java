@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,18 +43,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
-
-import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.BLOB_IMAGE;
-import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.CACHE_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.LAST_UPDATED__UTC;
-import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.TBL_IMAGE;
 
 /**
  * DB Helper for Covers DB.
@@ -76,20 +71,24 @@ public class CoverCacheDaoImpl
     private static final String TAG = "CoverCacheDaoImpl";
 
     private static final String INSERT =
-            "INSERT INTO " + TBL_IMAGE.getName()
-            + '(' + CACHE_ID + ',' + BLOB_IMAGE + ") VALUES (?,?)";
+            "INSERT INTO " + CoversDbHelper.TBL_IMAGE.getName()
+            + '(' + CoversDbHelper.CACHE_ID + ',' + CoversDbHelper.BLOB_IMAGE + ") VALUES (?,?)";
 
     /** Get a cached image. */
     private static final String SQL_GET_IMAGE =
-            "SELECT " + BLOB_IMAGE + " FROM " + TBL_IMAGE.getName()
-            + " WHERE " + CACHE_ID + "=? AND " + LAST_UPDATED__UTC + ">?";
+            "SELECT " + CoversDbHelper.BLOB_IMAGE
+            + " FROM " + CoversDbHelper.TBL_IMAGE.getName()
+            + " WHERE " + CoversDbHelper.CACHE_ID + "=?"
+            + " AND " + CoversDbHelper.LAST_UPDATED__UTC + ">?";
 
     /** Run a count for the desired file. 1 == exists, 0 == not there. */
     private static final String SQL_COUNT_ID =
-            "SELECT COUNT(" + PK_ID + ") FROM " + TBL_IMAGE.getName()
-            + " WHERE " + CACHE_ID + "=?";
+            "SELECT COUNT(" + CoversDbHelper.PK_ID + ")"
+            + " FROM " + CoversDbHelper.TBL_IMAGE.getName()
+            + " WHERE " + CoversDbHelper.CACHE_ID + "=?";
 
-    private static final String SQL_COUNT = "SELECT COUNT(*) FROM " + TBL_IMAGE.getName();
+    private static final String SQL_COUNT =
+            "SELECT COUNT(*) FROM " + CoversDbHelper.TBL_IMAGE.getName();
 
     /** Compresses images to 80% to store in the cache. */
     private static final int IMAGE_QUALITY_PERCENTAGE = 80;
@@ -144,7 +143,7 @@ public class CoverCacheDaoImpl
     public void delete(@NonNull final String uuid) {
         try {
             // starts with the uuid, remove all sizes and indexes
-            db.delete(TBL_IMAGE.getName(), CACHE_ID + " LIKE ?",
+            db.delete(CoversDbHelper.TBL_IMAGE.getName(), CoversDbHelper.CACHE_ID + " LIKE ?",
                       new String[]{uuid + '%'});
         } catch (@NonNull final SQLiteException e) {
             Logger.error(TAG, e);
@@ -154,7 +153,7 @@ public class CoverCacheDaoImpl
     @Override
     public void deleteAll() {
         try {
-            db.execSQL("DELETE FROM " + TBL_IMAGE.getName());
+            db.execSQL("DELETE FROM " + CoversDbHelper.TBL_IMAGE.getName());
         } catch (@NonNull final SQLiteException e) {
             Logger.error(TAG, e);
         }
@@ -242,13 +241,13 @@ public class CoverCacheDaoImpl
                         }
                     } else {
                         final ContentValues cv = new ContentValues();
-                        cv.put(CACHE_ID, cacheId);
-                        cv.put(BLOB_IMAGE, out.toByteArray());
-                        cv.put(LAST_UPDATED__UTC, LocalDateTime
+                        cv.put(CoversDbHelper.CACHE_ID, cacheId);
+                        cv.put(CoversDbHelper.BLOB_IMAGE, out.toByteArray());
+                        cv.put(CoversDbHelper.LAST_UPDATED__UTC, LocalDateTime
                                 .now(ZoneOffset.UTC)
                                 .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-                        db.update(TBL_IMAGE.getName(), cv,
-                                   CACHE_ID + "=?", new String[]{cacheId});
+                        db.update(CoversDbHelper.TBL_IMAGE.getName(), cv,
+                                  CoversDbHelper.CACHE_ID + "=?", new String[]{cacheId});
                     }
                 }
             } catch (@NonNull final IllegalStateException ignore) {
