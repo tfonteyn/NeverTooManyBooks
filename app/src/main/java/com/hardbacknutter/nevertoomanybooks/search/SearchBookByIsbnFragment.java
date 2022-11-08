@@ -45,6 +45,7 @@ import com.google.zxing.Result;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
@@ -70,10 +71,6 @@ public class SearchBookByIsbnFragment
     /** Log tag. */
     private static final String TAG = "BookSearchByIsbnFrag";
     private static final String BKEY_SCANNER_ACTIVITY_STARTED = TAG + ":started";
-
-    //URGENT: Experimental on-screen barcode scanner.. works fine, but GUI layout needs tuning.
-    // Also need to take the EditBook screen into account.
-    private static final boolean SCAN_EMBEDDED = true;
 
     /** flag indicating the scanner Activity is already started. */
     private boolean scannerActivityStarted;
@@ -270,7 +267,7 @@ public class SearchBookByIsbnFragment
     }
 
     private void startScanner() {
-        if (SCAN_EMBEDDED) {
+        if (BuildConfig.EMBEDDED_BARCODE_SCANNER) {
             startScannerEmbedded();
         } else {
             startScannerActivity();
@@ -370,7 +367,7 @@ public class SearchBookByIsbnFragment
     }
 
     private void stopScanner() {
-        if (SCAN_EMBEDDED) {
+        if (BuildConfig.EMBEDDED_BARCODE_SCANNER) {
             if (scanner != null) {
                 scanner.stopScanning();
             }
