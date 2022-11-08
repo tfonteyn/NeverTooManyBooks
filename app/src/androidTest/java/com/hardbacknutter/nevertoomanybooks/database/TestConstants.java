@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,9 +29,9 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
-public final class Constants {
+public final class TestConstants {
 
-    public static final String PREFIX = "Test";
+    private static final String PREFIX = "Test";
 
     static final String AUTHOR_FAMILY_NAME = PREFIX + "AuthorFamilyName";
     static final String AUTHOR_GIVEN_NAME = PREFIX + "AuthorGivenName";
@@ -44,7 +44,7 @@ public final class Constants {
     static final String BOOK_LCCN_0 = "unused0";
     private static final String BOOKSHELF = PREFIX + "BookshelfName";
 
-    private Constants() {
+    private TestConstants() {
     }
 
     static String AuthorFullName(final int index) {

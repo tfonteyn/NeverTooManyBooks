@@ -23,8 +23,6 @@ import android.content.Context;
 
 import java.util.ArrayList;
 
-import org.junit.Before;
-
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -37,9 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
-import static com.hardbacknutter.nevertoomanybooks.database.Constants.AuthorFullName;
-import static com.hardbacknutter.nevertoomanybooks.database.Constants.BOOK_TITLE;
-import static com.hardbacknutter.nevertoomanybooks.database.Constants.TOC_TITLE;
+import org.junit.Before;
 
 /**
  * a0: b0, b3
@@ -93,29 +89,29 @@ public abstract class BaseSetup
         final Context context = serviceLocator.getLocalizedAppContext();
 
         final SynchronizedDb db = serviceLocator.getDb();
-        Constants.deleteTocs(db);
-        Constants.deleteBooks(db);
-        Constants.deleteAuthors(db);
-        Constants.deletePublishers(db);
+        TestConstants.deleteTocs(db);
+        TestConstants.deleteBooks(db);
+        TestConstants.deleteAuthors(db);
+        TestConstants.deletePublishers(db);
 
         final BookDao bookDao = serviceLocator.getBookDao();
         // all books will sit on the same shelf for now
-        //Constants.deleteBookshelves(db);
+        //TestConstants.deleteBookshelves(db);
         bookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT);
 
         // Create, don't insert yet
-        author[0] = Author.from(AuthorFullName(0));
-        author[1] = Author.from(AuthorFullName(1));
-        author[2] = Author.from(AuthorFullName(2));
-        author[3] = Author.from(AuthorFullName(3));
-        author[4] = Author.from(AuthorFullName(4));
+        author[0] = Author.from(TestConstants.AuthorFullName(0));
+        author[1] = Author.from(TestConstants.AuthorFullName(1));
+        author[2] = Author.from(TestConstants.AuthorFullName(2));
+        author[3] = Author.from(TestConstants.AuthorFullName(3));
+        author[4] = Author.from(TestConstants.AuthorFullName(4));
 
         // Create, don't insert yet
-        publisher[0] = Publisher.from(Constants.PUBLISHER + "0");
-        publisher[1] = Publisher.from(Constants.PUBLISHER + "1");
-        publisher[2] = Publisher.from(Constants.PUBLISHER + "2");
-        publisher[3] = Publisher.from(Constants.PUBLISHER + "3");
-        publisher[4] = Publisher.from(Constants.PUBLISHER + "4");
+        publisher[0] = Publisher.from(TestConstants.PUBLISHER + "0");
+        publisher[1] = Publisher.from(TestConstants.PUBLISHER + "1");
+        publisher[2] = Publisher.from(TestConstants.PUBLISHER + "2");
+        publisher[3] = Publisher.from(TestConstants.PUBLISHER + "3");
+        publisher[4] = Publisher.from(TestConstants.PUBLISHER + "4");
 
 
         book[0] = new Book();
@@ -125,7 +121,7 @@ public abstract class BaseSetup
         book[0].setBookshelves(bookshelfList);
         book[0].setStage(EntityStage.Stage.Dirty);
 
-        book[0].putString(DBKey.TITLE, BOOK_TITLE + "0");
+        book[0].putString(DBKey.TITLE, TestConstants.BOOK_TITLE + "0");
         book[0].putString(DBKey.LANGUAGE, "eng");
         authorList.clear();
         authorList.add(author[0]);
@@ -143,7 +139,7 @@ public abstract class BaseSetup
         bookshelfList.add(bookshelf[0]);
         book[1].setBookshelves(bookshelfList);
         book[1].setStage(EntityStage.Stage.Dirty);
-        book[1].putString(DBKey.TITLE, BOOK_TITLE + "1");
+        book[1].putString(DBKey.TITLE, TestConstants.BOOK_TITLE + "1");
         book[1].putString(DBKey.LANGUAGE, "ger");
         authorList.clear();
         authorList.add(author[1]);
@@ -160,7 +156,7 @@ public abstract class BaseSetup
         bookshelfList.add(bookshelf[0]);
         book[2].setBookshelves(bookshelfList);
         book[2].setStage(EntityStage.Stage.Dirty);
-        book[2].putString(DBKey.TITLE, BOOK_TITLE + "2");
+        book[2].putString(DBKey.TITLE, TestConstants.BOOK_TITLE + "2");
         book[2].putString(DBKey.LANGUAGE, "eng");
         authorList.clear();
         authorList.add(author[2]);
@@ -177,7 +173,7 @@ public abstract class BaseSetup
         bookshelfList.add(bookshelf[0]);
         book[3].setBookshelves(bookshelfList);
         book[3].setStage(EntityStage.Stage.Dirty);
-        book[3].putString(DBKey.TITLE, BOOK_TITLE + "3");
+        book[3].putString(DBKey.TITLE, TestConstants.BOOK_TITLE + "3");
         book[3].putString(DBKey.LANGUAGE, "eng");
         authorList.clear();
         authorList.add(author[0]);
@@ -195,7 +191,7 @@ public abstract class BaseSetup
         bookshelfList.add(bookshelf[0]);
         book[4].setBookshelves(bookshelfList);
         book[4].setStage(EntityStage.Stage.Dirty);
-        book[4].putString(DBKey.TITLE, BOOK_TITLE + "4");
+        book[4].putString(DBKey.TITLE, TestConstants.BOOK_TITLE + "4");
         book[4].putString(DBKey.LANGUAGE, "eng");
         authorList.clear();
         authorList.add(author[1]);
@@ -206,13 +202,13 @@ public abstract class BaseSetup
         publisherList.add(publisher[2]);
         book[4].setPublishers(publisherList);
         tocList.clear();
-        tocEntry[0] = new TocEntry(author[1], TOC_TITLE + "0");
+        tocEntry[0] = new TocEntry(author[1], TestConstants.TOC_TITLE + "0");
         tocList.add(tocEntry[0]);
-        tocEntry[1] = new TocEntry(author[1], TOC_TITLE + "1");
+        tocEntry[1] = new TocEntry(author[1], TestConstants.TOC_TITLE + "1");
         tocList.add(tocEntry[1]);
-        tocEntry[2] = new TocEntry(author[2], TOC_TITLE + "2");
+        tocEntry[2] = new TocEntry(author[2], TestConstants.TOC_TITLE + "2");
         tocList.add(tocEntry[2]);
-        tocEntry[3] = new TocEntry(author[2], TOC_TITLE + "3");
+        tocEntry[3] = new TocEntry(author[2], TestConstants.TOC_TITLE + "3");
         tocList.add(tocEntry[3]);
         book[4].setToc(tocList);
         bookId[4] = bookDao.insert(context, book[4]);

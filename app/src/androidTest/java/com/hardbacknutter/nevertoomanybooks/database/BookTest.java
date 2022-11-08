@@ -33,9 +33,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
@@ -54,9 +51,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
-import static com.hardbacknutter.nevertoomanybooks.database.Constants.AuthorFullName;
-import static com.hardbacknutter.nevertoomanybooks.database.Constants.BOOK_TITLE;
-import static com.hardbacknutter.nevertoomanybooks.database.Constants.COVER;
+import org.junit.Before;
+import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -112,10 +109,10 @@ public class BookTest {
         final ServiceLocator sl = ServiceLocator.getInstance();
         final SynchronizedDb db = sl.getDb();
 
-        Constants.deleteTocs(db);
-        Constants.deleteBooks(db);
-        Constants.deleteAuthors(db);
-        Constants.deletePublishers(db);
+        TestConstants.deleteTocs(db);
+        TestConstants.deleteBooks(db);
+        TestConstants.deleteAuthors(db);
+        TestConstants.deletePublishers(db);
 
         final Context context = sl.getLocalizedAppContext();
 
@@ -137,16 +134,16 @@ public class BookTest {
         bookshelfList.clear();
         bookshelfList.add(bookshelf[0]);
 
-        author[0] = Author.from(AuthorFullName(0));
-        author[1] = Author.from(AuthorFullName(1));
+        author[0] = Author.from(TestConstants.AuthorFullName(0));
+        author[1] = Author.from(TestConstants.AuthorFullName(1));
 
         // insert author[0] but do NOT insert author[1]
         authorId[0] = sl.getAuthorDao().insert(context, author[0]);
         authorList.clear();
         authorList.add(author[0]);
 
-        publisher[0] = Publisher.from(Constants.PUBLISHER + "0");
-        publisher[1] = Publisher.from(Constants.PUBLISHER + "1");
+        publisher[0] = Publisher.from(TestConstants.PUBLISHER + "0");
+        publisher[1] = Publisher.from(TestConstants.PUBLISHER + "1");
 
         // insert publisher[0] but do NOT publisher author[1]
 
@@ -185,7 +182,7 @@ public class BookTest {
         final File srcFile = new File(originalImageFileName[cIdx]);
         originalImageSize[cIdx] = srcFile.length();
 
-        FileUtils.copy(srcFile, new File(CoverDir.getTemp(context), Constants.COVER[cIdx]));
+        FileUtils.copy(srcFile, new File(CoverDir.getTemp(context), TestConstants.COVER[cIdx]));
     }
 
     /**
@@ -234,16 +231,16 @@ public class BookTest {
          * update the stored book
          */
         book.setStage(EntityStage.Stage.WriteAble);
-        book.putString(DBKey.TITLE, BOOK_TITLE + "0_upd");
+        book.putString(DBKey.TITLE, TestConstants.BOOK_TITLE + "0_upd");
         book.setStage(EntityStage.Stage.Dirty);
 
         authors = book.getAuthors();
         authors.add(author[1]);
 
-        book.setCover(1, new File(tempDir, Constants.COVER[1]));
+        book.setCover(1, new File(tempDir, TestConstants.COVER[1]));
 
         assertEquals(tempDir.getAbsolutePath()
-                     + File.separatorChar + Constants.COVER[1],
+                     + File.separatorChar + TestConstants.COVER[1],
                      book.getString(Book.BKEY_TMP_FILE_SPEC[1]));
 
         assertEquals(EntityStage.Stage.Dirty, book.getStage());
@@ -258,7 +255,7 @@ public class BookTest {
 
         uuid = book.getString(DBKey.BOOK_UUID);
 
-        assertEquals(BOOK_TITLE + "0_upd", book.getTitle());
+        assertEquals(TestConstants.BOOK_TITLE + "0_upd", book.getTitle());
         bookshelves = book.getBookshelves();
         assertEquals(1, bookshelves.size());
         assertEquals(bookshelf[0], bookshelves.get(0));
@@ -326,7 +323,7 @@ public class BookTest {
         final List<File> files = FileUtils.collectFiles(coverDir, jpgFilter, 10);
         prepareTempCover(context, files, 1);
 
-        book.setCover(1, new File(tempDir, Constants.COVER[1]));
+        book.setCover(1, new File(tempDir, TestConstants.COVER[1]));
 
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
@@ -374,20 +371,20 @@ public class BookTest {
 
         final Book book = new Book();
         book.setStage(EntityStage.Stage.WriteAble);
-        book.putString(DBKey.TITLE, Constants.BOOK_TITLE + "0");
+        book.putString(DBKey.TITLE, TestConstants.BOOK_TITLE + "0");
         book.setStage(EntityStage.Stage.Dirty);
 
-        book.putLong(DBKey.SID_ISFDB, Constants.BOOK_ISFDB_123);
-        book.putString(DBKey.SID_LCCN, Constants.BOOK_LCCN_0);
+        book.putLong(DBKey.SID_ISFDB, TestConstants.BOOK_ISFDB_123);
+        book.putString(DBKey.SID_LCCN, TestConstants.BOOK_LCCN_0);
 
         book.setBookshelves(bookshelfList);
         book.setAuthors(authorList);
         book.setPublishers(publisherList);
 
-        book.setCover(0, new File(CoverDir.getTemp(context), Constants.COVER[0]));
+        book.setCover(0, new File(CoverDir.getTemp(context), TestConstants.COVER[0]));
 
         assertEquals(CoverDir.getTemp(context).getAbsolutePath()
-                     + File.separatorChar + Constants.COVER[0],
+                     + File.separatorChar + TestConstants.COVER[0],
                      book.getString(Book.BKEY_TMP_FILE_SPEC[0]));
 
         assertEquals(EntityStage.Stage.Dirty, book.getStage());
@@ -408,9 +405,9 @@ public class BookTest {
 
         final String uuid = book.getString(DBKey.BOOK_UUID);
         assertFalse(uuid.isEmpty());
-        assertEquals(BOOK_TITLE + "0", book.getTitle());
+        assertEquals(TestConstants.BOOK_TITLE + "0", book.getTitle());
 
-        assertEquals(Constants.BOOK_ISFDB_123, book.getLong(DBKey.SID_ISFDB));
+        assertEquals(TestConstants.BOOK_ISFDB_123, book.getLong(DBKey.SID_ISFDB));
 
         // not saved, hence empty
         assertEquals("", book.getString(DBKey.SID_LCCN));
@@ -442,6 +439,6 @@ public class BookTest {
                 FileUtils.collectFiles(CoverDir.getTemp(context), jpgFilter, 10);
         // expected: 1: because "0.jpg" should be gone, but "1.jpg" will still be there
         assertEquals(1, tempFiles.size());
-        assertEquals(COVER[1], tempFiles.get(0).getName());
+        assertEquals(TestConstants.COVER[1], tempFiles.get(0).getName());
     }
 }

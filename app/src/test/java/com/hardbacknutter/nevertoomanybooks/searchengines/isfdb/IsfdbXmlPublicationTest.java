@@ -25,21 +25,19 @@ import androidx.preference.PreferenceManager;
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.Locale;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 
-import static com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine.PK_SERIES_FROM_TOC;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.xml.sax.SAXException;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
@@ -57,10 +55,11 @@ class IsfdbXmlPublicationTest
         searchEngine.setCaller(new MockCancellable());
 
         // Override the default 'false'
-        mockPreferences.edit().putBoolean(PK_SERIES_FROM_TOC, true).apply();
+        mockPreferences.edit().putBoolean(IsfdbSearchEngine.PK_SERIES_FROM_TOC, true).apply();
 
-        final boolean b = PreferenceManager.getDefaultSharedPreferences(context)
-                                           .getBoolean(PK_SERIES_FROM_TOC, false);
+        final boolean b = PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .getBoolean(IsfdbSearchEngine.PK_SERIES_FROM_TOC, false);
         assertTrue(b);
     }
 

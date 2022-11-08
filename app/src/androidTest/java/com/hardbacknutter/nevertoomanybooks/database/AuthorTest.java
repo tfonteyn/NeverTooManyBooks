@@ -33,9 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 
 import org.junit.Test;
 
-import static com.hardbacknutter.nevertoomanybooks.database.Constants.AUTHOR_FAMILY_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.Constants.AUTHOR_GIVEN_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.Constants.AuthorFullName;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -45,8 +42,8 @@ import static org.junit.Assert.assertTrue;
 public class AuthorTest
         extends BaseSetup {
 
-    private static final String RENAMED_FAMILY_NAME = Constants.AUTHOR_FAMILY_NAME + "Renamed";
-    private static final String RENAMED_GIVEN_NAMES = Constants.AUTHOR_GIVEN_NAME + "Renamed";
+    private static final String RENAMED_FAMILY_NAME = TestConstants.AUTHOR_FAMILY_NAME + "Renamed";
+    private static final String RENAMED_GIVEN_NAMES = TestConstants.AUTHOR_GIVEN_NAME + "Renamed";
 
     /**
      * Very basic test of insert/update/delete an Author.
@@ -58,14 +55,14 @@ public class AuthorTest
         final Context context = serviceLocator.getLocalizedAppContext();
         final AuthorDao authorDao = serviceLocator.getAuthorDao();
 
-        author[0] = Author.from(AuthorFullName(0));
+        author[0] = Author.from(TestConstants.AuthorFullName(0));
         authorId[0] = authorDao.insert(context, author[0]);
         assertTrue(authorId[0] > 0);
 
         author[0] = authorDao.getById(authorId[0]);
         assertNotNull(author[0]);
-        assertEquals(AUTHOR_FAMILY_NAME + "0", author[0].getFamilyName());
-        assertEquals(AUTHOR_GIVEN_NAME + "0", author[0].getGivenNames());
+        assertEquals(TestConstants.AUTHOR_FAMILY_NAME + "0", author[0].getFamilyName());
+        assertEquals(TestConstants.AUTHOR_GIVEN_NAME + "0", author[0].getGivenNames());
         assertFalse(author[0].isComplete());
 
         author[0].setComplete(true);
@@ -74,8 +71,8 @@ public class AuthorTest
 
         author[0] = authorDao.getById(authorId[0]);
         assertNotNull(author[0]);
-        assertEquals(AUTHOR_FAMILY_NAME + "0", author[0].getFamilyName());
-        assertEquals(AUTHOR_GIVEN_NAME + "0", author[0].getGivenNames());
+        assertEquals(TestConstants.AUTHOR_FAMILY_NAME + "0", author[0].getFamilyName());
+        assertEquals(TestConstants.AUTHOR_GIVEN_NAME + "0", author[0].getGivenNames());
         assertTrue(author[0].isComplete());
 
         updateOk = authorDao.delete(context, author[0]);
@@ -128,7 +125,7 @@ public class AuthorTest
         // original should still be there with original name
         tmpAuthor = authorDao.getById(idBefore);
         assertNotNull(tmpAuthor);
-        assertEquals(Constants.AUTHOR_FAMILY_NAME + "1", tmpAuthor.getFamilyName());
+        assertEquals(TestConstants.AUTHOR_FAMILY_NAME + "1", tmpAuthor.getFamilyName());
 
         // rename an Author to another EXISTING name and MERGE books
         author[2].setName(RENAMED_FAMILY_NAME + "_a", RENAMED_GIVEN_NAMES + "_a");
