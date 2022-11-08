@@ -8,7 +8,7 @@
       </option>
       <option name="VALUE_RESOURCE_FILE_SETTINGS">
         <value>
-          <option name="WRAP_ATTRIBUTES" value="2" />
+          <option name="WRAP_ATTRIBUTES" value="1" />
         </value>
       </option>
       <option name="OTHER_SETTINGS">
@@ -52,11 +52,13 @@
       </option>
       <option name="JD_ADD_BLANK_AFTER_PARM_COMMENTS" value="true" />
       <option name="JD_ADD_BLANK_AFTER_RETURN" value="true" />
+      <option name="JD_DO_NOT_WRAP_ONE_LINE_COMMENTS" value="true" />
     </JavaCodeStyleSettings>
     <JetCodeStyleSettings>
       <option name="CODE_STYLE_DEFAULTS" value="KOTLIN_OFFICIAL" />
     </JetCodeStyleSettings>
     <XML>
+      <option name="XML_KEEP_LINE_BREAKS" value="true" />
       <option name="XML_ALIGN_ATTRIBUTES" value="true" />
     </XML>
     <codeStyleSettings language="Groovy">
@@ -66,6 +68,7 @@
     </codeStyleSettings>
     <codeStyleSettings language="JAVA">
       <option name="ALIGN_MULTILINE_CHAINED_METHODS" value="true" />
+      <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
       <option name="ALIGN_MULTILINE_BINARY_OPERATION" value="true" />
       <option name="ALIGN_MULTILINE_TERNARY_OPERATION" value="true" />
       <option name="ALIGN_MULTILINE_THROWS_LIST" value="true" />
@@ -74,7 +77,7 @@
       <option name="METHOD_PARAMETERS_WRAP" value="2" />
       <option name="EXTENDS_KEYWORD_WRAP" value="2" />
       <option name="THROWS_KEYWORD_WRAP" value="2" />
-      <option name="METHOD_CALL_CHAIN_WRAP" value="2" />
+      <option name="METHOD_CALL_CHAIN_WRAP" value="1" />
       <option name="IF_BRACE_FORCE" value="3" />
       <option name="DOWHILE_BRACE_FORCE" value="3" />
       <option name="WHILE_BRACE_FORCE" value="3" />
