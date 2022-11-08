@@ -30,10 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -45,6 +41,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Parse one or more "Publication" records.
@@ -399,6 +399,7 @@ class IsfdbPublicationListHandler
                         if (externalIdType != null && externalId != null) {
                             //NEWTHINGS: adding a new search engine: optional: add external id DOM
                             switch (externalIdType) {
+                                // the case labels are the codes used by the ISFDB website
                                 case "1":
                                     addIfNotPresent(DBKey.SID_ASIN, externalId);
                                     break;
