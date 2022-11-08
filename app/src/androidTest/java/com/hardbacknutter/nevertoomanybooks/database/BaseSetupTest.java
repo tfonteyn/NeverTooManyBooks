@@ -23,11 +23,11 @@ import androidx.test.filters.MediumTest;
 
 import java.util.ArrayList;
 
-import org.junit.Test;
-
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
+
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -109,19 +109,19 @@ public class BaseSetupTest
         assertEquals(bookId[4], (long) bookIdList.get(1));
 
 
-        works = authorDao.getAuthorWorks(author[1], bookshelf[0].getId(), true, false);
+        works = authorDao.getAuthorWorks(author[1], bookshelf[0].getId(), true, false, null);
         assertEquals(2, works.size());
-        works = authorDao.getAuthorWorks(author[2], bookshelf[0].getId(), true, false);
+        works = authorDao.getAuthorWorks(author[2], bookshelf[0].getId(), true, false, null);
         assertEquals(2, works.size());
 
-        works = authorDao.getAuthorWorks(author[1], bookshelf[0].getId(), true, true);
+        works = authorDao.getAuthorWorks(author[1], bookshelf[0].getId(), true, true, null);
         assertEquals(5, works.size());
-        works = authorDao.getAuthorWorks(author[2], bookshelf[0].getId(), true, true);
+        works = authorDao.getAuthorWorks(author[2], bookshelf[0].getId(), true, true, null);
         assertEquals(5, works.size());
 
-        works = authorDao.getAuthorWorks(author[1], bookshelf[0].getId(), false, true);
+        works = authorDao.getAuthorWorks(author[1], bookshelf[0].getId(), false, true, null);
         assertEquals(3, works.size());
-        works = authorDao.getAuthorWorks(author[2], bookshelf[0].getId(), false, true);
+        works = authorDao.getAuthorWorks(author[2], bookshelf[0].getId(), false, true, null);
         assertEquals(3, works.size());
     }
 }

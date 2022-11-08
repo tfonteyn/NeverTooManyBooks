@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -19,24 +19,48 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group
+        android:id="@id/MENU_GROUP_AUTHOR_WORKS_SORT"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/sm_title_author_works_sort"
+            android:checkable="false"
+            android:enabled="false"
+            android:title="@string/lbl_sorting" />
+        <item
+            android:id="@id/MENU_AUTHOR_WORKS_SORT_TITLE"
+            android:checked="true"
+            android:title="@string/lbl_title" />
+
+        <item
+            android:id="@id/MENU_AUTHOR_WORKS_SORT_FIRST_PUBLICATION_DATE"
+            android:title="@string/lbl_first_publication" />
+    </group>
 
     <group
         android:id="@id/MENU_GROUP_AUTHOR_WORKS"
         android:checkableBehavior="single">
 
         <item
-            android:id="@id/MENU_AUTHOR_WORKS_ALL"
+            android:id="@+id/sm_title_author_works_filter"
+            android:checkable="false"
+            android:enabled="false"
+            android:title="@string/lbl_filter" />
+        <item
+            android:id="@id/MENU_AUTHOR_WORKS_FILTER_ALL"
             android:checked="true"
             android:title="@string/action_show_all" />
 
         <item
-            android:id="@id/MENU_AUTHOR_WORKS_TOC"
+            android:id="@id/MENU_AUTHOR_WORKS_FILTER_TOC"
             android:title="@string/menu_author_works_toc" />
 
         <item
-            android:id="@id/MENU_AUTHOR_WORKS_BOOKS"
+            android:id="@id/MENU_AUTHOR_WORKS_FILTER_BOOKS"
             android:title="@string/menu_author_works_book" />
 
     </group>
@@ -45,7 +69,6 @@
             android:id="@id/MENU_AUTHOR_WORKS_ALL_BOOKSHELVES"
             android:checkable="true"
             android:title="@string/lbl_all_bookshelves"
-            app:showAsAction="never"
-            />
+            app:showAsAction="never" />
     </group>
 </menu>

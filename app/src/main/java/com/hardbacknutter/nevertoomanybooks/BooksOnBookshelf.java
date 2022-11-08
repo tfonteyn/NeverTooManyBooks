@@ -1071,7 +1071,7 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.AUTHOR: {
-                if (itemId == R.id.MENU_AUTHOR_WORKS) {
+                if (itemId == R.id.MENU_AUTHOR_WORKS_FILTER) {
                     authorWorksLauncher.launch(new AuthorWorksContract.Input(
                             rowData.getLong(DBKey.FK_AUTHOR),
                             vm.getCurrentBookshelf().getId(),

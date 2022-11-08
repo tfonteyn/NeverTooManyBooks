@@ -29,11 +29,13 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -62,6 +64,14 @@ public class AuthorWorksViewModel
     private boolean withBooks = true;
     /** Show all shelves, or only the initially selected shelf. */
     private boolean allBookshelves;
+    /**
+     * Order the list by...  initially always {@code null}, i.e. sort by the default column.
+     * For all allowed values, see {@link AuthorDao.WorksOrderBy}
+     */
+    @AuthorDao.WorksOrderBy
+    @Nullable
+    private String orderByColumn;
+
     /** Set to {@code true} when ... used to report back to BoB to decide rebuilding BoB list. */
     private boolean dataModified;
 
@@ -99,20 +109,21 @@ public class AuthorWorksViewModel
         }
     }
 
-    void reloadWorkList(final boolean withTocEntries,
-                        final boolean withBooks) {
+    void setFilter(final boolean withTocEntries,
+                   final boolean withBooks) {
         this.withTocEntries = withTocEntries;
         this.withBooks = withBooks;
-        reloadWorkList();
     }
 
     void reloadWorkList() {
         works.clear();
         final long bookshelfId = allBookshelves ? Bookshelf.ALL_BOOKS : bookshelf.getId();
 
-        final ArrayList<AuthorWork> authorWorks =
+        final List<AuthorWork> authorWorks =
                 ServiceLocator.getInstance().getAuthorDao()
-                              .getAuthorWorks(author, bookshelfId, withTocEntries, withBooks);
+                              .getAuthorWorks(author, bookshelfId,
+                                              withTocEntries, withBooks,
+                                              orderByColumn);
 
         works.addAll(authorWorks);
     }
@@ -132,6 +143,10 @@ public class AuthorWorksViewModel
 
     void setAllBookshelves(final boolean all) {
         allBookshelves = all;
+    }
+
+    public void setOrderByColumn(@AuthorDao.WorksOrderBy @Nullable final String orderByColumn) {
+        this.orderByColumn = orderByColumn;
     }
 
     /**

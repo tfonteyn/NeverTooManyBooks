@@ -86,21 +86,21 @@ public class AuthorDaoImpl
             + _AND_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOKSHELF) + "=?";
 
     /**
-     * All Book titles and their first pub. date, for an Author,
-     * returned as an {@link AuthorWork}.
+     * All Book titles and their first pub. date, for an Author, returned as an {@link AuthorWork}.
      * <p>
      * ORDER BY clause NOT added here, as this statement is used in a union as well.
      * <p>
+     * The pub. date is cut down to the year (4 year digits) only.
      * We need TITLE_OB as it will be used to ORDER BY
      */
     private static final String SELECT_BOOK_TITLES_BY_AUTHOR_ID =
-            SELECT_ + "'" + AuthorWork.Type.BookLight.asChar() + "' AS " + DBKey.AUTHOR_WORK_TYPE
-            + ',' + TBL_BOOKS.dotAs(DBKey.PK_ID,
-                                    DBKey.TITLE,
-                                    DBKey.TITLE_OB,
-                                    DBKey.FIRST_PUBLICATION__DATE,
-                                    DBKey.LANGUAGE)
-            + ",1 AS " + DBKey.BOOK_COUNT
+            SELECT_
+            + "'" + AuthorWork.Type.BookLight.asChar() + "'" + _AS_ + DBKey.AUTHOR_WORK_TYPE
+            + ',' + TBL_BOOKS.dotAs(DBKey.PK_ID, DBKey.TITLE, DBKey.TITLE_OB)
+            + ",SUBSTR(" + TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION__DATE) + ",0,5)" +
+            _AS_ + DBKey.FIRST_PUBLICATION__DATE
+            + ',' + TBL_BOOKS.dotAs(DBKey.LANGUAGE)
+            + ",1" + _AS_ + DBKey.BOOK_COUNT
             + _FROM_ + TBL_BOOKS.startJoin(TBL_BOOK_AUTHOR);
 
 
@@ -112,18 +112,19 @@ public class AuthorDaoImpl
      * <p>
      * ORDER BY clause NOT added here, as this statement is used in a union as well.
      * <p>
+     * The pub. date is cut down to the year (4 year digits) only.
      * We need TITLE_OB as it will be used to ORDER BY
      */
     private static final String SELECT_TOC_ENTRIES_BY_AUTHOR_ID =
-            SELECT_ + "'" + AuthorWork.Type.TocEntry.asChar() + "' AS " + DBKey.AUTHOR_WORK_TYPE
-            + ',' + TBL_TOC_ENTRIES.dotAs(DBKey.PK_ID,
-                                          DBKey.TITLE,
-                                          DBKey.TITLE_OB,
-                                          DBKey.FIRST_PUBLICATION__DATE)
+            SELECT_
+            + "'" + AuthorWork.Type.TocEntry.asChar() + "'" + _AS_ + DBKey.AUTHOR_WORK_TYPE
+            + ',' + TBL_TOC_ENTRIES.dotAs(DBKey.PK_ID, DBKey.TITLE, DBKey.TITLE_OB)
+            + ",SUBSTR(" + TBL_TOC_ENTRIES.dot(DBKey.FIRST_PUBLICATION__DATE) + ",0,5)" +
+            _AS_ + DBKey.FIRST_PUBLICATION__DATE
             // The Toc table does not have a language field, just return an empty string
-            + ",'' AS " + DBKey.LANGUAGE
+            + ",''" + _AS_ + DBKey.LANGUAGE
             // count the number of books this TOC entry is present in.
-            + ", COUNT(" + TBL_TOC_ENTRIES.dot(DBKey.PK_ID) + ") AS " + DBKey.BOOK_COUNT
+            + ", COUNT(" + TBL_TOC_ENTRIES.dot(DBKey.PK_ID) + ")" + _AS_ + DBKey.BOOK_COUNT
             // join with the books, so we can group by toc id, and get the number of books.
             + _FROM_ + TBL_TOC_ENTRIES.startJoin(TBL_BOOK_TOC_ENTRIES);
 
@@ -396,25 +397,25 @@ public class AuthorDaoImpl
         return list;
     }
 
-    /**
-     * Return all the {@link AuthorWork} for the given {@link Author}.
-     *
-     * @param author         to retrieve
-     * @param bookshelfId    limit the list to books on this shelf (pass -1 for all shelves)
-     * @param withTocEntries add the toc entries
-     * @param withBooks      add books without TOC as well; i.e. the toc of a book without a toc,
-     *                       is the book title itself. (makes sense?)
-     *
-     * @return List of {@link AuthorWork} for this {@link Author}
-     */
+    @Override
     @NonNull
     public ArrayList<AuthorWork> getAuthorWorks(@NonNull final Author author,
                                                 final long bookshelfId,
                                                 final boolean withTocEntries,
-                                                final boolean withBooks) {
+                                                final boolean withBooks,
+                                                @WorksOrderBy @Nullable final String orderBy) {
         // sanity check
         if (!withTocEntries && !withBooks) {
             throw new IllegalArgumentException("Must specify what to fetch");
+        }
+
+        final String orderByColumns;
+        if (orderBy == null || DBKey.TITLE_OB.equals(orderBy)) {
+            orderByColumns = DBKey.TITLE_OB + _COLLATION;
+        } else if (DBKey.FIRST_PUBLICATION__DATE.equals(orderBy)) {
+            orderByColumns = DBKey.FIRST_PUBLICATION__DATE + ',' + DBKey.TITLE_OB + _COLLATION;
+        } else {
+            throw new IllegalArgumentException("Invalid orderBy");
         }
 
         final boolean byShelf = bookshelfId != Bookshelf.ALL_BOOKS;
@@ -458,7 +459,7 @@ public class AuthorDaoImpl
             }
         }
 
-        sql += _ORDER_BY_ + DBKey.TITLE_OB + _COLLATION;
+        sql += _ORDER_BY_ + orderByColumns;
 
         final ArrayList<AuthorWork> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(sql, paramList.toArray(Z_ARRAY_STRING))) {
@@ -740,7 +741,7 @@ public class AuthorDaoImpl
         final String sql =
                 "SELECT " + DBKey.FK_BOOK + " FROM "
                 + "(SELECT " + DBKey.FK_BOOK
-                + ", MIN(" + DBKey.BOOK_AUTHOR_POSITION + ") AS mp"
+                + ", MIN(" + DBKey.BOOK_AUTHOR_POSITION + ")" + _AS_ + " mp"
                 + " FROM " + TBL_BOOK_AUTHOR.getName() + " GROUP BY " + DBKey.FK_BOOK
                 + ") WHERE mp > 1";
 

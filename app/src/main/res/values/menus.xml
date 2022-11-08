@@ -111,11 +111,15 @@
     <item name="MENU_AUTHOR_SET_COMPLETE" type="id" />
     <item name="MENU_AUTHOR_SET_INCOMPLETE" type="id" />
 
+    <item name="MENU_GROUP_AUTHOR_WORKS_SORT" type="id" />
+    <item name="MENU_AUTHOR_WORKS_SORT_TITLE" type="id" />
+    <item name="MENU_AUTHOR_WORKS_SORT_FIRST_PUBLICATION_DATE" type="id" />
+
     <item name="MENU_GROUP_AUTHOR_WORKS" type="id" />
-    <item name="MENU_AUTHOR_WORKS" type="id" />
-    <item name="MENU_AUTHOR_WORKS_ALL" type="id" />
-    <item name="MENU_AUTHOR_WORKS_TOC" type="id" />
-    <item name="MENU_AUTHOR_WORKS_BOOKS" type="id" />
+    <item name="MENU_AUTHOR_WORKS_FILTER" type="id" />
+    <item name="MENU_AUTHOR_WORKS_FILTER_ALL" type="id" />
+    <item name="MENU_AUTHOR_WORKS_FILTER_TOC" type="id" />
+    <item name="MENU_AUTHOR_WORKS_FILTER_BOOKS" type="id" />
 
     <item name="MENU_GROUP_AUTHOR_WORKS_BOOKSHELVES" type="id" />
     <item name="MENU_AUTHOR_WORKS_ALL_BOOKSHELVES" type="id" />

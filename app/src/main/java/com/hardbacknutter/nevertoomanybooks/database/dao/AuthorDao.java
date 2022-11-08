@@ -25,7 +25,10 @@ import android.database.Cursor;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
@@ -124,6 +127,7 @@ public interface AuthorDao {
      * @param withTocEntries add the toc entries
      * @param withBooks      add books without TOC as well; i.e. the toc of a book without a toc,
      *                       is the book title itself. (makes sense?)
+     * @param orderBy        {@code null} for the default, or one of {@link WorksOrderBy}
      *
      * @return List of {@link AuthorWork} for this {@link Author}
      */
@@ -131,7 +135,8 @@ public interface AuthorDao {
     ArrayList<AuthorWork> getAuthorWorks(@NonNull Author author,
                                          long bookshelfId,
                                          boolean withTocEntries,
-                                         boolean withBooks);
+                                         boolean withBooks,
+                                         @WorksOrderBy @Nullable String orderBy);
 
     /**
      * Get all Authors; mainly for the purpose of exports.
@@ -301,4 +306,13 @@ public interface AuthorDao {
      * @return the number of books processed
      */
     int repositionAuthor(@NonNull Context context);
+
+    @StringDef({
+            DBKey.TITLE_OB,
+            DBKey.FIRST_PUBLICATION__DATE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface WorksOrderBy {
+
+    }
 }

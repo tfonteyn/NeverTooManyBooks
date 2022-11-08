@@ -26,12 +26,12 @@ import androidx.test.filters.MediumTest;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import org.junit.Test;
-
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
+
+import org.junit.Test;
 
 import static com.hardbacknutter.nevertoomanybooks.database.Constants.AUTHOR_FAMILY_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.Constants.AUTHOR_GIVEN_NAME;
@@ -200,7 +200,7 @@ public class AuthorTest
         assertEquals(bookId[4], (long) bookIdList.get(4));
 
         // - all tocs of author[2] will now belong to author[1]
-        works = authorDao.getAuthorWorks(author[1], bookshelf[0].getId(), true, false);
+        works = authorDao.getAuthorWorks(author[1], bookshelf[0].getId(), true, false, null);
         assertEquals(4, works.size());
         assertEquals(tocEntry[0].getId(), works.get(0).getId());
         assertEquals(tocEntry[1].getId(), works.get(1).getId());

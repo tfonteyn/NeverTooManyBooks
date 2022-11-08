@@ -341,21 +341,38 @@ public class AuthorWorksFragment
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             final int itemId = menuItem.getItemId();
 
-            if (itemId == R.id.MENU_AUTHOR_WORKS_ALL) {
+            if (itemId == R.id.MENU_AUTHOR_WORKS_SORT_TITLE) {
                 menuItem.setChecked(true);
-                vm.reloadWorkList(true, true);
+                vm.setOrderByColumn(DBKey.TITLE_OB);
+                vm.reloadWorkList();
                 adapter.notifyDataSetChanged();
                 return true;
 
-            } else if (itemId == R.id.MENU_AUTHOR_WORKS_TOC) {
+            } else if (itemId == R.id.MENU_AUTHOR_WORKS_SORT_FIRST_PUBLICATION_DATE) {
                 menuItem.setChecked(true);
-                vm.reloadWorkList(true, false);
+                vm.setOrderByColumn(DBKey.FIRST_PUBLICATION__DATE);
+                vm.reloadWorkList();
                 adapter.notifyDataSetChanged();
                 return true;
 
-            } else if (itemId == R.id.MENU_AUTHOR_WORKS_BOOKS) {
+            } else if (itemId == R.id.MENU_AUTHOR_WORKS_FILTER_ALL) {
                 menuItem.setChecked(true);
-                vm.reloadWorkList(false, true);
+                vm.setFilter(true, true);
+                vm.reloadWorkList();
+                adapter.notifyDataSetChanged();
+                return true;
+
+            } else if (itemId == R.id.MENU_AUTHOR_WORKS_FILTER_TOC) {
+                menuItem.setChecked(true);
+                vm.setFilter(true, false);
+                vm.reloadWorkList();
+                adapter.notifyDataSetChanged();
+                return true;
+
+            } else if (itemId == R.id.MENU_AUTHOR_WORKS_FILTER_BOOKS) {
+                menuItem.setChecked(true);
+                vm.setFilter(false, true);
+                vm.reloadWorkList();
                 adapter.notifyDataSetChanged();
                 return true;
 
