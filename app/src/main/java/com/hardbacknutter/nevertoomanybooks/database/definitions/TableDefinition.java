@@ -381,12 +381,12 @@ public class TableDefinition {
      */
     @NonNull
     public String dot(@NonNull final String domain) {
-        return getAlias() + '.' + domain;
+        return alias + '.' + domain;
     }
 
     @NonNull
     public String dot(@NonNull final Domain domain) {
-        return getAlias() + '.' + domain.getName();
+        return alias + '.' + domain.getName();
     }
 
     /**
@@ -404,7 +404,7 @@ public class TableDefinition {
     @NonNull
     public String dotAs(@NonNull final String... domainKeys) {
         return Arrays.stream(domainKeys)
-                     .map(key -> getAlias() + '.' + key + _AS_ + key)
+                     .map(key -> alias + '.' + key + _AS_ + key)
                      .collect(Collectors.joining(","));
     }
 
@@ -412,7 +412,7 @@ public class TableDefinition {
     public String dotAs(@NonNull final List<Domain> domains) {
         return domains.stream()
                       .map(Domain::getName)
-                      .map(key -> getAlias() + '.' + key + _AS_ + key)
+                      .map(key -> alias + '.' + key + _AS_ + key)
                       .collect(Collectors.joining(","));
     }
 
@@ -427,7 +427,7 @@ public class TableDefinition {
      */
     @NonNull
     public String ref() {
-        return name + _AS_ + getAlias();
+        return name + _AS_ + alias;
     }
 
     /**
