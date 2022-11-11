@@ -43,6 +43,7 @@ import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -1095,8 +1096,8 @@ public class BooksOnBookshelf
                     return true;
 
                 } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    final String message = rowData.getString(DBKey.AUTHOR_FORMATTED);
-                    updateBooksFromInternetData(position, rowData, message);
+                    final String dialogTitle = rowData.getString(DBKey.AUTHOR_FORMATTED);
+                    updateBooksFromInternetData(position, rowData, dialogTitle);
                     return true;
                 }
                 break;
@@ -1127,8 +1128,8 @@ public class BooksOnBookshelf
                     return true;
 
                 } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    final String message = rowData.getString(DBKey.SERIES_TITLE);
-                    updateBooksFromInternetData(position, rowData, message);
+                    final String dialogTitle = rowData.getString(DBKey.SERIES_TITLE);
+                    updateBooksFromInternetData(position, rowData, dialogTitle);
                     return true;
                 }
                 break;
@@ -1149,8 +1150,8 @@ public class BooksOnBookshelf
                     return true;
 
                 } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    final String message = rowData.getString(DBKey.PUBLISHER_NAME);
-                    updateBooksFromInternetData(position, rowData, message);
+                    final String dialogTitle = rowData.getString(DBKey.PUBLISHER_NAME);
+                    updateBooksFromInternetData(position, rowData, dialogTitle);
                     return true;
                 }
                 break;
@@ -1291,20 +1292,20 @@ public class BooksOnBookshelf
      * IMPORTANT: this is from a context click on a row.
      * We pass the book ID's which are suited for that row.
      *
-     * @param position The position of the item within the adapter's data set.
-     * @param rowData  for the row which was selected
-     * @param message  to show to the user; can be 'null' if the group is a "no series" etc...
+     * @param position    The position of the item within the adapter's data set.
+     * @param rowData     for the row which was selected
+     * @param dialogTitle to show to the user; can be 'null' if the group is a "no series" etc...
      */
     private void updateBooksFromInternetData(final int position,
                                              @NonNull final DataHolder rowData,
-                                             @Nullable final CharSequence message) {
+                                             @Nullable final CharSequence dialogTitle) {
         final View anchor = layoutManager.findViewByPosition(position);
 
         //noinspection ConstantConditions
         new ExtPopupMenu(this)
                 .inflate(R.menu.update_books)
-                .setTitle(getString(R.string.menu_update_books))
-                .setMessage(message)
+                .setTitle(dialogTitle)
+                .setMessage(getString(R.string.menu_update_books))
                 .showAsDropDown(anchor, menuItem -> {
                     final int itemId = menuItem.getItemId();
                     if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_THIS_SHELF_ONLY) {
@@ -1832,6 +1833,7 @@ public class BooksOnBookshelf
         @Override
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
+            MenuCompat.setGroupDividerEnabled(menu, true);
             menuInflater.inflate(R.menu.bob, menu);
             MenuUtils.setupSearchActionView(BooksOnBookshelf.this, menu);
         }
