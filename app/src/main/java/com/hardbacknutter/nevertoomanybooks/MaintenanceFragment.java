@@ -245,7 +245,8 @@ public class MaintenanceFragment
         try {
             //noinspection ConstantConditions
             final DebugReport builder = new DebugReport(getContext())
-                    .addDefaultMessage();
+                    .addDefaultMessage()
+                    .addScreenParams();
 
             if (selectedItems.contains(DBG_SEND_DATABASE)) {
                 builder.addDatabase();
