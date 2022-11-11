@@ -19,8 +19,9 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@id/MENU_PREFS_SEARCH_SITES"
@@ -29,13 +30,6 @@
         android:title="@string/lbl_websites"
         app:showAsAction="ifRoom"
         />
-
-    <item
-        android:id="@id/MENU_ISBN_VALIDITY_STRICT"
-        android:checkable="true"
-        android:orderInCategory="@integer/MENU_ORDER_SEARCH_STRICT_ISBN"
-        android:title="@string/lbl_strict_isbn"
-        app:showAsAction="never" />
 
     <item
         android:id="@id/MENU_UPDATE_FROM_INTERNET_SKIP_ALL"
@@ -48,4 +42,14 @@
         android:icon="@drawable/ic_baseline_undo_24"
         android:title="@string/action_reset_to_default"
         />
+
+    <group
+        android:id="@id/SUBMENU_ISBN_VALIDITY"
+        android:orderInCategory="@integer/MENU_ORDER_ISBN_VALIDITY">
+        <item
+            android:id="@id/MENU_ISBN_VALIDITY_STRICT"
+            android:checkable="true"
+            android:title="@string/lbl_strict_isbn"
+            app:showAsAction="never" />
+    </group>
 </menu>
