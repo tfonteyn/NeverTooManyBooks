@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 
@@ -325,6 +326,12 @@ public class AuthorWorksFragment
                                  @NonNull final MenuInflater menuInflater) {
             MenuCompat.setGroupDividerEnabled(menu, true);
             menuInflater.inflate(R.menu.author_works, menu);
+
+            //noinspection ConstantConditions
+            MenuUtils.customizeMenuGroupTitle(getContext(), menu,
+                                              R.id.sm_title_author_works_sort);
+            MenuUtils.customizeMenuGroupTitle(getContext(), menu,
+                                              R.id.sm_title_author_works_filter);
         }
 
         @Override
