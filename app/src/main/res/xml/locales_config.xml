@@ -19,7 +19,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- see also "resConfigs" in gradle.build +  the in-app picker in "res/xml/preferences.xml" -->
+<!-- https://developer.android.com/guide/topics/resources/app-languages#use-localeconfig -->
 <locale-config xmlns:android="http://schemas.android.com/apk/res/android">
     <locale android:name="en" />
     <locale android:name="en-GB" />
