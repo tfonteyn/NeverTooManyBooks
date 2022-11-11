@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.util.Pair;
+import androidx.core.view.MenuCompat;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -471,6 +472,7 @@ public class SearchBookByIsbnFragment
         @Override
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
+            MenuCompat.setGroupDividerEnabled(menu, true);
             menuInflater.inflate(R.menu.search_by_isbn, menu);
         }
 
