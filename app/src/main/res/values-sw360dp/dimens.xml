@@ -49,7 +49,7 @@
     <dimen name="til_fixed_width_series_num">200dp</dimen>
     <dimen name="til_fixed_width_external_id">200dp</dimen>
 
-    <dimen name="cbx_fixed_width_author_type">160dp</dimen>
+    <dimen name="cbx_fixed_width_author_type">140dp</dimen>
 
     <dimen name="btn_open_toc_width">@dimen/wrap_content</dimen>
     <dimen name="btn_open_toc_height">@dimen/wrap_content</dimen>
