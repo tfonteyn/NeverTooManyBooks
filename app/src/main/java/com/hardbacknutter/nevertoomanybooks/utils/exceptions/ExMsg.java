@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -100,11 +100,9 @@ public final class ExMsg {
         } else if (e instanceof java.net.SocketTimeoutException) {
             msg = context.getString(R.string.httpErrorTimeout);
 
-        } else if (e instanceof java.net.MalformedURLException) {
-            msg = context.getString(R.string.error_search_failed_network);
-
-        } else if (e instanceof java.net.UnknownHostException) {
-            msg = context.getString(R.string.error_search_failed_network);
+        } else if (e instanceof java.net.MalformedURLException
+                   || e instanceof java.net.UnknownHostException) {
+            msg = context.getString(R.string.error_unknown_host, e.getMessage());
 
         } else if (e instanceof java.security.cert.CertificateEncodingException) {
             msg = context.getString(R.string.error_certificate_invalid);

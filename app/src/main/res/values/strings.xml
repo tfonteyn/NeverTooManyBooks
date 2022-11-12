@@ -162,7 +162,7 @@
     <string name="error_search_x_failed_y">Searching on %1$s failed: %2$s</string>
 
     <string name="error_search_failed_network">Please open the Settings and check your network and Search Site preferences.\nAlso check your device network settings.</string>
-
+    <string name="error_unknown_host">There was a problem connecting to “%1$s”. If this is a Search Site, please open the Settings and check your network and Search Site preferences.</string>
 
     <string name="error_auto_toc_population_failed">Automatic Population of Titles Failed.</string>
     <string name="error_no_image_editor">No image editor found.</string>
