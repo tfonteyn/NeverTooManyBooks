@@ -41,7 +41,7 @@
     <dimen name="column_margin_end">32dp</dimen>
 
     <!-- fixed width TIL fields -->
-    <dimen name="til_fixed_width_personal_name">320dp</dimen>
+    <dimen name="til_fixed_width_personal_name">300dp</dimen>
     <dimen name="til_fixed_width_year">120dp</dimen>
     <dimen name="til_fixed_width_price">160dp</dimen>
     <dimen name="til_fixed_width_currency">140dp</dimen>
