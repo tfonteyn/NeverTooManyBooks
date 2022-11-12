@@ -27,7 +27,11 @@
     port: w411dp h659dp
     land: w683dp h387dp
 
-    Samsung A5-2017 - 5.2" (1080 x 1920) - 480dpi - sw360dp
+    Samsung J530S - 5.2" (720x1280) - 320dpi (density=2.0) - sw360dp
+    port: w360dp h568dp
+    land:
+
+    Samsung A5-2017 - 5.2" (1080 x 1920) - 480dpi (density=3.0) - sw360dp
     port:  w360dp h616dp
     land:  w640dp h336dp
 
@@ -42,7 +46,9 @@
     land: w533dp h296dp
 -->
 <resources>
-    <!-- use a double redirect; e.g.  <dimen name="btn_open_toc_width">@dimen/wrap_content</dimen>     -->
+    <!-- use a double redirect;
+         e.g.  <dimen name="btn_open_toc_width">@dimen/wrap_content</dimen>
+    -->
     <item name="match_parent" format="integer" type="dimen">-1</item>
     <item name="wrap_content" format="integer" type="dimen">-2</item>
 
@@ -111,7 +117,7 @@
     <!-- Margin applied around all TIL fields. -->
     <dimen name="til_margin">2dp</dimen>
     <!-- personal_name: author, publisher  -->
-    <dimen name="til_fixed_width_personal_name">268dp</dimen>
+    <dimen name="til_fixed_width_personal_name">260dp</dimen>
     <!-- 4 digit year -->
     <dimen name="til_fixed_width_year">120dp</dimen>
     <dimen name="til_fixed_width_price">160dp</dimen>
