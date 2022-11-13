@@ -95,13 +95,14 @@ public final class NetworkUtils {
                         nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
 
                 // Indicates the network has been found to provide actual access to
-                // the public internet last time it was probed.w
+                // the public internet last time it was probed.
                 final boolean isValidated =
                         nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
 
-                // Indicates that the network is (not) metered.
-                final boolean isMetered =
-                        !nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
+                // Indicates that the network is not metered.
+                //noinspection NegativelyNamedBooleanVariable
+                final boolean isNotMetered =
+                        nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
 
                 final boolean isMeteredAllowed = PreferenceManager
                         .getDefaultSharedPreferences(context)
@@ -111,14 +112,14 @@ public final class NetworkUtils {
                     Log.d(TAG, "getNetworkCapabilities"
                                + "|hasInternet=" + hasInternet
                                + "|isValidated=" + isValidated
-                               + "|isMetered=" + isMetered
+                               + "|isMetered=" + isNotMetered
                                + "|isMeteredAllowed=" + isMeteredAllowed
                          );
                 }
 
                 return hasInternet
                        && isValidated
-                       && (isMetered || isMeteredAllowed);
+                       && (isNotMetered || isMeteredAllowed);
             }
         }
 
