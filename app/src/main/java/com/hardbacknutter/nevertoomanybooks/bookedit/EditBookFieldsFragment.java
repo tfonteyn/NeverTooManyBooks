@@ -58,8 +58,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
+import com.hardbacknutter.nevertoomanybooks.utils.CameraDetection;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
+import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
 
 /**
  * Note that the 'pick-list' fields are stored directly in the Book as well as the field.
@@ -96,7 +98,7 @@ public class EditBookFieldsFragment
             };
 
     /** The scanner. */
-    private final ActivityResultLauncher<Void> scanLauncher =
+    private final ActivityResultLauncher<ScanOptions> scanLauncher =
             registerForActivityResult(new ScannerContract(), o -> o.ifPresent(
                     barCode -> vm.getBook().putString(DBKey.BOOK_ISBN, barCode)));
 
@@ -173,7 +175,9 @@ public class EditBookFieldsFragment
         isbnValidationTextWatcher = new ISBN.ValidationTextWatcher(
                 vb.lblIsbn, vb.isbn, isbnValidityCheck);
         vb.isbn.addTextChangedListener(isbnValidationTextWatcher);
-        vb.lblIsbn.setEndIconOnClickListener(v -> scanLauncher.launch(null));
+        vb.lblIsbn.setEndIconOnClickListener(v -> scanLauncher.launch(
+                new ScanOptions().setUseCameraWithLensFacing(
+                        CameraDetection.getPreferredCameraLensFacing(getContext()))));
     }
 
     private void createCoverDelegates() {

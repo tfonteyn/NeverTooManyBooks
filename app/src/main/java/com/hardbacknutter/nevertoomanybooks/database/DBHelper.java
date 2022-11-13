@@ -877,6 +877,7 @@ public class DBHelper
               .remove("booklist..top.offset")
 
               .remove("calibre.last.sync.date")
+              .remove("camera.id.scan.barcode")
               .remove("compat.booklist.mode")
               .remove("compat.image.cropper.viewlayertype")
               .remove("edit.book.tab.authSer")

@@ -57,8 +57,10 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbn
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
+import com.hardbacknutter.nevertoomanybooks.utils.CameraDetection;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
+import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
 import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeFamily;
 import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeScanner;
 import com.hardbacknutter.tinyzxingwrapper.scanner.DecoderResultListener;
@@ -161,9 +163,21 @@ public class SearchBookByIsbnFragment
     /** After a successful scan/search, the data is offered for editing. */
     private final ActivityResultLauncher<Long> editExistingBookLauncher =
             registerForActivityResult(new EditBookByIdContract(),
-                    o -> o.ifPresent(this::onBookEditingDone));
+                                      o -> o.ifPresent(this::onBookEditingDone));
 
-    private final ActivityResultLauncher<Void> scannerActivityLauncher =
+    /**
+     * Start scanner activity.
+     */
+    private void startScannerActivity() {
+        if (!scannerActivityStarted) {
+            scannerActivityStarted = true;
+            //noinspection ConstantConditions
+            scannerActivityLauncher.launch(new ScanOptions().setUseCameraWithLensFacing(
+                    CameraDetection.getPreferredCameraLensFacing(getContext())));
+        }
+    }
+
+    private final ActivityResultLauncher<ScanOptions> scannerActivityLauncher =
             registerForActivityResult(new ScannerContract(), o -> {
                 scannerActivityStarted = false;
                 if (o.isPresent()) {
@@ -318,16 +332,6 @@ public class SearchBookByIsbnFragment
         });
     }
 
-
-    /**
-     * Start scanner activity.
-     */
-    private void startScannerActivity() {
-        if (!scannerActivityStarted) {
-            scannerActivityStarted = true;
-            scannerActivityLauncher.launch(null);
-        }
-    }
 
     private void onBarcodeScanned(@NonNull final String barCode) {
         final boolean strictIsbn = coordinator.isStrictIsbn();

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,8 +27,8 @@ import android.hardware.camera2.CameraMetadata;
 
 import androidx.annotation.NonNull;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -38,26 +38,27 @@ public final class CameraDetection {
     /** Log tag. */
     private static final String TAG = "CameraDetection";
 
+    private static final int NO_PREFERENCE = -1;
+
     private CameraDetection() {
     }
 
     /**
-     * Get available cameraId and lens-facing ID.
+     * Get available lens-facing id's.
      *
      * <ul>
      *     <li>{@link CameraMetadata#LENS_FACING_FRONT}</li>
      *     <li>{@link CameraMetadata#LENS_FACING_BACK}</li>
-     *     <li>{@link CameraMetadata#LENS_FACING_EXTERNAL}</li>
      * </ul>
      *
      * @param context Current context
      *
-     * @return Map: key: camera-id, value: the lens-facing id
+     * @return list with lens-facing id
      */
     @NonNull
-    public static Map<String, Integer> getCameras(@NonNull final Context context) {
+    public static List<Integer> getCameras(@NonNull final Context context) {
 
-        final Map<String, Integer> map = new HashMap<>();
+        final List<Integer> list = new ArrayList<>();
 
         final CameraManager cm = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
 
@@ -65,30 +66,37 @@ public final class CameraDetection {
             final String[] cameraIdList = cm.getCameraIdList();
             for (final String cameraId : cameraIdList) {
                 final CameraCharacteristics cc = cm.getCameraCharacteristics(cameraId);
-                map.put(cameraId, cc.get(CameraCharacteristics.LENS_FACING));
+                list.add(cc.get(CameraCharacteristics.LENS_FACING));
             }
         } catch (@NonNull final CameraAccessException e) {
             Logger.error(TAG, e);
         }
 
-        return map;
+        return list;
     }
 
     /**
-     * Get the user preferred camera id.
+     * Get the user preferred camera lens-facing identifier.
+     * <p>
+     * One of:
+     * <ul>
+     *     <li>{@link #NO_PREFERENCE} for no-preference</li>
+     *     <li>{@link CameraMetadata#LENS_FACING_FRONT}</li>
+     *     <li>{@link CameraMetadata#LENS_FACING_BACK}</li>
+     * </ul>
      *
      * @param context Current context
      *
-     * @return camera id, or {@code -1} for no-preference
+     * @return lens-facing identifier, or {@link #NO_PREFERENCE} for no-preference
      */
-    public static int getPreferredCameraId(@NonNull final Context context) {
-        // By default -1, which for the scanner IntentIntegrator call means 'no preference'
-        int cameraId = Prefs.getIntListPref(context, Prefs.pk_camera_id_scan_barcode, -1);
+    public static int getPreferredCameraLensFacing(@NonNull final Context context) {
+        // By default -1, which for the scanner contract call means 'no preference'
+        int lensFacing = Prefs.getIntListPref(context, Prefs.pk_camera_lens_facing, NO_PREFERENCE);
         // we must verify the id, as the preference could have been imported from another device
-        if (!getCameras(context).containsKey(String.valueOf(cameraId))) {
-            cameraId = -1;
+        if (!getCameras(context).contains(lensFacing)) {
+            lensFacing = NO_PREFERENCE;
         }
 
-        return cameraId;
+        return lensFacing;
     }
 }

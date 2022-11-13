@@ -51,7 +51,7 @@ public final class Prefs {
 
     public static final String pk_camera_image_autorotate = "camera.image.autorotate";
     public static final String pk_camera_image_action = "camera.image.action";
-    public static final String pk_camera_id_scan_barcode = "camera.id.scan.barcode";
+    public static final String pk_camera_lens_facing = "camera.lens.facing";
 
     public static final String pk_image_cache_resized = "image.cache.resized";
     public static final String pk_image_cropper_frame_whole = "image.cropper.frame.whole";

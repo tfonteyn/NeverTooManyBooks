@@ -29,6 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -45,7 +46,7 @@ import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
  * </ul>
  */
 public class ScannerContract
-        extends ActivityResultContract<Void, Optional<String>> {
+        extends ActivityResultContract<ScanOptions, Optional<String>> {
 
     private static final String TAG = "ScannerContract";
 
@@ -54,12 +55,13 @@ public class ScannerContract
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @Nullable final Void aVoid) {
+                               @Nullable final ScanOptions scanOptions) {
         // Beep in parseResult if a barcode was returned
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         beep = prefs.getBoolean(Prefs.pk_sounds_scan_found_barcode, true);
 
-        return new ScanOptions().createScanIntent(context);
+        return Objects.requireNonNullElseGet(scanOptions, ScanOptions::new)
+                      .createScanIntent(context);
     }
 
     @NonNull
