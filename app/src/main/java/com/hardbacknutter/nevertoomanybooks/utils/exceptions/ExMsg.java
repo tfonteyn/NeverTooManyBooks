@@ -102,7 +102,8 @@ public final class ExMsg {
 
         } else if (e instanceof java.net.MalformedURLException
                    || e instanceof java.net.UnknownHostException) {
-            msg = context.getString(R.string.error_unknown_host, e.getMessage());
+            msg = context.getString(R.string.error_unknown_host, e.getMessage())
+                  + '\n' + context.getString(R.string.error_search_failed_network);
 
         } else if (e instanceof java.security.cert.CertificateEncodingException) {
             msg = context.getString(R.string.error_certificate_invalid);

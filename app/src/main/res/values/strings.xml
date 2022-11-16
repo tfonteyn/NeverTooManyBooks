@@ -143,7 +143,7 @@
     <string name="X_error_network_site_has_problems">The website is not working as expected.</string>
 
     <!-- [VERIFIED] -->
-    <string name="error_network_failed_try_again">Check connection and try again</string>
+    <string name="error_network_failed_try_again">Check connection and try again.</string>
 
     <!-- Shared Storage file system access fails for some reason. No specifics. -->
     <string name="error_storage_not_accessible">Please check that storage is accessible.</string>
@@ -162,7 +162,11 @@
     <string name="error_search_x_failed_y">Searching on %1$s failed: %2$s</string>
 
     <string name="error_search_failed_network">Please open the Settings and check your network and Search Site preferences.\nAlso check your device network settings.</string>
-    <string name="error_unknown_host">There was a problem connecting to “%1$s”. If this is a Search Site, please open the Settings and check your network and Search Site preferences.</string>
+    <!-- MalformedURLException/UnknownHostException
+         Concatenated with a new line and "error_search_failed_network"
+         param 1: site/url -->
+    <string
+        name="error_unknown_host">There was a connection problem to the service on “%1$s”.</string>
 
     <string name="error_auto_toc_population_failed">Automatic Population of Titles Failed.</string>
     <string name="error_no_image_editor">No image editor found.</string>
@@ -1336,8 +1340,8 @@
 
     <string name="lbl_anthology">Anthology</string>
     <string name="lbl_collection">Collection</string>
-    <string name="lbl_story_in_multiple_books">“%1$s”\n is present in multiple books:\n\n%2$s</string>
-    <string name="lbl_story_in_single_book">“%1$s”\n is present in a single book:\n\n%2$s</string>
+    <string name="lbl_story_in_multiple_books">“%1$s” is present in multiple books:\n\n%2$s</string>
+    <string name="lbl_story_in_single_book">“%1$s” is present in a single book:\n\n%2$s</string>
 
     <string name="lbl_format">Format</string>
     <!-- [VERIFIED] -->
@@ -1596,7 +1600,7 @@
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Wishlist mapped bookshelf</string>
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>
 
-    <string name="lbl_auto_updates">Allow automatic updates from the internet</string>
+    <string name="lbl_auto_updates">Allow automatic updates from the internet.</string>
     <string name="action_add_with_details">Add with details</string>
     <string name="btn_start_export">Start export</string>
     <string name="btn_start_import">Start import</string>
