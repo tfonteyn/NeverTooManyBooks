@@ -108,8 +108,10 @@ public abstract class ArchiveReaderAbstract
     @NonNull
     private final ContentResolver contentResolver;
     /** progress message. */
+    @NonNull
     private final String coversText;
     /** progress message. */
+    @NonNull
     private final String progressMessage;
     /** The accumulated results. */
     @NonNull

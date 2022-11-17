@@ -364,7 +364,7 @@ public class CsvRecordReader
     }
 
     private void importBook(@NonNull final Context context,
-                            final Book book)
+                            @NonNull final Book book)
             throws StorageException,
                    DaoWriteException {
         // Always import books which have no UUID/ID, even if the book is a potential duplicate.

@@ -109,6 +109,7 @@ public interface AuthorWork {
             this.value = value;
         }
 
+        @NonNull
         public static Type getType(final char value) {
             switch (value) {
                 case 'T':

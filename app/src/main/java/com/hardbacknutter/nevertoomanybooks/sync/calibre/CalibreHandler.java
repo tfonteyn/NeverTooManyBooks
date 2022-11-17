@@ -308,6 +308,7 @@ public class CalibreHandler {
         });
     }
 
+    @NonNull
     public CalibreHandler setProgressFrame(@NonNull final View progressFrame) {
         this.progressFrame = progressFrame;
         return this;

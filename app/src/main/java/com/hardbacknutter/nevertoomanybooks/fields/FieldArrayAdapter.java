@@ -75,6 +75,7 @@ public final class FieldArrayAdapter
      *
      * @return adapter
      */
+    @NonNull
     public static FieldArrayAdapter createAutoComplete(@NonNull final Context context,
                                                        @NonNull final List<String> labels,
                                                        @NonNull
@@ -92,6 +93,7 @@ public final class FieldArrayAdapter
      *
      * @return adapter
      */
+    @NonNull
     public static FieldArrayAdapter createStringDropDown(@NonNull final Context context,
                                                          @NonNull final List<String> labels,
                                                          @Nullable
@@ -108,6 +110,7 @@ public final class FieldArrayAdapter
      *
      * @return adapter
      */
+    @NonNull
     public static FieldArrayAdapter createEntityDropDown(@NonNull final Context context,
                                                          @NonNull
                                                          final List<? extends Entity> entities) {

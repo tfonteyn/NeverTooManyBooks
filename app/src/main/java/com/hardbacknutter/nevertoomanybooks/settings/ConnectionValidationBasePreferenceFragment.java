@@ -171,7 +171,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
         });
     }
 
-    private void onCancelled(final LiveDataEvent<TaskResult<Boolean>> message) {
+    private void onCancelled(@NonNull final LiveDataEvent<TaskResult<Boolean>> message) {
         closeProgressDialog();
 
         message.getData().ifPresent(data -> {

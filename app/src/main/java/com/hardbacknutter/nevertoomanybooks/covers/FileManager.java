@@ -59,10 +59,11 @@ public class FileManager {
      * Downloaded files.
      * key = isbn
      */
-    private final Map<String, ImageFileInfo> files =
-            Collections.synchronizedMap(new HashMap<>());
+    @NonNull
+    private final Map<String, ImageFileInfo> files = Collections.synchronizedMap(new HashMap<>());
 
     /** The Sites the user wants to search for cover images. */
+    @NonNull
     private final List<Site> siteList;
 
     /**

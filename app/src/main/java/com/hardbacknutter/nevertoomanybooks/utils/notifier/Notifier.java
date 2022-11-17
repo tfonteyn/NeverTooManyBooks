@@ -117,6 +117,7 @@ public interface Notifier
             this.priority = priority;
         }
 
+        @NonNull
         String getName(@NonNull final Context context) {
             return context.getString(stringId);
         }

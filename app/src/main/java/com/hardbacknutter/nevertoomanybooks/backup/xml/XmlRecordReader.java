@@ -40,15 +40,9 @@ import java.util.Deque;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Consumer;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
@@ -62,6 +56,11 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * <strong>Important</strong>: The sax parser closes streams, which is not good
@@ -173,6 +172,7 @@ public class XmlRecordReader
         }
     }
 
+    @NonNull
     private XmlFilter buildFilters(@NonNull final EntityReader<String> accessor) {
         final String listRootElement = accessor.getRootTag();
         final String rootElement = accessor.getElementTag();
@@ -485,6 +485,7 @@ public class XmlRecordReader
         @NonNull
         final String type;
         /** All attributes on this tag. */
+        @NonNull
         final Attributes attrs;
         /**
          * optional value attribute (e.g. int,boolean,...),

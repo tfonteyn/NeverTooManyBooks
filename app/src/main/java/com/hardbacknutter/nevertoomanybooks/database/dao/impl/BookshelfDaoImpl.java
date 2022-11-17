@@ -258,7 +258,7 @@ public class BookshelfDaoImpl
      * @param bookshelfId the Bookshelf id; passed separately to allow clean inserts
      * @param bookshelf   to store
      */
-    private void storeFilters(final Context context,
+    private void storeFilters(@NonNull final Context context,
                               final long bookshelfId,
                               @NonNull final Bookshelf bookshelf) {
 

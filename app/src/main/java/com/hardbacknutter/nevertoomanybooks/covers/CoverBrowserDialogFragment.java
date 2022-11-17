@@ -100,7 +100,7 @@ public class CoverBrowserDialogFragment
     private final PositionHandler positionHandler = new PositionHandler() {
 
         @Override
-        public void onGalleryImageSelected(final ImageFileInfo imageFileInfo) {
+        public void onGalleryImageSelected(@NonNull final ImageFileInfo imageFileInfo) {
             // Display the given file in the preview View.
             // Starts a task to fetch a large(r) image if needed.
             imageFileInfo.getFile().ifPresent(file -> {
@@ -118,13 +118,13 @@ public class CoverBrowserDialogFragment
         }
 
         @Override
-        public void fetchGalleryImage(final String isbn) {
+        public void fetchGalleryImage(@NonNull final String isbn) {
             vm.fetchGalleryImage(isbn);
         }
 
         @Nullable
         @Override
-        public ImageFileInfo getFileInfo(final String isbn) {
+        public ImageFileInfo getFileInfo(@NonNull final String isbn) {
             return vm.getFileInfo(isbn);
         }
     };
@@ -339,12 +339,12 @@ public class CoverBrowserDialogFragment
          *
          * @param imageFileInfo for the image
          */
-        void onGalleryImageSelected(ImageFileInfo imageFileInfo);
+        void onGalleryImageSelected(@NonNull ImageFileInfo imageFileInfo);
 
-        void fetchGalleryImage(String isbn);
+        void fetchGalleryImage(@NonNull String isbn);
 
         @Nullable
-        ImageFileInfo getFileInfo(String isbn);
+        ImageFileInfo getFileInfo(@NonNull String isbn);
     }
 
     public abstract static class Launcher

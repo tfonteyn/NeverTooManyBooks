@@ -239,6 +239,7 @@ public abstract class ArchiveWriterAbstract
      * @throws DataWriterException on a decoding/parsing of data issue
      * @throws IOException on generic/other IO failures
      */
+    @NonNull
     private File prepareBooks(@NonNull final Context context,
                               @Nullable final LocalDateTime dateSince,
                               @NonNull final ProgressListener progressListener)

@@ -90,6 +90,7 @@ public final class ParseUtils {
      *
      * @return encoded string
      */
+    @NonNull
     public static String escape(final char elementSeparator,
                                 final char objectSeparator,
                                 @NonNull final CharSequence source,
@@ -149,6 +150,7 @@ public final class ParseUtils {
      *
      * @return decoded string
      */
+    @NonNull
     public static String unEscape(@Nullable final String source) {
         if (source == null || source.isEmpty()) {
             return "";
@@ -509,6 +511,7 @@ public final class ParseUtils {
      *
      * @return ascii text
      */
+    @NonNull
     public static String toAscii(@NonNull final CharSequence text) {
         return ASCII_PATTERN.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
                             .replaceAll("");

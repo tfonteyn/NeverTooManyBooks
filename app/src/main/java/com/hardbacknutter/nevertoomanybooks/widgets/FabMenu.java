@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class FabMenu {
 
     /** The normal FAB button; opens or closes the FAB menu. */
+    @NonNull
     private final FloatingActionButton fabButton;
 
     /** Overlay enabled while the FAB menu is shown to intercept clicks and close the FAB menu. */

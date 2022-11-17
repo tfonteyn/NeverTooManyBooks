@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,6 +61,7 @@ public final class SqlEncode {
      *
      * @return the encoded value
      */
+    @NonNull
     public static String orderByColumn(@NonNull final CharSequence value,
                                        @NonNull final Locale locale) {
         final String s = ParseUtils.toAscii(value);

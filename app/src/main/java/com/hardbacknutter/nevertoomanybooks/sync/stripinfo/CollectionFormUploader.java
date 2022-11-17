@@ -30,9 +30,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Objects;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -45,6 +42,9 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSea
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 /**
  * Handles the userdata FORM from the individual book side ajax panel.
@@ -188,6 +188,7 @@ public class CollectionFormUploader {
     }
 
     @AnyThread
+    @NonNull
     private String ratingToSite(@NonNull final Book book) {
         return String.valueOf(MathUtils.clamp(book.getFloat(DBKey.RATING) * 2, 0, 10));
     }

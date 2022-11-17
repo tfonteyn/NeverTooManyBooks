@@ -79,6 +79,7 @@ public class Languages {
      *
      * @see AppLocale#getLocale(Context, String)
      */
+    @SuppressWarnings("unused")
     @NonNull
     public static Locale toLocale(@NonNull final Context context,
                                   @Nullable final String language) {
@@ -222,6 +223,7 @@ public class Languages {
      *
      * @param iso3 ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
      */
+    @SuppressWarnings("WeakerAccess")
     @NonNull
     public String toBibliographic(@NonNull final Locale locale,
                                   @NonNull final String iso3) {
@@ -447,7 +449,7 @@ public class Languages {
      *
      * @return {@code true} if sites should be enabled by default.
      */
-    public boolean isLang(final Context context,
+    public boolean isLang(@NonNull final Context context,
                           @SuppressWarnings("SameParameterValue")
                           @NonNull final String iso) {
         final Locale systemLocale = ServiceLocator.getSystemLocale();

@@ -93,7 +93,7 @@ public class StripInfoReader
     private static final String TAG = "StripInfoReader";
     @NonNull
     private final Updates updateOption;
-
+    @NonNull
     private final boolean[] coversForNewBooks;
     @NonNull
     private final StripInfoSearchEngine searchEngine;

@@ -90,6 +90,7 @@ public class DataManager
     private final Collection<ValidatorException> validationExceptions = new ArrayList<>();
 
     /** Raw data storage. */
+    @NonNull
     private final Bundle rawData;
 
     /**

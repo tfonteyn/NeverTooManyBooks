@@ -246,7 +246,7 @@ public class SearchBookUpdatesFragment
         }
     }
 
-    private void onOneDone(final LiveDataEvent<TaskResult<Bundle>> message) {
+    private void onOneDone(@NonNull final LiveDataEvent<TaskResult<Bundle>> message) {
         //noinspection ConstantConditions
         message.getData().ifPresent(data -> vm.processOne(getContext(), data.getResult()));
     }
@@ -329,6 +329,7 @@ public class SearchBookUpdatesFragment
 
         static final SyncField[] Z_ARRAY_SYNC_FIELD = new SyncField[0];
 
+        @NonNull
         private final SyncField[] syncFields;
 
         /**

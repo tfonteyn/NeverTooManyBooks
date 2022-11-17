@@ -57,11 +57,13 @@ public final class Site
     /** {@link Parcelable}. */
     public static final Creator<Site> CREATOR = new Creator<>() {
         @Override
+        @NonNull
         public Site createFromParcel(@NonNull final Parcel source) {
             return new Site(source);
         }
 
         @Override
+        @NonNull
         public Site[] newArray(final int size) {
             return new Site[size];
         }
@@ -385,6 +387,7 @@ public final class Site
          *         in the desired order.
          */
         @VisibleForTesting
+        @NonNull
         public static List<Site> reorder(@NonNull final Collection<Site> sites,
                                          @NonNull final List<EngineId> order) {
 

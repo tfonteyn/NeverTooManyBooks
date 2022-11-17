@@ -138,6 +138,7 @@ public final class Logger {
      *
      * @return String
      */
+    @NonNull
     private static String concat(@NonNull final Object... params) {
         final StringBuilder message = new StringBuilder();
         Exception e = null;
@@ -213,6 +214,7 @@ public final class Logger {
      *
      * @param e An exception to log
      */
+    @NonNull
     private static String getStackTraceString(@Nullable final Throwable e) {
         if (e == null) {
             return "";

@@ -527,13 +527,17 @@ public class CropImageView
         private static final float HYSTERESIS = 40f;
 
         /** in image space. */
+        @NonNull
         final RectF cropRect;
+        @NonNull
         final Matrix matrix;
         final Rect imageViewDrawingRect = new Rect();
         final Path path = new Path();
         /** The View displaying the image. */
+        @NonNull
         private final CropImageView imageView;
         /*** in image space. */
+        @NonNull
         private final RectF imageRect;
         /** Drag handle. */
         private final Drawable resizeHorizontal;
@@ -543,6 +547,7 @@ public class CropImageView
         private final Paint outlinePaint = new Paint();
         private final RectF drawRectF = new RectF();
         /** in screen space. */
+        @NonNull
         Rect drawRect;
         @NonNull
         private ModifyMode modifyMode = ModifyMode.None;

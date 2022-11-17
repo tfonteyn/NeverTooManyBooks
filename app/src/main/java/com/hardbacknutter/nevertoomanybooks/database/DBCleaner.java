@@ -45,9 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
-
 /**
  * Cleanup routines for some columns/tables which can be run at upgrades, import, startup
  * <p>
@@ -159,7 +156,7 @@ public class DBCleaner {
 
         for (final String key : columns) {
             try (Cursor cursor = db.rawQuery(
-                    "SELECT " + DBKey.PK_ID + ',' + key + " FROM " + TBL_BOOKS.getName()
+                    "SELECT " + DBKey.PK_ID + ',' + key + " FROM " + DBDefinitions.TBL_BOOKS.getName()
                     + " WHERE " + key + " LIKE '%T%'", null)) {
                 while (cursor.moveToNext()) {
                     rows.add(new Pair<>(cursor.getLong(0), cursor.getString(1)));
@@ -172,7 +169,7 @@ public class DBCleaner {
                          + "|rows.size()=" + rows.size());
             }
             try (SynchronizedStatement stmt = db.compileStatement(
-                    "UPDATE " + TBL_BOOKS.getName()
+                    "UPDATE " + DBDefinitions.TBL_BOOKS.getName()
                     + " SET " + key + "=? WHERE " + DBKey.PK_ID + "=?")) {
 
                 for (final Pair<Long, String> row : rows) {
@@ -261,12 +258,12 @@ public class DBCleaner {
      */
     public void bookBookshelf(final boolean dryRun) {
         final String select = "SELECT DISTINCT " + DBKey.FK_BOOK
-                              + " FROM " + TBL_BOOK_BOOKSHELF
+                              + " FROM " + DBDefinitions.TBL_BOOK_BOOKSHELF
                               + " WHERE " + DBKey.FK_BOOKSHELF + " IS NULL";
 
         toLog("bookBookshelf|ENTER", select);
         if (!dryRun) {
-            final String sql = "DELETE " + TBL_BOOK_BOOKSHELF
+            final String sql = "DELETE " + DBDefinitions.TBL_BOOK_BOOKSHELF
                                + " WHERE " + DBKey.FK_BOOKSHELF + " IS NULL";
             try (SynchronizedStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();

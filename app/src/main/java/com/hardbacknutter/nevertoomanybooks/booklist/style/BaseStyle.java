@@ -54,9 +54,11 @@ public abstract class BaseStyle
         implements Style {
 
     /** Configuration for the fields shown on the Book level in the book list. */
+    @NonNull
     private final BooklistFieldVisibility listFieldVisibility;
 
     /** Configuration for the fields shown on the Book details screen. */
+    @NonNull
     private final BookDetailsFieldVisibility detailsFieldVisibility;
 
     /** All groups; <strong>ordered</strong>. */

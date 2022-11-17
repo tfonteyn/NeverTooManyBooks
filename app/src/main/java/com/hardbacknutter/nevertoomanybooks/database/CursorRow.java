@@ -43,6 +43,7 @@ public class CursorRow
         implements DataHolder {
 
     /** the mapped cursor. */
+    @NonNull
     private final Cursor cursor;
 
     /**

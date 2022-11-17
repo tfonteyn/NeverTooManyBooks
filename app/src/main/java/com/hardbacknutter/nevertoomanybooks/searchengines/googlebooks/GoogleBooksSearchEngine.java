@@ -32,12 +32,9 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.regex.Pattern;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
@@ -47,6 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedSAXException;
+
+import org.xml.sax.SAXException;
 
 /**
  * ENHANCE: migrate to new googlebooks API or drop Google altogether?
@@ -224,6 +223,7 @@ public class GoogleBooksSearchEngine
      *
      * @return encodes string
      */
+    @NonNull
     private String encodeSpaces(@NonNull final CharSequence s) {
 //        return URLEncoder.encode(s, "UTF-8");
         return SPACE_LITERAL.matcher(s).replaceAll("%20");

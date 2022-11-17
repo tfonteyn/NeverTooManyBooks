@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,11 +45,13 @@ public class ExportResults
     /** {@link Parcelable}. */
     public static final Creator<ExportResults> CREATOR = new Creator<>() {
         @Override
+        @NonNull
         public ExportResults createFromParcel(@NonNull final Parcel in) {
             return new ExportResults(in);
         }
 
         @Override
+        @NonNull
         public ExportResults[] newArray(final int size) {
             return new ExportResults[size];
         }

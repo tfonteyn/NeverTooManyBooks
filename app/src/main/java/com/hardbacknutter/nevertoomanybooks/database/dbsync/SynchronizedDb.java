@@ -462,7 +462,7 @@ public class SynchronizedDb
         }
     }
 
-
+    @NonNull
     public TableInfo getTableInfo(@NonNull final TableDefinition tableDefinition) {
         Synchronizer.SyncLock txLock = null;
         if (currentTxLock == null) {

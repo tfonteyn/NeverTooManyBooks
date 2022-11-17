@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,11 +39,13 @@ public class SearchCriteria
 
     public static final Creator<SearchCriteria> CREATOR = new Creator<>() {
         @Override
+        @NonNull
         public SearchCriteria createFromParcel(@NonNull final Parcel in) {
             return new SearchCriteria(in);
         }
 
         @Override
+        @NonNull
         public SearchCriteria[] newArray(final int size) {
             return new SearchCriteria[size];
         }

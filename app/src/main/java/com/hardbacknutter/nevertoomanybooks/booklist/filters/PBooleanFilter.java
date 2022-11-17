@@ -93,7 +93,7 @@ public class PBooleanFilter
         return dbKey;
     }
 
-    @Nullable
+    @NonNull
     @Override
     public String getPersistedValue() {
         return value == null ? "-1" : value ? "1" : "0";

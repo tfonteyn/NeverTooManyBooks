@@ -437,6 +437,7 @@ public class TableDefinition {
      *
      * @return SQL fragment
      */
+    @NonNull
     public String startJoin(@NonNull final TableDefinition... tables) {
         // optimization
         if (tables.length == 1) {

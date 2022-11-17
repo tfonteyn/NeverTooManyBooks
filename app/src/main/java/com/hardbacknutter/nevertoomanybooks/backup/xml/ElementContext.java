@@ -33,6 +33,7 @@ import org.xml.sax.helpers.AttributesImpl;
 public class ElementContext {
 
     /** the short name of the tag. */
+    @NonNull
     private final String localName;
     /** Attributes on this tag. */
     @NonNull

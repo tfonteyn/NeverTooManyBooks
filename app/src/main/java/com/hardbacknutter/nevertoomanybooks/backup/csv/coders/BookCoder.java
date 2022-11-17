@@ -141,11 +141,12 @@ public class BookCoder {
     private final StringList<Series> seriesCoder = new StringList<>(new SeriesCoder());
     private final StringList<Publisher> publisherCoder = new StringList<>(new PublisherCoder());
     private final StringList<TocEntry> tocCoder = new StringList<>(new TocEntryCoder());
+    @NonNull
     private final StringList<Bookshelf> bookshelfCoder;
 
     @NonNull
     private final List<Domain> externalIdDomains;
-
+    @NonNull
     private final ServiceLocator serviceLocator;
     @Nullable
     private Map<Long, String> calibreLibraryId2StrMap;
@@ -328,6 +329,7 @@ public class BookCoder {
      *
      * @return the decoded book
      */
+    @NonNull
     public Book decode(@NonNull final Context context,
                        @NonNull final String[] csvColumnNames,
                        @NonNull final String[] csvDataRow) {

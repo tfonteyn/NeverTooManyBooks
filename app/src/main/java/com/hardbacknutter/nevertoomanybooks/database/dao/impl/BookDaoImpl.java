@@ -900,6 +900,7 @@ public class BookDaoImpl
      *
      * @return A Book Cursor with 0..1 row
      */
+    @NonNull
     private TypedCursor getBookCursor(@Nullable final CharSequence whereClause,
                                       @Nullable final String[] selectionArgs,
                                       @Nullable final CharSequence orderByClause) {

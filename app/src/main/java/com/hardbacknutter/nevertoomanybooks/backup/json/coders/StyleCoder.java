@@ -197,8 +197,8 @@ public class StyleCoder
         }
     }
 
-    private void decodeGroups(final UserStyle userStyle,
-                              final JSONObject source)
+    private void decodeGroups(@NonNull final UserStyle userStyle,
+                              @NonNull final JSONObject source)
             throws JSONException {
         final JSONArray groupArray = source.getJSONArray(StyleDataStore.PK_GROUPS);
         final List<Integer> groupIds = IntStream.range(0, groupArray.length())

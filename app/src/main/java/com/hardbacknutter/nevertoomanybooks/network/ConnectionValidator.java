@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public interface ConnectionValidator {
 
+    @NonNull
     static ConnectionValidator create(@NonNull final Context context,
                                       @StringRes final int siteResId)
             throws CertificateException {

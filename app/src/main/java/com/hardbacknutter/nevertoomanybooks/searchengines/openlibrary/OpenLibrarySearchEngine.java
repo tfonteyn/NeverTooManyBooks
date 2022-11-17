@@ -693,6 +693,7 @@ public class OpenLibrarySearchEngine
         }
     }
 
+    @NonNull
     private ArrayList<String> parseCovers(@NonNull final JSONObject element,
                                           @NonNull final String validIsbn,
                                           @SuppressWarnings("SameParameterValue")

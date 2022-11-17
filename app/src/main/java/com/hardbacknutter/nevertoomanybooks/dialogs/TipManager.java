@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +37,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
@@ -53,9 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
  */
 public final class TipManager {
 
-    /** Log tag. */
-    private static final String TAG = "TipManager";
-
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "tips.";
     /** Preferences prefix for all tips. */
@@ -67,6 +62,7 @@ public final class TipManager {
     private TipManager() {
     }
 
+    @NonNull
     public static TipManager getInstance() {
         synchronized (TipManager.class) {
             if (sInstance == null) {
@@ -76,6 +72,7 @@ public final class TipManager {
         }
     }
 
+    @NonNull
     private Tip getTip(@StringRes final int id) {
         Tip tip = cached.get(id);
         if (tip == null) {
@@ -156,12 +153,6 @@ public final class TipManager {
                         @Nullable final Runnable postRun,
                         @Nullable final Object... args) {
         final Tip tip = getTip(tipId);
-        if (tip == null) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "display|tipId=" + tipId);
-            }
-            return;
-        }
         if (!tip.shouldBeShown(context)) {
             if (postRun != null) {
                 postRun.run();
@@ -189,12 +180,6 @@ public final class TipManager {
                         @Nullable final Runnable postRun,
                         @Nullable final Object... args) {
         final Tip tip = getTip(tipId);
-        if (tip == null) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "display|tipId=" + tipId + ", tipKey=" + tipKey);
-            }
-            return;
-        }
         if (!tip.shouldBeShown(context, tipKey)) {
             if (postRun != null) {
                 postRun.run();
@@ -241,6 +226,7 @@ public final class TipManager {
          *
          * @return {@code this} (for chaining)
          */
+        @NonNull
         Tip setLayoutId(@SuppressWarnings("SameParameterValue") @LayoutRes final int layoutId) {
             this.layoutId = layoutId;
             return this;

@@ -34,9 +34,11 @@ public abstract class InlineStringDaoImpl
         implements InlineStringDao {
 
     /** name only. */
+    @NonNull
     private final String sqlSelectAll;
 
     /** Global rename. */
+    @NonNull
     private final String sqlUpdate;
 
     /**

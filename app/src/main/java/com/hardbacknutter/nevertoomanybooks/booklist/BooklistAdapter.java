@@ -122,6 +122,7 @@ public class BooklistAdapter
     private final LayoutInflater inflater;
 
     /** caching the book condition strings. */
+    @NonNull
     private final String[] conditionDescriptions;
 
     /** Whether to use the covers DAO caching. */

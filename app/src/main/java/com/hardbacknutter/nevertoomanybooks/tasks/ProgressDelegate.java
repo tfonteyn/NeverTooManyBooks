@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogProgressBinding;
 public class ProgressDelegate {
 
     /** View Binding. */
+    @NonNull
     private final DialogProgressBinding vb;
     /** Control FLAG_KEEP_SCREEN_ON. (e.g. during a backup etc...) */
     private boolean preventSleep;

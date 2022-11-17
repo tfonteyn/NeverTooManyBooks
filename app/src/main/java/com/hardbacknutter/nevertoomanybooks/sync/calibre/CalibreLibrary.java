@@ -45,11 +45,13 @@ public class CalibreLibrary
     /** {@link Parcelable}. */
     public static final Creator<CalibreLibrary> CREATOR = new Creator<>() {
         @Override
+        @NonNull
         public CalibreLibrary createFromParcel(@NonNull final Parcel in) {
             return new CalibreLibrary(in);
         }
 
         @Override
+        @NonNull
         public CalibreLibrary[] newArray(final int size) {
             return new CalibreLibrary[size];
         }

@@ -522,6 +522,7 @@ public final class FileUtils {
         }
     }
 
+    @NonNull
     public static String getMimeTypeFromExtension(@NonNull final String fileExt) {
         String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExt);
         if (mimeType == null) {

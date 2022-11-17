@@ -125,7 +125,9 @@ class IsfdbPublicationListHandler
     private final ArrayList<Series> seriesList = new ArrayList<>();
     /** accumulate all Publishers for this book. */
     private final ArrayList<Publisher> publisherList = new ArrayList<>();
+    @NonNull
     private final IsfdbSearchEngine searchEngine;
+    @NonNull
     private final boolean[] fetchCovers;
     @NonNull
     private final Locale locale;

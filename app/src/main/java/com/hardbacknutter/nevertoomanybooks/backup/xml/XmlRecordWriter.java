@@ -404,6 +404,7 @@ public class XmlRecordWriter
      *
      * @throws IOException on generic/other IO failures
      */
+    @NonNull
     private ExportResults writeBooks(@NonNull final Context context,
                                      @NonNull final Writer writer,
                                      @Nullable final LocalDateTime sinceDateTime,

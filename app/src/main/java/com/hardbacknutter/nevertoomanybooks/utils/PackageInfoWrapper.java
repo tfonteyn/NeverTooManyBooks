@@ -63,6 +63,7 @@ public final class PackageInfoWrapper {
      *
      * @return instance
      */
+    @NonNull
     public static PackageInfoWrapper create(@NonNull final Context context) {
         return new PackageInfoWrapper(context, 0);
     }
@@ -74,6 +75,7 @@ public final class PackageInfoWrapper {
      *
      * @return instance with signing certificates loaded
      */
+    @NonNull
     public static PackageInfoWrapper createWithSignatures(@NonNull final Context context) {
         final PackageInfoWrapper info;
         if (Build.VERSION.SDK_INT >= 28) {

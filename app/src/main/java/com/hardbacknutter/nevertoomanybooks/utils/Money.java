@@ -69,6 +69,7 @@ public class Money
 
     public static final Creator<Money> CREATOR = new Creator<>() {
         @Override
+        @NonNull
         public Money createFromParcel(@NonNull final Parcel in) {
             return new Money(in);
         }
@@ -413,6 +414,7 @@ public class Money
      *
      * @return EURO value as a new Money object.
      */
+    @NonNull
     public Money toEuro() {
         Objects.requireNonNull(value);
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -121,6 +121,7 @@ public final class SyncField
      *
      * @return a SyncField record for the given field.
      */
+    @NonNull
     SyncField createRelatedField(@NonNull final String key) {
         return new SyncField(key, label, canAppend, defaultAction, syncAction);
     }
@@ -143,6 +144,7 @@ public final class SyncField
      *
      * @return label
      */
+    @NonNull
     public String getFieldLabel() {
         return label;
     }

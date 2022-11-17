@@ -55,11 +55,13 @@ public class TocEntry
     /** {@link Parcelable}. */
     public static final Creator<TocEntry> CREATOR = new Creator<>() {
         @Override
+        @NonNull
         public TocEntry createFromParcel(@NonNull final Parcel source) {
             return new TocEntry(source);
         }
 
         @Override
+        @NonNull
         public TocEntry[] newArray(final int size) {
             return new TocEntry[size];
         }

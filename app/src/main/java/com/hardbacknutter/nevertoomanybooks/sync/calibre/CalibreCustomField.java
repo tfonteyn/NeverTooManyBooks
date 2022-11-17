@@ -46,11 +46,13 @@ public class CalibreCustomField
 
     public static final Creator<CalibreCustomField> CREATOR = new Creator<>() {
         @Override
+        @NonNull
         public CalibreCustomField createFromParcel(@NonNull final Parcel in) {
             return new CalibreCustomField(in);
         }
 
         @Override
+        @NonNull
         public CalibreCustomField[] newArray(final int size) {
             return new CalibreCustomField[size];
         }

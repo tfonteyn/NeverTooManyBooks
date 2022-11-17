@@ -69,11 +69,13 @@ public final class SyncReaderProcessor
     /** {@link Parcelable}. */
     public static final Creator<SyncReaderProcessor> CREATOR = new Creator<>() {
         @Override
+        @NonNull
         public SyncReaderProcessor createFromParcel(@NonNull final Parcel in) {
             return new SyncReaderProcessor(in);
         }
 
         @Override
+        @NonNull
         public SyncReaderProcessor[] newArray(final int size) {
             return new SyncReaderProcessor[size];
         }
@@ -564,6 +566,7 @@ public final class SyncReaderProcessor
          *
          * @return {@code this} (for chaining)
          */
+        @NonNull
         public Builder addRelatedField(@NonNull final String key,
                                        @NonNull final String relatedKey) {
             // Don't check on key being present in the fields list. We'll do that at usage time.

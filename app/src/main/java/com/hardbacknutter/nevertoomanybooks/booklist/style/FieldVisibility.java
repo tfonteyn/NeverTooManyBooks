@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -154,6 +154,7 @@ public abstract class FieldVisibility {
         bits = defValue;
     }
 
+    @NonNull
     public static String getLabel(@NonNull final Context context,
                                   @NonNull final String dbKey) {
         final int index = DB_KEYS.indexOf(dbKey);

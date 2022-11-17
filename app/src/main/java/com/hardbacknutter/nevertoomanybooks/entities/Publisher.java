@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,11 +41,13 @@ public class Publisher
     /** {@link Parcelable}. */
     public static final Creator<Publisher> CREATOR = new Creator<>() {
         @Override
+        @NonNull
         public Publisher createFromParcel(@NonNull final Parcel source) {
             return new Publisher(source);
         }
 
         @Override
+        @NonNull
         public Publisher[] newArray(final int size) {
             return new Publisher[size];
         }
@@ -96,6 +98,7 @@ public class Publisher
      *
      * @return Publisher
      */
+    @NonNull
     public static Publisher from(@NonNull final String name) {
         return new Publisher(name);
     }

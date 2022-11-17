@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,6 +43,7 @@ public final class MultiSelectListPreferenceSummaryProvider
      * @return a singleton instance of this simple
      * {@link androidx.preference.Preference.SummaryProvider} implementation
      */
+    @NonNull
     public static MultiSelectListPreferenceSummaryProvider getInstance() {
         if (sSimpleSummaryProvider == null) {
             sSimpleSummaryProvider = new MultiSelectListPreferenceSummaryProvider();
@@ -51,6 +52,7 @@ public final class MultiSelectListPreferenceSummaryProvider
     }
 
     @Override
+    @NonNull
     public CharSequence provideSummary(@NonNull final MultiSelectListPreference preference) {
         final StringBuilder text = new StringBuilder();
         for (final String s : preference.getValues()) {

@@ -60,11 +60,13 @@ public class Bookshelf
     /** {@link Parcelable}. */
     public static final Creator<Bookshelf> CREATOR = new Creator<>() {
         @Override
+        @NonNull
         public Bookshelf createFromParcel(@NonNull final Parcel source) {
             return new Bookshelf(source);
         }
 
         @Override
+        @NonNull
         public Bookshelf[] newArray(final int size) {
             return new Bookshelf[size];
         }

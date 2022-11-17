@@ -53,7 +53,9 @@ public class BookCoder
         implements JsonCoder<Book> {
 
     private final JsonCoder<Author> authorCoder = new AuthorCoder();
+    @NonNull
     private final JsonCoder<Bookshelf> bookshelfCoder;
+    @NonNull
     private final JsonCoder<CalibreLibrary> calibreLibraryCoder;
     private final JsonCoder<Publisher> publisherCoder = new PublisherCoder();
     private final JsonCoder<Series> seriesCoder = new SeriesCoder();

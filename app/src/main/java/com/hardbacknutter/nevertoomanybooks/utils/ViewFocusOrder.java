@@ -281,6 +281,7 @@ public final class ViewFocusOrder {
         }
     }
 
+    @NonNull
     private static CharSequence dumpFocus(@NonNull final View view) {
         return new StringBuilder()
                 .append("; F:").append(getResName(view, view.getNextFocusForwardId()))

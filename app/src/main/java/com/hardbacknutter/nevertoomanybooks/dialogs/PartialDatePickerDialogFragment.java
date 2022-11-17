@@ -254,6 +254,7 @@ public class PartialDatePickerDialogFragment
     /**
      * Generate the month names (abbreviated). There are 13: first entry being 'unknown'.
      */
+    @NonNull
     private String[] getMonthAbbr() {
         final Locale userLocale = getResources().getConfiguration().getLocales().get(0);
         final String[] monthNames = new String[13];

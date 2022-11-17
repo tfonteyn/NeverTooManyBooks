@@ -48,16 +48,9 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
-import org.jsoup.select.Elements;
-import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -87,6 +80,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedSAXException;
+
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.select.Elements;
+import org.xml.sax.SAXException;
 
 /**
  * See notes in the package-info.java file.
@@ -448,6 +447,7 @@ public class IsfdbSearchEngine
      * @return the toc list
      */
     @WorkerThread
+    @NonNull
     private ArrayList<TocEntry> parseToc(@NonNull final Context context,
                                          @NonNull final Document document) {
 

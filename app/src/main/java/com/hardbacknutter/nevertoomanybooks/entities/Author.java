@@ -69,11 +69,13 @@ public class Author
     /** {@link Parcelable}. */
     public static final Creator<Author> CREATOR = new Creator<>() {
         @Override
+        @NonNull
         public Author createFromParcel(@NonNull final Parcel source) {
             return new Author(source);
         }
 
         @Override
+        @NonNull
         public Author[] newArray(final int size) {
             return new Author[size];
         }

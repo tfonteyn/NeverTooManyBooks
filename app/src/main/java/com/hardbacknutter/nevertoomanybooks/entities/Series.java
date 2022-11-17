@@ -57,11 +57,13 @@ public class Series
     /** {@link Parcelable}. */
     public static final Creator<Series> CREATOR = new Creator<>() {
         @Override
+        @NonNull
         public Series createFromParcel(@NonNull final Parcel source) {
             return new Series(source);
         }
 
         @Override
+        @NonNull
         public Series[] newArray(final int size) {
             return new Series[size];
         }

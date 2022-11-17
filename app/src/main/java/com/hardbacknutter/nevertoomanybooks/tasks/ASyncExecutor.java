@@ -46,6 +46,7 @@ public final class ASyncExecutor {
      * <p>
      * <strong>Note:</strong> this executor uses an unbounded {@link LinkedBlockingQueue}.
      */
+    @NonNull
     public static final Executor MAIN;
     /**
      * An {@link Executor} that executes tasks one at a time in serial
@@ -74,6 +75,7 @@ public final class ASyncExecutor {
     private static final ThreadFactory THREAD_FACTORY = new ThreadFactory() {
         private final AtomicInteger threadIdCounter = new AtomicInteger(1);
 
+        @NonNull
         public Thread newThread(@NonNull final Runnable r) {
             return new Thread(r, "CustomTask #" + threadIdCounter.getAndIncrement());
         }
@@ -127,6 +129,7 @@ public final class ASyncExecutor {
      *
      * @return a new Executor
      */
+    @NonNull
     public static Executor create(@NonNull final String threadName) {
         final ThreadPoolExecutor executor = new ThreadPoolExecutor(
                 CORE_POOL_SIZE, MAXIMUM_POOL_SIZE,
@@ -134,6 +137,7 @@ public final class ASyncExecutor {
                 new LinkedBlockingQueue<>(), new ThreadFactory() {
             private final AtomicInteger threadIdCounter = new AtomicInteger(1);
 
+            @NonNull
             public Thread newThread(@NonNull final Runnable r) {
                 return new Thread(r, threadName + '#' + threadIdCounter.getAndIncrement());
             }

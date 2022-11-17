@@ -23,6 +23,7 @@ import android.annotation.SuppressLint;
 import android.util.Log;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
@@ -75,10 +76,10 @@ public class XmlDumpParser
 
 
     @CallSuper
-    public void startElement(final String namespaceURI,
-                             final String localName,
-                             final String qName,
-                             final Attributes attributes) {
+    public void startElement(@NonNull final String namespaceURI,
+                             @NonNull final String localName,
+                             @NonNull final String qName,
+                             @NonNull final Attributes attributes) {
         final StringBuilder sb = new StringBuilder();
         sb.append("<").append(qName);
         if (namespaceBegin) {

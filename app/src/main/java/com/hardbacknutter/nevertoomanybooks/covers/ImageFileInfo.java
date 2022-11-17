@@ -43,11 +43,13 @@ public class ImageFileInfo
     /** {@link Parcelable}. */
     public static final Creator<ImageFileInfo> CREATOR = new Creator<>() {
         @Override
+        @NonNull
         public ImageFileInfo createFromParcel(@NonNull final Parcel in) {
             return new ImageFileInfo(in);
         }
 
         @Override
+        @NonNull
         public ImageFileInfo[] newArray(final int size) {
             return new ImageFileInfo[size];
         }

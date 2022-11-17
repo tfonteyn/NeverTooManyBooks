@@ -90,6 +90,7 @@ public class Booklist
      * Reminder: this is a {@link TableDefinition.TableType#Temporary}.
      */
     @SuppressWarnings("FieldNotUsedInToString")
+    @NonNull
     private final TableDefinition listTable;
 
     /**
@@ -98,6 +99,7 @@ public class Booklist
      * Reminder: this is a {@link TableDefinition.TableType#Temporary}.
      */
     @SuppressWarnings("FieldNotUsedInToString")
+    @NonNull
     private final TableDefinition navTable;
 
     /**
@@ -106,6 +108,7 @@ public class Booklist
      * Reminder: this is a {@link TableDefinition.TableType#Temporary}.
      */
     @SuppressWarnings("FieldNotUsedInToString")
+    @NonNull
     private final BooklistNodeDao nodeDao;
 
     /** Total number of books in current list. e.g. a book can be listed under 2 authors. */

@@ -301,6 +301,7 @@ public class StartupActivity
         RunTasks,
         Done;
 
+        @NonNull
         public Stage next() {
             switch (this) {
                 case Init:

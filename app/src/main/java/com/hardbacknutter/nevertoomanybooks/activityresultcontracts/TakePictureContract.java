@@ -64,6 +64,7 @@ public class TakePictureContract
     }
 
     @Override
+    @NonNull
     public Optional<File> parseResult(final int resultCode,
                                       @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {

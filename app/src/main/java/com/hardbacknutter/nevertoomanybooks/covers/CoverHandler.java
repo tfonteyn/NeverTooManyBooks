@@ -100,6 +100,7 @@ public class CoverHandler {
     @NonNull
     private final CoverBrowserDialogFragment.Launcher coverBrowserLauncher;
     /** Main used is to run transformation tasks. Shared among all current CoverHandlers. */
+    @NonNull
     private final CoverHandlerViewModel vm;
     @NonNull
     private final ImageViewLoader imageLoader;
@@ -148,6 +149,7 @@ public class CoverHandler {
         };
     }
 
+    @NonNull
     public CoverHandler onFragmentViewCreated(@NonNull final Fragment fragment) {
         fragmentView = fragment.requireView();
 
@@ -188,11 +190,13 @@ public class CoverHandler {
         return this;
     }
 
+    @NonNull
     public CoverHandler setProgressView(@Nullable final CircularProgressIndicator progressView) {
         progressIndicator = progressView;
         return this;
     }
 
+    @NonNull
     public CoverHandler setBookSupplier(@NonNull final Supplier<Book> bookSupplier) {
         this.bookSupplier = bookSupplier;
         return this;
@@ -344,11 +348,13 @@ public class CoverHandler {
         return false;
     }
 
+    @NonNull
     public CoverHandler setCoverBrowserIsbnSupplier(@NonNull final Supplier<String> supplier) {
         coverBrowserIsbnSupplier = supplier;
         return this;
     }
 
+    @NonNull
     public CoverHandler setCoverBrowserTitleSupplier(@NonNull final Supplier<String> supplier) {
         coverBrowserTitleSupplier = supplier;
         return this;

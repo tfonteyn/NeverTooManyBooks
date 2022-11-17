@@ -98,6 +98,7 @@ public class BookDaoHelper {
      *
      * @return {@code this} (for chaining)
      */
+    @NonNull
     BookDaoHelper process(@NonNull final Context context) {
         // Handle TITLE
         if (book.contains(DBKey.TITLE)) {

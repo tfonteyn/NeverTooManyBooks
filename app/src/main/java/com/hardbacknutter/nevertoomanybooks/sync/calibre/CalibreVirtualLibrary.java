@@ -33,11 +33,13 @@ public class CalibreVirtualLibrary
 
     public static final Creator<CalibreVirtualLibrary> CREATOR = new Creator<>() {
         @Override
+        @NonNull
         public CalibreVirtualLibrary createFromParcel(@NonNull final Parcel in) {
             return new CalibreVirtualLibrary(in);
         }
 
         @Override
+        @NonNull
         public CalibreVirtualLibrary[] newArray(final int size) {
             return new CalibreVirtualLibrary[size];
         }

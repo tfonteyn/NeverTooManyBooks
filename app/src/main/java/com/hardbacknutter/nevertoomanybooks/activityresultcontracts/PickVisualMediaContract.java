@@ -80,6 +80,7 @@ public class PickVisualMediaContract
     }
 
     @Override
+    @NonNull
     public Optional<Uri> parseResult(final int resultCode,
                                      @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {

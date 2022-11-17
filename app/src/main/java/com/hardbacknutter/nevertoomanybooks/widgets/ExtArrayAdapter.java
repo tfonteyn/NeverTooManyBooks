@@ -617,6 +617,7 @@ public class ExtArrayAdapter<T>
     }
 
     @Override
+    @NonNull
     public View getDropDownView(final int position,
                                 @Nullable final View convertView,
                                 @NonNull final ViewGroup parent) {
@@ -700,6 +701,7 @@ public class ExtArrayAdapter<T>
             extends AbstractArrayFilter {
 
         @Override
+        @NonNull
         protected FilterResults performFiltering(@Nullable final CharSequence prefix) {
             final ArrayList<T> values;
             synchronized (mLock) {
@@ -760,6 +762,7 @@ public class ExtArrayAdapter<T>
         private final Pattern DIACRITICS_PATTERN = Pattern.compile("[^\\p{ASCII}]");
 
         @Override
+        @NonNull
         protected FilterResults performFiltering(@Nullable final CharSequence prefix) {
             final ArrayList<T> values;
             synchronized (mLock) {
@@ -816,6 +819,7 @@ public class ExtArrayAdapter<T>
          *
          * @return ascii text
          */
+        @NonNull
         private String toAsciiLowerCase(@NonNull final CharSequence text) {
             return DIACRITICS_PATTERN.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
                                      .replaceAll("")
@@ -853,6 +857,7 @@ public class ExtArrayAdapter<T>
             extends Filter {
 
         @Override
+        @NonNull
         public CharSequence convertResultToString(@Nullable final Object resultValue) {
             //noinspection unchecked
             return getItemText((T) resultValue);

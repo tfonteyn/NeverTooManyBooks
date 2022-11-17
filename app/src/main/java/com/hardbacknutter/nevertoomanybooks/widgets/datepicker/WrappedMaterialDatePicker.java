@@ -55,10 +55,13 @@ public final class WrappedMaterialDatePicker<S>
     public static final long NO_SELECTION = -1L;
 
     /** The wrapped picker. */
+    @NonNull
     private final MaterialDatePicker<S> picker;
     @IdRes
+    @NonNull
     private final int[] fieldIds;
     /** key to use for the FragmentResultListener. */
+    @NonNull
     private final String requestKey;
 
     /**
@@ -114,6 +117,8 @@ public final class WrappedMaterialDatePicker<S>
 
         private static final String FIELD_ID = "fieldId";
         private static final String SELECTIONS = "selections";
+
+        @NonNull
         private final String requestKey;
         private FragmentManager fragmentManager;
 

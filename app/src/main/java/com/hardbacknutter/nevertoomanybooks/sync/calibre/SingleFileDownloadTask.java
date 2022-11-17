@@ -39,6 +39,7 @@ class SingleFileDownloadTask
     /** Log tag. */
     private static final String TAG = "SingleFileDownloadTask";
 
+    @NonNull
     private final CalibreContentServer server;
     private Book book;
     private Uri folder;

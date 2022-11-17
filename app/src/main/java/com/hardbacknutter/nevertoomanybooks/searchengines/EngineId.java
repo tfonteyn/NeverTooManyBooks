@@ -404,6 +404,7 @@ public enum EngineId
      *
      * @return the displayable name
      */
+    @NonNull
     public String getName(@NonNull final Context context) {
         return context.getString(labelResId);
     }

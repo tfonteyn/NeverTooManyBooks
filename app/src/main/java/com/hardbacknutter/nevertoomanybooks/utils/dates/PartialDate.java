@@ -53,11 +53,13 @@ public class PartialDate
     /** {@link Parcelable}. */
     public static final Creator<PartialDate> CREATOR = new Creator<>() {
         @Override
+        @NonNull
         public PartialDate createFromParcel(@NonNull final Parcel in) {
             return new PartialDate(in);
         }
 
         @Override
+        @NonNull
         public PartialDate[] newArray(final int size) {
             return new PartialDate[size];
         }

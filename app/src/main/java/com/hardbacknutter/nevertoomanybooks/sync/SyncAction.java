@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -60,6 +60,7 @@ public enum SyncAction
         this.labelResId = labelResId;
     }
 
+    @NonNull
     public static SyncAction read(@NonNull final SharedPreferences prefs,
                                   @NonNull final String key,
                                   @NonNull final SyncAction defAction) {

@@ -87,6 +87,7 @@ public class EditPictureContract
     }
 
     @Override
+    @NonNull
     public Optional<File> parseResult(final int resultCode,
                                       @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
@@ -102,7 +103,9 @@ public class EditPictureContract
 
     public static class Input {
 
+        @NonNull
         final File srcFile;
+        @NonNull
         final File dstFile;
 
         public Input(@NonNull final File srcFile,

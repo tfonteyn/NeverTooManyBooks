@@ -59,6 +59,7 @@ public final class OrderByHelper {
      *
      * @return title and locale data which should be used to construct ORDER-BY columns
      */
+    @NonNull
     static OrderByData createOrderByData(
             @NonNull final Context context,
             @NonNull final String title,

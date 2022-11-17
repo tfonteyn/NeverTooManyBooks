@@ -173,10 +173,10 @@ public class DebugReport {
         context.startActivity(intent);
     }
 
+    @NonNull
     private Uri zipFiles()
             throws IOException {
-        final File zipFile = new File(context.getCacheDir(),
-                                      String.format("NTMBBugReport-%s.zip", dateTime));
+        final File zipFile = new File(context.getCacheDir(), "NTMBBugReport-" + dateTime + ".zip");
         zipFile.deleteOnExit();
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(
                 new BufferedOutputStream(new FileOutputStream(zipFile),

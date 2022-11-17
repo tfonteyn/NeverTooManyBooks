@@ -176,6 +176,7 @@ public class ExtPopupMenu {
      *
      * @see #getMenu()
      */
+    @NonNull
     public MenuInflater getMenuInflater() {
         return new MenuInflater(popupWindow.getContentView().getContext());
     }
@@ -381,6 +382,7 @@ public class ExtPopupMenu {
         @NonNull
         private final MenuCallback menuCallback;
         /** Listener for the result. */
+        @NonNull
         private final OnMenuItemClickListener menuItemClickListener;
 
         /**

@@ -108,6 +108,7 @@ abstract class BaseDaoImpl {
      *
      * @return a full " VALUES(?,...)" clause
      */
+    @NonNull
     public static String values(final int count) {
         final StringJoiner sj = new StringJoiner(",", " VALUES (", ")");
         for (int i = 0; i < count; i++) {

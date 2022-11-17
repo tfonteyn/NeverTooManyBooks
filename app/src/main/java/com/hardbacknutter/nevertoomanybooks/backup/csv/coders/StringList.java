@@ -56,6 +56,7 @@ public class StringList<E> {
      *
      * @return instance
      */
+    @NonNull
     public static StringList<String> newInstance() {
         return new StringList<>(new Coder<>() {
             @NonNull
@@ -264,6 +265,7 @@ public class StringList<E> {
          *
          * @return encoded string
          */
+        @NonNull
         default String escape(@NonNull final String source,
                               @NonNull final char... escapeChars) {
             // add the factory specific separators

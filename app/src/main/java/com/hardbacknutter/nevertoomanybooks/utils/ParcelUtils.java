@@ -136,11 +136,13 @@ public final class ParcelUtils {
 
         public static final Creator<ParcelableArrayListLong> CREATOR = new Creator<>() {
             @Override
+            @NonNull
             public ParcelableArrayListLong createFromParcel(@NonNull final Parcel in) {
                 return new ParcelableArrayListLong(in);
             }
 
             @Override
+            @NonNull
             public ParcelableArrayListLong[] newArray(final int size) {
                 return new ParcelableArrayListLong[size];
             }

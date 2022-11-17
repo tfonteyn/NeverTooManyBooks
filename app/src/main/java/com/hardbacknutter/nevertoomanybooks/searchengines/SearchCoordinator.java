@@ -1058,7 +1058,7 @@ public class SearchCoordinator
                                                             BKEY_FILE_SPEC_ARRAY[1]);
 
         private final CoverFilter coverFilter = new CoverFilter();
-
+        @NonNull
         private final DateParser dateParser;
         /** Mappers to apply. */
         private final Collection<Mapper> mappers = new ArrayList<>();
