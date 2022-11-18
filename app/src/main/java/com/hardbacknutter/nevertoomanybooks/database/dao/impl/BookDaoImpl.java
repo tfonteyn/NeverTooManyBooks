@@ -781,17 +781,14 @@ public class BookDaoImpl
                 } else {
                     // We cannot update the author as it's part of the primary key.
                     // (we should never even get here if the author was changed)
-                    //noinspection SynchronizationOnLocalVariableOrMethodParameter
-                    synchronized (stmtUpdToc) {
-                        stmtUpdToc.bindString(1, tocEntry.getTitle());
-                        stmtUpdToc.bindString(2, SqlEncode
-                                .orderByColumn(obd.title, obd.locale));
-                        stmtUpdToc.bindString(3, tocEntry.getFirstPublicationDate()
-                                                         .getIsoString());
-                        stmtUpdToc.bindLong(4, tocEntry.getId());
-                        if (stmtUpdToc.executeUpdateDelete() != 1) {
-                            throw new DaoWriteException("update TocEntry");
-                        }
+                    stmtUpdToc.bindString(1, tocEntry.getTitle());
+                    stmtUpdToc.bindString(2, SqlEncode
+                            .orderByColumn(obd.title, obd.locale));
+                    stmtUpdToc.bindString(3, tocEntry
+                            .getFirstPublicationDate().getIsoString());
+                    stmtUpdToc.bindLong(4, tocEntry.getId());
+                    if (stmtUpdToc.executeUpdateDelete() != 1) {
+                        throw new DaoWriteException("update TocEntry");
                     }
                 }
 
@@ -808,14 +805,11 @@ public class BookDaoImpl
                 // (do not use the sql 'REPLACE' command! We want to keep the original position)
                 try {
                     position++;
-                    //noinspection SynchronizationOnLocalVariableOrMethodParameter
-                    synchronized (stmt) {
-                        stmt.bindLong(1, tocEntry.getId());
-                        stmt.bindLong(2, bookId);
-                        stmt.bindLong(3, position);
-                        if (stmt.executeInsert() == -1) {
-                            throw new DaoWriteException("insert Book-TocEntry");
-                        }
+                    stmt.bindLong(1, tocEntry.getId());
+                    stmt.bindLong(2, bookId);
+                    stmt.bindLong(3, position);
+                    if (stmt.executeInsert() == -1) {
+                        throw new DaoWriteException("insert Book-TocEntry");
                     }
                 } catch (@NonNull final SQLiteConstraintException ignore) {
                     // ignore and reset the position counter.
