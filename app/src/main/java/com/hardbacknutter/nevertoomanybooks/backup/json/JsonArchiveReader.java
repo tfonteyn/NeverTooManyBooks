@@ -92,22 +92,17 @@ public class JsonArchiveReader
 
         if (metaData == null) {
             @Nullable
-            final InputStream is = context.getContentResolver().openInputStream(
-                    importHelper.getUri());
+            final InputStream is = context.getContentResolver().openInputStream(importHelper.getUri());
             if (is == null) {
                 throw new FileNotFoundException(importHelper.getUri().toString());
             }
 
-            //noinspection TryFinallyCanBeTryWithResources
-            try (RecordReader recordReader = new JsonRecordReader(
-                    context, EnumSet.of(RecordType.MetaData))) {
+            try (is; RecordReader recordReader = new JsonRecordReader(context, EnumSet.of(RecordType.MetaData))) {
                 // wrap the entire input into a single record.
                 final ArchiveReaderRecord record = new JsonArchiveRecord(
                         importHelper.getUriInfo().getDisplayName(context), is);
 
                 metaData = recordReader.readMetaData(context, record).orElse(null);
-            } finally {
-                is.close();
             }
 
             // An archive based on this class <strong>must</strong> have an info block.
