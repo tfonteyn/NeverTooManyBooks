@@ -111,9 +111,9 @@ public class PBooleanFilter
         if (value == null) {
             return null;
         } else {
-            // ignore Lint warnings! we want a NEW instance!
-            //noinspection BooleanConstructorCall,BoxingBoxedValue
-            return new Boolean(value);
+            // ignore Lint warning! we want a COPY of the instance!
+            //noinspection BoxingBoxedValue
+            return Boolean.valueOf(value);
         }
     }
 
