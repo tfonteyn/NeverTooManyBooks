@@ -243,9 +243,11 @@ public class EditBookViewModel
      * @return Optional with the Field
      */
     @NonNull
-    private Optional<Field<?, ? extends View>> getField(@IdRes final int id) {
+    private <T, V extends View> Optional<Field<T, V>> getField(@IdRes final int id) {
+        //noinspection unchecked
         return fields.stream()
                      .filter(field -> field.getFieldViewId() == id)
+                     .map(field -> (Field<T, V>) field)
                      .findFirst();
     }
 
@@ -263,11 +265,11 @@ public class EditBookViewModel
     @NonNull
     <T, V extends View> Field<T, V> requireField(@IdRes final int id) {
         //noinspection unchecked
-        return (Field<T, V>) fields
-                .stream()
-                .filter(field -> field.getFieldViewId() == id)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Field not found: " + id));
+        return fields.stream()
+                     .filter(field -> field.getFieldViewId() == id)
+                     .map(field -> (Field<T, V>) field)
+                     .findFirst()
+                     .orElseThrow(() -> new IllegalArgumentException("Field not found: " + id));
     }
 
     /**
@@ -916,9 +918,7 @@ public class EditBookViewModel
                                                    requireField(R.id.price_listed)
                                                            .getValue(), null);
                                            getBook().putDouble(DBKey.PRICE_PAID, value);
-                                           //noinspection unchecked
-                                           ((Field<Double, ? extends View>) destField)
-                                                   .setValue(value);
+                                           destField.setValue(value);
                                        }
                                    });
                                }
@@ -939,9 +939,7 @@ public class EditBookViewModel
                                            if (value != null) {
                                                getBook().putString(DBKey.PRICE_PAID_CURRENCY,
                                                                    value);
-                                               //noinspection unchecked
-                                               ((Field<String, ? extends View>) destField)
-                                                       .setValue(value);
+                                               destField.setValue(value);
                                            }
                                        }
                                    });

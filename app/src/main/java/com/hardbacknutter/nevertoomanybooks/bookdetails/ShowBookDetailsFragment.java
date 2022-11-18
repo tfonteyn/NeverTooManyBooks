@@ -321,10 +321,7 @@ public class ShowBookDetailsFragment
 
         vm.requireField(R.id.read).setValue(read);
 
-        vm.getField(R.id.read_end).ifPresent(f -> {
-            //noinspection unchecked
-            final Field<String, TextView> field = (Field<String, TextView>) f;
-
+        vm.getField(R.id.read_end).ifPresent(field -> {
             field.setValue(book.getString(DBKey.READ_END__DATE));
             //noinspection ConstantConditions
             field.setVisibility(getView(), true, false);

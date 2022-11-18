@@ -163,9 +163,11 @@ public class ShowBookDetailsViewModel
     }
 
     @NonNull
-    Optional<Field<?, ? extends View>> getField(@IdRes final int id) {
+    <T, V extends View> Optional<Field<T, V>> getField(@IdRes final int id) {
+        //noinspection unchecked
         return fields.stream()
                      .filter(field -> field.getFieldViewId() == id)
+                     .map(field -> (Field<T, V>) field)
                      .findFirst();
     }
 
@@ -183,11 +185,11 @@ public class ShowBookDetailsViewModel
     @NonNull
     <T, V extends View> Field<T, V> requireField(@IdRes final int id) {
         //noinspection unchecked
-        return (Field<T, V>) fields
-                .stream()
-                .filter(field -> field.getFieldViewId() == id)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Field not found: " + id));
+        return fields.stream()
+                     .filter(field -> field.getFieldViewId() == id)
+                     .map(field -> (Field<T, V>) field)
+                     .findFirst()
+                     .orElseThrow(() -> new IllegalArgumentException("Field not found: " + id));
     }
 
     private void initFields(@NonNull final Context context,
