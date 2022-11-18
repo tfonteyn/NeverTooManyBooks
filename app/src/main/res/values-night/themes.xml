@@ -47,7 +47,7 @@
 
         <item name="colorSurface">@color/m3grey_10</item>
         <item name="colorOnSurface">@color/m3grey_70</item>
-        <item name="colorSurfaceVariant">@color/m3grey_30</item>
+        <item name="colorSurfaceVariant">@color/m3grey_50</item>
         <item name="colorOnSurfaceVariant">@color/m3grey_60</item>
         <item name="colorSurfaceInverse">@color/m3grey_70</item>
         <item name="colorOnSurfaceInverse">@color/m3grey_20</item>
