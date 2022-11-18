@@ -57,6 +57,8 @@ public class CalibreLibrary
         }
     };
 
+    private static final CalibreCustomField[] Z_CALIBRE_CUSTOM_FIELD = new CalibreCustomField[0];
+
     /** The physical Calibre library STRING id. */
     @NonNull
     private final String libraryStringId;
@@ -251,8 +253,7 @@ public class CalibreLibrary
 
 
         dest.writeInt(totalBooks);
-        //noinspection ZeroLengthArrayAllocation
-        dest.writeParcelableArray(calibreCustomFields.toArray(new CalibreCustomField[0]), flags);
+        dest.writeParcelableArray(calibreCustomFields.toArray(Z_CALIBRE_CUSTOM_FIELD), flags);
     }
 
     @Override
