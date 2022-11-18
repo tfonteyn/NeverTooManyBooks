@@ -92,12 +92,14 @@ public class JsonArchiveReader
 
         if (metaData == null) {
             @Nullable
-            final InputStream is = context.getContentResolver().openInputStream(importHelper.getUri());
+            final InputStream is = context.getContentResolver()
+                                          .openInputStream(importHelper.getUri());
             if (is == null) {
                 throw new FileNotFoundException(importHelper.getUri().toString());
             }
 
-            try (is; RecordReader recordReader = new JsonRecordReader(context, EnumSet.of(RecordType.MetaData))) {
+            try (is; RecordReader recordReader =
+                    new JsonRecordReader(context, EnumSet.of(RecordType.MetaData))) {
                 // wrap the entire input into a single record.
                 final ArchiveReaderRecord record = new JsonArchiveRecord(
                         importHelper.getUriInfo().getDisplayName(context), is);
