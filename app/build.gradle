@@ -67,7 +67,7 @@ android {
     defaultConfig {
         applicationId rootProject.ext.applicationId
         versionCode 23
-        versionName = '3.5.0'
+        versionName = '3.4.1'
 
         minSdk rootProject.ext.minSdkVersion
         targetSdk rootProject.ext.targetSdkVersion
