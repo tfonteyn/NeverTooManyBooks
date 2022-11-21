@@ -293,8 +293,7 @@ public class SearchBookByIsbnFragment
             //noinspection ConstantConditions
             scanner = new BarcodeScanner.Builder()
                     .setCodeFamily(BarcodeFamily.Product)
-                    .build(getContext(), getViewLifecycleOwner(),
-                            vb.cameraPreview.getSurfaceProvider());
+                    .build(getContext());
 
             if (vb.cameraViewFinder.isShowResultPoints()) {
                 scanner.setResultPointListener(vb.cameraViewFinder);
@@ -303,31 +302,32 @@ public class SearchBookByIsbnFragment
             getLifecycle().addObserver(scanner);
         }
 
-        scanner.startScan(new DecoderResultListener() {
-            @Nullable
-            private String lastCode;
+        scanner.startScan(getViewLifecycleOwner(),
+                          vb.cameraPreview,
+                          new DecoderResultListener() {
+                              @Nullable
+                              private String lastCode;
 
-            @Override
-            public void onResult(@NonNull final Result result) {
-                final String barCode = result.getText();
-                if (barCode != null && !barCode.isBlank()) {
-                    if (!barCode.equals(lastCode)) {
-                        lastCode = barCode;
-                        onBarcodeScanned(barCode);
-                    }
-                } else {
-                    stopScanner();
-                }
-            }
+                              @Override
+                              public void onResult(@NonNull final Result result) {
+                                  final String barCode = result.getText();
+                                  if (barCode != null && !barCode.isBlank()) {
+                                      if (!barCode.equals(lastCode)) {
+                                          lastCode = barCode;
+                                          onBarcodeScanned(barCode);
+                                      }
+                                  } else {
+                                      stopScanner();
+                                  }
+                              }
 
-            @Override
-            public void onError(@NonNull final String s,
-                                @NonNull final Exception e) {
-                stopScanner();
-                getLifecycle().removeObserver(scanner);
-                scanner = null;
-            }
-        });
+                              @Override
+                              public void onError(@NonNull final Throwable e) {
+                                  stopScanner();
+                                  getLifecycle().removeObserver(scanner);
+                                  scanner = null;
+                              }
+                          });
     }
 
 
