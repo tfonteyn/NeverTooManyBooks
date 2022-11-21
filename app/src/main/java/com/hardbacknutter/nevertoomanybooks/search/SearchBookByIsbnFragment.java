@@ -57,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbn
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
-import com.hardbacknutter.nevertoomanybooks.utils.CameraDetection;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
@@ -172,8 +171,7 @@ public class SearchBookByIsbnFragment
         if (!scannerActivityStarted) {
             scannerActivityStarted = true;
             //noinspection ConstantConditions
-            scannerActivityLauncher.launch(new ScanOptions().setUseCameraWithLensFacing(
-                    CameraDetection.getPreferredCameraLensFacing(getContext())));
+            scannerActivityLauncher.launch(ScannerContract.createDefaultOptions(getContext()));
         }
     }
 

@@ -36,9 +36,11 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.CameraDetection;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.tinyzxingwrapper.ScanIntentResult;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
+import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeFamily;
 
 /**
  * <ul>
@@ -51,6 +53,13 @@ public class ScannerContract
     private static final String TAG = "ScannerContract";
 
     private boolean beep;
+
+    public static ScanOptions createDefaultOptions(@NonNull final Context context) {
+        return new ScanOptions()
+                .setBarcodeFamily(BarcodeFamily.Product)
+                .setUseCameraWithLensFacing(
+                        CameraDetection.getPreferredCameraLensFacing(context));
+    }
 
     @NonNull
     @Override
@@ -77,7 +86,7 @@ public class ScannerContract
         }
 
         final String text = ScanIntentResult.parseActivityResult(resultCode, intent).getText();
-        if (text != null && !text.isBlank()) {
+        if (text != null) {
             if (beep) {
                 SoundManager.beep(SoundManager.EVENT);
             }
