@@ -56,7 +56,7 @@ public class ScannerContract
 
     public static ScanOptions createDefaultOptions(@NonNull final Context context) {
         return new ScanOptions()
-                .setBarcodeFamily(BarcodeFamily.Product)
+                .setBarcodeFormats(BarcodeFamily.PRODUCT)
                 .setUseCameraWithLensFacing(
                         CameraDetection.getPreferredCameraLensFacing(context));
     }
@@ -69,8 +69,7 @@ public class ScannerContract
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         beep = prefs.getBoolean(Prefs.pk_sounds_scan_found_barcode, true);
 
-        return Objects.requireNonNullElseGet(scanOptions, ScanOptions::new)
-                      .createScanIntent(context);
+        return Objects.requireNonNullElseGet(scanOptions, ScanOptions::new).build(context);
     }
 
     @NonNull
@@ -85,7 +84,8 @@ public class ScannerContract
             return Optional.empty();
         }
 
-        final String text = ScanIntentResult.parseActivityResult(resultCode, intent).getText();
+        final String text = ScanIntentResult.parseActivityResultIntent(resultCode, intent)
+                                            .getText();
         if (text != null) {
             if (beep) {
                 SoundManager.beep(SoundManager.EVENT);

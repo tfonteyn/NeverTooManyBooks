@@ -155,7 +155,7 @@ android {
             // 2021-04: the site has changed technology and our engine no longer works.
             buildConfigField("boolean", "ENABLE_KB_NL", "true")
             // under development
-            buildConfigField("boolean", "EMBEDDED_BARCODE_SCANNER", "true")
+            buildConfigField("boolean", "EMBEDDED_BARCODE_SCANNER", "false")
         }
     }
 

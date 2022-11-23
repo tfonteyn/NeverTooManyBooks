@@ -97,8 +97,8 @@ public class SearchBookByIsbnFragment
         super.onViewCreated(view, savedInstanceState);
 
         if (savedInstanceState != null) {
-            scannerActivityStarted = savedInstanceState.getBoolean(BKEY_SCANNER_ACTIVITY_STARTED,
-                    false);
+            scannerActivityStarted = savedInstanceState
+                    .getBoolean(BKEY_SCANNER_ACTIVITY_STARTED, false);
         }
 
         vm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
@@ -150,7 +150,7 @@ public class SearchBookByIsbnFragment
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             Site.promptToRegister(getContext(), coordinator.getSiteList(),
-                    "searchByIsbn", this::afterOnViewCreated);
+                                  "searchByIsbn", this::afterOnViewCreated);
         } else {
             afterOnViewCreated();
         }
@@ -163,42 +163,6 @@ public class SearchBookByIsbnFragment
     private final ActivityResultLauncher<Long> editExistingBookLauncher =
             registerForActivityResult(new EditBookByIdContract(),
                                       o -> o.ifPresent(this::onBookEditingDone));
-
-    /**
-     * Start scanner activity.
-     */
-    private void startScannerActivity() {
-        if (!scannerActivityStarted) {
-            scannerActivityStarted = true;
-            //noinspection ConstantConditions
-            scannerActivityLauncher.launch(ScannerContract.createDefaultOptions(getContext()));
-        }
-    }
-
-    private final ActivityResultLauncher<ScanOptions> scannerActivityLauncher =
-            registerForActivityResult(new ScannerContract(), o -> {
-                scannerActivityStarted = false;
-                if (o.isPresent()) {
-                    onBarcodeScanned(o.get());
-                } else {
-                    stopScanner();
-                }
-            });
-
-    @Override
-    @NonNull
-    protected Bundle getResultData() {
-        return vm.getResultData();
-    }
-
-    @Override
-    @Nullable
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        vb = FragmentBooksearchByIsbnBinding.inflate(inflater, container, false);
-        return vb.getRoot();
-    }
 
     /**
      * Search with ISBN or, if allowed, with a generic code.
@@ -222,7 +186,7 @@ public class SearchBookByIsbnFragment
             final long firstFound = existingIds.get(0).first;
             // Show the "title (isbn)" with a caution message
             final String msg = getString(R.string.a_bracket_b_bracket,
-                    existingIds.get(0).second, code.asText())
+                                         existingIds.get(0).second, code.asText())
                                + "\n\n" + getString(R.string.confirm_duplicate_book_message);
 
             //noinspection ConstantConditions
@@ -241,6 +205,123 @@ public class SearchBookByIsbnFragment
                     .setPositiveButton(R.string.action_add, (d, w) -> startSearch())
                     .create()
                     .show();
+        }
+    }
+
+    private final ActivityResultLauncher<ScanOptions> scannerActivityLauncher =
+            registerForActivityResult(new ScannerContract(), o -> {
+                scannerActivityStarted = false;
+                if (o.isPresent()) {
+                    onBarcodeScanned(o.get());
+                } else {
+                    stopScanner();
+                }
+            });
+
+    private void startScannerEmbedded() {
+        vb.barcodeScannerGroup.setVisibility(View.VISIBLE);
+        if (scanner == null) {
+            //noinspection ConstantConditions
+            scanner = new BarcodeScanner.Builder()
+                    .setBarcodeFormats(BarcodeFamily.PRODUCT)
+                    .build(getContext());
+
+            if (vb.cameraViewFinder.isShowResultPoints()) {
+                scanner.setResultPointListener(vb.cameraViewFinder);
+            }
+
+            getLifecycle().addObserver(scanner);
+        }
+
+        scanner.start(getViewLifecycleOwner(),
+                      vb.cameraPreview,
+                      new DecoderResultListener() {
+                          @Nullable
+                          private String lastCode;
+
+                          @Override
+                          public void onResult(@NonNull final Result result) {
+                              final String barCode = result.getText();
+                              if (barCode != null && !barCode.isBlank()) {
+                                  if (!barCode.equals(lastCode)) {
+                                      lastCode = barCode;
+                                      onBarcodeScanned(barCode);
+                                  }
+                              } else {
+                                  stopScanner();
+                              }
+                          }
+
+                          @Override
+                          public void onError(@NonNull final Throwable e) {
+                              stopScanner();
+                              getLifecycle().removeObserver(scanner);
+                              scanner = null;
+                          }
+                      });
+    }
+
+    /**
+     * Start scanner activity.
+     */
+    private void startScannerActivity() {
+        if (!scannerActivityStarted) {
+            scannerActivityStarted = true;
+            //noinspection ConstantConditions
+            scannerActivityLauncher.launch(ScannerContract.createDefaultOptions(getContext()));
+        }
+    }
+
+    @Override
+    @NonNull
+    protected Bundle getResultData() {
+        return vm.getResultData();
+    }
+
+    @Override
+    @Nullable
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        vb = FragmentBooksearchByIsbnBinding.inflate(inflater, container, false);
+        return vb.getRoot();
+    }
+
+    private void onBarcodeScanned(@NonNull final String barCode) {
+        final boolean strictIsbn = coordinator.isStrictIsbn();
+        final ISBN code = new ISBN(barCode, strictIsbn);
+
+        if (code.isValid(strictIsbn)) {
+            if (strictIsbn) {
+                //noinspection ConstantConditions
+                SoundManager.onValidBarcodeBeep(getContext());
+            }
+
+            if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Batch) {
+                // batch mode, queue the code, go scan next book
+                vm.addToQueue(code);
+                startScanner();
+
+            } else {
+                // single-scan mode, quit scanning, go search online for the book
+                stopScanner();
+                vb.isbn.setText(code.asText());
+                prepareSearch(code);
+            }
+        } else {
+            //noinspection ConstantConditions
+            SoundManager.onInvalidBarcodeBeep(getContext());
+            showError(vb.lblIsbn, getString(R.string.warning_x_is_not_a_valid_code,
+                                            code.asText()));
+
+            if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Batch) {
+                // batch mode, ignore the code, go scan next book
+                startScanner();
+            } else {
+                // single-scan mode, quit scanning, let the user edit the code
+                stopScanner();
+                vb.isbn.setText(code.asText());
+            }
         }
     }
 
@@ -287,92 +368,10 @@ public class SearchBookByIsbnFragment
         }
     }
 
-    private void startScannerEmbedded() {
-        vb.barcodeScannerGroup.setVisibility(View.VISIBLE);
-        if (scanner == null) {
-            //noinspection ConstantConditions
-            scanner = new BarcodeScanner.Builder()
-                    .setCodeFamily(BarcodeFamily.Product)
-                    .build(getContext());
-
-            if (vb.cameraViewFinder.isShowResultPoints()) {
-                scanner.setResultPointListener(vb.cameraViewFinder);
-            }
-
-            getLifecycle().addObserver(scanner);
-        }
-
-        scanner.startScan(getViewLifecycleOwner(),
-                          vb.cameraPreview,
-                          new DecoderResultListener() {
-                              @Nullable
-                              private String lastCode;
-
-                              @Override
-                              public void onResult(@NonNull final Result result) {
-                                  final String barCode = result.getText();
-                                  if (barCode != null && !barCode.isBlank()) {
-                                      if (!barCode.equals(lastCode)) {
-                                          lastCode = barCode;
-                                          onBarcodeScanned(barCode);
-                                      }
-                                  } else {
-                                      stopScanner();
-                                  }
-                              }
-
-                              @Override
-                              public void onError(@NonNull final Throwable e) {
-                                  stopScanner();
-                                  getLifecycle().removeObserver(scanner);
-                                  scanner = null;
-                              }
-                          });
-    }
-
-
-    private void onBarcodeScanned(@NonNull final String barCode) {
-        final boolean strictIsbn = coordinator.isStrictIsbn();
-        final ISBN code = new ISBN(barCode, strictIsbn);
-
-        if (code.isValid(strictIsbn)) {
-            if (strictIsbn) {
-                //noinspection ConstantConditions
-                SoundManager.onValidBarcodeBeep(getContext());
-            }
-
-            if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Batch) {
-                // batch mode, queue the code, go scan next book
-                vm.addToQueue(code);
-                startScanner();
-
-            } else {
-                // single-scan mode, quit scanning, go search online for the book
-                stopScanner();
-                vb.isbn.setText(code.asText());
-                prepareSearch(code);
-            }
-        } else {
-            //noinspection ConstantConditions
-            SoundManager.onInvalidBarcodeBeep(getContext());
-            showError(vb.lblIsbn, getString(R.string.warning_x_is_not_a_valid_code,
-                    code.asText()));
-
-            if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Batch) {
-                // batch mode, ignore the code, go scan next book
-                startScanner();
-            } else {
-                // single-scan mode, quit scanning, let the user edit the code
-                stopScanner();
-                vb.isbn.setText(code.asText());
-            }
-        }
-    }
-
     private void stopScanner() {
         if (BuildConfig.EMBEDDED_BARCODE_SCANNER) {
             if (scanner != null) {
-                scanner.stopScanning();
+                scanner.stop();
             }
             vb.barcodeScannerGroup.setVisibility(View.GONE);
         }
@@ -393,7 +392,6 @@ public class SearchBookByIsbnFragment
             showError(vb.lblIsbn, getString(R.string.warning_x_is_not_a_valid_code, barCode));
         }
     }
-
 
     @Override
     void onClearSearchCriteria() {
@@ -517,5 +515,4 @@ public class SearchBookByIsbnFragment
             return false;
         }
     }
-
 }
