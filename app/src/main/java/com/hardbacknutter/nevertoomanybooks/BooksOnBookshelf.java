@@ -135,7 +135,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.SpinnerInteractionListener;
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
  * <p>
- * URGENT: This class is littered with ActivityResultLauncher and *DialogFragment.Launcher
+ * TODO: This class is littered with ActivityResultLauncher and *DialogFragment.Launcher
  * objects etc... Refactor to sharing the VM is becoming VERY urgent.
  *
  * <p>

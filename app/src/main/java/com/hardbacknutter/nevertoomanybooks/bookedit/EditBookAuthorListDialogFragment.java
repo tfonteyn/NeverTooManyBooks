@@ -349,7 +349,7 @@ public class EditBookAuthorListDialogFragment
             StandardDialogs.showError(getContext(), R.string.error_storage_not_writable);
         }
 
-        //URGENT: updated author(s): Book gets them, but TocEntries remain using old set
+        //FIXME: updated author(s): Book gets them, but TocEntries remain using old set
         //
         // A TocEntry is unique based on author and title_od.
         // Updating the in-memory TOC list and/or the TocEntries stored in the database

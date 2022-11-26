@@ -507,7 +507,7 @@ public class SearchBookUpdatesViewModel
 
         // a single book
         if (bookIdList != null && bookIdList.size() == 1) {
-            //URGENT: we should only return this is we actually modified the book
+            //URGENT: we should only return this if we actually modified the book
             results.putLong(BKEY_BOOK_MODIFIED, bookIdList.get(0));
         }
 
