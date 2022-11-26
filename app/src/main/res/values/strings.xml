@@ -437,11 +437,14 @@
     <string name="tip_booklist_style_groups">You can use this screen to modify the hierarchy of headings for a specific booklist style. A “tick” indicates the heading will be shown in the list, “un-tick” to hide it and vice versa.  You can re-order the hierarchy by dragging the icon at the extreme right of each row up or down.</string>
     <string name="tip_booklist_style_properties">You can use this screen to set the characteristics of a specific booklist style. You can change the name, edit the groupings to change the hierarchy, and adjust a variety of other preferences to build a style that you find useful.</string>
 
+    <string name="tip_import_isbn_list">Import a text file with ISBN numbers. The file should have a single ISBN on each line. The results will be placed in the queue.</string>
+
     <string name="tip_authors_book_may_appear_more_than_once">If shown for every author, a single book may appear more than once in a list. In such a case deleting one of those books will delete all instances from the list.</string>
     <string name="tip_series_book_may_appear_more_than_once">If shown in every series, a single book may appear more than once in a list. In such a case deleting one of those books will delete all instances from the list.</string>
     <string name="tip_autorotate_camera_images">If you find yourself always rotating camera images in the same direction, try changing the application preferences to specify a rotation to apply automatically.</string>
     <!-- Tip text displayed when user enters the 'read-only' book view -->
-    <string name="tip_view_only_help">You can swipe left or right to navigate to other books.</string>
+    <string
+        name="tip_view_only_help">You can swipe left or right to navigate to other books.</string>
     <!-- Tip text displayed when user enters the booklist -->
     <string name="tip_book_list">Tapping on a book will show you the details of the book. A long-press on an item in the list will give you more options.</string>
     <!-- Tip text displayed when user enters the 'Update fields from internet' screen

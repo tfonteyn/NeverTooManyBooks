@@ -712,5 +712,6 @@
     <string name="x_of_y">%1$d di %2$d</string>
     <string name="yes">Sì</string>
     <string name="lbl_story_in_single_book">«%1$s» è presente in un solo libro:\n\n%2$s</string>
+    <string name="tip_import_isbn_list">Importa un file di testo con numeri ISBN. Il file dovrebbe avere un unico codice ISBN su ogni riga. I risultati verranno messi in coda.</string>
 
 </resources>

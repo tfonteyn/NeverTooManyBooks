@@ -723,5 +723,6 @@
     <string name="x_of_y">%1$d z %2$d</string>
     <string name="yes">Ano</string>
     <string name="lbl_story_in_single_book">„%1$s“ se nachází v jedné knize:\n\n%2$s</string>
+    <string name="tip_import_isbn_list">Importujte textový soubor s čísly ISBN. Soubor by měl mít na každém řádku jedno ISBN. Výsledky budou zařazeny do fronty.</string>
 
 </resources>
