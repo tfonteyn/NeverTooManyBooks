@@ -270,6 +270,12 @@ public class EditBookTocFragment
             .setIcon(R.drawable.ic_baseline_delete_24);
     }
 
+    @Override
+    public void onDestroyView() {
+        adapter.unregisterAdapterDataObserver(adapterDataObserver);
+        super.onDestroyView();
+    }
+
     private void onEntryUpdated(@NonNull final TocEntry tocEntry,
                                 final int position) {
         if (position == POS_NEW_ENTRY) {

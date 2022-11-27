@@ -189,6 +189,12 @@ public class EditBookAuthorListDialogFragment
     }
 
     @Override
+    public void onDestroyView() {
+        adapter.unregisterAdapterDataObserver(adapterDataObserver);
+        super.onDestroyView();
+    }
+
+    @Override
     protected void onToolbarNavigationClick(@NonNull final View v) {
         if (saveChanges()) {
             dismiss();
