@@ -187,6 +187,12 @@ public class EditBookshelvesFragment
         vb.list.setAdapter(adapter);
     }
 
+    @Override
+    public void onDestroyView() {
+        adapter.unregisterAdapterDataObserver(adapterDataObserver);
+        super.onDestroyView();
+    }
+
     private void editNewBookshelf() {
         //noinspection ConstantConditions
         final Style style = ServiceLocator.getInstance().getStyles().getDefault(getContext());
