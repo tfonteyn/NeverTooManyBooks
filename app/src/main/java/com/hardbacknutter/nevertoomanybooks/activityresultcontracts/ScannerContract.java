@@ -22,12 +22,10 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -35,9 +33,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraDetection;
-import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.tinyzxingwrapper.ScanIntentResult;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
 import com.hardbacknutter.tinyzxingwrapper.scanner.BarcodeFamily;
@@ -52,8 +48,6 @@ public class ScannerContract
 
     private static final String TAG = "ScannerContract";
 
-    private boolean beep;
-
     public static ScanOptions createDefaultOptions(@NonNull final Context context) {
         return new ScanOptions()
                 .setBarcodeFormats(BarcodeFamily.PRODUCT)
@@ -65,10 +59,6 @@ public class ScannerContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @Nullable final ScanOptions scanOptions) {
-        // Beep in parseResult if a barcode was returned
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        beep = prefs.getBoolean(Prefs.pk_sounds_scan_found_barcode, true);
-
         return Objects.requireNonNullElseGet(scanOptions, ScanOptions::new).build(context);
     }
 
@@ -87,9 +77,6 @@ public class ScannerContract
         final String text = ScanIntentResult.parseActivityResultIntent(resultCode, intent)
                                             .getText();
         if (text != null) {
-            if (beep) {
-                SoundManager.beep(SoundManager.EVENT);
-            }
             return Optional.of(text);
         } else {
             return Optional.empty();

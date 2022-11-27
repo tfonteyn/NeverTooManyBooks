@@ -160,6 +160,7 @@ public class SearchBookByIsbnViewModel
 
     void addToQueue(@NonNull final Context context,
                     @NonNull final ISBN code) {
+        // Don't add duplicates
         if (!scanQueue.contains(code)) {
             // don't trigger scanQueueUpdate here as we're scanning in a loop
             scanQueue.add(code);

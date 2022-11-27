@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.tinyzxingwrapper.ScanOptions;
 
 /**
@@ -99,7 +100,11 @@ public class EditBookFieldsFragment
     /** The scanner. */
     private final ActivityResultLauncher<ScanOptions> scanLauncher =
             registerForActivityResult(new ScannerContract(), o -> o.ifPresent(
-                    barCode -> vm.getBook().putString(DBKey.BOOK_ISBN, barCode)));
+                    barCode -> {
+                        vm.getBook().putString(DBKey.BOOK_ISBN, barCode);
+                        //noinspection ConstantConditions
+                        SoundManager.beepOnBarcodeFound(getContext());
+                    }));
 
     /** Delegate to handle cover replacement, rotation, etc. */
     private final CoverHandler[] coverHandler = new CoverHandler[2];

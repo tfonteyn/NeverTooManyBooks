@@ -36,17 +36,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public final class SoundManager {
 
-    /**
-     * Positive event; e.g. a scanned barcode is a valid ISBN.
-     */
     public static final int POSITIVE = ToneGenerator.TONE_PROP_ACK;
-    /**
-     * Negative event; e.g. a scanned barcode is NOT a valid ISBN.
-     */
     public static final int NEGATIVE = ToneGenerator.TONE_PROP_NACK;
-    /**
-     * Roadrunner ran by...
-     */
     public static final int EVENT = ToneGenerator.TONE_PROP_BEEP;
 
     private static final int MAX_LEN = 500;
@@ -57,7 +48,7 @@ public final class SoundManager {
     /**
      * Play a generic tone. If as tone is longer than 500ms, it will be cutoff.
      *
-     * @param tone one of {@link #POSITIVE} or {@link #NEGATIVE}
+     * @param tone one of {@link #POSITIVE}, {@link #NEGATIVE} or {@link #EVENT}
      *             or any of the {@link ToneGenerator} predefined tones.
      */
     public static void beep(@Tone final int tone) {
@@ -76,11 +67,11 @@ public final class SoundManager {
     }
 
     /**
-     * Optionally beep if the scan succeeded.
+     * Optionally beep if the scanned barcode represents a valid ISBN.
      *
      * @param context Current context
      */
-    public static void onValidBarcodeBeep(@NonNull final Context context) {
+    public static void beepOnValidIsbn(@NonNull final Context context) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
                              .getBoolean(Prefs.pk_sounds_scan_isbn_valid, false)) {
             beep(POSITIVE);
@@ -88,14 +79,26 @@ public final class SoundManager {
     }
 
     /**
-     * Optionally beep if the scan failed.
+     * Optionally beep if the scanned barcode is not a valid ISBN.
      *
      * @param context Current context
      */
-    public static void onInvalidBarcodeBeep(@NonNull final Context context) {
+    public static void beepOnInvalidIsbn(@NonNull final Context context) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
                              .getBoolean(Prefs.pk_sounds_scan_isbn_invalid, true)) {
             beep(NEGATIVE);
+        }
+    }
+
+    /**
+     * Optionally beep if the scan produced a valid barcode (of any type).
+     *
+     * @param context Current context
+     */
+    public static void beepOnBarcodeFound(@NonNull final Context context) {
+        if (PreferenceManager.getDefaultSharedPreferences(context)
+                             .getBoolean(Prefs.pk_sounds_scan_found_barcode, true)) {
+            beep(EVENT);
         }
     }
 
