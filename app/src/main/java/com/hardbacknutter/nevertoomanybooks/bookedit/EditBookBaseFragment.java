@@ -40,7 +40,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -48,9 +47,6 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -185,18 +181,6 @@ public abstract class EditBookBaseFragment
     @CallSuper
     void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
-        if (book.isNew()) {
-            if (vm.handlesField(getFragmentId(), R.id.date_acquired)) {
-                book.putString(DBKey.DATE_ACQUIRED, SqlEncode.date(LocalDateTime.now()));
-            }
-
-            if (vm.handlesField(getFragmentId(), R.id.condition)) {
-                if (GlobalFieldVisibility.isUsed(DBKey.BOOK_CONDITION)) {
-                    book.putInt(DBKey.BOOK_CONDITION, Book.CONDITION_AS_NEW);
-                }
-            }
-        }
-
         // Bulk load the data into the Views.
 
         // do NOT call notifyIfChanged, as this is the initial load
@@ -231,8 +215,9 @@ public abstract class EditBookBaseFragment
     }
 
     /** Listener for all field changes. */
+    @SuppressWarnings("WeakerAccess")
     @CallSuper
-    public void onAfterFieldChange(@NonNull final Field<?, ? extends View> field) {
+    void onAfterFieldChange(@NonNull final Field<?, ? extends View> field) {
         vm.getBook().setStage(EntityStage.Stage.Dirty);
     }
 

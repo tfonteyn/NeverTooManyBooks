@@ -33,6 +33,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -45,7 +46,9 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -85,11 +88,15 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 public class EditBookViewModel
         extends ViewModel {
 
-    private static final String COULD_NOT_UPDATE = "Could not update";
-    private static final String ORIGINAL = "original=";
-    private static final String MODIFIED = "modified=";
     /** Log tag. */
     private static final String TAG = "EditBookViewModel";
+    /** Log string. */
+    private static final String COULD_NOT_UPDATE = "Could not update";
+    /** Log string. */
+    private static final String ORIGINAL = "original=";
+    /** Log string. */
+    private static final String MODIFIED = "modified=";
+
     /** the list with all fields. */
     private final List<Field<?, ? extends View>> fields = new ArrayList<>();
 
@@ -193,6 +200,20 @@ public class EditBookViewModel
                 final Bundle bookData = args.getBundle(Book.BKEY_DATA_BUNDLE);
                 if (bookData != null) {
                     book = Book.from(bookData);
+                    // It should always be a new book here, but paranoia...
+                    if (book.isNew()) {
+                        // DATE_ACQUIRED is always used
+                        if (!book.contains(DBKey.DATE_ACQUIRED)) {
+                            book.putString(DBKey.DATE_ACQUIRED,
+                                           SqlEncode.date(LocalDateTime.now()));
+                        }
+                        // if BOOK_CONDITION is wanted, assume the user got a new book.
+                        if (GlobalFieldVisibility.isUsed(DBKey.BOOK_CONDITION)
+                            && !book.contains(DBKey.BOOK_CONDITION)) {
+                            book.putInt(DBKey.BOOK_CONDITION, Book.CONDITION_AS_NEW);
+                        }
+                    }
+
                 } else {
                     // 2. Do we have an id?, e.g. user clicked on a book in a list.
                     final long bookId = args.getLong(DBKey.FK_BOOK, 0);
