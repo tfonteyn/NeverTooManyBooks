@@ -215,6 +215,12 @@ public class PreferredStylesFragment
     }
 
     @Override
+    public void onDestroyView() {
+        listAdapter.unregisterAdapterDataObserver(adapterDataObserver);
+        super.onDestroyView();
+    }
+
+    @Override
     public void onPause() {
         vm.updateMenuOrder();
         super.onPause();
