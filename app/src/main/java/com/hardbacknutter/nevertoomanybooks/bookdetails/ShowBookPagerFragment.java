@@ -76,7 +76,7 @@ public class ShowBookPagerFragment
         //noinspection ConstantConditions
         aVm.init(getContext(), args);
 
-        vm = new ViewModelProvider(this).get(ShowBookPagerViewModel.class);
+        vm = new ViewModelProvider(getActivity()).get(ShowBookPagerViewModel.class);
         vm.init(args);
     }
 
@@ -104,6 +104,13 @@ public class ShowBookPagerFragment
         final ShowBookPagerAdapter adapter = new ShowBookPagerAdapter(this);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(vm.getInitialPagerPosition(), false);
+
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(final int position) {
+                vm.setPageSelected(position);
+            }
+        });
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions

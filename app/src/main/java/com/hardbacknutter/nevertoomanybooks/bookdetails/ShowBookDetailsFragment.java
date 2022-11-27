@@ -143,6 +143,10 @@ public class ShowBookDetailsFragment
                 }
             };
 
+    /** Gives access to the ViewPager2. Will be {@code null} when we're in embedded mode. */
+    @Nullable
+    private ShowBookPagerViewModel pagerVm;
+
     @NonNull
     public static Fragment create(@IntRange(from = 1) final long bookId,
                                   @NonNull final String styleUuid,
@@ -179,6 +183,11 @@ public class ShowBookDetailsFragment
         vm = new ViewModelProvider(this).get(ShowBookDetailsViewModel.class);
         vm.init(getContext(), args, aVm.getStyle());
 
+        if (!vm.isEmbedded()) {
+            pagerVm = new ViewModelProvider(getActivity()).get(ShowBookPagerViewModel.class);
+            pagerVm.init(args);
+        }
+
         editLenderLauncher.registerForFragmentResult(getChildFragmentManager(), RK_EDIT_LENDER,
                                                      this);
     }
@@ -209,6 +218,18 @@ public class ShowBookDetailsFragment
         // We must create them here, even if the Book has no matching sync id,
         // because the menu setup uses them before the Book is loaded.
         createSyncDelegates();
+
+        if (pagerVm != null) {
+            // hook up the ViewPager so we can update the screen title after a swipe
+            pagerVm.onCurrentBookUpdated().observe(getViewLifecycleOwner(), bookId -> {
+                // all fragments in the ViewPager will be called, so only update
+                // the toolbar if OUR book is the current one
+                final Book book = vm.getBook();
+                if (book.getId() == bookId) {
+                    updateToolbarTitle(book);
+                }
+            });
+        }
 
         vm.onBookLoaded().observe(getViewLifecycleOwner(), this::onBindBook);
 
@@ -334,6 +355,18 @@ public class ShowBookDetailsFragment
         }
     }
 
+    private void updateToolbarTitle(@NonNull final Book book) {
+        final Toolbar toolbar = getToolbar();
+        //noinspection ConstantConditions
+        toolbar.setTitle(Author.getCondensedNames(getContext(), book.getAuthors()));
+
+        String bookTitle = book.getString(DBKey.TITLE);
+        if (BuildConfig.DEBUG /* always */) {
+            bookTitle = "[" + book.getId() + "] " + bookTitle;
+        }
+        toolbar.setSubtitle(bookTitle);
+    }
+
     // Dev. Note: this will get called FOR EACH fragment currently existing
     // in the ViewPager ... so ALSO for the fragments off-screen.
     // DO NOT use a LiveDataEvent !
@@ -348,14 +381,7 @@ public class ShowBookDetailsFragment
                                 Lifecycle.State.RESUMED);
 
         if (!vm.isEmbedded()) {
-            //noinspection ConstantConditions
-            toolbar.setTitle(Author.getCondensedNames(getContext(), book.getAuthors()));
-
-            String title = book.getString(DBKey.TITLE);
-            if (BuildConfig.DEBUG /* always */) {
-                title = "[" + book.getId() + "] " + title;
-            }
-            toolbar.setSubtitle(title);
+            updateToolbarTitle(book);
         }
 
         final List<Field<?, ? extends View>> fields = vm.getFields();

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNavigatorDao;
@@ -43,6 +46,8 @@ public class ShowBookPagerViewModel
     public static final String BKEY_NAV_TABLE_NAME = TAG + ":LTName";
     /** The row id in the list table for the initial book to show. */
     public static final String BKEY_LIST_TABLE_ROW_ID = TAG + ":LTRow";
+
+    private final MutableLiveData<Long> currentBookId = new MutableLiveData<>();
 
     /** <strong>Optionally</strong> passed. */
     @Nullable
@@ -101,6 +106,11 @@ public class ShowBookPagerViewModel
         return initialPagerPosition;
     }
 
+    /**
+     * Provides the row count to be used in the ViewPager adapter.
+     *
+     * @return row count
+     */
     @IntRange(from = 1)
     int getRowCount() {
         if (navHelper != null) {
@@ -110,11 +120,33 @@ public class ShowBookPagerViewModel
         }
     }
 
+    /**
+     * Translate the position to the book id at that position.
+     *
+     * @param position to look up
+     *
+     * @return the book id at that position
+     */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public long getBookIdAtPosition(@IntRange(from = 0) final int position) {
+    long getBookIdAtPosition(@IntRange(from = 0) final int position) {
         if (navHelper != null) {
             return navHelper.getBookIdAtRow(position + 1);
         }
         return initialBookId;
+    }
+
+    @NonNull
+    MutableLiveData<Long> onCurrentBookUpdated() {
+        return currentBookId;
+    }
+
+    /**
+     * Called when the user swipes to the next or previous book.
+     *
+     * @param position new 'current' position
+     */
+    void setPageSelected(final int position) {
+        Objects.requireNonNull(navHelper);
+        currentBookId.setValue(navHelper.getBookIdAtRow(position + 1));
     }
 }
