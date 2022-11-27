@@ -26,8 +26,8 @@ Data is fetched from multiple internet sites.
 Requires minimal Android 8.0 (API 26)
 
 In August 2018, this project was forked from:
-Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn.
 Without their original creation, this project would not exist in its
 current form. It was however largely rewritten/refactored and any
-comments on this fork should be directed at HardBackNutter and not
+comments on this fork should be directed at myself and not
 at the original creators.
