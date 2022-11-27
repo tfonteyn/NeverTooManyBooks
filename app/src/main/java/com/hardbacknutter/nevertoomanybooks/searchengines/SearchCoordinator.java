@@ -1066,10 +1066,10 @@ public class SearchCoordinator
         ResultsAccumulator(@NonNull final Context context) {
             dateParser = new FullDateParser(context);
 
-            if (FormatMapper.isMappingAllowed()) {
+            if (FormatMapper.isMappingAllowed(context)) {
                 mappers.add(new FormatMapper());
             }
-            if (ColorMapper.isMappingAllowed()) {
+            if (ColorMapper.isMappingAllowed(context)) {
                 mappers.add(new ColorMapper());
             }
         }

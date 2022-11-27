@@ -33,6 +33,7 @@ import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.preference.PreferenceManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,6 +43,7 @@ import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,6 +57,8 @@ public class SearchBookByIsbnViewModel
     /** Log tag. */
     private static final String TAG = "SearchBookByIsbnViewModel";
     public static final String BKEY_SCAN_MODE = TAG + ":scanMode";
+
+    private static final String PREF_SCAN_QUEUE = "scan.queue";
 
     private static final int BUFFER_SIZE = 65535;
 
@@ -79,14 +83,31 @@ public class SearchBookByIsbnViewModel
         return resultData;
     }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+    }
+
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param context    Current context
+     * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
+     * @param args       {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@Nullable final Bundle args) {
+    public void init(@NonNull final Context context,
+                     final boolean strictIsbn,
+                     @Nullable final Bundle args) {
         if (bookDao == null) {
             bookDao = ServiceLocator.getInstance().getBookDao();
+
+            final String qs = PreferenceManager.getDefaultSharedPreferences(context)
+                                               .getString(PREF_SCAN_QUEUE, "");
+            scanQueue.addAll(Arrays.stream(qs.split(","))
+                                   .distinct()
+                                   .filter(s -> !s.isBlank())
+                                   .map(s -> new ISBN(s, strictIsbn))
+                                   .collect(Collectors.toList()));
 
             if (args != null) {
                 final ScanMode scanMode = args.getParcelable(BKEY_SCAN_MODE);
@@ -97,6 +118,19 @@ public class SearchBookByIsbnViewModel
         }
 
         scanQueueUpdate.setValue(scanQueue);
+    }
+
+    /**
+     * Store the current queue as a csv list of ISBN numbers to preferences.
+     *
+     * @param context Current context
+     */
+    private void storeQueue(@NonNull final Context context) {
+        final String list = scanQueue.stream()
+                                     .map(ISBN::asText)
+                                     .collect(Collectors.joining(","));
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit().putString(PREF_SCAN_QUEUE, list).apply();
     }
 
     /**
@@ -117,21 +151,27 @@ public class SearchBookByIsbnViewModel
         return scanQueueUpdate;
     }
 
-    void clearQueue() {
+    void clearQueue(@NonNull final Context context) {
         scanQueue.clear();
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit().remove(PREF_SCAN_QUEUE).apply();
         scanQueueUpdate.setValue(scanQueue);
     }
 
-    void addToQueue(@NonNull final ISBN code) {
+    void addToQueue(@NonNull final Context context,
+                    @NonNull final ISBN code) {
         if (!scanQueue.contains(code)) {
             // don't trigger scanQueueUpdate here as we're scanning in a loop
             scanQueue.add(code);
+            storeQueue(context);
         }
     }
 
-    void removeFromQueue(@NonNull final ISBN code) {
+    void removeFromQueue(@NonNull final Context context,
+                         @NonNull final ISBN code) {
         // don't trigger scanQueueUpdate here as we're updating the queue views manually
         scanQueue.remove(code);
+        storeQueue(context);
     }
 
 
@@ -161,11 +201,13 @@ public class SearchBookByIsbnViewModel
                     scanQueue.addAll(
                             reader.lines()
                                   .distinct()
+                                  .filter(s -> !s.isBlank())
                                   .map(s -> new ISBN(s, strictIsbn))
                                   .filter(isbn -> isbn.isValid(strictIsbn))
                                   .filter(isbn -> !scanQueue.contains(isbn))
                                   .collect(Collectors.toList()));
 
+                    storeQueue(context);
                     scanQueueUpdate.setValue(scanQueue);
 
                 } catch (@NonNull final UncheckedIOException e) {

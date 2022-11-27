@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,10 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
@@ -50,8 +52,8 @@ public final class ColorMapper
         return DBKey.COLOR;
     }
 
-    public static boolean isMappingAllowed() {
-        return ServiceLocator.getPreferences()
-                             .getBoolean(Prefs.pk_search_reformat_color, true);
+    public static boolean isMappingAllowed(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(Prefs.pk_search_reformat_color, true);
     }
 }

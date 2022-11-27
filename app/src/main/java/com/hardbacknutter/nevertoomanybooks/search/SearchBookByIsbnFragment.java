@@ -83,13 +83,35 @@ public class SearchBookByIsbnFragment
     private ISBN.ValidationTextWatcher isbnValidationTextWatcher;
     private ISBN.CleanupTextWatcher isbnCleanupTextWatcher;
     private SearchBookByIsbnViewModel vm;
-    @Nullable
-    private BarcodeScanner scanner;
-
     /** Importing a list of ISBN. */
     private final ActivityResultLauncher<String> openUriLauncher =
             registerForActivityResult(new GetContentUriForReadingContract(),
-                    o -> o.ifPresent(this::onOpenUri));
+                                      o -> o.ifPresent(this::onOpenUri));
+    @Nullable
+    private BarcodeScanner scanner;
+    /** After a successful scan/search, the data is offered for editing. */
+    private final ActivityResultLauncher<Long> editExistingBookLauncher =
+            registerForActivityResult(new EditBookByIdContract(),
+                                      o -> o.ifPresent(this::onBookEditingDone));
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        vm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
+        //noinspection ConstantConditions
+        vm.init(getContext(), coordinator.isStrictIsbn(), getArguments());
+    }
+
+    private final ActivityResultLauncher<ScanOptions> scannerActivityLauncher =
+            registerForActivityResult(new ScannerContract(), o -> {
+                scannerActivityStarted = false;
+                if (o.isPresent()) {
+                    onBarcodeScanned(o.get());
+                } else {
+                    stopScanner();
+                }
+            });
 
     @Override
     public void onViewCreated(@NonNull final View view,
@@ -101,8 +123,6 @@ public class SearchBookByIsbnFragment
                     .getBoolean(BKEY_SCANNER_ACTIVITY_STARTED, false);
         }
 
-        vm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
-        vm.init(getArguments());
         vm.onScanQueueUpdate().observe(getViewLifecycleOwner(), this::onQueueUpdated);
 
         final Toolbar toolbar = getToolbar();
@@ -145,7 +165,8 @@ public class SearchBookByIsbnFragment
         vb.keypad.btnSearch.setOnClickListener(
                 btn -> onBarcodeEntered(vb.isbn.getText().toString().trim()));
 
-        vb.btnClearQueue.setOnClickListener(v -> vm.clearQueue());
+        //noinspection ConstantConditions
+        vb.btnClearQueue.setOnClickListener(v -> vm.clearQueue(getContext()));
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
@@ -156,13 +177,57 @@ public class SearchBookByIsbnFragment
         }
 
         vb.btnStopScanning.setOnClickListener(v -> stopScanner());
-
     }
 
-    /** After a successful scan/search, the data is offered for editing. */
-    private final ActivityResultLauncher<Long> editExistingBookLauncher =
-            registerForActivityResult(new EditBookByIdContract(),
-                                      o -> o.ifPresent(this::onBookEditingDone));
+    private void onBarcodeScanned(@NonNull final String barCode) {
+        final boolean strictIsbn = coordinator.isStrictIsbn();
+        final ISBN code = new ISBN(barCode, strictIsbn);
+
+        if (code.isValid(strictIsbn)) {
+            if (strictIsbn) {
+                //noinspection ConstantConditions
+                SoundManager.onValidBarcodeBeep(getContext());
+            }
+
+            if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Batch) {
+                // batch mode, queue the code, go scan next book
+                //noinspection ConstantConditions
+                vm.addToQueue(getContext(), code);
+                startScanner();
+
+            } else {
+                // single-scan mode, quit scanning, go search online for the book
+                stopScanner();
+                vb.isbn.setText(code.asText());
+                prepareSearch(code);
+            }
+        } else {
+            //noinspection ConstantConditions
+            SoundManager.onInvalidBarcodeBeep(getContext());
+            showError(vb.lblIsbn, getString(R.string.warning_x_is_not_a_valid_code,
+                                            code.asText()));
+
+            if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Batch) {
+                // batch mode, ignore the code, go scan next book
+                startScanner();
+            } else {
+                // single-scan mode, quit scanning, let the user edit the code
+                stopScanner();
+                vb.isbn.setText(code.asText());
+            }
+        }
+    }
+
+    @NonNull
+    private ISBN removeFromQueue(@NonNull final View chip) {
+        final ISBN code = (ISBN) chip.getTag();
+        // remove and update view manually to avoid flicker
+        //noinspection ConstantConditions
+        vm.removeFromQueue(getContext(), code);
+        vb.queue.removeView(chip);
+        updateQueueViewsVisibility();
+        return code;
+    }
 
     /**
      * Search with ISBN or, if allowed, with a generic code.
@@ -207,16 +272,6 @@ public class SearchBookByIsbnFragment
                     .show();
         }
     }
-
-    private final ActivityResultLauncher<ScanOptions> scannerActivityLauncher =
-            registerForActivityResult(new ScannerContract(), o -> {
-                scannerActivityStarted = false;
-                if (o.isPresent()) {
-                    onBarcodeScanned(o.get());
-                } else {
-                    stopScanner();
-                }
-            });
 
     private void startScannerEmbedded() {
         vb.barcodeScannerGroup.setVisibility(View.VISIBLE);
@@ -287,41 +342,58 @@ public class SearchBookByIsbnFragment
         return vb.getRoot();
     }
 
-    private void onBarcodeScanned(@NonNull final String barCode) {
-        final boolean strictIsbn = coordinator.isStrictIsbn();
-        final ISBN code = new ISBN(barCode, strictIsbn);
+    private class ToolbarMenuProvider
+            implements MenuProvider {
 
-        if (code.isValid(strictIsbn)) {
-            if (strictIsbn) {
-                //noinspection ConstantConditions
-                SoundManager.onValidBarcodeBeep(getContext());
-            }
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            MenuCompat.setGroupDividerEnabled(menu, true);
+            menuInflater.inflate(R.menu.search_by_isbn, menu);
+        }
 
-            if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Batch) {
-                // batch mode, queue the code, go scan next book
-                vm.addToQueue(code);
+        @Override
+        public void onPrepareMenu(@NonNull final Menu menu) {
+            menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT)
+                .setChecked(coordinator.isStrictIsbn());
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            final int itemId = menuItem.getItemId();
+
+            if (itemId == R.id.MENU_BARCODE_SCAN) {
+                vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Single);
                 startScanner();
+                return true;
 
-            } else {
-                // single-scan mode, quit scanning, go search online for the book
-                stopScanner();
-                vb.isbn.setText(code.asText());
-                prepareSearch(code);
-            }
-        } else {
-            //noinspection ConstantConditions
-            SoundManager.onInvalidBarcodeBeep(getContext());
-            showError(vb.lblIsbn, getString(R.string.warning_x_is_not_a_valid_code,
-                                            code.asText()));
-
-            if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Batch) {
-                // batch mode, ignore the code, go scan next book
+            } else if (itemId == R.id.MENU_BARCODE_SCAN_BATCH) {
+                vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Batch);
                 startScanner();
-            } else {
-                // single-scan mode, quit scanning, let the user edit the code
-                stopScanner();
-                vb.isbn.setText(code.asText());
+                return true;
+
+            } else if (itemId == R.id.MENU_BARCODE_IMPORT) {
+                // See remarks in
+                // {@link com.hardbacknutter.nevertoomanybooks.backup.ImportFragment}
+                //URGENT: getContext() throws an exception stating the fragment is
+                // not attached to a host???
+//                //noinspection ConstantConditions
+//                TipManager.getInstance().display(getContext(), R.string.tip_import_isbn_list,
+//                                                 () -> openUriLauncher.launch("*/*"));
+                openUriLauncher.launch("*/*");
+                return true;
+
+            } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
+                final boolean checked = !menuItem.isChecked();
+                coordinator.setStrictIsbn(checked);
+
+                final ISBN.Validity validity = checked ? ISBN.Validity.Strict : ISBN.Validity.None;
+                isbnCleanupTextWatcher.setValidityLevel(validity);
+                isbnValidationTextWatcher.setValidityLevel(validity);
+                return true;
             }
+
+            return false;
         }
     }
 
@@ -377,7 +449,6 @@ public class SearchBookByIsbnFragment
         }
         vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Off);
     }
-
 
     /**
      * The user entered a barcode and clicked the search button.
@@ -456,63 +527,7 @@ public class SearchBookByIsbnFragment
         vb.queueGroup.setVisibility(visibility);
     }
 
-    @NonNull
-    private ISBN removeFromQueue(@NonNull final View chip) {
-        final ISBN code = (ISBN) chip.getTag();
-        // remove and update view manually to avoid flicker
-        vm.removeFromQueue(code);
-        vb.queue.removeView(chip);
-        updateQueueViewsVisibility();
-        return code;
-    }
 
-    private class ToolbarMenuProvider
-            implements MenuProvider {
 
-        @Override
-        public void onCreateMenu(@NonNull final Menu menu,
-                                 @NonNull final MenuInflater menuInflater) {
-            MenuCompat.setGroupDividerEnabled(menu, true);
-            menuInflater.inflate(R.menu.search_by_isbn, menu);
-        }
 
-        @Override
-        public void onPrepareMenu(@NonNull final Menu menu) {
-            menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT)
-                .setChecked(coordinator.isStrictIsbn());
-        }
-
-        @Override
-        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            final int itemId = menuItem.getItemId();
-
-            if (itemId == R.id.MENU_BARCODE_SCAN) {
-                vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Single);
-                startScanner();
-                return true;
-
-            } else if (itemId == R.id.MENU_BARCODE_SCAN_BATCH) {
-                vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Batch);
-                startScanner();
-                return true;
-
-            } else if (itemId == R.id.MENU_BARCODE_IMPORT) {
-                // See remarks in
-                // {@link com.hardbacknutter.nevertoomanybooks.backup.ImportFragment}
-                openUriLauncher.launch("*/*");
-                return true;
-
-            } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
-                final boolean checked = !menuItem.isChecked();
-                coordinator.setStrictIsbn(checked);
-
-                final ISBN.Validity validity = checked ? ISBN.Validity.Strict : ISBN.Validity.None;
-                isbnCleanupTextWatcher.setValidityLevel(validity);
-                isbnValidationTextWatcher.setValidityLevel(validity);
-                return true;
-            }
-
-            return false;
-        }
-    }
 }
