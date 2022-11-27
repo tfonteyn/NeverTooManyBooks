@@ -262,6 +262,7 @@ public class SearchBookByIsbnFragment
                 // {@link com.hardbacknutter.nevertoomanybooks.backup.ImportFragment}
                 //URGENT: getContext() throws an exception stating the fragment is
                 // not attached to a host???
+                // Getting the context works fine in ShowBookDetailsFragment though
 //                //noinspection ConstantConditions
 //                TipManager.getInstance().display(getContext(), R.string.tip_import_isbn_list,
 //                                                 () -> openUriLauncher.launch("*/*"));
