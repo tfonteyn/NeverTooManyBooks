@@ -64,6 +64,13 @@ public class ShowBookPagerFragment
                     getActivity().finish();
                 }
             };
+    private final ViewPager2.OnPageChangeCallback pageChange =
+            new ViewPager2.OnPageChangeCallback() {
+                @Override
+                public void onPageSelected(final int position) {
+                    vm.setPageSelected(position);
+                }
+            };
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -105,17 +112,19 @@ public class ShowBookPagerFragment
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(vm.getInitialPagerPosition(), false);
 
-        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(final int position) {
-                vm.setPageSelected(position);
-            }
-        });
+
+        viewPager.registerOnPageChangeCallback(pageChange);
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             TipManager.getInstance().display(getContext(), R.string.tip_view_only_help, null);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        viewPager.unregisterOnPageChangeCallback(pageChange);
+        super.onDestroy();
     }
 
     private class ShowBookPagerAdapter
