@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,10 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -78,15 +78,6 @@ class AuthorTest {
     }
 
     @Test
-    void fromString12() {
-        // yes, there REALLY is a book with an author named like this...
-        final Author author = Author.from("Don (*3)");
-        assertNotNull(author);
-        assertEquals("(*3)", author.getFamilyName());
-        assertEquals("Don", author.getGivenNames());
-    }
-
-    @Test
     void fromString20() {
         final Author author = Author.from("Charles Emerson Winchester III");
         assertNotNull(author);
@@ -108,5 +99,32 @@ class AuthorTest {
         assertNotNull(author);
         assertEquals("Winchester jr.", author.getFamilyName());
         assertEquals("Charles Emerson", author.getGivenNames());
+    }
+
+    @Test
+    void fromString30() {
+        // yes, there REALLY is a book with an author named like this...
+        final Author author = Author.from("Don (*3)");
+        assertNotNull(author);
+        assertEquals("(*3)", author.getFamilyName());
+        assertEquals("Don", author.getGivenNames());
+    }
+
+    @Test
+    void fromString31() {
+        // real name (alias,alias,...)
+        final Author author = Author.from("Robert Velter (Rob Vel)");
+        assertNotNull(author);
+        assertEquals("Velter", author.getFamilyName());
+        assertEquals("Robert", author.getGivenNames());
+    }
+
+    @Test
+    void fromString32() {
+        // real name (alias,alias,...)
+        final Author author = Author.from("Robert Velter (Rob-vel,Bozz)");
+        assertNotNull(author);
+        assertEquals("Velter", author.getFamilyName());
+        assertEquals("Robert", author.getGivenNames());
     }
 }
