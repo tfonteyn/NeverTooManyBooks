@@ -25,7 +25,7 @@ Data is fetched from multiple internet sites.
 
 Requires minimal Android 8.0 (API 26)
 
-To install the optional Calibre code,
+To install the optional Calibre code which provides Virtual Library support,
 see [Calibre AJAX extension](https://github.com/tfonteyn/NeverTooManyBooks/blob/dev/app/src/main/java/com/hardbacknutter/nevertoomanybooks/sync/calibre/ajax_additions.py)
 
 In August 2018, this project was forked from:
