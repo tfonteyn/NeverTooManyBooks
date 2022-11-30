@@ -132,6 +132,8 @@ public final class DBKey {
     public static final String AUTHOR_FAMILY_NAME = "family_name";
     public static final String AUTHOR_GIVEN_NAMES = "given_names";
     public static final String AUTHOR_IS_COMPLETE = "author_complete";
+    public static final String AUTHOR_IS_PSEUDONYM_FOR = "is_pseudonym_for";
+
     /** Aliases for CASE expressions. */
     public static final String AUTHOR_FORMATTED = "author_formatted";
     public static final String AUTHOR_FORMATTED_GIVEN_FIRST = "author_formatted_given_first";

@@ -158,7 +158,8 @@ public class AuthorDaoImpl
             + '(' + DBKey.AUTHOR_FAMILY_NAME + ',' + DBKey.AUTHOR_FAMILY_NAME_OB
             + ',' + DBKey.AUTHOR_GIVEN_NAMES + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB
             + ',' + DBKey.AUTHOR_IS_COMPLETE
-            + ") VALUES (?,?,?,?,?)";
+            + ',' + DBKey.AUTHOR_IS_PSEUDONYM_FOR
+            + ") VALUES (?,?,?,?,?,?)";
 
     /** Delete an {@link Author}. */
     private static final String DELETE_BY_ID =
@@ -237,7 +238,8 @@ public class AuthorDaoImpl
             SELECT_DISTINCT_ + TBL_AUTHORS.dotAs(DBKey.PK_ID,
                                                  DBKey.AUTHOR_FAMILY_NAME,
                                                  DBKey.AUTHOR_GIVEN_NAMES,
-                                                 DBKey.AUTHOR_IS_COMPLETE)
+                                                 DBKey.AUTHOR_IS_COMPLETE,
+                                                 DBKey.AUTHOR_IS_PSEUDONYM_FOR)
 
             + ',' + TBL_BOOK_AUTHOR.dotAs(DBKey.BOOK_AUTHOR_POSITION,
                                           DBKey.AUTHOR_TYPE__BITMASK)
@@ -618,6 +620,7 @@ public class AuthorDaoImpl
             stmt.bindString(3, author.getGivenNames());
             stmt.bindString(4, SqlEncode.orderByColumn(author.getGivenNames(), authorLocale));
             stmt.bindBoolean(5, author.isComplete());
+            stmt.bindLong(6, author.getRealAuthorId());
             final long iId = stmt.executeInsert();
             if (iId > 0) {
                 author.setId(iId);
@@ -641,6 +644,7 @@ public class AuthorDaoImpl
         cv.put(DBKey.AUTHOR_GIVEN_NAMES_OB,
                SqlEncode.orderByColumn(author.getGivenNames(), authorLocale));
         cv.put(DBKey.AUTHOR_IS_COMPLETE, author.isComplete());
+        cv.put(DBKey.AUTHOR_IS_PSEUDONYM_FOR, author.getRealAuthorId());
 
         return 0 < db.update(TBL_AUTHORS.getName(), cv, DBKey.PK_ID + "=?",
                              new String[]{String.valueOf(author.getId())});
@@ -682,13 +686,9 @@ public class AuthorDaoImpl
             db.update(TBL_TOC_ENTRIES.getName(), cv, DBKey.FK_AUTHOR + "=?",
                       new String[]{String.valueOf(source.getId())});
 
-            // the books must be done one by one, as we need to prevent duplicate authors
-            // e.g. suppose we have a book with author
-            // a1@pos1
-            // a2@pos2
-            // and we want to replace a1 with a2, we cannot simply do a mass update.
-            final Author destination = getById(destId);
-
+            // Relink books with the target Author,
+            // respecting the position of the Author in the list for each book.
+            // In addition, we also must preserve the author type as originally set.
             final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
             for (final long bookId : getBookIds(source.getId())) {
                 final Book book = Book.from(bookId);
@@ -696,10 +696,11 @@ public class AuthorDaoImpl
                 final Collection<Author> fromBook = book.getAuthors();
                 final Collection<Author> destList = new ArrayList<>();
 
-                for (final Author item : fromBook) {
-                    if (source.getId() == item.getId()) {
-                        // replace this one.
-                        destList.add(destination);
+                for (final Author originalBookAuthor : fromBook) {
+                    if (source.getId() == originalBookAuthor.getId()) {
+                        // replace this one but keep the original author type
+                        target.setType(originalBookAuthor.getType());
+                        destList.add(target);
                         // We could 'break' here as there should be no duplicates,
                         // but paranoia...
                     } else {
