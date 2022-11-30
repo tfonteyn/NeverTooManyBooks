@@ -158,14 +158,15 @@ public class EditPublisherDialogFragment
     private boolean saveChanges() {
         viewToModel();
 
-        // basic check only, we're doing more extensive checks later on.
         if (currentEdit.getName().isEmpty()) {
             showError(vb.lblPublisher, R.string.vldt_non_blank_required);
             return false;
         }
 
-        // anything actually changed ?
-        if (publisher.getName().equals(currentEdit.getName())) {
+        final boolean nameChanged = !publisher.getName().equals(currentEdit.getName());
+
+        // anything actually changed ? If not, we're done.
+        if (nameChanged) {
             return true;
         }
 
@@ -173,22 +174,20 @@ public class EditPublisherDialogFragment
         publisher.copyFrom(currentEdit);
 
         final Context context = getContext();
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final PublisherDao dao = ServiceLocator.getInstance().getPublisherDao();
 
         // There is no book involved here, so use the users Locale instead
         final Locale bookLocale = getResources().getConfiguration().getLocales().get(0);
 
-        final PublisherDao publisherDao = serviceLocator.getPublisherDao();
-        // check if it already exists (will be 0 if not)
+        // Check if there is an existing one with the same name
         //noinspection ConstantConditions
-        final long existingId = publisherDao.find(context, publisher, true, bookLocale);
-
+        final long existingId = dao.find(context, publisher, true, bookLocale);
         if (existingId == 0) {
             final boolean success;
             if (publisher.getId() == 0) {
-                success = publisherDao.insert(context, publisher, bookLocale) > 0;
+                success = dao.insert(context, publisher, bookLocale) > 0;
             } else {
-                success = publisherDao.update(context, publisher, bookLocale);
+                success = dao.update(context, publisher, bookLocale);
             }
             if (success) {
                 RowChangedListener.setResult(this, requestKey,
@@ -196,32 +195,39 @@ public class EditPublisherDialogFragment
                 return true;
             }
         } else {
-            // Merge the 2
-            new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(publisher.getLabel(context))
-                    .setMessage(R.string.confirm_merge_publishers)
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                    .setPositiveButton(R.string.action_merge, (d, w) -> {
-                        dismiss();
-                        // move all books from the one being edited to the existing one
-                        try {
-                            publisherDao.merge(context, publisher, existingId);
-                            RowChangedListener.setResult(
-                                    this, requestKey,
-                                    // return the publisher who 'lost' it's books
-                                    DBKey.FK_PUBLISHER,
-                                    publisher.getId());
-                        } catch (@NonNull final DaoWriteException e) {
-                            Logger.error(TAG, e);
-                            StandardDialogs.showError(context, R.string.error_storage_not_writable);
-                        }
-                    })
-                    .create()
-                    .show();
+            // There is one with the same name; ask whether to merge the 2
+            askToMerge(publisher, existingId);
         }
 
         return false;
+    }
+
+    private void askToMerge(@NonNull final Publisher current,
+                            final long targetId) {
+        final Context context = getContext();
+        //noinspection ConstantConditions
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setTitle(current.getLabel(context))
+                .setMessage(R.string.confirm_merge_publishers)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.action_merge, (d, w) -> {
+                    dismiss();
+                    try {
+                        final PublisherDao dao = ServiceLocator.getInstance().getPublisherDao();
+                        //noinspection ConstantConditions
+                        dao.moveBooks(context, current, dao.getById(targetId));
+
+                        // return the publisher who 'lost' it's books
+                        RowChangedListener.setResult(this, requestKey,
+                                                     DBKey.FK_PUBLISHER, current.getId());
+                    } catch (@NonNull final DaoWriteException e) {
+                        Logger.error(TAG, e);
+                        StandardDialogs.showError(context, R.string.error_storage_not_writable);
+                    }
+                })
+                .create()
+                .show();
     }
 
     private void viewToModel() {
