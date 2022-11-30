@@ -1066,6 +1066,7 @@ public class Book
     public void ensureLanguage(@NonNull final Context context) {
         if (getString(DBKey.LANGUAGE).isEmpty()) {
             putString(DBKey.LANGUAGE,
+                      // user locale
                       context.getResources().getConfiguration().getLocales().get(0)
                              .getISO3Language());
         }
