@@ -224,7 +224,7 @@ public class EditBookAuthorListDialogFragment
         vb.lblAuthor.setError(null);
 
         final String name = vb.author.getText().toString().trim();
-        if (name.isEmpty()) {
+        if (name.isBlank()) {
             vb.lblAuthor.setError(getString(R.string.vldt_non_blank_required));
             return;
         }
