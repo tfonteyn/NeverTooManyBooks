@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,8 +46,8 @@ public interface SeriesDao {
     Series getById(long id);
 
     /**
-     * Find a {@link Series} by using the appropriate fields of the passed {@link Series}.
-     * The incoming object is not modified.
+     * Find a {@link Series} by using the <strong>name</strong> fields
+     * of the passed {@link Series}. The incoming object is not modified.
      *
      * @param context      Current context
      * @param series       to find the id of
@@ -257,18 +257,18 @@ public interface SeriesDao {
                    @NonNull Series series);
 
     /**
-     * Moves all books from the 'source' {@link Series}, to the 'destId' {@link Series}.
+     * Moves all books from the 'source' {@link Series}, to the 'target' {@link Series}.
      * The (now unused) 'source' {@link Series} is deleted.
      *
      * @param context Current context
      * @param source  from where to move
-     * @param destId  to move to
+     * @param target  to move to
      *
      * @throws DaoWriteException on failure
      */
-    void merge(@NonNull Context context,
-               @NonNull Series source,
-               long destId)
+    void moveBooks(@NonNull Context context,
+                   @NonNull Series source,
+                   @NonNull Series target)
             throws DaoWriteException;
 
     /**
