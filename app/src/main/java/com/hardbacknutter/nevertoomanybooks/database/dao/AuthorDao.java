@@ -52,8 +52,8 @@ public interface AuthorDao {
     Author getById(long id);
 
     /**
-     * Find a {@link Author} by using the appropriate fields of the passed {@link Author}.
-     * The incoming object is not modified.
+     * Find an {@link Author} by using the <strong>name</strong> fields
+     * of the passed {@link Author}. The incoming object is not modified.
      * <p>
      * <strong>IMPORTANT:</strong> the query can return more than one row if the
      * given-name of the author is empty. e.g. "Asimov" and "Asimov"+"Isaac"
@@ -208,7 +208,7 @@ public interface AuthorDao {
                       @NonNull Locale bookLocale);
 
     /**
-     * Try to find the {@link Author}.
+     * Find an {@link Author} by using the <strong>name</strong> fields.
      * If found, update the id with the id as found in the database.
      *
      * @param context      Current context
@@ -276,18 +276,20 @@ public interface AuthorDao {
                    @NonNull Author author);
 
     /**
-     * Moves all books from the 'source' {@link Author}, to the 'destId' {@link Author}.
+     * Moves all books from the 'source' {@link Author}, to the 'target' {@link Author}.
      * The (now unused) 'source' {@link Author} is deleted.
+     * <p>
+     * Note that TOC entries also get updated with the new author id.
      *
      * @param context Current context
      * @param source  from where to move
-     * @param destId  to move to
+     * @param target  to move to
      *
      * @throws DaoWriteException on failure
      */
-    void merge(@NonNull Context context,
-               @NonNull Author source,
-               long destId)
+    void moveBooks(@NonNull Context context,
+                   @NonNull Author source,
+                   @NonNull Author target)
             throws DaoWriteException;
 
     /**

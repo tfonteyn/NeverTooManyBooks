@@ -665,9 +665,9 @@ public class AuthorDaoImpl
     }
 
     @Override
-    public void merge(@NonNull final Context context,
-                      @NonNull final Author source,
-                      final long destId)
+    public void moveBooks(@NonNull final Context context,
+                          @NonNull final Author source,
+                          @NonNull final Author target)
             throws DaoWriteException {
 
         Synchronizer.SyncLock txLock = null;
@@ -676,9 +676,9 @@ public class AuthorDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            // TOC is easy: just do a mass update
+            // Updating all TOCs is easy: just do a mass update
             final ContentValues cv = new ContentValues();
-            cv.put(DBKey.FK_AUTHOR, destId);
+            cv.put(DBKey.FK_AUTHOR, target.getId());
             db.update(TBL_TOC_ENTRIES.getName(), cv, DBKey.FK_AUTHOR + "=?",
                       new String[]{String.valueOf(source.getId())});
 
@@ -704,7 +704,7 @@ public class AuthorDaoImpl
                         // but paranoia...
                     } else {
                         // just keep/copy
-                        destList.add(item);
+                        destList.add(originalBookAuthor);
                     }
                 }
                 // delete old links and store all new links
