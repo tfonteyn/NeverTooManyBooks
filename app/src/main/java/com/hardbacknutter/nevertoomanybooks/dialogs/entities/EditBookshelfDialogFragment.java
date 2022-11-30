@@ -42,9 +42,12 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfBinding;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 /**
@@ -66,7 +69,7 @@ public class EditBookshelfDialogFragment
     /** The Bookshelf we're editing. */
     private Bookshelf bookshelf;
 
-    /** Current edit. */
+    /** Current edit. Using the 'name' directly. */
     private String name;
 
     /**
@@ -130,28 +133,33 @@ public class EditBookshelfDialogFragment
 
     private boolean saveChanges() {
         viewToModel();
+
         if (name.isEmpty()) {
             showError(vb.lblBookshelf, R.string.vldt_non_blank_required);
             return false;
         }
 
-        // anything actually changed ?
-        if (bookshelf.getName().equals(name)) {
+        final boolean nameChanged = !bookshelf.getName().equals(name);
+
+        // anything actually changed ? If not, we're done.
+        if (!nameChanged) {
             return true;
         }
 
         // store changes
         bookshelf.setName(name);
 
-        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
+        final Context context = getContext();
+        final BookshelfDao dao = ServiceLocator.getInstance().getBookshelfDao();
 
-        // check if it already exists (will be 0 if not)
-        final long existingId = bookshelfDao.find(bookshelf);
+        // The logic flow here is different from the default one as used for an Author.
+        // Here we reject using a name which already exists IF the user meant to create a NEW shelf.
 
-        // are we adding a new one but trying to use an existing name?
+        // Check if there is an existing one with the same name
+        final long existingId = dao.find(bookshelf);
+
+        // Are we adding a new one but trying to use an existing name? -> REJECT
         if (bookshelf.getId() == 0 && existingId != 0) {
-            final Context context = getContext();
-
             //noinspection ConstantConditions
             final String msg = context.getString(R.string.warning_x_already_exists,
                                                  context.getString(R.string.lbl_bookshelf));
@@ -160,38 +168,52 @@ public class EditBookshelfDialogFragment
         }
 
         if (existingId == 0) {
+            // We have a unique/new name; either add or update and we're done
             final boolean success;
             if (bookshelf.getId() == 0) {
                 //noinspection ConstantConditions
-                success = bookshelfDao.insert(getContext(), bookshelf) > 0;
+                success = dao.insert(context, bookshelf) > 0;
             } else {
                 //noinspection ConstantConditions
-                success = bookshelfDao.update(getContext(), bookshelf);
+                success = dao.update(context, bookshelf);
             }
             if (success) {
                 Launcher.setResult(this, requestKey, bookshelf.getId());
                 return true;
             }
         } else {
-            // Merge the 2
-            //noinspection ConstantConditions
-            new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(bookshelf.getLabel(getContext()))
-                    .setMessage(R.string.confirm_merge_bookshelves)
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                    .setPositiveButton(R.string.action_merge, (d, w) -> {
-                        // move all books from the one being edited to the existing one
-                        bookshelfDao.merge(bookshelf, existingId);
-
-                        Launcher.setResult(this, requestKey, existingId);
-                        dismiss();
-                    })
-                    .create()
-                    .show();
+            // There is one with the same name; ask whether to merge the 2
+            askToMerge(bookshelf, existingId);
         }
 
         return false;
+    }
+
+    private void askToMerge(@NonNull final Bookshelf current,
+                            final long otherBookshelfId) {
+        final Context context = getContext();
+        //noinspection ConstantConditions
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setTitle(current.getLabel(context))
+                .setMessage(R.string.confirm_merge_bookshelves)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.action_merge, (d, w) -> {
+                    dismiss();
+                    try {
+                        final BookshelfDao dao = ServiceLocator.getInstance().getBookshelfDao();
+                        //noinspection ConstantConditions
+                        dao.moveBooks(current, dao.getById(otherBookshelfId));
+
+                        Launcher.setResult(this, requestKey, otherBookshelfId);
+                    } catch (@NonNull final DaoWriteException e) {
+                        Logger.error(TAG, e);
+                        StandardDialogs.showError(context, R.string.error_storage_not_writable);
+                    }
+
+                })
+                .create()
+                .show();
     }
 
     private void viewToModel() {
