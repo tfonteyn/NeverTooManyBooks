@@ -357,13 +357,10 @@ public class PublisherDaoImpl
     }
 
     @Override
-    public void merge(@NonNull final Context context,
-                      @NonNull final Publisher source,
-                      final long destId)
+    public void moveBooks(@NonNull final Context context,
+                          @NonNull final Publisher source,
+                          @NonNull final Publisher target)
             throws DaoWriteException {
-
-        final ContentValues cv = new ContentValues();
-        cv.put(DBKey.FK_PUBLISHER, destId);
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -371,7 +368,8 @@ public class PublisherDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final Publisher destination = getById(destId);
+            // Relink books with the target Publisher,
+            // respecting the position of the Publisher in the list for each book.
             final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
             for (final long bookId : getBookIds(source.getId())) {
                 final Book book = Book.from(bookId);
@@ -381,7 +379,7 @@ public class PublisherDaoImpl
 
                 for (final Publisher item : fromBook) {
                     if (source.getId() == item.getId()) {
-                        destList.add(destination);
+                        destList.add(target);
                     } else {
                         destList.add(item);
                     }
