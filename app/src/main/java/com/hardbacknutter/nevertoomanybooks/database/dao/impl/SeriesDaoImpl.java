@@ -398,13 +398,10 @@ public class SeriesDaoImpl
     }
 
     @Override
-    public void merge(@NonNull final Context context,
-                      @NonNull final Series source,
-                      final long destId)
+    public void moveBooks(@NonNull final Context context,
+                          @NonNull final Series source,
+                          @NonNull final Series target)
             throws DaoWriteException {
-
-        final ContentValues cv = new ContentValues();
-        cv.put(DBKey.FK_SERIES, destId);
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -412,8 +409,8 @@ public class SeriesDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final Series destination = getById(destId);
-
+            // Relink books with the target Series,
+            // respecting the position of the Series in the list for each book.
             final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
             for (final long bookId : getBookIds(source.getId())) {
                 final Book book = Book.from(bookId);
@@ -423,7 +420,7 @@ public class SeriesDaoImpl
 
                 for (final Series item : fromBook) {
                     if (source.getId() == item.getId()) {
-                        destList.add(destination);
+                        destList.add(target);
                     } else {
                         destList.add(item);
                     }
