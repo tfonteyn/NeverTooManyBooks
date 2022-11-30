@@ -188,9 +188,9 @@ public class EditBookViewModel
             errStrNonBlankRequired = context.getString(R.string.vldt_non_blank_required);
             errStrReadStartAfterEnd = context.getString(R.string.vldt_read_start_after_end);
 
-            final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
-            dateFormatter = new DateFieldFormatter(locale);
-            languageFormatter = new LanguageFormatter(locale);
+            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+            dateFormatter = new DateFieldFormatter(userLocale);
+            languageFormatter = new LanguageFormatter(userLocale);
             doubleNumberFormatter = new DoubleNumberFormatter();
             listFormatterAutoDetails = new ListFormatter<>(Details.Auto, null);
             listFormatterNormalDetails = new ListFormatter<>(Details.Normal, null);
