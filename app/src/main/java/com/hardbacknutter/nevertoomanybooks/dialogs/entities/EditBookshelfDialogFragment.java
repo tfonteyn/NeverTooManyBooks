@@ -189,23 +189,24 @@ public class EditBookshelfDialogFragment
         return false;
     }
 
-    private void askToMerge(@NonNull final Bookshelf current,
-                            final long otherBookshelfId) {
+    private void askToMerge(@NonNull final Bookshelf source,
+                            final long targetId) {
         final Context context = getContext();
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_baseline_warning_24)
-                .setTitle(current.getLabel(context))
+                .setTitle(source.getLabel(context))
                 .setMessage(R.string.confirm_merge_bookshelves)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .setPositiveButton(R.string.action_merge, (d, w) -> {
                     dismiss();
                     try {
                         final BookshelfDao dao = ServiceLocator.getInstance().getBookshelfDao();
-                        //noinspection ConstantConditions
-                        dao.moveBooks(current, dao.getById(otherBookshelfId));
+                        final Bookshelf target = Objects.requireNonNull(dao.getById(targetId));
+                        // By choice we do NOT copy any extra attributes (e.g. filters, style,...)
+                        dao.moveBooks(source, target);
 
-                        Launcher.setResult(this, requestKey, otherBookshelfId);
+                        Launcher.setResult(this, requestKey, targetId);
                     } catch (@NonNull final DaoWriteException e) {
                         Logger.error(TAG, e);
                         StandardDialogs.showError(context, R.string.error_storage_not_writable);

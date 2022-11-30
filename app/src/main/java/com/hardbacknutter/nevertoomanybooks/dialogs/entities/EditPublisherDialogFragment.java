@@ -202,25 +202,26 @@ public class EditPublisherDialogFragment
         return false;
     }
 
-    private void askToMerge(@NonNull final Publisher current,
+    private void askToMerge(@NonNull final Publisher source,
                             final long targetId) {
         final Context context = getContext();
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_baseline_warning_24)
-                .setTitle(current.getLabel(context))
+                .setTitle(source.getLabel(context))
                 .setMessage(R.string.confirm_merge_publishers)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .setPositiveButton(R.string.action_merge, (d, w) -> {
                     dismiss();
                     try {
                         final PublisherDao dao = ServiceLocator.getInstance().getPublisherDao();
-                        //noinspection ConstantConditions
-                        dao.moveBooks(context, current, dao.getById(targetId));
+                        final Publisher target = Objects.requireNonNull(dao.getById(targetId));
+                        // There are no extra attributes, just move the books
+                        dao.moveBooks(context, source, target);
 
                         // return the publisher who 'lost' it's books
                         RowChangedListener.setResult(this, requestKey,
-                                                     DBKey.FK_PUBLISHER, current.getId());
+                                                     DBKey.FK_PUBLISHER, source.getId());
                     } catch (@NonNull final DaoWriteException e) {
                         Logger.error(TAG, e);
                         StandardDialogs.showError(context, R.string.error_storage_not_writable);
