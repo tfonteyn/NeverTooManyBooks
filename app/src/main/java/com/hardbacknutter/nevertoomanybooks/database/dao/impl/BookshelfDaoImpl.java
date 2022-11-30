@@ -432,14 +432,8 @@ public class BookshelfDaoImpl
     }
 
     @Override
-    @SuppressWarnings("UnusedReturnValue")
-    public int merge(@NonNull final Bookshelf source,
-                     final long destId) {
-
-        final ContentValues cv = new ContentValues();
-        cv.put(DBKey.FK_BOOKSHELF, destId);
-
-        final int rowsAffected;
+    public void moveBooks(@NonNull final Bookshelf source,
+                          @NonNull final Bookshelf target) {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -447,10 +441,12 @@ public class BookshelfDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            // we don't hold 'position' for shelves... so just do a mass update
-            rowsAffected = db.update(TBL_BOOK_BOOKSHELF.getName(), cv,
-                                     DBKey.FK_BOOKSHELF + "=?",
-                                     new String[]{String.valueOf(source.getId())});
+            // Relink books with the target Bookshelf.
+            // We don't hold 'position' for bookshelves... just do a mass update
+            final ContentValues cv = new ContentValues();
+            cv.put(DBKey.FK_BOOKSHELF, target.getId());
+            db.update(TBL_BOOK_BOOKSHELF.getName(), cv, DBKey.FK_BOOKSHELF + "=?",
+                      new String[]{String.valueOf(source.getId())});
 
             // delete the obsolete source.
             delete(source);
@@ -463,8 +459,6 @@ public class BookshelfDaoImpl
                 db.endTransaction(txLock);
             }
         }
-
-        return rowsAffected;
     }
 
     @Override

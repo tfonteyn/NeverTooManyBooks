@@ -47,8 +47,8 @@ public interface BookshelfDao {
     Bookshelf getById(long id);
 
     /**
-     * Find a {@link Bookshelf} by using the appropriate fields of the passed {@link Bookshelf}.
-     * The incoming object is not modified.
+     * Find a {@link Bookshelf} by using the <strong>name</strong> fields
+     * of the passed {@link Bookshelf}. The incoming object is not modified.
      *
      * @param bookshelf to find the id of
      *
@@ -148,17 +148,17 @@ public interface BookshelfDao {
     boolean delete(@NonNull Bookshelf bookshelf);
 
     /**
-     * Moves all books from the 'source' {@link Bookshelf}, to the 'destId' {@link Bookshelf}.
+     * Moves all books from the 'source' {@link Bookshelf}, to the 'target' {@link Bookshelf}.
      * The (now unused) 'source' {@link Bookshelf} is deleted.
      *
      * @param source from where to move
-     * @param destId to move to
+     * @param target to move to
      *
-     * @return the amount of books moved.
+     * @throws DaoWriteException on failure
      */
-    @SuppressWarnings("UnusedReturnValue")
-    int merge(@NonNull Bookshelf source,
-              long destId);
+    void moveBooks(@NonNull Bookshelf source,
+                   @NonNull Bookshelf target)
+            throws DaoWriteException;
 
     /**
      * Purge book list node state data for the given {@link Bookshelf}.
