@@ -40,6 +40,11 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
+/**
+ * An interesting read about Android Locale usage:
+ * <a href="https://medium.com/@hectorricardomendez/how-to-get-the-current-locale-in-android-fc12d8be6242">
+ * https://medium.com/@hectorricardomendez/how-to-get-the-current-locale-in-android-fc12d8be6242</a>
+ */
 public final class AppLocaleImpl
         implements AppLocale {
 
