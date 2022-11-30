@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,8 +46,8 @@ public interface PublisherDao {
     Publisher getById(long id);
 
     /**
-     * Find a {@link Publisher} by using the appropriate fields of the passed {@link Publisher}.
-     * The incoming object is not modified.
+     * Find a {@link Publisher} by using the <strong>name</strong> fields
+     * of the passed {@link Publisher}. The incoming object is not modified.
      *
      * @param context      Current context
      * @param publisher    to find the id of
@@ -216,18 +216,18 @@ public interface PublisherDao {
                    @NonNull Publisher publisher);
 
     /**
-     * Moves all books from the 'source' {@link Publisher}, to the 'destId' {@link Publisher}.
+     * Moves all books from the 'source' {@link Publisher}, to the 'target' {@link Publisher}.
      * The (now unused) 'source' {@link Publisher} is deleted.
      *
      * @param context Current context
      * @param source  from where to move
-     * @param destId  to move to
+     * @param target  to move to
      *
      * @throws DaoWriteException on failure
      */
-    void merge(@NonNull Context context,
-               @NonNull Publisher source,
-               long destId)
+    void moveBooks(@NonNull Context context,
+                   @NonNull Publisher source,
+                   @NonNull Publisher target)
             throws DaoWriteException;
 
     /**
