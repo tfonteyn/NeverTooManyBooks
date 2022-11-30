@@ -124,7 +124,9 @@ public abstract class BaseSetup
         book[0].putString(DBKey.TITLE, TestConstants.BOOK_TITLE + "0");
         book[0].putString(DBKey.LANGUAGE, "eng");
         authorList.clear();
+        // author[0] has no type
         authorList.add(author[0]);
+        author[1].setType(Author.TYPE_ARTIST);
         authorList.add(author[1]);
         book[0].setAuthors(authorList);
         publisherList.clear();
@@ -176,7 +178,9 @@ public abstract class BaseSetup
         book[3].putString(DBKey.TITLE, TestConstants.BOOK_TITLE + "3");
         book[3].putString(DBKey.LANGUAGE, "eng");
         authorList.clear();
+        // author[0] has no type
         authorList.add(author[0]);
+        author[2].setType(Author.TYPE_EDITOR);
         authorList.add(author[2]);
         book[3].setAuthors(authorList);
         publisherList.clear();
@@ -194,7 +198,9 @@ public abstract class BaseSetup
         book[4].putString(DBKey.TITLE, TestConstants.BOOK_TITLE + "4");
         book[4].putString(DBKey.LANGUAGE, "eng");
         authorList.clear();
+        author[1].setType(Author.TYPE_COLORIST);
         authorList.add(author[1]);
+        author[2].setType(Author.TYPE_EDITOR);
         authorList.add(author[2]);
         book[4].setAuthors(authorList);
         publisherList.clear();

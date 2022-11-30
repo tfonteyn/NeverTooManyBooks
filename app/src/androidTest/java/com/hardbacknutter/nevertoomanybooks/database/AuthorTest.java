@@ -90,7 +90,7 @@ public class AuthorTest
             throws DaoWriteException {
         final boolean updateOk;
 
-        final ArrayList<Long> bookIdList;
+        ArrayList<Long> bookIdList;
 
         long idBefore;
         long existingId;
@@ -131,7 +131,10 @@ public class AuthorTest
         author[2].setName(RENAMED_FAMILY_NAME + "_a", RENAMED_GIVEN_NAMES + "_a");
 
         existingId = authorDao.find(context, author[2], false, Locale.getDefault());
-        authorDao.merge(context, author[2], existingId);
+        final Author destination = authorDao.getById(existingId);
+        assertNotNull(destination);
+
+        authorDao.moveBooks(context, author[2], destination);
         // - the renamed author[2] will have been deleted
         assertEquals(0, author[2].getId());
         // find the author[2] again...
@@ -179,7 +182,9 @@ public class AuthorTest
         author[2].setName(RENAMED_FAMILY_NAME + "_b", RENAMED_GIVEN_NAMES + "_b");
 
         existingId = authorDao.find(context, author[2], false, Locale.getDefault());
-        authorDao.merge(context, author[2], existingId);
+        final Author destination = authorDao.getById(existingId);
+        assertNotNull(destination);
+        authorDao.moveBooks(context, author[2], destination);
         // - the renamed author[2] will have been deleted
         assertEquals(0, author[2].getId());
         // find the author[2] again...
