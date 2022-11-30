@@ -155,13 +155,16 @@ public class EditSeriesDialogFragment
 
     private boolean saveChanges() {
         viewToModel();
+
         if (currentEdit.getTitle().isEmpty()) {
             showError(vb.lblSeriesTitle, R.string.vldt_non_blank_required);
             return false;
         }
 
-        // anything actually changed ?
-        if (series.getTitle().equals(currentEdit.getTitle())
+        final boolean nameChanged = !series.getTitle().equals(currentEdit.getTitle());
+
+        // anything actually changed ? If not, we're done.
+        if (!nameChanged
             && series.isComplete() == currentEdit.isComplete()) {
             return true;
         }
@@ -170,53 +173,85 @@ public class EditSeriesDialogFragment
         series.copyFrom(currentEdit, false);
 
         final Context context = getContext();
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        final SeriesDao seriesDao = serviceLocator.getSeriesDao();
+        final SeriesDao dao = ServiceLocator.getInstance().getSeriesDao();
 
         // There is no book involved here, so use the users Locale instead
         final Locale bookLocale = getResources().getConfiguration().getLocales().get(0);
 
-        // check if it already exists (will be 0 if not)
-        //noinspection ConstantConditions
-        final long existingId = seriesDao.find(context, series, true, bookLocale);
-
-        if (existingId == 0) {
-            final boolean success;
-            if (series.getId() == 0) {
-                success = seriesDao.insert(context, series, bookLocale) > 0;
+        if (series.getId() == 0) {
+            // It's a new one. Check if there is an existing one with the same name
+            //noinspection ConstantConditions
+            final long existingId = dao.find(context, series, true, bookLocale);
+            if (existingId == 0) {
+                // It's an entirely new one; add it.
+                if (dao.insert(context, series, bookLocale) > 0) {
+                    RowChangedListener.setResult(this, requestKey,
+                                                 DBKey.FK_SERIES, series.getId());
+                    return true;
+                }
             } else {
-                success = seriesDao.update(context, series, bookLocale);
-            }
-            if (success) {
-                RowChangedListener.setResult(this, requestKey,
-                                             DBKey.FK_SERIES, series.getId());
-                return true;
+                // There is one with the same name; ask whether to merge the 2
+                askToMerge(series, existingId);
             }
         } else {
-            // Merge the 2
-            new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(series.getLabel(context))
-                    .setMessage(R.string.confirm_merge_series)
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                    .setPositiveButton(R.string.action_merge, (d, w) -> {
-                        dismiss();
-                        // move all books from the one being edited to the existing one
-                        try {
-                            seriesDao.merge(context, series, existingId);
-                            RowChangedListener.setResult(
-                                    this, requestKey,
-                                    // return the series which 'lost' it's books
-                                    DBKey.FK_SERIES, series.getId());
-                        } catch (@NonNull final DaoWriteException e) {
-                            Logger.error(TAG, e);
-                            StandardDialogs.showError(context, R.string.error_storage_not_writable);
-                        }
-                    })
-                    .create()
-                    .show();
+            // It's an existing one
+            if (nameChanged) {
+                // but the name was changed. Check if there is an existing one with the same name
+                //noinspection ConstantConditions
+                final long existingId = dao.find(context, series, true, bookLocale);
+                if (existingId == 0) {
+                    // none with the same name; so we just update this one
+                    if (dao.update(context, series, bookLocale)) {
+                        RowChangedListener.setResult(this, requestKey,
+                                                     DBKey.FK_SERIES, series.getId());
+                        return true;
+                    }
+                } else {
+                    // There is one with the same name; ask whether to merge the 2
+                    askToMerge(series, existingId);
+                }
+            } else {
+                // The name was not changed; just update the other attributes
+                //noinspection ConstantConditions
+                if (dao.update(context, series, bookLocale)) {
+                    RowChangedListener.setResult(this, requestKey,
+                                                 DBKey.FK_SERIES, series.getId());
+                    return true;
+                }
+            }
         }
+
         return false;
+    }
+
+    private void askToMerge(@NonNull final Series source,
+                            final long targetId) {
+        final Context context = getContext();
+        //noinspection ConstantConditions
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setTitle(source.getLabel(context))
+                .setMessage(R.string.confirm_merge_series)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.action_merge, (d, w) -> {
+                    dismiss();
+                    try {
+                        final SeriesDao dao = ServiceLocator.getInstance().getSeriesDao();
+                        final Series target = Objects.requireNonNull(dao.getById(targetId));
+                        //URGENT: should we copy these extra attributes ? Probably NOT...
+                        // target.setComplete(current.isComplete());
+                        dao.moveBooks(context, source, target);
+
+                        // return the series which 'lost' it's books
+                        RowChangedListener.setResult(this, requestKey,
+                                                     DBKey.FK_SERIES, source.getId());
+                    } catch (@NonNull final DaoWriteException e) {
+                        Logger.error(TAG, e);
+                        StandardDialogs.showError(context, R.string.error_storage_not_writable);
+                    }
+                })
+                .create()
+                .show();
     }
 
     private void viewToModel() {
