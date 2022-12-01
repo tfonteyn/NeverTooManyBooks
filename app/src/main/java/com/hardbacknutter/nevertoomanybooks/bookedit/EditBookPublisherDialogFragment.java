@@ -111,6 +111,8 @@ public class EditBookPublisherDialogFragment
 
         vb.publisherName.setText(currentEdit.getName());
         vb.publisherName.setAdapter(nameAdapter);
+
+        vb.publisherName.requestFocus();
     }
 
     @Nullable
