@@ -57,7 +57,7 @@
             >
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/lbl_publisher"
+                android:id="@+id/lbl_publisher_name"
                 style="@style/TIL.AutoCompleteTextView"
                 android:layout_width="@dimen/til_fixed_width_personal_name"
                 android:hint="@string/lbl_publisher"
@@ -67,7 +67,7 @@
                 >
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/publisher"
+                    android:id="@+id/publisher_name"
                     style="@style/acPersonalNameTextEntry"
                     android:imeOptions="actionDone"
                     tools:ignore="LabelFor"
@@ -84,7 +84,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lbl_publisher"
+                app:layout_constraintTop_toBottomOf="@id/lbl_publisher_name"
                 tools:listitem="@layout/row_edit_publisher_list"
                 />
 
