@@ -151,16 +151,17 @@ public class EditBookPublisherListDialogFragment
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getAllPublisherNames());
-        vb.publisher.setAdapter(nameAdapter);
-        vb.publisher.addTextChangedListener((ExtTextWatcher) s -> vb.lblPublisher.setError(null));
-        vb.publisher.setOnFocusChangeListener((v, hasFocus) -> {
+        vb.publisherName.setAdapter(nameAdapter);
+        vb.publisherName.addTextChangedListener((ExtTextWatcher) s ->
+                vb.lblPublisherName.setError(null));
+        vb.publisherName.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
-                vb.lblPublisher.setError(null);
+                vb.lblPublisherName.setError(null);
             }
         });
 
         // soft-keyboards 'done' button act as a shortcut to add the publisher
-        vb.publisher.setOnEditorActionListener((v, actionId, event) -> {
+        vb.publisherName.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 hideKeyboard(v);
                 onAdd(false);
@@ -216,11 +217,11 @@ public class EditBookPublisherListDialogFragment
      */
     private void onAdd(final boolean withDetails) {
         // clear any previous error
-        vb.lblPublisher.setError(null);
+        vb.lblPublisherName.setError(null);
 
-        final String name = vb.publisher.getText().toString().trim();
+        final String name = vb.publisherName.getText().toString().trim();
         if (name.isEmpty()) {
-            vb.lblPublisher.setError(getString(R.string.vldt_non_blank_required));
+            vb.lblPublisherName.setError(getString(R.string.vldt_non_blank_required));
             return;
         }
 
@@ -243,7 +244,7 @@ public class EditBookPublisherListDialogFragment
         vm.fixId(getContext(), publisher);
         // and check it's not already in the list.
         if (publisherList.contains(publisher)) {
-            vb.lblPublisher.setError(getString(R.string.warning_already_in_list));
+            vb.lblPublisherName.setError(getString(R.string.warning_already_in_list));
         } else {
             // add and scroll to the new item
             publisherList.add(publisher);
@@ -251,17 +252,17 @@ public class EditBookPublisherListDialogFragment
             vb.publisherList.scrollToPosition(adapter.getItemCount() - 1);
 
             // clear the form for next entry
-            vb.publisher.setText("");
-            vb.publisher.requestFocus();
+            vb.publisherName.setText("");
+            vb.publisherName.requestFocus();
         }
     }
 
     private boolean saveChanges() {
-        if (!vb.publisher.getText().toString().isEmpty()) {
+        if (!vb.publisherName.getText().toString().isEmpty()) {
             // Discarding applies to the edit field(s) only.
             //noinspection ConstantConditions
             StandardDialogs.unsavedEdits(getContext(), null, () -> {
-                vb.publisher.setText("");
+                vb.publisherName.setText("");
                 if (saveChanges()) {
                     dismiss();
                 }
