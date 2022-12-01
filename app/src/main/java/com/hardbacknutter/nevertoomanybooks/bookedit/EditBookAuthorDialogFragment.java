@@ -108,7 +108,7 @@ public class EditBookAuthorDialogFragment
             currentEdit.setType(author.getType());
         } else {
             //noinspection ConstantConditions
-            currentEdit = savedInstanceState.getParcelable(EditLauncher.BKEY_ITEM);
+            currentEdit = savedInstanceState.getParcelable(DBKey.FK_AUTHOR);
         }
     }
 
@@ -254,7 +254,7 @@ public class EditBookAuthorDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(EditLauncher.BKEY_ITEM, currentEdit);
+        outState.putParcelable(DBKey.FK_AUTHOR, currentEdit);
     }
 
     @Override
