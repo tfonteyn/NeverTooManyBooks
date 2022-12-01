@@ -83,12 +83,9 @@ public class EditBookSeriesDialogFragment
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                            BKEY_REQUEST_KEY);
-        action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY),
-                                        EditAction.BKEY);
-        series = Objects.requireNonNull(args.getParcelable(EditLauncher.BKEY_ITEM),
-                                        EditLauncher.BKEY_ITEM);
+        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
+        series = Objects.requireNonNull(args.getParcelable(DBKey.FK_SERIES), DBKey.FK_SERIES);
         bookTitle = args.getString(DBKey.TITLE);
 
         if (savedInstanceState == null) {
@@ -96,7 +93,7 @@ public class EditBookSeriesDialogFragment
             currentEdit.setNumber(series.getNumber());
         } else {
             //noinspection ConstantConditions
-            currentEdit = savedInstanceState.getParcelable(EditLauncher.BKEY_ITEM);
+            currentEdit = savedInstanceState.getParcelable(DBKey.FK_SERIES);
         }
     }
 
@@ -171,7 +168,7 @@ public class EditBookSeriesDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(EditLauncher.BKEY_ITEM, currentEdit);
+        outState.putParcelable(DBKey.FK_SERIES, currentEdit);
     }
 
     @Override
@@ -188,7 +185,7 @@ public class EditBookSeriesDialogFragment
                            @NonNull final EditAction action,
                            @NonNull final Series series) {
             super.launch(new EditBookSeriesDialogFragment(),
-                         bookTitle, action, series);
+                         bookTitle, action, DBKey.FK_SERIES, series);
         }
     }
 }

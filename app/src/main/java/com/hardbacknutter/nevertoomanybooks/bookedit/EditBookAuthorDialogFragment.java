@@ -109,8 +109,7 @@ public class EditBookAuthorDialogFragment
         final Bundle args = requireArguments();
         requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
         action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
-        author = Objects.requireNonNull(args.getParcelable(EditLauncher.BKEY_ITEM),
-                                        EditLauncher.BKEY_ITEM);
+        author = Objects.requireNonNull(args.getParcelable(DBKey.FK_AUTHOR), DBKey.FK_AUTHOR);
         bookTitle = args.getString(DBKey.TITLE);
 
         if (savedInstanceState == null) {
@@ -129,7 +128,7 @@ public class EditBookAuthorDialogFragment
             }
         } else {
             //noinspection ConstantConditions
-            currentEdit = savedInstanceState.getParcelable(EditLauncher.BKEY_ITEM);
+            currentEdit = savedInstanceState.getParcelable(DBKey.FK_AUTHOR);
             currentRealAuthorName = savedInstanceState.getString(SIS_REAL_AUTHOR_NAME);
         }
     }
@@ -308,7 +307,7 @@ public class EditBookAuthorDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(EditLauncher.BKEY_ITEM, currentEdit);
+        outState.putParcelable(DBKey.FK_AUTHOR, currentEdit);
         outState.putString(SIS_REAL_AUTHOR_NAME, currentRealAuthorName);
     }
 
@@ -326,7 +325,7 @@ public class EditBookAuthorDialogFragment
                            @NonNull final EditAction action,
                            @NonNull final Author author) {
             super.launch(new EditBookAuthorDialogFragment(),
-                         bookTitle, action, author);
+                         bookTitle, action, DBKey.FK_AUTHOR, author);
         }
     }
 }

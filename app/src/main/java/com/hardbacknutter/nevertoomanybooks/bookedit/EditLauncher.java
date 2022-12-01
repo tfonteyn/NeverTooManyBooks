@@ -37,8 +37,6 @@ public abstract class EditLauncher<T extends Parcelable>
         implements FragmentResultListener {
 
     private static final String TAG = "EditLauncher";
-    static final String BKEY_ITEM = TAG + ":item";
-
     private static final String ADD_NEW = TAG + ":n";
     private static final String ORIGINAL = TAG + ":o";
     private static final String MODIFIED = TAG + ":m";
@@ -90,12 +88,13 @@ public abstract class EditLauncher<T extends Parcelable>
     public void launch(@NonNull final DialogFragment fragment,
                        @NonNull final String bookTitle,
                        @NonNull final EditAction action,
+                       @NonNull final String itemKey,
                        @NonNull final T item) {
         final Bundle args = new Bundle(4);
         args.putString(requestKeyName, requestKeyValue);
         args.putString(DBKey.TITLE, bookTitle);
         args.putParcelable(EditAction.BKEY, action);
-        args.putParcelable(BKEY_ITEM, item);
+        args.putParcelable(itemKey, item);
 
         fragment.setArguments(args);
         fragment.show(fragmentManager, TAG);
