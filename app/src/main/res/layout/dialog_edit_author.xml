@@ -57,14 +57,28 @@
                 style="@style/Dialog.Body"
                 >
 
+                <androidx.constraintlayout.helper.widget.Flow
+                    android:id="@+id/flow_names"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="lbl_family_name,lbl_given_names"
+                    app:flow_horizontalAlign="start"
+                    app:flow_horizontalBias="0"
+                    app:flow_horizontalGap="@dimen/field_margin_inline"
+                    app:flow_horizontalStyle="packed"
+                    app:flow_maxElementsWrap="2"
+                    app:flow_verticalBias="0"
+                    app:flow_verticalGap="@dimen/field_margin_top"
+                    app:flow_wrapMode="aligned"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/lbl_family_name"
                     style="@style/TIL.AutoCompleteTextView"
                     android:layout_width="@dimen/til_fixed_width_personal_name"
                     android:hint="@string/lbl_family_name"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
                     >
 
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -81,9 +95,6 @@
                     style="@style/TIL.AutoCompleteTextView"
                     android:layout_width="@dimen/til_fixed_width_personal_name"
                     android:hint="@string/lbl_given_names"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/lbl_family_name"
                     >
 
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView
