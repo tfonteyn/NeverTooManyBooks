@@ -109,8 +109,8 @@ public class EditBookPublisherDialogFragment
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getAllPublisherNames());
 
-        vb.name.setText(currentEdit.getName());
-        vb.name.setAdapter(nameAdapter);
+        vb.publisherName.setText(currentEdit.getName());
+        vb.publisherName.setAdapter(nameAdapter);
     }
 
     @Nullable
@@ -142,7 +142,7 @@ public class EditBookPublisherDialogFragment
 
         // basic check only, we're doing more extensive checks later on.
         if (currentEdit.getName().isEmpty()) {
-            showError(vb.lblName, R.string.vldt_non_blank_required);
+            showError(vb.lblPublisherName, R.string.vldt_non_blank_required);
             return false;
         }
 
@@ -155,7 +155,7 @@ public class EditBookPublisherDialogFragment
     }
 
     private void viewToModel() {
-        currentEdit.setName(vb.name.getText().toString().trim());
+        currentEdit.setName(vb.publisherName.getText().toString().trim());
     }
 
     @Override
