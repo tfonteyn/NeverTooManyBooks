@@ -682,13 +682,9 @@ public class AuthorDaoImpl
             db.update(TBL_TOC_ENTRIES.getName(), cv, DBKey.FK_AUTHOR + "=?",
                       new String[]{String.valueOf(source.getId())});
 
-            // the books must be done one by one, as we need to prevent duplicate authors
-            // e.g. suppose we have a book with author
-            // a1@pos1
-            // a2@pos2
-            // and we want to replace a1 with a2, we cannot simply do a mass update.
-            final Author destination = getById(destId);
-
+            // Relink books with the target Author,
+            // respecting the position of the Author in the list for each book.
+            // In addition, we also must preserve the author type as originally set.
             final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
             for (final long bookId : getBookIds(source.getId())) {
                 final Book book = Book.from(bookId);
@@ -696,10 +692,11 @@ public class AuthorDaoImpl
                 final Collection<Author> fromBook = book.getAuthors();
                 final Collection<Author> destList = new ArrayList<>();
 
-                for (final Author item : fromBook) {
-                    if (source.getId() == item.getId()) {
-                        // replace this one.
-                        destList.add(destination);
+                for (final Author originalBookAuthor : fromBook) {
+                    if (source.getId() == originalBookAuthor.getId()) {
+                        // replace this one but keep the original author type
+                        target.setType(originalBookAuthor.getType());
+                        destList.add(target);
                         // We could 'break' here as there should be no duplicates,
                         // but paranoia...
                     } else {
