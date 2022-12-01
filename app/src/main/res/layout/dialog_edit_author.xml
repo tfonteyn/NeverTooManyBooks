@@ -145,7 +145,6 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
-                    android:id="@+id/blurb"
                     style="@style/Text.Body"
                     android:layout_marginTop="@dimen/section_margin_top"
                     android:text="@string/warning_immediate_global_changes"

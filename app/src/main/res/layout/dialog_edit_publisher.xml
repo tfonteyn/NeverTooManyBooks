@@ -77,7 +77,6 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
-                    android:id="@+id/blurb"
                     style="@style/Text.Body"
                     android:textAppearance="?attr/textAppearanceBodySmall"
                     android:text="@string/warning_immediate_global_changes"
