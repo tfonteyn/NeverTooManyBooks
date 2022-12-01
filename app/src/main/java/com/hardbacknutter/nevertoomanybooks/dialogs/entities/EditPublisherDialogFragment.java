@@ -125,10 +125,10 @@ public class EditPublisherDialogFragment
                 ExtArrayAdapter.FilterType.Diacritic,
                 ServiceLocator.getInstance().getPublisherDao().getNames());
 
-        vb.publisher.setText(currentEdit.getName());
-        vb.publisher.setAdapter(nameAdapter);
+        vb.publisherName.setText(currentEdit.getName());
+        vb.publisherName.setAdapter(nameAdapter);
 
-        vb.publisher.requestFocus();
+        vb.publisherName.requestFocus();
     }
 
     @Nullable
@@ -159,7 +159,7 @@ public class EditPublisherDialogFragment
         viewToModel();
 
         if (currentEdit.getName().isEmpty()) {
-            showError(vb.lblPublisher, R.string.vldt_non_blank_required);
+            showError(vb.lblPublisherName, R.string.vldt_non_blank_required);
             return false;
         }
 
@@ -232,7 +232,7 @@ public class EditPublisherDialogFragment
     }
 
     private void viewToModel() {
-        currentEdit.setName(vb.publisher.getText().toString().trim());
+        currentEdit.setName(vb.publisherName.getText().toString().trim());
     }
 
     @Override

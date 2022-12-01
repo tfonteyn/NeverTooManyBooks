@@ -63,7 +63,7 @@
                 >
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/lbl_name"
+                    android:id="@+id/lbl_publisher_name"
                     style="@style/TIL.AutoCompleteTextView"
                     android:layout_width="@dimen/til_fixed_width_personal_name"
                     android:hint="@string/lbl_name"
@@ -73,7 +73,7 @@
                     >
 
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                        android:id="@+id/name"
+                        android:id="@+id/publisher_name"
                         style="@style/acPersonalNameTextEntry"
                         android:imeOptions="actionNext"
                         tools:ignore="LabelFor"
