@@ -83,19 +83,17 @@ public class EditBookPublisherDialogFragment
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                            BKEY_REQUEST_KEY);
-        action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY),
-                                        EditAction.BKEY);
-        publisher = Objects.requireNonNull(args.getParcelable(EditLauncher.BKEY_ITEM),
-                                           EditLauncher.BKEY_ITEM);
+        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
+        publisher = Objects.requireNonNull(args.getParcelable(DBKey.FK_PUBLISHER),
+                                           DBKey.FK_PUBLISHER);
         bookTitle = args.getString(DBKey.TITLE);
 
         if (savedInstanceState == null) {
             currentEdit = new Publisher(publisher.getName());
         } else {
             //noinspection ConstantConditions
-            currentEdit = savedInstanceState.getParcelable(EditLauncher.BKEY_ITEM);
+            currentEdit = savedInstanceState.getParcelable(DBKey.FK_PUBLISHER);
         }
     }
 
@@ -163,7 +161,7 @@ public class EditBookPublisherDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(EditLauncher.BKEY_ITEM, currentEdit);
+        outState.putParcelable(DBKey.FK_PUBLISHER, currentEdit);
     }
 
     @Override
@@ -180,7 +178,7 @@ public class EditBookPublisherDialogFragment
                            @NonNull final EditAction action,
                            @NonNull final Publisher publisher) {
             super.launch(new EditBookPublisherDialogFragment(),
-                         bookTitle, action, publisher);
+                         bookTitle, action, DBKey.FK_PUBLISHER, publisher);
         }
     }
 

@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.MenuItem;
@@ -33,8 +34,10 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -93,12 +96,9 @@ public class EditBookAuthorDialogFragment
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                            BKEY_REQUEST_KEY);
-        action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY),
-                                        EditAction.BKEY);
-        author = Objects.requireNonNull(args.getParcelable(EditLauncher.BKEY_ITEM),
-                                        EditLauncher.BKEY_ITEM);
+        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
+        author = Objects.requireNonNull(args.getParcelable(DBKey.FK_AUTHOR), DBKey.FK_AUTHOR);
         bookTitle = args.getString(DBKey.TITLE);
 
         if (savedInstanceState == null) {
@@ -119,14 +119,19 @@ public class EditBookAuthorDialogFragment
         vb = DialogEditBookAuthorBinding.bind(view);
         vb.toolbar.setSubtitle(bookTitle);
 
+        final Context context = getContext();
+        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
-                getContext(), R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Diacritic, vm.getAllAuthorFamilyNames());
+                context, R.layout.popup_dropdown_menu_item,
+                ExtArrayAdapter.FilterType.Diacritic,
+                vm.getAllAuthorFamilyNames());
 
         final ExtArrayAdapter<String> givenNameAdapter = new ExtArrayAdapter<>(
-                getContext(), R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Diacritic, vm.getAllAuthorGivenNames());
+                context, R.layout.popup_dropdown_menu_item,
+                ExtArrayAdapter.FilterType.Diacritic,
+                vm.getAllAuthorGivenNames());
 
         vb.familyName.setText(currentEdit.getFamilyName());
         vb.familyName.setAdapter(familyNameAdapter);
@@ -137,8 +142,10 @@ public class EditBookAuthorDialogFragment
         final boolean useAuthorType = GlobalFieldVisibility.isUsed(DBKey.AUTHOR_TYPE__BITMASK);
         vb.authorTypeGroup.setVisibility(useAuthorType ? View.VISIBLE : View.GONE);
         if (useAuthorType) {
-            vb.btnUseAuthorType.setOnCheckedChangeListener(
-                    (v, isChecked) -> setTypeEnabled(isChecked));
+            vb.btnUseAuthorType.setOnCheckedChangeListener((v, isChecked) -> {
+                setTypeEnabled(isChecked);
+                vb.flowTypes.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            });
 
             // NEWTHINGS: author type: add a button to the layout
             typeButtons.put(Author.TYPE_WRITER, vb.cbxAuthorTypeWriter);
@@ -158,8 +165,10 @@ public class EditBookAuthorDialogFragment
 
             if (currentEdit.getType() == Author.TYPE_UNKNOWN) {
                 setTypeEnabled(false);
+                vb.flowTypes.setVisibility(View.GONE);
             } else {
                 setTypeEnabled(true);
+                vb.flowTypes.setVisibility(View.VISIBLE);
                 for (int i = 0; i < typeButtons.size(); i++) {
                     typeButtons.valueAt(i).setChecked((currentEdit.getType()
                                                        & typeButtons.keyAt(i)) != 0);
@@ -262,7 +271,7 @@ public class EditBookAuthorDialogFragment
                            @NonNull final EditAction action,
                            @NonNull final Author author) {
             super.launch(new EditBookAuthorDialogFragment(),
-                         bookTitle, action, author);
+                         bookTitle, action, DBKey.FK_AUTHOR, author);
         }
     }
 }
