@@ -152,10 +152,11 @@ public class EditBookSeriesListDialogFragment
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getAllSeriesTitles());
         vb.seriesTitle.setAdapter(titleAdapter);
-        vb.seriesTitle.addTextChangedListener((ExtTextWatcher) s -> vb.lblSeries.setError(null));
+        vb.seriesTitle.addTextChangedListener((ExtTextWatcher) s ->
+                vb.lblSeriesTitle.setError(null));
         vb.seriesTitle.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
-                vb.lblSeries.setError(null);
+                vb.lblSeriesTitle.setError(null);
             }
         });
 
@@ -217,11 +218,11 @@ public class EditBookSeriesListDialogFragment
      */
     private void onAdd(final boolean withDetails) {
         // clear any previous error
-        vb.lblSeries.setError(null);
+        vb.lblSeriesTitle.setError(null);
 
         final String title = vb.seriesTitle.getText().toString().trim();
         if (title.isEmpty()) {
-            vb.lblSeries.setError(getString(R.string.vldt_non_blank_required));
+            vb.lblSeriesTitle.setError(getString(R.string.vldt_non_blank_required));
             return;
         }
 
@@ -246,7 +247,7 @@ public class EditBookSeriesListDialogFragment
         vm.fixId(getContext(), series);
         // and check it's not already in the list.
         if (seriesList.contains(series)) {
-            vb.lblSeries.setError(getString(R.string.warning_already_in_list));
+            vb.lblSeriesTitle.setError(getString(R.string.warning_already_in_list));
         } else {
             // add and scroll to the new item
             seriesList.add(series);
