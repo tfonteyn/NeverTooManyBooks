@@ -41,6 +41,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
@@ -340,9 +341,9 @@ public class ExtPopupMenu {
 
         VBLite(@NonNull final View rootView) {
             this.rootView = rootView;
-            itemList = rootView.findViewById(R.id.item_list);
-            message = rootView.findViewById(R.id.message);
-            title = rootView.findViewById(R.id.title);
+            itemList = Objects.requireNonNull(rootView.findViewById(R.id.item_list));
+            message = Objects.requireNonNull(rootView.findViewById(R.id.message));
+            title = Objects.requireNonNull(rootView.findViewById(R.id.title));
         }
     }
 
