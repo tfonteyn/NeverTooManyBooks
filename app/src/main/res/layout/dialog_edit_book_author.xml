@@ -63,14 +63,13 @@
                 android:layout_height="wrap_content"
                 app:constraint_referenced_ids="lbl_family_name,lbl_given_names"
                 app:flow_horizontalAlign="start"
-                app:flow_horizontalBias="0.5"
+                app:flow_horizontalBias="0"
                 app:flow_horizontalGap="@dimen/field_margin_inline"
                 app:flow_horizontalStyle="packed"
                 app:flow_maxElementsWrap="2"
                 app:flow_verticalBias="0"
                 app:flow_verticalGap="@dimen/field_margin_top"
                 app:flow_wrapMode="aligned"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 />
@@ -107,30 +106,61 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/btn_use_author_type"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/lbl_author_type"
-                app:layout_constraintStart_toStartOf="@id/flow_names"
-                app:layout_constraintTop_toBottomOf="@id/flow_names"
-                android:checked="true"
-                />
-
             <CheckBox
                 android:id="@+id/cbx_is_complete"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/lbl_is_complete"
-                app:layout_constraintEnd_toEndOf="@id/flow_names"
-                app:layout_constraintTop_toBottomOf="@id/flow_names"
+                app:layout_constraintStart_toStartOf="@id/lbl_family_name"
+                app:layout_constraintTop_toBottomOf="@id/lbl_given_names" />
+
+            <TextView
+                android:id="@+id/lbl_real_author_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/section_margin_top"
+                android:text="@string/lbl_this_author_is_a_pseudonym_for"
+                app:layout_constraintStart_toStartOf="@id/flow_names"
+                app:layout_constraintTop_toBottomOf="@id/cbx_is_complete"
                 />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/lbl_real_author"
+                style="@style/TIL.AutoCompleteTextView"
+                android:layout_width="@dimen/til_fixed_width_personal_name"
+                android:layout_marginTop="@dimen/section_margin_top"
+                android:hint="@string/lbl_author"
+                app:layout_constraintStart_toStartOf="@id/lbl_family_name"
+                app:layout_constraintTop_toBottomOf="@id/lbl_real_author_header"
+                >
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/real_author"
+                    style="@style/acPersonalNameTextEntry"
+                    android:imeOptions="actionDone"
+                    tools:ignore="LabelFor"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
 
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/barrier_types_top"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/btn_use_author_type"
+                android:layout_marginTop="@dimen/section_margin_top"
+                app:layout_constraintTop_toBottomOf="@id/lbl_real_author"
+                />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/btn_use_author_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/section_margin_top"
+                android:checked="true"
+                android:text="@string/lbl_author_type"
+                app:layout_constraintStart_toStartOf="@id/flow_names"
+                app:layout_constraintTop_toBottomOf="@id/barrier_types_top"
                 />
 
             <!--suppress LongLine -->
@@ -156,9 +186,8 @@
                 app:flow_verticalBias="0"
                 app:flow_verticalGap="@dimen/field_margin_top"
                 app:flow_wrapMode="aligned"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/barrier_types_top"
+                app:layout_constraintStart_toStartOf="@id/flow_names"
+                app:layout_constraintTop_toBottomOf="@id/btn_use_author_type"
                 />
 
             <CheckBox
