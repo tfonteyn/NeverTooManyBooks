@@ -46,8 +46,7 @@
     <string name="X_confirm_continue">Es-tu sur de vouloir continuer ?</string>
     <string name="X_error_authentication_failed">Authentification échouée</string>
     <string name="X_error_download_failed">Échec du téléchargement</string>
-    <string
-        name="X_error_file_must_contain_column">Le fichier doit contenir une colonne nommée %1$s</string>
+    <string name="X_error_file_must_contain_column">Le fichier doit contenir une colonne nommée %1$s</string>
     <string name="X_error_network_site_has_problems">Le site Web a des problèmes.</string>
     <string name="X_error_not_available">%1$s indisponible</string>
     <string name="X_error_storage_not_accessible_s">Stockage non accessible: %1$s</string>
@@ -186,7 +185,7 @@
     <string name="confirm_registration_benefits">Cette fonctionnalité bénéficie d\'une inscription avec %1$s. Souhaitez-vous avoir plus d\'informations ou désactiver ce message?\nVous trouverez ces informations ultérieurement dans la section «%2$s» des paramètres.</string>
     <string name="confirm_registration_required">Cette fonctionnalité nécessite une inscription avec %1$s. Souhaitez-vous avoir plus d\'informations?</string>
     <string name="confirm_remove_toc_entry">Supprimer le titre «%1$s» par %2$s de ce livre ?</string>
-    <string name="confirm_scope_for_change">Vous avez changé:\n «%1$s»\n en\n «%2$s»\n\nComment souhaitez-vous appliquer ce changement ?\n\nNote : votre choix «%3$s» sera pris en compte instantanément.</string>
+    <string name="confirm_scope_for_change">Vous avez changé:\n «%1$s»\n en\n «%2$s»\n\nComment souhaitez-vous appliquer ce changement ?\n\nNote : votre choix «%3$s» sera pris en compte instantanément. Si vous choisissez «%4$s», alors un nouveau %5$s sera créé.</string>
     <string name="confirm_scope_for_delete">Supprimer le titre «%1$s» par %2$s.\n\nComment souhaitez-vous appliquer ce changement ?\nAVERTISSEMENT : Le choix « %3$s » ne peut pas être annulé !</string>
     <string name="confirm_test_connection">Il est conseillé de tester cette connexion pour éviter les problèmes par la suite.</string>
     <string name="confirm_unsaved_edits">Des modifications ne sont pas sauvées, si vous quittez maintenant elles seront perdues.</string>
@@ -222,12 +221,10 @@
     <string name="error_site_authentication_failed">L\'authentification %1$s a échoué</string>
     <string name="error_site_authorization_failed">Autorisation %1$s en erreur.</string>
     <string name="error_storage_no_space_left">Stockage insuffisant disponible</string>
-    <string
-        name="error_storage_not_accessible">Veuillez vérifier que le stockage est accessible.</string>
+    <string name="error_storage_not_accessible">Veuillez vérifier que le stockage est accessible.</string>
     <string name="error_storage_not_writable">Veuillez vérifier que le stockage est accessible en écriture et qu\'il dispose d\'un espace suffisant.</string>
     <string name="error_unknown">Une erreur inconnue s\'est produite</string>
-    <string
-        name="error_unknown_host">Il y a eu un problème de connexion au service sur «%1$s»</string>
+    <string name="error_unknown_host">Il y a eu un problème de connexion au service sur «%1$s»</string>
     <string name="error_unknown_long">Une erreur inattendue est apparue. Si le problème persiste, contactez le support technique en utilisant l\'option «%1$s» en bas de la page de paramètres.</string>
     <string name="error_unsupported_version_v">Version non prise en charge: %1$d</string>
     <string name="error_upgrade_not_supported">La mise à niveau à partir de versions antérieures à %1$s n\'est pas prise en charge.</string>
@@ -253,9 +250,9 @@
     <string name="lbl_about_contact">Contact:</string>
     <string name="lbl_add_book">Ajouter un livre</string>
     <string name="lbl_add_filter">Ajouter un filtre</string>
-    <string name="lbl_added_day">Jour d\'ajout</string>
-    <string name="lbl_added_month">Mois d\'ajout</string>
-    <string name="lbl_added_year">Année d\'ajout</string>
+    <string name="lbl_date_added_day">Jour d\'ajout</string>
+    <string name="lbl_date_added_month">Mois d\'ajout</string>
+    <string name="lbl_date_added_year">Année d\'ajout</string>
     <string name="lbl_advanced_options">Paramètres avancés</string>
     <string name="lbl_all_bookshelves">Toutes les bibliothèques</string>
     <string name="lbl_anthology">Anthologie</string>
@@ -264,8 +261,7 @@
     <string name="lbl_archive_format_json_info">Toutes les données au format JSON.</string>
     <string name="lbl_archive_format_xml_info">Toutes les données au format XML.</string>
     <string name="lbl_archive_is_export_only">Ceci est uniquement pour l\'exportation de données; l\'importation n\'est pas prise en charge.</string>
-    <string
-        name="lbl_archive_type_backup_info">Archive de sauvegarde / restauration complète</string>
+    <string name="lbl_archive_type_backup_info">Archive de sauvegarde / restauration complète</string>
     <string name="lbl_archive_type_backup_tar">Copie de sauvegarde (.tar)</string>
     <string name="lbl_archive_type_backup_zip">Copie de sauvegarde (.zip)</string>
     <string name="lbl_archive_type_csv">Livres (.csv)</string>
@@ -288,8 +284,7 @@
     <string name="lbl_author_type_translator">Traducteur</string>
     <string name="lbl_author_type_writer">écrivain</string>
     <string name="lbl_authors">Auteurs</string>
-    <string
-        name="lbl_auto_updates">Autoriser les mises à jour automatiques depuis Internet.</string>
+    <string name="lbl_auto_updates">Autoriser les mises à jour automatiques depuis Internet.</string>
     <string name="lbl_available">Disponible</string>
     <string name="lbl_backup">Sauvegarder</string>
     <string name="lbl_barcode">code à barre</string>
@@ -353,9 +348,9 @@
     <string name="lbl_field_usage_copy_if_blank">Copier si vide</string>
     <string name="lbl_field_usage_overwrite">Remplacer les données existantes</string>
     <string name="lbl_filter">Filtre</string>
-    <string name="lbl_first_pub_month">Premier mois de parution</string>
-    <string name="lbl_first_pub_year">Première année de parution</string>
-    <string name="lbl_first_publication">Première parution</string>
+    <string name="lbl_date_first_publication_month">Premier mois de parution</string>
+    <string name="lbl_date_first_publication_year">Première année de parution</string>
+    <string name="lbl_date_first_publication">Première parution</string>
     <string name="lbl_format">Format</string>
     <string name="lbl_formatting">Mise en page</string>
     <string name="lbl_genre">Genre</string>
@@ -397,8 +392,8 @@
     <string name="lbl_price_paid">Payé</string>
     <string name="lbl_print_run">Tirage</string>
     <string name="lbl_publication">Parution</string>
-    <string name="lbl_publication_month">Mois de parution</string>
-    <string name="lbl_publication_year">Année de parution</string>
+    <string name="lbl_date_published_month">Mois de parution</string>
+    <string name="lbl_date_published_year">Année de parution</string>
     <string name="lbl_publisher">Éditeur</string>
     <string name="lbl_publishers">Éditeurs</string>
     <string name="lbl_purge_files">Nettoyer les fichiers</string>
@@ -406,12 +401,12 @@
     <string name="lbl_rating">Appreciation</string>
     <string name="lbl_read">Lu</string>
     <string name="lbl_read_and_unread">Lu &amp; non lu</string>
-    <string name="lbl_read_day">Jour de lecture</string>
+    <string name="lbl_date_read_day">Jour de lecture</string>
     <string name="lbl_read_end">Date de fin de lecture</string>
-    <string name="lbl_read_month">Mois de lecture</string>
+    <string name="lbl_date_read_month">Mois de lecture</string>
     <string name="lbl_read_start">Date de début de lecture</string>
     <string name="lbl_read_timeout">Délai de lecture (secondes)</string>
-    <string name="lbl_read_year">Année de lecture</string>
+    <string name="lbl_date_read_year">Année de lecture</string>
     <string name="lbl_registration">Enregistrement %1$s</string>
     <string name="lbl_scope_of_change">Périmètre du changement</string>
     <string name="lbl_search_filtered_on_x">Filtré: %1$s</string>
@@ -433,8 +428,7 @@
     <string name="lbl_storage_select">Utiliser «%1$s»</string>
     <string name="lbl_storage_settings">Stockage</string>
     <string name="lbl_storage_volume">Volume de stockage</string>
-    <string
-        name="lbl_story_in_multiple_books">«%1$s» est présente dans plusieurs livres :\n\n%2$s</string>
+    <string name="lbl_story_in_multiple_books">«%1$s» est présente dans plusieurs livres :\n\n%2$s</string>
     <string name="lbl_strict_isbn">ISBN strict</string>
     <string name="lbl_style">Style</string>
     <string name="lbl_styles">Les styles</string>
@@ -452,9 +446,9 @@
     <string name="lbl_timeouts">Délais d\'attente</string>
     <string name="lbl_title">Titre</string>
     <string name="lbl_unread">Non lus</string>
-    <string name="lbl_update_day">Jour de mise à jour</string>
-    <string name="lbl_update_month">Mois de mise à Jour</string>
-    <string name="lbl_update_year">Année de mise à jour</string>
+    <string name="lbl_date_last_updated_day">Jour de mise à jour</string>
+    <string name="lbl_date_last_updated_month">Mois de mise à Jour</string>
+    <string name="lbl_date_last_updated_year">Année de mise à jour</string>
     <string name="lbl_virtual_libraries">Bibliothèques virtuelles dans cette bibliothèque</string>
     <string name="lbl_website_address">Adresse du site (URL)</string>
     <string name="lbl_websites">Sites Internet</string>
@@ -614,7 +608,7 @@
     <string name="statick">Statique</string>
     <string name="strict">Strict</string>
     <string name="style_builtin_acquired_date">Date d\'acquisition</string>
-    <string name="style_builtin_added_date">Ajouté le</string>
+    <string name="style_builtin_added_date">Date ajoutée</string>
     <string name="style_builtin_author_series">Auteur puis série</string>
     <string name="style_builtin_author_year">Auteur et année</string>
     <string name="style_builtin_bookshelf">Bibliothèque</string>
@@ -716,5 +710,6 @@
     <string name="yes">Oui</string>
     <string name="lbl_story_in_single_book">«%1$s» est présent dans un seul livre:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Importez un fichier texte avec des numéros ISBN. Le fichier doit avoir un seul ISBN sur chaque ligne. Les résultats seront placés dans la file d\'attente.</string>
+    <string name="lbl_date_added">Date ajoutée</string>
 
 </resources>

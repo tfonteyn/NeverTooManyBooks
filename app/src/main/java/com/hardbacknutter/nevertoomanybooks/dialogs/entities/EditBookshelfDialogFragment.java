@@ -104,6 +104,7 @@ public class EditBookshelfDialogFragment
         vb = DialogEditBookshelfBinding.bind(view);
 
         vb.bookshelf.setText(name);
+
         vb.bookshelf.requestFocus();
     }
 

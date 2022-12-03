@@ -38,7 +38,7 @@
 
         <item
             android:id="@id/MENU_AUTHOR_WORKS_SORT_FIRST_PUBLICATION_DATE"
-            android:title="@string/lbl_first_publication" />
+            android:title="@string/lbl_date_first_publication" />
     </group>
 
     <group

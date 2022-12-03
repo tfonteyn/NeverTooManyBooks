@@ -596,9 +596,20 @@ public class EditBookViewModel
         final Locale bookLocale = book.getLocale(context);
 
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-        final long nrOfReferences = authorDao.countBooks(context, author, bookLocale)
-                                    + authorDao.countTocEntries(context, author, bookLocale);
-        return nrOfReferences <= (book.isNew() ? 0 : 1);
+        final long books = authorDao.countBooks(context, author, bookLocale);
+        final long tocEntries = authorDao.countTocEntries(context, author, bookLocale);
+
+        // If the book is new, then there should be no other references.
+        // If the book exists in the database, then obv. there should be 1 reference.
+        final int zeroOrOneRef = book.isNew() ? 0 : 1;
+
+        // edge case: if an Author has ONE book and there is a single TOCEntry for
+        // that book (with obviously the same Author) then it's considered single use.
+        if (books == zeroOrOneRef && tocEntries == zeroOrOneRef) {
+            return true;
+        }
+
+        return (books + tocEntries) <= zeroOrOneRef;
     }
 
     /**

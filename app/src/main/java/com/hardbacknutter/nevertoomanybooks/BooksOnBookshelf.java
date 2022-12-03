@@ -847,6 +847,7 @@ public class BooksOnBookshelf
                     vm.getAmazonHandler().onPrepareMenu(menu, rowData);
 
                 } else {
+                    // It's a "(No Series)" node
                     menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                              getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
                              R.string.menu_update_books)
@@ -858,6 +859,7 @@ public class BooksOnBookshelf
                 if (rowData.getLong(DBKey.FK_PUBLISHER) != 0) {
                     getMenuInflater().inflate(R.menu.publisher, menu);
                 } else {
+                    // It's a "(No Publisher)" node
                     menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                              getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
                              R.string.menu_update_books)
@@ -916,6 +918,22 @@ public class BooksOnBookshelf
                 }
                 break;
             }
+            // year/month/day all resolve to the same date string yyyy-mm-dd
+            case BooklistGroup.DATE_ACQUIRED_YEAR:
+            case BooklistGroup.DATE_ACQUIRED_MONTH:
+            case BooklistGroup.DATE_ACQUIRED_DAY:
+            case BooklistGroup.DATE_ADDED_YEAR:
+            case BooklistGroup.DATE_ADDED_MONTH:
+            case BooklistGroup.DATE_ADDED_DAY:
+            case BooklistGroup.DATE_PUBLISHED_YEAR:
+            case BooklistGroup.DATE_PUBLISHED_MONTH:
+                menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
+                         getResources().getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
+                         R.string.menu_update_books)
+                    .setIcon(R.drawable.ic_baseline_cloud_download_24);
+                break;
+
+
             default: {
                 break;
             }
@@ -1096,8 +1114,7 @@ public class BooksOnBookshelf
                     return true;
 
                 } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    final String dialogTitle = rowData.getString(DBKey.AUTHOR_FORMATTED);
-                    updateBooksFromInternetData(position, rowData, dialogTitle);
+                    updateBooksFromInternetData(position, rowData, DBKey.AUTHOR_FORMATTED);
                     return true;
                 }
                 break;
@@ -1128,8 +1145,7 @@ public class BooksOnBookshelf
                     return true;
 
                 } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    final String dialogTitle = rowData.getString(DBKey.SERIES_TITLE);
-                    updateBooksFromInternetData(position, rowData, dialogTitle);
+                    updateBooksFromInternetData(position, rowData, DBKey.SERIES_TITLE);
                     return true;
                 }
                 break;
@@ -1150,8 +1166,7 @@ public class BooksOnBookshelf
                     return true;
 
                 } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-                    final String dialogTitle = rowData.getString(DBKey.PUBLISHER_NAME);
-                    updateBooksFromInternetData(position, rowData, dialogTitle);
+                    updateBooksFromInternetData(position, rowData, DBKey.PUBLISHER_NAME);
                     return true;
                 }
                 break;
@@ -1208,6 +1223,21 @@ public class BooksOnBookshelf
                 if (itemId == R.id.MENU_COLOR_EDIT) {
                     EditColorDialogFragment.launch(getSupportFragmentManager(),
                                                    rowData.getString(DBKey.COLOR));
+                    return true;
+                }
+                break;
+            }
+            case BooklistGroup.DATE_ACQUIRED_YEAR:
+            case BooklistGroup.DATE_ACQUIRED_MONTH:
+            case BooklistGroup.DATE_ACQUIRED_DAY:
+            case BooklistGroup.DATE_ADDED_YEAR:
+            case BooklistGroup.DATE_ADDED_MONTH:
+            case BooklistGroup.DATE_ADDED_DAY:
+            case BooklistGroup.DATE_PUBLISHED_YEAR:
+            case BooklistGroup.DATE_PUBLISHED_MONTH: {
+                if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+                    updateBookListLauncher.launch(
+                            vm.createDateRowUpdateBooklistContractInput(this, rowData));
                     return true;
                 }
                 break;
@@ -1289,18 +1319,18 @@ public class BooksOnBookshelf
     }
 
     /**
-     * IMPORTANT: this is from a context click on a row.
-     * We pass the book ID's which are suited for that row.
+     * Allow the user to decide between books on "this bookshelf only" or on all bookshelves
+     * and then update all the selected books.
      *
-     * @param position    The position of the item within the adapter's data set.
-     * @param rowData     for the row which was selected
-     * @param dialogTitle to show to the user; can be 'null' if the group is a "no series" etc...
+     * @param position The position of the item within the adapter's data set.
+     * @param rowData  for the row which was selected
+     * @param labelKey key into the rowData for the row-item text to show to the user.
      */
     private void updateBooksFromInternetData(final int position,
                                              @NonNull final DataHolder rowData,
-                                             @Nullable final CharSequence dialogTitle) {
+                                             @NonNull final String labelKey) {
         final View anchor = layoutManager.findViewByPosition(position);
-
+        final String dialogTitle = rowData.getString(labelKey);
         //noinspection ConstantConditions
         new ExtPopupMenu(this)
                 .inflate(R.menu.update_books)
@@ -1308,76 +1338,20 @@ public class BooksOnBookshelf
                 .setMessage(getString(R.string.menu_update_books))
                 .showAsDropDown(anchor, menuItem -> {
                     final int itemId = menuItem.getItemId();
-                    if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_THIS_SHELF_ONLY) {
-                        updateBooksFromInternetData(rowData, true);
-                        return true;
+                    Boolean onlyThisShelf = null;
 
+                    if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_THIS_SHELF_ONLY) {
+                        onlyThisShelf = true;
                     } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_ALL_SHELVES) {
-                        updateBooksFromInternetData(rowData, false);
+                        onlyThisShelf = false;
+                    }
+                    if (onlyThisShelf != null) {
+                        updateBookListLauncher.launch(vm.createUpdateBooklistContractInput(
+                                this, rowData, onlyThisShelf));
                         return true;
                     }
-
                     return false;
                 });
-    }
-
-    private void updateBooksFromInternetData(@NonNull final DataHolder rowData,
-                                             final boolean onlyThisShelf) {
-
-        final int groupId = rowData.getInt(DBKey.BL_NODE_GROUP);
-        final String nodeKey = rowData.getString(DBKey.BL_NODE_KEY);
-
-        switch (groupId) {
-            case BooklistGroup.AUTHOR: {
-                final long id = rowData.getLong(DBKey.FK_AUTHOR);
-                final ArrayList<Long> books = vm.getBookIdsByAuthor(nodeKey, onlyThisShelf, id);
-                final String name = id != 0 ? rowData.getString(DBKey.AUTHOR_FORMATTED)
-                                            : getString(R.string.bob_empty_author);
-
-                updateBookListLauncher.launch(new UpdateBooklistContract.Input(
-                        books, getString(R.string.name_colon_value,
-                                         getString(R.string.lbl_author), name),
-                        getString(R.string.name_colon_value,
-                                  getString(R.string.lbl_books),
-                                  String.valueOf(books.size()))));
-                break;
-            }
-            case BooklistGroup.SERIES: {
-                final long id = rowData.getLong(DBKey.FK_SERIES);
-                final ArrayList<Long> books = vm.getBookIdsBySeries(nodeKey, onlyThisShelf, id);
-                final String name = id != 0 ? rowData.getString(DBKey.SERIES_TITLE)
-                                            : getString(R.string.bob_empty_series);
-
-                updateBookListLauncher.launch(new UpdateBooklistContract.Input(
-                        books, getString(R.string.name_colon_value,
-                                         getString(R.string.lbl_series), name),
-                        getString(R.string.name_colon_value,
-                                  getString(R.string.lbl_books),
-                                  String.valueOf(books.size()))));
-                break;
-            }
-            case BooklistGroup.PUBLISHER: {
-                final long id = rowData.getLong(DBKey.FK_PUBLISHER);
-                final ArrayList<Long> books = vm.getBookIdsByPublisher(nodeKey, onlyThisShelf, id);
-                final String name = id != 0 ? rowData.getString(DBKey.PUBLISHER_NAME)
-                                            : getString(R.string.bob_empty_publisher);
-
-                updateBookListLauncher.launch(new UpdateBooklistContract.Input(
-                        books, getString(R.string.name_colon_value,
-                                         getString(R.string.lbl_publisher), name),
-                        getString(R.string.name_colon_value,
-                                  getString(R.string.lbl_books),
-                                  String.valueOf(books.size()))));
-                break;
-            }
-            default: {
-                if (BuildConfig.DEBUG /* always */) {
-                    throw new IllegalArgumentException(
-                            "updateBooksFromInternetData|not supported|groupId=" + groupId);
-                }
-                break;
-            }
-        }
     }
 
     public void editStyle(@NonNull final Style style,

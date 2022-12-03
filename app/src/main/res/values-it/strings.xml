@@ -44,13 +44,11 @@
     <string name="X_confirm_continue">Sei sicuro di voler continuare ?</string>
     <string name="X_error_authentication_failed">Autenticazione fallita</string>
     <string name="X_error_download_failed">Scaricamento fallito</string>
-    <string
-        name="X_error_file_must_contain_column">Il file deve contenere una colonna con nome %1$s</string>
+    <string name="X_error_file_must_contain_column">Il file deve contenere una colonna con nome %1$s</string>
     <string name="X_error_network_site_has_problems">Il sito Web ha problemi.</string>
     <string name="X_error_not_available">%1$s non disponibile</string>
     <string name="X_error_storage_not_accessible_s">Archiviazione non accessibile: %1$s</string>
-    <string
-        name="X_httpErrorIO">Comunicazione con il server non riuscita. Riprova più tardi.</string>
+    <string name="X_httpErrorIO">Comunicazione con il server non riuscita. Riprova più tardi.</string>
     <string name="X_info_authorized_needed">Autorizza accesso</string>
     <string name="X_info_not_authorized">Non autorizzato</string>
     <string name="X_info_site_authorization_successful">Autorizzazione %1$s concessa</string>
@@ -185,7 +183,7 @@
     <string name="confirm_registration_benefits">Questa funzione beneficia della registrazione con %1$s. Desideri visualizzare ulteriori informazioni o disabilitare questo messaggio?\nPuoi trovare queste informazioni in un secondo momento nella sezione «%2$s» nelle impostazioni.</string>
     <string name="confirm_registration_required">Questa funzione richiede la registrazione con %1$s. Vuoi vedere maggiori informazioni?</string>
     <string name="confirm_remove_toc_entry">Rimuovere il titolo «%1$s» di %2$s da questo libro?</string>
-    <string name="confirm_scope_for_change">Hai modificato:\n «%1$s»\n in\n «%2$s»\n\nCome desideri applicare questa modifica?\n\nNota: La scelta «%3$s» sarà applicata immediatamente.</string>
+    <string name="confirm_scope_for_change">Hai modificato:\n «%1$s»\n in\n «%2$s»\n\nCome desideri applicare questa modifica?\n\nNota: La scelta «%3$s» sarà applicata immediatamente. Se scegli «%4$s», verrà creato un nuovo %5$s.</string>
     <string name="confirm_scope_for_delete">Elimina il titolo «%1$s» di %2$s.\n\nCome desideri applicare questa modifica?\nATTENZIONE: la scelta «%3$s» non può essere annullata!</string>
     <string name="confirm_test_connection">Si consiglia di testare questa connessione per evitare problemi in seguito.</string>
     <string name="confirm_unsaved_edits">Vi sono modifiche non salvate, se esci adesso saranno perse.</string>
@@ -206,8 +204,7 @@
     <string name="error_import_archive_invalid">Il file di archivio è danneggiato o altrimenti non valido.</string>
     <string name="error_import_csv_column_count_mismatch">Conteggio colonne errato nella riga %1$d</string>
     <string name="error_import_csv_line">Errore sconosciuto nella riga %1$d</string>
-    <string
-        name="error_import_csv_line_to_long">La riga è troppo lunga (riga=%1$d, lunghezza=%2$d)</string>
+    <string name="error_import_csv_line_to_long">La riga è troppo lunga (riga=%1$d, lunghezza=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Il file deve contenere una colonna con uno dei seguenti nomi: %1$s</string>
     <string name="error_import_failed">Importazione fallita.</string>
     <string name="error_import_failed_for_record">Importazione fallita (%1$s).</string>
@@ -220,8 +217,7 @@
     <string name="error_search_failed_network">Si prega di aprire le impostazioni e controllare la rete e le preferenze del sito di ricerca.\nControlla anche le impostazioni di rete del tuo dispositivo</string>
     <string name="error_search_x_failed_y">Ricerca su %1$s non riuscita: %2$s</string>
     <string name="error_site_authentication_failed">Autenticazione %1$s non riuscita</string>
-    <string
-        name="error_site_authorization_failed">Errore durante l\'autorizzazione di %1$s.</string>
+    <string name="error_site_authorization_failed">Errore durante l\'autorizzazione di %1$s.</string>
     <string name="error_storage_no_space_left">Spazio disponibile insufficiente</string>
     <string name="error_storage_not_accessible">Si prega di verificare che lo spazio di archiviazione sia accessibile.</string>
     <string name="error_storage_not_writable">Verifica che lo spazio di archiviazione sia scrivibile e che disponga di spazio sufficiente.</string>
@@ -252,9 +248,9 @@
     <string name="lbl_about_contact">Contatti:</string>
     <string name="lbl_add_book">Aggiungi libro</string>
     <string name="lbl_add_filter">Aggiungi filtro</string>
-    <string name="lbl_added_day">Giorno di inserimento</string>
-    <string name="lbl_added_month">Mese di inserimento</string>
-    <string name="lbl_added_year">Anno di inserimento</string>
+    <string name="lbl_date_added_day">Giorno di inserimento</string>
+    <string name="lbl_date_added_month">Mese di inserimento</string>
+    <string name="lbl_date_added_year">Anno di inserimento</string>
     <string name="lbl_advanced_options">Avanzate</string>
     <string name="lbl_all_bookshelves">Tutte le biblioteche</string>
     <string name="lbl_anthology">Antologia</string>
@@ -329,8 +325,7 @@
     <string name="lbl_date_last_updated">Data ultimo aggiornamento</string>
     <string name="lbl_date_published">Data di pubblicazione</string>
     <string name="lbl_day">Giorno</string>
-    <string
-        name="lbl_delete_removed_books">Elimina i libri che non sono più presenti sul server</string>
+    <string name="lbl_delete_removed_books">Elimina i libri che non sono più presenti sul server</string>
     <string name="lbl_description">Descrizione</string>
     <string name="lbl_details_have_changed">Dettagli modificati</string>
     <string name="lbl_duplicate_book">Duplica titolo libro</string>
@@ -351,9 +346,9 @@
     <string name="lbl_field_usage_copy_if_blank">Copia se vuoto</string>
     <string name="lbl_field_usage_overwrite">Sovrascrivi dati esistenti</string>
     <string name="lbl_filter">Filtro</string>
-    <string name="lbl_first_pub_month">Primo mese di pub.</string>
-    <string name="lbl_first_pub_year">Primo anno di pub.</string>
-    <string name="lbl_first_publication">Prima pubblicazione</string>
+    <string name="lbl_date_first_publication_month">Primo mese di pub.</string>
+    <string name="lbl_date_first_publication_year">Primo anno di pub.</string>
+    <string name="lbl_date_first_publication">Prima pubblicazione</string>
     <string name="lbl_format">Formato</string>
     <string name="lbl_formatting">Formattazione</string>
     <string name="lbl_genre">Genere</string>
@@ -395,8 +390,8 @@
     <string name="lbl_price_paid">Pagato</string>
     <string name="lbl_print_run">Tiratura</string>
     <string name="lbl_publication">Pubblicazione</string>
-    <string name="lbl_publication_month">Mese di Pubblicazione</string>
-    <string name="lbl_publication_year">Anno di Pubblicazione</string>
+    <string name="lbl_date_published_month">Mese di Pubblicazione</string>
+    <string name="lbl_date_published_year">Anno di Pubblicazione</string>
     <string name="lbl_publisher">Editore</string>
     <string name="lbl_publishers">Editori</string>
     <string name="lbl_purge_files">Cancella i file</string>
@@ -404,12 +399,12 @@
     <string name="lbl_rating">Valutazione</string>
     <string name="lbl_read">Letto</string>
     <string name="lbl_read_and_unread">Letto &amp; Non letto</string>
-    <string name="lbl_read_day">Leggi Giorno</string>
+    <string name="lbl_date_read_day">Leggi Giorno</string>
     <string name="lbl_read_end">Data fine lettura</string>
-    <string name="lbl_read_month">Leggi Mese</string>
+    <string name="lbl_date_read_month">Leggi Mese</string>
     <string name="lbl_read_start">Data inizio lettura</string>
     <string name="lbl_read_timeout">Timeout lettura (secondi)</string>
-    <string name="lbl_read_year">Leggi Anno</string>
+    <string name="lbl_date_read_year">Leggi Anno</string>
     <string name="lbl_registration">Registrazione su %1$s </string>
     <string name="lbl_scope_of_change">Intervallo modifica</string>
     <string name="lbl_search_filtered_on_x">Filtrato: %1$s</string>
@@ -449,9 +444,9 @@
     <string name="lbl_timeouts">Timeout</string>
     <string name="lbl_title">Titolo</string>
     <string name="lbl_unread">Da leggere</string>
-    <string name="lbl_update_day">Giorno di aggiornamento</string>
-    <string name="lbl_update_month">Mese di aggiornamento</string>
-    <string name="lbl_update_year">Anno di aggiornamento</string>
+    <string name="lbl_date_last_updated_day">Giorno di aggiornamento</string>
+    <string name="lbl_date_last_updated_month">Mese di aggiornamento</string>
+    <string name="lbl_date_last_updated_year">Anno di aggiornamento</string>
     <string name="lbl_virtual_libraries">Biblioteche virtuali in questa libreria</string>
     <string name="lbl_website_address">Διεύθυνση ιστότοπου (URL)</string>
     <string name="lbl_websites">Siti web</string>
@@ -499,7 +494,7 @@
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
     <string name="no">No</string>
-    <string name="none">Nessuna</string>
+    <string name="none">Nessuno</string>
     <string name="notification_channel_error">Errore</string>
     <string name="notification_channel_info">Informazione</string>
     <string name="notification_channel_warn">Attenzione</string>
@@ -713,5 +708,6 @@
     <string name="yes">Sì</string>
     <string name="lbl_story_in_single_book">«%1$s» è presente in un solo libro:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Importa un file di testo con numeri ISBN. Il file dovrebbe avere un unico codice ISBN su ogni riga. I risultati verranno messi in coda.</string>
+    <string name="lbl_date_added">Data di inserimento</string>
 
 </resources>

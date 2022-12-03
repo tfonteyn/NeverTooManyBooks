@@ -119,17 +119,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/section_margin_top"
-                android:text="@string/lbl_this_author_is_a_pseudonym_for"
+                android:text="@string/lbl_author_pseudonym"
                 app:layout_constraintStart_toStartOf="@id/flow_names"
                 app:layout_constraintTop_toBottomOf="@id/cbx_is_complete"
                 />
 
+            <!-- NO hint text! -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/lbl_real_author"
                 style="@style/TIL.AutoCompleteTextView"
                 android:layout_width="@dimen/til_fixed_width_personal_name"
                 android:layout_marginTop="@dimen/section_margin_top"
-                android:hint="@string/lbl_author"
                 app:layout_constraintStart_toStartOf="@id/lbl_family_name"
                 app:layout_constraintTop_toBottomOf="@id/lbl_real_author_header"
                 >
@@ -164,16 +164,8 @@
                 />
 
             <!--suppress LongLine -->
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/author_type_group"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:constraint_referenced_ids="cbx_author_type_writer,cbx_author_type_intro,cbx_author_type_contributor,cbx_author_type_translator,cbx_author_type_editor,cbx_author_type_narrator,cbx_author_type_artist,cbx_author_type_inking,cbx_author_type_colorist,cbx_author_type_cover_artist,cbx_author_type_cover_inking,cbx_author_type_cover_colorist"
-                />
-
-            <!--suppress LongLine -->
             <androidx.constraintlayout.helper.widget.Flow
-                android:id="@+id/flow_types"
+                android:id="@+id/author_type_group"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/section_margin_top"

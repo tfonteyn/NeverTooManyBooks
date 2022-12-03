@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -115,7 +115,7 @@
             android:key="fields.visibility.first_publication"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/lbl_first_publication" />
+            android:title="@string/lbl_date_first_publication" />
 
         <SwitchPreference
             android:defaultValue="true"

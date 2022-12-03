@@ -165,8 +165,7 @@
     <!-- MalformedURLException/UnknownHostException
          Concatenated with a new line and "error_search_failed_network"
          param 1: site/url -->
-    <string
-        name="error_unknown_host">There was a connection problem to the service on “%1$s”.</string>
+    <string name="error_unknown_host">There was a connection problem to the service on “%1$s”.</string>
 
     <string name="error_auto_toc_population_failed">Automatic Population of Titles Failed.</string>
     <string name="error_no_image_editor">No image editor found.</string>
@@ -342,8 +341,11 @@
     <string name="confirm_overwrite_cover">This will update the selected fields as shown, but images can optionally be downloaded for ALL books.\n\nDo you want to overwrite all existing images? Warning, this may take a long time.</string>
 
     <!-- param 1: previous name; param 2: new name - each time as a single string.
-         param 3: the text on the button for making a global change. e.g. "All books" -->
-    <string name="confirm_scope_for_change">You have changed:\n “%1$s”\n to\n “%2$s”\n\nHow do you wish to apply this change?\nNote: The choice “%3$s” will be applied instantly.</string>
+         param 3: the text on the button for making a global change. e.g. "All books"
+         param 4: the text on the button for making a local change. e.g. "This book only"
+         param 5: the type of object we'll create a new one of if the user chooses "This book only"
+          -->
+    <string name="confirm_scope_for_change">You have changed:\n “%1$s”\n to\n “%2$s”\n\nHow do you wish to apply this change?\nNote: The choice “%3$s” will be applied instantly. If you choose “%4$s”, then a new %5$s will be created.</string>
 
     <!-- offer to send the exported file as an email attachment -->
     <string name="confirm_email_file">Would you like to send this file as an email?</string>
@@ -444,8 +446,7 @@
     <string name="tip_series_book_may_appear_more_than_once">If shown in every series, a single book may appear more than once in a list. In such a case deleting one of those books will delete all instances from the list.</string>
     <string name="tip_autorotate_camera_images">If you find yourself always rotating camera images in the same direction, try changing the application preferences to specify a rotation to apply automatically.</string>
     <!-- Tip text displayed when user enters the 'read-only' book view -->
-    <string
-        name="tip_view_only_help">You can swipe left or right to navigate to other books.</string>
+    <string name="tip_view_only_help">You can swipe left or right to navigate to other books.</string>
     <!-- Tip text displayed when user enters the booklist -->
     <string name="tip_book_list">Tapping on a book will show you the details of the book. A long-press on an item in the list will give you more options.</string>
     <!-- Tip text displayed when user enters the 'Update fields from internet' screen
@@ -925,6 +926,8 @@
 
     <!-- [VERIFIED] generic action buttons/menus -->
     <string name="action_add">Add</string>
+
+    <string name="action_add_with_details">Add with details</string>
     <!-- [VERIFIED] -->
     <string name="action_edit">Edit</string>
     <!-- [VERIFIED] -->
@@ -1014,6 +1017,7 @@
     <!-- Menu / button content description text. Icon: res/drawable/ic_barcode_batch -->
     <string name="menu_barcode_scan_continuous">Scan continuously</string>
     <string name="btn_clear_queue">Clear queue</string>
+    <string name="btn_stop_scanning">Stop scanning</string>
 
     <string name="X_btn_show_list">Show list</string>
 
@@ -1244,8 +1248,11 @@
     <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>
 
-    <!-- e.g. indicates nothing was selected; nothing was done. -->
+    <!-- [VERIFIED]
+        taken from "platform_packages_apps_settings_strings.xml/notification_log_details_none"
+        e.g. indicates nothing was selected; nothing was done. -->
     <string name="none">None</string>
+
     <string name="strict">Strict</string>
 
     <string name="X_neither">Neither</string>
@@ -1355,7 +1362,7 @@
     <string name="lbl_genre">Genre</string>
     <string name="lbl_signed">Signed</string>
     <string name="lbl_title">Title</string>
-    <string name="lbl_date_acquired">Date Acquired</string>
+
     <string name="lbl_is_complete">Is complete</string>
     <string name="lbl_dust_cover">Dust cover</string>
 
@@ -1371,10 +1378,8 @@
     <string name="lbl_publication">Publication</string>
     <string name="lbl_publisher">Publisher</string>
     <string name="lbl_publishers">Publishers</string>
-    <!-- First Publication Date for the content of the book. -->
-    <string name="lbl_first_publication">First Publication</string>
-    <!-- Publication Date for the book. -->
-    <string name="lbl_date_published">Date Published</string>
+
+
     <!-- Number of books printed of this edition. -->
     <string name="lbl_print_run">Print run</string>
     <!-- [VERIFIED] -->
@@ -1431,7 +1436,8 @@
     <!-- Search on keywords entered. -->
     <string name="lbl_keywords">Keywords</string>
 
-    <string name="lbl_date_last_updated">Date last updated</string>
+    <!-- Whether a book can be updated without user-permission. -->
+    <string name="lbl_auto_updates">Allow automatic updates from the internet.</string>
 
 
     <!-- [VERIFIED] Universal date strings -->
@@ -1439,28 +1445,33 @@
     <string name="lbl_month">Month</string>
     <!-- [VERIFIED] -->
     <string name="lbl_day">Day</string>
-    <!-- Individual fields for "date added" -->
-    <string name="lbl_added_year">Year Added</string>
-    <string name="lbl_added_month">Month Added</string>
-    <string name="lbl_added_day">Day Added</string>
+    <!-- The date a book was added to the database. -->
+    <string name="lbl_date_added">Date Added</string>
+    <string name="lbl_date_added_year">Year Added</string>
+    <string name="lbl_date_added_month">Month Added</string>
+    <string name="lbl_date_added_day">Day Added</string>
     <!-- Individual fields for "date read" -->
-    <string name="lbl_read_year">Year read</string>
-    <string name="lbl_read_month">Month read</string>
-    <string name="lbl_read_day">Day read</string>
-    <!-- Individual fields for "date last updated" -->
-    <string name="lbl_update_year">Update Year</string>
-    <string name="lbl_update_month">Update Month</string>
-    <string name="lbl_update_day">Update Day</string>
-    <!-- Individual fields for "date acquired" -->
-    <string name="lbl_date_acquired_day">Day Acquired</string>
-    <string name="lbl_date_acquired_month">Month Acquired</string>
+    <string name="lbl_date_read_year">Year read</string>
+    <string name="lbl_date_read_month">Month read</string>
+    <string name="lbl_date_read_day">Day read</string>
+    <!-- The date the book was last updated. -->
+    <string name="lbl_date_last_updated">Date last updated</string>
+    <string name="lbl_date_last_updated_year">Update Year</string>
+    <string name="lbl_date_last_updated_month">Update Month</string>
+    <string name="lbl_date_last_updated_day">Update Day</string>
+    <!-- The date a user acquired the book. -->
+    <string name="lbl_date_acquired">Date Acquired</string>
     <string name="lbl_date_acquired_year">Year Acquired</string>
-    <!-- Individual fields for "First publication date" -->
-    <string name="lbl_first_pub_month">First Pub. Month</string>
-    <string name="lbl_first_pub_year">First Pub. Year</string>
-    <!-- Individual fields for "original publication date" -->
-    <string name="lbl_publication_year">Publication Year</string>
-    <string name="lbl_publication_month">Publication Month</string>
+    <string name="lbl_date_acquired_month">Month Acquired</string>
+    <string name="lbl_date_acquired_day">Day Acquired</string>
+    <!-- First Publication Date for the content of the book. -->
+    <string name="lbl_date_first_publication">First Publication</string>
+    <string name="lbl_date_first_publication_year">First Pub. Year</string>
+    <string name="lbl_date_first_publication_month">First Pub. Month</string>
+    <!-- Publication Date for the book. -->
+    <string name="lbl_date_published">Date Published</string>
+    <string name="lbl_date_published_year">Publication Year</string>
+    <string name="lbl_date_published_month">Publication Month</string>
 
     <!-- Label for the dropdown menu where the user selects the format of the export file/archive. -->
     <string name="lbl_archive_format">Format</string>
@@ -1472,6 +1483,9 @@
     <string name="lbl_archive_type_backup_tar">Backup (.tar)</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
     <string name="lbl_archive_type_backup_info">Full Backup / Restore archive</string>
+
+    <string name="btn_start_export">Start export</string>
+    <string name="btn_start_import">Start import</string>
 
     <!-- Text in a dropdown menu. Must be fairly short. -->
     <string name="lbl_archive_type_csv">Books (.csv)</string>
@@ -1604,14 +1618,7 @@
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Wishlist mapped bookshelf</string>
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>
 
-    <string name="lbl_auto_updates">Allow automatic updates from the internet.</string>
-    <string name="action_add_with_details">Add with details</string>
-    <string name="btn_start_export">Start export</string>
-    <string name="btn_start_import">Start import</string>
-    <string name="btn_stop_scanning">Stop scanning</string>
-
-    <string name="lbl_this_author_is_a_pseudonym_for">This author is a pseudonym for:</string>
-    <string name="lbl_real_author_or_blank">Real author name or leave blank</string>
+    <string name="lbl_author_pseudonym">This author is a pseudonym for:</string>
     <string name="err_real_author_must_be_valid">Must be blank or an existing Author</string>
 
 

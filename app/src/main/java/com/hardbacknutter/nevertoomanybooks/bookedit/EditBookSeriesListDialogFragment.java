@@ -291,40 +291,26 @@ public class EditBookSeriesListDialogFragment
 
         final Context context = getContext();
 
-        // name not changed ?
-        if (original.getTitle().equals(modified.getTitle())) {
-            // copy the completion state, we don't have to warn/ask the user about it.
-            original.setComplete(modified.isComplete());
-
-            // Number is not part of the Series table, but of the book_series table.
-            if (!original.getNumber().equals(modified.getNumber())) {
-                // so if the number is different, just update it
-                original.setNumber(modified.getNumber());
-                //noinspection ConstantConditions
-                vm.getBook().pruneSeries(context, true);
-                adapter.notifyDataSetChanged();
-            }
-            return;
-        }
-
-        // The name was modified. Check if it's used by any other books.
+        // The name was not changed OR
+        // the name was modified but not used by any other books.
         //noinspection ConstantConditions
-        if (vm.isSingleUsage(context, original)) {
-            // If it's not, we can simply modify the old object and we're done here.
-            // There is no need to consult the user.
-            // Copy the new data into the original object that the user was changing.
-            original.copyFrom(modified, true);
-            vm.getBook().pruneSeries(context, true);
-            adapter.notifyDataSetChanged();
-            return;
-        }
+        if (original.getTitle().equals(modified.getTitle())
+            || vm.isSingleUsage(context, original)) {
 
-        // At this point, we know the object was modified and it's used in more than one place.
-        // We need to ask the user if they want to make the changes globally.
-        StandardDialogs.confirmScopeForChange(
-                context, original.getLabel(context), modified.getLabel(context),
-                () -> changeForAllBooks(original, modified),
-                () -> changeForThisBook(original, modified));
+            original.copyFrom(modified, true);
+            adapter.notifyDataSetChanged();
+
+        } else {
+            // Object was modified and it's used in more than one place.
+            // We need to ask the user if they want to make the changes globally.
+            StandardDialogs.confirmScopeForChange(
+                    context, context.getString(R.string.lbl_series),
+                    //TODO: if the names are the same, we should probably state
+                    // that some other attribute was changed
+                    original.getLabel(context), modified.getLabel(context),
+                    () -> changeForAllBooks(original, modified),
+                    () -> changeForThisBook(original, modified));
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")

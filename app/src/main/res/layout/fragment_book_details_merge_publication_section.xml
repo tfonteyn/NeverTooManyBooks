@@ -30,7 +30,7 @@
     <TextView
         android:id="@+id/lbl_first_publication"
         style="@style/Label"
-        android:text="@string/lbl_first_publication"
+        android:text="@string/lbl_date_first_publication"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />

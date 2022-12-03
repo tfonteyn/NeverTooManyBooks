@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 public class EditAuthorDialogFragment
         extends FFBaseDialogFragment {
 
+
     /** Fragment/Log tag. */
     private static final String TAG = "EditAuthorDialogFrag";
     private static final String SIS_REAL_AUTHOR_NAME = TAG + ":ran";
@@ -175,7 +176,7 @@ public class EditAuthorDialogFragment
             }
         });
 
-        // don't requestFocus() as we have multiple fields.
+        vb.familyName.requestFocus();
     }
 
     @Nullable

@@ -63,6 +63,7 @@ public class Booklist
     private static final String _FROM_ = " FROM ";
     private static final String _AS_ = " AS ";
     private static final String _WHERE_ = " WHERE ";
+    private static final String _LIKE_x = " LIKE ?";
     private static final String _AND_ = " AND ";
     private static final String _ORDER_BY_ = " ORDER BY ";
     private static final String UPDATE_ = "UPDATE ";
@@ -72,6 +73,7 @@ public class Booklist
 
     /** Log tag. */
     private static final String TAG = "Booklist";
+
 
     /** Database Access. */
     @SuppressWarnings("FieldNotUsedInToString")
@@ -443,7 +445,7 @@ public class Booklist
             sqlEnsureNodeIsVisible =
                     SELECT_ + DBKey.PK_ID + _FROM_ + listTable.getName()
                     // follow the node hierarchy
-                    + _WHERE_ + DBKey.BL_NODE_KEY + " LIKE ?"
+                    + _WHERE_ + DBKey.BL_NODE_KEY + _LIKE_x
                     // we'll loop for all levels
                     + _AND_ + DBKey.BL_NODE_LEVEL + "=?";
         }
@@ -548,12 +550,12 @@ public class Booklist
             sqlGetBookIdListForNodeKey =
                     SELECT_ + DBKey.FK_BOOK
                     + _FROM_ + listTable.getName()
-                    + _WHERE_ + DBKey.BL_NODE_KEY + "=?"
+                    + _WHERE_ + DBKey.BL_NODE_KEY + _LIKE_x
                     + _AND_ + DBKey.BL_NODE_GROUP + "=" + BooklistGroup.BOOK
                     + _ORDER_BY_ + DBKey.FK_BOOK;
         }
 
-        try (Cursor cursor = db.rawQuery(sqlGetBookIdListForNodeKey, new String[]{nodeKey})) {
+        try (Cursor cursor = db.rawQuery(sqlGetBookIdListForNodeKey, new String[]{nodeKey + "%"})) {
             if (cursor.moveToFirst()) {
                 final ArrayList<Long> rows = new ArrayList<>(cursor.getCount());
                 do {

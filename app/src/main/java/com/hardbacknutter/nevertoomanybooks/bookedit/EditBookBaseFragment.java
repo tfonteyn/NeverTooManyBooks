@@ -196,7 +196,7 @@ public abstract class EditBookBaseFragment
         }
 
         if (vm.handlesField(getFragmentId(), R.id.first_publication)) {
-            addPartialDatePicker(R.string.lbl_first_publication, R.id.first_publication);
+            addPartialDatePicker(R.string.lbl_date_first_publication, R.id.first_publication);
         }
 
         if (vm.handlesField(getFragmentId(), R.id.date_acquired)) {

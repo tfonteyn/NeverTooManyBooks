@@ -185,7 +185,7 @@
     <string name="confirm_registration_benefits">Bu özellik %1$s kayıt işleminden faydalanır. Daha fazla bilgi görmek veya bu mesajı devre dışı bırakmak ister misiniz?\n Bu bilgiyi daha sonra ayarlarda “%2$s” bölümünün altında bulabilirsiniz.</string>
     <string name="confirm_registration_required">Bu özellik %1$s ile kayıt gerektiriyor. Daha fazla bilgi görmek ister misiniz?</string>
     <string name="confirm_remove_toc_entry">“%1$s” başlığı %2$s tarafından bu kitaptan kaldırılsın mı?</string>
-    <string name="confirm_scope_for_change">Değiştirdiniz:\n “%1$s”,\n“%2$s”\n olarak.\n\nDeğişiklikleri nasıl uygulamak istersiniz?\n\nNot: “%3$s” seçimi anında uygulanacaktır.</string>
+    <string name="confirm_scope_for_change">Değiştirdiniz:\n “%1$s”,\n“%2$s”\n olarak.\n\nDeğişiklikleri nasıl uygulamak istersiniz?\n\nNot: “%3$s” seçimi anında uygulanacaktır. “%4$s” seçerseniz, yeni bir %5$s oluşturulacaktır.</string>
     <string name="confirm_scope_for_delete">“%1$s” başlığını %2$s ile silin.\n\nBu değişikliği nasıl uygulamak istersiniz?\nUYARI: “%3$s” seçimi geri alınamaz!</string>
     <string name="confirm_test_connection">Daha sonra sorunları önlemek için bu bağlantıyı test etmeniz önerilir.</string>
     <string name="confirm_unsaved_edits">Saklanmamış değişiklikler var, şimdi çıkarsanız hepsi silinecektir.</string>
@@ -251,9 +251,9 @@
     <string name="lbl_about_contact">İletişim:</string>
     <string name="lbl_add_book">Kitap ekle</string>
     <string name="lbl_add_filter">Filtre ekle</string>
-    <string name="lbl_added_day">Eklenen gün</string>
-    <string name="lbl_added_month">Eklenen ay</string>
-    <string name="lbl_added_year">Eklenen yıl</string>
+    <string name="lbl_date_added_day">Eklenen gün</string>
+    <string name="lbl_date_added_month">Eklenen ay</string>
+    <string name="lbl_date_added_year">Eklenen yıl</string>
     <string name="lbl_advanced_options">Gelişmiş</string>
     <string name="lbl_all_bookshelves">Tüm raflardan</string>
     <string name="lbl_anthology">Seçmeler</string>
@@ -349,9 +349,9 @@
     <string name="lbl_field_usage_copy_if_blank">Boş ise eşlemle</string>
     <string name="lbl_field_usage_overwrite">Bulunan verinin üstüne yazar</string>
     <string name="lbl_filter">Filtre</string>
-    <string name="lbl_first_pub_month">Yayının İlk Ayı</string>
-    <string name="lbl_first_pub_year">Yayının İlk Yılı</string>
-    <string name="lbl_first_publication">İlk yayın</string>
+    <string name="lbl_date_first_publication_month">Yayının İlk Ayı</string>
+    <string name="lbl_date_first_publication_year">Yayının İlk Yılı</string>
+    <string name="lbl_date_first_publication">İlk yayın</string>
     <string name="lbl_format">Biçim</string>
     <string name="lbl_formatting">Biçimlendiriliyor</string>
     <string name="lbl_genre">Tür</string>
@@ -393,8 +393,8 @@
     <string name="lbl_price_paid">Ödenen fiyat</string>
     <string name="lbl_print_run">Baskı çalıştırmak</string>
     <string name="lbl_publication">Yayınlama</string>
-    <string name="lbl_publication_month">Yayım ayı</string>
-    <string name="lbl_publication_year">Yayım yılı</string>
+    <string name="lbl_date_published_month">Yayım ayı</string>
+    <string name="lbl_date_published_year">Yayım yılı</string>
     <string name="lbl_publisher">Yayınevi</string>
     <string name="lbl_publishers">Yayıncılar</string>
     <string name="lbl_purge_files">Dosyaları temizle</string>
@@ -402,12 +402,12 @@
     <string name="lbl_rating">Değerlendirme</string>
     <string name="lbl_read">Okunmuş</string>
     <string name="lbl_read_and_unread">Okunan &amp; Okunmayan</string>
-    <string name="lbl_read_day">Okuma günü</string>
+    <string name="lbl_date_read_day">Okuma günü</string>
     <string name="lbl_read_end">Okumanın bittiği tarih</string>
-    <string name="lbl_read_month">Okuma ayı</string>
+    <string name="lbl_date_read_month">Okuma ayı</string>
     <string name="lbl_read_start">Okumaya başlanan tarih</string>
     <string name="lbl_read_timeout">Okuma zaman aşımı (saniye)</string>
-    <string name="lbl_read_year">Okuma yılı</string>
+    <string name="lbl_date_read_year">Okuma yılı</string>
     <string name="lbl_registration">%1$s Kayıt</string>
     <string name="lbl_scope_of_change">Değişiklik kapsamı</string>
     <string name="lbl_search_filtered_on_x">Süzülmüş: %1$s</string>
@@ -448,9 +448,9 @@
     <string name="lbl_timeouts">zaman aşımları</string>
     <string name="lbl_title">Kitap adı</string>
     <string name="lbl_unread">Okunmamış</string>
-    <string name="lbl_update_day">Günü güncelle</string>
-    <string name="lbl_update_month">Ayı güncelle</string>
-    <string name="lbl_update_year">Yılı güncelle</string>
+    <string name="lbl_date_last_updated_day">Günü güncelle</string>
+    <string name="lbl_date_last_updated_month">Ayı güncelle</string>
+    <string name="lbl_date_last_updated_year">Yılı güncelle</string>
     <string name="lbl_virtual_libraries">Bu kitaplıktaki sanal kitaplıklar</string>
     <string name="lbl_website_address">Site adresi (URL)</string>
     <string name="lbl_websites">Web siteleri</string>
@@ -498,7 +498,7 @@
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
     <string name="no">Hayır</string>
-    <string name="none">Yok</string>
+    <string name="none">hiçbiri</string>
     <string name="notification_channel_error">Hata</string>
     <string name="notification_channel_info">Bilgi</string>
     <string name="notification_channel_warn">Uyarı</string>
@@ -710,5 +710,6 @@
     <string name="yes">Evet</string>
     <string name="lbl_story_in_single_book">“%1$s” tek bir kitapta mevcut:\n\n%2$s</string>
     <string name="tip_import_isbn_list">ISBN numaralarına sahip bir metin dosyasını içe aktarın. Dosyanın her satırında tek bir ISBN olmalıdır. Sonuçlar sıraya konulacaktır.</string>
+    <string name="lbl_date_added">Eklenen günay</string>
 
 </resources>

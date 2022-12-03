@@ -285,31 +285,28 @@ public class EditBookPublisherListDialogFragment
     private void processChanges(@NonNull final Publisher original,
                                 @NonNull final Publisher modified) {
 
-        // name not changed ?
-        if (original.getName().equals(modified.getName())) {
-            return;
-        }
-
         final Context context = getContext();
 
-        // The name was modified. Check if it's used by any other books.
+        // The name was not changed OR
+        // the name was modified but not used by any other books.
         //noinspection ConstantConditions
-        if (vm.isSingleUsage(context, original)) {
-            // If it's not, we can simply modify the old object and we're done here.
-            // There is no need to consult the user.
-            // Copy the new data into the original object that the user was changing.
-            original.copyFrom(modified);
-            vm.getBook().prunePublishers(context, true);
-            adapter.notifyDataSetChanged();
-            return;
-        }
+        if (original.getName().equals(modified.getName())
+            || vm.isSingleUsage(context, original)) {
 
-        // At this point, we know the object was modified and it's used in more than one place.
-        // We need to ask the user if they want to make the changes globally.
-        StandardDialogs.confirmScopeForChange(
-                context, original.getLabel(context), modified.getLabel(context),
-                () -> changeForAllBooks(original, modified),
-                () -> changeForThisBook(original, modified));
+            original.copyFrom(modified);
+            adapter.notifyDataSetChanged();
+
+        } else {
+            // Object was modified and it's used in more than one place.
+            // We need to ask the user if they want to make the changes globally.
+            StandardDialogs.confirmScopeForChange(
+                    context, context.getString(R.string.lbl_publisher),
+                    //TODO: if the names are the same, we should probably state
+                    // that some other attribute was changed
+                    original.getLabel(context), modified.getLabel(context),
+                    () -> changeForAllBooks(original, modified),
+                    () -> changeForThisBook(original, modified));
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")

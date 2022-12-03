@@ -44,13 +44,11 @@
     <string name="X_confirm_continue">Вы уверены что хотите продолжить ?</string>
     <string name="X_error_authentication_failed">Ошибка аутентификации</string>
     <string name="X_error_download_failed">Загрузка не удалась</string>
-    <string
-        name="X_error_file_must_contain_column">В файле должен быть столбец с названием %1$s</string>
+    <string name="X_error_file_must_contain_column">В файле должен быть столбец с названием %1$s</string>
     <string name="X_error_network_site_has_problems">На сайте есть проблемы.</string>
     <string name="X_error_not_available">%1$s недоступен</string>
     <string name="X_error_storage_not_accessible_s">Хранение недоступно: %1$s</string>
-    <string
-        name="X_httpErrorIO">Не удалось подключиться к серверу. Повторите попытку позже.</string>
+    <string name="X_httpErrorIO">Не удалось подключиться к серверу. Повторите попытку позже.</string>
     <string name="X_info_authorized_needed">Авторизация</string>
     <string name="X_info_not_authorized">Не авторизовано</string>
     <string name="X_info_site_authorization_successful">Авторизация %1$s прошла успешно</string>
@@ -162,8 +160,7 @@
     <string name="camera_next_action">Действие после съемки</string>
     <string name="camera_other">Другое</string>
     <string name="cancelled">Печать отменена</string>
-    <string
-        name="cd_btn_drag_handle">Перетащите меня, чтобы изменить порядок в этом списке.</string>
+    <string name="cd_btn_drag_handle">Перетащите меня, чтобы изменить порядок в этом списке.</string>
     <string name="cd_clear_text_end_icon">Очистить текстовое поле</string>
     <string name="certificate_issued_by">Кем выдан: %1$s</string>
     <string name="certificate_issued_to">Кому выдан: %1$s</string>
@@ -186,7 +183,7 @@
     <string name="confirm_registration_benefits">Эта функция имеет преимущества при регистрации в %1$s. Хотите увидеть больше информации или отключить это сообщение?\n Вы можете найти эту информацию позже в разделе «%2$s» в настройках.</string>
     <string name="confirm_registration_required">Эта функция требует регистрации в %1$s. Хотите увидеть больше информации?</string>
     <string name="confirm_remove_toc_entry">Удалить название «%1$s» пользователя %2$s из этой книги?</string>
-    <string name="confirm_scope_for_change">Вы изменили:\n «%1$s»\n на\n «%2$s»\n\nКак вы хотите применить это изменение?\n\nЗамечание: выбор «%3$s» будет применён немедленно.</string>
+    <string name="confirm_scope_for_change">Вы изменили:\n «%1$s»\n на\n «%2$s»\n\nКак вы хотите применить это изменение?\n\nЗамечание: выбор «%3$s» будет применён немедленно. Если вы выберете «%4$s», будет создан новый %5$s.</string>
     <string name="confirm_scope_for_delete">Удалить заголовок «%1$s» пользователем %2$s.\n\nКак вы хотите применить это изменение? Примечание.\nВНИМАНИЕ «%3$s» нельзя отменить!</string>
     <string name="confirm_test_connection">Желательно проверить это соединение, чтобы избежать проблем в дальнейшем.</string>
     <string name="confirm_unsaved_edits">Если вы выйдете сейчас, не сохраненные изменения будут потеряны.</string>
@@ -207,8 +204,7 @@
     <string name="error_import_archive_invalid">Файл архива поврежден или недействителен.</string>
     <string name="error_import_csv_column_count_mismatch">Неверное количество столбцов в строке %1$d</string>
     <string name="error_import_csv_line">Неизвестная ошибка в строке %1$d</string>
-    <string
-        name="error_import_csv_line_to_long">Строка слишком длинная (строка=%1$d, длина=%2$d)</string>
+    <string name="error_import_csv_line_to_long">Строка слишком длинная (строка=%1$d, длина=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Файл должен содержать столбец с одним из следующих имён: %1$s</string>
     <string name="error_import_failed">Импорт не удался.</string>
     <string name="error_import_failed_for_record">Импорт не удался (%1$s).</string>
@@ -223,18 +219,15 @@
     <string name="error_site_authentication_failed">%1$s аутентификация не удалась</string>
     <string name="error_site_authorization_failed">Авторизация %1$s завершилась с ошибкой.</string>
     <string name="error_storage_no_space_left">Недостаточно места</string>
-    <string
-        name="error_storage_not_accessible">Пожалуйста, проверьте, что хранилище доступно.</string>
+    <string name="error_storage_not_accessible">Пожалуйста, проверьте, что хранилище доступно.</string>
     <string name="error_storage_not_writable">Пожалуйста, проверьте, что хранилище доступно для записи и имеет достаточно места.</string>
     <string name="error_unknown">Произошла неизвестная ошибка</string>
     <string name="error_unknown_host">Возникла проблема с подключением к сервису на «%1$s»</string>
     <string name="error_unknown_long">Произошла непредвиденная ошибка. Если проблема не исчезнет, обратитесь в службу поддержки, используя параметр «%1$s» внизу страницы настроек.</string>
     <string name="error_unsupported_version_v">Неподдерживаемая версия: %1$d</string>
-    <string
-        name="error_upgrade_not_supported">Обновление с версий старше %1$s не поддерживается.</string>
+    <string name="error_upgrade_not_supported">Обновление с версий старше %1$s не поддерживается.</string>
     <string name="fab_add_book_by_barcode_scan">Сканировать штрих-код</string>
-    <string
-        name="fab_add_book_by_barcode_scan_batch">Сканирование штрих-кодов в пакетном режиме</string>
+    <string name="fab_add_book_by_barcode_scan_batch">Сканирование штрих-кодов в пакетном режиме</string>
     <string name="fab_add_book_by_external_id">Идентификатор книги сайта</string>
     <string name="fab_add_book_by_internet_search">Поиск в Интернете</string>
     <string name="fab_add_book_by_isbn">Ввести ISBN</string>
@@ -255,9 +248,9 @@
     <string name="lbl_about_contact">Контакт:</string>
     <string name="lbl_add_book">Добавить книгу</string>
     <string name="lbl_add_filter">Добавить фильтр</string>
-    <string name="lbl_added_day">Добавленый день</string>
-    <string name="lbl_added_month">Добавленый месяц</string>
-    <string name="lbl_added_year">Добавленый год</string>
+    <string name="lbl_date_added_day">Добавленый день</string>
+    <string name="lbl_date_added_month">Добавленый месяц</string>
+    <string name="lbl_date_added_year">Добавленый год</string>
     <string name="lbl_advanced_options">Дополнительные настройки</string>
     <string name="lbl_all_bookshelves">Все книжные полки</string>
     <string name="lbl_anthology">Антология</string>
@@ -266,8 +259,7 @@
     <string name="lbl_archive_format_json_info">Все данные в формате JSON.</string>
     <string name="lbl_archive_format_xml_info">Все данные в формате XML.</string>
     <string name="lbl_archive_is_export_only">Это только для экспорта данных; импорт не поддерживается.</string>
-    <string
-        name="lbl_archive_type_backup_info">Полное резервное копирование / восстановление архива</string>
+    <string name="lbl_archive_type_backup_info">Полное резервное копирование / восстановление архива</string>
     <string name="lbl_archive_type_backup_tar">резервная копия (.tar)</string>
     <string name="lbl_archive_type_backup_zip">резервная копия (.zip)</string>
     <string name="lbl_archive_type_csv">книги (.csv)</string>
@@ -354,9 +346,9 @@
     <string name="lbl_field_usage_copy_if_blank">Копирует, если пусто</string>
     <string name="lbl_field_usage_overwrite">Перезаписывает существующие данные</string>
     <string name="lbl_filter">Фильтр</string>
-    <string name="lbl_first_pub_month">первый месяц публикации</string>
-    <string name="lbl_first_pub_year">первый год публикации</string>
-    <string name="lbl_first_publication">первая публикация</string>
+    <string name="lbl_date_first_publication_month">первый месяц публикации</string>
+    <string name="lbl_date_first_publication_year">первый год публикации</string>
+    <string name="lbl_date_first_publication">первая публикация</string>
     <string name="lbl_format">Формат</string>
     <string name="lbl_formatting">Форматирование</string>
     <string name="lbl_genre">Жанр</string>
@@ -398,8 +390,8 @@
     <string name="lbl_price_paid">Цена оплачена</string>
     <string name="lbl_print_run">Тираж</string>
     <string name="lbl_publication">публикация</string>
-    <string name="lbl_publication_month">Месяц публикации</string>
-    <string name="lbl_publication_year">Год публикации</string>
+    <string name="lbl_date_published_month">Месяц публикации</string>
+    <string name="lbl_date_published_year">Год публикации</string>
     <string name="lbl_publisher">Издатель</string>
     <string name="lbl_publishers">Издатели</string>
     <string name="lbl_purge_files">Очистка файлов</string>
@@ -407,12 +399,12 @@
     <string name="lbl_rating">Оценка</string>
     <string name="lbl_read">Прочитана</string>
     <string name="lbl_read_and_unread">Прочитано &amp; Не прочитано</string>
-    <string name="lbl_read_day">День прочтения</string>
+    <string name="lbl_date_read_day">День прочтения</string>
     <string name="lbl_read_end">Конец чтения</string>
-    <string name="lbl_read_month">Месяц прочтения</string>
+    <string name="lbl_date_read_month">Месяц прочтения</string>
     <string name="lbl_read_start">Начало чтения</string>
     <string name="lbl_read_timeout">Таймаут чтения (секунды)</string>
-    <string name="lbl_read_year">Год прочтения</string>
+    <string name="lbl_date_read_year">Год прочтения</string>
     <string name="lbl_registration">Регистрация в %1$s</string>
     <string name="lbl_scope_of_change">Масштаб изменения</string>
     <string name="lbl_search_filtered_on_x">отфильтрованный: %1$s</string>
@@ -434,8 +426,7 @@
     <string name="lbl_storage_select">Используйте «%1$s»</string>
     <string name="lbl_storage_settings">Хранилище</string>
     <string name="lbl_storage_volume">Объем хранилища</string>
-    <string
-        name="lbl_story_in_multiple_books">«%1$s» присутствует в нескольких книгах:\n\n%2$s</string>
+    <string name="lbl_story_in_multiple_books">«%1$s» присутствует в нескольких книгах:\n\n%2$s</string>
     <string name="lbl_strict_isbn">Строгий ISBN</string>
     <string name="lbl_style">стиль</string>
     <string name="lbl_styles">стили</string>
@@ -453,9 +444,9 @@
     <string name="lbl_timeouts">Таймауты</string>
     <string name="lbl_title">Название</string>
     <string name="lbl_unread">Непрочитанные</string>
-    <string name="lbl_update_day">День обновленияy</string>
-    <string name="lbl_update_month">Месяц обновления</string>
-    <string name="lbl_update_year">Год обновления</string>
+    <string name="lbl_date_last_updated_day">День обновленияy</string>
+    <string name="lbl_date_last_updated_month">Месяц обновления</string>
+    <string name="lbl_date_last_updated_year">Год обновления</string>
     <string name="lbl_virtual_libraries">Виртуальные библиотеки в этой библиотеке</string>
     <string name="lbl_website_address">Адрес сайта (URL)</string>
     <string name="lbl_websites">Веб-сайты</string>
@@ -503,7 +494,7 @@
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
     <string name="no">Нет</string>
-    <string name="none">Никто</string>
+    <string name="none">Нет</string>
     <string name="notification_channel_error">Ошибка</string>
     <string name="notification_channel_info">Информация</string>
     <string name="notification_channel_warn">Предупреждение</string>
@@ -715,5 +706,6 @@
     <string name="yes">Да</string>
     <string name="lbl_story_in_single_book">«%1$s» присутствует в одной книге:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Импортируйте текстовый файл с номерами ISBN. Файл должен иметь один ISBN в каждой строке. Результаты будут помещены в очередь.</string>
+    <string name="lbl_date_added">Дата добавления</string>
 
 </resources>

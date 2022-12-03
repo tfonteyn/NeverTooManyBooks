@@ -46,8 +46,7 @@
     <string name="X_error_network_site_has_problems">De website heeft problemen.</string>
     <string name="X_error_not_available">%1$s is niet beschikbaar</string>
     <string name="X_error_storage_not_accessible_s">Opslag niet toegankelijk: %1$s</string>
-    <string
-        name="X_httpErrorIO">Kan niet communiceren met de server. Probeer het later opnieuw.</string>
+    <string name="X_httpErrorIO">Kan niet communiceren met de server. Probeer het later opnieuw.</string>
     <string name="X_info_authorized_needed">Toegang autoriseren</string>
     <string name="X_info_not_authorized">Niet geautoriseerd</string>
     <string name="X_info_site_authorization_successful">%1$s autorisatie gelukt</string>
@@ -182,7 +181,7 @@
     <string name="confirm_registration_benefits">Deze functie profiteert van registratie bij %1$s. Wil je meer informatie bekijken of dit bericht uitschakelen?\nJe vind deze informatie op een later tijdstip in de sectie „%2$s” in de instellingen.</string>
     <string name="confirm_registration_required">Deze functie vereist registratie bij %1$s. Wil je meer informatie zien?</string>
     <string name="confirm_remove_toc_entry">De titel „%1$s” door %2$s uit dit boek verwijderen?</string>
-    <string name="confirm_scope_for_change">Je wijzigde:\n „%1$s”\n naar\n „%2$s”\n\nHoe wil je deze verandering toepassen?\n\nNB: De keuze „%3$s” wordt onmiddelijk toegepast.</string>
+    <string name="confirm_scope_for_change">Je wijzigde:\n „%1$s”\n naar\n „%2$s”\n\nHoe wil je deze verandering toepassen?\n\nNB: De keuze „%3$s” wordt onmiddelijk toegepast. Als u „%4$s” kiest, wordt een nieuwe %5$s aangemaakt.</string>
     <string name="confirm_scope_for_delete">Verwijder de titel „%1$s” door %2$s.\n\nHoe wilt u deze wijziging toepassen?\nWAARSCHUWING: De keuze „%3$s” kan niet ongedaan worden gemaakt!</string>
     <string name="confirm_test_connection">Het is raadzaam om deze verbinding te testen om later problemen te voorkomen.</string>
     <string name="confirm_unsaved_edits">Je hebt niet opgeslagen veranderingen. Als je nu afsluit gaan die verloren.</string>
@@ -221,8 +220,7 @@
     <string name="error_storage_not_accessible">Controleer aub of opslag toegankelijk is.</string>
     <string name="error_storage_not_writable">Controleer aub of opslag beschrijfbaar is en voldoende vrije ruimte heeft.</string>
     <string name="error_unknown">Er is een onbekende fout opgetreden</string>
-    <string
-        name="error_unknown_host">Er was een connectie probleem naar de service op „%1$s”.</string>
+    <string name="error_unknown_host">Er was een connectie probleem naar de service op „%1$s”.</string>
     <string name="error_unknown_long">Er is een onverwachte fout opgetreden. Als het probleem zich blijft voordoen, neem contact op met de ondersteuning via de „%1$s”-optie onderaan de instellingenpagina.</string>
     <string name="error_unsupported_version_v">Niet-ondersteunde versie: %1$d</string>
     <string name="error_upgrade_not_supported">Upgraden vanaf versies ouder dan %1$s wordt niet ondersteund.</string>
@@ -248,9 +246,9 @@
     <string name="lbl_about_contact">Contact:</string>
     <string name="lbl_add_book">Boek Toevoegen</string>
     <string name="lbl_add_filter">Filter toevoegen</string>
-    <string name="lbl_added_day">Dag</string>
-    <string name="lbl_added_month">Maand</string>
-    <string name="lbl_added_year">Jaar</string>
+    <string name="lbl_date_added_day">Dag</string>
+    <string name="lbl_date_added_month">Maand</string>
+    <string name="lbl_date_added_year">Jaar</string>
     <string name="lbl_advanced_options">Geavanceerd</string>
     <string name="lbl_all_bookshelves">Alle boekenplanken</string>
     <string name="lbl_anthology">Bloemlezing</string>
@@ -325,8 +323,7 @@
     <string name="lbl_date_last_updated">Datum laatst bijgewerkt</string>
     <string name="lbl_date_published">Datum uitgave</string>
     <string name="lbl_day">Dag</string>
-    <string
-        name="lbl_delete_removed_books">Verwijder boeken die niet meer op de server staan</string>
+    <string name="lbl_delete_removed_books">Verwijder boeken die niet meer op de server staan</string>
     <string name="lbl_description">Beschrijving</string>
     <string name="lbl_details_have_changed">De details zijn veranderd</string>
     <string name="lbl_duplicate_book">Dupliceer Boek</string>
@@ -347,9 +344,9 @@
     <string name="lbl_field_usage_copy_if_blank">kopieer indien leeg</string>
     <string name="lbl_field_usage_overwrite">Overschrijf bestaande gegevens</string>
     <string name="lbl_filter">Filter</string>
-    <string name="lbl_first_pub_month">Eerste uitg. Maand</string>
-    <string name="lbl_first_pub_year">Eerste uitg. Dag</string>
-    <string name="lbl_first_publication">Eerste uitgave</string>
+    <string name="lbl_date_first_publication_month">Eerste uitg. Maand</string>
+    <string name="lbl_date_first_publication_year">Eerste uitg. Dag</string>
+    <string name="lbl_date_first_publication">Eerste uitgave</string>
     <string name="lbl_format">Formaat</string>
     <string name="lbl_formatting">Formatteren</string>
     <string name="lbl_genre">Genre</string>
@@ -391,8 +388,8 @@
     <string name="lbl_price_paid">Betaald</string>
     <string name="lbl_print_run">Oplage</string>
     <string name="lbl_publication">Uitgave</string>
-    <string name="lbl_publication_month">Maand</string>
-    <string name="lbl_publication_year">Jaar</string>
+    <string name="lbl_date_published_month">Maand</string>
+    <string name="lbl_date_published_year">Jaar</string>
     <string name="lbl_publisher">Uitgever</string>
     <string name="lbl_publishers">Uitgevers</string>
     <string name="lbl_purge_files">Bestanden opschonen</string>
@@ -400,12 +397,12 @@
     <string name="lbl_rating">Waardering</string>
     <string name="lbl_read">Gelezen</string>
     <string name="lbl_read_and_unread">Gelezen &amp; Ongelezen</string>
-    <string name="lbl_read_day">Dag</string>
+    <string name="lbl_date_read_day">Dag</string>
     <string name="lbl_read_end">Einddatum gelezen</string>
-    <string name="lbl_read_month">Maand</string>
+    <string name="lbl_date_read_month">Maand</string>
     <string name="lbl_read_start">Begindatum lezen</string>
     <string name="lbl_read_timeout">Time-out lezen (seconden)</string>
-    <string name="lbl_read_year">Jaar</string>
+    <string name="lbl_date_read_year">Jaar</string>
     <string name="lbl_registration">%1$s registratie</string>
     <string name="lbl_scope_of_change">Omvang van de verandering</string>
     <string name="lbl_search_filtered_on_x">Gefiltered: %1$s</string>
@@ -423,13 +420,11 @@
     <string name="lbl_sort_and_style_ellipsis">Sorteren &amp; Stijlen…</string>
     <string name="lbl_sorting">Sorteren</string>
     <string name="lbl_sql_query">SQL-query</string>
-    <string
-        name="lbl_storage_quit_and_reinsert_sdcard">Sluit de app en inserteer de juiste SD kaart</string>
+    <string name="lbl_storage_quit_and_reinsert_sdcard">Sluit de app en inserteer de juiste SD kaart</string>
     <string name="lbl_storage_select">Gebruik „%1$s”</string>
     <string name="lbl_storage_settings">Opslagruimte</string>
     <string name="lbl_storage_volume">Opslagvolume</string>
-    <string
-        name="lbl_story_in_multiple_books">„%1$s” is present in meerdere boeken:\n\n%2$s</string>
+    <string name="lbl_story_in_multiple_books">„%1$s” is present in meerdere boeken:\n\n%2$s</string>
     <string name="lbl_story_in_single_book">„%1$s” is present in één enkel book:\n\n%2$s</string>
     <string name="lbl_strict_isbn">Strikt ISBN</string>
     <string name="lbl_style">Stijl</string>
@@ -448,9 +443,9 @@
     <string name="lbl_timeouts">Time-outs</string>
     <string name="lbl_title">Titel</string>
     <string name="lbl_unread">Ongelezen</string>
-    <string name="lbl_update_day">Dag update</string>
-    <string name="lbl_update_month">Maand update</string>
-    <string name="lbl_update_year">Jaar update</string>
+    <string name="lbl_date_last_updated_day">Dag update</string>
+    <string name="lbl_date_last_updated_month">Maand update</string>
+    <string name="lbl_date_last_updated_year">Jaar update</string>
     <string name="lbl_virtual_libraries">Virtuele bibliotheken in deze bibliotheek</string>
     <string name="lbl_website_address">Web-adres (URL)</string>
     <string name="lbl_websites">Websites</string>
@@ -691,8 +686,7 @@
     <string name="warning_import_csv">Waarschuwing. Het importeren van gegevens kan bestaande boekgegevens onbedoeld bijwerken met nieuwe informatie als de UUID-kolom niet aanwezig is en de id in het import-bestand dezelfde is als het bestaande id. Dit is meestal geen bezwaar als je een veld in een exportbestand hebt veranderd. Als je een nieuw boek item hebt gemaakt, of iemand anders zijn boeken importeert, zorg dan dat het UUID veld aanwezig is of dat het id veld leeg is.</string>
     <string name="warning_import_csv_unescaped_quote">Niet ge-escaped aanhalingsteken op rij %1$d, positie %2$d</string>
     <string name="warning_import_failed_for_lines_lots">Het parseren is mislukt voor regels \n%1$s\n en andere.</string>
-    <string
-        name="warning_import_failed_for_lines_some">Het parseren is mislukt voor regels \n%1$s\n</string>
+    <string name="warning_import_failed_for_lines_some">Het parseren is mislukt voor regels \n%1$s\n</string>
     <string name="warning_no_editions">Geen andere uitgave informatie beschikbaar</string>
     <string name="warning_no_matching_book_found">Geen overeenkomstig boek gevonden</string>
     <string name="warning_no_search_data_for_active_sites">Geen geldige zoekgegevens voor actieve sites.</string>
@@ -712,6 +706,7 @@
     <string name="x_of_y">%1$d van %2$d</string>
     <string name="yes">Ja</string>
     <string name="tip_import_isbn_list">Importeer een tekstbestand met ISBN-nummers. Het bestand moet op elke regel één enkel ISBN-nummer hebben. De resultaten worden in de wachtrij geplaatst.</string>
+    <string name="lbl_date_added">Datum toegevoegd</string>
 
 
 </resources>

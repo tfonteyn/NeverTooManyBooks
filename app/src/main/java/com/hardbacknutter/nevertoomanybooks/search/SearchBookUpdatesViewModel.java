@@ -182,7 +182,7 @@ public class SearchBookUpdatesViewModel
                 new String[]{DBKey.PRINT_RUN});
         map.put(context.getString(R.string.lbl_date_published),
                 new String[]{DBKey.BOOK_PUBLICATION__DATE});
-        map.put(context.getString(R.string.lbl_first_publication),
+        map.put(context.getString(R.string.lbl_date_first_publication),
                 new String[]{DBKey.FIRST_PUBLICATION__DATE});
         map.put(context.getString(R.string.lbl_price_listed),
                 new String[]{DBKey.PRICE_LISTED});

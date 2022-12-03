@@ -119,7 +119,7 @@ public abstract class FieldVisibility {
             R.string.lbl_description,
             R.string.lbl_edition,
 
-            R.string.lbl_first_publication,
+            R.string.lbl_date_first_publication,
             R.string.lbl_format,
             R.string.lbl_genre,
             R.string.lbl_language,

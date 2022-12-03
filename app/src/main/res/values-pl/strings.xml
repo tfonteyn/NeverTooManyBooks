@@ -48,8 +48,7 @@
     <string name="X_error_network_site_has_problems">Witryna ma problemy.</string>
     <string name="X_error_not_available">%1$s jest niedostępny</string>
     <string name="X_error_storage_not_accessible_s">Pamięć niedostępna: %1$s</string>
-    <string
-        name="X_httpErrorIO">Nie można nawiązać połączenia z serwerem. Spróbuj ponownie później.</string>
+    <string name="X_httpErrorIO">Nie można nawiązać połączenia z serwerem. Spróbuj ponownie później.</string>
     <string name="X_info_authorized_needed">Autoryzuj dostęp</string>
     <string name="X_info_not_authorized">Nieautoryzowany</string>
     <string name="X_info_site_authorization_successful">Autoryzacja %1$s powiodła się</string>
@@ -86,8 +85,7 @@
     <string name="X_whichImageCaptureApplication">Zrób zdjęcie w aplikacji</string>
     <string name="X_whichSendToApplication">Wyślij za pomocą</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string
-        name="acra_resDialogCommentPrompt">Twoje komentarze (lub po prostu pozostaw puste):</string>
+    <string name="acra_resDialogCommentPrompt">Twoje komentarze (lub po prostu pozostaw puste):</string>
     <string name="acra_resDialogText">Vypadá to, že &APP_NAME; havaroval. Pokud je to možné, popište cokoliv, o čem si myslíte, že mohou být relevantní níže, a stiskněte „OK”, abyste nám poslali e-mail o havárii. E-mail se zobrazí před odesláním.</string>
     <string name="action_add">Dodaj</string>
     <string name="action_add_with_details">Dodaj ze szczegółami</string>
@@ -185,7 +183,7 @@
     <string name="confirm_registration_benefits">Ta funkcja korzysta z rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji lub wyłączyć tę wiadomość?\n Informacje te można znaleźć później w sekcji „%2$s” w ustawieniach.</string>
     <string name="confirm_registration_required">Ta funkcja wymaga rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji?</string>
     <string name="confirm_remove_toc_entry">Usunąć tytuł „%1$s” autorstwa %2$s z tej książki?</string>
-    <string name="confirm_scope_for_change">Zmieniłeś:\n „%1$s”\n na\n „%2$s”\n\nJak chcesz zastosować tę zmianę?\n\nUwaga: Zmiana „%3$s” zostanie wykonana natychmiast.</string>
+    <string name="confirm_scope_for_change">Zmieniłeś:\n „%1$s”\n na\n „%2$s”\n\nJak chcesz zastosować tę zmianę?\n\nUwaga: Zmiana „%3$s” zostanie wykonana natychmiast. Jeśli wybierzesz „%4$s”, zostanie utworzone nowe %5$s.</string>
     <string name="confirm_scope_for_delete">Usuń tytuł „%1$s” do %2$s.\n\nJak chcesz zastosować tę zmianę?\nOSTRZEŻENIE: wyboru „%3$s” nie można cofnąć!</string>
     <string name="confirm_test_connection">Zaleca się przetestowanie tego połączenia, aby później uniknąć problemów.</string>
     <string name="confirm_unsaved_edits">Masz niezapisane zmiany, jeśli wyjdziesz teraz, zostaną utracone.</string>
@@ -206,8 +204,7 @@
     <string name="error_import_archive_invalid">Plik archiwum jest uszkodzony lub z innego powodu nieprawidłowy.</string>
     <string name="error_import_csv_column_count_mismatch">Nieprawidłowa liczba kolumn w wierszu %1$d</string>
     <string name="error_import_csv_line">Nieznany błąd w wierszu %1$d</string>
-    <string
-        name="error_import_csv_line_to_long">Linia jest za długa (wiersz=%1$d, długość=%2$d)</string>
+    <string name="error_import_csv_line_to_long">Linia jest za długa (wiersz=%1$d, długość=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Plik musi zawierać jedno z pól: %1$s</string>
     <string name="error_import_failed">Import nie powiódł się.</string>
     <string name="error_import_failed_for_record">Import nie powiódł się (%1$s).</string>
@@ -251,9 +248,9 @@
     <string name="lbl_about_contact">Kontakt:</string>
     <string name="lbl_add_book">Dodaj książkę</string>
     <string name="lbl_add_filter">Dodaj filtr</string>
-    <string name="lbl_added_day">Dodano dzień</string>
-    <string name="lbl_added_month">Dodano miesiąc</string>
-    <string name="lbl_added_year">Dodano rok</string>
+    <string name="lbl_date_added_day">Dodano dzień</string>
+    <string name="lbl_date_added_month">Dodano miesiąc</string>
+    <string name="lbl_date_added_year">Dodano rok</string>
     <string name="lbl_advanced_options">Zaawansowane</string>
     <string name="lbl_all_bookshelves">Wszystkie półki na książki</string>
     <string name="lbl_anthology">Antologia</string>
@@ -262,8 +259,7 @@
     <string name="lbl_archive_format_json_info">Wszystkie dane w formacie JSON.</string>
     <string name="lbl_archive_format_xml_info">Wszystkie dane w formacie XML.</string>
     <string name="lbl_archive_is_export_only">Dotyczy to tylko eksportowania danych; import nie jest obsługiwany.</string>
-    <string
-        name="lbl_archive_type_backup_info">Pełne archiwum kopii zapasowej / przywracania</string>
+    <string name="lbl_archive_type_backup_info">Pełne archiwum kopii zapasowej / przywracania</string>
     <string name="lbl_archive_type_backup_tar">Kopia zapasowa (.tar)</string>
     <string name="lbl_archive_type_backup_zip">Kopia zapasowa (.zip)</string>
     <string name="lbl_archive_type_csv">Książki (.csv)</string>
@@ -350,9 +346,9 @@
     <string name="lbl_field_usage_copy_if_blank">Kopiuj, gdy puste</string>
     <string name="lbl_field_usage_overwrite">Nadpisz istniejące dane</string>
     <string name="lbl_filter">Filtr</string>
-    <string name="lbl_first_pub_month">Pierwszy miesiąc publikacji</string>
-    <string name="lbl_first_pub_year">Pierwszy rok publikacji</string>
-    <string name="lbl_first_publication">Pierwsza publikacja</string>
+    <string name="lbl_date_first_publication_month">Pierwszy miesiąc publikacji</string>
+    <string name="lbl_date_first_publication_year">Pierwszy rok publikacji</string>
+    <string name="lbl_date_first_publication">Pierwsza publikacja</string>
     <string name="lbl_format">Format</string>
     <string name="lbl_formatting">Formatowanie</string>
     <string name="lbl_genre">Gatunek</string>
@@ -394,8 +390,8 @@
     <string name="lbl_price_paid">Zapłacona cena</string>
     <string name="lbl_print_run">Wersja do wydruku</string>
     <string name="lbl_publication">Publikacja</string>
-    <string name="lbl_publication_month">Miesiąc publikacji</string>
-    <string name="lbl_publication_year">Rok publikacji</string>
+    <string name="lbl_date_published_month">Miesiąc publikacji</string>
+    <string name="lbl_date_published_year">Rok publikacji</string>
     <string name="lbl_publisher">Wydawca</string>
     <string name="lbl_publishers">Wydawcy</string>
     <string name="lbl_purge_files">Usuwanie plików</string>
@@ -403,12 +399,12 @@
     <string name="lbl_rating">Ocena</string>
     <string name="lbl_read">Czytać</string>
     <string name="lbl_read_and_unread">Odczyt / nieprzeczytane</string>
-    <string name="lbl_read_day">Dzień odczytu</string>
+    <string name="lbl_date_read_day">Dzień odczytu</string>
     <string name="lbl_read_end">Data zakończenia czytania</string>
-    <string name="lbl_read_month">Miesiąc przeczytany</string>
+    <string name="lbl_date_read_month">Miesiąc przeczytany</string>
     <string name="lbl_read_start">Data rozpoczęcia czytania</string>
     <string name="lbl_read_timeout">Limit czasu odczytu (sekundy)</string>
-    <string name="lbl_read_year">Przeczytaj rok</string>
+    <string name="lbl_date_read_year">Przeczytaj rok</string>
     <string name="lbl_registration">Rejestracja w %1$s</string>
     <string name="lbl_scope_of_change">Zakres zmiany</string>
     <string name="lbl_search_filtered_on_x">Przefiltrowany: %1$s</string>
@@ -430,8 +426,7 @@
     <string name="lbl_storage_select">Użyj „%1$s”</string>
     <string name="lbl_storage_settings">Pamięć wewnętrzna</string>
     <string name="lbl_storage_volume">Pojemność pamięci</string>
-    <string
-        name="lbl_story_in_multiple_books">„%1$s” jest obecna w wielu książkach:\n\n%2$s</string>
+    <string name="lbl_story_in_multiple_books">„%1$s” jest obecna w wielu książkach:\n\n%2$s</string>
     <string name="lbl_strict_isbn">Ścisły ISBN</string>
     <string name="lbl_style">Styl</string>
     <string name="lbl_styles">Style</string>
@@ -449,9 +444,9 @@
     <string name="lbl_timeouts">Limity czasu</string>
     <string name="lbl_title">Tytuł</string>
     <string name="lbl_unread">Nieprzeczytane</string>
-    <string name="lbl_update_day">Dzień aktualizacji</string>
-    <string name="lbl_update_month">Zaktualizuj miesiąc</string>
-    <string name="lbl_update_year">Zaktualizuj rok</string>
+    <string name="lbl_date_last_updated_day">Dzień aktualizacji</string>
+    <string name="lbl_date_last_updated_month">Zaktualizuj miesiąc</string>
+    <string name="lbl_date_last_updated_year">Zaktualizuj rok</string>
     <string name="lbl_virtual_libraries">Biblioteki wirtualne w tej bibliotece</string>
     <string name="lbl_website_address">Adres witryny (URL)</string>
     <string name="lbl_websites">Strony internetowe</string>
@@ -499,7 +494,7 @@
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
     <string name="no">Nie</string>
-    <string name="none">Żaden</string>
+    <string name="none">Brak</string>
     <string name="notification_channel_error">Błąd</string>
     <string name="notification_channel_info">Informacja</string>
     <string name="notification_channel_warn">Uwaga</string>
@@ -711,5 +706,6 @@
     <string name="yes">Tak</string>
     <string name="lbl_story_in_single_book">„%1$s” występuje w jednej książce:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Zaimportuj plik tekstowy z numerami ISBN. Plik powinien mieć jeden numer ISBN w każdym wierszu. Wyniki zostaną umieszczone w kolejce.</string>
+    <string name="lbl_date_added">Data dodania</string>
 
 </resources>

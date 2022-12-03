@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -89,28 +89,34 @@ public final class StandardDialogs {
      * or just the current book.
      *
      * @param context    Current context
+     * @param itemType   The name of the type of object (e.g. 'Author', 'Publisher' ...)
      * @param original   entity label
      * @param modified   entity label
-     * @param onAllBooks Runnable to execute if the user 'all books''
-     * @param onThisBook Runnable to execute if the user 'this book''
+     * @param onAllBooks Runnable to execute if the user picks 'all books''
+     * @param onThisBook Runnable to execute if the user picks 'this book''
      */
     public static void confirmScopeForChange(@NonNull final Context context,
+                                             @NonNull final String itemType,
                                              @NonNull final String original,
                                              @NonNull final String modified,
                                              @NonNull final Runnable onAllBooks,
                                              @NonNull final Runnable onThisBook) {
         final String allBooks = context.getString(R.string.btn_all_books);
+        final String thisBook = context.getString(R.string.btn_this_book);
+
         final String message = context.getString(R.string.confirm_scope_for_change,
                                                  original,
                                                  modified,
-                                                 allBooks);
+                                                 allBooks,
+                                                 thisBook,
+                                                 itemType);
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_baseline_warning_24)
                 .setTitle(R.string.lbl_scope_of_change)
                 .setMessage(message)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .setNeutralButton(allBooks, (d, w) -> onAllBooks.run())
-                .setPositiveButton(R.string.btn_this_book, (d, w) -> onThisBook.run())
+                .setPositiveButton(thisBook, (d, w) -> onThisBook.run())
                 .create()
                 .show();
     }

@@ -57,6 +57,7 @@ public class EditBookAuthorDialogFragment
     /** Fragment/Log tag. */
     public static final String TAG = "EditAuthorForBookDialog";
     private static final String SIS_REAL_AUTHOR_NAME = TAG + ":ran";
+
     public static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /**
@@ -173,11 +174,11 @@ public class EditBookAuthorDialogFragment
         });
 
         final boolean useAuthorType = GlobalFieldVisibility.isUsed(DBKey.AUTHOR_TYPE__BITMASK);
-        vb.authorTypeGroup.setVisibility(useAuthorType ? View.VISIBLE : View.GONE);
         if (useAuthorType) {
+            vb.btnUseAuthorType.setVisibility(View.VISIBLE);
             vb.btnUseAuthorType.setOnCheckedChangeListener((v, isChecked) -> {
                 setTypeEnabled(isChecked);
-                vb.flowTypes.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                vb.authorTypeGroup.setVisibility(isChecked ? View.VISIBLE : View.GONE);
             });
 
             // NEWTHINGS: author type: add a button to the layout
@@ -198,15 +199,18 @@ public class EditBookAuthorDialogFragment
 
             if (currentEdit.getType() == Author.TYPE_UNKNOWN) {
                 setTypeEnabled(false);
-                vb.flowTypes.setVisibility(View.GONE);
+                vb.authorTypeGroup.setVisibility(View.GONE);
             } else {
                 setTypeEnabled(true);
-                vb.flowTypes.setVisibility(View.VISIBLE);
+                vb.authorTypeGroup.setVisibility(View.VISIBLE);
                 for (int i = 0; i < typeButtons.size(); i++) {
                     typeButtons.valueAt(i).setChecked((currentEdit.getType()
                                                        & typeButtons.keyAt(i)) != 0);
                 }
             }
+        } else {
+            vb.btnUseAuthorType.setVisibility(View.GONE);
+            vb.authorTypeGroup.setVisibility(View.GONE);
         }
     }
 

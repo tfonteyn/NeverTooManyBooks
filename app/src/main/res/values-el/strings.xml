@@ -44,8 +44,7 @@
     <string name="X_confirm_continue">Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
     <string name="X_error_authentication_failed">Η ταυτοποίηση απέτυχε</string>
     <string name="X_error_download_failed">Η λήψη απέτυχε</string>
-    <string
-        name="X_error_file_must_contain_column">Το αρχείο πρέπει να περιέχει στήλη με όνομα %1$s</string>
+    <string name="X_error_file_must_contain_column">Το αρχείο πρέπει να περιέχει στήλη με όνομα %1$s</string>
     <string name="X_error_network_site_has_problems">Ο ιστότοπος έχει προβλήματα.</string>
     <string name="X_error_not_available">Το %1$s δεν είναι διαθέσιμο</string>
     <string name="X_error_storage_not_accessible_s">Δεν είναι δυνατή η αποθήκευση: %1$s</string>
@@ -81,8 +80,7 @@
     <string name="X_txt_thank_you">Ευχαριστούμε!</string>
     <string name="X_use_default_setting">Χρήση προεπιλεγμένων ρυθμίσεων</string>
     <string name="X_vldt_failed_for_x">Η επικύρωση απέτυχε για «%1$s»</string>
-    <string
-        name="X_warning_image_processing_failed">Δεν ήταν δυνατή η επεξεργασία της εικόνας.</string>
+    <string name="X_warning_image_processing_failed">Δεν ήταν δυνατή η επεξεργασία της εικόνας.</string>
     <string name="X_warning_no_matching_book_found_long">Το βιβλίο που σαρώθηκε δεν βρέθηκε. Κάποιες φορές το σωστό barcode βρίσκεται στο εσωτερικό του εξωφύλλου. Αλλιώς εισάγετε τις λεπτομέρειες χειροκίνητα.</string>
     <string name="X_whichImageCaptureApplication">Λήψη εικόνας με</string>
     <string name="X_whichSendToApplication">Αποστολή μέσω</string>
@@ -185,7 +183,7 @@
     <string name="confirm_registration_benefits">Αυτή η δυνατότητα επωφελείται από την εγγραφή με %1$s. Θα θέλατε να δείτε περισσότερες πληροφορίες ή να απενεργοποιήσετε αυτό το μήνυμα;\n Μπορείτε να βρείτε αυτές τις πληροφορίες σε μεταγενέστερη ημερομηνία κάτω από την ενότητα «%2$s» στις ρυθμίσεις.</string>
     <string name="confirm_registration_required">Αυτή η λειτουργία απαιτεί εγγραφή με %1$s. Θα θέλατε να δείτε περισσότερες πληροφορίες;</string>
     <string name="confirm_remove_toc_entry">Να καταργηθεί ο τίτλος «%1$s» κατά %2$s από αυτό το βιβλίο;</string>
-    <string name="confirm_scope_for_change">Έχετε αλλάξει:\n «%1$s»\n σε\n «%2$s»\n\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή «%3$s» θα εφαρμοστεί στιγμιαία.</string>
+    <string name="confirm_scope_for_change">Έχετε αλλάξει:\n «%1$s»\n σε\n «%2$s»\n\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή «%3$s» θα εφαρμοστεί στιγμιαία. Εάν επιλέξετε «%4$s», τότε θα δημιουργηθεί ένα νέο %5$s.</string>
     <string name="confirm_scope_for_delete">Διαγράψτε τον τίτλο «%1$s» κατά %2$s\n\nΠώς θέλετε να εφαρμόσετε αυτήν την αλλαγή;\nΠΡΟΕΙΔΟΠΟΙΗΣΗ: Η επιλογή «%3$s» δεν μπορεί να αναιρεθεί!</string>
     <string name="confirm_test_connection">Συνιστάται να δοκιμάσετε αυτήν τη σύνδεση για να αποφύγετε προβλήματα αργότερα.</string>
     <string name="confirm_unsaved_edits">Υπάρχουν αλλαγές που δεν έχουν αποθηκευτεί, αν γίνει έξοδος τώρα θα χαθούν.</string>
@@ -206,8 +204,7 @@
     <string name="error_import_archive_invalid">Το αρχείο αρχειοθέτησης είναι κατεστραμμένο ή με άλλο τρόπο άκυρο.</string>
     <string name="error_import_csv_column_count_mismatch">Λανθασμένος αριθμός στηλών στη σειρά %1$d</string>
     <string name="error_import_csv_line">Άγνωστο σφάλμα στη σειρά %1$d</string>
-    <string
-        name="error_import_csv_line_to_long">Η γραμμή είναι πολύ μεγάλη (σειρά=%1$d, μήκος=%2$d)</string>
+    <string name="error_import_csv_line_to_long">Η γραμμή είναι πολύ μεγάλη (σειρά=%1$d, μήκος=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Το αρχείο πρέπει να περιέχει στήλη με ένα από τα ακόλουθα όνοματα: %1$s</string>
     <string name="error_import_failed">Αποτυχία Εισαγωγής.</string>
     <string name="error_import_failed_for_record">Αποτυχία Εισαγωγής (%1$s).</string>
@@ -222,12 +219,10 @@
     <string name="error_site_authentication_failed">Ο έλεγχος ταυτότητας %1$s απέτυχε</string>
     <string name="error_site_authorization_failed">Η αδειοδότηση του %1$s οδήγησε σε λάθος.</string>
     <string name="error_storage_no_space_left">Ανεπαρκής χώρος αποθήκευσης</string>
-    <string
-        name="error_storage_not_accessible">Βεβαιωθείτε ότι έχετε πρόσβαση στο χώρο αποθήκευσης.</string>
+    <string name="error_storage_not_accessible">Βεβαιωθείτε ότι έχετε πρόσβαση στο χώρο αποθήκευσης.</string>
     <string name="error_storage_not_writable">Ελέγξτε ότι η αποθήκευση είναι εγγράψιμη και έχει αρκετό χώρο.</string>
     <string name="error_unknown">Ένα άγνωστο σφάλμα συνέβη.</string>
-    <string
-        name="error_unknown_host">Παρουσιάστηκε πρόβλημα σύνδεσης με την υπηρεσία «%1$s»</string>
+    <string name="error_unknown_host">Παρουσιάστηκε πρόβλημα σύνδεσης με την υπηρεσία «%1$s»</string>
     <string name="error_unknown_long">Προέκυψε ένα μη αναμενόμενο σφάλμα. Εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη χρησιμοποιώντας την επιλογή «%1$s» στο κάτω μέρος της σελίδας ρυθμίσεων.</string>
     <string name="error_unsupported_version_v">Μη υποστηριζόμενη έκδοση: %1$d</string>
     <string name="error_upgrade_not_supported">Δεν υποστηρίζεται η αναβάθμιση από εκδόσεις παλαιότερες από %1$s.</string>
@@ -253,9 +248,9 @@
     <string name="lbl_about_contact">Επαφές:</string>
     <string name="lbl_add_book">Προσθήκη Βιβλίου</string>
     <string name="lbl_add_filter">Προσθήκη φίλτρου</string>
-    <string name="lbl_added_day">Ημέρα Πρόσθεσης</string>
-    <string name="lbl_added_month">Μήνας Πρόσθεσης</string>
-    <string name="lbl_added_year">Έτος Πρόσθεσης</string>
+    <string name="lbl_date_added_day">Ημέρα Πρόσθεσης</string>
+    <string name="lbl_date_added_month">Μήνας Πρόσθεσης</string>
+    <string name="lbl_date_added_year">Έτος Πρόσθεσης</string>
     <string name="lbl_advanced_options">Για προχωρημένους</string>
     <string name="lbl_all_bookshelves">Όλα τα ράφια</string>
     <string name="lbl_anthology">Ανθολογία</string>
@@ -264,8 +259,7 @@
     <string name="lbl_archive_format_json_info">Όλα τα δεδομένα σε μορφή JSON.</string>
     <string name="lbl_archive_format_xml_info">Όλα τα δεδομένα σε μορφή XML.</string>
     <string name="lbl_archive_is_export_only">Αυτό προορίζεται μόνο για εξαγωγή δεδομένων. η εισαγωγή δεν υποστηρίζεται.</string>
-    <string
-        name="lbl_archive_type_backup_info">Αρχείο πλήρους αντιγράφου ασφαλείας / επαναφοράς</string>
+    <string name="lbl_archive_type_backup_info">Αρχείο πλήρους αντιγράφου ασφαλείας / επαναφοράς</string>
     <string name="lbl_archive_type_backup_tar">Αντίγραφο ασφαλείας (.tar)</string>
     <string name="lbl_archive_type_backup_zip">Αντίγραφο ασφαλείας (.zip)</string>
     <string name="lbl_archive_type_csv">βιβλία (.csv)</string>
@@ -331,8 +325,7 @@
     <string name="lbl_date_last_updated">Ημερομηνία τελευταίας ενημέρωσης</string>
     <string name="lbl_date_published">Ημερομηνία έκδοσης</string>
     <string name="lbl_day">Ημέρα</string>
-    <string
-        name="lbl_delete_removed_books">Διαγράψτε βιβλία που δεν υπάρχουν πλέον στο διακομιστή</string>
+    <string name="lbl_delete_removed_books">Διαγράψτε βιβλία που δεν υπάρχουν πλέον στο διακομιστή</string>
     <string name="lbl_description">Περιγραφή</string>
     <string name="lbl_details_have_changed">Κάποιες λεπτομέρειες έχουν αλλάξει</string>
     <string name="lbl_duplicate_book">Διπλοεγγραφή Βιβλίου</string>
@@ -353,9 +346,9 @@
     <string name="lbl_field_usage_copy_if_blank">Αντιγραφή εαν ειναι κενό</string>
     <string name="lbl_field_usage_overwrite">Αντικαθιστά υπάρχοντα δεδομένα</string>
     <string name="lbl_filter">Φίλτρο</string>
-    <string name="lbl_first_pub_month">Πρώτος Μήνας Δημοσίευσης</string>
-    <string name="lbl_first_pub_year">Πρώτο έτος δημοσίευσης</string>
-    <string name="lbl_first_publication">Πρώτη δημοσίευση</string>
+    <string name="lbl_date_first_publication_month">Πρώτος Μήνας Δημοσίευσης</string>
+    <string name="lbl_date_first_publication_year">Πρώτο έτος δημοσίευσης</string>
+    <string name="lbl_date_first_publication">Πρώτη δημοσίευση</string>
     <string name="lbl_format">Μορφή</string>
     <string name="lbl_formatting">Μορφοποίηση</string>
     <string name="lbl_genre">Είδος</string>
@@ -397,8 +390,8 @@
     <string name="lbl_price_paid">Πληρωθείσα τιμή</string>
     <string name="lbl_print_run">Εκτέλεση εκτύπωσης</string>
     <string name="lbl_publication">Δημοσίευση</string>
-    <string name="lbl_publication_month">Μήνας Έκδοσης</string>
-    <string name="lbl_publication_year">Έτος Εκδοσης</string>
+    <string name="lbl_date_published_month">Μήνας Έκδοσης</string>
+    <string name="lbl_date_published_year">Έτος Εκδοσης</string>
     <string name="lbl_publisher">Εκδότης</string>
     <string name="lbl_publishers">Εκδότες</string>
     <string name="lbl_purge_files">Εκκαθάριση αρχείων</string>
@@ -406,12 +399,12 @@
     <string name="lbl_rating">Βαθμολογία</string>
     <string name="lbl_read">Αναγνωσμένα</string>
     <string name="lbl_read_and_unread">Αναγνωσμένο &amp; Μη Αναγνωσμένο</string>
-    <string name="lbl_read_day">Ημέρα Ανάγνωσης</string>
+    <string name="lbl_date_read_day">Ημέρα Ανάγνωσης</string>
     <string name="lbl_read_end">Ημερομηνία Λήξης Ανάγνωσης</string>
-    <string name="lbl_read_month">Μήνας Ανάγνωσης</string>
+    <string name="lbl_date_read_month">Μήνας Ανάγνωσης</string>
     <string name="lbl_read_start">Ημερομηνία Εναρξης Ανάγνωσης</string>
     <string name="lbl_read_timeout">Χρονικό όριο ανάγνωσης (δευτερόλεπτα)</string>
-    <string name="lbl_read_year">Έτος Ανάγνωσης</string>
+    <string name="lbl_date_read_year">Έτος Ανάγνωσης</string>
     <string name="lbl_registration">%1$s Εγγραφή</string>
     <string name="lbl_scope_of_change">Πεδίο εφαρμογής της αλλαγής</string>
     <string name="lbl_search_filtered_on_x">Φιλτραρισμένο: %1$s</string>
@@ -451,9 +444,9 @@
     <string name="lbl_timeouts">Χρονικά όρια</string>
     <string name="lbl_title">Τίτλος</string>
     <string name="lbl_unread">Μη αναγνωσμένα</string>
-    <string name="lbl_update_day">Ημέρα ενημέρωσης</string>
-    <string name="lbl_update_month">Μήνας ενημέρωσης</string>
-    <string name="lbl_update_year">Έτος ενημέρωσης</string>
+    <string name="lbl_date_last_updated_day">Ημέρα ενημέρωσης</string>
+    <string name="lbl_date_last_updated_month">Μήνας ενημέρωσης</string>
+    <string name="lbl_date_last_updated_year">Έτος ενημέρωσης</string>
     <string name="lbl_virtual_libraries">Εικονικές βιβλιοθήκες σε αυτήν τη βιβλιοθήκη</string>
     <string name="lbl_website_address">Διεύθυνση ιστότοπου (URL)</string>
     <string name="lbl_websites">Ιστοσελίδες</string>
@@ -501,7 +494,7 @@
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
     <string name="no">Όχι</string>
-    <string name="none">Κανένας</string>
+    <string name="none">Κανένα</string>
     <string name="notification_channel_error">Σφάλμα</string>
     <string name="notification_channel_info">Πληροφορίες</string>
     <string name="notification_channel_warn">Προσοχή</string>
@@ -715,5 +708,6 @@
     <string name="yes">Ναι</string>
     <string name="lbl_story_in_single_book">Το «%1$s» υπάρχει σε ένα μόνο βιβλίο:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Εισαγάγετε ένα αρχείο κειμένου με αριθμούς ISBN. Το αρχείο θα πρέπει να έχει ένα μόνο ISBN σε κάθε γραμμή. Τα αποτελέσματα θα τοποθετηθούν στην ουρά.</string>
+    <string name="lbl_date_added">Ημερομηνία προσθήκης</string>
 
 </resources>

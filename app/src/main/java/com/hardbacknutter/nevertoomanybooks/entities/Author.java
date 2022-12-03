@@ -24,6 +24,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
@@ -465,11 +466,17 @@ public class Author
         complete = isComplete;
     }
 
+    /**
+     * If this Author is a pseudonym, then this will return the id for the real Author.
+     *
+     * @return real Author id; or {@code 0} if there is none
+     */
+    @IntRange(from = 0)
     public long getRealAuthorId() {
         return realAuthorId;
     }
 
-    public void setRealAuthorId(final long id) {
+    public void setRealAuthorId(@IntRange(from = 0) final long id) {
         this.realAuthorId = id;
     }
 

@@ -183,7 +183,7 @@
     <string name="confirm_registration_benefits">Diese Funktion profitiert von der Registrierung bei %1$s. Möchten Sie weitere Informationen sehen oder diese Nachricht deaktivieren?\n Sie finden diese Informationen zu einem späteren Zeitpunkt in den Einstellungen unter „%2$s“.</string>
     <string name="confirm_registration_required">Diese Funktion erfordert eine Registrierung bei %1$s. Möchten Sie weitere Informationen sehen?</string>
     <string name="confirm_remove_toc_entry">Den Titel „%1$s“ von %2$s aus diesem Buch entfernen?</string>
-    <string name="confirm_scope_for_change">Sie haben Folgendes geändert:\n „%1$s“\n in\n „%2$s“\n\nWie wollen Sie diese Änderung übernehmen?\n\nHinweis: Die Auswahl „%3$s“ wird sofort übernommen.</string>
+    <string name="confirm_scope_for_change">Sie haben Folgendes geändert:\n „%1$s“\n in\n „%2$s“\n\nWie wollen Sie diese Änderung übernehmen?\n\nHinweis: Die Auswahl „%3$s“ wird sofort übernommen. Wenn Sie „%4$s“ auswählen, wird ein neues %5$s erstellt.</string>
     <string name="confirm_scope_for_delete">Lösche den Titel „%1$s“ von %2$s.\n\nWie möchten Sie diese Änderung anwenden?\nWARNUNG: Die Auswahl „%3$s“ kann nicht rückgängig gemacht werden!</string>
     <string name="confirm_test_connection">Es ist ratsam, diese Verbindung zu testen, um später Probleme zu vermeiden.</string>
     <string name="confirm_unsaved_edits">Einige Änderungen wurden noch nicht gespeichert. Beim Beenden gehen diese Änderungen verloren.</string>
@@ -213,17 +213,13 @@
     <string name="error_network_please_connect">Bitte stelle eine Verbindung zum Internet her.</string>
     <string name="error_network_site_access_failed">Beim Zugriff auf %1$s ist ein Netzwerkproblem aufgetreten. Bitte überprüfen Sie, ob die Website erreichbar ist. Falls das Problem nicht gelöst werden kann, kontaktieren Sie den Support.</string>
     <string name="error_no_image_editor">Kein Bildbearbeitungsprogramm gefunden</string>
-    <string
-        name="error_search_could_not_be_started">Die Suche nach dem Buch ist fehlgeschlagen.</string>
+    <string name="error_search_could_not_be_started">Die Suche nach dem Buch ist fehlgeschlagen.</string>
     <string name="error_search_failed_network">Öffnen Sie die Einstellungen und überprüfen Sie Ihre Netzwerk- und Site-Sucheinstellungen.\nÜberprüfen Sie auch die Netzwerkeinstellungen Ihres Geräts</string>
     <string name="error_search_x_failed_y">Suche auf %1$s fehlgeschlagen: %2$s</string>
-    <string
-        name="error_site_authentication_failed">Authentifizierung bei %1$s fehlgeschlagen</string>
-    <string
-        name="error_site_authorization_failed">Die Autorisierung bei %1$s endete fehlerhaft</string>
+    <string name="error_site_authentication_failed">Authentifizierung bei %1$s fehlgeschlagen</string>
+    <string name="error_site_authorization_failed">Die Autorisierung bei %1$s endete fehlerhaft</string>
     <string name="error_storage_no_space_left">Nicht genügend Speicher verfügbar</string>
-    <string
-        name="error_storage_not_accessible">Bitte überprüfen Sie, ob der Speicher verfügbar ist.</string>
+    <string name="error_storage_not_accessible">Bitte überprüfen Sie, ob der Speicher verfügbar ist.</string>
     <string name="error_storage_not_writable">Bitte überprüfen Sie, ob der Speicher beschreibbar ist und über ausreichend Speicherplatz verfügt.</string>
     <string name="error_unknown">Es ist ein unbekannter Fehler aufgetreten</string>
     <string name="error_unknown_host">Es gab ein Verbindungsproblem mit dem Dienst „%1$s“</string>
@@ -252,9 +248,9 @@
     <string name="lbl_about_contact">Kontakt:</string>
     <string name="lbl_add_book">Buch hinzufügen</string>
     <string name="lbl_add_filter">Filter hinzufügen</string>
-    <string name="lbl_added_day">Tag der Erfassung</string>
-    <string name="lbl_added_month">Monat der Erfassung</string>
-    <string name="lbl_added_year">Jahr der Erfassung</string>
+    <string name="lbl_date_added_day">Tag der Erfassung</string>
+    <string name="lbl_date_added_month">Monat der Erfassung</string>
+    <string name="lbl_date_added_year">Jahr der Erfassung</string>
     <string name="lbl_advanced_options">Erweitert</string>
     <string name="lbl_all_bookshelves">Alle Bücherregale</string>
     <string name="lbl_anthology">Anthologie</string>
@@ -350,9 +346,9 @@
     <string name="lbl_field_usage_copy_if_blank">Kopieren wenn leer</string>
     <string name="lbl_field_usage_overwrite">überschreibt zusätzliche Daten</string>
     <string name="lbl_filter">Filter</string>
-    <string name="lbl_first_pub_month">Erstveröffentlichungsmonat</string>
-    <string name="lbl_first_pub_year">Erstes Veröffentlichungsjahr</string>
-    <string name="lbl_first_publication">Erstveröffentlichung</string>
+    <string name="lbl_date_first_publication_month">Erstveröffentlichungsmonat</string>
+    <string name="lbl_date_first_publication_year">Erstes Veröffentlichungsjahr</string>
+    <string name="lbl_date_first_publication">Erstveröffentlichung</string>
     <string name="lbl_format">Buchformat</string>
     <string name="lbl_formatting">Formatierung</string>
     <string name="lbl_genre">Genre</string>
@@ -394,8 +390,8 @@
     <string name="lbl_price_paid">Bezahlt</string>
     <string name="lbl_print_run">Druckauflage</string>
     <string name="lbl_publication">Veröffentlichung</string>
-    <string name="lbl_publication_month">Monat der Veröffentlichung</string>
-    <string name="lbl_publication_year">Jahr der Veröffentlichung</string>
+    <string name="lbl_date_published_month">Monat der Veröffentlichung</string>
+    <string name="lbl_date_published_year">Jahr der Veröffentlichung</string>
     <string name="lbl_publisher">Verlag</string>
     <string name="lbl_publishers">Verlag</string>
     <string name="lbl_purge_files">Dateien bereinigen</string>
@@ -403,12 +399,12 @@
     <string name="lbl_rating">Bewertung</string>
     <string name="lbl_read">Gelesen</string>
     <string name="lbl_read_and_unread">Gelesen und ungelesen</string>
-    <string name="lbl_read_day">Tag</string>
+    <string name="lbl_date_read_day">Tag</string>
     <string name="lbl_read_end">Datum Lesen beendet</string>
-    <string name="lbl_read_month">Monat</string>
+    <string name="lbl_date_read_month">Monat</string>
     <string name="lbl_read_start">Datum mit Lesen begonnen</string>
     <string name="lbl_read_timeout">Zeitüberschreitung beim Lesen (Sekunden)</string>
-    <string name="lbl_read_year">Jahr</string>
+    <string name="lbl_date_read_year">Jahr</string>
     <string name="lbl_registration">%1$s-Registrierung</string>
     <string name="lbl_scope_of_change">Umfang der Änderung</string>
     <string name="lbl_search_filtered_on_x">Gefiltert: %1$s</string>
@@ -430,8 +426,7 @@
     <string name="lbl_storage_select">Verwende „%1$s“</string>
     <string name="lbl_storage_settings">Speicher</string>
     <string name="lbl_storage_volume">Speichervolumen</string>
-    <string
-        name="lbl_story_in_multiple_books">„%1$s“ ist in mehreren Büchern vorhanden:\n\n%2$s</string>
+    <string name="lbl_story_in_multiple_books">„%1$s“ ist in mehreren Büchern vorhanden:\n\n%2$s</string>
     <string name="lbl_strict_isbn">Strikte ISBN</string>
     <string name="lbl_style">Stil</string>
     <string name="lbl_styles">Stile</string>
@@ -449,9 +444,9 @@
     <string name="lbl_timeouts">Zeitüberschreitung</string>
     <string name="lbl_title">Titel</string>
     <string name="lbl_unread">Ungelesen</string>
-    <string name="lbl_update_day">Änderungstag</string>
-    <string name="lbl_update_month">Anderungsmonat</string>
-    <string name="lbl_update_year">Änderungsjahr</string>
+    <string name="lbl_date_last_updated_day">Änderungstag</string>
+    <string name="lbl_date_last_updated_month">Anderungsmonat</string>
+    <string name="lbl_date_last_updated_year">Änderungsjahr</string>
     <string name="lbl_virtual_libraries">Virtuelle Bibliotheken in dieser Bibliothek</string>
     <string name="lbl_website_address">Webadresse (URL)</string>
     <string name="lbl_websites">Webseiten</string>
@@ -499,7 +494,7 @@
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
     <string name="no">Nein</string>
-    <string name="none">Keiner</string>
+    <string name="none">Keine</string>
     <string name="notification_channel_error">Fehler</string>
     <string name="notification_channel_info">Information</string>
     <string name="notification_channel_warn">Warnung</string>
@@ -637,8 +632,7 @@
     <string name="tip_authors_works">Verwendete Icons</string>
     <string name="tip_authors_works_book">Buch.</string>
     <string name="tip_authors_works_multiple_books">Der Titel ist in mehreren Büchern vorhanden.</string>
-    <string
-        name="tip_authors_works_single_book">Der Titel ist in einem einzigen Buch vorhanden.</string>
+    <string name="tip_authors_works_single_book">Der Titel ist in einem einzigen Buch vorhanden.</string>
     <string name="tip_autorotate_camera_images">Wenn Sie Bilder von der Kamera immer in dieselbe Richtung drehen müssen, versuchen Sie,die automatische Drehrichtung in den Einstellungen festzulegen.</string>
     <string name="tip_book_list">Tippen Sie auf ein Buch, um dessen Details zu sehen. Ein langer Druck auf einen Listeneintrag zeigt weitere Optionen.</string>
     <string name="tip_book_search_by_text">Das Hinzufügen der Bücher per ISBN ist genauer als das Hinzufügen per Autor und Titel und sollte im Allgemeinen bevorzugt werden. Bitte beachten Sie, dass der korrekte Barcode manchmal auf der Rückseite des Buchumschläge zu finden ist.</string>
@@ -712,8 +706,8 @@
     <string name="whichViewApplication">Öffnen mit</string>
     <string name="x_of_y">%1$d von %2$d</string>
     <string name="yes">Ja</string>
-    <string
-        name="lbl_story_in_single_book">„%1$s“ ist in einem einzigen Buch vorhanden:\n\n%2$s</string>
+    <string name="lbl_story_in_single_book">„%1$s“ ist in einem einzigen Buch vorhanden:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Importieren Sie eine Textdatei mit ISBN-Nummern. Die Datei sollte in jeder Zeile eine einzige ISBN haben. Die Ergebnisse werden in die Warteschlange gestellt.</string>
+    <string name="lbl_date_added">Erfassungsdatum</string>
 
 </resources>

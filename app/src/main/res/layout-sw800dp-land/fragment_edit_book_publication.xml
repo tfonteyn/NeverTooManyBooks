@@ -108,7 +108,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_first_publication"
             style="@style/TIL.DatePicker"
-            android:hint="@string/lbl_first_publication"
+            android:hint="@string/lbl_date_first_publication"
             app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_publisher"

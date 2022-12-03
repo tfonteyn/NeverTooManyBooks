@@ -126,7 +126,7 @@ public class EditSeriesDialogFragment
         vb.seriesTitle.setAdapter(titleAdapter);
         vb.cbxIsComplete.setChecked(currentEdit.isComplete());
 
-        // don't requestFocus() as we have multiple fields.
+        vb.seriesTitle.requestFocus();
     }
 
     @Nullable

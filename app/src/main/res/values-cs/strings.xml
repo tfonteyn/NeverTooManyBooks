@@ -43,8 +43,7 @@
     <string name="X_confirm_continue">Jste si jistý, že chcete pokračovat ?</string>
     <string name="X_error_authentication_failed">Ověření se nezdařilo</string>
     <string name="X_error_download_failed">Stažení se nezdařilo</string>
-    <string
-        name="X_error_file_must_contain_column">Soubor musí obsahovat sloupec jménem %1$s</string>
+    <string name="X_error_file_must_contain_column">Soubor musí obsahovat sloupec jménem %1$s</string>
     <string name="X_error_network_site_has_problems">Web má problémy.</string>
     <string name="X_error_not_available">%1$s není k dispozici</string>
     <string name="X_error_storage_not_accessible_s">Úložiště není přístupné: %1$s</string>
@@ -175,23 +174,19 @@
     <string name="confirm_merge_authors">Autor, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_merge_bookshelves">Knihovna, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_merge_publishers">Vydavatel, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
-    <string
-        name="confirm_merge_series">Série, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
+    <string name="confirm_merge_series">Série, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_overwrite_cover">Toto aktualizuje pouze vybraná pole, ale náhledy budou staženy pro VŠECHNY knihy.\n\nChcete přepsat všechny existující náhledy? Pozor, může to chvíli trvat…</string>
     <string name="confirm_rebuild_fts">Po restartování aplikace se data indexu vyhledávání znovu vytvoří. Jste si jistý, že chcete pokračovat ?</string>
     <string name="confirm_rebuild_index">Po restartování aplikace se indexy znovu sestaví. Jste si jistý, že chcete pokračovat ?</string>
     <string name="confirm_rebuild_orderby_columns">Po restartování aplikace dojde k opětovnému vytvoření třídicích dat. Jste si jistý, že chcete pokračovat ?</string>
     <string name="confirm_registration_benefits">Tato funkce těží z registrace u %1$s. Chcete zobrazit další informace nebo tuto zprávu deaktivovat?\nTyto informace najdete později v části „%2$s“ v nastavení.</string>
     <string name="confirm_registration_required">Tato funkce vyžaduje registraci s %1$s. Chtěli byste vidět více informací?</string>
-    <string
-        name="confirm_remove_toc_entry">Odebrat z této knihy titul „%1$s“ od autora %2$s?</string>
-    <string name="confirm_scope_for_change">Změnili jste:\n „%1$s“\n na\n „%2$s“\n\nJak si přejete aplikovat tuto změnu?\n\nUpozornění: Volba „%3$s“ bude aplikována okamžitě.</string>
+    <string name="confirm_remove_toc_entry">Odebrat z této knihy titul „%1$s“ od autora %2$s?</string>
+    <string name="confirm_scope_for_change">Změnili jste:\n „%1$s“\n na\n „%2$s“\n\nJak si přejete aplikovat tuto změnu?\n\nUpozornění: Volba „%3$s“ bude aplikována okamžitě. Pokud zvolíte „%4$s“, vytvoří se nový %5$s.</string>
     <string name="confirm_scope_for_delete">Smazat název „%1$s“ od %2$s.\n\nJak chcete tuto změnu uplatnit?\nVAROVÁNÍ: Volbu „%3$s“ nelze vrátit zpět!</string>
     <string name="confirm_test_connection">Doporučujeme toto připojení otestovat, abyste se později vyhnuli problémům.</string>
-    <string
-        name="confirm_unsaved_edits">Máte neuložené změny, pokud nyní ukončíte, budou ztraceny.</string>
-    <string
-        name="debug_body">Věnujte prosím čas přesnému popisu problému, se kterým máte zkušenost.</string>
+    <string name="confirm_unsaved_edits">Máte neuložené změny, pokud nyní ukončíte, budou ztraceny.</string>
+    <string name="debug_body">Věnujte prosím čas přesnému popisu problému, se kterým máte zkušenost.</string>
     <string name="debug_send_info_text">Tím vytvoříte záložní kopii vaší databáze a všechny soubory protokolu a odešlete ji vývojářům. Pokud si nepřejete poslat některý z těchto souborů, odstraňte jej z přílohy mailu ještě před jeho odesláním.</string>
     <string name="debug_subject">Shromáždit informace o debugování</string>
     <string name="disabled">Vypnutý</string>
@@ -205,13 +200,10 @@
     <string name="error_export_failed">Export se nezdařil</string>
     <string name="error_file_not_found">Soubor nenalezen: %1$s</string>
     <string name="error_file_not_recognized">Vybraný soubor není rozpoznán.</string>
-    <string
-        name="error_import_archive_invalid">Archivní soubor je poškozený nebo jinak neplatný.</string>
-    <string
-        name="error_import_csv_column_count_mismatch">Nesprávný počet sloupců v řádku %1$d</string>
+    <string name="error_import_archive_invalid">Archivní soubor je poškozený nebo jinak neplatný.</string>
+    <string name="error_import_csv_column_count_mismatch">Nesprávný počet sloupců v řádku %1$d</string>
     <string name="error_import_csv_line">Neznámá chyba v řádku %1$d</string>
-    <string
-        name="error_import_csv_line_to_long">Řádek je příliš dlouhý (řádek=%1$d, délka=%2$d)</string>
+    <string name="error_import_csv_line_to_long">Řádek je příliš dlouhý (řádek=%1$d, délka=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Soubor musí obsahovat sloupec s jedním z následujících jmen: %1$s</string>
     <string name="error_import_failed">Import se nezdařil.</string>
     <string name="error_import_failed_for_record">Import se nezdařil (%1$s).</string>
@@ -232,8 +224,7 @@
     <string name="error_unknown_host">Došlo k problému s připojením ke službě na „%1$s“</string>
     <string name="error_unknown_long">Vyskytla se neočekávaná chyba. Pokud problém přetrvává, kontaktujte podporu pomocí možnosti „%1$s“ ve spodní části stránky nastavení.</string>
     <string name="error_unsupported_version_v">Nepodporovaná verze: %1$d</string>
-    <string
-        name="error_upgrade_not_supported">Upgrade z verzí starších než %1$s není podporován.</string>
+    <string name="error_upgrade_not_supported">Upgrade z verzí starších než %1$s není podporován.</string>
     <string name="fab_add_book_by_barcode_scan">Skenování čárového kódu</string>
     <string name="fab_add_book_by_barcode_scan_batch">Skenování čárových kódů v dávce</string>
     <string name="fab_add_book_by_external_id">ID webové stránky</string>
@@ -256,9 +247,9 @@
     <string name="lbl_about_contact">Kontakt:</string>
     <string name="lbl_add_book">Přidat knihu</string>
     <string name="lbl_add_filter">Přidat filtr</string>
-    <string name="lbl_added_day">Den přidání</string>
-    <string name="lbl_added_month">Měsíc přidání</string>
-    <string name="lbl_added_year">Rok přidání</string>
+    <string name="lbl_date_added_day">Den přidání</string>
+    <string name="lbl_date_added_month">Měsíc přidání</string>
+    <string name="lbl_date_added_year">Rok přidání</string>
     <string name="lbl_advanced_options">Rozšířené nastavení</string>
     <string name="lbl_all_bookshelves">Všechny knihovny</string>
     <string name="lbl_anthology">Antologie</string>
@@ -266,8 +257,7 @@
     <string name="lbl_archive_format_db_info">Databáze SQLite.</string>
     <string name="lbl_archive_format_json_info">Všechna data ve formátu JSON.</string>
     <string name="lbl_archive_format_xml_info">Všechna data ve formátu XML.</string>
-    <string
-        name="lbl_archive_is_export_only">Toto je pouze pro export dat; import není podporován.</string>
+    <string name="lbl_archive_is_export_only">Toto je pouze pro export dat; import není podporován.</string>
     <string name="lbl_archive_type_backup_info">Úplný archiv zálohy / obnovy</string>
     <string name="lbl_archive_type_backup_tar">Záložní kopie (.tar)</string>
     <string name="lbl_archive_type_backup_zip">Záložní kopie (.zip)</string>
@@ -348,17 +338,16 @@
     <string name="lbl_edition_limited">Limitovaná edice</string>
     <string name="lbl_edition_slipcase">Slipcase</string>
     <string name="lbl_export_books_option_all">Všechny knihy</string>
-    <string
-        name="lbl_export_books_option_since_last_full_backup">Nové a aktualizované knihy</string>
+    <string name="lbl_export_books_option_since_last_full_backup">Nové a aktualizované knihy</string>
     <string name="lbl_export_options">Vyberte, co bude exportováno.</string>
     <string name="lbl_family_name">Příjmení</string>
     <string name="lbl_field_usage_append">Přidat extra data</string>
     <string name="lbl_field_usage_copy_if_blank">Kopírovat pokud je prázdné</string>
     <string name="lbl_field_usage_overwrite">Přepsat existující data</string>
     <string name="lbl_filter">Filtr</string>
-    <string name="lbl_first_pub_month">První měsíc vydání</string>
-    <string name="lbl_first_pub_year">Rok prvního vydání</string>
-    <string name="lbl_first_publication">První publikace</string>
+    <string name="lbl_date_first_publication_month">První měsíc vydání</string>
+    <string name="lbl_date_first_publication_year">Rok prvního vydání</string>
+    <string name="lbl_date_first_publication">První publikace</string>
     <string name="lbl_format">Formát</string>
     <string name="lbl_formatting">Formátování</string>
     <string name="lbl_genre">Žánr</string>
@@ -400,8 +389,8 @@
     <string name="lbl_price_paid">Cena zaplacena</string>
     <string name="lbl_print_run">Tisk běh</string>
     <string name="lbl_publication">Vydání</string>
-    <string name="lbl_publication_month">Měsíc vydání</string>
-    <string name="lbl_publication_year">Rok vydání</string>
+    <string name="lbl_date_published_month">Měsíc vydání</string>
+    <string name="lbl_date_published_year">Rok vydání</string>
     <string name="lbl_publisher">Vydavatel</string>
     <string name="lbl_publishers">Vydavatelé</string>
     <string name="lbl_purge_files">Odstranit soubory</string>
@@ -409,12 +398,12 @@
     <string name="lbl_rating">Hodnocení</string>
     <string name="lbl_read">Přečteno</string>
     <string name="lbl_read_and_unread">Přečteno amp; Nepřečteno</string>
-    <string name="lbl_read_day">Čtení dne</string>
+    <string name="lbl_date_read_day">Čtení dne</string>
     <string name="lbl_read_end">Datum ukončení čtení</string>
-    <string name="lbl_read_month">Měsíc přečetl</string>
+    <string name="lbl_date_read_month">Měsíc přečetl</string>
     <string name="lbl_read_start">Datum začátku čtení</string>
     <string name="lbl_read_timeout">Časový limit čtení (sekundy)</string>
-    <string name="lbl_read_year">Rok čtení</string>
+    <string name="lbl_date_read_year">Rok čtení</string>
     <string name="lbl_registration">%1$s registrace</string>
     <string name="lbl_scope_of_change">Rozsah změny</string>
     <string name="lbl_search_filtered_on_x">Filtrovaný: %1$s</string>
@@ -432,8 +421,7 @@
     <string name="lbl_sort_and_style_ellipsis">Seřadit &amp; Styl…</string>
     <string name="lbl_sorting">Třídění</string>
     <string name="lbl_sql_query">SQL dotaz</string>
-    <string
-        name="lbl_storage_quit_and_reinsert_sdcard">Zavřete aplikaci a vložte správnou SD kartu</string>
+    <string name="lbl_storage_quit_and_reinsert_sdcard">Zavřete aplikaci a vložte správnou SD kartu</string>
     <string name="lbl_storage_select">Použijte „%1$s“</string>
     <string name="lbl_storage_settings">Úložiště</string>
     <string name="lbl_storage_volume">Objem úložiště</string>
@@ -455,9 +443,9 @@
     <string name="lbl_timeouts">Časové limity</string>
     <string name="lbl_title">Titul</string>
     <string name="lbl_unread">Nepřečtené</string>
-    <string name="lbl_update_day">Den aktualizace</string>
-    <string name="lbl_update_month">Měsíc aktualizace</string>
-    <string name="lbl_update_year">Rok aktualizace</string>
+    <string name="lbl_date_last_updated_day">Den aktualizace</string>
+    <string name="lbl_date_last_updated_month">Měsíc aktualizace</string>
+    <string name="lbl_date_last_updated_year">Rok aktualizace</string>
     <string name="lbl_virtual_libraries">Virtuální knihovny v této knihovně</string>
     <string name="lbl_website_address">Adresa webu (URL)</string>
     <string name="lbl_websites">Webové stránky</string>
@@ -505,7 +493,7 @@
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
     <string name="no">Ne</string>
-    <string name="none">Žádný</string>
+    <string name="none">Žádné</string>
     <string name="notification_channel_error">Chyba</string>
     <string name="notification_channel_info">Informace</string>
     <string name="notification_channel_warn">Pozor</string>
@@ -578,8 +566,7 @@
     <string name="pt_maintenance">Údržba</string>
     <string name="pt_primary_author_type">Typ primárního autora</string>
     <string name="pt_scanning_beep_on_barcode_found">Při nalezení čárového kódu pípne</string>
-    <string
-        name="pt_scanning_beep_on_invalid">Je-li naskenované číslo ISBN neplatné, pípněte</string>
+    <string name="pt_scanning_beep_on_invalid">Je-li naskenované číslo ISBN neplatné, pípněte</string>
     <string name="pt_scanning_beep_on_valid">Je-li naskenované číslo ISBN platné, pípněte</string>
     <string name="pt_search_prefer_isbn10">Pokud je to možné, použijte ISBN-10</string>
     <string name="pt_search_reformat_color">Standardizujte názvy barev knih</string>
@@ -654,8 +641,7 @@
     <string name="tip_reset_done">Rady byly obnoveny</string>
     <string name="tip_series_book_may_appear_more_than_once">Při zobrazení pod každou sérií se může stát, že jedna kniha se objeví v seznamu vícekrát - pokud však v takovém případě odstraníte kterýkoli z těchto záznamů, budou odstraněny všechny.</string>
     <string name="tip_update_fields_from_internet">Externí odkazy na stránky jsou zpracovány pouze v případě, že je web skutečně kontaktován. Výsledkem je, že nabídka „Výhled na…“ také ukáže pouze to, co je k dispozici.</string>
-    <string
-        name="tip_view_only_help">Můžete posouvat doleva nebo doprava a přejít k dalším knihám.</string>
+    <string name="tip_view_only_help">Můžete posouvat doleva nebo doprava a přejít k dalším knihám.</string>
     <string name="txt_cleanup_files">Dočasné soubory momentálně zabírají %1$s na SD kartě. Logovací soubory a další data jsou ukládána na SD kartu při každé aktualizaci, při zálohování databáze, nebo při pádu aplikace. Stiskněte tlačítko níže pro odstranění těchto dat. Pokud jste se však v minulosti setkal s pádem aplikace, nebo dalšími problémy při jejím používání, uvažujte prosím nejprve o zaslání těchto informací prostřednictvím tlačítka „%2$s“.</string>
     <string name="txt_displaying_n_books_in_m_entries">%1$d knih ve heslech %2$d</string>
     <string name="txt_export_backup_all">Všechny knihy, obaly, předvolby a vlastní styly budou exportovány do archivu.</string>
@@ -668,8 +654,7 @@
     <string name="txt_select_fields_to_update">Vybraná pole budou aktualizována automaticky z internetu. Nevybraná pole zůstanou beze změny.</string>
     <string name="txt_share_book_im_reading">Čtu „%1$s“ %2$s o %3$s %4$s</string>
     <string name="txt_tap_on_image_to_select">Klepnutím na větší obrázek jej vyberte.</string>
-    <string
-        name="txt_tap_on_thumbnail_to_zoom">Pro zobrazení většího obrázku klikněte na náhled</string>
+    <string name="txt_tap_on_thumbnail_to_zoom">Pro zobrazení většího obrázku klikněte na náhled</string>
     <string name="txt_x_pages">%1$d stran</string>
     <string name="unknown">Neznámé</string>
     <string name="unknown_author">[Neznámý autor]</string>
@@ -689,18 +674,15 @@
     <string name="warning_book_not_always_found">Ne všechny weby vrátily platná data.</string>
     <string name="warning_book_not_found">Nepodařilo se nalézt zadanou knihu</string>
     <string name="warning_cannot_delete_1st_bs">Nelze smazat defaultní knihovnu.</string>
-    <string
-        name="warning_enable_at_least_1_website">Pro každou kategorii povolte alespoň jeden web.</string>
+    <string name="warning_enable_at_least_1_website">Pro každou kategorii povolte alespoň jeden web.</string>
     <string name="warning_export_contains_no_data">Nebylo co vyvážet.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Je-li zadán den, musí být také uveden měsíc i rok.</string>
-    <string
-        name="warning_if_month_set_year_must_be">Pokud je zadán měsíc, musí být také uveden rok.</string>
+    <string name="warning_if_month_set_year_must_be">Pokud je zadán měsíc, musí být také uveden rok.</string>
     <string name="warning_image_copy_failed">Obrázek nelze zkopírovat.</string>
     <string name="warning_image_not_found">Obrázek nebyl nalezen.</string>
     <string name="warning_immediate_global_changes">UPOZORNĚNÍ: Všechny uložené změny se aplikují u všech záznamů</string>
     <string name="warning_import_csv">Pozor: Importovaná data mohou upravit existující záznamy knih - k takové situaci dojde v případě, že není vyplněno uuid, a id v importovaném souboru je totožné s již existujícím id. Doporučujeme proto zkontrolovat - a případně upravit - toto pole v exportovaném souboru. Pokud byl vytvořen nový záznam, nebo jsou importovány další knihy, tak se ujistěte, že je vyplněno uuid, nebo že pole id je prázdné.</string>
-    <string
-        name="warning_import_csv_unescaped_quote">Znak bez uvozovek v řádku %1$d, pozice %2$d</string>
+    <string name="warning_import_csv_unescaped_quote">Znak bez uvozovek v řádku %1$d, pozice %2$d</string>
     <string name="warning_import_failed_for_lines_lots">Analýza linek se nezdařila pro linky \n%1$s\n a další.</string>
     <string name="warning_import_failed_for_lines_some">Analýza linek se nezdařila pro řádky \n%1$s\n</string>
     <string name="warning_no_editions">K dispozici nejsou žádné další informace o vydání</string>
@@ -713,8 +695,7 @@
     <string name="warning_requires_site_and_id">Vyberte web a zadejte ID.</string>
     <string name="warning_select_at_least_1_field">Zvolte alespoň jedno pole k aktualizaci.</string>
     <string name="warning_select_at_least_1_group">Vyberte alespoň jednu skupinu.</string>
-    <string
-        name="warning_toc_confirm">Prosím zkontrolujte, zda jsou tyto antologie v pořádku</string>
+    <string name="warning_toc_confirm">Prosím zkontrolujte, zda jsou tyto antologie v pořádku</string>
     <string name="warning_x_already_exists">%1$s již existuje.</string>
     <string name="warning_x_is_not_a_valid_code">„%1$s“ není platné číslo kód</string>
     <string name="whichEditApplication">Upravit v aplikaci</string>
@@ -724,5 +705,6 @@
     <string name="yes">Ano</string>
     <string name="lbl_story_in_single_book">„%1$s“ se nachází v jedné knize:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Importujte textový soubor s čísly ISBN. Soubor by měl mít na každém řádku jedno ISBN. Výsledky budou zařazeny do fronty.</string>
+    <string name="lbl_date_added">Datum přidání</string>
 
 </resources>

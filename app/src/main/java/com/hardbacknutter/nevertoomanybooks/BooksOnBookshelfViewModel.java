@@ -26,18 +26,22 @@ import android.os.Bundle;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooksOutput;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
@@ -47,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -73,7 +78,61 @@ public class BooksOnBookshelfViewModel
 
     static final String BKEY_PROPOSE_BACKUP = TAG + ":pb";
 
+    private static final String GROUP_NOT_DEFINED = "Group not defined: ";
     private static final String ERROR_NULL_BOOKLIST = "booklist";
+
+    private static final Map<Integer, BLGRecord> BLG_RECORD = Map.ofEntries(
+            Map.entry(BooklistGroup.AUTHOR,
+                      new BLGRecord(DBKey.FK_AUTHOR,
+                                    R.string.lbl_author,
+                                    DBKey.AUTHOR_FORMATTED,
+                                    R.string.bob_empty_author)),
+            Map.entry(BooklistGroup.SERIES,
+                      new BLGRecord(DBKey.FK_SERIES,
+                                    R.string.lbl_series,
+                                    DBKey.SERIES_TITLE,
+                                    R.string.bob_empty_series)),
+            Map.entry(BooklistGroup.PUBLISHER,
+                      new BLGRecord(DBKey.FK_PUBLISHER,
+                                    R.string.lbl_publisher,
+                                    DBKey.PUBLISHER_NAME,
+                                    R.string.bob_empty_publisher))
+    );
+
+    private static final Map<Integer, BLGDateRecord> BLG_DATE_RECORD = Map.ofEntries(
+            Map.entry(BooklistGroup.DATE_ACQUIRED_YEAR,
+                      new BLGDateRecord(R.string.lbl_date_acquired,
+                                        BooklistGroup.BlgKey.ACQUIRED_YEAR)),
+            Map.entry(BooklistGroup.DATE_ACQUIRED_MONTH,
+                      new BLGDateRecord(R.string.lbl_date_acquired,
+                                        BooklistGroup.BlgKey.ACQUIRED_YEAR,
+                                        BooklistGroup.BlgKey.ACQUIRED_MONTH)),
+            Map.entry(BooklistGroup.DATE_ACQUIRED_DAY,
+                      new BLGDateRecord(R.string.lbl_date_acquired,
+                                        BooklistGroup.BlgKey.ACQUIRED_YEAR,
+                                        BooklistGroup.BlgKey.ACQUIRED_MONTH,
+                                        BooklistGroup.BlgKey.ACQUIRED_DAY)),
+            Map.entry(BooklistGroup.DATE_ADDED_YEAR,
+                      new BLGDateRecord(R.string.lbl_date_added,
+                                        BooklistGroup.BlgKey.ADDED_YEAR)),
+            Map.entry(BooklistGroup.DATE_ADDED_MONTH,
+                      new BLGDateRecord(R.string.lbl_date_added,
+                                        BooklistGroup.BlgKey.ADDED_YEAR,
+                                        BooklistGroup.BlgKey.ADDED_DAY)),
+            Map.entry(BooklistGroup.DATE_ADDED_DAY,
+                      new BLGDateRecord(R.string.lbl_date_added,
+                                        BooklistGroup.BlgKey.ADDED_YEAR,
+                                        BooklistGroup.BlgKey.ADDED_DAY,
+                                        BooklistGroup.BlgKey.ADDED_MONTH)),
+            Map.entry(BooklistGroup.DATE_PUBLISHED_YEAR,
+                      new BLGDateRecord(R.string.lbl_date_published,
+                                        BooklistGroup.BlgKey.PUB_YEAR)),
+            Map.entry(BooklistGroup.DATE_PUBLISHED_MONTH,
+                      new BLGDateRecord(R.string.lbl_date_published,
+                                        BooklistGroup.BlgKey.PUB_YEAR,
+                                        BooklistGroup.BlgKey.PUB_MONTH))
+    );
+
     /** Cache for all bookshelves. */
     private final List<Bookshelf> bookshelfList = new ArrayList<>();
     private final BoBTask boBTask = new BoBTask();
@@ -327,7 +386,6 @@ public class BooksOnBookshelfViewModel
         return false;
     }
 
-
     /**
      * Get the style of the current bookshelf.
      *
@@ -407,7 +465,7 @@ public class BooksOnBookshelfViewModel
     }
 
     @IntRange(from = 0)
-    public long getCurrentCenteredBookId() {
+    long getCurrentCenteredBookId() {
         return currentCenteredBookId;
     }
 
@@ -484,7 +542,6 @@ public class BooksOnBookshelfViewModel
         booklist.setAllNodes(topLevel, expand);
     }
 
-
     @NonNull
     Optional<BooklistNode> getNextBookWithoutCover(final long rowId) {
         Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
@@ -518,40 +575,102 @@ public class BooksOnBookshelfViewModel
         return ServiceLocator.getInstance().getAuthorDao().getAuthorsByBookId(bookId);
     }
 
+    /**
+     * Create the contract input object for one the groups in {@link #BLG_RECORD}.
+     *
+     * @param context       Current context
+     * @param rowData       the data at the selected position/row
+     * @param onlyThisShelf flag
+     *
+     * @return a fully initialized input object
+     */
     @NonNull
-    ArrayList<Long> getBookIdsByAuthor(@NonNull final String nodeKey,
-                                       final boolean onlyThisShelf,
-                                       @IntRange(from = 0) final long authorId) {
-        if (onlyThisShelf || authorId == 0) {
+    UpdateBooklistContract.Input createUpdateBooklistContractInput(
+            @NonNull final Context context,
+            @NonNull final DataHolder rowData,
+            final boolean onlyThisShelf) {
+
+        final int groupId = rowData.getInt(DBKey.BL_NODE_GROUP);
+        final BLGRecord blgRecord = Objects.requireNonNull(BLG_RECORD.get(groupId),
+                                                           () -> GROUP_NOT_DEFINED + groupId);
+
+        final ArrayList<Long> books;
+
+        final long id = rowData.getLong(blgRecord.dbKey);
+        if (onlyThisShelf || id == 0) {
+            final String nodeKey = rowData.getString(DBKey.BL_NODE_KEY);
+
             Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-            return booklist.getBookIdsForNodeKey(nodeKey);
+            books = booklist.getBookIdsForNodeKey(nodeKey);
         } else {
-            return ServiceLocator.getInstance().getAuthorDao().getBookIds(authorId);
+            switch (groupId) {
+                case BooklistGroup.AUTHOR:
+                    books = ServiceLocator.getInstance().getAuthorDao().getBookIds(id);
+                    break;
+                case BooklistGroup.SERIES:
+                    books = ServiceLocator.getInstance().getSeriesDao().getBookIds(id);
+                    break;
+                case BooklistGroup.PUBLISHER:
+                    books = ServiceLocator.getInstance().getPublisherDao().getBookIds(id);
+                    break;
+                default:
+                    throw new IllegalArgumentException(String.valueOf(groupId));
+            }
         }
+
+        final String text = id != 0 ? rowData.getString(blgRecord.labelKey)
+                                    : context.getString(blgRecord.emptyItemTextResId);
+
+        return new UpdateBooklistContract.Input(
+                books,
+                context.getString(R.string.name_colon_value,
+                                  context.getString(blgRecord.labelResId),
+                                  text),
+                context.getString(R.string.name_colon_value,
+                                  context.getString(R.string.lbl_books),
+                                  String.valueOf(books.size())));
     }
 
+    /**
+     * Create the contract input object for one the groups in {@link #BLG_DATE_RECORD}.
+     *
+     * @param context Current context
+     * @param rowData the data at the selected position/row
+     *
+     * @return a fully initialized input object
+     */
     @NonNull
-    ArrayList<Long> getBookIdsBySeries(@NonNull final String nodeKey,
-                                       final boolean onlyThisShelf,
-                                       @IntRange(from = 0) final long seriesId) {
-        if (onlyThisShelf || seriesId == 0) {
-            Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-            return booklist.getBookIdsForNodeKey(nodeKey);
-        } else {
-            return ServiceLocator.getInstance().getSeriesDao().getBookIds(seriesId);
-        }
-    }
+    UpdateBooklistContract.Input createDateRowUpdateBooklistContractInput(
+            @NonNull final Context context,
+            @NonNull final DataHolder rowData) {
 
-    @NonNull
-    ArrayList<Long> getBookIdsByPublisher(@NonNull final String nodeKey,
-                                          final boolean onlyThisShelf,
-                                          @IntRange(from = 0) final long publisherId) {
-        if (onlyThisShelf || publisherId == 0) {
-            Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
-            return booklist.getBookIdsForNodeKey(nodeKey);
-        } else {
-            return ServiceLocator.getInstance().getPublisherDao().getBookIds(publisherId);
+        final String nodeKey = rowData.getString(DBKey.BL_NODE_KEY);
+
+        Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
+        final ArrayList<Long> books = booklist.getBookIdsForNodeKey(nodeKey);
+
+        final int groupId = rowData.getInt(DBKey.BL_NODE_GROUP);
+
+        final BLGDateRecord blgRecord = Objects.requireNonNull(BLG_DATE_RECORD.get(groupId),
+                                                               () -> GROUP_NOT_DEFINED + groupId);
+
+        final StringJoiner sj = new StringJoiner("-");
+        for (int g = 0; g < blgRecord.dbKeys.length; g++) {
+            final String text = rowData.getString(blgRecord.dbKeys[g]);
+            if (text.isBlank()) {
+                break;
+            }
+            sj.add(text);
         }
+
+        return new UpdateBooklistContract.Input(
+                books,
+                context.getString(R.string.name_colon_value,
+                                  context.getString(blgRecord.labelResId),
+                                  sj.toString()),
+                context.getString(R.string.name_colon_value,
+                                  context.getString(R.string.lbl_books),
+                                  String.valueOf(books.size())));
     }
 
     boolean setAuthorComplete(@IntRange(from = 1) final long authorId,
@@ -651,7 +770,6 @@ public class BooksOnBookshelfViewModel
                        .toArray();
     }
 
-
     /**
      * Called when a book/book-list was updated with internet data.
      *
@@ -740,7 +858,6 @@ public class BooksOnBookshelfViewModel
         forceRebuildInOnResume = true;
     }
 
-
     /**
      * Called when the user has finished an Import.
      * <p>
@@ -804,9 +921,43 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    public List<BooklistNode> getVisibleBookNodes(final long bookId) {
+    List<BooklistNode> getVisibleBookNodes(final long bookId) {
         Objects.requireNonNull(booklist, ERROR_NULL_BOOKLIST);
         return booklist.getVisibleBookNodes(bookId);
+    }
+
+    private static class BLGDateRecord {
+        @NonNull
+        final String[] dbKeys;
+        @StringRes
+        final int labelResId;
+
+        BLGDateRecord(@StringRes final int labelResId,
+                      @NonNull final String... dbKeys) {
+            this.dbKeys = dbKeys;
+            this.labelResId = labelResId;
+        }
+    }
+
+    private static class BLGRecord {
+        @NonNull
+        final String dbKey;
+        @StringRes
+        final int labelResId;
+        @NonNull
+        final String labelKey;
+        @StringRes
+        final int emptyItemTextResId;
+
+        BLGRecord(@NonNull final String dbKey,
+                  @StringRes final int labelResId,
+                  @NonNull final String labelKey,
+                  @StringRes final int emptyItemTextResId) {
+            this.dbKey = dbKey;
+            this.labelResId = labelResId;
+            this.labelKey = labelKey;
+            this.emptyItemTextResId = emptyItemTextResId;
+        }
     }
 
 }
