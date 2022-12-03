@@ -224,6 +224,13 @@ public class Author
     private String givenNames;
     /** whether we have all we want from this Author. */
     private boolean complete;
+
+    /**
+     * If this Author is a pseudonym, then 'realAuthorId' points to that author.
+     * When {@code 0} this IS a real author.
+     */
+    private long realAuthorId;
+
     /** Bitmask. */
     @Type
     private int type = TYPE_UNKNOWN;
@@ -265,6 +272,7 @@ public class Author
     public Author(final long id,
                   @NonNull final DataHolder rowData) {
         this.id = id;
+        realAuthorId = rowData.getLong(DBKey.AUTHOR_IS_PSEUDONYM_FOR);
         familyName = rowData.getString(DBKey.AUTHOR_FAMILY_NAME);
         givenNames = rowData.getString(DBKey.AUTHOR_GIVEN_NAMES);
         complete = rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE);
@@ -281,6 +289,7 @@ public class Author
      */
     private Author(@NonNull final Parcel in) {
         id = in.readLong();
+        realAuthorId = in.readLong();
         //noinspection ConstantConditions
         familyName = in.readString();
         //noinspection ConstantConditions
@@ -325,12 +334,12 @@ public class Author
         // 4. "Don (*3)"
         // above examples from lastdodo...
         //
-        // 1+2: The () part are aliases.
+        // 1+2: The () part are pseudonyms.
         // 3: there are 2 people with the same name "Ange"; 1/2 and 2/2 makes the distinction.
         // 4: presumably there are 3 Don's?
         //
         // Assumption is that if the part between brackets starts with a alpha char,
-        // then we drop the () part (as we don't support aliases/pseudonyms for now)
+        // then we drop the () part (as we don't support pseudonyms for now)
         // and decode the part before as a normal name.
         // This is handled here.
         // In the case of a non-alpha, we will take the entire "(...)" part as the last name.
@@ -426,6 +435,7 @@ public class Author
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         dest.writeLong(id);
+        dest.writeLong(realAuthorId);
         dest.writeString(familyName);
         dest.writeString(givenNames);
         dest.writeByte((byte) (complete ? 1 : 0));
@@ -453,6 +463,14 @@ public class Author
      */
     public void setComplete(final boolean isComplete) {
         complete = isComplete;
+    }
+
+    public long getRealAuthorId() {
+        return realAuthorId;
+    }
+
+    public void setRealAuthorId(final long id) {
+        this.realAuthorId = id;
     }
 
     @Type
@@ -636,6 +654,7 @@ public class Author
         familyName = source.familyName;
         givenNames = source.givenNames;
         complete = source.complete;
+        realAuthorId = source.realAuthorId;
         if (includeBookFields) {
             type = source.type;
         }
@@ -677,6 +696,7 @@ public class Author
 
     /**
      * Diacritic neutral version of {@link  #hashCode()} without id.
+     * Used to merge two authors based on name alone.
      *
      * @return hashcode
      */
@@ -686,7 +706,7 @@ public class Author
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, familyName, givenNames);
+        return Objects.hash(id, familyName, givenNames, realAuthorId);
     }
 
     /**
@@ -713,7 +733,8 @@ public class Author
             return false;
         }
         return Objects.equals(familyName, that.familyName)
-               && Objects.equals(givenNames, that.givenNames);
+               && Objects.equals(givenNames, that.givenNames)
+               && realAuthorId == that.realAuthorId;
     }
 
     @Override
@@ -778,6 +799,7 @@ public class Author
 
         return "Author{"
                + "id=" + id
+               + ", realAuthorId=" + realAuthorId
                + ", familyName=`" + familyName + '`'
                + ", givenNames=`" + givenNames + '`'
                + ", complete=" + complete
@@ -788,10 +810,10 @@ public class Author
     // NEWTHINGS: author type: add to the IntDef
     @IntDef(flag = true,
             value = {TYPE_UNKNOWN,
-                     TYPE_WRITER, TYPE_FOREWORD, TYPE_AFTERWORD,
-                     TYPE_TRANSLATOR, TYPE_INTRODUCTION, TYPE_EDITOR, TYPE_CONTRIBUTOR,
-                     TYPE_COVER_ARTIST, TYPE_COVER_INKING, TYPE_NARRATOR, TYPE_COVER_COLORIST,
-                     TYPE_ARTIST, TYPE_INKING, TYPE_COLORIST, TYPE_PSEUDONYM
+                    TYPE_WRITER, TYPE_FOREWORD, TYPE_AFTERWORD,
+                    TYPE_TRANSLATOR, TYPE_INTRODUCTION, TYPE_EDITOR, TYPE_CONTRIBUTOR,
+                    TYPE_COVER_ARTIST, TYPE_COVER_INKING, TYPE_NARRATOR, TYPE_COVER_COLORIST,
+                    TYPE_ARTIST, TYPE_INKING, TYPE_COLORIST, TYPE_PSEUDONYM
             })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {

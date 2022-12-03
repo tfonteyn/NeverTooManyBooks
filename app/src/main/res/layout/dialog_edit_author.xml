@@ -116,12 +116,41 @@
                     />
 
                 <TextView
+                    android:id="@+id/lbl_real_author_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/section_margin_top"
+                    android:text="@string/lbl_this_author_is_a_pseudonym_for"
+                    app:layout_constraintStart_toStartOf="@id/flow_names"
+                    app:layout_constraintTop_toBottomOf="@id/cbx_is_complete"
+                    />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/lbl_real_author"
+                    style="@style/TIL.AutoCompleteTextView"
+                    android:layout_width="@dimen/til_fixed_width_personal_name"
+                    android:layout_marginTop="@dimen/section_margin_top"
+                    android:hint="@string/lbl_author"
+                    app:layout_constraintStart_toStartOf="@id/lbl_family_name"
+                    app:layout_constraintTop_toBottomOf="@id/lbl_real_author_header"
+                    >
+
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/real_author"
+                        style="@style/acPersonalNameTextEntry"
+                        android:imeOptions="actionDone"
+                        tools:ignore="LabelFor"
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
                     style="@style/Text.Body"
                     android:layout_marginTop="@dimen/section_margin_top"
                     android:text="@string/warning_immediate_global_changes"
                     android:textAppearance="?attr/textAppearanceBodySmall"
                     app:layout_constraintStart_toStartOf="@id/lbl_family_name"
-                    app:layout_constraintTop_toBottomOf="@id/cbx_is_complete"
+                    app:layout_constraintTop_toBottomOf="@id/lbl_real_author"
                     />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
