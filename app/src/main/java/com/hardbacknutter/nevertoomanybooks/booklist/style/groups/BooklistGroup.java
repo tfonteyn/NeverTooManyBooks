@@ -842,7 +842,6 @@ public class BooklistGroup {
 
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public static final class GroupKey {
 
         /** User displayable label resource id. */
@@ -909,9 +908,8 @@ public class BooklistGroup {
          *
          * @return keyPrefix, never {@code null} but will be empty for a BOOK.
          */
-        @VisibleForTesting
         @NonNull
-        public String getKeyPrefix() {
+        String getKeyPrefix() {
             return keyPrefix;
         }
 
