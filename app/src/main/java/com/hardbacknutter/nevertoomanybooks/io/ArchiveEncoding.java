@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -74,10 +73,6 @@ public enum ArchiveEncoding
     /** Books, Styles, Preferences in a JSON file; full support for export/import. */
     Json("json", R.string.lbl_archive_type_json,
          R.string.lbl_archive_format_json_info),
-
-    /** XML <strong>Export only</strong>. */
-    Xml("xml", R.string.lbl_archive_type_xml,
-        R.string.lbl_archive_format_xml_info),
 
     /** Database. */
     SqLiteDb("db", R.string.lbl_archive_type_db,
@@ -172,14 +167,6 @@ public enum ArchiveEncoding
                     return Optional.of(SqLiteDb);
                 }
 
-                // xml file, offset 0, the string "<?xml "
-                if (len > 5
-                    && b[0] == 0x3c && b[1] == 0x3f && b[2] == 0x78 && b[3] == 0x6d
-                    && b[4] == 0x6c && b[5] == 0x20) {
-                    return Optional.of(Xml);
-                }
-
-
                 // csv book file as we write them out, offset 0, the string "\"_id\","
                 // Obviously not foolproof but good enough.
                 if (len > 6
@@ -234,12 +221,6 @@ public enum ArchiveEncoding
             return Optional.of(Json);
         }
 
-        pattern = Pattern.compile("^.*\\.xml( \\(\\d+\\))?$",
-                                  Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-        if (pattern.matcher(displayName).find()) {
-            return Optional.of(Xml);
-        }
-
         // give up.
         return Optional.empty();
     }
@@ -281,9 +262,6 @@ public enum ArchiveEncoding
         switch (this) {
             case Zip:
                 return new ZipArchiveWriter(context, helper);
-
-            case Xml:
-                return new XmlArchiveWriter(helper);
 
             case Csv:
                 return new CsvArchiveWriter(helper);
@@ -346,8 +324,6 @@ public enum ArchiveEncoding
                 reader = new JsonArchiveReader(helper);
                 break;
 
-            case Xml:
-                // reading from xml is not supported
             default:
                 throw new DataReaderException(context.getString(
                         R.string.error_file_not_recognized));

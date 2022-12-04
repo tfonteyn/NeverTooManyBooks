@@ -258,7 +258,6 @@ public class ExportFragment
                 vb.cbxCovers.setEnabled(false);
                 break;
             }
-            case Xml:
             case SqLiteDb: {
                 vb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
 

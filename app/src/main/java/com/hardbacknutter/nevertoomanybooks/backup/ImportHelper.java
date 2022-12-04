@@ -105,8 +105,6 @@ public final class ImportHelper
                 setUpdateOption(DataReader.Updates.OnlyNewer);
                 break;
 
-            case Xml:
-                // not supported
             default:
                 break;
         }

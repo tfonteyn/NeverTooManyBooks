@@ -246,7 +246,6 @@ public class ImportFragment
                 showOptions();
                 break;
 
-            case Xml:
             default:
                 onImportNotSupported(getString(R.string.error_import_file_not_supported));
                 break;
@@ -307,11 +306,6 @@ public class ImportFragment
                 vb.cbxCovers.setVisibility(View.GONE);
                 vb.cbxPrefs.setVisibility(View.GONE);
                 vb.cbxStyles.setVisibility(View.GONE);
-                break;
-            }
-            case Xml: {
-                // shouldn't even get here
-                onImportNotSupported(getString(R.string.error_import_file_not_supported));
                 break;
             }
         }

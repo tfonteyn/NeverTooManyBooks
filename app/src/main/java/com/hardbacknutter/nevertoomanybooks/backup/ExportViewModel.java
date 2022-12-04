@@ -47,7 +47,6 @@ public class ExportViewModel
             ArchiveEncoding.Zip,
             ArchiveEncoding.Csv,
             ArchiveEncoding.Json,
-            ArchiveEncoding.Xml,
             ArchiveEncoding.SqLiteDb};
 
     @NonNull
