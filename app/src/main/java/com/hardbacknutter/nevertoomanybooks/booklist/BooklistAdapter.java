@@ -78,6 +78,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
@@ -851,12 +852,16 @@ public class BooklistAdapter
 
         @NonNull
         private final BooksonbookshelfRowBookBinding vb;
+        @NonNull
+        private final Languages languages;
         /** Only active when running in debug mode; displays the "position/rowId" for a book. */
         @Nullable
         private TextView dbgRowIdView;
         /** each holder has its own loader - the more cores the cpu has, the faster we load. */
         @Nullable
         private ImageViewLoader imageLoader;
+        @Nullable
+        private UseFields use;
 
         /**
          * Constructor.
@@ -871,6 +876,8 @@ public class BooklistAdapter
                    @NonNull final View itemView) {
             super(itemView);
             this.adapter = adapter;
+
+            languages = ServiceLocator.getInstance().getLanguages();
 
             vb = BooksonbookshelfRowBookBinding.bind(itemView);
 
@@ -932,6 +939,11 @@ public class BooklistAdapter
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
                               @NonNull final Style style) {
+            if (use == null) {
+                // init once
+                use = new UseFields(rowData, style);
+            }
+
             // Titles (book/series) are NOT reordered here.
             // It does not make much sense in this particular view/holder,
             // and slows down scrolling to much.
@@ -940,34 +952,30 @@ public class BooklistAdapter
             vb.title.setText(rowData.getString(DBKey.TITLE));
 
             // {@link BoBTask#fixedDomainList}
-            vb.iconRead.setVisibility(rowData.getBoolean(DBKey.READ__BOOL) ? View.VISIBLE
-                                                                           : View.GONE);
+            vb.iconRead.setVisibility(
+                    rowData.getBoolean(DBKey.READ__BOOL) ? View.VISIBLE : View.GONE);
 
-            if (style.isShowField(Style.Screen.List, DBKey.SIGNED__BOOL)
-                && rowData.contains(DBKey.SIGNED__BOOL)) {
+            if (use.signed) {
                 final boolean isSet = rowData.getBoolean(DBKey.SIGNED__BOOL);
                 vb.iconSigned.setVisibility(isSet ? View.VISIBLE : View.GONE);
             }
 
-            if (style.isShowField(Style.Screen.List, DBKey.EDITION__BITMASK)
-                && rowData.contains(DBKey.EDITION__BITMASK)) {
+            if (use.edition) {
                 final boolean isSet = (rowData.getLong(DBKey.EDITION__BITMASK)
                                        & Book.Edition.FIRST) != 0;
                 vb.iconFirstEdition.setVisibility(isSet ? View.VISIBLE : View.GONE);
             }
 
-            if (style.isShowField(Style.Screen.List, DBKey.LOANEE_NAME)
-                && rowData.contains(DBKey.LOANEE_NAME)) {
+            if (use.loanee) {
                 final boolean isSet = !rowData.getString(DBKey.LOANEE_NAME).isEmpty();
                 vb.iconLendOut.setVisibility(isSet ? View.VISIBLE : View.GONE);
             }
 
-            if (style.isShowField(Style.Screen.List, FieldVisibility.COVER[0])
-                && rowData.contains(DBKey.BOOK_UUID)) {
+            if (use.cover0) {
                 setImageView(rowData.getString(DBKey.BOOK_UUID));
             }
 
-            if (style.isShowField(Style.Screen.List, DBKey.FK_SERIES)) {
+            if (use.series) {
                 if (style.hasGroup(BooklistGroup.SERIES)) {
                     vb.seriesTitle.setVisibility(View.GONE);
                     showOrHideSeriesNumber(rowData);
@@ -978,8 +986,7 @@ public class BooklistAdapter
                 }
             }
 
-            if (style.isShowField(Style.Screen.List, DBKey.RATING)
-                && rowData.contains(DBKey.RATING)) {
+            if (use.rating) {
                 final float rating = rowData.getFloat(DBKey.RATING);
                 if (rating > 0) {
                     vb.rating.setRating(rating);
@@ -989,35 +996,24 @@ public class BooklistAdapter
                 }
             }
 
-            if (style.isShowField(Style.Screen.List, DBKey.FK_AUTHOR)
-                && rowData.contains(DBKey.AUTHOR_FORMATTED)) {
+            if (use.author) {
                 showOrHide(vb.author, rowData.getString(DBKey.AUTHOR_FORMATTED));
             }
 
-
-            final boolean usePub =
-                    style.isShowField(Style.Screen.List, DBKey.FK_PUBLISHER)
-                    && rowData.contains(DBKey.PUBLISHER_NAME_CSV);
-            final boolean usePubDate =
-                    style.isShowField(Style.Screen.List, DBKey.BOOK_PUBLICATION__DATE)
-                    && rowData.contains(DBKey.BOOK_PUBLICATION__DATE);
-
-            if (usePub || usePubDate) {
-                showOrHidePublisher(rowData, usePub, usePubDate);
+            if (use.publisher || use.publicationDate) {
+                showOrHidePublisher(rowData, use.publisher, use.publicationDate);
             }
 
             // {@link BoBTask#fixedDomainList}
-            if (style.isShowField(Style.Screen.List, DBKey.BOOK_ISBN)) {
+            if (use.isbn) {
                 showOrHide(vb.isbn, rowData.getString(DBKey.BOOK_ISBN));
             }
 
-            if (style.isShowField(Style.Screen.List, DBKey.FORMAT)
-                && rowData.contains(DBKey.FORMAT)) {
+            if (use.format) {
                 showOrHide(vb.format, rowData.getString(DBKey.FORMAT));
             }
 
-            if (style.isShowField(Style.Screen.List, DBKey.BOOK_CONDITION)
-                && rowData.contains(DBKey.BOOK_CONDITION)) {
+            if (use.condition) {
                 final int condition = rowData.getInt(DBKey.BOOK_CONDITION);
                 if (condition > 0) {
                     showOrHide(vb.condition, adapter.conditionDescriptions[condition]);
@@ -1028,21 +1024,17 @@ public class BooklistAdapter
             }
 
             // {@link BoBTask#fixedDomainList}
-            if (style.isShowField(Style.Screen.List, DBKey.LANGUAGE)) {
-                final String language =
-                        ServiceLocator.getInstance().getLanguages()
-                                      .getDisplayNameFromISO3(vb.language.getContext(),
-                                                              rowData.getString(DBKey.LANGUAGE));
+            if (use.language) {
+                final String language = languages.getDisplayNameFromISO3(
+                        vb.language.getContext(), rowData.getString(DBKey.LANGUAGE));
                 showOrHide(vb.language, language);
             }
 
-            if (style.isShowField(Style.Screen.List, DBKey.LOCATION)
-                && rowData.contains(DBKey.LOCATION)) {
+            if (use.location) {
                 showOrHide(vb.location, rowData.getString(DBKey.LOCATION));
             }
 
-            if (style.isShowField(Style.Screen.List, DBKey.FK_BOOKSHELF)
-                && rowData.contains(DBKey.BOOKSHELF_NAME_CSV)) {
+            if (use.bookshelves) {
                 showOrHide(vb.shelves, rowData.getString(DBKey.BOOKSHELF_NAME_CSV));
             }
 
@@ -1215,6 +1207,59 @@ public class BooklistAdapter
                 // Cache not used: Get the image from the file system and display it.
                 //noinspection ConstantConditions
                 imageLoader.fromFile(vb.coverImage0, file.get(), null);
+            }
+        }
+
+        /**
+         * Cache the 'use' flags for {@link #onBindViewHolder(int, DataHolder, Style)}.
+         */
+        private static class UseFields {
+            final boolean isbn;
+            final boolean signed;
+            final boolean edition;
+            final boolean loanee;
+            final boolean cover0;
+            final boolean rating;
+            final boolean author;
+            final boolean publisher;
+            final boolean publicationDate;
+            final boolean format;
+            final boolean condition;
+            final boolean language;
+            final boolean location;
+            final boolean bookshelves;
+            final boolean series;
+
+            UseFields(@NonNull final DataHolder rowData,
+                      @NonNull final Style style) {
+                isbn = style.isShowField(Style.Screen.List, DBKey.BOOK_ISBN);
+                series = style.isShowField(Style.Screen.List, DBKey.FK_SERIES);
+
+                signed = style.isShowField(Style.Screen.List, DBKey.SIGNED__BOOL)
+                         && rowData.contains(DBKey.SIGNED__BOOL);
+                edition = style.isShowField(Style.Screen.List, DBKey.EDITION__BITMASK)
+                          && rowData.contains(DBKey.EDITION__BITMASK);
+                loanee = style.isShowField(Style.Screen.List, DBKey.LOANEE_NAME)
+                         && rowData.contains(DBKey.LOANEE_NAME);
+                cover0 = style.isShowField(Style.Screen.List, FieldVisibility.COVER[0])
+                         && rowData.contains(DBKey.BOOK_UUID);
+                rating = style.isShowField(Style.Screen.List, DBKey.RATING)
+                         && rowData.contains(DBKey.RATING);
+                author = style.isShowField(Style.Screen.List, DBKey.FK_AUTHOR)
+                         && rowData.contains(DBKey.AUTHOR_FORMATTED);
+                publisher = style.isShowField(Style.Screen.List, DBKey.FK_PUBLISHER)
+                            && rowData.contains(DBKey.PUBLISHER_NAME_CSV);
+                publicationDate = style.isShowField(Style.Screen.List, DBKey.BOOK_PUBLICATION__DATE)
+                                  && rowData.contains(DBKey.BOOK_PUBLICATION__DATE);
+                format = style.isShowField(Style.Screen.List, DBKey.FORMAT)
+                         && rowData.contains(DBKey.FORMAT);
+                condition = style.isShowField(Style.Screen.List, DBKey.BOOK_CONDITION)
+                            && rowData.contains(DBKey.BOOK_CONDITION);
+                language = style.isShowField(Style.Screen.List, DBKey.LANGUAGE);
+                location = style.isShowField(Style.Screen.List, DBKey.LOCATION)
+                           && rowData.contains(DBKey.LOCATION);
+                bookshelves = style.isShowField(Style.Screen.List, DBKey.FK_BOOKSHELF)
+                              && rowData.contains(DBKey.BOOKSHELF_NAME_CSV);
             }
         }
     }
