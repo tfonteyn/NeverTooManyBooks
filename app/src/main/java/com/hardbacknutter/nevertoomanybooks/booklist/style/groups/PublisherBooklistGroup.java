@@ -67,22 +67,21 @@ public class PublisherBooklistGroup
     @Override
     @NonNull
     public GroupKey createGroupKey() {
-        // We use the foreign ID to create the key domain.
-        // We override the display domain in #displayDomainExpression.
+        // We use the foreign ID to create the key-domain.
+        // It is NOT used to display the data; instead we use #displayDomainExpression.
+        // Neither the key-domain nor the display-domain is sorted;
+        // instead we add the OB column, sorted, as a group domain.
         return new GroupKey(R.string.lbl_publisher, "p",
                             new DomainExpression(DBDefinitions.DOM_FK_PUBLISHER,
                                                  DBDefinitions.TBL_PUBLISHERS.dot(DBKey.PK_ID),
                                                  Sort.Unsorted))
                 .addGroupDomain(
-                        // We do not sort on the key domain but add the OB column instead
                         new DomainExpression(
                                 new Domain.Builder(BlgKey.SORT_PUBLISHER, SqLiteDataType.Text)
                                         .build(),
                                 DBDefinitions.TBL_PUBLISHERS.dot(DBKey.PUBLISHER_NAME_OB),
                                 Sort.Asc))
                 .addGroupDomain(
-                        // Group by id (we want the id available and there is
-                        // a chance two Publishers will have the same name)
                         new DomainExpression(DBDefinitions.DOM_FK_PUBLISHER,
                                              DBDefinitions.TBL_BOOK_PUBLISHER));
     }

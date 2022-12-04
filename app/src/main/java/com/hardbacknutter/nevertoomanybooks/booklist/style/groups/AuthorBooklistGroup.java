@@ -86,22 +86,24 @@ public class AuthorBooklistGroup
     @Override
     @NonNull
     public GroupKey createGroupKey() {
-        // We use the foreign ID to create the key domain.
-        // We override the display domain in #displayDomainExpression.
+        // We use the foreign ID to create the key-domain.
+        // It is NOT used to display the data; instead we use #displayDomainExpression.
+        // Neither the key-domain nor the display-domain is sorted;
         // Sorting is done with #sortingDomainExpression
         return new GroupKey(R.string.lbl_author, "a",
                             new DomainExpression(DBDefinitions.DOM_FK_AUTHOR,
                                                  DBDefinitions.TBL_AUTHORS.dot(DBKey.PK_ID),
                                                  Sort.Unsorted))
-
                 .addGroupDomain(
-                        // Group by id (we want the id available and there is
-                        // a chance two Authors will have the same name)
                         new DomainExpression(DBDefinitions.DOM_FK_AUTHOR,
                                              DBDefinitions.TBL_BOOK_AUTHOR))
+
+                // Extra data we need:
                 .addGroupDomain(
-                        // Group by complete-flag
                         new DomainExpression(DBDefinitions.DOM_AUTHOR_IS_COMPLETE,
+                                             DBDefinitions.TBL_AUTHORS))
+                .addGroupDomain(
+                        new DomainExpression(DBDefinitions.DOM_AUTHOR_IS_PSEUDONYM_FOR,
                                              DBDefinitions.TBL_AUTHORS));
     }
 

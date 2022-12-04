@@ -67,26 +67,26 @@ public class SeriesBooklistGroup
     @Override
     @NonNull
     public GroupKey createGroupKey() {
-        // We use the foreign ID to create the key domain.
-        // We override the display domain in #displayDomainExpression.
+        // We use the foreign ID to create the key-domain.
+        // It is NOT used to display the data; instead we use #displayDomainExpression.
+        // Neither the key-domain nor the display-domain is sorted;
+        // instead we add the OB column, sorted, as a group domain.
         return new GroupKey(R.string.lbl_series, "s",
                             new DomainExpression(DBDefinitions.DOM_FK_SERIES,
                                                  DBDefinitions.TBL_SERIES.dot(DBKey.PK_ID),
                                                  Sort.Unsorted))
                 .addGroupDomain(
-                        // We do not sort on the key domain but add the OB column instead
                         new DomainExpression(
                                 new Domain.Builder(BlgKey.SORT_SERIES_TITLE, SqLiteDataType.Text)
                                         .build(),
                                 DBDefinitions.TBL_SERIES.dot(DBKey.SERIES_TITLE_OB),
                                 Sort.Asc))
                 .addGroupDomain(
-                        // Group by id (we want the id available and there is
-                        // a chance two Series will have the same name)
                         new DomainExpression(DBDefinitions.DOM_FK_SERIES,
                                              DBDefinitions.TBL_BOOK_SERIES))
+
+                // Extra data we need:
                 .addGroupDomain(
-                        // Group by complete-flag
                         new DomainExpression(DBDefinitions.DOM_SERIES_IS_COMPLETE,
                                              DBDefinitions.TBL_SERIES))
                 .addBaseDomain(
@@ -95,7 +95,8 @@ public class SeriesBooklistGroup
                         // Casting it as a float allows for the possibility of 3.1,
                         // or even 3.1|Omnibus 3-10" as a series number.
                         new DomainExpression(
-                                new Domain.Builder("blg_ser_num_float", SqLiteDataType.Real)
+                                new Domain.Builder(BlgKey.SORT_SERIES_NUM_FLOAT,
+                                                   SqLiteDataType.Real)
                                         .build(),
                                 "CAST("
                                 + DBDefinitions.TBL_BOOK_SERIES.dot(DBKey.SERIES_BOOK_NUMBER)
