@@ -65,7 +65,7 @@ public enum ArchiveEncoding
         R.string.lbl_archive_type_backup_zip,
         R.string.lbl_archive_type_backup_info),
 
-    /** Books as a CSV file; full support for export/import. */
+    /** Books as a CSV file; legacy support for importing only. */
     Csv("csv", R.string.lbl_archive_type_csv,
         R.string.lbl_archive_type_csv_info),
 
