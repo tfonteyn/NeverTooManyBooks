@@ -76,7 +76,7 @@ public class AuthorBooklistGroup
                                      Sort.Unsorted);
         // Sorting depends on user preference
         sortingDomainExpression =
-                new DomainExpression(new Domain.Builder("blg_aut_sort", SqLiteDataType.Text)
+                new DomainExpression(new Domain.Builder(BlgKey.SORT_AUTHOR, SqLiteDataType.Text)
                                              .build(),
                                      AuthorDaoImpl.getSortingDomainExpression(
                                              style.isSortAuthorByGivenName()),

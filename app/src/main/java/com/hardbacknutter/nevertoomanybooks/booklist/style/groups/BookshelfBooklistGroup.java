@@ -79,7 +79,7 @@ public class BookshelfBooklistGroup
                 .addGroupDomain(
                         // We do not sort on the key domain but add the OB column instead
                         new DomainExpression(
-                                new Domain.Builder("blg_shelf_sort", SqLiteDataType.Text)
+                                new Domain.Builder(BlgKey.SORT_BOOKSHELF, SqLiteDataType.Text)
                                         .build(),
                                 DBDefinitions.TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME),
                                 Sort.Asc))

@@ -76,7 +76,7 @@ public class PublisherBooklistGroup
                 .addGroupDomain(
                         // We do not sort on the key domain but add the OB column instead
                         new DomainExpression(
-                                new Domain.Builder("blg_pub_sort", SqLiteDataType.Text)
+                                new Domain.Builder(BlgKey.SORT_PUBLISHER, SqLiteDataType.Text)
                                         .build(),
                                 DBDefinitions.TBL_PUBLISHERS.dot(DBKey.PUBLISHER_NAME_OB),
                                 Sort.Asc))

@@ -871,9 +871,16 @@ public class BooklistGroup {
         public static final String READ_DAY = "blg_rd_d";
         public static final String FIRST_PUB_YEAR = "blg_1pub_y";
         public static final String FIRST_PUB_MONTH = "blg_1pub_m";
+
         public static final String SERIES_TITLE_1CHAR = "blg_ser_tit_1ch";
         public static final String BOOK_TITLE_1CHAR = "blg_tit_1ch";
         public static final String READ = "blg_rd_sts";
+        // specific domains for sorting
+        public static final String SORT_AUTHOR = "blg_sort_aut";
+        public static final String SORT_BOOKSHELF = "blg_sort_shelf";
+        public static final String SORT_PUBLISHER = "blg_sort_pub";
+        public static final String SORT_SERIES_TITLE = "blg_sort_ser";
+        public static final String SORT_SERIES_NUM_FLOAT = "blg_sort_ser_num_f";
 
         private BlgKey() {
         }

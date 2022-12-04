@@ -76,7 +76,7 @@ public class SeriesBooklistGroup
                 .addGroupDomain(
                         // We do not sort on the key domain but add the OB column instead
                         new DomainExpression(
-                                new Domain.Builder("blg_ser_sort", SqLiteDataType.Text)
+                                new Domain.Builder(BlgKey.SORT_SERIES_TITLE, SqLiteDataType.Text)
                                         .build(),
                                 DBDefinitions.TBL_SERIES.dot(DBKey.SERIES_TITLE_OB),
                                 Sort.Asc))
