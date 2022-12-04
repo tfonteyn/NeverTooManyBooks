@@ -352,10 +352,10 @@ class BooklistBuilder {
         /**
          * Domains required in output table.
          * During the build, the {@link Domain} is added to the {@link #listTable}
-         * where they will be used to create the table.
+         * where they will be used to <strong>create</strong> the table.
          * <p>
-         * The full {@link DomainExpression} is kept this collection to build the SQL column string
-         * for both the INSERT and the SELECT statement.
+         * The full {@link DomainExpression} is added to this collection to build the
+         * SQL column string for both the INSERT and the SELECT statement.
          */
         private final Collection<DomainExpression> domainExpressions = new ArrayList<>();
 
