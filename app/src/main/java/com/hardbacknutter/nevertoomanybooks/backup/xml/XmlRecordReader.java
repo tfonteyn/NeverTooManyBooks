@@ -40,6 +40,7 @@ import java.util.Deque;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -619,6 +620,69 @@ public class XmlRecordReader
         public void close() {
             // ignore the close call from the SAX parser.
             // We'll close it ourselves when appropriate.
+        }
+    }
+
+    /**
+     * Minimalist builder for XML tags and attributes.
+     */
+    static final class XmlUtils {
+
+        /** item, value stored in the item body. */
+        static final String TAG_STRING = "string";
+        /** item; value is an attribute. */
+        static final String TAG_BOOLEAN = "boolean";
+        /** item; value is an attribute. */
+        static final String TAG_INT = "int";
+        /** item; value is an attribute. */
+        static final String TAG_LONG = "long";
+        /** item; value is an attribute. */
+        static final String TAG_FLOAT = "float";
+        /** item; value is an attribute. */
+        static final String TAG_DOUBLE = "double";
+        /** item, value stored in the item body. */
+        static final String TAG_SET = "set";
+        /** item, value stored in the item body. */
+        static final String TAG_LIST = "list";
+        /** item, value stored in the item body. */
+        static final String TAG_SERIALIZABLE = "serializable";
+        static final String ATTR_VERSION = "version";
+        /** Database row ID. */
+        static final String ATTR_ID = "id";
+        /** element name attribute; i.e. the "thing" we are reading/writing. */
+        static final String ATTR_NAME = "name";
+        /** the value of the individual item of the "thing". */
+        static final String ATTR_VALUE = "value";
+
+        private static final Pattern QUOT_LITERAL = Pattern.compile("&quot;", Pattern.LITERAL);
+        private static final Pattern APOS_LITERAL = Pattern.compile("&apos;", Pattern.LITERAL);
+        private static final Pattern LT_LITERAL = Pattern.compile("&lt;", Pattern.LITERAL);
+        private static final Pattern GT_LITERAL = Pattern.compile("&gt;", Pattern.LITERAL);
+        private static final Pattern AMP_LITERAL = Pattern.compile("&amp;", Pattern.LITERAL);
+
+        private XmlUtils() {
+        }
+
+        /**
+         * Only String 'value' tags need decoding.
+         * <p>
+         * decode the bare essentials only. To decode all possible entities we could add the Apache
+         * 'lang' library I suppose.... maybe some day.
+         */
+        @NonNull
+        static String decode(@Nullable final String data) {
+            if (data == null || "null".equalsIgnoreCase(data) || data.trim().isEmpty()) {
+                return "";
+            }
+
+            // must be last of the entities
+            String result = data.trim();
+            result = AMP_LITERAL.matcher(result).replaceAll("&");
+            result = GT_LITERAL.matcher(result).replaceAll(">");
+            result = LT_LITERAL.matcher(result).replaceAll("<");
+            result = APOS_LITERAL.matcher(result).replaceAll("'");
+            result = QUOT_LITERAL.matcher(result).replaceAll("\"");
+            return result;
         }
     }
 }

@@ -268,7 +268,6 @@ public class ExportFragment
                 vb.cbxBooks.setChecked(true);
                 vb.cbxBooks.setEnabled(false);
 
-                // See class docs for XmlArchiveWriter
                 vb.rbBooksGroup.setEnabled(false);
                 vb.rbExportAll.setChecked(true);
 

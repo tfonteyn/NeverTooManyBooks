@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordReader;
-import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordWriter;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
@@ -122,10 +121,10 @@ public enum RecordEncoding {
                 return new JsonRecordWriter(utcSinceDateTime);
             case Csv:
                 return new CsvRecordWriter(utcSinceDateTime);
-            case Xml:
-                return new XmlRecordWriter(utcSinceDateTime);
             case Cover:
                 // Not useful, won't implement. It's just a File copy operation
+            case Xml:
+                // No longer supported
             default:
                 break;
         }
