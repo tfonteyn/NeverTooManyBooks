@@ -19,35 +19,22 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.SeriesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
 import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SeriesStringListTest {
-
-    /**
-     * String suited to be used with {@link Series#from},
-     * as tested in com.hardbacknutter.nevertoomanybooks.entities.SeriesTest.
-     */
-    private static final String[] SERIES = {
-            "Jerry Cornelius",
-            "Dancers (5)",
-            "Cornelius Chronicles, The (8|8 as includes The Alchemist's Question)",
-            "Eternal Champion, The (984|Jerry Cornelius Calendar 4 as includes"
-            + " The Alchemist's * Question)"
-    };
 
     /**
      * The correct string result of encoding the above; as written to the export file.
@@ -64,8 +51,6 @@ class SeriesStringListTest {
             + "Eternal Champion, The (984\\|Jerry Cornelius Calendar 4 as includes"
             + " The Alchemist's \\\\* Question)";
 
-    private List<Series> series;
-
     private StringList<Series> coder;
 
     @BeforeAll
@@ -75,26 +60,13 @@ class SeriesStringListTest {
 
     @BeforeEach
     void setUp() {
-        series = new ArrayList<>();
-        for (final String s : SERIES) {
-            series.add(Series.from(s));
-        }
-        series.get(1).setComplete(true);
-        series.get(2).setComplete(true);
-
         coder = new StringList<>(new SeriesCoder());
-    }
-
-    @Test
-    void encode() {
-        final String encoded = coder.encodeList(series);
-        assertEquals(ENCODED, encoded);
     }
 
     @Test
     void decode() {
         final List<Series> decoded = coder.decodeList(ENCODED);
-        assertEquals(SERIES.length, decoded.size());
+        assertEquals(4, decoded.size());
 
         Series series;
 

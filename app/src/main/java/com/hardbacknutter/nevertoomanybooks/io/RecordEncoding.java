@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordReader;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordReader;
@@ -119,11 +118,10 @@ public enum RecordEncoding {
         switch (this) {
             case Json:
                 return new JsonRecordWriter(utcSinceDateTime);
-            case Csv:
-                return new CsvRecordWriter(utcSinceDateTime);
-            case Cover:
+                case Cover:
                 // Not useful, won't implement. It's just a File copy operation
             case Xml:
+            case Csv:
                 // No longer supported
             default:
                 break;

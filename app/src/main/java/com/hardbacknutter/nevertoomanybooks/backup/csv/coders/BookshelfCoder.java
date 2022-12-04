@@ -41,7 +41,6 @@ import com.hardbacknutter.org.json.JSONObject;
 public class BookshelfCoder
         implements StringList.Coder<Bookshelf> {
 
-    private static final char[] ESCAPE_CHARS = {'(', ')'};
     @NonNull
     private final Style defaultStyle;
 
@@ -60,23 +59,6 @@ public class BookshelfCoder
     @Override
     public char getElementSeparator() {
         return ',';
-    }
-
-    @NonNull
-    @Override
-    public String encode(@NonNull final Bookshelf bookshelf)
-            throws JSONException {
-        String result = escape(bookshelf.getName(), ESCAPE_CHARS);
-
-        final JSONObject details = new JSONObject();
-        if (!bookshelf.getStyleUuid().isEmpty()) {
-            details.put(DBKey.FK_STYLE, bookshelf.getStyleUuid());
-        }
-
-        if (!details.isEmpty()) {
-            result += ' ' + String.valueOf(getObjectSeparator()) + ' ' + details;
-        }
-        return result;
     }
 
     @Override

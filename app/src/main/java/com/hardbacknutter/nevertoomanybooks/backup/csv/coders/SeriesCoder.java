@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,32 +45,8 @@ import com.hardbacknutter.org.json.JSONObject;
 public class SeriesCoder
         implements StringList.Coder<Series> {
 
-    private static final char[] ESCAPE_CHARS = {'(', ')'};
-
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public SeriesCoder() {
-    }
-
-    @NonNull
-    @Override
-    public String encode(@NonNull final Series series)
-            throws JSONException {
-        String result = escape(series.getTitle(), ESCAPE_CHARS);
-        if (!series.getNumber().isEmpty()) {
-            // start with a space for readability
-            // the surrounding () are NOT escaped as they are part of the format.
-            result += " (" + escape(series.getNumber(), ESCAPE_CHARS) + ')';
-        }
-
-        final JSONObject details = new JSONObject();
-        if (series.isComplete()) {
-            details.put(DBKey.SERIES_IS_COMPLETE, true);
-        }
-
-        if (!details.isEmpty()) {
-            result += ' ' + String.valueOf(getObjectSeparator()) + ' ' + details;
-        }
-        return result;
     }
 
     @Override

@@ -19,38 +19,21 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.AuthorCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
 import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class AuthorStringListTest {
-
-    /**
-     * String suited to be used with {@link Author#from},
-     * as tested in com.hardbacknutter.nevertoomanybooks.entities.AuthorTest.
-     */
-    private static final String[] AUTHORS = {
-            "Charles Emerson Winchester",
-            "Winchester, Charles Emerson",
-            "Winchester, Charles\\ Emerson",
-            "Wade, (ps Jack Vance)",
-            "Giroud, Frank",
-            "Ralph Meyer",
-            "Van der Heide Produkties, Zandvoort",
-            // yes, there REALLY is a book with an author named like this...
-            "Don (*3)"
-    };
 
     /**
      * The correct string result of encoding the above; as written to the export file.
@@ -73,8 +56,6 @@ class AuthorStringListTest {
             + "|"
             + "\\(\\\\*3\\), Don";
 
-    private List<Author> author;
-
     private StringList<Author> coder;
 
     @BeforeAll
@@ -84,26 +65,13 @@ class AuthorStringListTest {
 
     @BeforeEach
     void setUp() {
-        author = new ArrayList<>();
-        for (final String s : AUTHORS) {
-            author.add(Author.from(s));
-        }
-        author.get(5).setType(Author.TYPE_ARTIST | Author.TYPE_COLORIST);
-        author.get(6).setType(Author.TYPE_TRANSLATOR);
-
         coder = new StringList<>(new AuthorCoder());
-    }
-
-    @Test
-    void encode() {
-        final String encoded = coder.encodeList(author);
-        assertEquals(ENCODED, encoded);
     }
 
     @Test
     void decode() {
         final List<Author> decoded = coder.decodeList(ENCODED);
-        assertEquals(AUTHORS.length, decoded.size());
+        assertEquals(8, decoded.size());
         Author author;
 
         author = decoded.get(0);
@@ -143,15 +111,6 @@ class AuthorStringListTest {
         assertEquals("(*3)", author.getFamilyName());
         assertEquals("Don", author.getGivenNames());
         assertFalse(author.isComplete());
-    }
-
-
-    @Test
-    void encode01() {
-        final Author author = Author.from("Charles Emerson Winchester");
-        final String authorStr = new StringList<>(new AuthorCoder()).encodeElement(author);
-
-        assertEquals("Winchester, Charles\\ Emerson", authorStr);
     }
 
     @Test

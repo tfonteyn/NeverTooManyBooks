@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,6 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.org.json.JSONException;
 
 /**
  * StringList factory for a {@link TocEntry}.
@@ -58,28 +57,7 @@ public class TocEntryCoder
                             + "|[1|2]\\d\\d\\d-\\d\\d-\\d\\d)"
                             + "\\)");
 
-    private static final char[] ESCAPE_CHARS = {'(', ')'};
-
     TocEntryCoder() {
-    }
-
-    @NonNull
-    @Override
-    public String encode(@NonNull final TocEntry tocEntry)
-            throws JSONException {
-        final StringBuilder result = new StringBuilder(escape(tocEntry.getTitle(), ESCAPE_CHARS));
-
-        tocEntry.getFirstPublicationDate().ifPresent(date -> {
-            // start with a space for readability
-            // the surrounding () are NOT escaped as they are part of the format.
-            result.append(" (").append(date.getIsoString()).append(')');
-        });
-
-        return result.append(+' ').append(getObjectSeparator()).append(' ')
-                     .append(new StringList<>(
-                             // we only use the name here
-                             new AuthorCoder()).encodeElement(tocEntry.getPrimaryAuthor()))
-                     .toString();
     }
 
     /**

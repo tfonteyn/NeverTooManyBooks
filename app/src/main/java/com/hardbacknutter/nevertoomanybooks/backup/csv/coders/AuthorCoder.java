@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,38 +44,8 @@ import com.hardbacknutter.org.json.JSONObject;
 public class AuthorCoder
         implements StringList.Coder<Author> {
 
-    /** String encoding use: separator between family name and given-names. */
-    private static final char NAME_SEPARATOR = ',';
-
-    private static final char[] ESCAPE_CHARS = {NAME_SEPARATOR, ' ', '(', ')'};
-
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public AuthorCoder() {
-    }
-
-    @NonNull
-    @Override
-    public String encode(@NonNull final Author author)
-            throws JSONException {
-        // Note the use of NAME_SEPARATOR between family and given-names,
-        // i.e. the names are considered ONE field with a private separator.
-        // Always add the given-name even when empty!
-        String result = escape(author.getFamilyName(), ESCAPE_CHARS)
-                        + NAME_SEPARATOR + ' '
-                        + escape(author.getGivenNames(), ESCAPE_CHARS);
-
-        final JSONObject details = new JSONObject();
-        if (author.isComplete()) {
-            details.put(DBKey.AUTHOR_IS_COMPLETE, true);
-        }
-        if (author.getType() != Author.TYPE_UNKNOWN) {
-            details.put(DBKey.AUTHOR_TYPE__BITMASK, author.getType());
-        }
-
-        if (!details.isEmpty()) {
-            result += ' ' + String.valueOf(getObjectSeparator()) + ' ' + details;
-        }
-        return result;
     }
 
     @Override

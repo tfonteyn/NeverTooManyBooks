@@ -23,12 +23,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
-import com.hardbacknutter.org.json.JSONException;
 
 /**
  * A StringList contains a list of elements, separated by the {@link Coder#getElementSeparator()}.
@@ -58,19 +55,7 @@ public class StringList<E> {
      */
     @NonNull
     public static StringList<String> newInstance() {
-        return new StringList<>(new Coder<>() {
-            @NonNull
-            @Override
-            public String encode(@NonNull final String obj) {
-                return obj;
-            }
-
-            @NonNull
-            @Override
-            public String decode(@NonNull final String element) {
-                return element;
-            }
-        });
+        return new StringList<>(element -> element);
     }
 
     /**
@@ -173,51 +158,12 @@ public class StringList<E> {
     }
 
     /**
-     * Encode a list of elements.
-     *
-     * @param list to encode
-     *
-     * @return Encoded string
-     */
-    @NonNull
-    public String encodeList(@NonNull final Collection<E> list)
-            throws JSONException {
-        // The factory will encode each element, and we simply concat all of them.
-        return list.stream()
-                   .map(coder::encode)
-                   .collect(Collectors.joining(String.valueOf(coder.getElementSeparator())));
-    }
-
-    /**
-     * Encode a single element.
-     *
-     * @param element to encode
-     *
-     * @return Encoded string
-     */
-    @NonNull
-    public String encodeElement(@NonNull final E element)
-            throws JSONException {
-        return coder.encode(element);
-    }
-
-    /**
      * A Coder is responsible for encoding and decoding <strong>individual</strong> elements.
      *
      * @param <E> type of element.
      */
+    @FunctionalInterface
     public interface Coder<E> {
-
-        /**
-         * Encode an object to a String representation.
-         *
-         * @param obj Object to encode
-         *
-         * @return string
-         */
-        @NonNull
-        String encode(@NonNull E obj)
-                throws JSONException;
 
         /**
          * Decode a <string>SINGLE</string> element.

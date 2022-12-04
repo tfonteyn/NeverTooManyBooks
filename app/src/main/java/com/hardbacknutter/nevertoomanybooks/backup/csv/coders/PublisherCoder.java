@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,15 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 public class PublisherCoder
         implements StringList.Coder<Publisher> {
 
-    private static final char[] ESCAPE_CHARS = {'(', ')'};
-
     PublisherCoder() {
-    }
-
-    @NonNull
-    @Override
-    public String encode(@NonNull final Publisher publisher) {
-        return escape(publisher.getName(), ESCAPE_CHARS);
     }
 
     @Override

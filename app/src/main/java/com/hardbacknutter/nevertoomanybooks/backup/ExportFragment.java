@@ -224,23 +224,6 @@ public class ExportFragment
                 vb.cbxCovers.setEnabled(true);
                 break;
             }
-            case Csv: {
-                vb.archiveFormatInfoLong.setText("");
-
-                helper.removeRecordType(EnumSet.of(RecordType.Styles,
-                                                   RecordType.Preferences,
-                                                   RecordType.Certificates));
-
-                vb.cbxBooks.setChecked(true);
-                vb.cbxBooks.setEnabled(false);
-
-                vb.rbBooksGroup.setEnabled(true);
-                vb.rbExportNewAndUpdated.setChecked(true);
-
-                vb.cbxCovers.setChecked(false);
-                vb.cbxCovers.setEnabled(false);
-                break;
-            }
             case Json: {
                 vb.archiveFormatInfoLong.setText("");
 
@@ -276,6 +259,7 @@ public class ExportFragment
                 break;
             }
             case Tar:
+            case Csv:
             default:
                 throw new IllegalArgumentException(encoding.toString());
         }

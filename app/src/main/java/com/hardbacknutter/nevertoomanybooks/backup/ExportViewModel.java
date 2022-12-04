@@ -45,7 +45,6 @@ public class ExportViewModel
      */
     public static final ArchiveEncoding[] ENCODINGS = {
             ArchiveEncoding.Zip,
-            ArchiveEncoding.Csv,
             ArchiveEncoding.Json,
             ArchiveEncoding.SqLiteDb};
 

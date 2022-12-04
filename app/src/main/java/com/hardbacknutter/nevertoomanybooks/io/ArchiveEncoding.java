@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveReader;
@@ -263,9 +262,6 @@ public enum ArchiveEncoding
             case Zip:
                 return new ZipArchiveWriter(context, helper);
 
-            case Csv:
-                return new CsvArchiveWriter(helper);
-
             case SqLiteDb:
                 return new DbArchiveWriter(context, helper);
 
@@ -273,7 +269,8 @@ public enum ArchiveEncoding
                 return new JsonArchiveWriter(helper);
 
             case Tar:
-                // writing to tar is no longer supported
+            case Csv:
+                // writing to tar and csv is no longer supported
             default:
                 throw new IllegalStateException(DataWriter.ERROR_NO_WRITER_AVAILABLE);
         }
