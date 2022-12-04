@@ -142,21 +142,24 @@ public class BooklistGroup {
     @VisibleForTesting
     public static final int GROUP_KEY_MAX = 31;
 
-    // Date based groups have to sort on the full date for cases
-    // where we don't have all separate year,month,day fields.
-    private static final DomainExpression DATE_PUBLISHED =
+    /**
+     * Base domains (BD_*) for Date groups.
+     * Date based groups have to sort on the full date for cases
+     * where we don't have all separate year,month,day fields.
+     */
+    private static final DomainExpression BD_DATE_PUBLISHED =
             new DomainExpression(DOM_BOOK_DATE_PUBLISHED, Sort.Desc);
-    private static final DomainExpression DATE_FIRST_PUBLICATION =
+    private static final DomainExpression BD_DATE_FIRST_PUBLICATION =
             new DomainExpression(DOM_DATE_FIRST_PUBLICATION, Sort.Desc);
-    private static final DomainExpression BOOK_IS_READ =
+    private static final DomainExpression BD_BOOK_IS_READ =
             new DomainExpression(DOM_BOOK_READ, Sort.Desc);
-    private static final DomainExpression DATE_READ_END =
+    private static final DomainExpression BD_DATE_READ_END =
             new DomainExpression(DOM_BOOK_DATE_READ_END, Sort.Desc);
-    private static final DomainExpression DATE_ADDED =
+    private static final DomainExpression BD_DATE_ADDED =
             new DomainExpression(DOM_ADDED__UTC, Sort.Desc);
-    private static final DomainExpression DATE_LAST_UPDATED =
+    private static final DomainExpression BD_DATE_LAST_UPDATED =
             new DomainExpression(DOM_LAST_UPDATED__UTC, Sort.Desc);
-    private static final DomainExpression DATE_ACQUIRED =
+    private static final DomainExpression BD_DATE_ACQUIRED =
             new DomainExpression(DOM_BOOK_DATE_ACQUIRED, Sort.Desc);
 
     private static final String CASE_WHEN_ = "CASE WHEN ";
@@ -368,9 +371,15 @@ public class BooklistGroup {
      * GroupKey factory constructor. Called <strong>ONCE</strong> for each group
      * during the lifetime of the app.
      * <p>
-     * Specialized classes override this method. e.g. {@link AuthorBooklistGroup}.
+     * Specialized classes must override this method to provide their key.
+     * (which is why this method is not static...)
      *
      * @return new GroupKey instance
+     *
+     * @see AuthorBooklistGroup
+     * @see BookshelfBooklistGroup
+     * @see PublisherBooklistGroup
+     * @see SeriesBooklistGroup
      */
     @SuppressLint("SwitchIntDef")
     @NonNull
@@ -461,7 +470,7 @@ public class BooklistGroup {
                         year(TBL_BOOKS.dot(DBKey.BOOK_PUBLICATION__DATE), false),
                         Sort.Desc);
                 return new GroupKey(R.string.lbl_date_published_year, "yrp", keyDomainExpression)
-                        .addBaseDomain(DATE_PUBLISHED);
+                        .addBaseDomain(BD_DATE_PUBLISHED);
             }
             case DATE_PUBLISHED_MONTH: {
                 // UTC. Formatting is done after fetching.
@@ -470,7 +479,7 @@ public class BooklistGroup {
                         month(TBL_BOOKS.dot(DBKey.BOOK_PUBLICATION__DATE), false),
                         Sort.Desc);
                 return new GroupKey(R.string.lbl_date_published_month, "mp", keyDomainExpression)
-                        .addBaseDomain(DATE_PUBLISHED);
+                        .addBaseDomain(BD_DATE_PUBLISHED);
             }
 
 
@@ -482,7 +491,7 @@ public class BooklistGroup {
                         Sort.Desc);
                 return new GroupKey(R.string.lbl_date_first_publication_year, "yfp",
                                     keyDomainExpression)
-                        .addBaseDomain(DATE_FIRST_PUBLICATION);
+                        .addBaseDomain(BD_DATE_FIRST_PUBLICATION);
             }
             case DATE_FIRST_PUBLICATION_MONTH: {
                 // Local for the user. Formatting is done after fetching.
@@ -492,7 +501,7 @@ public class BooklistGroup {
                         Sort.Desc);
                 return new GroupKey(R.string.lbl_date_first_publication_month, "mfp",
                                     keyDomainExpression)
-                        .addBaseDomain(DATE_FIRST_PUBLICATION);
+                        .addBaseDomain(BD_DATE_FIRST_PUBLICATION);
             }
 
 
@@ -503,7 +512,7 @@ public class BooklistGroup {
                         year(TBL_BOOKS.dot(DBKey.DATE_ACQUIRED), true),
                         Sort.Desc);
                 return new GroupKey(R.string.lbl_date_acquired_year, "yac", keyDomainExpression)
-                        .addBaseDomain(DATE_ACQUIRED);
+                        .addBaseDomain(BD_DATE_ACQUIRED);
             }
             case DATE_ACQUIRED_MONTH: {
                 // Local for the user. Formatting is done after fetching.
@@ -512,7 +521,7 @@ public class BooklistGroup {
                         month(TBL_BOOKS.dot(DBKey.DATE_ACQUIRED), true),
                         Sort.Desc);
                 return new GroupKey(R.string.lbl_date_acquired_month, "mac", keyDomainExpression)
-                        .addBaseDomain(DATE_ACQUIRED);
+                        .addBaseDomain(BD_DATE_ACQUIRED);
             }
             case DATE_ACQUIRED_DAY: {
                 // Local for the user. Formatting is done in the sql expression.
@@ -521,7 +530,7 @@ public class BooklistGroup {
                         day(TBL_BOOKS.dot(DBKey.DATE_ACQUIRED), true),
                         Sort.Desc);
                 return new GroupKey(R.string.lbl_date_acquired_day, "dac", keyDomainExpression)
-                        .addBaseDomain(DATE_ACQUIRED);
+                        .addBaseDomain(BD_DATE_ACQUIRED);
             }
 
 
@@ -532,7 +541,7 @@ public class BooklistGroup {
                         year(TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC), true),
                         Sort.Desc);
                 return new GroupKey(R.string.lbl_date_added_year, "ya", keyDomainExpression)
-                        .addBaseDomain(DATE_ADDED);
+                        .addBaseDomain(BD_DATE_ADDED);
             }
             case DATE_ADDED_MONTH: {
                 // Local for the user. Formatting is done after fetching.
@@ -541,7 +550,7 @@ public class BooklistGroup {
                         month(TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC), true),
                         Sort.Desc);
                 return new GroupKey(R.string.lbl_date_added_month, "ma", keyDomainExpression)
-                        .addBaseDomain(DATE_ADDED);
+                        .addBaseDomain(BD_DATE_ADDED);
             }
             case DATE_ADDED_DAY: {
                 // Local for the user. Formatting is done in the sql expression.
@@ -550,7 +559,7 @@ public class BooklistGroup {
                         day(TBL_BOOKS.dot(DBKey.DATE_ADDED__UTC), true),
                         Sort.Desc);
                 return new GroupKey(R.string.lbl_date_added_day, "da", keyDomainExpression)
-                        .addBaseDomain(DATE_ADDED);
+                        .addBaseDomain(BD_DATE_ADDED);
             }
 
 
@@ -561,7 +570,7 @@ public class BooklistGroup {
                         year(TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC), true),
                         Sort.Desc);
                 return new GroupKey(R.string.lbl_date_last_updated_year, "yu", keyDomainExpression)
-                        .addBaseDomain(DATE_LAST_UPDATED);
+                        .addBaseDomain(BD_DATE_LAST_UPDATED);
             }
             case DATE_LAST_UPDATE_MONTH: {
                 // Local for the user. Formatting is done after fetching.
@@ -570,7 +579,7 @@ public class BooklistGroup {
                         month(TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC), true),
                         Sort.Desc);
                 return new GroupKey(R.string.lbl_date_last_updated_month, "mu", keyDomainExpression)
-                        .addBaseDomain(DATE_LAST_UPDATED);
+                        .addBaseDomain(BD_DATE_LAST_UPDATED);
             }
             case DATE_LAST_UPDATE_DAY: {
                 // Local for the user. Formatting is done in the sql expression.
@@ -579,7 +588,7 @@ public class BooklistGroup {
                         day(TBL_BOOKS.dot(DBKey.DATE_LAST_UPDATED__UTC), true),
                         Sort.Desc);
                 return new GroupKey(R.string.lbl_date_last_updated_day, "du", keyDomainExpression)
-                        .addBaseDomain(DATE_LAST_UPDATED);
+                        .addBaseDomain(BD_DATE_LAST_UPDATED);
             }
 
 
@@ -590,8 +599,8 @@ public class BooklistGroup {
                         year(TBL_BOOKS.dot(DBKey.READ_END__DATE), true),
                         Sort.Desc);
                 return new GroupKey(R.string.lbl_date_read_year, "yr", keyDomainExpression)
-                        .addBaseDomain(DATE_READ_END)
-                        .addGroupDomain(BOOK_IS_READ);
+                        .addBaseDomain(BD_DATE_READ_END)
+                        .addGroupDomain(BD_BOOK_IS_READ);
             }
             case DATE_READ_MONTH: {
                 // Local for the user. Formatting is done after fetching.
@@ -600,8 +609,8 @@ public class BooklistGroup {
                         month(TBL_BOOKS.dot(DBKey.READ_END__DATE), true),
                         Sort.Desc);
                 return new GroupKey(R.string.lbl_date_read_month, "mr", keyDomainExpression)
-                        .addBaseDomain(DATE_READ_END)
-                        .addGroupDomain(BOOK_IS_READ);
+                        .addBaseDomain(BD_DATE_READ_END)
+                        .addGroupDomain(BD_BOOK_IS_READ);
             }
             case DATE_READ_DAY: {
                 // Local for the user. Formatting is done in the sql expression.
@@ -610,8 +619,8 @@ public class BooklistGroup {
                         day(TBL_BOOKS.dot(DBKey.READ_END__DATE), true),
                         Sort.Desc);
                 return new GroupKey(R.string.lbl_date_read_day, "dr", keyDomainExpression)
-                        .addBaseDomain(DATE_READ_END)
-                        .addGroupDomain(BOOK_IS_READ);
+                        .addBaseDomain(BD_DATE_READ_END)
+                        .addGroupDomain(BD_BOOK_IS_READ);
             }
 
             // The key domain for a book is not used but we define one
