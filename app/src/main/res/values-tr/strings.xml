@@ -401,7 +401,7 @@
     <string name="lbl_purge_image_cache">Görüntü önbelleğini temizle</string>
     <string name="lbl_rating">Değerlendirme</string>
     <string name="lbl_read">Okunmuş</string>
-    <string name="lbl_read_and_unread">Okunan &amp; Okunmayan</string>
+    <string name="lbl_group_read_and_unread">Okunan &amp; Okunmayan</string>
     <string name="lbl_date_read_day">Okuma günü</string>
     <string name="lbl_read_end">Okumanın bittiği tarih</string>
     <string name="lbl_date_read_month">Okuma ayı</string>
@@ -607,25 +607,10 @@
     <string name="size_x_small">X-Küçük</string>
     <string name="statick">Statik</string>
     <string name="strict">Sıkı</string>
-    <string name="style_builtin_acquired_date">Edinilen</string>
-    <string name="style_builtin_added_date">Eklenen günay</string>
     <string name="style_builtin_author_series">Önce yazar sonra seri</string>
     <string name="style_builtin_author_year">Önce yazar sonra yıl</string>
-    <string name="style_builtin_bookshelf">Kitaplık</string>
     <string name="style_builtin_compact">Küçük</string>
-    <string name="style_builtin_book_title_1st_char">Kitap adı - 1. harf</string>
-    <string name="style_builtin_series_title_1st_char">Seri başlığı - 1. harf</string>
-    <string name="style_builtin_format">Biçim</string>
-    <string name="style_builtin_genre">Tür</string>
-    <string name="style_builtin_language">Dil</string>
-    <string name="style_builtin_lending">Ödünç verilmiş</string>
-    <string name="style_builtin_location">Konum</string>
-    <string name="style_builtin_publication_date">Yayın tarihi</string>
-    <string name="style_builtin_rating">Değerlendirme</string>
-    <string name="style_builtin_read_and_unread">Okunmuş ve okunmamış</string>
-    <string name="style_builtin_read_date">Okunan günay</string>
-    <string name="style_builtin_series">Seriler</string>
-    <string name="style_builtin_update_date">Gün ve ayı güncelle</string>
+    <string name="lbl_date_read">Okunan günay</string>
     <string name="style_is_builtin">Yerleşik</string>
     <string name="style_is_user_defined">Kullanıcı tanımlı</string>
     <string name="system">(Sistem)</string>
@@ -712,4 +697,8 @@
     <string name="tip_import_isbn_list">ISBN numaralarına sahip bir metin dosyasını içe aktarın. Dosyanın her satırında tek bir ISBN olmalıdır. Sonuçlar sıraya konulacaktır.</string>
     <string name="lbl_date_added">Eklenen günay</string>
 
+    <string name="lbl_group_1st_char_author_family_name">Yazar soyadının 1. karakteri</string>
+    <string name="lbl_group_1st_char_series_title">Seri başlığının 1. karakteri</string>
+    <string name="lbl_group_1st_char_publisher_name">Yayıncı adının 1. karakteri</string>
+    <string name="lbl_group_1st_char_book_title">Kitap başlığının 1. karakteri</string>
 </resources>

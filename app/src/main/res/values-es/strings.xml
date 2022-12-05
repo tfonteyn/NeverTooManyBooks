@@ -398,7 +398,7 @@
     <string name="lbl_purge_image_cache">Borrar caché de imágenes</string>
     <string name="lbl_rating">Calificación</string>
     <string name="lbl_read">Leídos</string>
-    <string name="lbl_read_and_unread">Leído &amp; No leído</string>
+    <string name="lbl_group_read_and_unread">Leído &amp; No leído</string>
     <string name="lbl_date_read_day">Día de lectura</string>
     <string name="lbl_read_end">Fecha de fin de lectura</string>
     <string name="lbl_date_read_month">Mes de lectura</string>
@@ -605,25 +605,10 @@
     <string name="size_x_small">X-Pequeño</string>
     <string name="statick">Estático</string>
     <string name="strict">Estricto</string>
-    <string name="style_builtin_acquired_date">Fecha de adquisición</string>
-    <string name="style_builtin_added_date">Fecha de inclusión</string>
     <string name="style_builtin_author_series">Primero Autor después Serie</string>
     <string name="style_builtin_author_year">Autor y Año</string>
-    <string name="style_builtin_bookshelf">Biblioteca</string>
     <string name="style_builtin_compact">Compacto</string>
-    <string name="style_builtin_book_title_1st_char">Título del libro - Primera letra</string>
-    <string name="style_builtin_series_title_1st_char">Título de la serie - Primera letra</string>
-    <string name="style_builtin_format">Formato</string>
-    <string name="style_builtin_genre">Género</string>
-    <string name="style_builtin_language">Idioma</string>
-    <string name="style_builtin_lending">Prestados</string>
-    <string name="style_builtin_location">Ubicación</string>
-    <string name="style_builtin_publication_date">Fecha de publicación</string>
-    <string name="style_builtin_rating">Calificación</string>
-    <string name="style_builtin_read_and_unread">Leídos y No leídos</string>
-    <string name="style_builtin_read_date">Fecha de lectura</string>
-    <string name="style_builtin_series">Serie</string>
-    <string name="style_builtin_update_date">Fecha de actualización</string>
+    <string name="lbl_date_read">Fecha de lectura</string>
     <string name="style_is_builtin">Predefinido</string>
     <string name="style_is_user_defined">Definido por el usuario</string>
     <string name="system">(Sistema)</string>
@@ -710,4 +695,8 @@
     <string name="tip_import_isbn_list">Importa un archivo de texto con números ISBN. El archivo debe tener un solo ISBN en cada línea. Los resultados se colocarán en la cola.</string>
     <string name="lbl_date_added">Fecha de inclusión</string>
 
+    <string name="lbl_group_1st_char_author_family_name">1er carácter del apellido del autor</string>
+    <string name="lbl_group_1st_char_series_title">1er carácter del título de la serie</string>
+    <string name="lbl_group_1st_char_publisher_name">1er carácter del nombre del editor</string>
+    <string name="lbl_group_1st_char_book_title">1er carácter del título del libro</string>
 </resources>

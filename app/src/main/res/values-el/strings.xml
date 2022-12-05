@@ -398,7 +398,7 @@
     <string name="lbl_purge_image_cache">Καθαρή cache εικόνας</string>
     <string name="lbl_rating">Βαθμολογία</string>
     <string name="lbl_read">Αναγνωσμένα</string>
-    <string name="lbl_read_and_unread">Αναγνωσμένο &amp; Μη Αναγνωσμένο</string>
+    <string name="lbl_group_read_and_unread">Αναγνωσμένο &amp; Μη Αναγνωσμένο</string>
     <string name="lbl_date_read_day">Ημέρα Ανάγνωσης</string>
     <string name="lbl_read_end">Ημερομηνία Λήξης Ανάγνωσης</string>
     <string name="lbl_date_read_month">Μήνας Ανάγνωσης</string>
@@ -605,25 +605,10 @@
     <string name="size_x_small">X-Μικρό</string>
     <string name="statick">Στατικός</string>
     <string name="strict">Αυστηρό</string>
-    <string name="style_builtin_acquired_date">Επίκτητος</string>
-    <string name="style_builtin_added_date">Ημερομηνία προσθήκης</string>
     <string name="style_builtin_author_series">Συγγραφέας μετά σειρά</string>
     <string name="style_builtin_author_year">Συγγραφέας και χρονιά</string>
-    <string name="style_builtin_bookshelf">Ράφι</string>
     <string name="style_builtin_compact">Συμπαγής</string>
-    <string name="style_builtin_book_title_1st_char">Τίτλος βιβλίου - 1ο γράμμα</string>
-    <string name="style_builtin_series_title_1st_char">Τίτλος σειράς - 1ο γράμμα</string>
-    <string name="style_builtin_format">Μορφή</string>
-    <string name="style_builtin_genre">Όνομα Κατηγορίας</string>
-    <string name="style_builtin_language">Γλώσσα</string>
-    <string name="style_builtin_lending">Δανεισμένα</string>
-    <string name="style_builtin_location">Τοποθεσία</string>
-    <string name="style_builtin_publication_date">Ημερομηνία έκδοσης</string>
-    <string name="style_builtin_rating">Βαθμολογία</string>
-    <string name="style_builtin_read_and_unread">Αναγνωσμένα και μη αναγνωσμένα</string>
-    <string name="style_builtin_read_date">Ημερομηνία Ανάγνωσης</string>
-    <string name="style_builtin_series">Σειρά</string>
-    <string name="style_builtin_update_date">Ημερομηνία ενημέρωσης</string>
+    <string name="lbl_date_read">Ημερομηνία Ανάγνωσης</string>
     <string name="style_is_builtin">Ενσωματωμένο</string>
     <string name="style_is_user_defined">Καθορισμενο-από-χρήστη</string>
     <string name="system">(Σύστημα)</string>
@@ -710,4 +695,8 @@
     <string name="tip_import_isbn_list">Εισαγάγετε ένα αρχείο κειμένου με αριθμούς ISBN. Το αρχείο θα πρέπει να έχει ένα μόνο ISBN σε κάθε γραμμή. Τα αποτελέσματα θα τοποθετηθούν στην ουρά.</string>
     <string name="lbl_date_added">Ημερομηνία προσθήκης</string>
 
+    <string name="lbl_group_1st_char_author_family_name">1ος χαρακτήρας του ονόματος της οικογένειας του συγγραφέα</string>
+    <string name="lbl_group_1st_char_series_title">1ος χαρακτήρας του τίτλου της σειράς</string>
+    <string name="lbl_group_1st_char_publisher_name">1ος χαρακτήρας του ονόματος του εκδότη</string>
+    <string name="lbl_group_1st_char_book_title">1ος χαρακτήρας του τίτλου του βιβλίου</string>
 </resources>

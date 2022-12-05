@@ -397,7 +397,7 @@
     <string name="lbl_purge_image_cache">Vymazat mezipaměť obrázků</string>
     <string name="lbl_rating">Hodnocení</string>
     <string name="lbl_read">Přečteno</string>
-    <string name="lbl_read_and_unread">Přečteno amp; Nepřečteno</string>
+    <string name="lbl_group_read_and_unread">Přečteno amp; Nepřečteno</string>
     <string name="lbl_date_read_day">Čtení dne</string>
     <string name="lbl_read_end">Datum ukončení čtení</string>
     <string name="lbl_date_read_month">Měsíc přečetl</string>
@@ -602,25 +602,10 @@
     <string name="size_x_small">X-Malý</string>
     <string name="statick">Statický</string>
     <string name="strict">Přísné</string>
-    <string name="style_builtin_acquired_date">Získáno</string>
-    <string name="style_builtin_added_date">Datum přidání</string>
     <string name="style_builtin_author_series">Autor, následně série</string>
     <string name="style_builtin_author_year">Autor, rok</string>
-    <string name="style_builtin_bookshelf">Knihovna</string>
     <string name="style_builtin_compact">Kompaktní</string>
-    <string name="style_builtin_book_title_1st_char">Název knihy - 1. písm</string>
-    <string name="style_builtin_series_title_1st_char">Název edice 1. písmeno</string>
-    <string name="style_builtin_format">Formát</string>
-    <string name="style_builtin_genre">Název žánru</string>
-    <string name="style_builtin_language">Jazyk</string>
-    <string name="style_builtin_lending">Půjčeno</string>
-    <string name="style_builtin_location">Umístění</string>
-    <string name="style_builtin_publication_date">Datum vydání</string>
-    <string name="style_builtin_rating">Hodnocení</string>
-    <string name="style_builtin_read_and_unread">Přečteno/Nepřečteno</string>
-    <string name="style_builtin_read_date">Datum Čtení</string>
-    <string name="style_builtin_series">Série</string>
-    <string name="style_builtin_update_date">Datum aktualizace</string>
+    <string name="lbl_date_read">Datum Čtení</string>
     <string name="style_is_builtin">Vestavěný</string>
     <string name="style_is_user_defined">Definován uživatelem</string>
     <string name="system">(Systém)</string>
@@ -707,4 +692,8 @@
     <string name="tip_import_isbn_list">Importujte textový soubor s čísly ISBN. Soubor by měl mít na každém řádku jedno ISBN. Výsledky budou zařazeny do fronty.</string>
     <string name="lbl_date_added">Datum přidání</string>
 
+    <string name="lbl_group_1st_char_author_family_name">1. znak příjmení Author</string>
+    <string name="lbl_group_1st_char_series_title">1. postava názvu seriálu</string>
+    <string name="lbl_group_1st_char_publisher_name">1. znak jména vydavatele</string>
+    <string name="lbl_group_1st_char_book_title">1. znak názvu knihy</string>
 </resources>

@@ -398,7 +398,7 @@
     <string name="lbl_purge_image_cache">Очистить кэш изображений</string>
     <string name="lbl_rating">Оценка</string>
     <string name="lbl_read">Прочитана</string>
-    <string name="lbl_read_and_unread">Прочитано &amp; Не прочитано</string>
+    <string name="lbl_group_read_and_unread">Прочитано &amp; Не прочитано</string>
     <string name="lbl_date_read_day">День прочтения</string>
     <string name="lbl_read_end">Конец чтения</string>
     <string name="lbl_date_read_month">Месяц прочтения</string>
@@ -603,25 +603,10 @@
     <string name="size_x_small">X-Маленький</string>
     <string name="statick">статический</string>
     <string name="strict">Строгий</string>
-    <string name="style_builtin_acquired_date">приобретенный</string>
-    <string name="style_builtin_added_date">Дата добавления</string>
     <string name="style_builtin_author_series">Сначала автор потом серия</string>
     <string name="style_builtin_author_year">Автор и год</string>
-    <string name="style_builtin_bookshelf">Книжная полка</string>
     <string name="style_builtin_compact">Компактный</string>
-    <string name="style_builtin_book_title_1st_char">Название книги - 1-я буква</string>
-    <string name="style_builtin_series_title_1st_char">Название серии - 1-я буква</string>
-    <string name="style_builtin_format">Формат</string>
-    <string name="style_builtin_genre">Имя жанра</string>
-    <string name="style_builtin_language">Язык</string>
-    <string name="style_builtin_lending">Заимствована</string>
-    <string name="style_builtin_location">Местоположение</string>
-    <string name="style_builtin_publication_date">Дата публикации</string>
-    <string name="style_builtin_rating">Оценка</string>
-    <string name="style_builtin_read_and_unread">Прочтена и непрочтена</string>
-    <string name="style_builtin_read_date">Дата прочтения</string>
-    <string name="style_builtin_series">Серии</string>
-    <string name="style_builtin_update_date">Дата обновления</string>
+    <string name="lbl_date_read">Дата прочтения</string>
     <string name="style_is_builtin">Встроенный</string>
     <string name="style_is_user_defined">Определенный пользователем</string>
     <string name="system">(системное)</string>
@@ -707,5 +692,10 @@
     <string name="lbl_story_in_single_book">«%1$s» присутствует в одной книге:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Импортируйте текстовый файл с номерами ISBN. Файл должен иметь один ISBN в каждой строке. Результаты будут помещены в очередь.</string>
     <string name="lbl_date_added">Дата добавления</string>
+
+    <string name="lbl_group_1st_char_author_family_name">1-й символ фамилии Автора</string>
+    <string name="lbl_group_1st_char_series_title">1-й персонаж названия сериала</string>
+    <string name="lbl_group_1st_char_publisher_name">1-й символ имени издателя</string>
+    <string name="lbl_group_1st_char_book_title">1-й символ названия книги</string>
 
 </resources>

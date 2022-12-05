@@ -1096,27 +1096,25 @@
     <string name="style_is_user_defined">User-defined</string>
     <string name="style_is_builtin">Builtin</string>
 
-    <string name="style_builtin_acquired_date">Acquired</string>
-    <string name="style_builtin_added_date">Date added</string>
     <string name="style_builtin_author_series">Author, Series</string>
-    <string name="style_builtin_author_year">Author,Year</string>
-    <string name="style_builtin_bookshelf">Bookshelf</string>
+    <string name="style_builtin_author_year">Author, Year</string>
     <string name="style_builtin_compact">Compact</string>
-    <string name="style_builtin_book_title_1st_char">Book title - 1st letter</string>
-    <string name="style_builtin_series_title_1st_char">Series title - 1st letter</string>
-    <string name="style_builtin_format">Format</string>
-    <string name="style_builtin_genre">Genre</string>
-    <!-- [VERIFIED] -->
-    <string name="style_builtin_language">Language</string>
-    <string name="style_builtin_lending">Lending</string>
-    <!-- [VERIFIED] -->
-    <string name="style_builtin_location">Location</string>
-    <string name="style_builtin_publication_date">Pub. Date</string>
-    <string name="style_builtin_rating">Rating</string>
-    <string name="style_builtin_read_and_unread">Read/Unread</string>
-    <string name="style_builtin_read_date">Date Read</string>
-    <string name="style_builtin_series">Series</string>
-    <string name="style_builtin_update_date">Date updated</string>
+
+    <string name="style_builtin_bookshelf" translatable="false">@string/lbl_bookshelf</string>
+    <string name="style_builtin_date_acquired" translatable="false">@string/lbl_date_acquired</string>
+    <string name="style_builtin_date_added" translatable="false">@string/lbl_date_added</string>
+    <string name="style_builtin_date_last_updated" translatable="false">@string/lbl_date_last_updated</string>
+    <string name="style_builtin_date_published" translatable="false">@string/lbl_date_published</string>
+    <string name="style_builtin_date_read" translatable="false">@string/lbl_date_read</string>
+    <string name="style_builtin_1st_char_book_title" translatable="false">@string/lbl_group_1st_char_book_title</string>
+    <string name="style_builtin_format" translatable="false">@string/lbl_format</string>
+    <string name="style_builtin_genre" translatable="false">@string/lbl_genre</string>
+    <string name="style_builtin_language" translatable="false">@string/lbl_language</string>
+    <string name="style_builtin_lending" translatable="false">@string/lbl_lending</string>
+    <string name="style_builtin_location" translatable="false">@string/lbl_location</string>
+    <string name="style_builtin_rating" translatable="false">@string/lbl_rating</string>
+    <string name="style_builtin_read_and_unread" translatable="false">@string/lbl_group_read_and_unread</string>
+    <string name="style_builtin_series" translatable="false">@string/lbl_series</string>
 
     <!-- ####################################################################################### -->
     <!-- == List values used to unify terminology from internet websites. == -->
@@ -1269,6 +1267,17 @@
     <string name="statick">Static</string>
 
     <!-- ####################################################################################### -->
+    <!-- == Booklist Group names == -->
+    <!-- ####################################################################################### -->
+
+    <string name="lbl_group_read_and_unread">Read &amp; Unread</string>
+
+    <string name="lbl_group_1st_char_author_family_name">1st character of the Author family name</string>
+    <string name="lbl_group_1st_char_series_title">1st character of the Series title</string>
+    <string name="lbl_group_1st_char_publisher_name">1st character of the Publisher name</string>
+    <string name="lbl_group_1st_char_book_title">1st character of the Book title</string>
+
+    <!-- ####################################################################################### -->
     <!-- == Field labels == -->
     <!-- ####################################################################################### -->
 
@@ -1391,7 +1400,6 @@
     <string name="lbl_table_of_content">Table Of Content</string>
     <string name="lbl_table_of_content_entry">TOC Entry</string>
 
-    <string name="lbl_read_and_unread">Read &amp; Unread</string>
 
     <string name="lbl_site_book_id">Website book ID</string>
     <string name="lbl_select_website">Select a website:</string>
@@ -1423,7 +1431,7 @@
 
     <string name="lbl_barcode">Barcode</string>
 
-    <!-- Label used in the list of Field visibility preferences. -->
+    <!-- Label used in the list of Field visibility preferences and as style name. -->
     <string name="lbl_lending">Lending</string>
     <!-- a header, with a text field below where the user can type in a name -->
     <string name="lbl_lend_book_to_colon">Lend this book to:</string>
@@ -1450,7 +1458,8 @@
     <string name="lbl_date_added_year">Year Added</string>
     <string name="lbl_date_added_month">Month Added</string>
     <string name="lbl_date_added_day">Day Added</string>
-    <!-- Individual fields for "date read" -->
+    <!-- The date a book was read -->
+    <string name="lbl_date_read">Date Read</string>
     <string name="lbl_date_read_year">Year read</string>
     <string name="lbl_date_read_month">Month read</string>
     <string name="lbl_date_read_day">Day read</string>
@@ -1478,34 +1487,28 @@
 
     <string name="lbl_archive_is_export_only">This is only for exporting data; importing is not supported.</string>
 
-    <!-- Text in a dropdown menu. Must be fairly short. -->
-    <string name="lbl_archive_type_backup_zip">Backup (.zip)</string>
-    <string name="lbl_archive_type_backup_tar">Backup (.tar)</string>
-    <!-- Explanatory note for 'lbl_archive_type_xml' -->
-    <string name="lbl_archive_type_backup_info">Full Backup / Restore archive</string>
-
     <string name="btn_start_export">Start export</string>
     <string name="btn_start_import">Start import</string>
 
     <!-- Text in a dropdown menu. Must be fairly short. -->
+    <string name="lbl_archive_type_backup_zip">Backup (.zip)</string>
+    <string name="lbl_archive_type_backup_tar">Backup (.tar)</string>
     <string name="lbl_archive_type_csv">Books (.csv)</string>
+    <string name="lbl_archive_type_xml">XML export (.xml)</string>
+    <string name="lbl_archive_type_json">JSON export (.json)</string>
+    <string name="lbl_archive_type_db">Database file (.db)</string>
+
+    <!-- Explanatory note for 'lbl_archive_type_xml' -->
+    <string name="lbl_archive_type_backup_info">Full Backup / Restore archive</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
     <string name="lbl_archive_type_csv_info">Export of the books to a CSV file</string>
-
-    <!-- Text in a dropdown menu. Must be fairly short. -->
-    <string name="lbl_archive_type_xml">XML export (.xml)</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
     <string name="lbl_archive_format_xml_info">All data in XML format.</string>
-
-    <!-- Text in a dropdown menu. Must be fairly short. -->
-    <string name="lbl_archive_type_json">JSON export (.json)</string>
     <!-- Explanatory note for 'lbl_archive_type_json' -->
     <string name="lbl_archive_format_json_info">All data in JSON format.</string>
-
-    <!-- Text in a dropdown menu. Must be fairly short. -->
-    <string name="lbl_archive_type_db">Database file (.db)</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
     <string name="lbl_archive_format_db_info">The SQLite database.</string>
+
     <string name="lbl_database">Database</string>
     <string name="lbl_database_upgrade">Database upgrade files</string>
 

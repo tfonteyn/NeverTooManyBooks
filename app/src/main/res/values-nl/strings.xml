@@ -396,7 +396,7 @@
     <string name="lbl_purge_image_cache">Afbeeldingen cache wissen</string>
     <string name="lbl_rating">Waardering</string>
     <string name="lbl_read">Gelezen</string>
-    <string name="lbl_read_and_unread">Gelezen &amp; Ongelezen</string>
+    <string name="lbl_group_read_and_unread">Gelezen &amp; Ongelezen</string>
     <string name="lbl_date_read_day">Dag</string>
     <string name="lbl_read_end">Einddatum gelezen</string>
     <string name="lbl_date_read_month">Maand</string>
@@ -604,25 +604,10 @@
     <string name="size_x_small">X-Klein</string>
     <string name="statick">Statisch</string>
     <string name="strict">Strikt</string>
-    <string name="style_builtin_acquired_date">Datum verworven</string>
-    <string name="style_builtin_added_date">Datum toegevoegd</string>
     <string name="style_builtin_author_series">Auteur daarna Reeks</string>
     <string name="style_builtin_author_year">Auteur en jaar</string>
-    <string name="style_builtin_bookshelf">Boekenplank</string>
     <string name="style_builtin_compact">Compact</string>
-    <string name="style_builtin_book_title_1st_char">Boektitel - 1e letter</string>
-    <string name="style_builtin_series_title_1st_char">Reekstitel - 1e letter</string>
-    <string name="style_builtin_format">Formaat</string>
-    <string name="style_builtin_genre">Genrenaam</string>
-    <string name="style_builtin_language">Taal</string>
-    <string name="style_builtin_lending">Uitlenen</string>
-    <string name="style_builtin_location">Locatie</string>
-    <string name="style_builtin_publication_date">Uitgifte datum</string>
-    <string name="style_builtin_rating">Waardering</string>
-    <string name="style_builtin_read_and_unread">Gelezen en ongelezen</string>
-    <string name="style_builtin_read_date">Datum gelezen</string>
-    <string name="style_builtin_series">Reeksen</string>
-    <string name="style_builtin_update_date">Datum update</string>
+    <string name="lbl_date_read">Datum gelezen</string>
     <string name="style_is_builtin">Ingebouwd</string>
     <string name="style_is_user_defined">Gebruiker-gedefinieerd</string>
     <string name="system">(Systeem)</string>
@@ -708,5 +693,8 @@
     <string name="tip_import_isbn_list">Importeer een tekstbestand met ISBN-nummers. Het bestand moet op elke regel één enkel ISBN-nummer hebben. De resultaten worden in de wachtrij geplaatst.</string>
     <string name="lbl_date_added">Datum toegevoegd</string>
 
-
+    <string name="lbl_group_1st_char_author_family_name">1e karakter van de achternaam van de auteur</string>
+    <string name="lbl_group_1st_char_series_title">1e karakter van de serietitel</string>
+    <string name="lbl_group_1st_char_publisher_name">1e karakter van de uitgeversnaam</string>
+    <string name="lbl_group_1st_char_book_title">1e karakter van de boektitel</string>
 </resources>
