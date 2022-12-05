@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -61,14 +61,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:checked="true"
-            tools:text="@string/pe_bob_filter_read_yes"
+            tools:text="@string/option_bob_filter_read_yes"
             />
 
         <RadioButton
             android:id="@+id/valueFalse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="@string/pe_bob_filter_read_no"
+            tools:text="@string/option_bob_filter_read_no"
             />
     </RadioGroup>
 </androidx.constraintlayout.widget.ConstraintLayout>

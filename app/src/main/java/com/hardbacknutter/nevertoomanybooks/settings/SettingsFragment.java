@@ -293,7 +293,7 @@ public class SettingsFragment
                     .setTitle(R.string.lbl_storage_settings)
                     // this dialog is important. Make sure the user pays some attention
                     .setCancelable(false)
-                    .setMessage(getString(R.string.lbl_storage_select, newVolumeDesc))
+                    .setMessage(getString(R.string.option_storage_select, newVolumeDesc))
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(android.R.string.ok, (d, w) ->
                             setStorageVolume(newVolumeIndex))
@@ -304,8 +304,8 @@ public class SettingsFragment
             final CharSequence oldVolumeDesc = storageVolumePref.getEntries()[oldVolumeIndex];
 
             final CharSequence[] items = {
-                    getString(R.string.lbl_storage_select, newVolumeDesc),
-                    getString(R.string.info_moving_covers_from_x_to_y,
+                    getString(R.string.option_storage_select, newVolumeDesc),
+                    getString(R.string.option_moving_covers_from_x_to_y,
                               oldVolumeDesc, newVolumeDesc)};
 
             //noinspection ConstantConditions

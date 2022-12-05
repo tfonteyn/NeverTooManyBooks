@@ -79,7 +79,7 @@
                     android:id="@+id/cbx_is_complete"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/lbl_is_complete"
+                    android:text="@string/lbl_series_is_complete"
                     app:layout_constraintStart_toStartOf="@id/lbl_series_title"
                     app:layout_constraintTop_toBottomOf="@id/lbl_series_title"
                     />

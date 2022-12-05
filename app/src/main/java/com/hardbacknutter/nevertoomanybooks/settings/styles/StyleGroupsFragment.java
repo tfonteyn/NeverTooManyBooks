@@ -78,7 +78,7 @@ public class StyleGroupsFragment
                         //noinspection ConstantConditions
                         new MaterialAlertDialogBuilder(getContext())
                                 .setIcon(R.drawable.ic_baseline_warning_24)
-                                .setTitle(R.string.pg_style_groups)
+                                .setTitle(R.string.pt_bob_groups)
                                 .setMessage(R.string.warning_select_at_least_1_group)
                                 .setNegativeButton(R.string.action_discard, (d, w) ->
                                         // just pop, we're always called from a fragment

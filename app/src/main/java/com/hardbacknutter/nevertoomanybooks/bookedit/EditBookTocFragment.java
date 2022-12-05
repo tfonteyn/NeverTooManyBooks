@@ -754,7 +754,7 @@ public class EditBookTocFragment
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
             menu.add(R.id.MENU_POPULATE_TOC_FROM_ISFDB, R.id.MENU_POPULATE_TOC_FROM_ISFDB, 0,
-                     R.string.isfdb_menu_populate_toc);
+                     R.string.option_isfdb_menu_populate_toc);
         }
 
         @Override

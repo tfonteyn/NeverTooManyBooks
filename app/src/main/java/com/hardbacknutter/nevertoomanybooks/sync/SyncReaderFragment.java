@@ -422,7 +422,7 @@ public class SyncReaderFragment
         message.getData().ifPresent(data -> {
             final ReaderResults result = data.getResult();
             if (result != null) {
-                onImportFinished(R.string.progress_end_import_partially_complete, result);
+                onImportFinished(R.string.info_import_partially_complete, result);
             } else {
                 //noinspection ConstantConditions
                 Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
@@ -442,7 +442,7 @@ public class SyncReaderFragment
         closeProgressDialog();
 
         message.getData().map(TaskResult::requireResult).ifPresent(
-                result -> onImportFinished(R.string.progress_end_import_complete, result));
+                result -> onImportFinished(R.string.info_import_complete, result));
     }
 
     /**

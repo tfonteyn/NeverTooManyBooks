@@ -98,7 +98,7 @@ public class SearchBookByExternalIdFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
-        toolbar.setTitle(R.string.fab_add_book_by_external_id);
+        toolbar.setTitle(R.string.lbl_add_book_by_external_id);
 
         if (savedInstanceState != null) {
             final int checkedId = savedInstanceState.getInt(SIS_SELECTED_RB_ID, View.NO_ID);

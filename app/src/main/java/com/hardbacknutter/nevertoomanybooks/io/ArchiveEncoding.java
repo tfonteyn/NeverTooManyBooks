@@ -62,24 +62,24 @@ public enum ArchiveEncoding
         implements Parcelable {
     /** The default full backup/restore support. Text files are compressed, images are not. */
     Zip("zip",
-        R.string.lbl_archive_type_backup_zip,
-        R.string.lbl_archive_type_backup_info),
+        R.string.option_archive_type_backup_zip,
+        R.string.option_info_lbl_archive_type_backup),
 
     /** Books as a CSV file; legacy support for importing only. */
-    Csv("csv", R.string.lbl_archive_type_csv,
-        R.string.lbl_archive_type_csv_info),
+    Csv("csv", R.string.option_archive_type_csv,
+        R.string.option_info_archive_type_csv),
 
     /** Books, Styles, Preferences in a JSON file; full support for export/import. */
-    Json("json", R.string.lbl_archive_type_json,
-         R.string.lbl_archive_format_json_info),
+    Json("json", R.string.option_archive_type_json,
+         R.string.option_info_archive_format_json),
 
     /** Database. */
-    SqLiteDb("db", R.string.lbl_archive_type_db,
-             R.string.lbl_archive_format_db_info),
+    SqLiteDb("db", R.string.option_archive_type_db,
+             R.string.option_info_archive_format_db),
 
     /** The legacy full backup/restore support. NOT compressed. */
-    Tar("tar", R.string.lbl_archive_type_backup_tar,
-        R.string.lbl_archive_type_backup_info);
+    Tar("tar", R.string.option_archive_type_backup_tar,
+        R.string.option_info_lbl_archive_type_backup);
 
     /** {@link Parcelable}. */
     public static final Creator<ArchiveEncoding> CREATOR = new Creator<>() {

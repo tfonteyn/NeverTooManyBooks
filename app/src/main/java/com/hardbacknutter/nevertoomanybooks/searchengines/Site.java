@@ -312,7 +312,7 @@ public final class Site
         Covers("covers", R.string.lbl_covers),
 
         /** List of sites for which we store an id. */
-        ViewOnSite("view", R.string.menu_view_book_at);
+        ViewOnSite("view", R.string.option_view_book_at);
 
         /** {@link Parcelable}. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")

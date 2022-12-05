@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@
     >
 
     <PreferenceCategory
-        android:title="@string/pg_ui">
+        android:title="@string/pc_ui">
         <!-- The language list contains Locale string IDs in contrast to other
              ListPreference which use 0,1... -->
         <ListPreference
@@ -56,12 +56,12 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@android:string/search_go">
+        android:title="@string/pc_search">
 
         <Preference
             android:icon="@drawable/ic_baseline_sort_24"
             android:key="psk_search_site_order"
-            android:summary="@string/pt_website_order_and_enable"
+            android:summary="@string/pt_website_search_order_and_enable"
             android:title="@string/lbl_websites">
         </Preference>
 
@@ -71,19 +71,19 @@
             android:key="network.allow.metered"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/pt_allow_mobile_data" />
+            android:title="@string/pt_allow_metered_network_data" />
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.SearchInternetPreferenceFragment"
             android:icon="@drawable/ic_baseline_search_24"
             android:key="psk_web_searches"
-            android:title="@string/btn_more_ellipsis"
+            android:title="@string/pt_more"
             />
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/lbl_formatting">
+        android:title="@string/pc_formatting">
 
         <!-- This is the global setting; can be overridden with a style-level setting. -->
         <SwitchPreference
@@ -106,14 +106,14 @@
             android:defaultValue="false"
             android:icon="@drawable/ic_baseline_reorder_24"
             android:key="show.title.reordered"
-            android:summaryOff="@string/pt_show_titles_reordered_off"
-            android:summaryOn="@string/pt_show_titles_reordered_on"
+            android:summaryOff="@string/ps_show_titles_reordered_off"
+            android:summaryOn="@string/ps_show_titles_reordered_on"
             android:title="@string/pt_show_title_reordered" />
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/lbl_sorting">
+        android:title="@string/pc_sorting">
 
         <!-- This is the global setting; can be overridden with a style-level setting. -->
         <SwitchPreference
@@ -138,20 +138,20 @@
             android:defaultValue="true"
             android:icon="@drawable/ic_baseline_sort_by_alpha_24"
             android:key="sort.title.reordered"
-            android:summaryOff="@string/pt_show_titles_reordered_off"
-            android:summaryOn="@string/pt_show_titles_reordered_on"
+            android:summaryOff="@string/ps_show_titles_reordered_off"
+            android:summaryOn="@string/ps_show_titles_reordered_on"
             android:title="@string/pt_sort_title_reordered" />
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/action_edit">
+        android:title="@string/pc_edit">
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.ImagesPreferenceFragment"
             android:icon="@drawable/ic_baseline_image_24"
             android:key="psk_thumbnails"
-            android:title="@string/lbl_covers_long"
+            android:title="@string/pt_covers"
             />
 
         <ListPreference
@@ -166,13 +166,13 @@
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment"
             android:icon="@drawable/ic_barcode"
             android:key="psk_barcode"
-            android:title="@string/pg_barcode_scanner"
+            android:title="@string/pt_barcode_scanner"
             />
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/pg_booklist">
+        android:title="@string/pc_bob">
         <!-- edit the global defaults for styles.
         WORK IN PROGRESS, HAS ISSUES, CRASHES due to not passing 'extras' with the tag name
         implement 'onPreferenceStartFragment'
@@ -200,17 +200,17 @@
             android:entryValues="@array/pv_fastscroller_overlay"
             android:icon="@drawable/ic_baseline_chat_24"
             android:key="booklist.fastscroller.overlay"
-            android:title="@string/pt_enable_fast_scroller_overlay" />
+            android:title="@string/pt_fast_scroller_overlay" />
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/lbl_advanced_options">
+        android:title="@string/pc_advanced_options">
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment"
             android:icon="@drawable/ic_baseline_visibility_24"
             android:key="psk_fields_visibility"
-            android:title="@string/pg_ui_field_visibility"
+            android:title="@string/pt_field_visibility"
             />
 
         <SwitchPreference
@@ -219,7 +219,7 @@
             android:key="edit.book.tab.externalId"
             android:summaryOff="@string/disabled"
             android:summaryOn="@string/enabled"
-            android:title="@string/pt_allow_edit_external_id" />
+            android:title="@string/pt_allow_editing_external_id" />
 
 
         <SwitchPreference
@@ -228,13 +228,13 @@
             android:key="fields.visibility.loaned_to"
             android:summaryOff="@string/disabled"
             android:summaryOn="@string/enabled"
-            android:title="@string/lbl_lending" />
+            android:title="@string/pt_lending_enabled" />
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment"
             android:icon="@drawable/ic_baseline_cloud_24"
             android:key="psk_calibre"
-            android:title="@string/lbl_calibre_content_server"
+            android:title="@string/pt_calibre_content_server"
             tools:summary="@string/disabled">
         </Preference>
 
@@ -243,7 +243,7 @@
             android:defaultValue="0"
             android:icon="@drawable/ic_baseline_folder_24"
             android:key="storage.volume.index"
-            android:title="@string/lbl_storage_volume" />
+            android:title="@string/pt_storage_volume" />
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.MaintenanceFragment"

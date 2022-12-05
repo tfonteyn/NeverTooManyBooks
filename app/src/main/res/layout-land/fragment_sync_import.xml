@@ -111,7 +111,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
-            android:text="@string/lbl_import_books_option_new_only"
+            android:text="@string/option_import_books_option_new_only"
             app:layout_constraintStart_toStartOf="@id/cbx_books"
             app:layout_constraintTop_toBottomOf="@id/cbx_books"
             />
@@ -119,7 +119,7 @@
         <ImageButton
             android:id="@+id/inf_import_new_only"
             style="@style/Button.InfoPopup"
-            android:contentDescription="@string/txt_import_books_option_new_only"
+            android:contentDescription="@string/option_info_import_books_option_new_only"
             app:layout_constraintStart_toEndOf="@id/rb_import_new_only"
             app:layout_constraintTop_toTopOf="@id/rb_import_new_only"
             />
@@ -130,7 +130,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:checked="true"
-            android:text="@string/lbl_import_books_option_new_and_updated"
+            android:text="@string/option_import_books_option_new_and_updated"
             app:layout_constraintStart_toStartOf="@id/cbx_books"
             app:layout_constraintTop_toBottomOf="@id/rb_import_new_only"
             />
@@ -138,7 +138,7 @@
         <ImageButton
             android:id="@+id/inf_import_new_and_updated"
             style="@style/Button.InfoPopup"
-            android:contentDescription="@string/txt_import_books_option_new_and_updated"
+            android:contentDescription="@string/option_info_import_books_option_new_and_updated"
             app:layout_constraintStart_toEndOf="@id/rb_import_new_and_updated"
             app:layout_constraintTop_toTopOf="@id/rb_import_new_and_updated"
             />
@@ -148,7 +148,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
-            android:text="@string/lbl_import_books_option_all"
+            android:text="@string/option_import_books_option_all"
             app:layout_constraintStart_toStartOf="@id/cbx_books"
             app:layout_constraintTop_toBottomOf="@id/rb_import_new_and_updated"
             />
@@ -156,7 +156,7 @@
         <ImageButton
             android:id="@+id/inf_import_all"
             style="@style/Button.InfoPopup"
-            android:contentDescription="@string/txt_import_books_option_all"
+            android:contentDescription="@string/option_info_import_books_option_all"
             app:layout_constraintStart_toEndOf="@id/rb_import_all"
             app:layout_constraintTop_toTopOf="@id/rb_import_all"
             />
@@ -175,7 +175,7 @@
         <TextView
             android:id="@+id/inf_sync_date"
             style="@style/Text.Header"
-            android:text="@string/lbl_import_books_option_new_and_updated_cutoff_date"
+            android:text="@string/option_header_import_books_option_new_and_updated_cutoff_date"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/lbl_sync_date"
             app:layout_constraintStart_toStartOf="parent"
@@ -206,7 +206,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/section_margin_top"
-            android:text="@string/btn_start_import"
+            android:text="@string/action_start_import"
             app:icon="@drawable/ic_baseline_start_24"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.9"

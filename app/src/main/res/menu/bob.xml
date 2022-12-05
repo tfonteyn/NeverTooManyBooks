@@ -37,14 +37,14 @@
         android:id="@id/MENU_FILTERS"
         android:icon="@drawable/ic_baseline_filter_list_24"
         android:orderInCategory="@integer/MENU_ORDER_SORT"
-        android:title="@string/pg_filters"
+        android:title="@string/lbl_filters"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@id/MENU_STYLE_PICKER"
         android:icon="@drawable/ic_baseline_style_24"
         android:orderInCategory="@integer/MENU_ORDER_SORT"
-        android:title="@string/lbl_sort_and_style_ellipsis"
+        android:title="@string/option_sort_and_style_ellipsis"
         app:showAsAction="ifRoom" />
 
     <group android:id="@id/MENU_GROUP_BOB_EXPANSION">
@@ -52,21 +52,21 @@
             android:id="@id/MENU_LEVEL_COLLAPSE"
             android:icon="@drawable/ic_baseline_unfold_less_24"
             android:orderInCategory="@integer/MENU_ORDER_LEVEL_COLLAPSE"
-            android:title="@string/lbl_level_collapse"
+            android:title="@string/option_level_collapse"
             app:showAsAction="ifRoom" />
 
         <item
             android:id="@id/MENU_LEVEL_PREFERRED_EXPANSION"
             android:icon="@drawable/ic_baseline_unfold_less_preferred_24"
             android:orderInCategory="@integer/MENU_ORDER_LEVEL_EXPAND_PREFERRED_LEVEL"
-            android:title="@string/lbl_level_reset"
+            android:title="@string/option_level_reset"
             app:showAsAction="ifRoom" />
 
         <item
             android:id="@id/MENU_LEVEL_EXPAND"
             android:icon="@drawable/ic_baseline_unfold_more_24"
             android:orderInCategory="@integer/MENU_ORDER_LEVEL_EXPAND"
-            android:title="@string/lbl_level_expand"
+            android:title="@string/option_level_expand"
             app:showAsAction="never" />
 
     </group>

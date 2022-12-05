@@ -141,7 +141,7 @@ public class SyncWriterFragment
                 .setTitle(vm.getSyncWriterHelper().getSyncServer().getLabelResId())
                 .setMessage(R.string.action_synchronize)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
-                .setNeutralButton(R.string.btn_options, (d, w) -> {
+                .setNeutralButton(R.string.action_show_options, (d, w) -> {
                     d.dismiss();
                     showOptions();
                 })
@@ -227,7 +227,7 @@ public class SyncWriterFragment
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_baseline_info_24)
-                        .setTitle(R.string.menu_backup_and_export)
+                        .setTitle(R.string.title_backup_and_export)
                         .setMessage(R.string.warning_no_matching_book_found)
                         .setPositiveButton(R.string.action_done, (d, w) -> {
                             //noinspection ConstantConditions
@@ -245,7 +245,7 @@ public class SyncWriterFragment
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_baseline_info_24)
-                        .setTitle(R.string.progress_end_export_successful)
+                        .setTitle(R.string.info_export_successful)
                         .setMessage(itemList)
                         .setPositiveButton(R.string.action_done, (d, w) -> {
                             final Intent resultIntent = SyncContractBase
@@ -282,7 +282,7 @@ public class SyncWriterFragment
             if (progressDelegate == null) {
                 //noinspection ConstantConditions
                 progressDelegate = new ProgressDelegate(getProgressFrame())
-                        .setTitle(R.string.menu_backup_and_export)
+                        .setTitle(R.string.title_backup_and_export)
                         .setPreventSleep(true)
                         .setOnCancelListener(v -> vm.cancelTask(data.taskId))
                         .show(() -> getActivity().getWindow());

@@ -595,6 +595,8 @@ public class BooklistAdapter
             case BooklistGroup.COLOR:
             case BooklistGroup.BOOK_TITLE_1ST_CHAR:
             case BooklistGroup.SERIES_TITLE_1ST_CHAR:
+            case BooklistGroup.AUTHOR_FAMILY_NAME_1ST_CHAR:
+            case BooklistGroup.PUBLISHER_NAME_1ST_CHAR:
             default: {
                 if (text == null || text.isEmpty()) {
                     return context.getString(R.string.bob_empty_field);

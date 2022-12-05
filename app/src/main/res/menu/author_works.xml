@@ -57,11 +57,11 @@
 
         <item
             android:id="@id/MENU_AUTHOR_WORKS_FILTER_TOC"
-            android:title="@string/menu_author_works_toc" />
+            android:title="@string/option_author_works_toc" />
 
         <item
             android:id="@id/MENU_AUTHOR_WORKS_FILTER_BOOKS"
-            android:title="@string/menu_author_works_book" />
+            android:title="@string/option_author_works_book" />
 
     </group>
     <group android:id="@id/MENU_GROUP_AUTHOR_WORKS_BOOKSHELVES">

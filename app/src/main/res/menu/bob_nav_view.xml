@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -41,12 +41,12 @@
     <item
         android:id="@id/MENU_FILE_EXPORT"
         android:icon="@drawable/ic_baseline_sd_storage_24"
-        android:title="@string/menu_backup_and_export" />
+        android:title="@string/option_backup_and_export" />
 
     <item
         android:id="@id/MENU_FILE_IMPORT"
         android:icon="@drawable/ic_baseline_file_download_24"
-        android:title="@string/menu_import" />
+        android:title="@string/option_import" />
 
     <item
         android:id="@id/SUBMENU_SYNC"

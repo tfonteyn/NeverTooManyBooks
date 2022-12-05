@@ -94,7 +94,7 @@
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fab4_search_external_id"
             style="@style/Widget.App.ExtendedFloatingActionButton"
-            android:text="@string/fab_add_book_by_external_id"
+            android:text="@string/option_fab_add_book_by_external_id"
             app:icon="@drawable/ic_baseline_find_in_page_24"
             app:layout_anchor="@id/fab"
             tools:translationX="@dimen/fab_menu_translationX_4"
@@ -105,7 +105,7 @@
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fab3_add_manually"
             style="@style/Widget.App.ExtendedFloatingActionButton"
-            android:text="@string/fab_add_book_manually"
+            android:text="@string/option_fab_add_book_manually"
             app:icon="@drawable/ic_baseline_keyboard_24"
             app:layout_anchor="@id/fab"
             tools:translationX="@dimen/fab_menu_translationX_3"
@@ -116,7 +116,7 @@
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fab2_search_text"
             style="@style/Widget.App.ExtendedFloatingActionButton"
-            android:text="@string/fab_add_book_by_internet_search"
+            android:text="@string/option_fab_add_book_by_internet_search"
             app:icon="@drawable/ic_baseline_search_24"
             app:layout_anchor="@id/fab"
             tools:translationX="@dimen/fab_menu_translationX_2"
@@ -127,7 +127,7 @@
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fab1_search_isbn"
             style="@style/Widget.App.ExtendedFloatingActionButton"
-            android:text="@string/fab_add_book_by_isbn"
+            android:text="@string/option_fab_add_book_by_isbn"
             app:icon="@drawable/ic_baseline_apps_24"
             app:layout_anchor="@id/fab"
             tools:translationX="@dimen/fab_menu_translationX_1"
@@ -142,7 +142,7 @@
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fab0_scan_barcode"
             style="@style/Widget.App.ExtendedFloatingActionButton"
-            android:text="@string/fab_add_book_by_barcode_scan"
+            android:text="@string/option_fab_add_book_by_barcode_scan"
             app:icon="@drawable/ic_baseline_photo_camera_24"
             app:layout_anchor="@id/fab"
             tools:translationX="@dimen/fab_menu_translationX_0"
@@ -153,7 +153,7 @@
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fab0_scan_barcode_batch"
             style="@style/Widget.App.ExtendedFloatingActionButton"
-            android:text="@string/fab_add_book_by_barcode_scan_batch"
+            android:text="@string/option_fab_add_book_by_barcode_scan_batch"
             app:icon="@drawable/ic_baseline_photo_camera_24"
             app:layout_anchor="@id/fab"
             tools:translationX="@dimen/fab_menu_translationX_0"

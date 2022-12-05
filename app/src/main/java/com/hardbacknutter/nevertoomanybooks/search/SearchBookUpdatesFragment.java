@@ -221,11 +221,11 @@ public class SearchBookUpdatesFragment
                     .setTitle(R.string.menu_update_fields)
                     .setMessage(R.string.confirm_overwrite_cover)
                     .setNeutralButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                    .setNegativeButton(R.string.lbl_field_usage_copy_if_blank, (d, w) -> {
+                    .setNegativeButton(R.string.option_field_usage_copy_if_blank, (d, w) -> {
                         vm.setCoverSyncAction(SyncAction.CopyIfBlank);
                         startUpdate();
                     })
-                    .setPositiveButton(R.string.lbl_field_usage_overwrite, (d, w) -> {
+                    .setPositiveButton(R.string.option_field_usage_overwrite, (d, w) -> {
                         vm.setCoverSyncAction(SyncAction.Overwrite);
                         startUpdate();
                     })

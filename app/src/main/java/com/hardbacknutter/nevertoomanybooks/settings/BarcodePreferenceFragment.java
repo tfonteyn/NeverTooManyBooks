@@ -50,7 +50,7 @@ public class BarcodePreferenceFragment
         final int max = cameras.size() + 1;
         final CharSequence[] cameraLabels = new CharSequence[max];
         final CharSequence[] cameraValues = new CharSequence[max];
-        cameraLabels[0] = getString(R.string.system_default);
+        cameraLabels[0] = getString(R.string.lbl_system_default);
         cameraValues[0] = "-1";
 
         int i = 0;
@@ -58,9 +58,9 @@ public class BarcodePreferenceFragment
             i++;
             cameraValues[i] = String.valueOf(value);
             if (value == CameraMetadata.LENS_FACING_FRONT) {
-                cameraLabels[i] = getString(R.string.camera_front);
+                cameraLabels[i] = getString(R.string.pe_camera_front);
             } else if (value == CameraMetadata.LENS_FACING_BACK) {
-                cameraLabels[i] = getString(R.string.camera_back);
+                cameraLabels[i] = getString(R.string.pe_camera_back);
             }
         }
         final ListPreference cameraPref = findPreference(Prefs.pk_camera_lens_facing);

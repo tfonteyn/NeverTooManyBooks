@@ -92,7 +92,7 @@
         <Button
             android:id="@+id/btn_stop_scanning"
             style="@style/IsbnKeyPad.StopScanButton"
-            android:text="@string/btn_stop_scanning"
+            android:text="@string/action_stop_scanning"
             app:layout_constraintEnd_toEndOf="@id/barcode_scanner"
             app:layout_constraintStart_toStartOf="@id/barcode_scanner"
             app:layout_constraintTop_toBottomOf="@id/barcode_scanner"
@@ -155,7 +155,7 @@
         <Button
             android:id="@+id/btn_clear_queue"
             style="@style/IsbnKeyPad.ClearQueueButton"
-            android:text="@string/btn_clear_queue"
+            android:text="@string/action_clear_queue"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/queue"
             />

@@ -450,7 +450,7 @@ public class ImportFragment
             final ImportResults result = data.getResult();
 
             if (result != null) {
-                onImportFinished(R.string.progress_end_import_partially_complete, result);
+                onImportFinished(R.string.info_import_partially_complete, result);
             } else {
                 //noinspection ConstantConditions
                 Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG)
@@ -471,7 +471,7 @@ public class ImportFragment
         closeProgressDialog();
 
         message.getData().map(TaskResult::requireResult).ifPresent(
-                result -> onImportFinished(R.string.progress_end_import_complete, result));
+                result -> onImportFinished(R.string.info_import_complete, result));
     }
 
     /**

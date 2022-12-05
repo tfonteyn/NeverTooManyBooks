@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -33,14 +33,14 @@
         />
 
     <PreferenceCategory
-        android:title="@string/pg_booklist"
+        android:title="@string/pc_bob"
         >
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleGroupsFragment"
             android:icon="@drawable/ic_baseline_format_list_bulleted_24"
             android:key="style.booklist.groups"
-            android:title="@string/pg_style_groups"
+            android:title="@string/pt_bob_groups"
             />
 
         <!-- ListPreference - booklist default expanded level for the groups.

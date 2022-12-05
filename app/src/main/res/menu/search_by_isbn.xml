@@ -27,20 +27,20 @@
         android:id="@id/MENU_BARCODE_SCAN"
         android:icon="@drawable/ic_barcode"
         android:orderInCategory="@integer/MENU_ORDER_BARCODE_SCAN"
-        android:title="@string/menu_barcode_scan"
+        android:title="@string/option_barcode_scan"
         app:showAsAction="always" />
 
     <item
         android:id="@id/MENU_BARCODE_SCAN_BATCH"
         android:icon="@drawable/ic_barcode_batch"
         android:orderInCategory="@integer/MENU_ORDER_BARCODE_SCAN_BATCH"
-        android:title="@string/menu_barcode_scan_continuous"
+        android:title="@string/option_barcode_scan_continuous"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@id/MENU_BARCODE_IMPORT"
         android:orderInCategory="@integer/MENU_ORDER_BARCODE_IMPORT"
-        android:title="@string/menu_import"
+        android:title="@string/option_import"
         app:showAsAction="never" />
 
     <group
@@ -49,7 +49,7 @@
         <item
             android:id="@id/MENU_ISBN_VALIDITY_STRICT"
             android:checkable="true"
-            android:title="@string/lbl_strict_isbn"
+            android:title="@string/option_isbn_strict"
             app:showAsAction="never" />
     </group>
 

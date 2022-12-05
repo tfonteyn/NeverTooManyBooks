@@ -252,7 +252,7 @@ public class StartupActivity
 
         final CharSequence[] items = {
                 getString(R.string.lbl_storage_quit_and_reinsert_sdcard),
-                getString(R.string.lbl_storage_select, volume.getDescription(this)),
+                getString(R.string.option_storage_select, volume.getDescription(this)),
                 getString(R.string.lbl_edit_settings)};
 
         new MaterialAlertDialogBuilder(this)

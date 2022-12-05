@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -25,13 +25,13 @@
         android:id="@id/MENU_SERIES_SET_COMPLETE"
         android:icon="@drawable/ic_baseline_check_box_24"
         android:orderInCategory="@integer/MENU_ORDER_COMPLETE"
-        android:title="@string/menu_set_complete" />
+        android:title="@string/option_set_complete" />
 
     <item
         android:id="@id/MENU_SERIES_SET_INCOMPLETE"
         android:icon="@drawable/ic_baseline_check_box_outline_blank_24"
         android:orderInCategory="@integer/MENU_ORDER_INCOMPLETE"
-        android:title="@string/menu_set_incomplete" />
+        android:title="@string/option_set_incomplete" />
 
     <item
         android:id="@id/MENU_SERIES_EDIT"

@@ -1347,7 +1347,7 @@ public class Book
             ALL.put(FIRST, R.string.lbl_edition_first_edition);
             ALL.put(FIRST_IMPRESSION, R.string.lbl_edition_first_impression);
             ALL.put(LIMITED, R.string.lbl_edition_limited);
-            ALL.put(SIGNED, R.string.lbl_signed);
+            ALL.put(SIGNED, R.string.lbl_edition_signed);
             ALL.put(SLIPCASE, R.string.lbl_edition_slipcase);
 
             ALL.put(BOOK_CLUB, R.string.lbl_edition_book_club);

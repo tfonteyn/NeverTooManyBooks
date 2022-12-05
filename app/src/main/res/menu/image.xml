@@ -30,23 +30,23 @@
     <item
         android:id="@id/SUBMENU_THUMB_REPLACE"
         android:icon="@drawable/ic_baseline_find_replace_24"
-        android:title="@string/menu_cover_replace"
+        android:title="@string/option_cover_replace"
         >
         <menu>
             <item
                 android:id="@id/MENU_THUMB_ADD_FROM_CAMERA"
                 android:icon="@drawable/ic_baseline_add_a_photo_24"
-                android:title="@string/menu_cover_replace_from_camera" />
+                android:title="@string/option_cover_replace_from_camera" />
 
             <item
                 android:id="@id/MENU_THUMB_ADD_FROM_FILE_SYSTEM"
                 android:icon="@drawable/ic_baseline_photo_album_24"
-                android:title="@string/menu_cover_replace_from_gallery" />
+                android:title="@string/option_cover_replace_from_gallery" />
 
             <item
                 android:id="@id/MENU_THUMB_ADD_FROM_ALT_EDITIONS"
                 android:icon="@drawable/ic_baseline_find_replace_24"
-                android:title="@string/menu_cover_replace_from_alt_editions" />
+                android:title="@string/option_cover_replace_from_alt_editions" />
 
         </menu>
     </item>
@@ -54,23 +54,23 @@
     <item
         android:id="@id/SUBMENU_THUMB_ROTATE"
         android:icon="@drawable/ic_baseline_rotate_right_24"
-        android:title="@string/menu_cover_rotate"
+        android:title="@string/option_cover_rotate"
         >
         <menu>
             <item
                 android:id="@id/MENU_THUMB_ROTATE_CW"
                 android:icon="@drawable/ic_baseline_rotate_right_24"
-                android:title="@string/menu_cover_rotate_cw" />
+                android:title="@string/option_cover_rotate_cw" />
 
             <item
                 android:id="@id/MENU_THUMB_ROTATE_CCW"
                 android:icon="@drawable/ic_baseline_rotate_left_24"
-                android:title="@string/menu_cover_rotate_ccw" />
+                android:title="@string/option_cover_rotate_ccw" />
 
             <item
                 android:id="@id/MENU_THUMB_ROTATE_180"
                 android:icon="@drawable/ic_baseline_swap_vert_24"
-                android:title="@string/menu_cover_rotate_180" />
+                android:title="@string/option_cover_rotate_180" />
 
         </menu>
     </item>
@@ -78,9 +78,9 @@
     <item
         android:id="@id/MENU_THUMB_CROP"
         android:icon="@drawable/ic_baseline_crop_24"
-        android:title="@string/menu_cover_crop" />
+        android:title="@string/option_cover_crop" />
     <item
         android:id="@id/MENU_EDIT"
         android:icon="@drawable/ic_baseline_edit_24"
-        android:title="@string/menu_cover_edit" />
+        android:title="@string/option_cover_edit" />
 </menu>

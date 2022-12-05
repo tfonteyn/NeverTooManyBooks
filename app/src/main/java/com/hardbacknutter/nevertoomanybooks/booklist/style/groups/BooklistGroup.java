@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelfViewModel;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
@@ -67,6 +66,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DA
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LAST_UPDATED__UTC;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TITLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
@@ -75,18 +75,19 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
  * Class representing a single level in the booklist hierarchy.
  * <p>
  * There is a one-to-one mapping with a {@link GroupKey},
- * the latter providing a lightweight (final) object without user preferences.
+ * the latter providing a lightweight (static final) object without user preferences.
  * The BooklistGroup encapsulates the {@link GroupKey}, adding user/temp stuff.
  * <p>
  * <p>
  * How to add a new Group:
  * <ol>
  *      <li>add it to {@link GroupKey} and update {@link #GROUP_KEY_MAX}</li>
+ *      <li>add it to the {@link Id}</li>
  *      <li>if necessary add new domain to {@link DBDefinitions}</li>
- *      <li>modify {@link BooksOnBookshelfViewModel}
- *          to add the necessary grouped/sorted domains</li>
- *      <li>modify {@link BooklistAdapter#onCreateViewHolder}; If it is just a string field it can
- *          use a {@link BooklistAdapter}.GenericStringHolder otherwise add a new holder</li>
+ *      <li>add to the switch() in {@link #initGroupKey}. Create key/sort domains as needed</li>
+ *      <li>Optionally modify {@link BooklistAdapter#onCreateViewHolder};
+ *          If it is just a string field it can use a {@link BooklistAdapter}.GenericStringHolder
+ *          otherwise add a new holder</li>
  * </ol>
  */
 public class BooklistGroup {
@@ -134,13 +135,15 @@ public class BooklistGroup {
     @SuppressWarnings("WeakerAccess")
     public static final int SERIES_TITLE_1ST_CHAR = 30;
     public static final int CONDITION = 31;
+    public static final int AUTHOR_FAMILY_NAME_1ST_CHAR = 32;
+    public static final int PUBLISHER_NAME_1ST_CHAR = 33;
 
     /**
      * NEWTHINGS: BooklistGroup.KEY
      * The highest valid index of GroupKey - ALWAYS to be updated after adding a group key.
      */
     @VisibleForTesting
-    public static final int GROUP_KEY_MAX = 31;
+    public static final int GROUP_KEY_MAX = 33;
 
     /**
      * Base domains (BD_*) for Date groups.
@@ -431,26 +434,28 @@ public class BooklistGroup {
             // the others here below are custom key domains
             case READ_STATUS: {
                 // Formatting is done after fetching.
-                return new GroupKey(R.string.lbl_read_and_unread, "r", new DomainExpression(
+                final DomainExpression keyDomainExpression = new DomainExpression(
                         new Domain.Builder(BlgKey.READ, SqLiteDataType.Text)
                                 .notNull()
                                 .build(),
                         TBL_BOOKS.dot(DBKey.READ__BOOL),
-                        Sort.Asc));
+                        Sort.Asc);
+                return new GroupKey(R.string.lbl_group_read_and_unread, "r", keyDomainExpression);
             }
-            case BOOK_TITLE_1ST_LETTER: {
-                // Uses the OB column so we get the re-ordered version if applicable.
+
+            case AUTHOR_FAMILY_NAME_1ST_CHAR: {
+                // Uses the OrderBy column so we get the re-ordered version if applicable.
                 // Formatting is done in the sql expression.
                 final DomainExpression keyDomainExpression = new DomainExpression(
-                        new Domain.Builder(BlgKey.BOOK_TITLE_1CHAR, SqLiteDataType.Text)
+                        new Domain.Builder(BlgKey.AUTHOR_FAMILY_NAME_1CHAR, SqLiteDataType.Text)
                                 .notNull()
                                 .build(),
-                        "UPPER(SUBSTR(" + TBL_BOOKS.dot(DBKey.TITLE_OB) + ",1,1))",
+                        "UPPER(SUBSTR(" + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB) + ",1,1))",
                         Sort.Asc);
-                return new GroupKey(R.string.style_builtin_first_letter_book_title, "t",
+                return new GroupKey(R.string.lbl_group_1st_char_author_family_name, "afn",
                                     keyDomainExpression);
             }
-            case SERIES_TITLE_1ST_LETTER: {
+            case SERIES_TITLE_1ST_CHAR: {
                 // Uses the OrderBy column so we get the re-ordered version if applicable.
                 // Formatting is done in the sql expression.
                 final DomainExpression keyDomainExpression = new DomainExpression(
@@ -459,7 +464,31 @@ public class BooklistGroup {
                                 .build(),
                         "UPPER(SUBSTR(" + TBL_SERIES.dot(DBKey.SERIES_TITLE_OB) + ",1,1))",
                         Sort.Asc);
-                return new GroupKey(R.string.style_builtin_first_letter_series_title, "st",
+                return new GroupKey(R.string.lbl_group_1st_char_series_title, "st",
+                                    keyDomainExpression);
+            }
+            case PUBLISHER_NAME_1ST_CHAR: {
+                // Uses the OB column so we get the re-ordered version if applicable.
+                // Formatting is done in the sql expression.
+                final DomainExpression keyDomainExpression = new DomainExpression(
+                        new Domain.Builder(BlgKey.PUBLISHER_NAME_1CHAR, SqLiteDataType.Text)
+                                .notNull()
+                                .build(),
+                        "UPPER(SUBSTR(" + TBL_BOOKS.dot(DBKey.PUBLISHER_NAME_OB) + ",1,1))",
+                        Sort.Asc);
+                return new GroupKey(R.string.lbl_group_1st_char_publisher_name, "p",
+                                    keyDomainExpression);
+            }
+            case BOOK_TITLE_1ST_CHAR: {
+                // Uses the OB column so we get the re-ordered version if applicable.
+                // Formatting is done in the sql expression.
+                final DomainExpression keyDomainExpression = new DomainExpression(
+                        new Domain.Builder(BlgKey.BOOK_TITLE_1CHAR, SqLiteDataType.Text)
+                                .notNull()
+                                .build(),
+                        "UPPER(SUBSTR(" + TBL_BOOKS.dot(DBKey.TITLE_OB) + ",1,1))",
+                        Sort.Asc);
+                return new GroupKey(R.string.lbl_group_1st_char_book_title, "t",
                                     keyDomainExpression);
             }
 
@@ -626,8 +655,9 @@ public class BooklistGroup {
             // The key domain for a book is not used but we define one
             // to prevents any potential null issues.
             case BOOK: {
-                return new GroupKey(R.string.lbl_book, "b",
-                                    new DomainExpression(DOM_TITLE, TBL_BOOKS));
+                final DomainExpression keyDomainExpression = new DomainExpression(
+                        DOM_TITLE, TBL_BOOKS);
+                return new GroupKey(R.string.lbl_book, "b", keyDomainExpression);
             }
             default:
                 throw new IllegalArgumentException(String.valueOf(id));
@@ -815,8 +845,10 @@ public class BooklistGroup {
 
             LENDING,
 
-            BOOK_TITLE_1ST_LETTER,
-            SERIES_TITLE_1ST_LETTER,
+            AUTHOR_FAMILY_NAME_1ST_CHAR,
+            SERIES_TITLE_1ST_CHAR,
+            PUBLISHER_NAME_1ST_CHAR,
+            BOOK_TITLE_1ST_CHAR,
 
             GENRE,
             FORMAT,
@@ -872,7 +904,9 @@ public class BooklistGroup {
         public static final String FIRST_PUB_YEAR = "blg_1pub_y";
         public static final String FIRST_PUB_MONTH = "blg_1pub_m";
 
+        public static final String AUTHOR_FAMILY_NAME_1CHAR = "blg_aut_fn_1ch";
         public static final String SERIES_TITLE_1CHAR = "blg_ser_tit_1ch";
+        public static final String PUBLISHER_NAME_1CHAR = "blg_pub_1ch";
         public static final String BOOK_TITLE_1CHAR = "blg_tit_1ch";
         public static final String READ = "blg_rd_sts";
         // specific domains for sorting

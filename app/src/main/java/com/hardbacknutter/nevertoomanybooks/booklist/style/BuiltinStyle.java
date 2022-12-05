@@ -102,7 +102,7 @@ public final class BuiltinStyle
                            new int[]{BooklistGroup.AUTHOR}),
             new Definition(ID_BOOK_TITLE_FIRST_LETTER,
                            "16b4ecdf-edef-4bf2-a682-23f7230446c8",
-                           R.string.style_builtin_book_title_1st_char,
+                           R.string.style_builtin_1st_char_book_title,
                            new int[]{BooklistGroup.BOOK_TITLE_1ST_CHAR}),
             new Definition(ID_SERIES,
                            "ad55ebc3-f79d-4cc2-a27d-f06ff0bf2335",
@@ -129,26 +129,26 @@ public final class BuiltinStyle
                                      BooklistGroup.SERIES}),
             new Definition(ID_PUBLICATION_DATA,
                            "182f5d3c-8fd7-4f3a-b5b0-0c93551d1796",
-                           R.string.style_builtin_publication_date,
+                           R.string.style_builtin_date_published,
                            new int[]{BooklistGroup.DATE_PUBLISHED_YEAR,
-                                     BooklistGroup.DATE_PUBLISHED_MONTH,
-                                     BooklistGroup.AUTHOR,
-                                     BooklistGroup.SERIES}),
+                                   BooklistGroup.DATE_PUBLISHED_MONTH,
+                                   BooklistGroup.AUTHOR,
+                                   BooklistGroup.SERIES}),
             new Definition(ID_DATE_ADDED,
                            "95d7afc0-a70a-4f1f-8d77-aa7ebc60e521",
-                           R.string.style_builtin_added_date,
+                           R.string.style_builtin_date_added,
                            new int[]{BooklistGroup.DATE_ADDED_YEAR,
-                                     BooklistGroup.DATE_ADDED_MONTH,
-                                     BooklistGroup.DATE_ADDED_DAY,
-                                     BooklistGroup.AUTHOR}),
+                                   BooklistGroup.DATE_ADDED_MONTH,
+                                   BooklistGroup.DATE_ADDED_DAY,
+                                   BooklistGroup.AUTHOR}),
 
             new Definition(ID_DATE_ACQUIRED,
                            "b3255b1f-5b07-4b3e-9700-96c0f8f35a58",
-                           R.string.style_builtin_acquired_date,
+                           R.string.style_builtin_date_acquired,
                            new int[]{BooklistGroup.DATE_ACQUIRED_YEAR,
-                                     BooklistGroup.DATE_ACQUIRED_MONTH,
-                                     BooklistGroup.DATE_ACQUIRED_DAY,
-                                     BooklistGroup.AUTHOR}),
+                                   BooklistGroup.DATE_ACQUIRED_MONTH,
+                                   BooklistGroup.DATE_ACQUIRED_DAY,
+                                   BooklistGroup.AUTHOR}),
             new Definition(ID_AUTHOR_AND_YEAR,
                            "7c9ad91e-df7c-415a-a205-cdfabff5465d",
                            R.string.style_builtin_author_year,
@@ -161,10 +161,10 @@ public final class BuiltinStyle
                            new int[]{BooklistGroup.FORMAT}),
             new Definition(ID_DATE_READ,
                            "034fe547-879b-4fa0-997a-28d769ba5a84",
-                           R.string.style_builtin_read_date,
+                           R.string.style_builtin_date_read,
                            new int[]{BooklistGroup.DATE_READ_YEAR,
-                                     BooklistGroup.DATE_READ_MONTH,
-                                     BooklistGroup.AUTHOR}),
+                                   BooklistGroup.DATE_READ_MONTH,
+                                   BooklistGroup.AUTHOR}),
             new Definition(ID_LOCATION,
                            "e21a90c9-5150-49ee-a204-0cab301fc5a1",
                            R.string.style_builtin_location,
@@ -192,10 +192,10 @@ public final class BuiltinStyle
                                      BooklistGroup.SERIES}),
             new Definition(ID_DATE_LAST_UPDATE,
                            "427a0da5-0779-44b6-89e9-82772e5ad5ef",
-                           R.string.style_builtin_update_date,
+                           R.string.style_builtin_date_last_updated,
                            new int[]{BooklistGroup.DATE_LAST_UPDATE_YEAR,
-                                     BooklistGroup.DATE_LAST_UPDATE_MONTH,
-                                     BooklistGroup.DATE_LAST_UPDATE_DAY})
+                                   BooklistGroup.DATE_LAST_UPDATE_MONTH,
+                                   BooklistGroup.DATE_LAST_UPDATE_DAY})
                                                              );
 
     static {
@@ -315,7 +315,7 @@ public final class BuiltinStyle
     @Override
     @NonNull
     public String getTypeDescription(@NonNull final Context context) {
-        return context.getString(R.string.style_is_builtin);
+        return context.getString(R.string.style_type_builtin);
     }
 
     @Override

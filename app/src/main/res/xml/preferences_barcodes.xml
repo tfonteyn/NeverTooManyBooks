@@ -21,13 +21,13 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:title="@string/pg_barcode_scanner">
+        android:title="@string/pt_barcode_scanner">
 
         <ListPreference
             android:defaultValue="-1"
             android:icon="@drawable/ic_baseline_photo_camera_24"
             android:key="camera.lens.facing"
-            android:title="@string/camera"
+            android:title="@string/pt_camera_lens_facing"
             />
 
         <SwitchPreference

@@ -171,7 +171,7 @@ public class UserStyle
     @Override
     @NonNull
     public String getTypeDescription(@NonNull final Context context) {
-        return context.getString(R.string.style_is_user_defined);
+        return context.getString(R.string.style_type_user_defined);
     }
 
     @Override

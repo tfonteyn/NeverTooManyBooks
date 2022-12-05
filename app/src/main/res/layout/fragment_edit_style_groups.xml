@@ -30,7 +30,7 @@
     <TextView
         android:id="@+id/header"
         style="@style/Text.Header.PreferenceCategory"
-        android:text="@string/pg_style_groups"
+        android:text="@string/pt_bob_groups"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />

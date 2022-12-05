@@ -31,9 +31,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public enum SyncAction
         implements Parcelable {
     Skip(0, R.string.action_skip),
-    CopyIfBlank(1, R.string.lbl_field_usage_copy_if_blank),
-    Append(2, R.string.lbl_field_usage_append),
-    Overwrite(3, R.string.lbl_field_usage_overwrite);
+    CopyIfBlank(1, R.string.option_field_usage_copy_if_blank),
+    Append(2, R.string.option_field_usage_append),
+    Overwrite(3, R.string.option_field_usage_overwrite);
 
     /** {@link Parcelable}. */
     public static final Creator<SyncAction> CREATOR = new Creator<>() {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -30,19 +30,19 @@
             android:id="@id/MENU_SYNC_LIST_WITH_DETAILS"
             android:icon="@drawable/ic_baseline_arrow_back_24"
             android:orderInCategory="@integer/MENU_ORDER_SYNC_LIST_WITH_DETAILS"
-            android:title="@string/menu_book_sync_list_with_details" />
+            android:title="@string/option_book_sync_list_with_details" />
 
         <item
             android:id="@id/MENU_BOOK_SET_READ"
             android:icon="@drawable/ic_baseline_check_box_24"
             android:orderInCategory="@integer/MENU_ORDER_READ"
-            android:title="@string/menu_set_read" />
+            android:title="@string/option_set_read" />
 
         <item
             android:id="@id/MENU_BOOK_SET_UNREAD"
             android:icon="@drawable/ic_baseline_check_box_outline_blank_24"
             android:orderInCategory="@integer/MENU_ORDER_UNREAD"
-            android:title="@string/menu_set_unread" />
+            android:title="@string/option_set_unread" />
 
         <item
             android:id="@id/MENU_BOOK_EDIT"
@@ -73,13 +73,13 @@
             android:id="@id/MENU_BOOK_LOAN_ADD"
             android:icon="@drawable/ic_baseline_people_24"
             android:orderInCategory="@integer/MENU_ORDER_LENDING"
-            android:title="@string/menu_lend_out_book" />
+            android:title="@string/option_lend_out_book" />
 
         <item
             android:id="@id/MENU_BOOK_LOAN_DELETE"
             android:icon="@drawable/ic_baseline_people_24"
             android:orderInCategory="@integer/MENU_ORDER_LENDING"
-            android:title="@string/menu_lend_return_book" />
+            android:title="@string/option_lend_return_book" />
 
         <item
             android:id="@id/MENU_SHARE"

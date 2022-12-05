@@ -235,7 +235,7 @@ public interface SearchEngine
                     .setTitle(siteName)
                     .setNegativeButton(R.string.action_not_now, (d, w) ->
                             onResult.accept(RegistrationAction.NotNow))
-                    .setPositiveButton(R.string.btn_learn_more, (d, w) ->
+                    .setPositiveButton(R.string.action_learn_more, (d, w) ->
                             onResult.accept(RegistrationAction.Register))
                     .setOnCancelListener(
                             d -> onResult.accept(RegistrationAction.Cancelled));
@@ -256,7 +256,7 @@ public interface SearchEngine
                 // for the given caller.
                 if (key != null) {
                     dialogBuilder.setPositiveButton(context.getString(
-                            R.string.btn_disable_message), (d, w) -> {
+                            R.string.action_disable_message), (d, w) -> {
                         PreferenceManager.getDefaultSharedPreferences(context)
                                          .edit().putBoolean(key, true).apply();
                         onResult.accept(RegistrationAction.NotEver);

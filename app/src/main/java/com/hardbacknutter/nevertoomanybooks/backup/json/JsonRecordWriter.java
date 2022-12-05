@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -159,7 +159,7 @@ public class JsonRecordWriter
             if (recordTypes.contains(RecordType.Certificates)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(
-                        R.string.lbl_certificate_ca));
+                        R.string.lbl_certificates));
 
                 final JSONObject certificates = new JSONObject();
                 final JsonCoder<X509Certificate> coder = new CertificateCoder();

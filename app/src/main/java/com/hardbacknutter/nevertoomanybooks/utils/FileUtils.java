@@ -404,13 +404,13 @@ public final class FileUtils {
                                         final float bytes) {
         if (bytes < 3_000) {
             // Show 'bytes' if < 3k
-            return context.getString(R.string.bytes, bytes);
+            return context.getString(R.string.size_bytes, bytes);
         } else if (bytes < 250_000) {
             // Show Kb if less than 250kB
-            return context.getString(R.string.kilobytes, bytes / TO_KILOBYTES);
+            return context.getString(R.string.size_kilobytes, bytes / TO_KILOBYTES);
         } else {
             // Show MB otherwise...
-            return context.getString(R.string.megabytes, bytes / TO_MEGABYTES);
+            return context.getString(R.string.size_megabytes, bytes / TO_MEGABYTES);
         }
     }
 

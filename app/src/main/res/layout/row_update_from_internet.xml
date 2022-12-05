@@ -55,7 +55,7 @@
         app:layout_constraintHorizontal_weight="0.6"
         app:layout_constraintStart_toEndOf="@id/field"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/lbl_field_usage_overwrite"
+        tools:text="@string/option_field_usage_overwrite"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

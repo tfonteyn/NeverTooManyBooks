@@ -34,8 +34,8 @@
 
     <com.hardbacknutter.nevertoomanybooks.settings.widgets.ExtPreferenceCategory
         android:icon="@drawable/ic_baseline_visibility_24"
-        android:summary="@string/txt_manage_fields"
-        android:title="@string/pg_ui_field_visibility">
+        android:summary="@string/ps_manage_fields"
+        android:title="@string/pt_field_visibility">
 
         <!-- Authors are always visible, but the user can hide the type. -->
         <SwitchPreference

@@ -166,7 +166,7 @@ public class StripInfoReader
         // The site specific keys
         map.put(context.getString(R.string.lbl_owned),
                 new String[]{DBKey.STRIP_INFO_OWNED});
-        map.put(context.getString(R.string.lbl_wishlist),
+        map.put(context.getString(R.string.bookshelf_my_wishlist),
                 new String[]{DBKey.STRIP_INFO_WANTED});
         map.put(context.getString(R.string.lbl_number),
                 new String[]{DBKey.STRIP_INFO_AMOUNT});

@@ -83,7 +83,7 @@
             style="@style/TIL.AutoCompleteTextView"
             android:hint="@string/lbl_publisher"
             android:visibility="gone"
-            app:helperText="@string/isfdb_warning_limited_to"
+            app:helperText="@string/info_isfdb_warning_limited_to"
             app:helperTextEnabled="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

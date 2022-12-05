@@ -136,7 +136,7 @@
             app:layout_constraintStart_toStartOf="@id/lbl_archive_format"
             app:layout_constraintTop_toBottomOf="@id/lbl_archive_format"
             tools:ignore="SelectableText"
-            tools:text="@string/lbl_archive_format_xml_info"
+            tools:text="@string/option_info_lbl_archive_type_backup"
             />
 
         <TextView
@@ -149,7 +149,6 @@
             app:layout_constraintStart_toStartOf="@id/lbl_archive_format"
             app:layout_constraintTop_toBottomOf="@id/archive_format_info"
             tools:ignore="SelectableText"
-            tools:text="@string/lbl_archive_is_export_only"
             />
 
         <Button
@@ -158,7 +157,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/section_margin_top"
-            android:text="@string/btn_start_export"
+            android:text="@string/action_start_export"
             app:icon="@drawable/ic_baseline_start_24"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.9"

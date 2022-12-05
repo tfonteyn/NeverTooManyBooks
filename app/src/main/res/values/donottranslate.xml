@@ -138,9 +138,9 @@
 
     <!-- ListPreference - fastscroller text overlay. -->
     <string-array name="pe_fastscroller_overlay">
-        <item>@string/dynamic</item>
-        <item>@string/statick</item>
-        <item>@string/none</item>
+        <item>@string/pe_fast_scroller_overlay_dynamic</item>
+        <item>@string/pe_fast_scroller_overlay_static</item>
+        <item>@string/pe_fast_scroller_overlay_none</item>
     </string-array>
     <string-array name="pv_fastscroller_overlay">
         <!-- value 2 is legacy / not in use -->
@@ -151,10 +151,10 @@
 
     <!-- ListPreference - Degrees by which to rotate camera images automatically -->
     <string-array name="pe_thumbnails_rotate_auto">
-        <item>@string/menu_cover_rotate_automatic</item>
-        <item>@string/menu_cover_rotate_cw</item>
-        <item>@string/menu_cover_rotate_ccw</item>
-        <item>@string/menu_cover_rotate_180</item>
+        <item>@string/option_cover_rotate_automatic</item>
+        <item>@string/option_cover_rotate_cw</item>
+        <item>@string/option_cover_rotate_ccw</item>
+        <item>@string/option_cover_rotate_180</item>
     </string-array>
     <string-array name="pv_thumbnails_rotate_auto">
         <item>0</item>
@@ -166,8 +166,8 @@
     <!-- ListPreference - After taking a picture, take the next action. -->
     <string-array name="pe_camera_next_action">
         <item>@string/none</item>
-        <item>@string/menu_cover_crop</item>
-        <item>@string/menu_cover_edit</item>
+        <item>@string/option_cover_crop</item>
+        <item>@string/option_cover_edit</item>
     </string-array>
     <string-array name="pv_camera_next_action">
         <item>0</item>
@@ -182,29 +182,29 @@
     <!-- ListPreference - Booklist Filter -->
     <string-array name="pe_bob_filter_read">
         <item>@string/btn_all_books</item>
-        <item>@string/pe_bob_filter_read_no</item>
-        <item>@string/pe_bob_filter_read_yes</item>
+        <item>@string/option_bob_filter_read_no</item>
+        <item>@string/option_bob_filter_read_yes</item>
     </string-array>
 
     <!-- ListPreference - Booklist Filter -->
     <string-array name="pe_bob_filter_signed">
         <item>@string/btn_all_books</item>
-        <item>@string/pe_bob_filter_signed_no</item>
-        <item>@string/pe_bob_filter_signed_yes</item>
+        <item>@string/option_bob_filter_signed_no</item>
+        <item>@string/option_bob_filter_signed_yes</item>
     </string-array>
 
     <!-- ListPreference - Booklist Filter -->
     <string-array name="pe_bob_filter_lending">
         <item>@string/btn_all_books</item>
-        <item>@string/pe_bob_filter_lend_out_no</item>
-        <item>@string/pe_bob_filter_lend_out_yes</item>
+        <item>@string/option_bob_filter_lend_out_no</item>
+        <item>@string/option_bob_filter_lend_out_yes</item>
     </string-array>
 
     <!-- ListPreference - Booklist Filter -->
     <string-array name="pe_bob_filter_isbn">
         <item>@string/btn_all_books</item>
-        <item>@string/pe_bob_filter_isbn_no</item>
-        <item>@string/pe_bob_filter_isbn_yes</item>
+        <item>@string/option_bob_filter_isbn_no</item>
+        <item>@string/option_bob_filter_isbn_yes</item>
     </string-array>
 
     <!-- MultiSelectListPreference - Determines what is show in booklist header -->

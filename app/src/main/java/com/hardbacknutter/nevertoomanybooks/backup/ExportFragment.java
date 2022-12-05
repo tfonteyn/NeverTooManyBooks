@@ -110,7 +110,7 @@ public class ExportFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getToolbar().setTitle(R.string.menu_backup_and_export);
+        getToolbar().setTitle(R.string.title_backup_and_export);
 
         vm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         vm.onWriteDataCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
@@ -157,7 +157,7 @@ public class ExportFragment
                 .setTitle(R.string.lbl_backup)
                 .setMessage(R.string.txt_export_backup_all)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
-                .setNeutralButton(R.string.btn_options, (d, w) -> {
+                .setNeutralButton(R.string.action_show_options, (d, w) -> {
                     d.dismiss();
                     showOptions();
                 })
@@ -242,7 +242,7 @@ public class ExportFragment
                 break;
             }
             case SqLiteDb: {
-                vb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
+                vb.archiveFormatInfoLong.setText(R.string.option_info_lbl_archive_is_export_only);
 
                 helper.removeRecordType(EnumSet.of(RecordType.Styles,
                                                    RecordType.Preferences,
@@ -340,7 +340,7 @@ public class ExportFragment
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_baseline_info_24)
-                        .setTitle(R.string.menu_backup_and_export)
+                        .setTitle(R.string.title_backup_and_export)
                         .setMessage(R.string.warning_export_contains_no_data)
                         .setPositiveButton(R.string.action_done, (d, w)
                                 -> getActivity().finish())
@@ -357,8 +357,8 @@ public class ExportFragment
 
 
                 @StringRes
-                final int title = helper.isBackup() ? R.string.progress_end_backup_successful
-                                                    : R.string.progress_end_export_successful;
+                final int title = helper.isBackup() ? R.string.info_backup_successful
+                                                    : R.string.info_export_successful;
 
                 //noinspection ConstantConditions
                 final MaterialAlertDialogBuilder dialogBuilder =
@@ -376,14 +376,14 @@ public class ExportFragment
                 // We cannot get the folder name for the file.
                 // FIXME: We need to change the descriptive string not to include the folder.
                 msg.append("\n\n")
-                   .append(getString(R.string.progress_end_export_report, "",
+                   .append(getString(R.string.info_export_report, "",
                                      uriInfo.getDisplayName(getContext()),
                                      FileUtils.formatFileSize(getContext(), size)));
 
                 if (size > 0 && size < MAX_FILE_SIZE_FOR_EMAIL) {
                     msg.append("\n\n").append(getString(R.string.confirm_email_file));
 
-                    dialogBuilder.setNeutralButton(R.string.btn_email, (d, w) ->
+                    dialogBuilder.setNeutralButton(R.string.action_email, (d, w) ->
                             onExportEmail(uriInfo.getUri(), itemList));
                 }
 
@@ -443,7 +443,7 @@ public class ExportFragment
             if (progressDelegate == null) {
                 //noinspection ConstantConditions
                 progressDelegate = new ProgressDelegate(getProgressFrame())
-                        .setTitle(R.string.menu_backup_and_export)
+                        .setTitle(R.string.title_backup_and_export)
                         .setPreventSleep(true)
                         .setOnCancelListener(v -> vm.cancelTask(data.taskId))
                         .show(() -> getActivity().getWindow());
@@ -462,7 +462,7 @@ public class ExportFragment
                                final String report) {
 
         final String subject = '[' + getString(R.string.app_name) + "] "
-                               + getString(R.string.lbl_backup);
+                               + getString(R.string.txt_backup_email_subject);
 
         try {
             final Intent intent = new Intent(Intent.ACTION_SEND)
