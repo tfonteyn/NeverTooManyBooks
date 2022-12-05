@@ -109,7 +109,7 @@ public class BooklistGroup {
     public static final int LENDING = 6;
     public static final int DATE_PUBLISHED_YEAR = 7;
     public static final int DATE_PUBLISHED_MONTH = 8;
-    public static final int BOOK_TITLE_1ST_LETTER = 9;
+    public static final int BOOK_TITLE_1ST_CHAR = 9;
     public static final int DATE_ADDED_YEAR = 10;
     public static final int DATE_ADDED_MONTH = 11;
     public static final int DATE_ADDED_DAY = 12;
@@ -132,7 +132,7 @@ public class BooklistGroup {
     public static final int DATE_FIRST_PUBLICATION_MONTH = 28;
     public static final int COLOR = 29;
     @SuppressWarnings("WeakerAccess")
-    public static final int SERIES_TITLE_1ST_LETTER = 30;
+    public static final int SERIES_TITLE_1ST_CHAR = 30;
     public static final int CONDITION = 31;
 
     /**

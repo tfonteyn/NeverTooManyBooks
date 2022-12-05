@@ -611,8 +611,8 @@
     <string name="style_builtin_author_year">Autor y Año</string>
     <string name="style_builtin_bookshelf">Biblioteca</string>
     <string name="style_builtin_compact">Compacto</string>
-    <string name="style_builtin_first_letter_book_title">Título del libro - Primera letra</string>
-    <string name="style_builtin_first_letter_series_title">Título de la serie - Primera letra</string>
+    <string name="style_builtin_book_title_1st_char">Título del libro - Primera letra</string>
+    <string name="style_builtin_series_title_1st_char">Título de la serie - Primera letra</string>
     <string name="style_builtin_format">Formato</string>
     <string name="style_builtin_genre">Género</string>
     <string name="style_builtin_language">Idioma</string>

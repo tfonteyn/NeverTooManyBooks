@@ -1102,8 +1102,8 @@
     <string name="style_builtin_author_year">Author,Year</string>
     <string name="style_builtin_bookshelf">Bookshelf</string>
     <string name="style_builtin_compact">Compact</string>
-    <string name="style_builtin_first_letter_book_title">Book title - 1st letter</string>
-    <string name="style_builtin_first_letter_series_title">Series title - 1st letter</string>
+    <string name="style_builtin_book_title_1st_char">Book title - 1st letter</string>
+    <string name="style_builtin_series_title_1st_char">Series title - 1st letter</string>
     <string name="style_builtin_format">Format</string>
     <string name="style_builtin_genre">Genre</string>
     <!-- [VERIFIED] -->

@@ -610,8 +610,8 @@
     <string name="style_builtin_author_year">Auteur en jaar</string>
     <string name="style_builtin_bookshelf">Boekenplank</string>
     <string name="style_builtin_compact">Compact</string>
-    <string name="style_builtin_first_letter_book_title">Boektitel - 1e letter</string>
-    <string name="style_builtin_first_letter_series_title">Reekstitel - 1e letter</string>
+    <string name="style_builtin_book_title_1st_char">Boektitel - 1e letter</string>
+    <string name="style_builtin_series_title_1st_char">Reekstitel - 1e letter</string>
     <string name="style_builtin_format">Formaat</string>
     <string name="style_builtin_genre">Genrenaam</string>
     <string name="style_builtin_language">Taal</string>

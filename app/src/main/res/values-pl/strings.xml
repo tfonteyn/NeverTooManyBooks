@@ -609,8 +609,8 @@
     <string name="style_builtin_author_year">Autor, rok</string>
     <string name="style_builtin_bookshelf">Półka</string>
     <string name="style_builtin_compact">Kompaktowy</string>
-    <string name="style_builtin_first_letter_book_title">Tytuł książki - pierwsza litera</string>
-    <string name="style_builtin_first_letter_series_title">Tytuł serii - pierwsza litera</string>
+    <string name="style_builtin_book_title_1st_char">Tytuł książki - pierwsza litera</string>
+    <string name="style_builtin_series_title_1st_char">Tytuł serii - pierwsza litera</string>
     <string name="style_builtin_format">Format</string>
     <string name="style_builtin_genre">Gatunek literacki</string>
     <string name="style_builtin_language">Język</string>

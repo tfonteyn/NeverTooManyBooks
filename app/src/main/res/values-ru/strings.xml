@@ -609,8 +609,8 @@
     <string name="style_builtin_author_year">Автор и год</string>
     <string name="style_builtin_bookshelf">Книжная полка</string>
     <string name="style_builtin_compact">Компактный</string>
-    <string name="style_builtin_first_letter_book_title">Название книги - 1-я буква</string>
-    <string name="style_builtin_first_letter_series_title">Название серии - 1-я буква</string>
+    <string name="style_builtin_book_title_1st_char">Название книги - 1-я буква</string>
+    <string name="style_builtin_series_title_1st_char">Название серии - 1-я буква</string>
     <string name="style_builtin_format">Формат</string>
     <string name="style_builtin_genre">Имя жанра</string>
     <string name="style_builtin_language">Язык</string>
