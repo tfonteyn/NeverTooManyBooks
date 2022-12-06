@@ -149,7 +149,7 @@
     <string name="btn_less_ellipsis">Moins…</string>
     <string name="btn_more_ellipsis">Plus…</string>
     <string name="action_show_options">Options</string>
-    <string name="btn_show_toc_long">Afficher la table des matières</string>
+    <string name="action_show_toc_long">Afficher la table des matières</string>
     <string name="action_start_export">Démarrer l\'exportation</string>
     <string name="action_start_import">Démarrer l\'importation</string>
     <string name="action_stop_scanning">Arrêter la numérisation</string>
@@ -324,7 +324,7 @@
     <string name="lbl_date_last_updated">Date de la dernière mise à jour</string>
     <string name="lbl_date_published">Date de publication</string>
     <string name="lbl_day">Jour</string>
-    <string name="lbl_delete_removed_books">Supprimer les livres qui ne sont plus présents sur le serveur</string>
+    <string name="option_delete_removed_books">Supprimer les livres qui ne sont plus présents sur le serveur</string>
     <string name="lbl_description">Description</string>
     <string name="lbl_details_have_changed">Modification en cours</string>
     <string name="lbl_duplicate_book">Dupliquer le livre</string>
@@ -436,7 +436,7 @@
     <string name="lbl_tab_lbl_ext_id">ID externe</string>
     <string name="lbl_tab_notes">Notes</string>
     <string name="lbl_tab_publication">Édition</string>
-    <string name="lbl_tab_table_of_content">Contenu</string>
+    <string name="lbl_table_of_content_short">Contenu</string>
     <string name="lbl_table_of_content">Table des matières</string>
     <string name="lbl_table_of_content_entry">Entrée dans la table des matières</string>
     <string name="lbl_test_connection">Tester la connexion</string>

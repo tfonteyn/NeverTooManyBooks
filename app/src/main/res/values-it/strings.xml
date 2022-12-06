@@ -147,7 +147,7 @@
     <string name="btn_less_ellipsis">Di meno…</string>
     <string name="btn_more_ellipsis">Altro…</string>
     <string name="action_show_options">Opzioni</string>
-    <string name="btn_show_toc_long">Mostra sommario</string>
+    <string name="action_show_toc_long">Mostra sommario</string>
     <string name="action_start_export">Avvia l\'esportazione</string>
     <string name="action_start_import">Avvia l\'importazione</string>
     <string name="action_stop_scanning">Interrompere la scansione</string>
@@ -322,7 +322,7 @@
     <string name="lbl_date_last_updated">Data ultimo aggiornamento</string>
     <string name="lbl_date_published">Data di pubblicazione</string>
     <string name="lbl_day">Giorno</string>
-    <string name="lbl_delete_removed_books">Elimina i libri che non sono più presenti sul server</string>
+    <string name="option_delete_removed_books">Elimina i libri che non sono più presenti sul server</string>
     <string name="lbl_description">Descrizione</string>
     <string name="lbl_details_have_changed">Dettagli modificati</string>
     <string name="lbl_duplicate_book">Duplica titolo libro</string>
@@ -434,7 +434,7 @@
     <string name="lbl_tab_lbl_ext_id">ID esterno</string>
     <string name="lbl_tab_notes">Note</string>
     <string name="lbl_tab_publication">Pubblicazione</string>
-    <string name="lbl_tab_table_of_content">Contenuto</string>
+    <string name="lbl_table_of_content_short">Contenuto</string>
     <string name="lbl_table_of_content">Tabella dei contenuti</string>
     <string name="lbl_table_of_content_entry">Voce nella tabella dei contenuti</string>
     <string name="lbl_test_connection">Verifica la connessione</string>

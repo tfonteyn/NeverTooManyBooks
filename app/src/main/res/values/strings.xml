@@ -43,12 +43,10 @@
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») -->
 <!--suppress LongLine -->
-<resources
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:locale="en">
-    <!-- ####################################################################################### -->
-    <!-- == order formatters == -->
-    <!-- ####################################################################################### -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
+
+    <!-- region ========== order formatters. -->
+
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <!-- generic "label: value" -->
     <string name="name_colon_value">%1$s: %2$s</string>
@@ -60,7 +58,6 @@
 
     <!-- x and y are numbers; e.g.: 5 of 9 -->
     <string name="x_of_y">%1$d of %2$d</string>
-
 
     <!-- abbreviation to indicate there are more of something.
          e.g. a list of Series: "Foundation …" indicates a book belongs to the
@@ -80,19 +77,21 @@
     -->
     <string name="fallback_currency_format">%1$s %2$.2f</string>
 
-    <!-- ####################################################################################### -->
-    <!-- System Notification channel names -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== System Notification channel names. -->
 
     <!-- [VERIFIED] -->
     <string name="notification_channel_error">Error</string>
     <string name="notification_channel_warn">Warning</string>
     <string name="notification_channel_info">Info</string>
 
-    <!-- ####################################################################################### -->
-    <!-- Fatal/Crash/Debug messages -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
 
+    <!-- region ========== Fatal/Crash/Debug messages. -->
+
+    <!-- [VERIFIED] Maintenance - collect debug information and prepare an email to the developers -->
+    <string name="lbl_send_debug">Bug report</string>
     <string name="debug_subject">Gathered debugging information</string>
     <string name="debug_body">Please take the time to briefly describe the problem you are experiencing.</string>
     <string name="debug_send_info_text">This will create a backup copy of your database as well as any log files and send it to the developers. If you do not wish to send any of these files, delete them from the mail attachments before sending.</string>
@@ -100,11 +99,11 @@
     <string name="acra_resDialogText">It looks like &APP_NAME; has crashed. If possible describe anything you think may be relevant below and press “OK” to send us an email about the crash. You will see the email before it is sent.</string>
     <string name="acra_resDialogCommentPrompt">Your comments (or just leave blank):</string>
 
-    <!-- ####################################################################################### -->
-    <!-- ========== HTTP(S) error messages; copied from:
-         "https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/res/res/values/strings.xml"
-    -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== HTTP(S) error messages. -->
+    <!-- copied from: "https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/res/res/values/strings.xml" -->
+
     <!-- [VERIFIED] - Displayed when a web request failed because there was an input or output error. -->
     <string name="X_httpErrorIO">Couldn\'t communicate with the server. Try again later.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because the request timed out -->
@@ -120,9 +119,9 @@
     <!-- [VERIFIED] - Displayed when a request failed because the file wasn't found. -->
     <string name="httpErrorFileNotFound">Couldn\'t find the requested file.</string>
 
-    <!-- ####################################################################################### -->
-    <!-- ========== General error messages ========== -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== General error messages. -->
 
     <string name="error_upgrade_not_supported">Upgrading from versions older than %1$s is not supported.</string>
 
@@ -167,7 +166,7 @@
     <string name="error_storage_no_space_left">Insufficient storage available.</string>
 
     <!-- A search on a specific website failed, with the specified reason.
-         param 1: site name; param 2: message      -->
+         param 1: site name; param 2: message   . -->
     <string name="error_search_x_failed_y">Searching on %1$s failed: %2$s</string>
 
     <!-- STARTING a search has failed / no attempt to search was possible; this is an error! -->
@@ -216,9 +215,9 @@
     <!-- generic export failure -->
     <string name="error_export_failed">Export failed.</string>
 
-    <!-- ####################################################################################### -->
-    <!-- ========== Warning messages ========== -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== Warning messages. -->
     <string name="warning_import_csv">Warning. Importing data may update existing book records with new information if the uuid column is not present and the id in the import file is the same as an existing id. This is usually fine if you changed a field in an exported file. If you created a new book record, or are importing someone else\'s books, ensure the uuid field is present or the id field is blank.</string>
 
     <!-- Importing a CSV book list; individual lines can fail. Report the exact position.
@@ -283,9 +282,9 @@
 
     <string name="warning_no_site_supports_this_method">WARNING: none of the currently selected sites supports searching by %1$s. Please use the site menu to enable alternative sites, or use a different search method.</string>
 
-    <!-- ####################################################################################### -->
-    <!-- ========== ValidatorException error messages ========== -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== ValidatorException error messages. -->
 
     <!-- Dialog title for validation messages. -->
     <string name="vldt_failure">Validation failure</string>
@@ -304,9 +303,9 @@
     <!-- Specific to a check on the "reading started" versus "reading ended" dates. -->
     <string name="vldt_read_start_after_end">The date reading started, is after the end date</string>
 
-    <!-- ####################################################################################### -->
-    <!-- ========== Progress messages for 'lengthy' actions ========== -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== Progress messages for 'lengthy' actions. -->
 
     <!-- [VERIFIED] -->
     <string name="progress_msg_please_wait">Please wait…</string>
@@ -345,14 +344,14 @@
 
             Note the format should cause the least disruption to the eyes of the user.
             i.e. the numbers will count up, but the overall message should be constant.
-        -->
+     . -->
     <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d created, %3$d updated, %4$d skipped</string>
 
     <string name="progress_msg_cleaning_up">Cleaning up…</string>
 
-    <!-- ####################################################################################### -->
-    <!-- ========== Tips which are shown in some places on how to use a screen ========== -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== Tips which are shown in some places on how to use a screen. -->
 
     <string name="tip_dialog_title">Tip</string>
     <string name="tip_reset_all">Reset tips</string>
@@ -385,9 +384,9 @@
     <string name="tip_authors_works_multiple_books">The title is present in multiple books.</string>
     <string name="tip_authors_works_single_book">The title is present in a single book.</string>
 
-    <!-- ####################################################################################### -->
-    <!-- == BoB specific place holder text for empty fields.  == -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== BoB specific place holder text for empty fields. -->
 
     <!-- BoB generic place holder text for EMPTY fields.
          The actual text is different from info_not_set in Translations.
@@ -420,9 +419,9 @@
     <!-- BoB specific place holder text for Day rows. -->
     <string name="bob_empty_day">(Day not set)</string>
 
-    <!-- ####################################################################################### -->
-    <!-- == Size measurements == -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== Size measurements. -->
 
     <!-- Size of a file: MB/kB/B refer to the IEC decimal notation 1kB == 1000B-->
     <string name="size_megabytes">%1$.2fMB</string>
@@ -437,9 +436,10 @@
     <string name="size_large">Large</string>
     <string name="size_x_large">X-Large</string>
 
-    <!-- ####################################################################################### -->
-    <!-- == List values used to unify terminology from internet websites. == -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== List values used to unify terminology from internet websites. -->
+
     <!--  book format - traditional 'hardcover' also known as 'hardback' -->
     <string name="book_format_hardcover">Hardcover</string>
     <!-- book format - A Softcover is not necessarily a paperback -->
@@ -451,7 +451,7 @@
     <!--  book format - mostly used for magazines like 'readers digest'
           A lot of english monthly magazines use the same format.
           In French this is semi-officially known as "Petit format" or "Small size".
-    -->
+ . -->
     <string name="book_format_digest">Digest</string>
     <!--  book format - string used if a website indicates it's an eBook -->
     <string name="book_format_ebook">eBook</string>
@@ -468,9 +468,9 @@
          e.g. black and white, but additional red for emphasis -->
     <string name="book_color_support_color">Bicolored</string>
 
-    <!-- ####################################################################################### -->
-    <!-- == Names of builtin styles == -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== Names of builtin styles. -->
 
     <string name="style_builtin_author_series">Author, Series</string>
     <string name="style_builtin_author_year">Author, Year</string>
@@ -491,9 +491,9 @@
     <string name="style_builtin_read_and_unread" translatable="false">@string/lbl_group_read_and_unread</string>
     <string name="style_builtin_series" translatable="false">@string/lbl_series</string>
 
-    <!-- ####################################################################################### -->
-    <!-- == Style terminology == -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== Style terminology. -->
 
     <!-- Single Style -->
     <string name="lbl_style">Style</string>
@@ -506,9 +506,9 @@
     <!-- Style type -->
     <string name="style_type_user_defined">User-defined</string>
 
-    <!-- ####################################################################################### -->
-    <!-- == Booklist Group names == -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== Booklist Group names. -->
 
     <string name="lbl_group_read_and_unread">Read &amp; Unread</string>
 
@@ -516,10 +516,9 @@
     <string name="lbl_group_1st_char_series_title">1st character of the Series title</string>
     <string name="lbl_group_1st_char_publisher_name">1st character of the Publisher name</string>
     <string name="lbl_group_1st_char_book_title">1st character of the Book title</string>
+    <!-- endregion -->
 
-    <!-- ####################################################################################### -->
-    <!-- == Defaults for bookshelf names == -->
-    <!-- ####################################################################################### -->
+    <!-- region ========== Defaults for bookshelf names. -->
 
     <!-- Name of virtual bookshelf which displays all books. -->
     <string name="bookshelf_all_books">All Books</string>
@@ -529,10 +528,9 @@
     <!-- Predefined/proposed name for a bookshelf when synchronizing with
          a wishlist from some websites. -->
     <string name="bookshelf_my_wishlist">Wishlist</string>
+    <!-- endregion -->
 
-    <!-- ####################################################################################### -->
-    <!-- == Book editions values NEWTHINGS: add book edition: add label here == -->
-    <!-- ####################################################################################### -->
+    <!-- region ========== Book editions values NEWTHINGS: add book edition: add label here. -->
 
     <string name="lbl_edition_first_edition">First Edition</string>
     <string name="lbl_edition_first_impression">First impression</string>
@@ -540,10 +538,9 @@
     <string name="lbl_edition_signed" translatable="false">@string/lbl_signed</string>
     <string name="lbl_edition_slipcase">Slipcase</string>
     <string name="lbl_edition_book_club">Bookclub edition</string>
+    <!-- endregion -->
 
-    <!-- ####################################################################################### -->
-    <!-- == Book / Dust cover condition values == -->
-    <!-- ####################################################################################### -->
+    <!-- region ========== Book / Dust cover condition values. -->
 
     <string name="lbl_condition_fine">As new</string>
     <string name="lbl_condition_very_good">Very good</string>
@@ -552,10 +549,9 @@
     <string name="lbl_condition_reading_copy">Reading copy</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Missing/Fair</string>
     <string name="lbl_condition_dust_cover_none">None</string>
+    <!-- endregion -->
 
-    <!-- ####################################################################################### -->
-    <!-- == Author types == -->
-    <!-- ####################################################################################### -->
+    <!-- region ========== Author types. -->
 
     <string name="lbl_author_type_writer">writer</string>
     <string name="lbl_author_type_translator">translator</string>
@@ -571,10 +567,9 @@
     <string name="lbl_author_type_cover_artist">Cover art</string>
     <string name="lbl_author_type_cover_inking">Cover inking</string>
     <string name="lbl_author_type_cover_colorist">Cover colorist</string>
+    <!-- endregion -->
 
-    <!-- ####################################################################################### -->
-    <!-- ========== options - radio, checkbox or menus ========== -->
-    <!-- ####################################################################################### -->
+    <!-- region ========== options - radio, checkbox or menus. -->
 
     <!-- Move covers from one storage device to another (e.g. internal to sdcard) -->
     <string name="option_moving_covers_from_x_to_y">Move all covers from “%1$s” to “%2$s”</string>
@@ -686,10 +681,9 @@
     <string name="option_import">Import</string>
     <string name="option_backup_and_export" translatable="false">@string/title_backup_and_export</string>
 
+    <!-- endregion -->
 
-    <!-- ####################################################################################### -->
-    <!-- ========== Messages for actions that need confirming first. ========== -->
-    <!-- ####################################################################################### -->
+    <!-- region ========== Messages for actions that need confirming first. -->
 
     <string name="confirm_unsaved_edits">You have unsaved changes, if you exit now they will be lost.</string>
 
@@ -723,7 +717,7 @@
          param 3: the text on the button for making a global change. e.g. "All books"
          param 4: the text on the button for making a local change. e.g. "This book only"
          param 5: the type of object we'll create a new one of if the user chooses "This book only"
-          -->
+       . -->
     <string name="confirm_scope_for_change">You have changed:\n “%1$s”\n to\n “%2$s”\n\nHow do you wish to apply this change?\nNote: The choice “%3$s” will be applied instantly. If you choose “%4$s”, then a new %5$s will be created.</string>
 
     <!-- offer to send the exported file as an email attachment -->
@@ -733,7 +727,7 @@
 
     <!-- Displayed when the user changes their sorting preference.
          When doing this, the sorting information in the database needs to be rebuild.
-    -->
+ . -->
     <string name="confirm_rebuild_orderby_columns">This will rebuild the sorting data when the app is restarted. Are you sure you want to continue ?</string>
 
     <string name="confirm_rebuild_fts">This will rebuild the search index data when the app is restarted. Are you sure you want to continue ?</string>
@@ -741,10 +735,9 @@
 
     <string name="confirm_registration_required">This feature requires registration with %1$s. Would you like to see more information?</string>
     <string name="confirm_registration_benefits">This feature benefits from registration with %1$s. Would you like to see more information, or disable this message?\n You can find this information at a later date under the “%2$s” section in the settings.</string>
+    <!-- endregion -->
 
-    <!-- ####################################################################################### -->
-    <!-- == Button (action) texts, must be short == -->
-    <!-- ####################################################################################### -->
+    <!-- region ========== Button (action) texts, must be short. -->
 
     <!-- [VERIFIED] -->
     <string name="action_add">Add</string>
@@ -828,9 +821,14 @@
 
     <string name="action_synchronize">Synchronize</string>
 
-    <!-- ####################################################################################### -->
-    <!-- == Toolbar, Activity and Dialog titles == -->
-    <!-- ####################################################################################### -->
+    <!-- Small screens. Ideally 3-5 characters long. -->
+    <string name="action_show_toc" translatable="false">@string/lbl_table_of_content_short</string>
+    <!-- Large screens; max 25 chars -->
+    <string name="action_show_toc_long">Show Table Of Content</string>
+
+    <!-- endregion -->
+
+    <!-- region ========== Toolbar, Activity and Dialog titles. -->
 
     <!-- Toolbar/Screen title. -->
     <string name="lbl_search_isbn">ISBN Search</string>
@@ -877,9 +875,9 @@
     <!-- [VERIFIED] Title of intent resolver dialog when selecting a sharing application to run. -->
     <string name="whichSendApplication">Share</string>
 
-    <!-- ####################################################################################### -->
-    <!-- == Field labels == -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== Field labels. -->
 
     <!-- Single Author -->
     <string name="lbl_author">Author</string>
@@ -976,9 +974,9 @@
     <!-- a one line label, with the name of the person appended -->
     <string name="lbl_lend_out_to_name">Lend out to %1$s</string>
 
-    <!-- ####################################################################################### -->
-    <!-- == All date related labels == -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== All date related labels. -->
 
     <!-- [VERIFIED] Universal date strings -->
     <string name="lbl_year">Year</string>
@@ -1022,9 +1020,9 @@
     <string name="lbl_date_first_publication_year">First Pub. Year</string>
     <string name="lbl_date_first_publication_month">First Pub. Month</string>
 
-    <!-- ####################################################################################### -->
-    <!-- == Backup, Export and Import == -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== Backup, Export and Import. -->
 
     <!-- Dialog /screen / Navigation panel menu option -->
     <string name="title_backup_and_export">Backup &amp; Export</string>
@@ -1084,7 +1082,7 @@
     <!-- Text above an EditText which has a label of "Since" and contains a date.
          Hence this string can/should be read as "Only import books modified since this date"
          Translated strings are usually longer... add one or more '\n' as needed.
-         -->
+      . -->
     <string name="option_header_import_books_option_new_and_updated_cutoff_date">Only import books modified since</string>
     <string name="lbl_sync_date">Since</string>
 
@@ -1098,9 +1096,9 @@
     <!-- progress final message - some data was imported. The user probably canceled before we finished. -->
     <string name="info_import_partially_complete">Partial import done</string>
 
-    <!-- ####################################################################################### -->
-    <!-- == Global settings == -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== Global settings. -->
 
     <!-- Generic place holder text for preference fields which are NOT SET.
          The actual text is different from hint_empty_field in Translations.
@@ -1150,7 +1148,7 @@
      This is case-sensitive, so each locale can decide if it's appropriate to for example
      move a word only if it starts with an uppercase, but not for the same word starting
      with a lowercase character.
-    -->
+ . -->
     <string name="pv_reformat_titles_prefixes">a|A|an|An|the|The</string>
 
 
@@ -1185,7 +1183,7 @@
     <!-- SwitchPreference - when an ISBN-13 number is entered for searching,
          this option forces (if possible) the search to convert it to an ISBN-10
          for the actual search. The data itself will keep using what the user entered.
-    -->
+ . -->
     <string name="pt_search_prefer_isbn10">Use ISBN-10 when possible</string>
     <!-- SwitchPreference - search engines can collect Series information from the toc.
          This is not always desirable, and by default switched off. -->
@@ -1237,12 +1235,11 @@
     <!-- [VERIFIED] -->
     <string name="pe_camera_other">Other</string>
 
-    <!-- ####################################################################################### -->
-    <!-- == Maintenance, Debug, logging and about == -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
 
-    <!-- [VERIFIED] Maintenance - collect debug information and prepare an email to the developers -->
-    <string name="lbl_send_debug">Bug report</string>
+    <!-- region ========== Maintenance, Debug, logging and about. -->
+
+
     <!-- Maintenance - cleanup log, temp files -->
     <string name="lbl_purge_files">Cleanup Files</string>
     <!-- Maintenance - clear the cached images -->
@@ -1266,9 +1263,9 @@
     <string name="lbl_about">About</string>
     <string name="lbl_about_contact">Contact:</string>
 
-    <!-- ####################################################################################### -->
-    <!-- == Website settings == -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== Website settings. -->
 
     <string name="lbl_connection_timeout">Connection timeout (seconds)</string>
     <string name="lbl_read_timeout">Read timeout (seconds)</string>
@@ -1289,9 +1286,9 @@
     <!-- [VERIFIED] - Label for an information field on an SSL Certificate Dialog -->
     <string name="lbl_certificate_issued_by">Issued by: %1$s</string>
 
-    <!-- ####################################################################################### -->
-    <!-- == Style settings == -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== Style settings. -->
 
     <!-- BooklistGroup's in booklist style.
          Opens a new screen with the related settings. -->
@@ -1348,9 +1345,9 @@
     <string name="pv_bob_books_under_multiple_primary_publisher_only">under their primary publisher only</string>
     <string name="pv_bob_books_under_multiple_each_publisher">under each publisher</string>
 
-    <!-- ####################################################################################### -->
-    <!-- == Filters == -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== Filters. -->
 
     <string name="lbl_filters">Filters</string>
 
@@ -1370,20 +1367,21 @@
 
     <string name="lbl_search_filtered_on_x">Filtered on: %1$s</string>
 
-    <!-- ####################################################################################### -->
-    <!-- == Automatic update book fields from the internet == -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
 
+    <!-- region ========== Automatic update book fields from the internet. -->
+
+    <!-- booklist screen - context menu - Update Fields from internet for a set of books -->
+    <string name="menu_update_books">Update books</string>
     <string name="menu_update_fields">Update fields</string>
     <string name="txt_select_fields_to_update">Selected fields will be updated from the internet. Unselected fields will remain unchanged.</string>
     <string name="lbl_select_fields">Select Fields</string>
     <string name="option_field_usage_copy_if_blank">Copy if blank</string>
     <string name="option_field_usage_append">Appends extra data</string>
     <string name="option_field_usage_overwrite">Overwrites existing data</string>
+    <!-- endregion -->
 
-    <!-- ####################################################################################### -->
-    <!-- == Lending == -->
-    <!-- ####################################################################################### -->
+    <!-- region ========== Lending. -->
 
     <string name="lbl_lending">Lending</string>
     <!-- a header, with a text field below where the user can type in a name -->
@@ -1392,10 +1390,9 @@
     <string name="lbl_lend_out">Lend out</string>
     <!-- [VERIFIED] -->
     <string name="lbl_available">Available</string>
+    <!-- endregion -->
 
-    <!-- ####################################################################################### -->
-    <!-- == TAB labels - need to be very short; 4 tabs should fit on a screen. Ideally 5. -->
-    <!-- ####################################################################################### -->
+    <!-- region ========== TAB labels - need to be very short; 4 tabs should fit on a screen. Ideally 5. -->
 
     <!-- Edit book: Name of the 'Details' tab -->
     <string name="lbl_tab_details">Details</string>
@@ -1404,16 +1401,16 @@
     <!-- Edit book: Name of the 'Notes' tab.-->
     <string name="lbl_tab_notes">Notes</string>
     <!-- Edit book: Name of the 'Table Of Content' tab. -->
-    <string name="lbl_tab_table_of_content">TOC</string>
+    <string name="lbl_tab_table_of_content" translatable="false">@string/lbl_table_of_content_short</string>
     <!-- Edit book: Name of the 'External website id' tab.-->
     <string name="lbl_tab_lbl_ext_id">External ID</string>
 
     <!-- SearchAdmin page: Name of the 'Alternative Editions' tab. -->
     <string name="lbl_tab_alternative_editions">Alt. Ed.</string>
 
-    <!-- ####################################################################################### -->
-    <!-- ========== Single words used for multiple purposes ========== -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== Single words used for multiple purposes. -->
 
     <!-- [VERIFIED] -->
     <string name="yes">Yes</string>
@@ -1451,9 +1448,9 @@
     <string name="btn_more_ellipsis">More…</string>
     <string name="btn_less_ellipsis">Less…</string>
 
-    <!-- ####################################################################################### -->
-    <!-- == Other labels == -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== Other labels - TODO: needs cleaning up... -->
 
     <string name="menu_set_download_folder">Set the download folder</string>
     <string name="menu_download_folder">Local download folder</string>
@@ -1467,8 +1464,7 @@
 
     <!-- Whether the menu/options for a particular 'Sync' site are enabled or hidden. -->
     <string name="menu_enable_sync_options">Enable sync options</string>
-    <!-- booklist screen - context menu - Update Fields from internet for a set of books -->
-    <string name="menu_update_books">Update books</string>
+
 
 
     <string name="btn_this_book">This book only</string>
@@ -1503,11 +1499,8 @@
     <string name="lbl_story_in_multiple_books">“%1$s” is present in multiple books:\n\n%2$s</string>
     <string name="lbl_story_in_single_book">“%1$s” is present in a single book:\n\n%2$s</string>
 
-    <!-- Button text; shown only on larger screens - max 25 chars?
-         On smaller screens, "tab_lbl_toc" is used.
-     -->
-    <string name="btn_show_toc_long">Show Table Of Content</string>
     <string name="lbl_table_of_content">Table Of Content</string>
+    <string name="lbl_table_of_content_short">TOC</string>
     <string name="lbl_table_of_content_entry">TOC Entry</string>
 
     <string name="lbl_site_book_id">Website book ID</string>
@@ -1515,7 +1508,7 @@
 
     <string name="lbl_library">Library</string>
     <string name="lbl_virtual_libraries">Virtual libraries in this library</string>
-    <string name="lbl_delete_removed_books">Delete local books which are no longer present on the server</string>
+    <string name="option_delete_removed_books">Delete local books which are no longer present on the server</string>
 
     <!-- [VERIFIED] -->
     <string name="lbl_system_default">(System default)</string>
@@ -1566,9 +1559,9 @@
      This is displayed at the 'end' of a label, hence needs the brackets for clarity. -->
     <string name="info_isfdb_warning_limited_to">(only supported by the ISFDB web site)</string>
 
-    <!-- ####################################################################################### -->
-    <!-- === Unused, but not removing as we have translations which might be useful later == -->
-    <!-- ####################################################################################### -->
+    <!-- endregion -->
+
+    <!-- region ========== Unused, but not removing as we have translations which might be useful later. -->
 
     <string name="X_acra_resToastText">&APP_NAME; has crashed unexpectedly. Please help us to make the application better by reporting this crash.</string>
     <string name="X_action_swap">Swap</string>
@@ -1617,8 +1610,11 @@
     <string name="X_use_default_setting">Use default values</string>
     <!-- [VERIFIED] -->
     <string name="X_lbl_folder">Folder</string>
+
+    <!-- endregion -->
+
     <!-- ####################################################################################### -->
-    <!-- ========== likely to change still  ========== -->
+    <!-- ========== likely to change still. -->
     <!-- ####################################################################################### -->
 
     <!-- Internal cleanup of Booklist node states... collapsed/expanded etc... need proper name -->

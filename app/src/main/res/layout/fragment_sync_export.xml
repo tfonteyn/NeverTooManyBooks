@@ -113,7 +113,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:checked="false"
-            android:text="@string/lbl_delete_removed_books"
+            android:text="@string/option_delete_removed_books"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/formatDivider"
             />

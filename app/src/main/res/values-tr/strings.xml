@@ -149,7 +149,7 @@
     <string name="btn_less_ellipsis">Az…</string>
     <string name="btn_more_ellipsis">Diğer…</string>
     <string name="action_show_options">Seçenekler</string>
-    <string name="btn_show_toc_long">İçindekiler Tablosunu Göster</string>
+    <string name="action_show_toc_long">İçindekiler Tablosunu Göster</string>
     <string name="action_start_export">Dışa aktarmayı başlat</string>
     <string name="action_start_import">İçe aktarmayı başlat</string>
     <string name="action_stop_scanning">Taramayı durdur</string>
@@ -325,7 +325,7 @@
     <string name="lbl_date_last_updated">Son güncelleme tarihi</string>
     <string name="lbl_date_published">Yayımlandığı Tarih</string>
     <string name="lbl_day">Gün</string>
-    <string name="lbl_delete_removed_books">Artık sunucuda bulunmayan kitapları silin</string>
+    <string name="option_delete_removed_books">Artık sunucuda bulunmayan kitapları silin</string>
     <string name="lbl_description">Özet</string>
     <string name="lbl_details_have_changed">Ayrıntılar değiştirildi</string>
     <string name="lbl_duplicate_book">Kitabı kopyala</string>
@@ -438,7 +438,7 @@
     <string name="lbl_tab_lbl_ext_id">Harici Kimlik</string>
     <string name="lbl_tab_notes">Notlar</string>
     <string name="lbl_tab_publication">Yayınlama</string>
-    <string name="lbl_tab_table_of_content">Içerik</string>
+    <string name="lbl_table_of_content_short">Içerik</string>
     <string name="lbl_table_of_content">İçindekiler</string>
     <string name="lbl_table_of_content_entry">İçindekiler Tablosuna Giriş</string>
     <string name="lbl_test_connection">Bağlantıyı test edin</string>

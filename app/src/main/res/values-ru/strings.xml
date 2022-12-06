@@ -147,7 +147,7 @@
     <string name="btn_less_ellipsis">Меньше…</string>
     <string name="btn_more_ellipsis">Ещё…</string>
     <string name="action_show_options">опции</string>
-    <string name="btn_show_toc_long">Показать оглавление</string>
+    <string name="action_show_toc_long">Показать оглавление</string>
     <string name="action_start_export">Начать экспорт</string>
     <string name="action_start_import">Начать импорт</string>
     <string name="action_stop_scanning">Остановить сканирование</string>
@@ -322,7 +322,7 @@
     <string name="lbl_date_last_updated">Дата последнего обновления</string>
     <string name="lbl_date_published">Дата издания</string>
     <string name="lbl_day">дн.</string>
-    <string name="lbl_delete_removed_books">Удалите книги, которых больше нет на сервере</string>
+    <string name="option_delete_removed_books">Удалите книги, которых больше нет на сервере</string>
     <string name="lbl_description">Описание</string>
     <string name="lbl_details_have_changed">Детали были измененны</string>
     <string name="lbl_duplicate_book">Копия книги</string>
@@ -434,7 +434,7 @@
     <string name="lbl_tab_lbl_ext_id">Внешний идентификатор</string>
     <string name="lbl_tab_notes">заметки</string>
     <string name="lbl_tab_publication">публикация</string>
-    <string name="lbl_tab_table_of_content">оглавление</string>
+    <string name="lbl_table_of_content_short">оглавление</string>
     <string name="lbl_table_of_content">оглавление</string>
     <string name="lbl_table_of_content_entry">Запись в оглавлении</string>
     <string name="lbl_test_connection">Проверить соединение</string>

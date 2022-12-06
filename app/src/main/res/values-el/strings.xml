@@ -147,7 +147,7 @@
     <string name="btn_less_ellipsis">Πιο λιγο…</string>
     <string name="btn_more_ellipsis">Περισσότερο…</string>
     <string name="action_show_options">Επιλογές</string>
-    <string name="btn_show_toc_long">Εμφάνιση Πίνακα Περιεχομένων</string>
+    <string name="action_show_toc_long">Εμφάνιση Πίνακα Περιεχομένων</string>
     <string name="action_start_export">Έναρξη εξαγωγής</string>
     <string name="action_start_import">Έναρξη εισαγωγής</string>
     <string name="action_stop_scanning">Σταματήστε τη σάρωση</string>
@@ -322,7 +322,7 @@
     <string name="lbl_date_last_updated">Ημερομηνία τελευταίας ενημέρωσης</string>
     <string name="lbl_date_published">Ημερομηνία έκδοσης</string>
     <string name="lbl_day">Ημέρα</string>
-    <string name="lbl_delete_removed_books">Διαγράψτε βιβλία που δεν υπάρχουν πλέον στο διακομιστή</string>
+    <string name="option_delete_removed_books">Διαγράψτε βιβλία που δεν υπάρχουν πλέον στο διακομιστή</string>
     <string name="lbl_description">Περιγραφή</string>
     <string name="lbl_details_have_changed">Κάποιες λεπτομέρειες έχουν αλλάξει</string>
     <string name="lbl_duplicate_book">Διπλοεγγραφή Βιβλίου</string>
@@ -434,7 +434,7 @@
     <string name="lbl_tab_lbl_ext_id">Εξωτερικό αναγνωριστικό</string>
     <string name="lbl_tab_notes">Σημειώσεις</string>
     <string name="lbl_tab_publication">Δημοσίευση</string>
-    <string name="lbl_tab_table_of_content">περιεχόμενο</string>
+    <string name="lbl_table_of_content_short">περιεχόμενο</string>
     <string name="lbl_table_of_content">πίνακας περιεχομένων</string>
     <string name="lbl_table_of_content_entry">Καταχώριση στον πίνακα περιεχομένου</string>
     <string name="lbl_test_connection">Δοκιμάστε τη σύνδεση</string>

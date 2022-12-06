@@ -146,7 +146,7 @@
     <string name="btn_less_ellipsis">Méně…</string>
     <string name="btn_more_ellipsis">Více…</string>
     <string name="action_show_options">Možnosti</string>
-    <string name="btn_show_toc_long">Zobrazit obsah</string>
+    <string name="action_show_toc_long">Zobrazit obsah</string>
     <string name="action_start_export">Spusťte export</string>
     <string name="action_start_import">Spusťte import</string>
     <string name="action_stop_scanning">Zastavit skenování</string>
@@ -321,7 +321,7 @@
     <string name="lbl_date_last_updated">Datum poslední aktualizace</string>
     <string name="lbl_date_published">Datum vydání</string>
     <string name="lbl_day">Den</string>
-    <string name="lbl_delete_removed_books">Odstraňte knihy, které již na serveru nejsou</string>
+    <string name="option_delete_removed_books">Odstraňte knihy, které již na serveru nejsou</string>
     <string name="lbl_description">Popis</string>
     <string name="lbl_details_have_changed">Podrobnosti se změnily</string>
     <string name="lbl_duplicate_book">Duplicitní kniha</string>
@@ -433,7 +433,7 @@
     <string name="lbl_tab_lbl_ext_id">Externí ID</string>
     <string name="lbl_tab_notes">Poznámky</string>
     <string name="lbl_tab_publication">Vydání</string>
-    <string name="lbl_tab_table_of_content">Obsah</string>
+    <string name="lbl_table_of_content_short">Obsah</string>
     <string name="lbl_table_of_content">Obsah</string>
     <string name="lbl_table_of_content_entry">Zápis do obsahu</string>
     <string name="lbl_test_connection">Vyzkoušejte připojení</string>

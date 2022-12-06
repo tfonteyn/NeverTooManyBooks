@@ -145,7 +145,7 @@
     <string name="btn_less_ellipsis">Minder…</string>
     <string name="btn_more_ellipsis">Meer…</string>
     <string name="action_show_options">Opties</string>
-    <string name="btn_show_toc_long">Inhoudsopgave weergeven</string>
+    <string name="action_show_toc_long">Inhoudsopgave weergeven</string>
     <string name="action_start_export">Start export</string>
     <string name="action_start_import">Start import</string>
     <string name="action_stop_scanning">Stop scanning</string>
@@ -320,7 +320,7 @@
     <string name="lbl_date_last_updated">Datum laatst bijgewerkt</string>
     <string name="lbl_date_published">Datum uitgave</string>
     <string name="lbl_day">Dag</string>
-    <string name="lbl_delete_removed_books">Verwijder boeken die niet meer op de server staan</string>
+    <string name="option_delete_removed_books">Verwijder boeken die niet meer op de server staan</string>
     <string name="lbl_description">Beschrijving</string>
     <string name="lbl_details_have_changed">De details zijn veranderd</string>
     <string name="lbl_duplicate_book">Dupliceer Boek</string>
@@ -433,7 +433,7 @@
     <string name="lbl_tab_lbl_ext_id">Extern ID</string>
     <string name="lbl_tab_notes">Notities</string>
     <string name="lbl_tab_publication">Uitgave</string>
-    <string name="lbl_tab_table_of_content">Inhoud</string>
+    <string name="lbl_table_of_content_short">Inhoud</string>
     <string name="lbl_table_of_content">Inhouds tabel</string>
     <string name="lbl_table_of_content_entry">Vermelding in de inhoudsopgave</string>
     <string name="lbl_test_connection">Test de verbinding</string>
