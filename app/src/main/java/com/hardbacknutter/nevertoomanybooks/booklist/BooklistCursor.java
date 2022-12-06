@@ -31,16 +31,14 @@ import java.util.function.Function;
 
 /**
  * TODO: https://developer.android.com/topic/libraries/architecture/paging.html
- * <p>
- * 2022-05-22: reimplemented using {@link LruCache}.
  */
 public class BooklistCursor
         extends AbstractCursor {
 
     /** Number of rows to return in each cursor. No tuning has been done to pick this number. */
     private static final int PAGE_SIZE = 32;
-    /** Size of MRU list. Not based on tuning; just set to more than 2*3+1. */
-    private static final int MRU_LIST_SIZE = 8;
+    /** Size of {@link CursorCache}. No tuning has been done to pick this number. */
+    private static final int LRU_LIST_SIZE = 8;
 
     /** Back reference to the builder which produced this cursor. */
     @NonNull
@@ -62,7 +60,7 @@ public class BooklistCursor
      */
     BooklistCursor(@NonNull final Booklist booklist) {
         this.booklist = booklist;
-        cursorCache = new CursorCache(MRU_LIST_SIZE, cursorId -> {
+        cursorCache = new CursorCache(LRU_LIST_SIZE, cursorId -> {
             // Determine the actual start position offset.
             final int offset = cursorId * PAGE_SIZE;
             return this.booklist.getOffsetCursor(offset, PAGE_SIZE);
@@ -178,8 +176,8 @@ public class BooklistCursor
         }
 
         @Override
-        protected Cursor create(@NonNull final Integer cursorId) {
-            return cursorSupplier.apply(cursorId);
+        protected Cursor create(@NonNull final Integer key) {
+            return cursorSupplier.apply(key);
         }
 
         @Override
