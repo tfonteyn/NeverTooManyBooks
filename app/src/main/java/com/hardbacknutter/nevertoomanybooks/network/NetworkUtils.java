@@ -106,7 +106,7 @@ public final class NetworkUtils {
 
                 final boolean isMeteredAllowed = PreferenceManager
                         .getDefaultSharedPreferences(context)
-                        .getBoolean(Prefs.pk_network_allow_metered, false);
+                        .getBoolean(Prefs.pk_network_allow_metered, true);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
                     Log.d(TAG, "getNetworkCapabilities"
