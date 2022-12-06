@@ -181,21 +181,7 @@ public class EditBookAuthorDialogFragment
                 vb.authorTypeGroup.setVisibility(isChecked ? View.VISIBLE : View.GONE);
             });
 
-            // NEWTHINGS: author type: add a button to the layout
-            typeButtons.put(Author.TYPE_WRITER, vb.cbxAuthorTypeWriter);
-            typeButtons.put(Author.TYPE_CONTRIBUTOR, vb.cbxAuthorTypeContributor);
-            typeButtons.put(Author.TYPE_INTRODUCTION, vb.cbxAuthorTypeIntro);
-            typeButtons.put(Author.TYPE_TRANSLATOR, vb.cbxAuthorTypeTranslator);
-            typeButtons.put(Author.TYPE_EDITOR, vb.cbxAuthorTypeEditor);
-            typeButtons.put(Author.TYPE_NARRATOR, vb.cbxAuthorTypeNarrator);
-
-            typeButtons.put(Author.TYPE_ARTIST, vb.cbxAuthorTypeArtist);
-            typeButtons.put(Author.TYPE_INKING, vb.cbxAuthorTypeInking);
-            typeButtons.put(Author.TYPE_COLORIST, vb.cbxAuthorTypeColorist);
-
-            typeButtons.put(Author.TYPE_COVER_ARTIST, vb.cbxAuthorTypeCoverArtist);
-            typeButtons.put(Author.TYPE_COVER_INKING, vb.cbxAuthorTypeCoverInking);
-            typeButtons.put(Author.TYPE_COVER_COLORIST, vb.cbxAuthorTypeCoverColorist);
+            createTypeButtonList();
 
             if (currentEdit.getType() == Author.TYPE_UNKNOWN) {
                 setTypeEnabled(false);
@@ -212,6 +198,24 @@ public class EditBookAuthorDialogFragment
             vb.btnUseAuthorType.setVisibility(View.GONE);
             vb.authorTypeGroup.setVisibility(View.GONE);
         }
+    }
+
+    private void createTypeButtonList() {
+        // NEWTHINGS: author type: add a button to the layout
+        typeButtons.put(Author.TYPE_WRITER, vb.cbxAuthorTypeWriter);
+        typeButtons.put(Author.TYPE_CONTRIBUTOR, vb.cbxAuthorTypeContributor);
+        typeButtons.put(Author.TYPE_INTRODUCTION, vb.cbxAuthorTypeIntro);
+        typeButtons.put(Author.TYPE_TRANSLATOR, vb.cbxAuthorTypeTranslator);
+        typeButtons.put(Author.TYPE_EDITOR, vb.cbxAuthorTypeEditor);
+        typeButtons.put(Author.TYPE_NARRATOR, vb.cbxAuthorTypeNarrator);
+
+        typeButtons.put(Author.TYPE_ARTIST, vb.cbxAuthorTypeArtist);
+        typeButtons.put(Author.TYPE_INKING, vb.cbxAuthorTypeInking);
+        typeButtons.put(Author.TYPE_COLORIST, vb.cbxAuthorTypeColorist);
+
+        typeButtons.put(Author.TYPE_COVER_ARTIST, vb.cbxAuthorTypeCoverArtist);
+        typeButtons.put(Author.TYPE_COVER_INKING, vb.cbxAuthorTypeCoverInking);
+        typeButtons.put(Author.TYPE_COVER_COLORIST, vb.cbxAuthorTypeCoverColorist);
     }
 
     /**

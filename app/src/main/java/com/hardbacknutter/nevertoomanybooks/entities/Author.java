@@ -84,10 +84,14 @@ public class Author
     /** Generic Author; the default. A single person created the book. */
     public static final int TYPE_UNKNOWN = 0;
 
-    /*
+    /**
      * {@link DBDefinitions#DOM_BOOK_AUTHOR_TYPE_BITMASK}.
      * NEWTHINGS: author type: add a bit flag
      * Never change the bit value!
+     * <p>
+     * Not all of these flags are currently exposed to the user.
+     * See {@link com.hardbacknutter.nevertoomanybooks.bookedit.EditBookAuthorDialogFragment
+     *      #createTypeButtonList}
      */
     /** WRITER: primary or only writer. i.e. in contrast to any of the below. */
     public static final int TYPE_WRITER = 1;
@@ -135,8 +139,12 @@ public class Author
 
     /**
      * Any: indicate that this name entry is a pseudonym.
-     * ENHANCE: pseudonym flag on its own this is not much use; need to link it with the real name
+     *
+     * @deprecated as a flag, this is useless.
+     * We're now adding {@link #realAuthorId} for proper support.
+     * (I think this flag is a legacy from when we had goodreads integration)
      */
+    @Deprecated
     public static final int TYPE_PSEUDONYM = 1 << 16;
 
     /**
