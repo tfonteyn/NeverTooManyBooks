@@ -84,10 +84,13 @@ public class Author
     /** Generic Author; the default. A single person created the book. */
     public static final int TYPE_UNKNOWN = 0;
 
-    /*
+    /**
      * {@link DBDefinitions#DOM_BOOK_AUTHOR_TYPE_BITMASK}.
      * NEWTHINGS: author type: add a bit flag
      * Never change the bit value!
+     * <p>
+     * Not all of these flags are currently exposed to the user.
+     * See {@link #TYPES} for the ones which are.
      */
     /** WRITER: primary or only writer. i.e. in contrast to any of the below. */
     public static final int TYPE_WRITER = 1;
@@ -135,8 +138,12 @@ public class Author
 
     /**
      * Any: indicate that this name entry is a pseudonym.
-     * ENHANCE: pseudonym flag on its own this is not much use; need to link it with the real name
+     *
+     * @deprecated as a flag, this is useless.
+     * We're now adding {@link #realAuthorId} for proper support.
+     * (I think this flag is a legacy from when we had goodreads integration)
      */
+    @Deprecated
     public static final int TYPE_PSEUDONYM = 1 << 16;
 
     /**
@@ -199,11 +206,10 @@ public class Author
      */
     static {
         TYPES.put(TYPE_WRITER, R.string.lbl_author_type_writer);
-
-        TYPES.put(TYPE_TRANSLATOR, R.string.lbl_author_type_translator);
-        TYPES.put(TYPE_INTRODUCTION, R.string.lbl_author_type_intro);
-        TYPES.put(TYPE_EDITOR, R.string.lbl_author_type_editor);
         TYPES.put(TYPE_CONTRIBUTOR, R.string.lbl_author_type_contributor);
+        TYPES.put(TYPE_INTRODUCTION, R.string.lbl_author_type_intro);
+        TYPES.put(TYPE_TRANSLATOR, R.string.lbl_author_type_translator);
+        TYPES.put(TYPE_EDITOR, R.string.lbl_author_type_editor);
         TYPES.put(TYPE_NARRATOR, R.string.lbl_author_type_narrator);
 
         TYPES.put(TYPE_ARTIST, R.string.lbl_author_type_artist);
