@@ -88,9 +88,6 @@ public class Author
      * {@link DBDefinitions#DOM_BOOK_AUTHOR_TYPE_BITMASK}.
      * NEWTHINGS: author type: add a bit flag
      * Never change the bit value!
-     * <p>
-     * Not all of these flags are currently exposed to the user.
-     * See {@link #TYPES} for the ones which are.
      */
     /** WRITER: primary or only writer. i.e. in contrast to any of the below. */
     public static final int TYPE_WRITER = 1;
