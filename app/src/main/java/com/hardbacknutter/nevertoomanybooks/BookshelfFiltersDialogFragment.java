@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PBooleanFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PStringEqualityFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfFiltersBinding;
@@ -185,10 +184,10 @@ public class BookshelfFiltersDialogFragment
 
         //noinspection ConstantConditions
         FilterFactory.SUPPORTED
+                .entrySet()
                 .stream()
-                .filter(GlobalFieldVisibility::isUsed)
-                .forEach(key -> map.put(FieldVisibility.getLabel(context, key), key));
-
+                .filter(entry -> GlobalFieldVisibility.isUsed(entry.getKey()))
+                .forEach(entry -> map.put(context.getString(entry.getValue()), entry.getKey()));
 
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(context)
@@ -467,7 +466,7 @@ public class BookshelfFiltersDialogFragment
                                                     .collect(Collectors.toList());
 
                 new MultiChoiceAlertDialogBuilder<Long>(context)
-                        .setTitle(context.getString(R.string.lbl_bookshelves))
+                        .setTitle(filter.getLabel(context))
                         .setItems(ids, labels)
                         .setSelectedItems(filter.getValue())
                         .setPositiveButton(android.R.string.ok, value -> {

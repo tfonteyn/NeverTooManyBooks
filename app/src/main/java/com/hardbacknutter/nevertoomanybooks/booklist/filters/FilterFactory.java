@@ -24,7 +24,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.List;
+import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -50,22 +50,22 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 
 public final class FilterFactory {
 
-    public static final List<String> SUPPORTED =
-            List.of(DBKey.READ__BOOL,
-                    DBKey.SIGNED__BOOL,
+    public static final Map<String, Integer> SUPPORTED = Map.of(
+            DBKey.READ__BOOL, R.string.lbl_read,
+            DBKey.SIGNED__BOOL, R.string.lbl_signed,
 
-                    DBKey.BOOK_ISBN,
-                    DBKey.LOANEE_NAME,
+            DBKey.BOOK_ISBN, R.string.lbl_isbn,
+            DBKey.LOANEE_NAME, R.string.lbl_lend_out,
 
-                    DBKey.COLOR,
-                    DBKey.FORMAT,
-                    DBKey.LANGUAGE,
+            DBKey.COLOR, R.string.lbl_color,
+            DBKey.FORMAT, R.string.lbl_format,
+            DBKey.LANGUAGE, R.string.lbl_language,
 
-                    DBKey.EDITION__BITMASK,
+            DBKey.EDITION__BITMASK, R.string.lbl_edition,
 
-                    DBKey.FK_BOOKSHELF,
-                    DBKey.FK_TOC_ENTRY
-                   );
+            DBKey.FK_BOOKSHELF, R.string.lbl_bookshelf,
+            DBKey.FK_TOC_ENTRY, R.string.lbl_book_type
+    );
 
     private FilterFactory() {
     }
@@ -136,7 +136,7 @@ public final class FilterFactory {
 
             case DBKey.FK_TOC_ENTRY: {
                 return new PEntityListFilter<>(
-                        dbKey, R.string.lbl_anthology,
+                        dbKey, R.string.lbl_book_type,
                         TBL_BOOKS, DOM_BOOK_TOC_TYPE,
                         Book.ContentType::getAll);
             }
