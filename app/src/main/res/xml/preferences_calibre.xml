@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -30,14 +30,14 @@
             android:key="calibre.enabled"
             android:summaryOff="@string/disabled"
             android:summaryOn="@string/enabled"
-            android:title="@string/menu_enable_sync_options" />
+            android:title="@string/option_enable_sync_options" />
 
         <Preference
             android:dependency="calibre.enabled"
             android:icon="@drawable/ic_baseline_folder_24"
             android:key="psk_pick_folder"
             android:summary="@string/preference_not_set"
-            android:title="@string/menu_download_folder"
+            android:title="@string/option_download_folder"
             />
 
         <EditTextPreference

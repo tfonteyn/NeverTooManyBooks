@@ -1245,12 +1245,12 @@ public class Book
     public enum ContentType
             implements Entity {
         /** Single work. One or more authors. */
-        Book(0, R.string.lbl_book),
+        Book(0, R.string.lbl_book_type_book),
         /** Multiple works, all by a single Author. */
-        Collection(1, R.string.lbl_collection),
+        Collection(1, R.string.lbl_book_type_collection),
         // value 2 not in use.
         /** Multiple works, multiple Authors. */
-        Anthology(3, R.string.lbl_anthology);
+        Anthology(3, R.string.lbl_book_type_anthology);
 
         private final int value;
         @StringRes

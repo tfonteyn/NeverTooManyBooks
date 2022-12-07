@@ -124,7 +124,7 @@
     <TextView
         android:id="@+id/lbl_anthology"
         style="@style/Field.Generic"
-        android:text="@string/lbl_anthology"
+        android:text="@string/lbl_book_type_anthology"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_publication"
         app:layout_constraintTop_toBottomOf="@id/format"

@@ -157,12 +157,12 @@ public class DebugReport {
             sb.append(message).append('\n');
         }
         sb.append("Details:\n\n")
-          .append(context.getString(R.string.debug_body))
+          .append(context.getString(R.string.debug_email_body))
           .append("\n\n");
 
         final String[] to = BuildConfig.EMAIL_DEBUG_REPORT.split(";");
         final String subject = "[" + context.getString(R.string.app_name) + "] "
-                               + context.getString(R.string.debug_subject);
+                               + context.getString(R.string.debug_email_subject);
 
         final Intent intent = new Intent(Intent.ACTION_SEND)
                 .setType("text/plain")

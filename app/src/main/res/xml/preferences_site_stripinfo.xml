@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -45,7 +45,7 @@
             android:key="stripinfo.enabled"
             android:summaryOff="@string/disabled"
             android:summaryOn="@string/enabled"
-            android:title="@string/menu_enable_sync_options" />
+            android:title="@string/option_enable_sync_options" />
 
         <EditTextPreference
             android:defaultValue=""

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -64,7 +64,7 @@ public class ImagesPreferenceFragment
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setMessage(R.string.lbl_purge_image_cache)
+                    .setMessage(R.string.option_purge_image_cache)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(android.R.string.ok, (d, w) -> {
                         ServiceLocator.getInstance().getCoverCacheDao().deleteAll();

@@ -463,12 +463,12 @@ public class ShowBookDetailsFragment
         switch (book.getContentType()) {
             case Collection:
                 lblAnthologyOrCollection.setVisibility(View.VISIBLE);
-                lblAnthologyOrCollection.setText(R.string.lbl_collection);
+                lblAnthologyOrCollection.setText(R.string.lbl_book_type_collection);
                 break;
 
             case Anthology:
                 lblAnthologyOrCollection.setVisibility(View.VISIBLE);
-                lblAnthologyOrCollection.setText(R.string.lbl_anthology);
+                lblAnthologyOrCollection.setText(R.string.lbl_book_type_anthology);
                 break;
 
             case Book:

@@ -192,7 +192,7 @@ public class CalibreHandler {
                 // always shown
                 menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD)
                     .setTitle(context.getString(
-                            R.string.menu_download_ebook_format,
+                            R.string.option_download_ebook_format,
                             book.getString(DBKey.CALIBRE_BOOK_MAIN_FORMAT)))
                     .setVisible(true);
 
@@ -205,7 +205,7 @@ public class CalibreHandler {
                 menu.findItem(R.id.MENU_CALIBRE_READ).setVisible(false);
                 menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD).setVisible(false);
                 menu.findItem(R.id.MENU_CALIBRE_SETTINGS)
-                    .setTitle(R.string.menu_set_download_folder)
+                    .setTitle(R.string.option_download_set_folder)
                     .setVisible(true);
             }
 

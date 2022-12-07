@@ -142,11 +142,11 @@ public class MaintenanceFragment
 
             final String msg = getString(R.string.txt_cleanup_files,
                                          FileUtils.formatFileSize(context, bytes),
-                                         getString(R.string.lbl_send_debug));
+                                         getString(R.string.option_bug_report));
 
             new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(R.string.lbl_purge_files)
+                    .setTitle(R.string.option_purge_files)
                     .setMessage(msg)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(android.R.string.ok, (d, w) -> {
@@ -177,7 +177,7 @@ public class MaintenanceFragment
 
         vb.btnRebuildFts.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
                 .setIcon(R.drawable.ic_baseline_warning_24)
-                .setTitle(R.string.menu_rebuild_fts)
+                .setTitle(R.string.option_rebuild_fts)
                 .setMessage(R.string.confirm_rebuild_fts)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> {
                     StartupViewModel.schedule(v.getContext(),
@@ -194,7 +194,7 @@ public class MaintenanceFragment
 
         vb.btnRebuildIndex.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
                 .setIcon(R.drawable.ic_baseline_warning_24)
-                .setTitle(R.string.menu_rebuild_index)
+                .setTitle(R.string.option_rebuild_index)
                 .setMessage(R.string.confirm_rebuild_index)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> {
                     StartupViewModel.schedule(v.getContext(),
@@ -222,10 +222,11 @@ public class MaintenanceFragment
                                       DBG_SEND_DATABASE_UPGRADE,
                                       DBG_SEND_LOGFILES,
                                       DBG_SEND_PREFERENCES),
-                              List.of(context.getString(R.string.lbl_database),
-                                      context.getString(R.string.lbl_database_upgrade),
-                                      context.getString(R.string.lbl_logfiles),
-                                      context.getString(R.string.lbl_settings)))
+                              List.of(context.getString(R.string.option_bug_report_database),
+                                      context.getString(
+                                              R.string.option_bug_report_database_upgrade),
+                                      context.getString(R.string.option_bug_report_logfiles),
+                                      context.getString(R.string.option_bug_report_settings)))
                     .setPositiveButton(android.R.string.ok, this::sendDebug)
                     .create()
                     .show();

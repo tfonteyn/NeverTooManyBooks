@@ -52,7 +52,7 @@
         <Button
             android:id="@+id/btn_purge_files"
             style="@style/Button.Menu"
-            android:text="@string/lbl_purge_files"
+            android:text="@string/option_purge_files"
             app:icon="@drawable/ic_baseline_remove_24"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -72,7 +72,7 @@
         <Button
             android:id="@+id/btn_rebuild_fts"
             style="@style/Button.Menu"
-            android:text="@string/menu_rebuild_fts"
+            android:text="@string/option_rebuild_fts"
             app:icon="@drawable/ic_baseline_build_24"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -82,7 +82,7 @@
         <Button
             android:id="@+id/btn_rebuild_index"
             style="@style/Button.Menu"
-            android:text="@string/menu_rebuild_index"
+            android:text="@string/option_rebuild_index"
             app:icon="@drawable/ic_baseline_build_24"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -100,7 +100,7 @@
         <Button
             android:id="@+id/btn_debug_send_mail"
             style="@style/Button.Menu"
-            android:text="@string/lbl_send_debug"
+            android:text="@string/option_bug_report"
             app:icon="@drawable/ic_baseline_bug_report_24"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

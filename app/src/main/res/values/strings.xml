@@ -45,7 +45,7 @@
 <!--suppress LongLine -->
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
 
-    <!-- region ========== order formatters. -->
+    <!-- region ========== Order formatters. -->
 
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <!-- generic "label: value" -->
@@ -90,11 +90,8 @@
 
     <!-- region ========== Fatal/Crash/Debug messages. -->
 
-    <!-- [VERIFIED] Maintenance - collect debug information and prepare an email to the developers -->
-    <string name="lbl_send_debug">Bug report</string>
-    <string name="debug_subject">Gathered debugging information</string>
-    <string name="debug_body">Please take the time to briefly describe the problem you are experiencing.</string>
-    <string name="debug_send_info_text">This will create a backup copy of your database as well as any log files and send it to the developers. If you do not wish to send any of these files, delete them from the mail attachments before sending.</string>
+    <string name="debug_email_subject">Gathered debugging information</string>
+    <string name="debug_email_body">Please take the time to briefly describe the problem you are experiencing.</string>
 
     <string name="acra_resDialogText">It looks like &APP_NAME; has crashed. If possible describe anything you think may be relevant below and press “OK” to send us an email about the crash. You will see the email before it is sent.</string>
     <string name="acra_resDialogCommentPrompt">Your comments (or just leave blank):</string>
@@ -569,7 +566,7 @@
     <string name="lbl_author_type_cover_colorist">Cover colorist</string>
     <!-- endregion -->
 
-    <!-- region ========== options - radio, checkbox or menus. -->
+    <!-- region ========== Options - radio, checkbox, preferences or menus. -->
 
     <!-- Move covers from one storage device to another (e.g. internal to sdcard) -->
     <string name="option_moving_covers_from_x_to_y">Move all covers from “%1$s” to “%2$s”</string>
@@ -677,9 +674,15 @@
     <!-- Whether a book can be updated without user-permission. -->
     <string name="option_auto_updates">Allow automatic updates from the internet.</string>
 
-
     <string name="option_import">Import</string>
     <string name="option_backup_and_export" translatable="false">@string/title_backup_and_export</string>
+
+    <string name="option_download_set_folder">Set the download folder</string>
+    <string name="option_download_folder">Local download folder</string>
+    <string name="option_download_ebook_format">Download eBook (%1$s)</string>
+
+    <!-- Whether the menu/options for a particular 'Sync' site are enabled or hidden. -->
+    <string name="option_enable_sync_options">Enable sync options</string>
 
     <!-- endregion -->
 
@@ -859,6 +862,11 @@
     <!-- Dialog title. -->
     <string name="lbl_backup">Backup</string>
 
+    <!-- [VERIFIED] Dialog title -->
+    <string name="lbl_storage_settings">Storage</string>
+
+    <!-- [VERIFIED] - Dialog title when moving data to external storage [CHAR LIMIT=32] -->
+    <string name="lbl_moving_data">Moving data</string>
 
     <!-- [VERIFIED] Dialog title - Calibre specific.-->
     <string name="lbl_calibre_content_server">Calibre Content Server</string>
@@ -916,6 +924,11 @@
     <!-- Multiple Book. -->
     <string name="lbl_books">Books</string>
 
+    <string name="lbl_book_type">Book type</string>
+    <string name="lbl_book_type_book" translatable="false">@string/lbl_book</string>
+    <string name="lbl_book_type_anthology">Anthology</string>
+    <string name="lbl_book_type_collection">Collection</string>
+
     <!-- Single book cover - Short label. -->
     <string name="lbl_cover_front">Cover</string>
     <!-- Single book back/second cover. -->
@@ -966,7 +979,10 @@
 
     <!-- Book edition -->
     <string name="lbl_edition">Edition</string>
-    <!--  -->
+
+    <!-- Whether the user considers his collection of this [Author, Series, ...] to be complete. -->
+    <string name="lbl_is_complete">Is complete</string>
+
     <!-- Book / Dust cover condition -->
     <string name="lbl_condition">Condition</string>
     <string name="lbl_dust_cover">Dust cover</string>
@@ -1237,31 +1253,31 @@
 
     <!-- endregion -->
 
-    <!-- region ========== Maintenance, Debug, logging and about. -->
+    <!-- region ========== Maintenance. -->
 
-
-    <!-- Maintenance - cleanup log, temp files -->
-    <string name="lbl_purge_files">Cleanup Files</string>
-    <!-- Maintenance - clear the cached images -->
-    <string name="lbl_purge_image_cache">Clear images cache</string>
-    <!-- Maintenance -->
-    <string name="menu_rebuild_fts">Rebuild FTS</string>
-    <!-- Maintenance -->
-    <string name="menu_rebuild_index">Rebuild index</string>
-    <string name="txt_rebuild_scheduled">Rebuild scheduled</string>
-
+    <!-- Cleanup log and other temp files -->
+    <string name="option_purge_files">Cleanup Files</string>
     <!-- param 1: file size; param 2: button text -->
     <string name="txt_cleanup_files">Purgeable files currently use %1$s on the SD card. Log files and other data are saved on the SD card at each upgrade, when you backup the database, or when the application crashes. Tap the button below to purge these files from your SD card. If you have been experiencing crashing or other errors, please consider using the “%2$s” button first.</string>
 
+    <!-- Clear the cached images -->
+    <string name="option_purge_image_cache">Clear image cache</string>
+    <string name="option_rebuild_fts">Rebuild FTS</string>
+    <string name="option_rebuild_index">Rebuild index</string>
+    <string name="txt_rebuild_scheduled">Rebuild scheduled</string>
 
-    <string name="lbl_database">Database</string>
-    <string name="lbl_database_upgrade">Database upgrade files</string>
-    <string name="lbl_logfiles">Log files</string>
+    <!-- [VERIFIED]  Collect debug information and prepare an email to the developers -->
+    <string name="option_bug_report">Bug report</string>
+    <!-- Explanatory note for the bug report. -->
+    <string name="debug_send_info_text">This will create a backup copy of your database as well as any log files and send it to the developers. If you do not wish to send any of these files, delete them from the mail attachments before sending.</string>
+    <!-- The user can choose which files to include. -->
+    <string name="option_bug_report_database" translatable="false">@string/lbl_database</string>
+    <string name="option_bug_report_database_upgrade">Database upgrade files</string>
+    <string name="option_bug_report_logfiles">Log files</string>
+    <string name="option_bug_report_settings" translatable="false">@string/lbl_settings</string>
 
+    <!-- the hint text for the input field on the SQLite Shell page. -->
     <string name="lbl_sql_query">SQL query</string>
-
-    <string name="lbl_about">About</string>
-    <string name="lbl_about_contact">Contact:</string>
 
     <!-- endregion -->
 
@@ -1452,20 +1468,19 @@
 
     <!-- region ========== Other labels - TODO: needs cleaning up... -->
 
-    <string name="menu_set_download_folder">Set the download folder</string>
-    <string name="menu_download_folder">Local download folder</string>
-    <string name="menu_download_ebook_format">Download eBook (%1$s)</string>
     <string name="progress_end_download_successful">Download successful</string>
+
     <string name="lbl_add_book_by_external_id" translatable="false">@string/option_fab_add_book_by_external_id</string>
 
     <string name="lbl_local_search">Local Search</string>
     <string name="lbl_local_search_long">Advanced Local Search</string>
+    <!-- Search on keywords entered. -->
+    <string name="lbl_keywords">Keywords</string>
 
+    <string name="lbl_database">Database</string>
 
-    <!-- Whether the menu/options for a particular 'Sync' site are enabled or hidden. -->
-    <string name="menu_enable_sync_options">Enable sync options</string>
-
-
+    <string name="lbl_about">About</string>
+    <string name="lbl_about_contact">Contact:</string>
 
     <string name="btn_this_book">This book only</string>
     <string name="btn_all_books">All books</string>
@@ -1491,10 +1506,7 @@
     <!-- "I own this book"; or "the number of books I own" -->
     <string name="lbl_owned">Owned</string>
 
-    <string name="lbl_is_complete">Is complete</string>
 
-    <string name="lbl_anthology">Anthology</string>
-    <string name="lbl_collection">Collection</string>
 
     <string name="lbl_story_in_multiple_books">“%1$s” is present in multiple books:\n\n%2$s</string>
     <string name="lbl_story_in_single_book">“%1$s” is present in a single book:\n\n%2$s</string>
@@ -1522,10 +1534,7 @@
 
     <string name="lbl_barcode">Barcode</string>
 
-    <!-- Search on keywords entered. -->
-    <string name="lbl_keywords">Keywords</string>
 
-    <string name="lbl_book_type">Book type</string>
 
     <!-- [VERIFIED] - heading/titles for settings/preference screens. -->
     <string name="lbl_settings">Settings</string>
@@ -1533,13 +1542,8 @@
 
     <string name="lbl_websites">Websites</string>
 
-    <!-- [VERIFIED] -->
-    <string name="lbl_storage_settings">Storage</string>
     <string name="lbl_storage_volume">Storage volume</string>
     <string name="lbl_storage_quit_and_reinsert_sdcard">Quit and reinsert the correct SD CARD</string>
-
-    <!-- [VERIFIED] - Notification title when moving data to external storage [CHAR LIMIT=32] -->
-    <string name="lbl_moving_data">Moving data</string>
 
     <string name="lbl_calibre_content_server_extension_info">Calibre content server extension is not installed.</string>
 

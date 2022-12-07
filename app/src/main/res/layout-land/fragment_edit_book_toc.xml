@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="none"
                 tools:ignore="LabelFor"
-                tools:text="@string/lbl_collection"
+                tools:text="@string/lbl_book_type_collection"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
