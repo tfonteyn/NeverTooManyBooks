@@ -39,6 +39,7 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveWriterAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookshelfCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BundleCoder;
@@ -106,6 +107,46 @@ public class JsonRecordWriter
         }
     }
 
+    /**
+     * IMPORTANT:
+     * For the current supported backup version(s), {@link ArchiveWriterAbstract}
+     * will call this method with <strong>ONE</strong> RecordType at a time.
+     * i.e. Styles OR Preferences OR ...
+     * and hence the jsonData written will be several virtual files (records), one for each type.
+     * <p>
+     * {@link JsonArchiveWriter}, will call this method <strong>ONCE</strong>
+     * with ALL RecordType's.
+     * <p>
+     * The code is written for the latter case while being compliant with the former.
+     * <p>
+     * There is a <strong>strict order</strong> of the entries:
+     * <ol>
+     *     <li>These always come first in the given order</li>
+     *     <li>{@link RecordType#MetaData}</li>
+     *     <li>{@link RecordType#Styles}</li>
+     *     <li>{@link RecordType#Preferences}</li>
+     *
+     *     <li>These depend on other types being included or not</li>
+     *     <li>{@link RecordType#Certificates}</li>
+     *     <li>{@link RecordType#Bookshelves}</li>
+     *     <li>{@link RecordType#CalibreLibraries}</li>
+     *     <li>{@link RecordType#CalibreCustomFields}</li>
+     *
+     *     <li>These always come last in the given order</li>
+     *     <li>{@link RecordType#Books}</li>
+     *     <li>{@link RecordType#Cover}</li>
+     * </ol>
+     *
+     * @param context          Current context
+     * @param writer           Writer to write to
+     * @param recordTypes      The set of records which should be written.
+     * @param progressListener Progress and cancellation interface
+     *
+     * @return results summary
+     *
+     * @throws DataWriterException on a decoding/parsing of data issue
+     * @throws IOException         on generic/other IO failures
+     */
     @Override
     @NonNull
     public ExportResults write(@NonNull final Context context,
@@ -118,17 +159,6 @@ public class JsonRecordWriter
         final ExportResults results = new ExportResults();
         final JSONObject jsonData = new JSONObject();
 
-        // IMPORTANT:
-        // For the current supported backup version(s),
-        // the writer will be called with ONE RecordType at a time.
-        // i.e. Styles OR Preferences OR ...
-        // and hence the jsonData written will be several virtual files (records),
-        // one for each type.
-        //
-        // For the experimental JsonArchiveWrite, this method gets called ONCE
-        // with ALL RecordType.
-        //
-        // The code is written/prepared for the latter case.
         try {
             // Write styles first, and preferences next! This will facilitate & speedup
             // importing as we'll be seeking in the input archive for these.
