@@ -19,9 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.debug;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -39,19 +37,21 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
@@ -80,9 +80,12 @@ public class DebugReport {
     public DebugReport addDefaultMessage() {
         final PackageInfoWrapper info = PackageInfoWrapper.createWithSignatures(context);
 
+        final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
         message = "App: " + info.getPackageName() + '\n'
                   + "Version: " + info.getVersionName()
                   + " (" + info.getVersionCode() + ", " + BuildConfig.TIMESTAMP + ")\n"
+                  + "User country: " + locale.getCountry() + '\n'
+                  + "User language: " + locale.getLanguage() + '\n'
                   + "SDK: " + Build.VERSION.RELEASE
                   + " (" + Build.VERSION.SDK_INT + ' ' + Build.TAGS + ")\n"
                   + "Model: " + Build.MODEL + '\n'
@@ -135,47 +138,29 @@ public class DebugReport {
                          .collect(Collectors.joining("\n"));
     }
 
-    public void sendAsEmail()
-            throws ActivityNotFoundException, IOException {
+    public void sendToFile(@NonNull final Uri destUri)
+            throws IOException {
 
-        if (preferences != null) {
-            final File file = new File(context.getCacheDir(), "preferences.txt");
-            file.deleteOnExit();
-            // Charset needs API 33
-            //noinspection CharsetObjectCanBeUsed
-            try (PrintWriter printWriter = new PrintWriter(file, "UTF-8")) {
-                printWriter.println(preferences);
+        final File file = zipAllInfo();
+        try (InputStream is = new FileInputStream(file);
+             OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
+            if (os != null) {
+                FileUtils.copy(is, os);
             }
-            files.add(file);
         }
-
-        final Uri uri = zipFiles();
-
-        // the user should (hopefully) add their comment to the email
-        final StringBuilder sb = new StringBuilder();
-        if (message != null) {
-            sb.append(message).append('\n');
-        }
-        sb.append("Details:\n\n")
-          .append(context.getString(R.string.debug_body))
-          .append("\n\n");
-
-        final String[] to = BuildConfig.EMAIL_DEBUG_REPORT.split(";");
-        final String subject = "[" + context.getString(R.string.app_name) + "] "
-                               + context.getString(R.string.debug_subject);
-
-        final Intent intent = new Intent(Intent.ACTION_SEND)
-                .setType("text/plain")
-                .putExtra(Intent.EXTRA_EMAIL, to)
-                .putExtra(Intent.EXTRA_SUBJECT, subject)
-                .putExtra(Intent.EXTRA_TEXT, sb.toString())
-                .putExtra(Intent.EXTRA_STREAM, uri);
-        context.startActivity(intent);
     }
 
     @NonNull
-    private Uri zipFiles()
+    private File zipAllInfo()
             throws IOException {
+
+        if (message != null) {
+            writeAndAddFile("info.txt", message);
+        }
+        if (preferences != null) {
+            writeAndAddFile("preferences.txt", preferences);
+        }
+
         final File zipFile = new File(context.getCacheDir(), "NTMBBugReport-" + dateTime + ".zip");
         zipFile.deleteOnExit();
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(
@@ -195,7 +180,20 @@ public class DebugReport {
             }
         }
 
-        return GenericFileProvider.createUri(context, zipFile);
+        return zipFile;
+    }
+
+    private void writeAndAddFile(@NonNull final String filename,
+                                 @NonNull final String text)
+            throws FileNotFoundException, UnsupportedEncodingException {
+        final File file = new File(context.getCacheDir(), filename);
+        file.deleteOnExit();
+        // Charset needs API 33
+        //noinspection CharsetObjectCanBeUsed
+        try (PrintWriter printWriter = new PrintWriter(file, "UTF-8")) {
+            printWriter.println(text);
+        }
+        files.add(file);
     }
 
     @NonNull

@@ -715,5 +715,6 @@
     <string name="yes">Ναι</string>
     <string name="lbl_story_in_single_book">Το «%1$s» υπάρχει σε ένα μόνο βιβλίο:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Εισαγάγετε ένα αρχείο κειμένου με αριθμούς ISBN. Το αρχείο θα πρέπει να έχει ένα μόνο ISBN σε κάθε γραμμή. Τα αποτελέσματα θα τοποθετηθούν στην ουρά.</string>
+    <string name="debug_select_items">Επιλέξτε αυτό που θέλετε να συμπεριλάβετε</string>
 
 </resources>

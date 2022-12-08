@@ -19,32 +19,36 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.FileFilter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUriForWritingContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceAlertDialogBuilder;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -60,27 +64,25 @@ public class MaintenanceFragment
     /** Log tag. */
     public static final String TAG = "MaintenanceFragment";
 
-    private static final int DBG_SEND_DATABASE = 0;
-    private static final int DBG_SEND_DATABASE_UPGRADE = 1;
-    private static final int DBG_SEND_LOGFILES = 2;
-    private static final int DBG_SEND_PREFERENCES = 3;
-
     /** The length of a UUID string. */
     private static final int UUID_LEN = 32;
 
-    /**
-     * After clicking the debug category header 3 times, we display the debug options.
-     * SQLite shell updates are not allowed.
-     */
-    private static final int DEBUG_CLICKS = 3;
-    /** After clicking the header 3 more times, the SQLite shell will allow updates. */
-    private static final int DEBUG_CLICKS_ALLOW_SQL_UPDATES = 6;
-
-    private int debugClicks;
-    private boolean debugSqLiteAllowsUpdates;
+    private MaintenanceViewModel vm;
 
     /** View Binding. */
     private FragmentMaintenanceBinding vb;
+    /** The launcher for picking a Uri to write to. */
+    private final ActivityResultLauncher<GetContentUriForWritingContract.Input>
+            createDocumentLauncher =
+            registerForActivityResult(new GetContentUriForWritingContract(),
+                                      o -> o.ifPresent(this::sendDebug));
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        vm = new ViewModelProvider(this).get(MaintenanceViewModel.class);
+    }
 
     @Nullable
     @Override
@@ -102,15 +104,15 @@ public class MaintenanceFragment
         toolbar.setSubtitle(R.string.pt_maintenance);
 
         vb.btnDebug.setOnClickListener(v -> {
-            debugClicks++;
-            if (debugClicks >= DEBUG_CLICKS) {
+            vm.incDebugClicks();
+
+            if (vm.isShowDbgOptions()) {
                 vb.btnDebugSqShell.setVisibility(View.VISIBLE);
             }
 
-            if (debugClicks >= DEBUG_CLICKS_ALLOW_SQL_UPDATES) {
+            if (vm.isDebugSqLiteAllowsUpdates()) {
                 vb.btnDebugSqShell.setCompoundDrawablesRelativeWithIntrinsicBounds(
                         R.drawable.ic_baseline_warning_24, 0, 0, 0);
-                debugSqLiteAllowsUpdates = true;
             }
         });
 
@@ -215,18 +217,26 @@ public class MaintenanceFragment
             new MultiChoiceAlertDialogBuilder<Integer>(context)
                     .setIcon(R.drawable.ic_baseline_warning_24)
                     .setTitle(R.string.debug)
-                    .setMessage(R.string.debug_send_info_text)
-                    .setSelectedItems(Set.of(DBG_SEND_LOGFILES,
-                                             DBG_SEND_PREFERENCES))
-                    .setItems(List.of(DBG_SEND_DATABASE,
-                                      DBG_SEND_DATABASE_UPGRADE,
-                                      DBG_SEND_LOGFILES,
-                                      DBG_SEND_PREFERENCES),
+                    .setMessage(R.string.debug_select_items)
+                    .setSelectedItems(Set.of(MaintenanceViewModel.DBG_SEND_LOGFILES,
+                                             MaintenanceViewModel.DBG_SEND_PREFERENCES))
+                    .setItems(List.of(MaintenanceViewModel.DBG_SEND_DATABASE,
+                                      MaintenanceViewModel.DBG_SEND_DATABASE_UPGRADE,
+                                      MaintenanceViewModel.DBG_SEND_LOGFILES,
+                                      MaintenanceViewModel.DBG_SEND_PREFERENCES),
                               List.of(context.getString(R.string.lbl_database),
                                       context.getString(R.string.lbl_database_upgrade),
                                       context.getString(R.string.lbl_logfiles),
                                       context.getString(R.string.lbl_settings)))
-                    .setPositiveButton(android.R.string.ok, this::sendDebug)
+
+                    .setPositiveButton(R.string.action_save, selection -> {
+                        vm.setDebugSelection(selection);
+                        final String fileName = "ntmb-debug-" + LocalDate
+                                .now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+                        final String mimeType = FileUtils.getMimeTypeFromExtension("zip");
+                        createDocumentLauncher.launch(new GetContentUriForWritingContract
+                                .Input(mimeType, fileName));
+                    })
                     .create()
                     .show();
         });
@@ -236,35 +246,19 @@ public class MaintenanceFragment
                 .setReorderingAllowed(true)
                 .addToBackStack(SqliteShellFragment.TAG)
                 .replace(R.id.main_fragment,
-                         SqliteShellFragment.create(debugSqLiteAllowsUpdates),
+                         SqliteShellFragment.create(vm.isDebugSqLiteAllowsUpdates()),
                          SqliteShellFragment.TAG)
                 .commit());
     }
 
-    private void sendDebug(@NonNull final Set<Integer> selectedItems) {
+    private void sendDebug(@NonNull final Uri uri) {
         try {
             //noinspection ConstantConditions
-            final DebugReport builder = new DebugReport(getContext())
-                    .addDefaultMessage()
-                    .addScreenParams();
+            vm.sendDebug(getContext(), uri);
 
-            if (selectedItems.contains(DBG_SEND_DATABASE)) {
-                builder.addDatabase();
-            }
-            if (selectedItems.contains(DBG_SEND_DATABASE_UPGRADE)) {
-                builder.addDatabaseUpgrades(1);
-            }
-            if (selectedItems.contains(DBG_SEND_LOGFILES)) {
-                builder.addLogs(10);
-            }
-            if (selectedItems.contains(DBG_SEND_PREFERENCES)) {
-                builder.addPreferences();
-            }
-            builder.sendAsEmail();
-
-        } catch (@NonNull final ActivityNotFoundException | IOException e) {
+        } catch (@NonNull final RuntimeException | IOException e) {
             //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.error_email_failed,
+            Snackbar.make(getView(), R.string.error_export_failed,
                           Snackbar.LENGTH_LONG).show();
         }
     }
@@ -319,5 +313,10 @@ public class MaintenanceFragment
                + FileUtils.deleteDirectory(ServiceLocator.getUpgradesDir(), null, null)
                + FileUtils.deleteDirectory(CoverDir.getTemp(context), null, null)
                + FileUtils.deleteDirectory(CoverDir.getDir(context), coverFilter, null);
+    }
+
+    public enum SendTo {
+        email,
+        file
     }
 }

@@ -37,8 +37,7 @@ plugins {
         sign.storePassword=MyStorePassword
         sign.keyAlias=MyKeyAlias
         sign.keyPassword=MyKeyPassword
-        # These can be empty but must exist
-        email.support=support@somewhere.com
+        # This one can be empty but must exist
         email.acra=acra@somewhere.com
 
  */
@@ -81,7 +80,6 @@ android {
                 "de.mannodermaus.junit5.AndroidJUnit5Builder"
 
         buildConfigField("String", "EMAIL_ACRA", '"' + props['email.acra'] + '"')
-        buildConfigField("String", "EMAIL_DEBUG_REPORT", '"' + props['email.support'] + '"')
 
         // Add the build UTC DateTime; ISO formatted
         buildConfigField("String", "TIMESTAMP", "\"x\"")
@@ -173,6 +171,7 @@ android {
 
     buildFeatures {
         viewBinding true
+        buildConfig true
     }
 
     testOptions {

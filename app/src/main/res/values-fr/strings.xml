@@ -716,5 +716,6 @@
     <string name="yes">Oui</string>
     <string name="lbl_story_in_single_book">«%1$s» est présent dans un seul livre:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Importez un fichier texte avec des numéros ISBN. Le fichier doit avoir un seul ISBN sur chaque ligne. Les résultats seront placés dans la file d\'attente.</string>
+    <string name="debug_select_items">Sélectionnez ce que vous souhaitez inclure</string>
 
 </resources>

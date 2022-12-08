@@ -96,6 +96,7 @@
     <string name="debug_subject">Gathered debugging information</string>
     <string name="debug_body">Please take the time to briefly describe the problem you are experiencing.</string>
     <string name="debug_send_info_text">This will create a backup copy of your database as well as any log files and send it to the developers. If you do not wish to send any of these files, delete them from the mail attachments before sending.</string>
+    <string name="debug_select_items">Select what you would like to include:</string>
 
     <string name="acra_resDialogText">It looks like &APP_NAME; has crashed. If possible describe anything you think may be relevant below and press “OK” to send us an email about the crash. You will see the email before it is sent.</string>
     <string name="X_acra_resToastText">&APP_NAME; has crashed unexpectedly. Please help us to make the application better by reporting this crash.</string>
@@ -1608,6 +1609,7 @@
     <string name="btn_start_export">Start export</string>
     <string name="btn_start_import">Start import</string>
     <string name="btn_stop_scanning">Stop scanning</string>
+    <string name="debug_file">File</string>
 
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->

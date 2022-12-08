@@ -715,5 +715,6 @@
     <string
         name="lbl_story_in_single_book">„%1$s“ ist in einem einzigen Buch vorhanden:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Importieren Sie eine Textdatei mit ISBN-Nummern. Die Datei sollte in jeder Zeile eine einzige ISBN haben. Die Ergebnisse werden in die Warteschlange gestellt.</string>
+    <string name="debug_select_items">Wählen Sie aus, was Sie aufnehmen möchten</string>
 
 </resources>

@@ -19,8 +19,8 @@
  */
 
 plugins {
-    id 'com.android.application' version '8.0.0-alpha08' apply false
-    id 'com.android.library' version '8.0.0-alpha08' apply false
+    id 'com.android.application' version '8.0.0-alpha09' apply false
+    id 'com.android.library' version '8.0.0-alpha09' apply false
     id 'org.jetbrains.kotlin.android' version '1.7.10' apply false
     // https://github.com/mannodermaus/android-junit5
     id 'de.mannodermaus.android-junit5' version '1.8.2.1' apply false
@@ -32,8 +32,8 @@ task clean(type: Delete) {
 
 ext {
     applicationId = "com.hardbacknutter.nevertoomanybooks"
-    applicationVersionCode = 23
-    applicationVersionName = '3.4.1'
+    applicationVersionCode = 24
+    applicationVersionName = '3.4.2'
 
 
     // see NOTES.txt
@@ -98,7 +98,7 @@ ext {
     apache_commons_codec = '1.15'
 
     // https://github.com/ACRA/acra
-    acra_version = '5.9.6'
+    acra_version = '5.9.7'
 
     // https://github.com/mockito/mockito
     mockito_version = '4.9.0'
