@@ -83,7 +83,6 @@ public final class ImportHelper
                 break;
 
             case Zip:
-            case Tar:
                 addRecordType(EnumSet.of(RecordType.Styles,
                                          RecordType.Preferences,
                                          RecordType.Certificates,

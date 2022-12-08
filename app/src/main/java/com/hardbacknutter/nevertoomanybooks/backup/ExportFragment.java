@@ -258,7 +258,6 @@ public class ExportFragment
                 vb.cbxCovers.setEnabled(false);
                 break;
             }
-            case Tar:
             case Csv:
             default:
                 throw new IllegalArgumentException(encoding.toString());

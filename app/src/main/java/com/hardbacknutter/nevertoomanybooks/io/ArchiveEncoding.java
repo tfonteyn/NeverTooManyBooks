@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -75,11 +74,7 @@ public enum ArchiveEncoding
 
     /** Database. */
     SqLiteDb("db", R.string.option_archive_type_db,
-             R.string.option_info_archive_format_db),
-
-    /** The legacy full backup/restore support. NOT compressed. */
-    Tar("tar", R.string.option_archive_type_backup_tar,
-        R.string.option_info_lbl_archive_type_backup);
+             R.string.option_info_archive_format_db);
 
     /** {@link Parcelable}. */
     public static final Creator<ArchiveEncoding> CREATOR = new Creator<>() {
@@ -147,13 +142,6 @@ public enum ArchiveEncoding
                 if (len > 4
                     && b[0] == 0x50 && b[1] == 0x4B && b[2] == 0x03 && b[3] == 0x04) {
                     return Optional.of(Zip);
-                }
-
-                // tar file: offset 0x101, the string "ustar"
-                if (len > 0x110
-                    && b[0x101] == 0x75 && b[0x102] == 0x73 && b[0x103] == 0x74
-                    && b[0x104] == 0x61 && b[0x105] == 0x72) {
-                    return Optional.of(Tar);
                 }
 
                 // sqlite v3, offset 0, 53 51 4c 69 74 65 20 66 6f 72 6d 61 74 20 33 00
@@ -268,9 +256,8 @@ public enum ArchiveEncoding
             case Json:
                 return new JsonArchiveWriter(helper);
 
-            case Tar:
             case Csv:
-                // writing to tar and csv is no longer supported
+                // writing to csv is no longer supported
             default:
                 throw new IllegalStateException(DataWriter.ERROR_NO_WRITER_AVAILABLE);
         }
@@ -303,10 +290,6 @@ public enum ArchiveEncoding
         switch (this) {
             case Zip:
                 reader = new ZipArchiveReader(context, helper);
-                break;
-
-            case Tar:
-                reader = new TarArchiveReader(context, helper);
                 break;
 
             case Csv:

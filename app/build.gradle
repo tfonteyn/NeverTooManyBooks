@@ -267,12 +267,6 @@ dependencies {
     // https://github.com/material-components/material-components-android/releases
     implementation("com.google.android.material:material:${google_material_version}")
 
-    // Tar file support for backups
-    // http://commons.apache.org/proper/commons-compress/
-    implementation("org.apache.commons:commons-compress:${apache_commons_compress}")
-    // http://commons.apache.org/proper/commons-codec/
-    implementation("commons-codec:commons-codec:${apache_commons_codec}")
-
     // jsoup HTML parser library @ https://jsoup.org/
     implementation("org.jsoup:jsoup:${jsoup_version}")
 

@@ -240,7 +240,6 @@ public class ImportFragment
                 break;
 
             case Zip:
-            case Tar:
             case SqLiteDb:
             case Json:
                 showOptions();
@@ -282,8 +281,7 @@ public class ImportFragment
 
         // Set the visibility depending on the encoding
         switch (helper.getEncoding()) {
-            case Zip:
-            case Tar: {
+            case Zip: {
                 // all options available
                 vb.cbxBooks.setVisibility(View.VISIBLE);
                 vb.cbxCovers.setVisibility(View.VISIBLE);
