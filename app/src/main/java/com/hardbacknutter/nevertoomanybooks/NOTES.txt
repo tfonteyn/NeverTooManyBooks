@@ -25,3 +25,26 @@ The node-management, i.e. storing the tree-state of the nodes in the booklist
 is by design not foolproof. The nodes 'expanded' flag WILL get out of sync with
  the display from time to time.
 
+----------------------------------------------------------------------------------------------------
+4.0.0
+
+NEW:
+- new scanner code from 3.4 is considered stable.
+- update-from-internet is now available for a number of date based booklist groups
+- booklist groups for author and publisher 1st character
+
+FIXES:
+- merging author etc... is now consistent in not only moving books,
+  but also updating the target object itself
+- fixed filter name mismatches.
+- string duplicates cleanup effort.
+- potential memory leaks fixed: register/unregister calls matched
+
+REMOVED:
+- all CSV and XML exports are removed. Use JSON instead.
+- TAR import is removed. Repack any tar archive as a zip and import the zip.
+
+EXPERIMENTAL:
+- an author pseudonym can be defined
+- author pseudonym is added to the list-table.
+=> needs to flagged/displayed still
