@@ -92,6 +92,7 @@
 
     <string name="debug_email_subject">Gathered debugging information</string>
     <string name="debug_email_body">Please take the time to briefly describe the problem you are experiencing.</string>
+    <string name="debug_select_items">Select what you would like to include:</string>
 
     <string name="acra_resDialogText">It looks like &APP_NAME; has crashed. If possible describe anything you think may be relevant below and press “OK” to send us an email about the crash. You will see the email before it is sent.</string>
     <string name="acra_resDialogCommentPrompt">Your comments (or just leave blank):</string>

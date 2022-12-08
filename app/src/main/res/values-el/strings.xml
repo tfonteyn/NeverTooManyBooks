@@ -691,6 +691,7 @@
     <string name="info_story_in_single_book">Το «%1$s» υπάρχει σε ένα μόνο βιβλίο:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Εισαγάγετε ένα αρχείο κειμένου με αριθμούς ISBN. Το αρχείο θα πρέπει να έχει ένα μόνο ISBN σε κάθε γραμμή. Τα αποτελέσματα θα τοποθετηθούν στην ουρά.</string>
     <string name="lbl_date_added">Ημερομηνία προσθήκης</string>
+    <string name="debug_select_items">Επιλέξτε αυτό που θέλετε να συμπεριλάβετε</string>
 
     <string name="lbl_group_1st_char_author_family_name">1ος χαρακτήρας του ονόματος της οικογένειας του συγγραφέα</string>
     <string name="lbl_group_1st_char_series_title">1ος χαρακτήρας του τίτλου της σειράς</string>

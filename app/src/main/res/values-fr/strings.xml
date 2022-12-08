@@ -698,5 +698,6 @@
     <string name="lbl_group_1st_char_series_title">1er caractère du titre de la série</string>
     <string name="lbl_group_1st_char_publisher_name">1er caractère du nom de l\'éditeur</string>
     <string name="lbl_group_1st_char_book_title">1er caractère du titre du livre</string>
+    <string name="debug_select_items">Sélectionnez ce que vous souhaitez inclure</string>
 
 </resources>

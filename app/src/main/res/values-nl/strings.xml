@@ -689,6 +689,7 @@
     <string name="yes">Ja</string>
     <string name="tip_import_isbn_list">Importeer een tekstbestand met ISBN-nummers. Het bestand moet op elke regel één enkel ISBN-nummer hebben. De resultaten worden in de wachtrij geplaatst.</string>
     <string name="lbl_date_added">Datum toegevoegd</string>
+    <string name="debug_select_items">Selecteer wat u wilt opnemen</string>
 
     <string name="lbl_group_1st_char_author_family_name">1e karakter van de achternaam van de auteur</string>
     <string name="lbl_group_1st_char_series_title">1e karakter van de serietitel</string>

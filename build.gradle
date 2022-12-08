@@ -32,7 +32,7 @@ task clean(type: Delete) {
 
 ext {
     applicationId = "com.hardbacknutter.nevertoomanybooks"
-    applicationVersionCode = 24
+    applicationVersionCode = 40
     applicationVersionName = '4.0.0'
 
     // see NOTES.txt
@@ -91,7 +91,7 @@ ext {
     zxing_core_version = '3.5.1'
 
     // https://github.com/ACRA/acra
-    acra_version = '5.9.6'
+    acra_version = '5.9.7'
 
     // https://github.com/mockito/mockito
     mockito_version = '4.9.0'

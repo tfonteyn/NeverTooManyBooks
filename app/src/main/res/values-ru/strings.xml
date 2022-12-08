@@ -694,5 +694,6 @@
     <string name="lbl_group_1st_char_series_title">1-й персонаж названия сериала</string>
     <string name="lbl_group_1st_char_publisher_name">1-й символ имени издателя</string>
     <string name="lbl_group_1st_char_book_title">1-й символ названия книги</string>
+    <string name="debug_select_items">Выберите, что вы хотите включить</string>
 
 </resources>

@@ -691,6 +691,7 @@
     <string name="info_story_in_single_book">«%1$s» está presente en un solo libro:\n\n%2$s</string>
     <string name="tip_import_isbn_list">Importa un archivo de texto con números ISBN. El archivo debe tener un solo ISBN en cada línea. Los resultados se colocarán en la cola.</string>
     <string name="lbl_date_added">Fecha de inclusión</string>
+    <string name="debug_select_items">Seleccione lo que le gustaría incluir</string>
 
     <string name="lbl_group_1st_char_author_family_name">1er carácter del apellido del autor</string>
     <string name="lbl_group_1st_char_series_title">1er carácter del título de la serie</string>
