@@ -224,10 +224,11 @@ public class MaintenanceFragment
                                       MaintenanceViewModel.DBG_SEND_DATABASE_UPGRADE,
                                       MaintenanceViewModel.DBG_SEND_LOGFILES,
                                       MaintenanceViewModel.DBG_SEND_PREFERENCES),
-                              List.of(context.getString(R.string.lbl_database),
-                                      context.getString(R.string.lbl_database_upgrade),
-                                      context.getString(R.string.lbl_logfiles),
-                                      context.getString(R.string.lbl_settings)))
+                              List.of(context.getString(R.string.option_bug_report_database),
+                                      context.getString(
+                                              R.string.option_bug_report_database_upgrade),
+                                      context.getString(R.string.option_bug_report_logfiles),
+                                      context.getString(R.string.option_bug_report_settings)))
 
                     .setPositiveButton(R.string.action_save, selection -> {
                         vm.setDebugSelection(selection);
@@ -313,10 +314,5 @@ public class MaintenanceFragment
                + FileUtils.deleteDirectory(ServiceLocator.getUpgradesDir(), null, null)
                + FileUtils.deleteDirectory(CoverDir.getTemp(context), null, null)
                + FileUtils.deleteDirectory(CoverDir.getDir(context), coverFilter, null);
-    }
-
-    public enum SendTo {
-        email,
-        file
     }
 }
