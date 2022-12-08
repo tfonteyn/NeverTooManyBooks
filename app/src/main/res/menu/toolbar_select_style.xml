@@ -26,7 +26,7 @@
     <item
         android:id="@id/MENU_STYLE_LIST_TOGGLE"
         android:icon="@drawable/ic_baseline_unfold_more_24"
-        android:title="@string/btn_more_ellipsis"
+        android:title="@string/action_more_ellipsis"
         app:showAsAction="always" />
     <item
         android:id="@id/MENU_EDIT"

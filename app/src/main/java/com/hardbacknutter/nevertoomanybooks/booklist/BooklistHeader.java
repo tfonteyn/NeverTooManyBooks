@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -82,7 +82,7 @@ public class BooklistHeader {
                                    .getQuantityString(R.plurals.displaying_n_books,
                                                       distinctBooks, totalBooks);
             } else {
-                bookCount = context.getString(R.string.txt_displaying_n_books_in_m_entries,
+                bookCount = context.getString(R.string.info_displaying_n_books_in_m_entries,
                                               distinctBooks, totalBooks);
             }
         }

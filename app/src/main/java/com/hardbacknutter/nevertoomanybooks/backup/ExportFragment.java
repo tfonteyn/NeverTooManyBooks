@@ -155,7 +155,7 @@ public class ExportFragment
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.lbl_backup)
-                .setMessage(R.string.txt_export_backup_all)
+                .setMessage(R.string.info_export_backup_all)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
                 .setNeutralButton(R.string.action_show_options, (d, w) -> {
                     d.dismiss();
@@ -462,7 +462,7 @@ public class ExportFragment
                                final String report) {
 
         final String subject = '[' + getString(R.string.app_name) + "] "
-                               + getString(R.string.txt_backup_email_subject);
+                               + getString(R.string.info_backup_email_subject);
 
         try {
             final Intent intent = new Intent(Intent.ACTION_SEND)

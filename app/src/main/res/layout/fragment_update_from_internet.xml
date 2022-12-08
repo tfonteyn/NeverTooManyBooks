@@ -32,7 +32,7 @@
     <TextView
         android:id="@+id/header"
         style="@style/Text.Body"
-        android:text="@string/txt_select_fields_to_update"
+        android:text="@string/info_select_fields_to_update"
         android:textAppearance="?attr/textAppearanceBodySmall"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

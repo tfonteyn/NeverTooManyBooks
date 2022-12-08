@@ -251,9 +251,9 @@ public class StartupActivity
         final StorageVolume volume = storage.getStorageVolumes().get(actualVolumeIndex);
 
         final CharSequence[] items = {
-                getString(R.string.lbl_storage_quit_and_reinsert_sdcard),
+                getString(R.string.option_storage_quit_and_reinsert_sdcard),
                 getString(R.string.option_storage_select, volume.getDescription(this)),
-                getString(R.string.lbl_edit_settings)};
+                getString(R.string.option_storage_edit_settings)};
 
         new MaterialAlertDialogBuilder(this)
                 .setIcon(R.drawable.ic_baseline_warning_24)

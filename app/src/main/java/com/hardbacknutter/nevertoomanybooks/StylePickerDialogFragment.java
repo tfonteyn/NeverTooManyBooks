@@ -136,10 +136,10 @@ public class StylePickerDialogFragment
         } else if (itemId == R.id.MENU_STYLE_LIST_TOGGLE) {
             showAllStyles = !showAllStyles;
             if (showAllStyles) {
-                menuItem.setTitle(R.string.btn_less_ellipsis);
+                menuItem.setTitle(R.string.action_less_ellipsis);
                 menuItem.setIcon(R.drawable.ic_baseline_unfold_less_24);
             } else {
-                menuItem.setTitle(R.string.btn_more_ellipsis);
+                menuItem.setTitle(R.string.action_more_ellipsis);
                 menuItem.setIcon(R.drawable.ic_baseline_unfold_more_24);
             }
             loadStyles();

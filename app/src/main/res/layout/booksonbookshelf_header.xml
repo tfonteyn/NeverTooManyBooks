@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -42,7 +42,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/style_name"
         tools:ignore="SelectableText"
-        tools:text="@string/txt_displaying_n_books_in_m_entries"
+        tools:text="@string/info_displaying_n_books_in_m_entries"
         />
 
     <TextView

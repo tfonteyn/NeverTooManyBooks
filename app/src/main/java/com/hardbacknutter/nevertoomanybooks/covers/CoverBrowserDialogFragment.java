@@ -251,7 +251,7 @@ public class CoverBrowserDialogFragment
             vm.setEditions(editionsList);
             galleryAdapter.notifyDataSetChanged();
             // Show help message
-            vb.statusMessage.setText(R.string.txt_tap_on_thumbnail_to_zoom);
+            vb.statusMessage.setText(R.string.info_tap_on_thumbnail_to_zoom);
         }
     }
 
@@ -321,7 +321,7 @@ public class CoverBrowserDialogFragment
                     // Set AFTER it was successfully loaded and displayed for maximum reliability
                     vm.setSelectedFile(file.get());
                     vb.preview.setVisibility(View.VISIBLE);
-                    vb.statusMessage.setText(R.string.txt_tap_on_image_to_select);
+                    vb.statusMessage.setText(R.string.info_tap_on_image_to_select);
                 });
                 return;
             }
@@ -329,7 +329,7 @@ public class CoverBrowserDialogFragment
 
         Snackbar.make(vb.preview, R.string.warning_image_not_found,
                       Snackbar.LENGTH_LONG).show();
-        vb.statusMessage.setText(R.string.txt_tap_on_thumbnail_to_zoom);
+        vb.statusMessage.setText(R.string.info_tap_on_thumbnail_to_zoom);
     }
 
     private interface PositionHandler {

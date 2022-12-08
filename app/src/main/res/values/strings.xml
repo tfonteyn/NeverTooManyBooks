@@ -348,6 +348,40 @@
 
     <!-- endregion -->
 
+    <!-- region ========== Informational/Explanatory messages. -->
+
+    <string name="info_authorized">Authorized</string>
+
+    <string name="info_story_in_multiple_books">“%1$s” is present in multiple books:\n\n%2$s</string>
+    <string name="info_story_in_single_book">“%1$s” is present in a single book:\n\n%2$s</string>
+
+    <!-- Shown in the heading of booklist. -->
+    <string name="info_displaying_n_books_in_m_entries">%1$d books, in %2$d entries</string>
+    <!-- The default 'share' message.
+        Param 1: book title.
+        Param 2: series.
+        Param 3: author.
+        Param 4: rating.
+    -->
+    <string name="info_share_book_im_reading">I\'m reading “%1$s” %2$s by %3$s %4$s</string>
+
+    <string name="info_tap_on_thumbnail_to_zoom">Tap on a thumbnail to display a larger image.</string>
+    <string name="info_tap_on_image_to_select">Tap on the larger image to select it.</string>
+    <string name="info_download_successful">Download successful</string>
+    <string name="info_calibre_content_server_extension">Calibre content server extension is not installed.</string>
+
+    <!-- ContentDescription text for the drag handle button in re-order-able lists -->
+    <string name="cd_btn_drag_handle">Drag to reorder this list</string>
+    <!-- [VERIFIED] ContentDescription text for the delete (cross) icon at the end of an input box. -->
+    <string name="cd_clear_text_end_icon">Clear text</string>
+
+    <!-- ISFDB specific
+     Some functionality is limited to the ISFDB web site only.
+     This is displayed at the 'end' of a label, hence needs the brackets for clarity. -->
+    <string name="info_isfdb_warning_limited_to">(only supported by the ISFDB web site)</string>
+
+    <!-- endregion -->
+
     <!-- region ========== Tips which are shown in some places on how to use a screen. -->
 
     <string name="tip_dialog_title">Tip</string>
@@ -570,8 +604,14 @@
 
     <!-- Move covers from one storage device to another (e.g. internal to sdcard) -->
     <string name="option_moving_covers_from_x_to_y">Move all covers from “%1$s” to “%2$s”</string>
-    <!-- Use a particular storage device. (e.g. to store covers on) -->
+
+    <!-- If the storage volume has changed, offer the use these options: -->
+    <!-- Option to use a particular storage device. (e.g. to store covers on) -->
     <string name="option_storage_select">Use “%1$s”</string>
+    <!-- Option to manually edit the storage settings. -->
+    <string name="option_storage_edit_settings">Edit settings</string>
+    <!-- Option to simply swap the memory card with the correct one. -->
+    <string name="option_storage_quit_and_reinsert_sdcard">Quit and reinsert the correct SD card</string>
 
     <!-- Booklist menu option -->
     <string name="option_sort_and_style_ellipsis">Sorting &amp; Styles…</string>
@@ -795,6 +835,10 @@
     <!-- [VERIFIED] -->
     <string name="action_done">Done</string>
 
+    <!-- [VERIFIED] buttons on the "sorting / styles" dialog -->
+    <string name="action_more_ellipsis">More…</string>
+    <string name="action_less_ellipsis">Less…</string>
+
     <!-- [VERIFIED] - Title of wizard button prompting user to start data migration [CHAR LIMIT=32] -->
     <string name="X_action_move">Move</string>
     <!-- [VERIFIED] -->
@@ -946,7 +990,7 @@
     <!-- number of pages; this is a field-label. -->
     <string name="lbl_pages">Pages</string>
     <!-- number of pages; this is formatted text. -->
-    <string name="txt_x_pages" tools:ignore="PluralsCandidate">%1$d pages</string>
+    <string name="info_x_pages" tools:ignore="PluralsCandidate">%1$d pages</string>
 
     <string name="lbl_currency">Currency</string>
     <string name="lbl_price_listed">List Price</string>
@@ -963,6 +1007,7 @@
     <string name="lbl_signed">Signed</string>
     <string name="lbl_title">Title</string>
 
+    <string name="lbl_barcode">Barcode</string>
 
     <string name="lbl_description">Description</string>
     <string name="lbl_personal_notes">Personal notes</string>
@@ -1044,14 +1089,14 @@
     <string name="title_backup_and_export">Backup &amp; Export</string>
 
     <!-- Export 'simple dialog' note for making a backup.  -->
-    <string name="txt_export_backup_all">All books, covers, preferences and custom styles will be exported to the archive.</string>
+    <string name="info_export_backup_all">All books, covers, preferences and custom styles will be exported to the archive.</string>
 
     <!-- Dialog export all options. -->
     <string name="lbl_export_options">Select what will be exported.</string>
     <string name="lbl_export_books_option_all">All books</string>
     <string name="lbl_export_books_option_since_last_full_backup">New and updated books</string>
     <!-- Explanatory note 'lbl_export_books_option_since_last_full_backup' -->
-    <string name="txt_export_books_option_since_last_full_backup">Books added or updated since last full backup.</string>
+    <string name="info_export_books_option_since_last_full_backup">Books added or updated since last full backup.</string>
 
     <!-- Label for the dropdown menu where the user selects the format of the export file/archive. -->
     <string name="lbl_archive_format">Format</string>
@@ -1080,7 +1125,7 @@
     <!-- progress final message - displayed when a Backup is done: 1: folder; 2: filename; 3: file size -->
     <string name="info_export_report">A %3$s file called “%2$s” was created in the “%1$s” folder and you should manually copy it elsewhere to protect the data in case your device is damaged, lost, or stolen.</string>
 
-    <string name="txt_backup_email_subject" translatable="false">@string/lbl_backup</string>
+    <string name="info_backup_email_subject" translatable="false">@string/lbl_backup</string>
 
 
     <!-- Dialog import all options. -->
@@ -1140,9 +1185,9 @@
     <string name="pt_covers" translatable="false">@string/lbl_covers_long</string>
     <string name="pt_barcode_scanner">Barcode scanner</string>
     <string name="pt_calibre_content_server" translatable="false">@string/lbl_calibre_content_server</string>
-    <string name="pt_storage_volume" translatable="false">@string/lbl_storage_volume</string>
+    <string name="pt_storage_volume">Storage volume</string>
     <string name="pt_maintenance">Maintenance</string>
-    <string name="pt_more" translatable="false">@string/btn_more_ellipsis</string>
+    <string name="pt_more" translatable="false">@string/action_more_ellipsis</string>
 
     <string name="pt_field_visibility">Field Visibility</string>
     <string name="ps_manage_fields">Selected fields are visible in the add/edit book screens. Unselected fields are hidden.</string>
@@ -1258,13 +1303,13 @@
     <!-- Cleanup log and other temp files -->
     <string name="option_purge_files">Cleanup Files</string>
     <!-- param 1: file size; param 2: button text -->
-    <string name="txt_cleanup_files">Purgeable files currently use %1$s on the SD card. Log files and other data are saved on the SD card at each upgrade, when you backup the database, or when the application crashes. Tap the button below to purge these files from your SD card. If you have been experiencing crashing or other errors, please consider using the “%2$s” button first.</string>
+    <string name="info_cleanup_files">Purgeable files currently use %1$s on the SD card. Log files and other data are saved on the SD card at each upgrade, when you backup the database, or when the application crashes. Tap the button below to purge these files from your SD card. If you have been experiencing crashing or other errors, please consider using the “%2$s” button first.</string>
 
     <!-- Clear the cached images -->
     <string name="option_purge_image_cache">Clear image cache</string>
     <string name="option_rebuild_fts">Rebuild FTS</string>
     <string name="option_rebuild_index">Rebuild index</string>
-    <string name="txt_rebuild_scheduled">Rebuild scheduled</string>
+    <string name="info_rebuild_scheduled">Rebuild scheduled</string>
 
     <!-- [VERIFIED]  Collect debug information and prepare an email to the developers -->
     <string name="option_bug_report">Bug report</string>
@@ -1306,12 +1351,16 @@
 
     <!-- region ========== Style settings. -->
 
-    <!-- BooklistGroup's in booklist style.
+    <!-- Preference Category -->
+    <string name="pc_book_detail_screen">Book details page</string>
+
+    <!-- BooklistGroups.
          Opens a new screen with the related settings. -->
     <string name="pt_bob_groups">Groups</string>
 
-    <!-- Preference Screen; The extra fields displayed on 'book-level' in the booklist -->
-    <string name="pg_bob_show_details">Book Details shown in the list</string>
+    <!-- The extra fields displayed on 'book-level' in the booklist.
+         Opens a new screen with the related settings. -->
+    <string name="pt_bob_show_details">Book Details shown in the list</string>
 
     <!-- MultiSelectListPreference - Determines what is show in booklist header -->
     <string name="pt_bob_header">Summary details in header</string>
@@ -1319,47 +1368,41 @@
     <string name="pv_bob_header_style_name">Style name</string>
     <string name="pv_bob_header_filters">Filters</string>
 
-
-    <!-- [VERIFIED] ListPreference - Scale text. -->
+    <!-- SwitchPreference - Show thumbnail image for each book -->
+    <string name="pt_bob_cover_show">Show covers</string>
+    <!-- SeekBarPreference - Scale thumbnails in the list view. -->
+    <string name="pt_bob_cover_scale">Cover size in lists</string>
+    <!-- [VERIFIED] SeekBarPreference - Scale text. -->
     <string name="pt_bob_font_size">Font size</string>
-
     <!-- SwitchPreference - the height of the rows in the booklist (Small/Large) -->
     <string name="pt_line_spacing">Line spacing</string>
 
-    <!-- SwitchPreference -->
+    <!-- SeekBarPreference -->
     <string name="pt_bob_list_state_expansion_level">Default booklist expansion</string>
 
-    <!-- Preference Category: thumbnails -->
-    <!-- SwitchPreference - Show thumbnail image for each book -->
-    <string name="pt_bob_cover_show">Show covers</string>
-    <!-- ListPreference - Scale thumbnails in the list view. -->
-    <string name="pt_bob_cover_scale">Cover size in lists</string>
 
-    <!-- Preference Category: author -->
     <!-- SwitchPreference - Display Authors by family (default) or given name. -->
     <string name="pt_show_author_name_given_first">Author name formatting</string>
     <!-- SwitchPreference - Sorting Authors by family (default) or given name. -->
     <string name="pt_sort_author_name_given_first">Author name sorting</string>
-
-    <string name="pv_author_name_given_first">e.g. “Connie Willis”</string>
-    <string name="pv_author_name_family_first">e.g. “Willis, Connie”</string>
+    <!-- summary strings for show/sort author-name. -->
+    <string name="ps_author_name_given_first">e.g. “Connie Willis”</string>
+    <string name="ps_author_name_family_first">e.g. “Willis, Connie”</string>
 
     <!-- SwitchPreference -->
     <string name="pt_bob_books_under_multiple_authors">Show books with multiple authors</string>
-    <string name="pv_bob_books_under_multiple_primary_author_only">under their primary author only</string>
-    <string name="pv_bob_books_under_multiple_each_author">under each author</string>
+    <string name="ps_bob_books_under_multiple_primary_author_only">under their primary author only</string>
+    <string name="ps_bob_books_under_multiple_each_author">under each author</string>
 
-    <!-- Preference Category: Series -->
     <!-- SwitchPreference -->
     <string name="pt_bob_books_under_multiple_series">Show books in multiple series</string>
-    <string name="pv_bob_books_under_multiple_primary_series_only">under their primary series only</string>
-    <string name="pv_bob_books_under_multiple_each_series">under each series</string>
+    <string name="ps_bob_books_under_multiple_primary_series_only">under their primary series only</string>
+    <string name="ps_bob_books_under_multiple_each_series">under each series</string>
 
-    <!-- Preference Category: Publisher -->
     <!-- SwitchPreference -->
     <string name="pt_bob_books_under_multiple_publisher">Show books with multiple publishers</string>
-    <string name="pv_bob_books_under_multiple_primary_publisher_only">under their primary publisher only</string>
-    <string name="pv_bob_books_under_multiple_each_publisher">under each publisher</string>
+    <string name="ps_bob_books_under_multiple_primary_publisher_only">under their primary publisher only</string>
+    <string name="ps_bob_books_under_multiple_each_publisher">under each publisher</string>
 
     <!-- endregion -->
 
@@ -1390,7 +1433,7 @@
     <!-- booklist screen - context menu - Update Fields from internet for a set of books -->
     <string name="menu_update_books">Update books</string>
     <string name="menu_update_fields">Update fields</string>
-    <string name="txt_select_fields_to_update">Selected fields will be updated from the internet. Unselected fields will remain unchanged.</string>
+    <string name="info_select_fields_to_update">Selected fields will be updated from the internet. Unselected fields will remain unchanged.</string>
     <string name="lbl_select_fields">Select Fields</string>
     <string name="option_field_usage_copy_if_blank">Copy if blank</string>
     <string name="option_field_usage_append">Appends extra data</string>
@@ -1460,15 +1503,9 @@
     <!-- 'and' as used in lists:  x and y -->
     <string name="list_and">and</string>
 
-    <!-- [VERIFIED] buttons on the "sorting / styles" dialog -->
-    <string name="btn_more_ellipsis">More…</string>
-    <string name="btn_less_ellipsis">Less…</string>
-
     <!-- endregion -->
 
     <!-- region ========== Other labels - TODO: needs cleaning up... -->
-
-    <string name="progress_end_download_successful">Download successful</string>
 
     <string name="lbl_add_book_by_external_id" translatable="false">@string/option_fab_add_book_by_external_id</string>
 
@@ -1485,14 +1522,8 @@
     <string name="btn_this_book">This book only</string>
     <string name="btn_all_books">All books</string>
 
-    <!-- ContentDescription text for the drag handle button in re-order-able lists -->
-    <string name="cd_btn_drag_handle">Drag to reorder this list</string>
-
-    <!-- [VERIFIED] ContentDescription text -->
-    <string name="cd_clear_text_end_icon">Clear text</string>
-
     <!-- Specifically used for an unknown book title (mostly in import/export logic).
-     Translations should add the [] around the string. -->
+         Translations should add the [] around the string. -->
     <string name="unknown_title">[Unknown title]</string>
     <!-- Specifically used for an unknown book title (mostly in import/export logic).
          Translations should add the [] around the string. -->
@@ -1506,16 +1537,15 @@
     <!-- "I own this book"; or "the number of books I own" -->
     <string name="lbl_owned">Owned</string>
 
-
-
-    <string name="lbl_story_in_multiple_books">“%1$s” is present in multiple books:\n\n%2$s</string>
-    <string name="lbl_story_in_single_book">“%1$s” is present in a single book:\n\n%2$s</string>
-
     <string name="lbl_table_of_content">Table Of Content</string>
     <string name="lbl_table_of_content_short">TOC</string>
     <string name="lbl_table_of_content_entry">TOC Entry</string>
 
+
+    <string name="lbl_websites">Websites</string>
+    <!-- hint text for an input field -->
     <string name="lbl_site_book_id">Website book ID</string>
+    <!-- prompt above a list of websites. -->
     <string name="lbl_select_website">Select a website:</string>
 
     <string name="lbl_library">Library</string>
@@ -1532,36 +1562,8 @@
     <!-- [VERIFIED] -->
     <string name="lbl_unread">Unread</string>
 
-    <string name="lbl_barcode">Barcode</string>
-
-
-
     <!-- [VERIFIED] - heading/titles for settings/preference screens. -->
     <string name="lbl_settings">Settings</string>
-    <string name="lbl_edit_settings">Edit settings</string>
-
-    <string name="lbl_websites">Websites</string>
-
-    <string name="lbl_storage_volume">Storage volume</string>
-    <string name="lbl_storage_quit_and_reinsert_sdcard">Quit and reinsert the correct SD CARD</string>
-
-    <string name="lbl_calibre_content_server_extension_info">Calibre content server extension is not installed.</string>
-
-    <string name="lbl_book_detail_screen">Book details page</string>
-
-    <string name="info_authorized">Authorized</string>
-
-    <!-- Shown in the heading of booklist. -->
-    <string name="txt_displaying_n_books_in_m_entries">%1$d books, in %2$d entries</string>
-
-    <string name="txt_share_book_im_reading">I\'m reading “%1$s” %2$s by %3$s %4$s</string>
-    <string name="txt_tap_on_thumbnail_to_zoom">Tap on a thumbnail to display a larger image.</string>
-    <string name="txt_tap_on_image_to_select">Tap on the larger image to select it.</string>
-
-    <!-- ISFDB specific
-     Some functionality is limited to the ISFDB web site only.
-     This is displayed at the 'end' of a label, hence needs the brackets for clarity. -->
-    <string name="info_isfdb_warning_limited_to">(only supported by the ISFDB web site)</string>
 
     <!-- endregion -->
 

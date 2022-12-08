@@ -140,7 +140,7 @@ public class MaintenanceFragment
                 return;
             }
 
-            final String msg = getString(R.string.txt_cleanup_files,
+            final String msg = getString(R.string.info_cleanup_files,
                                          FileUtils.formatFileSize(context, bytes),
                                          getString(R.string.option_bug_report));
 
@@ -187,7 +187,7 @@ public class MaintenanceFragment
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
                     StartupViewModel.schedule(v.getContext(),
                                               StartupViewModel.PK_REBUILD_FTS, true);
-                    vb.btnRebuildFts.setError(getString(R.string.txt_rebuild_scheduled));
+                    vb.btnRebuildFts.setError(getString(R.string.info_rebuild_scheduled));
                 })
                 .create()
                 .show());
@@ -204,7 +204,7 @@ public class MaintenanceFragment
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
                     StartupViewModel.schedule(v.getContext(),
                                               StartupViewModel.PK_REBUILD_INDEXES, true);
-                    vb.btnRebuildIndex.setError(getString(R.string.txt_rebuild_scheduled));
+                    vb.btnRebuildIndex.setError(getString(R.string.info_rebuild_scheduled));
                 })
                 .create()
                 .show());

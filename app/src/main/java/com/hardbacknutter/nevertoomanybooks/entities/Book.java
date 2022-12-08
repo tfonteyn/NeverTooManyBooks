@@ -1216,7 +1216,7 @@ public class Book
             ratingStr = "";
         }
 
-        final String text = context.getString(R.string.txt_share_book_im_reading,
+        final String text = context.getString(R.string.info_share_book_im_reading,
                                               title, seriesStr, authorStr, ratingStr);
 
         final Intent intent = new Intent(Intent.ACTION_SEND)

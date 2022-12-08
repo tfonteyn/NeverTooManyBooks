@@ -47,7 +47,7 @@
         <ImageButton
             android:id="@+id/inf_ext_not_installed"
             style="@style/Button.InfoPopup"
-            android:contentDescription="@string/lbl_calibre_content_server_extension_info"
+            android:contentDescription="@string/info_calibre_content_server_extension"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/header"
             app:layout_constraintStart_toEndOf="@id/header"

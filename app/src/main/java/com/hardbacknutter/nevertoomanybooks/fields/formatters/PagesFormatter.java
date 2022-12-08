@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,7 +47,7 @@ public class PagesFormatter
 
         } else {
             try {
-                return context.getString(R.string.txt_x_pages, Integer.parseInt(rawValue));
+                return context.getString(R.string.info_x_pages, Integer.parseInt(rawValue));
 
             } catch (@NonNull final NumberFormatException ignore) {
                 // don't log, stored pages was alphanumeric.

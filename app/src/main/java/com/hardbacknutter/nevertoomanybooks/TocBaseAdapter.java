@@ -129,12 +129,12 @@ public abstract class TocBaseAdapter
                 .collect(Collectors.joining("\n"));
 
         if (work.getBookCount() > 1) {
-            final String msg = context.getString(R.string.lbl_story_in_multiple_books,
+            final String msg = context.getString(R.string.info_story_in_multiple_books,
                                                  holder.vb.title.getText().toString(),
                                                  titles);
             StandardDialogs.infoPopup(holder.vb.btnType, XOFF, YOFF, msg);
         } else {
-            final String msg = context.getString(R.string.lbl_story_in_single_book,
+            final String msg = context.getString(R.string.info_story_in_single_book,
                                                  holder.vb.title.getText().toString(),
                                                  titles);
             StandardDialogs.infoPopup(holder.vb.btnType, XOFF, YOFF, msg);

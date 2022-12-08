@@ -28,7 +28,7 @@
                   xmlns:app="http://schemas.android.com/apk/res-auto"
                   app:orderingFromXml="false">
     <PreferenceCategory
-        android:title="@string/pg_bob_show_details">
+        android:title="@string/pt_bob_show_details">
 
         <SwitchPreference
             android:defaultValue="false"

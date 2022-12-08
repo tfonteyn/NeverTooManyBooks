@@ -69,7 +69,7 @@
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBookDetailsFragment"
             android:icon="@drawable/ic_baseline_details_24"
             android:key="psk_style_show_details"
-            android:title="@string/pg_bob_show_details"
+            android:title="@string/pt_bob_show_details"
             />
 
 
@@ -119,7 +119,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/lbl_book_detail_screen"
+        android:title="@string/pc_book_detail_screen"
         >
         <SwitchPreference
             android:defaultValue="true"
@@ -151,8 +151,8 @@
             android:defaultValue="true"
             android:icon="@drawable/ic_baseline_reorder_24"
             android:key="show.author.name.given_first"
-            android:summaryOff="@string/pv_author_name_family_first"
-            android:summaryOn="@string/pv_author_name_given_first"
+            android:summaryOff="@string/ps_author_name_family_first"
+            android:summaryOn="@string/ps_author_name_given_first"
             android:title="@string/pt_show_author_name_given_first"
             />
 
@@ -160,8 +160,8 @@
             android:defaultValue="false"
             android:icon="@drawable/ic_baseline_sort_by_alpha_24"
             android:key="sort.author.name.given_first"
-            android:summaryOff="@string/pv_author_name_family_first"
-            android:summaryOn="@string/pv_author_name_given_first"
+            android:summaryOff="@string/ps_author_name_family_first"
+            android:summaryOn="@string/ps_author_name_given_first"
             android:title="@string/pt_sort_author_name_given_first"
             />
 
@@ -189,8 +189,8 @@
             android:defaultValue="false"
             android:icon="@drawable/ic_baseline_functions_24"
             android:key="style.booklist.group.authors.show.all"
-            android:summaryOff="@string/pv_bob_books_under_multiple_primary_author_only"
-            android:summaryOn="@string/pv_bob_books_under_multiple_each_author"
+            android:summaryOff="@string/ps_bob_books_under_multiple_primary_author_only"
+            android:summaryOn="@string/ps_bob_books_under_multiple_each_author"
             android:title="@string/pt_bob_books_under_multiple_authors"
             app:isPreferenceVisible="false"
             tools:isPreferenceVisible="true"
@@ -210,8 +210,8 @@
             android:defaultValue="false"
             android:icon="@drawable/ic_baseline_functions_24"
             android:key="style.booklist.group.series.show.all"
-            android:summaryOff="@string/pv_bob_books_under_multiple_primary_series_only"
-            android:summaryOn="@string/pv_bob_books_under_multiple_each_series"
+            android:summaryOff="@string/ps_bob_books_under_multiple_primary_series_only"
+            android:summaryOn="@string/ps_bob_books_under_multiple_each_series"
             android:title="@string/pt_bob_books_under_multiple_series"
             app:isPreferenceVisible="false"
             tools:isPreferenceVisible="true"
@@ -231,8 +231,8 @@
             android:defaultValue="false"
             android:icon="@drawable/ic_baseline_functions_24"
             android:key="style.booklist.group.publisher.show.all"
-            android:summaryOff="@string/pv_bob_books_under_multiple_primary_publisher_only"
-            android:summaryOn="@string/pv_bob_books_under_multiple_each_publisher"
+            android:summaryOff="@string/ps_bob_books_under_multiple_primary_publisher_only"
+            android:summaryOn="@string/ps_bob_books_under_multiple_each_publisher"
             android:title="@string/pt_bob_books_under_multiple_publisher"
             app:isPreferenceVisible="false"
             tools:isPreferenceVisible="true"
