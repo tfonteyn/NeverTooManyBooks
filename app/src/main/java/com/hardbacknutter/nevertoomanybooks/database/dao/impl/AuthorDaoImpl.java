@@ -158,7 +158,7 @@ public class AuthorDaoImpl
             + '(' + DBKey.AUTHOR_FAMILY_NAME + ',' + DBKey.AUTHOR_FAMILY_NAME_OB
             + ',' + DBKey.AUTHOR_GIVEN_NAMES + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB
             + ',' + DBKey.AUTHOR_IS_COMPLETE
-            + ',' + DBKey.AUTHOR_IS_PSEUDONYM_FOR
+            + ',' + DBKey.AUTHOR_PSEUDONYM
             + ") VALUES (?,?,?,?,?,?)";
 
     /** Delete an {@link Author}. */
@@ -239,7 +239,7 @@ public class AuthorDaoImpl
                                                  DBKey.AUTHOR_FAMILY_NAME,
                                                  DBKey.AUTHOR_GIVEN_NAMES,
                                                  DBKey.AUTHOR_IS_COMPLETE,
-                                                 DBKey.AUTHOR_IS_PSEUDONYM_FOR)
+                                                 DBKey.AUTHOR_PSEUDONYM)
 
             + ',' + TBL_BOOK_AUTHOR.dotAs(DBKey.BOOK_AUTHOR_POSITION,
                                           DBKey.AUTHOR_TYPE__BITMASK)
@@ -644,7 +644,7 @@ public class AuthorDaoImpl
         cv.put(DBKey.AUTHOR_GIVEN_NAMES_OB,
                SqlEncode.orderByColumn(author.getGivenNames(), authorLocale));
         cv.put(DBKey.AUTHOR_IS_COMPLETE, author.isComplete());
-        cv.put(DBKey.AUTHOR_IS_PSEUDONYM_FOR, author.getRealAuthorId());
+        cv.put(DBKey.AUTHOR_PSEUDONYM, author.getRealAuthorId());
 
         return 0 < db.update(TBL_AUTHORS.getName(), cv, DBKey.PK_ID + "=?",
                              new String[]{String.valueOf(author.getId())});

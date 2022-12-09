@@ -91,7 +91,7 @@ public class TocEntryDaoImpl
             + ',' + TBL_AUTHORS.dotAs(DBKey.AUTHOR_FAMILY_NAME,
                                       DBKey.AUTHOR_GIVEN_NAMES,
                                       DBKey.AUTHOR_IS_COMPLETE,
-                                      DBKey.AUTHOR_IS_PSEUDONYM_FOR)
+                                      DBKey.AUTHOR_PSEUDONYM)
 
             // count the number of books this TOC entry is present in.
             + ',' + "(SELECT COUNT(*) FROM " + TBL_BOOK_TOC_ENTRIES.getName()

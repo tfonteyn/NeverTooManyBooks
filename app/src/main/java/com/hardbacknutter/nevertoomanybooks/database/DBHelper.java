@@ -803,7 +803,7 @@ public class DBHelper
             db.execSQL("DELETE FROM " + TBL_BOOKLIST_STYLES.getName() + " WHERE _id=-2");
         }
         if (oldVersion < 23) {
-            TBL_AUTHORS.alterTableAddColumns(db, DBDefinitions.DOM_AUTHOR_IS_PSEUDONYM_FOR);
+            TBL_AUTHORS.alterTableAddColumns(db, DBDefinitions.DOM_AUTHOR_PSEUDONYM);
         }
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table:

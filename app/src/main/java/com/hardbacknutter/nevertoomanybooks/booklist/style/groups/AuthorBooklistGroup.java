@@ -103,7 +103,7 @@ public class AuthorBooklistGroup
                         new DomainExpression(DBDefinitions.DOM_AUTHOR_IS_COMPLETE,
                                              DBDefinitions.TBL_AUTHORS))
                 .addGroupDomain(
-                        new DomainExpression(DBDefinitions.DOM_AUTHOR_IS_PSEUDONYM_FOR,
+                        new DomainExpression(DBDefinitions.DOM_AUTHOR_PSEUDONYM,
                                              DBDefinitions.TBL_AUTHORS));
     }
 

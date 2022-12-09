@@ -205,7 +205,7 @@ public final class DBDefinitions {
     /** {@link #TBL_AUTHORS}. */
     public static final Domain DOM_AUTHOR_IS_COMPLETE;
     /** {@link #TBL_AUTHORS}. */
-    public static final Domain DOM_AUTHOR_IS_PSEUDONYM_FOR;
+    public static final Domain DOM_AUTHOR_PSEUDONYM;
     /** Virtual: "FamilyName, GivenName". */
     public static final Domain DOM_AUTHOR_FORMATTED_FAMILY_FIRST;
 
@@ -632,8 +632,8 @@ public final class DBDefinitions {
                         .withDefault(false)
                         .build();
 
-        DOM_AUTHOR_IS_PSEUDONYM_FOR =
-                new Domain.Builder(DBKey.AUTHOR_IS_PSEUDONYM_FOR, SqLiteDataType.Integer)
+        DOM_AUTHOR_PSEUDONYM =
+                new Domain.Builder(DBKey.AUTHOR_PSEUDONYM, SqLiteDataType.Integer)
                         .notNull()
                         .withDefault(0)
                         .build();
@@ -1228,7 +1228,7 @@ public final class DBDefinitions {
                             DOM_AUTHOR_GIVEN_NAMES,
                             DOM_AUTHOR_GIVEN_NAMES_OB,
                             DOM_AUTHOR_IS_COMPLETE,
-                            DOM_AUTHOR_IS_PSEUDONYM_FOR)
+                            DOM_AUTHOR_PSEUDONYM)
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex(DBKey.AUTHOR_FAMILY_NAME_OB, false, DOM_AUTHOR_FAMILY_NAME_OB)
                 .addIndex(DBKey.AUTHOR_FAMILY_NAME, false, DOM_AUTHOR_FAMILY_NAME)

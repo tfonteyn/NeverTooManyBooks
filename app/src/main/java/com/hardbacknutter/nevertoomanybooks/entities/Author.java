@@ -276,7 +276,7 @@ public class Author
     public Author(final long id,
                   @NonNull final DataHolder rowData) {
         this.id = id;
-        realAuthorId = rowData.getLong(DBKey.AUTHOR_IS_PSEUDONYM_FOR);
+        realAuthorId = rowData.getLong(DBKey.AUTHOR_PSEUDONYM);
         familyName = rowData.getString(DBKey.AUTHOR_FAMILY_NAME);
         givenNames = rowData.getString(DBKey.AUTHOR_GIVEN_NAMES);
         complete = rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE);
