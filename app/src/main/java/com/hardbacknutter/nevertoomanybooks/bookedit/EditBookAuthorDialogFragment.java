@@ -75,6 +75,8 @@ public class EditBookAuthorDialogFragment
     /** Displayed for info only. */
     @Nullable
     private String bookTitle;
+    @Nullable
+    private String bookLanguage;
 
     /** Adding or Editing. */
     private EditAction action;
@@ -99,6 +101,7 @@ public class EditBookAuthorDialogFragment
         final Bundle args = requireArguments();
         action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
         bookTitle = args.getString(DBKey.TITLE);
+        bookLanguage = args.getString(DBKey.LANGUAGE);
     }
 
     @Override

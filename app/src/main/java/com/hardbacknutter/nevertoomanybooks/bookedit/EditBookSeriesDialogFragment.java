@@ -60,6 +60,8 @@ public class EditBookSeriesDialogFragment
     /** Displayed for info only. */
     @Nullable
     private String bookTitle;
+    @Nullable
+    private String bookLanguage;
 
     /** The Series we're editing. */
     private Series series;
@@ -87,6 +89,7 @@ public class EditBookSeriesDialogFragment
         action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
         series = Objects.requireNonNull(args.getParcelable(DBKey.FK_SERIES), DBKey.FK_SERIES);
         bookTitle = args.getString(DBKey.TITLE);
+        bookLanguage = args.getString(DBKey.LANGUAGE);
 
         if (savedInstanceState == null) {
             currentEdit = new Series(series.getTitle(), series.isComplete());

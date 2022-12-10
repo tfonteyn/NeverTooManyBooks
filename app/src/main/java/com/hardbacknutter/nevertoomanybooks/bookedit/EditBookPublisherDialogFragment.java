@@ -60,6 +60,8 @@ public class EditBookPublisherDialogFragment
     /** Displayed for info only. */
     @Nullable
     private String bookTitle;
+    @Nullable
+    private String bookLanguage;
 
     /** The Publisher we're editing. */
     private Publisher publisher;
@@ -88,6 +90,7 @@ public class EditBookPublisherDialogFragment
         publisher = Objects.requireNonNull(args.getParcelable(DBKey.FK_PUBLISHER),
                                            DBKey.FK_PUBLISHER);
         bookTitle = args.getString(DBKey.TITLE);
+        bookLanguage = args.getString(DBKey.LANGUAGE);
 
         if (savedInstanceState == null) {
             currentEdit = new Publisher(publisher.getName());
