@@ -218,6 +218,14 @@ public class EditSeriesDialogFragment
         return success;
     }
 
+    /**
+     * Ask whether to move the books from the current/modified Series
+     * to the already existing Series.
+     * <p>
+     * Note that extra attributes are <strong>NOT</strong> copied!
+     * URGENT: should we copy these extra attributes ? Probably NOT...
+     *  #isComplete
+     */
     private void askToMerge(@NonNull final Series source,
                             final long targetId) {
         final Context context = getContext();
@@ -232,11 +240,10 @@ public class EditSeriesDialogFragment
                     try {
                         final SeriesDao dao = ServiceLocator.getInstance().getSeriesDao();
                         final Series target = Objects.requireNonNull(dao.getById(targetId));
-                        //URGENT: should we copy these extra attributes ? Probably NOT...
-                        // target.setComplete(current.isComplete());
+
                         dao.moveBooks(context, source, target);
 
-                        // return the series which 'lost' it's books
+                        // return the Series which 'lost' it's books
                         RowChangedListener.setResult(this, requestKey,
                                                      DBKey.FK_SERIES, source.getId());
                     } catch (@NonNull final DaoWriteException e) {

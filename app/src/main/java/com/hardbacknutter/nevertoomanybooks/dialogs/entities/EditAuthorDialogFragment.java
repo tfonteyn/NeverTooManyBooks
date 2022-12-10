@@ -273,7 +273,7 @@ public class EditAuthorDialogFragment
 
                         dao.moveBooks(context, source, target);
 
-                        // return the author who 'lost' their books
+                        // return the Author who 'lost' their books
                         RowChangedListener.setResult(this, authorVm.getRequestKey(),
                                                      DBKey.FK_AUTHOR, source.getId());
                     } catch (@NonNull final DaoWriteException e) {
