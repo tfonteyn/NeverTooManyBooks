@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
@@ -138,7 +139,7 @@ public class EditBookAuthorListDialogFragment
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         editLauncher.registerForFragmentResult(getChildFragmentManager(),
-                                               EditBookAuthorDialogFragment.BKEY_REQUEST_KEY,
+                                               EditAuthorViewModel.BKEY_REQUEST_KEY,
                                                RK_EDIT_AUTHOR,
                                                this);
     }

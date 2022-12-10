@@ -179,27 +179,26 @@ public class EditPublisherDialogFragment
         // There is no book involved here, so use the users Locale instead
         final Locale bookLocale = getResources().getConfiguration().getLocales().get(0);
 
+        boolean success = false;
+
         // Check if there is an existing one with the same name
         //noinspection ConstantConditions
         final long existingId = dao.find(context, publisher, true, bookLocale);
         if (existingId == 0) {
-            final boolean success;
             if (publisher.getId() == 0) {
                 success = dao.insert(context, publisher, bookLocale) > 0;
             } else {
                 success = dao.update(context, publisher, bookLocale);
-            }
-            if (success) {
-                RowChangedListener.setResult(this, requestKey,
-                                             DBKey.FK_PUBLISHER, publisher.getId());
-                return true;
             }
         } else {
             // There is one with the same name; ask whether to merge the 2
             askToMerge(publisher, existingId);
         }
 
-        return false;
+        if (success) {
+            RowChangedListener.setResult(this, requestKey, DBKey.FK_PUBLISHER, publisher.getId());
+        }
+        return success;
     }
 
     private void askToMerge(@NonNull final Publisher source,

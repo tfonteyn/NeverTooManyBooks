@@ -173,10 +173,12 @@ public class EditSeriesDialogFragment
         series.copyFrom(currentEdit, false);
 
         final Context context = getContext();
-        final SeriesDao dao = ServiceLocator.getInstance().getSeriesDao();
-
         // There is no book involved here, so use the users Locale instead
         final Locale bookLocale = getResources().getConfiguration().getLocales().get(0);
+
+        final SeriesDao dao = ServiceLocator.getInstance().getSeriesDao();
+
+        boolean success = false;
 
         if (series.getId() == 0) {
             // It's a new one. Check if there is an existing one with the same name
@@ -184,11 +186,7 @@ public class EditSeriesDialogFragment
             final long existingId = dao.find(context, series, true, bookLocale);
             if (existingId == 0) {
                 // It's an entirely new one; add it.
-                if (dao.insert(context, series, bookLocale) > 0) {
-                    RowChangedListener.setResult(this, requestKey,
-                                                 DBKey.FK_SERIES, series.getId());
-                    return true;
-                }
+                success = dao.insert(context, series, bookLocale) > 0;
             } else {
                 // There is one with the same name; ask whether to merge the 2
                 askToMerge(series, existingId);
@@ -201,11 +199,7 @@ public class EditSeriesDialogFragment
                 final long existingId = dao.find(context, series, true, bookLocale);
                 if (existingId == 0) {
                     // none with the same name; so we just update this one
-                    if (dao.update(context, series, bookLocale)) {
-                        RowChangedListener.setResult(this, requestKey,
-                                                     DBKey.FK_SERIES, series.getId());
-                        return true;
-                    }
+                    success = dao.update(context, series, bookLocale);
                 } else {
                     // There is one with the same name; ask whether to merge the 2
                     askToMerge(series, existingId);
@@ -213,15 +207,15 @@ public class EditSeriesDialogFragment
             } else {
                 // The name was not changed; just update the other attributes
                 //noinspection ConstantConditions
-                if (dao.update(context, series, bookLocale)) {
-                    RowChangedListener.setResult(this, requestKey,
-                                                 DBKey.FK_SERIES, series.getId());
-                    return true;
-                }
+                success = dao.update(context, series, bookLocale);
             }
         }
 
-        return false;
+        if (success) {
+            RowChangedListener.setResult(this, requestKey,
+                                         DBKey.FK_SERIES, series.getId());
+        }
+        return success;
     }
 
     private void askToMerge(@NonNull final Series source,

@@ -29,6 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -65,26 +66,12 @@ public class EditAuthorDialogFragment
 
     /** Fragment/Log tag. */
     private static final String TAG = "EditAuthorDialogFrag";
-    private static final String SIS_REAL_AUTHOR_NAME = TAG + ":ran";
-    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
+    /** Author View model. Fragment scope. */
+    private EditAuthorViewModel authorVm;
 
     /** View Binding. */
     private DialogEditAuthorBinding vb;
-
-    /** The Author we're editing. */
-    private Author author;
-
-    /** Current edit. */
-    private Author currentEdit;
-    /**
-     * The 'currentEdit' does not hold the real-author-id during the edit-phase.
-     * We just keep the name until the user clicks "save".
-     */
-    @Nullable
-    private String currentRealAuthorName;
 
     /**
      * No-arg constructor for OS use.
@@ -102,7 +89,7 @@ public class EditAuthorDialogFragment
     public static void launch(@NonNull final FragmentManager fm,
                               @NonNull final Author author) {
         final Bundle args = new Bundle(2);
-        args.putString(BKEY_REQUEST_KEY, RowChangedListener.REQUEST_KEY);
+        args.putString(EditAuthorViewModel.BKEY_REQUEST_KEY, RowChangedListener.REQUEST_KEY);
         args.putParcelable(DBKey.FK_AUTHOR, author);
 
         final DialogFragment frag = new EditAuthorDialogFragment();
@@ -114,27 +101,8 @@ public class EditAuthorDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
-        author = Objects.requireNonNull(args.getParcelable(DBKey.FK_AUTHOR), DBKey.FK_AUTHOR);
-
-        if (savedInstanceState == null) {
-            currentEdit = new Author(author.getFamilyName(),
-                                     author.getGivenNames(),
-                                     author.isComplete());
-            if (author.getRealAuthorId() != 0) {
-                final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-                final Author realAuthor = authorDao.getById(author.getRealAuthorId());
-                // this should never be null... flw
-                if (realAuthor != null) {
-                    currentRealAuthorName = realAuthor.getFormattedName(false);
-                }
-            }
-        } else {
-            //noinspection ConstantConditions
-            currentEdit = savedInstanceState.getParcelable(DBKey.FK_AUTHOR);
-            currentRealAuthorName = savedInstanceState.getString(SIS_REAL_AUTHOR_NAME);
-        }
+        authorVm = new ViewModelProvider(this).get(EditAuthorViewModel.class);
+        authorVm.init(requireArguments());
     }
 
     @Override
@@ -157,12 +125,14 @@ public class EditAuthorDialogFragment
                 ExtArrayAdapter.FilterType.Diacritic,
                 authorDao.getNames(DBKey.AUTHOR_GIVEN_NAMES));
 
+        final Author currentEdit = authorVm.getCurrentEdit();
+
         vb.familyName.setText(currentEdit.getFamilyName());
         vb.familyName.setAdapter(familyNameAdapter);
         vb.givenNames.setText(currentEdit.getGivenNames());
         vb.givenNames.setAdapter(givenNameAdapter);
         vb.cbxIsComplete.setChecked(currentEdit.isComplete());
-        vb.realAuthor.setText(currentRealAuthorName, false);
+        vb.realAuthor.setText(authorVm.getCurrentRealAuthorName(), false);
 
         final ExtArrayAdapter<String> realNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
@@ -205,29 +175,25 @@ public class EditAuthorDialogFragment
 
     private boolean saveChanges() {
         viewToModel();
-
+        final Author currentEdit = authorVm.getCurrentEdit();
+        // basic check only, we're doing more extensive checks later on.
         if (currentEdit.getFamilyName().isEmpty()) {
             showError(vb.lblFamilyName, R.string.vldt_non_blank_required);
             return false;
         }
 
         final Context context = getContext();
-        final AuthorDao dao = ServiceLocator.getInstance().getAuthorDao();
-
         // There is no book involved here, so use the users Locale instead
         final Locale bookLocale = getResources().getConfiguration().getLocales().get(0);
 
-        // If we have a pseudonym set, it must be a valid/existing author.
-        if (currentRealAuthorName != null && !currentRealAuthorName.isBlank()) {
-            final Author realAuthor = Author.from(currentRealAuthorName);
-            //noinspection ConstantConditions
-            dao.fixId(getContext(), realAuthor, false, bookLocale);
-            if (realAuthor.getId() == 0) {
-                vb.lblRealAuthor.setError(getString(R.string.err_real_author_must_be_valid));
-                return false;
-            }
-            currentEdit.setRealAuthorId(realAuthor.getId());
+        //noinspection ConstantConditions
+        if (!authorVm.validateAndSetRealAuthor(context, bookLocale)) {
+            vb.lblRealAuthor.setError(getString(R.string.err_real_author_must_be_valid));
+            return false;
         }
+
+        final Author author = authorVm.getAuthor();
+        final Author realAuthor = author.getRealAuthor();
 
         final boolean nameChanged = !author.getFamilyName().equals(currentEdit.getFamilyName())
                                     || !author.getGivenNames().equals(currentEdit.getGivenNames());
@@ -235,24 +201,23 @@ public class EditAuthorDialogFragment
         // anything changed at all ? If not, we're done.
         if (!nameChanged
             && author.isComplete() == currentEdit.isComplete()
-            && author.getRealAuthorId() == currentEdit.getRealAuthorId()) {
+            && Objects.equals(realAuthor, currentEdit.getRealAuthor())) {
             return true;
         }
 
         // store changes
         author.copyFrom(currentEdit, false);
 
+        final AuthorDao dao = ServiceLocator.getInstance().getAuthorDao();
+
+        boolean success = false;
+
         if (author.getId() == 0) {
             // It's a new one. Check if there is an existing one with the same name
-            // noinspection ConstantConditions
             final long existingId = dao.find(context, author, true, bookLocale);
             if (existingId == 0) {
                 // it's an entirely new one; add it.
-                if (dao.insert(context, author) > 0) {
-                    RowChangedListener.setResult(this, requestKey,
-                                                 DBKey.FK_AUTHOR, author.getId());
-                    return true;
-                }
+                success = dao.insert(context, author) > 0;
             } else {
                 // There is one with the same name; ask whether to merge the 2
                 askToMerge(author, existingId);
@@ -261,33 +226,36 @@ public class EditAuthorDialogFragment
             // It's an existing one
             if (nameChanged) {
                 // but the name was changed. Check if there is an existing one with the same name
-                //noinspection ConstantConditions
                 final long existingId = dao.find(context, author, true, bookLocale);
                 if (existingId == 0) {
                     // no-one else with the same name; so we just update this one
-                    if (dao.update(context, author)) {
-                        RowChangedListener.setResult(this, requestKey,
-                                                     DBKey.FK_AUTHOR, author.getId());
-                        return true;
-                    }
+                    success = dao.update(context, author);
                 } else {
                     // There is one with the same name; ask whether to merge the 2
                     askToMerge(author, existingId);
                 }
             } else {
                 // The name was not changed; just update the other attributes
-                //noinspection ConstantConditions
-                if (dao.update(context, author)) {
-                    RowChangedListener.setResult(this, requestKey,
-                                                 DBKey.FK_AUTHOR, author.getId());
-                    return true;
-                }
+                success = (dao.update(context, author));
             }
         }
 
-        return false;
+        if (success) {
+            RowChangedListener.setResult(this, authorVm.getRequestKey(),
+                                         DBKey.FK_AUTHOR, author.getId());
+        }
+        return success;
     }
 
+    /**
+     * Ask whether to move the books from the current/modified Author
+     * to the already existing Author.
+     * <p>
+     * Note that extra attributes are <strong>NOT</strong> copied!
+     * URGENT: should we copy these extra attributes ? Probably NOT...
+     *  #isComplete
+     *  #pseudonym
+     */
     private void askToMerge(@NonNull final Author source,
                             final long targetId) {
         final Context context = getContext();
@@ -302,13 +270,11 @@ public class EditAuthorDialogFragment
                     try {
                         final AuthorDao dao = ServiceLocator.getInstance().getAuthorDao();
                         final Author target = Objects.requireNonNull(dao.getById(targetId));
-                        //URGENT: should we copy these extra attributes ? Probably NOT...
-                        // target.setComplete(current.isComplete());
-                        // target.setRealAuthorId(current.getRealAuthorId());
+
                         dao.moveBooks(context, source, target);
 
                         // return the author who 'lost' their books
-                        RowChangedListener.setResult(this, requestKey,
+                        RowChangedListener.setResult(this, authorVm.getRequestKey(),
                                                      DBKey.FK_AUTHOR, source.getId());
                     } catch (@NonNull final DaoWriteException e) {
                         Logger.error(TAG, e);
@@ -320,18 +286,12 @@ public class EditAuthorDialogFragment
     }
 
     private void viewToModel() {
+        final Author currentEdit = authorVm.getCurrentEdit();
         currentEdit.setName(vb.familyName.getText().toString().trim(),
                             vb.givenNames.getText().toString().trim());
         currentEdit.setComplete(vb.cbxIsComplete.isChecked());
 
-        currentRealAuthorName = vb.realAuthor.getText().toString().trim();
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(DBKey.FK_AUTHOR, currentEdit);
-        outState.putString(SIS_REAL_AUTHOR_NAME, currentRealAuthorName);
+        authorVm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().trim());
     }
 
     @Override

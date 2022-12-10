@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
@@ -56,9 +57,6 @@ public class EditBookAuthorDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditAuthorForBookDialog";
-    private static final String SIS_REAL_AUTHOR_NAME = TAG + ":ran";
-
-    public static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /**
      * We create a list of all the Type checkboxes for easy handling.
@@ -66,27 +64,17 @@ public class EditBookAuthorDialogFragment
      */
     private final SparseArray<CompoundButton> typeButtons = new SparseArray<>();
 
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
-    /** View model. Must be in the Activity scope. */
+    /** Book View model. Must be in the Activity scope. */
     private EditBookViewModel vm;
+    /** Author View model. Fragment scope. */
+    private EditAuthorViewModel authorVm;
+
     /** View Binding. */
     private DialogEditBookAuthorBinding vb;
 
     /** Displayed for info only. */
     @Nullable
     private String bookTitle;
-
-    /** The Author we're editing. */
-    private Author author;
-    /** Current edit. */
-    private Author currentEdit;
-    /**
-     * The 'currentEdit' does not hold the real-author-id during the edit-phase.
-     * We just keep the name until the user clicks "save".
-     */
-    @Nullable
-    private String currentRealAuthorName;
 
     /** Adding or Editing. */
     private EditAction action;
@@ -105,32 +93,12 @@ public class EditBookAuthorDialogFragment
 
         //noinspection ConstantConditions
         vm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
+        authorVm = new ViewModelProvider(this).get(EditAuthorViewModel.class);
+        authorVm.init(requireArguments());
 
         final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
         action = Objects.requireNonNull(args.getParcelable(EditAction.BKEY), EditAction.BKEY);
-        author = Objects.requireNonNull(args.getParcelable(DBKey.FK_AUTHOR), DBKey.FK_AUTHOR);
         bookTitle = args.getString(DBKey.TITLE);
-
-        if (savedInstanceState == null) {
-            currentEdit = new Author(author.getFamilyName(),
-                                     author.getGivenNames(),
-                                     author.isComplete());
-            currentEdit.setType(author.getType());
-
-            if (author.getRealAuthorId() != 0) {
-                final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-                final Author realAuthor = authorDao.getById(author.getRealAuthorId());
-                // this should never be null... flw
-                if (realAuthor != null) {
-                    currentRealAuthorName = realAuthor.getFormattedName(false);
-                }
-            }
-        } else {
-            //noinspection ConstantConditions
-            currentEdit = savedInstanceState.getParcelable(DBKey.FK_AUTHOR);
-            currentRealAuthorName = savedInstanceState.getString(SIS_REAL_AUTHOR_NAME);
-        }
     }
 
     @Override
@@ -154,12 +122,14 @@ public class EditBookAuthorDialogFragment
                 ExtArrayAdapter.FilterType.Diacritic,
                 vm.getAllAuthorGivenNames());
 
+        final Author currentEdit = authorVm.getCurrentEdit();
+
         vb.familyName.setText(currentEdit.getFamilyName());
         vb.familyName.setAdapter(familyNameAdapter);
         vb.givenNames.setText(currentEdit.getGivenNames());
         vb.givenNames.setAdapter(givenNameAdapter);
         vb.cbxIsComplete.setChecked(currentEdit.isComplete());
-        vb.realAuthor.setText(currentRealAuthorName, false);
+        vb.realAuthor.setText(authorVm.getCurrentRealAuthorName(), false);
 
         final ExtArrayAdapter<String> realNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
@@ -258,28 +228,11 @@ public class EditBookAuthorDialogFragment
 
     protected boolean saveChanges() {
         viewToModel();
-
+        final Author currentEdit = authorVm.getCurrentEdit();
         // basic check only, we're doing more extensive checks later on.
         if (currentEdit.getFamilyName().isEmpty()) {
             showError(vb.lblFamilyName, R.string.vldt_non_blank_required);
             return false;
-        }
-
-        final Context context = getContext();
-        final AuthorDao dao = ServiceLocator.getInstance().getAuthorDao();
-        //URGENT: this should be real book locale!
-        final Locale bookLocale = getResources().getConfiguration().getLocales().get(0);
-
-        // If we have a pseudonym set, it must be a valid/existing author.
-        if (currentRealAuthorName != null && !currentRealAuthorName.isBlank()) {
-            final Author realAuthor = Author.from(currentRealAuthorName);
-            //noinspection ConstantConditions
-            dao.fixId(context, realAuthor, false, bookLocale);
-            if (realAuthor.getId() == 0) {
-                vb.lblRealAuthor.setError(getString(R.string.err_real_author_must_be_valid));
-                return false;
-            }
-            currentEdit.setRealAuthorId(realAuthor.getId());
         }
 
         // invalidate the type if needed
@@ -287,20 +240,33 @@ public class EditBookAuthorDialogFragment
             currentEdit.setType(Author.TYPE_UNKNOWN);
         }
 
+        final Context context = getContext();
+        //URGENT: this should be the real book locale!
+        final Locale bookLocale = getResources().getConfiguration().getLocales().get(0);
+
+        //noinspection ConstantConditions
+        if (!authorVm.validateAndSetRealAuthor(context, bookLocale)) {
+            vb.lblRealAuthor.setError(getString(R.string.err_real_author_must_be_valid));
+            return false;
+        }
+
         if (action == EditAction.Add) {
-            Launcher.setResult(this, requestKey, currentEdit);
+            Launcher.setResult(this, authorVm.getRequestKey(),
+                               currentEdit);
         } else {
-            Launcher.setResult(this, requestKey, author, currentEdit);
+            Launcher.setResult(this, authorVm.getRequestKey(),
+                               authorVm.getAuthor(), currentEdit);
         }
         return true;
     }
 
     private void viewToModel() {
+        final Author currentEdit = authorVm.getCurrentEdit();
         currentEdit.setName(vb.familyName.getText().toString().trim(),
                             vb.givenNames.getText().toString().trim());
         currentEdit.setComplete(vb.cbxIsComplete.isChecked());
 
-        currentRealAuthorName = vb.realAuthor.getText().toString().trim();
+        authorVm.setCurrentRealAuthorName(vb.realAuthor.getText().toString().trim());
 
         int type = Author.TYPE_UNKNOWN;
         for (int i = 0; i < typeButtons.size(); i++) {
@@ -309,13 +275,6 @@ public class EditBookAuthorDialogFragment
             }
         }
         currentEdit.setType(type);
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(DBKey.FK_AUTHOR, currentEdit);
-        outState.putString(SIS_REAL_AUTHOR_NAME, currentRealAuthorName);
     }
 
     @Override
