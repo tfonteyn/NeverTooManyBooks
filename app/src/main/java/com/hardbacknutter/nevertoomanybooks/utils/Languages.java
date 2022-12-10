@@ -79,20 +79,19 @@ public class Languages {
      *
      * @see AppLocale#getLocale(Context, String)
      */
-    @SuppressWarnings("unused")
     @NonNull
     public static Locale toLocale(@NonNull final Context context,
                                   @Nullable final String language) {
-        Locale locale;
-        if (language == null || language.isEmpty()) {
-            locale = context.getResources().getConfiguration().getLocales().get(0);
-        } else {
-            locale = ServiceLocator.getInstance().getAppLocale().getLocale(context, language);
-            if (locale == null) {
-                locale = context.getResources().getConfiguration().getLocales().get(0);
+
+        if (language != null && !language.isBlank()) {
+            final Locale locale = ServiceLocator.getInstance().getAppLocale()
+                                                .getLocale(context, language);
+            if (locale != null) {
+                return locale;
             }
         }
-        return locale;
+
+        return context.getResources().getConfiguration().getLocales().get(0);
     }
 
     /**
