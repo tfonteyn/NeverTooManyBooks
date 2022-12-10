@@ -38,9 +38,11 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
@@ -99,7 +101,9 @@ public class EditBookPublisherListDialogFragment
 
         @Override
         public void edit(final int position) {
-            editLauncher.launch(vm.getBook().getTitle(),
+            final Book book = vm.getBook();
+            editLauncher.launch(book.getTitle(),
+                                book.getString(DBKey.LANGUAGE),
                                 EditAction.Edit,
                                 publisherList.get(position));
         }
@@ -227,7 +231,11 @@ public class EditBookPublisherListDialogFragment
 
         final Publisher publisher = Publisher.from(name);
         if (withDetails) {
-            editLauncher.launch(vm.getBook().getTitle(), EditAction.Add, publisher);
+            final Book book = vm.getBook();
+            editLauncher.launch(book.getTitle(),
+                                book.getString(DBKey.LANGUAGE),
+                                EditAction.Add,
+                                publisher);
         } else {
             add(publisher);
         }

@@ -182,10 +182,11 @@ public class EditBookSeriesDialogFragment
 
         @Override
         public void launch(@NonNull final String bookTitle,
+                           @NonNull final String bookLanguage,
                            @NonNull final EditAction action,
                            @NonNull final Series series) {
             super.launch(new EditBookSeriesDialogFragment(),
-                         bookTitle, action, DBKey.FK_SERIES, series);
+                         bookTitle, bookLanguage, action, DBKey.FK_SERIES, series);
         }
     }
 }

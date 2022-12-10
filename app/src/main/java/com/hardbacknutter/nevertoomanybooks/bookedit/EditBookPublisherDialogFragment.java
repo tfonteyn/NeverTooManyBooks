@@ -177,10 +177,11 @@ public class EditBookPublisherDialogFragment
 
         @Override
         public void launch(@NonNull final String bookTitle,
+                           @NonNull final String bookLanguage,
                            @NonNull final EditAction action,
                            @NonNull final Publisher publisher) {
             super.launch(new EditBookPublisherDialogFragment(),
-                         bookTitle, action, DBKey.FK_PUBLISHER, publisher);
+                         bookTitle, bookLanguage, action, DBKey.FK_PUBLISHER, publisher);
         }
     }
 

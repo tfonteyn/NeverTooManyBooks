@@ -38,9 +38,11 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
@@ -99,7 +101,9 @@ public class EditBookSeriesListDialogFragment
 
         @Override
         public void edit(final int position) {
-            editLauncher.launch(vm.getBook().getTitle(),
+            final Book book = vm.getBook();
+            editLauncher.launch(book.getTitle(),
+                                book.getString(DBKey.LANGUAGE),
                                 EditAction.Edit,
                                 seriesList.get(position));
         }
@@ -230,7 +234,11 @@ public class EditBookSeriesListDialogFragment
         //noinspection ConstantConditions
         series.setNumber(vb.seriesNum.getText().toString().trim());
         if (withDetails) {
-            editLauncher.launch(vm.getBook().getTitle(), EditAction.Add, series);
+            final Book book = vm.getBook();
+            editLauncher.launch(book.getTitle(),
+                                book.getString(DBKey.LANGUAGE),
+                                EditAction.Add,
+                                series);
         } else {
             add(series);
         }

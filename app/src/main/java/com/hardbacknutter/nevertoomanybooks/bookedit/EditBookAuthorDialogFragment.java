@@ -288,10 +288,12 @@ public class EditBookAuthorDialogFragment
 
         @Override
         public void launch(@NonNull final String bookTitle,
+                           @NonNull final String bookLanguage,
                            @NonNull final EditAction action,
                            @NonNull final Author author) {
             super.launch(new EditBookAuthorDialogFragment(),
-                         bookTitle, action, DBKey.FK_AUTHOR, author);
+                         bookTitle, bookLanguage,
+                         action, DBKey.FK_AUTHOR, author);
         }
     }
 }
