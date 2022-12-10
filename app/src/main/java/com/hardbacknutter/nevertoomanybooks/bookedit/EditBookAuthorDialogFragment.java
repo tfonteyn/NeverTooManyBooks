@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorBind
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorViewModel;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 
@@ -244,10 +245,9 @@ public class EditBookAuthorDialogFragment
         }
 
         final Context context = getContext();
-        //URGENT: this should be the real book locale!
-        final Locale bookLocale = getResources().getConfiguration().getLocales().get(0);
-
         //noinspection ConstantConditions
+        final Locale bookLocale = Languages.toLocale(context, bookLanguage);
+
         if (!authorVm.validateAndSetRealAuthor(context, bookLocale)) {
             vb.lblRealAuthor.setError(getString(R.string.err_real_author_must_be_valid));
             return false;
