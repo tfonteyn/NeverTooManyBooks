@@ -71,32 +71,35 @@ public final class DBDefinitions {
      * <p>
      * Only add standard tables. Do not add temporary/FTS tables.
      * app tables
-     * TBL_BOOKLIST_STYLES,
+     * {@link #TBL_BOOKLIST_STYLES},
      * <p>
      * basic user data tables
-     * TBL_BOOKSHELF,
-     * TBL_BOOKSHELF_FILTERS
-     * TBL_AUTHORS,
-     * TBL_SERIES,
-     * TBL_PUBLISHERS,
-     * TBL_BOOKS,
-     * TBL_TOC_ENTRIES,
+     * {@link #TBL_BOOKSHELF},
+     * {@link #TBL_BOOKSHELF_FILTERS}
+     * {@link #TBL_AUTHORS},
+     * {@link #TBL_SERIES},
+     * {@link #TBL_PUBLISHERS},
+     * {@link #TBL_BOOKS},
+     * {@link #TBL_TOC_ENTRIES},
      * <p>
      * link tables
-     * TBL_BOOK_BOOKSHELF,
-     * TBL_BOOK_AUTHOR,
-     * TBL_BOOK_SERIES,
-     * TBL_BOOK_PUBLISHER,
-     * TBL_BOOK_TOC_ENTRIES,
-     * TBL_BOOK_LOANEE,
+     * {@link #TBL_AUTHOR_PSEUDONYMS},
      * <p>
-     * TBL_CALIBRE_BOOKS,
-     * TBL_CALIBRE_LIBRARIES,
+     * {@link #TBL_BOOK_BOOKSHELF},
+     * {@link #TBL_BOOK_AUTHOR},
+     * {@link #TBL_BOOK_SERIES},
+     * {@link #TBL_BOOK_PUBLISHER},
+     * {@link #TBL_BOOK_TOC_ENTRIES},
+     * {@link #TBL_BOOK_LOANEE},
+     * <p>
+     * {@link #TBL_CALIBRE_BOOKS},
+     * {@link #TBL_CALIBRE_LIBRARIES},
      * <p>
      * permanent booklist management tables
-     * TBL_BOOK_LIST_NODE_STATE: storage of the expanded/collapsed status of the book list tree.
+     * {@link #TBL_BOOK_LIST_NODE_STATE}: storage of the expanded/collapsed status
+     * of the book list tree.
      * <p>
-     * TBL_STRIPINFO_COLLECTION_TO_IMPORT: stores external id's for new books to import
+     * {@link #TBL_STRIPINFO_COLLECTION}: stores external id's for new books to import
      * from this site. Used as a means to split the relatively fast process of getting
      * the collection data (fast) and as a next step importing new books (slow).
      */
@@ -133,6 +136,9 @@ public final class DBDefinitions {
     public static final TableDefinition TBL_BOOK_LOANEE;
     /** link table. */
     public static final TableDefinition TBL_BOOK_TOC_ENTRIES;
+
+    /** Map alternative names for Authors. */
+    public static final TableDefinition TBL_AUTHOR_PSEUDONYMS;
 
     /** User defined styles. */
     public static final TableDefinition TBL_BOOKLIST_STYLES;
@@ -467,6 +473,8 @@ public final class DBDefinitions {
         TBL_BOOKSHELF_FILTERS = new TableDefinition("bookshelf_filters", "bshf");
 
         TBL_TOC_ENTRIES = new TableDefinition("anthology", "an");
+
+        TBL_AUTHOR_PSEUDONYMS = new TableDefinition("author_pseudonym", "ap");
 
         TBL_BOOK_BOOKSHELF = new TableDefinition("book_bookshelf", "bbsh");
         TBL_BOOK_AUTHOR = new TableDefinition("book_author", "ba");
@@ -1227,8 +1235,7 @@ public final class DBDefinitions {
                             DOM_AUTHOR_FAMILY_NAME_OB,
                             DOM_AUTHOR_GIVEN_NAMES,
                             DOM_AUTHOR_GIVEN_NAMES_OB,
-                            DOM_AUTHOR_IS_COMPLETE,
-                            DOM_AUTHOR_PSEUDONYM)
+                            DOM_AUTHOR_IS_COMPLETE)
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex(DBKey.AUTHOR_FAMILY_NAME_OB, false, DOM_AUTHOR_FAMILY_NAME_OB)
                 .addIndex(DBKey.AUTHOR_FAMILY_NAME, false, DOM_AUTHOR_FAMILY_NAME)
@@ -1349,6 +1356,17 @@ public final class DBDefinitions {
         /* ======================================================================================
          *  link tables
          * ====================================================================================== */
+
+        TBL_AUTHOR_PSEUDONYMS
+                .addDomains(DOM_FK_AUTHOR,
+                            DOM_AUTHOR_PSEUDONYM)
+                .setPrimaryKey(DOM_FK_AUTHOR, DOM_AUTHOR_PSEUDONYM)
+                .addReference(TBL_AUTHORS, DOM_FK_AUTHOR)
+                .addReference(TBL_AUTHORS, DOM_AUTHOR_PSEUDONYM)
+                .addIndex(DBKey.FK_AUTHOR, true, DOM_FK_AUTHOR)
+                .addIndex(DBKey.AUTHOR_PSEUDONYM, true, DOM_AUTHOR_PSEUDONYM);
+        ALL_TABLES.put(TBL_AUTHOR_PSEUDONYMS.getName(), TBL_AUTHOR_PSEUDONYMS);
+
 
         TBL_BOOK_BOOKSHELF
                 .addDomains(DOM_FK_BOOK,

@@ -147,6 +147,9 @@ public interface BookDao {
      *
      * @param context      Current context
      * @param bookId       of the book
+     * @param doUpdates    set to {@code true} to force each Author to be updated.
+     *                     <strong>ONLY</strong> set this when actually needed.
+     *                     Do not set this during for example an import.
      * @param list         the list of authors
      * @param lookupLocale set to {@code true} to force a database lookup of the locale.
      *                     This can be (relatively) slow, and hence should be {@code false}
@@ -159,6 +162,7 @@ public interface BookDao {
      */
     void insertAuthors(@NonNull Context context,
                        @IntRange(from = 1) long bookId,
+                       boolean doUpdates,
                        @NonNull Collection<Author> list,
                        boolean lookupLocale,
                        @NonNull Locale bookLocale)
@@ -175,6 +179,9 @@ public interface BookDao {
      *
      * @param context      Current context
      * @param bookId       of the book
+     * @param doUpdates    set to {@code true} to force each Author to be updated.
+     *                     <strong>ONLY</strong> set this when actually needed.
+     *                     Do not set this during for example an import.
      * @param list         the list of Series
      * @param lookupLocale set to {@code true} to force a database lookup of the locale.
      *                     This can be (relatively) slow, and hence should be {@code false}
@@ -187,6 +194,7 @@ public interface BookDao {
      */
     void insertSeries(@NonNull Context context,
                       @IntRange(from = 1) long bookId,
+                      boolean doUpdates,
                       @NonNull Collection<Series> list,
                       boolean lookupLocale,
                       @NonNull Locale bookLocale)
@@ -203,6 +211,9 @@ public interface BookDao {
      *
      * @param context      Current context
      * @param bookId       of the book
+     * @param doUpdates    set to {@code true} to force each Author to be updated.
+     *                     <strong>ONLY</strong> set this when actually needed.
+     *                     Do not set this during for example an import.
      * @param list         the list of Publishers
      * @param lookupLocale set to {@code true} to force a database lookup of the locale.
      *                     This can be (relatively) slow, and hence should be {@code false}
@@ -215,6 +226,7 @@ public interface BookDao {
      */
     void insertPublishers(@NonNull Context context,
                           @IntRange(from = 1) long bookId,
+                          boolean doUpdates,
                           @NonNull Collection<Publisher> list,
                           boolean lookupLocale,
                           @NonNull Locale bookLocale)
@@ -311,7 +323,7 @@ public interface BookDao {
      * @param idList List of book ID's to retrieve; should not be empty!
      *
      * @return A Book Cursor with 0..n rows; ordered by book id
-     *         Only books with {@link DBKey#AUTO_UPDATE} set will be returned.
+     * Only books with {@link DBKey#AUTO_UPDATE} set will be returned.
      *
      * @throws SanityCheck.SanityException if the list is empty
      */
@@ -338,7 +350,7 @@ public interface BookDao {
      * @param id the lowest book id to start from.
      *
      * @return A Book Cursor with 0..n rows; ordered by book id
-     *         Only books with {@link DBKey#AUTO_UPDATE} set will be returned.
+     * Only books with {@link DBKey#AUTO_UPDATE} set will be returned.
      */
     @NonNull
     TypedCursor fetchForAutoUpdateFromIdOnwards(long id);

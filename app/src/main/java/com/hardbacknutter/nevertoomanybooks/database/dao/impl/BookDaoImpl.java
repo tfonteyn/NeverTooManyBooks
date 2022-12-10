@@ -383,8 +383,13 @@ public class BookDaoImpl
                                  @NonNull final Set<BookFlag> flags)
             throws DaoWriteException {
 
-        // Only lookup locales when we're NOT in batch mode (i.e. NOT doing an import)
+        // Only lookup locales
+        // when we're NOT in batch mode (i.e. NOT doing an import)
         final boolean lookupLocale = !flags.contains(BookFlag.RunInBatch);
+
+        // Only update individual Author, Series, Publisher
+        // when we're NOT in batch mode (i.e. NOT doing an import)
+        final boolean doUpdates = !flags.contains(BookFlag.RunInBatch);
 
         // unconditional lookup of the book locale!
         final Locale bookLocale = book.getLocale(context);
@@ -395,30 +400,21 @@ public class BookDaoImpl
         }
 
         if (book.contains(Book.BKEY_AUTHOR_LIST)) {
-            // Authors will be inserted if new, but not updated
-            insertAuthors(context,
-                          book.getId(),
-                          book.getAuthors(),
-                          lookupLocale,
-                          bookLocale);
+            final List<Author> list = book.getAuthors();
+            // Authors will be inserted if new, but only updated if allowed
+            insertAuthors(context, book.getId(), doUpdates, list, lookupLocale, bookLocale);
         }
 
         if (book.contains(Book.BKEY_SERIES_LIST)) {
-            // Series will be inserted if new, but not updated
-            insertSeries(context,
-                         book.getId(),
-                         book.getSeries(),
-                         lookupLocale,
-                         bookLocale);
+            final List<Series> list = book.getSeries();
+            // Series will be inserted if new, but only updated if allowed
+            insertSeries(context, book.getId(), doUpdates, list, lookupLocale, bookLocale);
         }
 
         if (book.contains(Book.BKEY_PUBLISHER_LIST)) {
-            // Publishers will be inserted if new, but not updated
-            insertPublishers(context,
-                             book.getId(),
-                             book.getPublishers(),
-                             lookupLocale,
-                             bookLocale);
+            final List<Publisher> list = book.getPublishers();
+            // Publishers will be inserted if new, but only updated if allowed
+            insertPublishers(context, book.getId(), doUpdates, list, lookupLocale, bookLocale);
         }
 
         if (book.contains(Book.BKEY_TOC_LIST)) {
@@ -523,6 +519,7 @@ public class BookDaoImpl
     @Override
     public void insertAuthors(@NonNull final Context context,
                               @IntRange(from = 1) final long bookId,
+                              final boolean doUpdates,
                               @NonNull final Collection<Author> list,
                               final boolean lookupLocale,
                               @NonNull final Locale bookLocale)
@@ -550,10 +547,14 @@ public class BookDaoImpl
         int position = 0;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.Insert.BOOK_AUTHOR)) {
             for (final Author author : list) {
-                // create if needed - do NOT do updates here
+                // Always create if needed, but only update if allowed
                 if (author.getId() == 0) {
                     if (authorDao.insert(context, author) == -1) {
                         throw new DaoWriteException("insert Author");
+                    }
+                } else if (doUpdates) {
+                    if (!authorDao.update(context, author)) {
+                        throw new DaoWriteException("update Author");
                     }
                 }
 
@@ -586,6 +587,7 @@ public class BookDaoImpl
     @Override
     public void insertSeries(@NonNull final Context context,
                              @IntRange(from = 1) final long bookId,
+                             final boolean doUpdates,
                              @NonNull final Collection<Series> list,
                              final boolean lookupLocale,
                              @NonNull final Locale bookLocale)
@@ -610,7 +612,6 @@ public class BookDaoImpl
             return;
         }
 
-
         int position = 0;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.Insert.BOOK_SERIES)) {
             for (final Series series : list) {
@@ -618,6 +619,10 @@ public class BookDaoImpl
                 if (series.getId() == 0) {
                     if (seriesDao.insert(context, series, bookLocale) == -1) {
                         throw new DaoWriteException("insert Series");
+                    }
+                } else if (doUpdates) {
+                    if (!seriesDao.update(context, series, bookLocale)) {
+                        throw new DaoWriteException("update Series");
                     }
                 }
 
@@ -650,6 +655,7 @@ public class BookDaoImpl
     @Override
     public void insertPublishers(@NonNull final Context context,
                                  @IntRange(from = 1) final long bookId,
+                                 final boolean doUpdates,
                                  @NonNull final Collection<Publisher> list,
                                  final boolean lookupLocale,
                                  @NonNull final Locale bookLocale)
@@ -674,7 +680,6 @@ public class BookDaoImpl
             return;
         }
 
-
         int position = 0;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.Insert.BOOK_PUBLISHER)) {
             for (final Publisher publisher : list) {
@@ -682,6 +687,10 @@ public class BookDaoImpl
                 if (publisher.getId() == 0) {
                     if (publisherDao.insert(context, publisher, bookLocale) == -1) {
                         throw new DaoWriteException("insert Publisher");
+                    }
+                } else if (doUpdates) {
+                    if (!publisherDao.update(context, publisher, bookLocale)) {
+                        throw new DaoWriteException("update Publisher");
                     }
                 }
 

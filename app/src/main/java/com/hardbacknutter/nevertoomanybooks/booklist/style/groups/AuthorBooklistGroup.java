@@ -101,9 +101,6 @@ public class AuthorBooklistGroup
                 // Extra data we need:
                 .addGroupDomain(
                         new DomainExpression(DBDefinitions.DOM_AUTHOR_IS_COMPLETE,
-                                             DBDefinitions.TBL_AUTHORS))
-                .addGroupDomain(
-                        new DomainExpression(DBDefinitions.DOM_AUTHOR_PSEUDONYM,
                                              DBDefinitions.TBL_AUTHORS));
     }
 

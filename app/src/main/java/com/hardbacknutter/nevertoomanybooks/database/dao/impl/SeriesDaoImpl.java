@@ -425,8 +425,11 @@ public class SeriesDaoImpl
                         destList.add(item);
                     }
                 }
-                bookDao.insertSeries(context, bookId, destList, true,
-                                     book.getLocale(context));
+
+                // delete old links and store all new links
+                // We KNOW there are no updates needed.
+                bookDao.insertSeries(context, bookId, false, destList,
+                                     true, book.getLocale(context));
             }
 
             // delete the obsolete source.
@@ -476,7 +479,8 @@ public class SeriesDaoImpl
 
                 for (final long bookId : bookIds) {
                     final ArrayList<Series> list = getSeriesByBookId(bookId);
-                    bookDao.insertSeries(context, bookId, list, false, bookLocale);
+                    // We KNOW there are no updates needed.
+                    bookDao.insertSeries(context, bookId, false, list, false, bookLocale);
                 }
                 if (txLock != null) {
                     db.setTransactionSuccessful();

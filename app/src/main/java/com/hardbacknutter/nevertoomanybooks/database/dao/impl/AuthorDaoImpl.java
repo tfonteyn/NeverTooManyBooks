@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import androidx.annotation.IntRange;
@@ -54,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityMerger;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHOR_PSEUDONYMS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
@@ -105,7 +107,10 @@ public class AuthorDaoImpl
 
 
     /** {@link Author}, all columns. */
-    private static final String SELECT_ALL = "SELECT * FROM " + TBL_AUTHORS.getName();
+    private static final String SELECT_ALL =
+            "SELECT " + TBL_AUTHORS.dot("*")
+            + ',' + TBL_AUTHOR_PSEUDONYMS.dotAs(DBKey.AUTHOR_PSEUDONYM)
+            + _FROM_ + TBL_AUTHORS.ref() + TBL_AUTHORS.leftOuterJoin(TBL_AUTHOR_PSEUDONYMS);
 
     /**
      * All {@link TocEntry}'s for an Author, returned as an {@link AuthorWork}.
@@ -119,6 +124,7 @@ public class AuthorDaoImpl
             SELECT_
             + "'" + AuthorWork.Type.TocEntry.asChar() + "'" + _AS_ + DBKey.AUTHOR_WORK_TYPE
             + ',' + TBL_TOC_ENTRIES.dotAs(DBKey.PK_ID, DBKey.TITLE, DBKey.TITLE_OB)
+            // Year only
             + ",SUBSTR(" + TBL_TOC_ENTRIES.dot(DBKey.FIRST_PUBLICATION__DATE) + ",0,5)" +
             _AS_ + DBKey.FIRST_PUBLICATION__DATE
             // The Toc table does not have a language field, just return an empty string
@@ -158,8 +164,7 @@ public class AuthorDaoImpl
             + '(' + DBKey.AUTHOR_FAMILY_NAME + ',' + DBKey.AUTHOR_FAMILY_NAME_OB
             + ',' + DBKey.AUTHOR_GIVEN_NAMES + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB
             + ',' + DBKey.AUTHOR_IS_COMPLETE
-            + ',' + DBKey.AUTHOR_PSEUDONYM
-            + ") VALUES (?,?,?,?,?,?)";
+            + ") VALUES (?,?,?,?,?)";
 
     /** Delete an {@link Author}. */
     private static final String DELETE_BY_ID =
@@ -182,15 +187,24 @@ public class AuthorDaoImpl
             + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME)
             + "||', '||" + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES)
             + _END;
-
+    /** {@link #getNames(String)} : 'Display name' in column 0. */
+    private static final String SELECT_ALL_NAMES_FORMATTED_FAMILY_FIRST =
+            SELECT_ + DISPLAY_AUTHOR_FAMILY_FIRST
+            + _FROM_ + TBL_AUTHORS.ref()
+            + _ORDER_BY_ + DBKey.AUTHOR_FAMILY_NAME_OB + _COLLATION
+            + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB + _COLLATION;
     private static final String DISPLAY_AUTHOR_GIVEN_FIRST =
             CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES) + "=''"
             + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME)
             + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES)
             + "||' '||" + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME)
             + _END;
-
-
+    /** {@link #getNames(String)} : 'Display name' in column 0. */
+    private static final String SELECT_ALL_NAMES_FORMATTED_GIVEN_FIRST =
+            SELECT_ + DISPLAY_AUTHOR_GIVEN_FIRST
+            + _FROM_ + TBL_AUTHORS.ref()
+            + _ORDER_BY_ + DBKey.AUTHOR_FAMILY_NAME_OB + _COLLATION
+            + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB + _COLLATION;
     private static final String SORT_AUTHOR_FAMILY_FIRST =
             CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES_OB) + "=''"
             + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
@@ -198,7 +212,6 @@ public class AuthorDaoImpl
             + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
             + "||" + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES_OB)
             + _END;
-
     private static final String SORT_AUTHOR_GIVEN_FIRST =
             CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES_OB) + "=''"
             + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
@@ -206,45 +219,29 @@ public class AuthorDaoImpl
             + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES_OB)
             + "||" + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
             + _END;
-
-
     /** {@link #getNames(String)} : 'Family name' in column 0. */
     private static final String SELECT_ALL_FAMILY_NAMES =
             SELECT_DISTINCT_ + DBKey.AUTHOR_FAMILY_NAME + _FROM_ + TBL_AUTHORS.getName()
             + _ORDER_BY_ + DBKey.AUTHOR_FAMILY_NAME_OB + _COLLATION;
-
     /** {@link #getNames(String)} : 'Given name' in column 0. */
     private static final String SELECT_ALL_GIVEN_NAMES =
             SELECT_DISTINCT_ + DBKey.AUTHOR_GIVEN_NAMES + _FROM_ + TBL_AUTHORS.getName()
             + _WHERE_ + DBKey.AUTHOR_GIVEN_NAMES_OB + "<> ''"
             + _ORDER_BY_ + DBKey.AUTHOR_GIVEN_NAMES_OB + _COLLATION;
-
-    /** {@link #getNames(String)} : 'Display name' in column 0. */
-    private static final String SELECT_ALL_NAMES_FORMATTED_FAMILY_FIRST =
-            SELECT_ + DISPLAY_AUTHOR_FAMILY_FIRST
-            + _FROM_ + TBL_AUTHORS.ref()
-            + _ORDER_BY_ + DBKey.AUTHOR_FAMILY_NAME_OB + _COLLATION
-            + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB + _COLLATION;
-
-    /** {@link #getNames(String)} : 'Display name' in column 0. */
-    private static final String SELECT_ALL_NAMES_FORMATTED_GIVEN_FIRST =
-            SELECT_ + DISPLAY_AUTHOR_GIVEN_FIRST
-            + _FROM_ + TBL_AUTHORS.ref()
-            + _ORDER_BY_ + DBKey.AUTHOR_FAMILY_NAME_OB + _COLLATION
-            + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB + _COLLATION;
-
     /** All Authors for a Book; ordered by position, family, given. */
     private static final String AUTHORS_BY_BOOK_ID =
             SELECT_DISTINCT_ + TBL_AUTHORS.dotAs(DBKey.PK_ID,
                                                  DBKey.AUTHOR_FAMILY_NAME,
                                                  DBKey.AUTHOR_GIVEN_NAMES,
-                                                 DBKey.AUTHOR_IS_COMPLETE,
-                                                 DBKey.AUTHOR_PSEUDONYM)
+                                                 DBKey.AUTHOR_IS_COMPLETE)
 
             + ',' + TBL_BOOK_AUTHOR.dotAs(DBKey.BOOK_AUTHOR_POSITION,
                                           DBKey.AUTHOR_TYPE__BITMASK)
 
+            + ',' + TBL_AUTHOR_PSEUDONYMS.dotAs(DBKey.AUTHOR_PSEUDONYM)
+
             + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_AUTHORS)
+            + TBL_AUTHORS.leftOuterJoin(TBL_AUTHOR_PSEUDONYMS)
             + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_BOOK) + "=?"
 
             + _ORDER_BY_ + TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_POSITION)
@@ -391,7 +388,7 @@ public class AuthorDaoImpl
         final ArrayList<Long> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(SELECT_BOOK_IDS_BY_AUTHOR_ID_AND_BOOKSHELF_ID,
                                          new String[]{String.valueOf(authorId),
-                                                      String.valueOf(bookshelfId)})) {
+                                                 String.valueOf(bookshelfId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }
@@ -614,18 +611,67 @@ public class AuthorDaoImpl
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final Locale authorLocale = author.getLocale(context, userLocale);
 
-        try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
-            stmt.bindString(1, author.getFamilyName());
-            stmt.bindString(2, SqlEncode.orderByColumn(author.getFamilyName(), authorLocale));
-            stmt.bindString(3, author.getGivenNames());
-            stmt.bindString(4, SqlEncode.orderByColumn(author.getGivenNames(), authorLocale));
-            stmt.bindBoolean(5, author.isComplete());
-            stmt.bindLong(6, author.getRealAuthorId());
-            final long iId = stmt.executeInsert();
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
+
+            final long iId;
+
+            try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
+                stmt.bindString(1, author.getFamilyName());
+                stmt.bindString(2, SqlEncode.orderByColumn(author.getFamilyName(), authorLocale));
+                stmt.bindString(3, author.getGivenNames());
+                stmt.bindString(4, SqlEncode.orderByColumn(author.getGivenNames(), authorLocale));
+                stmt.bindBoolean(5, author.isComplete());
+                iId = stmt.executeInsert();
+            }
+
+            if (iId > 0) {
+                final Author realAuthor = author.getRealAuthor();
+                if (realAuthor != null) {
+                    if (insertPseudonymLink(iId, realAuthor.getId()) <= 0) {
+                        return -1;
+                    }
+                }
+            }
+
+            if (txLock != null) {
+                db.setTransactionSuccessful();
+            }
+
             if (iId > 0) {
                 author.setId(iId);
             }
             return iId;
+
+        } finally {
+            if (txLock != null) {
+                db.endTransaction(txLock);
+            }
+        }
+    }
+
+    private long insertPseudonymLink(final long authorID,
+                                     final long realAuthorId) {
+        try (SynchronizedStatement stmt = db.compileStatement(
+                INSERT_INTO_ + TBL_AUTHOR_PSEUDONYMS.getName()
+                + '(' + DBKey.FK_AUTHOR
+                + ',' + DBKey.AUTHOR_PSEUDONYM
+                + ") VALUES (?,?)")) {
+            stmt.bindLong(1, authorID);
+            stmt.bindLong(2, realAuthorId);
+            return stmt.executeInsert();
+        }
+    }
+
+    private void deletePseudonymLink(final long authorID) {
+        try (SynchronizedStatement stmt = db.compileStatement(
+                DELETE_FROM_ + TBL_AUTHOR_PSEUDONYMS.getName()
+                + _WHERE_ + DBKey.FK_AUTHOR + "=?")) {
+            stmt.bindLong(1, authorID);
+            stmt.executeUpdateDelete();
         }
     }
 
@@ -636,18 +682,50 @@ public class AuthorDaoImpl
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final Locale authorLocale = author.getLocale(context, userLocale);
 
-        final ContentValues cv = new ContentValues();
-        cv.put(DBKey.AUTHOR_FAMILY_NAME, author.getFamilyName());
-        cv.put(DBKey.AUTHOR_FAMILY_NAME_OB,
-               SqlEncode.orderByColumn(author.getFamilyName(), authorLocale));
-        cv.put(DBKey.AUTHOR_GIVEN_NAMES, author.getGivenNames());
-        cv.put(DBKey.AUTHOR_GIVEN_NAMES_OB,
-               SqlEncode.orderByColumn(author.getGivenNames(), authorLocale));
-        cv.put(DBKey.AUTHOR_IS_COMPLETE, author.isComplete());
-        cv.put(DBKey.AUTHOR_PSEUDONYM, author.getRealAuthorId());
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
 
-        return 0 < db.update(TBL_AUTHORS.getName(), cv, DBKey.PK_ID + "=?",
-                             new String[]{String.valueOf(author.getId())});
+            final ContentValues cv = new ContentValues();
+            cv.put(DBKey.AUTHOR_FAMILY_NAME, author.getFamilyName());
+            cv.put(DBKey.AUTHOR_FAMILY_NAME_OB,
+                   SqlEncode.orderByColumn(author.getFamilyName(), authorLocale));
+            cv.put(DBKey.AUTHOR_GIVEN_NAMES, author.getGivenNames());
+            cv.put(DBKey.AUTHOR_GIVEN_NAMES_OB,
+                   SqlEncode.orderByColumn(author.getGivenNames(), authorLocale));
+            cv.put(DBKey.AUTHOR_IS_COMPLETE, author.isComplete());
+
+            final boolean success =
+                    0 < db.update(TBL_AUTHORS.getName(), cv, DBKey.PK_ID + "=?",
+                                  new String[]{String.valueOf(author.getId())});
+
+            if (success) {
+                final Author realAuthor = author.getRealAuthor();
+                // just delete any previous link
+                deletePseudonymLink(author.getId());
+                if (realAuthor != null) {
+                    if (insertPseudonymLink(author.getId(),
+                                            realAuthor.getId()) <= 0) {
+                        return false;
+                    }
+                }
+                if (txLock != null) {
+                    db.setTransactionSuccessful();
+                }
+            }
+
+            return success;
+
+        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+            return false;
+
+        } finally {
+            if (txLock != null) {
+                db.endTransaction(txLock);
+            }
+        }
     }
 
     @Override
@@ -708,9 +786,11 @@ public class AuthorDaoImpl
                         destList.add(originalBookAuthor);
                     }
                 }
+
                 // delete old links and store all new links
-                bookDao.insertAuthors(context, bookId, destList, true,
-                                      book.getLocale(context));
+                // We KNOW there are no updates needed.
+                bookDao.insertAuthors(context, bookId, false, destList,
+                                      true, book.getLocale(context));
             }
 
             // delete the obsolete source.
@@ -764,7 +844,8 @@ public class AuthorDaoImpl
 
                 for (final long bookId : bookIds) {
                     final ArrayList<Author> list = getAuthorsByBookId(bookId);
-                    bookDao.insertAuthors(context, bookId, list, false, bookLocale);
+                    // We KNOW there are no updates needed.
+                    bookDao.insertAuthors(context, bookId, false, list, false, bookLocale);
                 }
                 if (txLock != null) {
                     db.setTransactionSuccessful();

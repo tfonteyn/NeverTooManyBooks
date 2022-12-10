@@ -24,7 +24,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
@@ -42,6 +41,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
@@ -137,7 +137,6 @@ public class Author
      * Any: indicate that this name entry is a pseudonym.
      *
      * @deprecated as a flag, this is useless.
-     * We're now adding {@link #realAuthorId} for proper support.
      * (I think this flag is a legacy from when we had goodreads integration)
      */
     @Deprecated
@@ -233,7 +232,8 @@ public class Author
      * If this Author is a pseudonym, then 'realAuthorId' points to that author.
      * When {@code 0} this IS a real author.
      */
-    private long realAuthorId;
+    @Nullable
+    private Author realAuthor;
 
     /** Bitmask. */
     @Type
@@ -276,7 +276,6 @@ public class Author
     public Author(final long id,
                   @NonNull final DataHolder rowData) {
         this.id = id;
-        realAuthorId = rowData.getLong(DBKey.AUTHOR_PSEUDONYM);
         familyName = rowData.getString(DBKey.AUTHOR_FAMILY_NAME);
         givenNames = rowData.getString(DBKey.AUTHOR_GIVEN_NAMES);
         complete = rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE);
@@ -284,6 +283,20 @@ public class Author
         if (rowData.contains(DBKey.AUTHOR_TYPE__BITMASK)) {
             type = rowData.getInt(DBKey.AUTHOR_TYPE__BITMASK);
         }
+
+        if (rowData.contains(DBKey.AUTHOR_PSEUDONYM)) {
+            realAuthor = ServiceLocator.getInstance().getAuthorDao().getById(
+                    rowData.getLong(DBKey.AUTHOR_PSEUDONYM));
+        }
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param author to copy
+     */
+    public Author(@NonNull final Author author) {
+        copyFrom(author, true);
     }
 
     /**
@@ -293,13 +306,13 @@ public class Author
      */
     private Author(@NonNull final Parcel in) {
         id = in.readLong();
-        realAuthorId = in.readLong();
         //noinspection ConstantConditions
         familyName = in.readString();
         //noinspection ConstantConditions
         givenNames = in.readString();
         complete = in.readByte() != 0;
         type = in.readInt();
+        realAuthor = in.readParcelable(getClass().getClassLoader());
     }
 
     @NonNull
@@ -439,11 +452,11 @@ public class Author
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         dest.writeLong(id);
-        dest.writeLong(realAuthorId);
         dest.writeString(familyName);
         dest.writeString(givenNames);
         dest.writeByte((byte) (complete ? 1 : 0));
         dest.writeInt(type);
+        dest.writeParcelable(realAuthor, flags);
     }
 
     @Override
@@ -470,17 +483,17 @@ public class Author
     }
 
     /**
-     * If this Author is a pseudonym, then this will return the id for the real Author.
+     * If this Author is a pseudonym, then this will return the real Author.
      *
-     * @return real Author id; or {@code 0} if there is none
+     * @return real Author; or {@code null} if there is none
      */
-    @IntRange(from = 0)
-    public long getRealAuthorId() {
-        return realAuthorId;
+    @Nullable
+    public Author getRealAuthor() {
+        return realAuthor;
     }
 
-    public void setRealAuthorId(@IntRange(from = 0) final long id) {
-        this.realAuthorId = id;
+    public void setRealAuthor(@Nullable final Author realAuthor) {
+        this.realAuthor = realAuthor;
     }
 
     @Type
@@ -664,7 +677,8 @@ public class Author
         familyName = source.familyName;
         givenNames = source.givenNames;
         complete = source.complete;
-        realAuthorId = source.realAuthorId;
+        realAuthor = source.realAuthor;
+
         if (includeBookFields) {
             type = source.type;
         }
@@ -716,11 +730,11 @@ public class Author
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, familyName, givenNames, realAuthorId);
+        return Objects.hash(id, familyName, givenNames, realAuthor);
     }
 
     /**
-     * Equality: <strong>id, family and given-names</strong>.
+     * Equality: <strong>id, family and given-names, realAuthor</strong>.
      * <ul>
      *   <li>'type' is on a per book basis. See {@link AuthorDao#pruneList}.</li>
      *   <li>'isComplete' is a user setting and is ignored.</li>
@@ -744,7 +758,7 @@ public class Author
         }
         return Objects.equals(familyName, that.familyName)
                && Objects.equals(givenNames, that.givenNames)
-               && realAuthorId == that.realAuthorId;
+               && Objects.equals(realAuthor, that.realAuthor);
     }
 
     @Override
@@ -809,11 +823,11 @@ public class Author
 
         return "Author{"
                + "id=" + id
-               + ", realAuthorId=" + realAuthorId
                + ", familyName=`" + familyName + '`'
                + ", givenNames=`" + givenNames + '`'
                + ", complete=" + complete
                + ", type=0b" + Integer.toBinaryString(type) + ": " + sj
+               + ", realAuthor=" + realAuthor
                + '}';
     }
 

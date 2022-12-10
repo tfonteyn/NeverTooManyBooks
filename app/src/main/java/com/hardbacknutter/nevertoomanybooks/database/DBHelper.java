@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UpgradeFailedException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHOR_PSEUDONYMS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF_FILTERS;
@@ -803,7 +804,7 @@ public class DBHelper
             db.execSQL("DELETE FROM " + TBL_BOOKLIST_STYLES.getName() + " WHERE _id=-2");
         }
         if (oldVersion < 23) {
-            TBL_AUTHORS.alterTableAddColumns(db, DBDefinitions.DOM_AUTHOR_PSEUDONYM);
+            TBL_AUTHOR_PSEUDONYMS.create(db, true);
         }
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table:

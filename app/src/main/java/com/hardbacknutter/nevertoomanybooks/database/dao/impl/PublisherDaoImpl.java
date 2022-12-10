@@ -384,8 +384,11 @@ public class PublisherDaoImpl
                         destList.add(item);
                     }
                 }
-                bookDao.insertPublishers(context, bookId, destList, true,
-                                         book.getLocale(context));
+
+                // delete old links and store all new links
+                // We KNOW there are no updates needed.
+                bookDao.insertPublishers(context, bookId, false, destList,
+                                         true, book.getLocale(context));
             }
 
             // delete the obsolete source.
@@ -436,7 +439,8 @@ public class PublisherDaoImpl
 
                 for (final long bookId : bookIds) {
                     final ArrayList<Publisher> list = getPublishersByBookId(bookId);
-                    bookDao.insertPublishers(context, bookId, list, false, bookLocale);
+                    // We KNOW there are no updates needed.
+                    bookDao.insertPublishers(context, bookId, false, list, false, bookLocale);
                 }
                 if (txLock != null) {
                     db.setTransactionSuccessful();
