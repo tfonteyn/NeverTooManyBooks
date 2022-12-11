@@ -1635,6 +1635,7 @@
 
     <string name="lbl_author_pseudonym">This author is a pseudonym for:</string>
     <string name="err_real_author_must_be_valid">Must be blank or an existing Author</string>
+    <string name="confirm_create_real_author">“%1$s” does not exist yet. Should it be created?</string>
 
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->

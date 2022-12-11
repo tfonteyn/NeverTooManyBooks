@@ -164,7 +164,7 @@ public class EditAuthorDialogFragment
                                              @Nullable final Button button) {
         if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM && button != null) {
             if (button.getId() == R.id.btn_save) {
-                if (saveChanges()) {
+                if (saveChanges(false)) {
                     dismiss();
                 }
                 return true;
@@ -173,8 +173,9 @@ public class EditAuthorDialogFragment
         return false;
     }
 
-    private boolean saveChanges() {
+    private boolean saveChanges(final boolean createRealAuthorIfNeeded) {
         viewToModel();
+
         final Author currentEdit = authorVm.getCurrentEdit();
         // basic check only, we're doing more extensive checks later on.
         if (currentEdit.getFamilyName().isEmpty()) {
@@ -187,8 +188,22 @@ public class EditAuthorDialogFragment
         final Locale bookLocale = getResources().getConfiguration().getLocales().get(0);
 
         //noinspection ConstantConditions
-        if (!authorVm.validateAndSetRealAuthor(context, bookLocale)) {
-            vb.lblRealAuthor.setError(getString(R.string.err_real_author_must_be_valid));
+        if (!authorVm.validateAndSetRealAuthor(context, bookLocale, createRealAuthorIfNeeded)) {
+            new MaterialAlertDialogBuilder(context)
+                    .setIcon(R.drawable.ic_baseline_warning_24)
+                    .setTitle(R.string.err_real_author_must_be_valid)
+                    .setMessage(context.getString(R.string.confirm_create_real_author,
+                                                  authorVm.getCurrentRealAuthorName()))
+                    .setNegativeButton(R.string.action_edit, (d, w) -> vb.lblRealAuthor.setError(
+                            getString(R.string.err_real_author_must_be_valid)))
+                    .setPositiveButton(R.string.action_create, (d, w) -> {
+                        if (saveChanges(true)) {
+                            // finish the DialogFragment
+                            dismiss();
+                        }
+                    })
+                    .create()
+                    .show();
             return false;
         }
 

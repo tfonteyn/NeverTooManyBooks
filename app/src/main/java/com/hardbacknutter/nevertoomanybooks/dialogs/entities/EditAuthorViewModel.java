@@ -25,6 +25,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.Locale;
@@ -55,6 +56,11 @@ public class EditAuthorViewModel
     @Nullable
     private String currentRealAuthorName;
 
+    /**
+     * Pseudo constructor.
+     *
+     * @param args {@link Fragment#getArguments()}
+     */
     public void init(@NonNull final Bundle args) {
         if (authorDao == null) {
             authorDao = ServiceLocator.getInstance().getAuthorDao();
@@ -68,6 +74,11 @@ public class EditAuthorViewModel
         }
     }
 
+    /**
+     * Get the request-key for Launcher/Listener communications.
+     *
+     * @return key
+     */
     @NonNull
     public String getRequestKey() {
         return requestKey;
@@ -92,16 +103,30 @@ public class EditAuthorViewModel
         this.currentRealAuthorName = name;
     }
 
+    /**
+     * @param context    Current context
+     * @param bookLocale Locale to use if the item has none set
+     * @param create     {@code true} if a non-existent Author should be created
+     *
+     * @return {@code false} if the author does not exist and 'create' was {@code false}
+     */
     public boolean validateAndSetRealAuthor(@NonNull final Context context,
-                                            @NonNull final Locale bookLocale) {
-        final AuthorDao dao = ServiceLocator.getInstance().getAuthorDao();
+                                            @NonNull final Locale bookLocale,
+                                            final boolean create) {
         // If we have a pseudonym set, it must be a valid/existing author.
         if (currentRealAuthorName != null && !currentRealAuthorName.isBlank()) {
             final Author tmpRealAuthor = Author.from(currentRealAuthorName);
+            final AuthorDao dao = ServiceLocator.getInstance().getAuthorDao();
+
             dao.fixId(context, tmpRealAuthor, false, bookLocale);
-            //URGENT: allow inserting a new one here?
             if (tmpRealAuthor.getId() == 0) {
-                return false;
+                if (create) {
+                    if (dao.insert(context, tmpRealAuthor) == -1) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
             }
             currentEdit.setRealAuthor(tmpRealAuthor);
         } else {

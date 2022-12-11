@@ -31,14 +31,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorViewModel;
@@ -113,7 +113,6 @@ public class EditBookAuthorDialogFragment
         vb.toolbar.setSubtitle(bookTitle);
 
         final Context context = getContext();
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
@@ -138,7 +137,7 @@ public class EditBookAuthorDialogFragment
         final ExtArrayAdapter<String> realNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                authorDao.getNames(DBKey.AUTHOR_FORMATTED));
+                vm.getAllAuthorNames());
         vb.realAuthor.setAdapter(realNameAdapter);
         vb.realAuthor.addTextChangedListener((ExtTextWatcher) s -> vb.lblRealAuthor.setError(null));
         vb.realAuthor.setOnFocusChangeListener((v, hasFocus) -> {
@@ -172,6 +171,8 @@ public class EditBookAuthorDialogFragment
             vb.btnUseAuthorType.setVisibility(View.GONE);
             vb.authorTypeGroup.setVisibility(View.GONE);
         }
+
+        vb.familyName.requestFocus();
     }
 
     private void createTypeButtonList() {
@@ -221,7 +222,7 @@ public class EditBookAuthorDialogFragment
                                              @Nullable final Button button) {
         if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM && button != null) {
             if (button.getId() == R.id.btn_save) {
-                if (saveChanges()) {
+                if (saveChanges(false)) {
                     dismiss();
                 }
                 return true;
@@ -230,8 +231,9 @@ public class EditBookAuthorDialogFragment
         return false;
     }
 
-    protected boolean saveChanges() {
+    protected boolean saveChanges(final boolean createRealAuthorIfNeeded) {
         viewToModel();
+
         final Author currentEdit = authorVm.getCurrentEdit();
         // basic check only, we're doing more extensive checks later on.
         if (currentEdit.getFamilyName().isEmpty()) {
@@ -248,8 +250,22 @@ public class EditBookAuthorDialogFragment
         //noinspection ConstantConditions
         final Locale bookLocale = Languages.toLocale(context, bookLanguage);
 
-        if (!authorVm.validateAndSetRealAuthor(context, bookLocale)) {
-            vb.lblRealAuthor.setError(getString(R.string.err_real_author_must_be_valid));
+        if (!authorVm.validateAndSetRealAuthor(context, bookLocale, createRealAuthorIfNeeded)) {
+            new MaterialAlertDialogBuilder(context)
+                    .setIcon(R.drawable.ic_baseline_warning_24)
+                    .setTitle(R.string.err_real_author_must_be_valid)
+                    .setMessage(context.getString(R.string.confirm_create_real_author,
+                                                  authorVm.getCurrentRealAuthorName()))
+                    .setNegativeButton(R.string.action_edit, (d, w) -> vb.lblRealAuthor.setError(
+                            getString(R.string.err_real_author_must_be_valid)))
+                    .setPositiveButton(R.string.action_create, (d, w) -> {
+                        if (saveChanges(true)) {
+                            // finish the DialogFragment
+                            dismiss();
+                        }
+                    })
+                    .create()
+                    .show();
             return false;
         }
 
