@@ -124,6 +124,7 @@ public class EditTocEntryDialogFragment
         vb.toolbar.setSubtitle(bookTitle);
 
         vb.title.setText(title);
+        autoRemoveError(vb.title, vb.lblTitle);
 
         firstPublicationDate.ifPresent(date -> vb.firstPublication.setText(
                 String.valueOf(date.getYearValue())));
@@ -178,7 +179,7 @@ public class EditTocEntryDialogFragment
     private boolean saveChanges() {
         viewToModel();
         if (title.isEmpty()) {
-            showError(vb.lblTitle, R.string.vldt_non_blank_required);
+            vb.lblTitle.setError(getString(R.string.vldt_non_blank_required));
             return false;
         }
 

@@ -104,6 +104,7 @@ public class EditBookshelfDialogFragment
         vb = DialogEditBookshelfBinding.bind(view);
 
         vb.bookshelf.setText(name);
+        autoRemoveError(vb.bookshelf, vb.lblBookshelf);
 
         vb.bookshelf.requestFocus();
     }
@@ -136,7 +137,7 @@ public class EditBookshelfDialogFragment
         viewToModel();
 
         if (name.isEmpty()) {
-            showError(vb.lblBookshelf, R.string.vldt_non_blank_required);
+            vb.lblBookshelf.setError(getString(R.string.vldt_non_blank_required));
             return false;
         }
 
@@ -161,10 +162,8 @@ public class EditBookshelfDialogFragment
 
         // Are we adding a new one but trying to use an existing name? -> REJECT
         if (bookshelf.getId() == 0 && existingId != 0) {
-            //noinspection ConstantConditions
-            final String msg = context.getString(R.string.warning_x_already_exists,
-                                                 context.getString(R.string.lbl_bookshelf));
-            showError(vb.lblBookshelf, msg);
+            vb.lblBookshelf.setError(getString(R.string.warning_x_already_exists,
+                                               getString(R.string.lbl_bookshelf)));
             return false;
         }
 

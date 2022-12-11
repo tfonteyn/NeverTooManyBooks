@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorViewModel
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 
 /**
  * Edit a single Author from the book's author list.
@@ -113,38 +112,33 @@ public class EditBookAuthorDialogFragment
         vb.toolbar.setSubtitle(bookTitle);
 
         final Context context = getContext();
+        final Author currentEdit = authorVm.getCurrentEdit();
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
                 vm.getAllAuthorFamilyNames());
+        vb.familyName.setText(currentEdit.getFamilyName());
+        vb.familyName.setAdapter(familyNameAdapter);
+        autoRemoveError(vb.familyName, vb.lblFamilyName);
 
         final ExtArrayAdapter<String> givenNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
                 vm.getAllAuthorGivenNames());
-
-        final Author currentEdit = authorVm.getCurrentEdit();
-
-        vb.familyName.setText(currentEdit.getFamilyName());
-        vb.familyName.setAdapter(familyNameAdapter);
         vb.givenNames.setText(currentEdit.getGivenNames());
         vb.givenNames.setAdapter(givenNameAdapter);
-        vb.cbxIsComplete.setChecked(currentEdit.isComplete());
-        vb.realAuthor.setText(authorVm.getCurrentRealAuthorName(), false);
 
         final ExtArrayAdapter<String> realNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
                 vm.getAllAuthorNames());
+        vb.realAuthor.setText(authorVm.getCurrentRealAuthorName(), false);
         vb.realAuthor.setAdapter(realNameAdapter);
-        vb.realAuthor.addTextChangedListener((ExtTextWatcher) s -> vb.lblRealAuthor.setError(null));
-        vb.realAuthor.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                vb.lblRealAuthor.setError(null);
-            }
-        });
+        autoRemoveError(vb.realAuthor, vb.lblRealAuthor);
+
+        vb.cbxIsComplete.setChecked(currentEdit.isComplete());
 
         final boolean useAuthorType = GlobalFieldVisibility.isUsed(DBKey.AUTHOR_TYPE__BITMASK);
         if (useAuthorType) {
@@ -237,7 +231,7 @@ public class EditBookAuthorDialogFragment
         final Author currentEdit = authorVm.getCurrentEdit();
         // basic check only, we're doing more extensive checks later on.
         if (currentEdit.getFamilyName().isEmpty()) {
-            showError(vb.lblFamilyName, R.string.vldt_non_blank_required);
+            vb.lblFamilyName.setError(getString(R.string.vldt_non_blank_required));
             return false;
         }
 

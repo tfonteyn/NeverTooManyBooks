@@ -340,7 +340,6 @@ public abstract class BaseField<T, V extends View>
             if (errorView != null) {
                 if (errorView instanceof TextInputLayout) {
                     final TextInputLayout til = (TextInputLayout) errorView;
-                    til.setErrorEnabled(errorText != null);
                     til.setError(errorText);
                 } else if (errorView instanceof TextView) {
                     final TextView textView = (TextView) errorView;

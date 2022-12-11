@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.DimenRes;
@@ -45,12 +46,12 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.StylePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 
 /**
  * Provides fullscreen or floating dialog support.
@@ -375,26 +376,20 @@ public abstract class FFBaseDialogFragment
     }
 
     /**
-     * Show an error on the passed text field. Automatically remove it after a delay.
+     * Add the needed listeners to automatically remove any error text from
+     * a {@link TextInputLayout} when the user changes the content.
      *
-     * @param til     the text field
-     * @param errorId to show
+     * @param editText inner text edit view
+     * @param til      outer layout view
      */
-    protected void showError(@NonNull final TextInputLayout til,
-                             @SuppressWarnings("SameParameterValue") @StringRes final int errorId) {
-        showError(til, getString(errorId));
-    }
-
-    /**
-     * Show an error on the passed text field. Automatically remove it after a delay.
-     *
-     * @param til   the text field
-     * @param error to show
-     */
-    protected void showError(@NonNull final TextInputLayout til,
-                             @NonNull final CharSequence error) {
-        til.setError(error);
-        til.postDelayed(() -> til.setError(null), BaseActivity.DELAY_LONG_MS);
+    protected void autoRemoveError(@NonNull final EditText editText,
+                                   @NonNull final TextInputLayout til) {
+        editText.addTextChangedListener((ExtTextWatcher) s -> til.setError(null));
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                til.setError(null);
+            }
+        });
     }
 
     /**

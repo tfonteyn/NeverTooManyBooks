@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EntityFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
@@ -162,12 +161,7 @@ public class EditBookAuthorListDialogFragment
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getAllAuthorNames());
         vb.author.setAdapter(nameAdapter);
-        vb.author.addTextChangedListener((ExtTextWatcher) s -> vb.lblAuthor.setError(null));
-        vb.author.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                vb.lblAuthor.setError(null);
-            }
-        });
+        autoRemoveError(vb.author, vb.lblAuthor);
 
         // soft-keyboards 'done' button act as a shortcut to add the author
         vb.author.setOnEditorActionListener((v, actionId, event) -> {

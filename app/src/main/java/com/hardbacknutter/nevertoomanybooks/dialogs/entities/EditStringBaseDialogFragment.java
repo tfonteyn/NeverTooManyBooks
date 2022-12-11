@@ -106,9 +106,8 @@ public abstract class EditStringBaseDialogFragment
         vb.toolbar.setTitle(dialogTitleId);
 
         vb.lblEditString.setHint(getString(labelResId));
-        vb.lblEditString.setErrorEnabled(true);
-
         vb.editString.setText(currentText);
+        autoRemoveError(vb.editString, vb.lblEditString);
 
         // soft-keyboards 'done' button act as a shortcut to confirming/saving the changes
         vb.editString.setOnEditorActionListener((v, actionId, event) -> {
@@ -167,7 +166,7 @@ public abstract class EditStringBaseDialogFragment
     private boolean saveChanges() {
         viewToModel();
         if (currentText.isEmpty()) {
-            showError(vb.lblEditString, R.string.vldt_non_blank_required);
+            vb.lblEditString.setError(getString(R.string.vldt_non_blank_required));
             return false;
         }
 

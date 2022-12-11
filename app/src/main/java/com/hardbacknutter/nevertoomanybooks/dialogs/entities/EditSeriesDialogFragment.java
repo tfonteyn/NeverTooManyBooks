@@ -124,6 +124,8 @@ public class EditSeriesDialogFragment
 
         vb.seriesTitle.setText(currentEdit.getTitle());
         vb.seriesTitle.setAdapter(titleAdapter);
+        autoRemoveError(vb.seriesTitle, vb.lblSeriesTitle);
+
         vb.cbxIsComplete.setChecked(currentEdit.isComplete());
 
         vb.seriesTitle.requestFocus();
@@ -157,7 +159,7 @@ public class EditSeriesDialogFragment
         viewToModel();
 
         if (currentEdit.getTitle().isEmpty()) {
-            showError(vb.lblSeriesTitle, R.string.vldt_non_blank_required);
+            vb.lblSeriesTitle.setError(getString(R.string.vldt_non_blank_required));
             return false;
         }
 

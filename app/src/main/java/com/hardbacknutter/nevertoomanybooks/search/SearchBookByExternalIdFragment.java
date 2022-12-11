@@ -115,6 +115,7 @@ public class SearchBookByExternalIdFragment
         vb.sitesGroup.setOnCheckedChangeListener(this::onSiteSelect);
         vb.btnSearch.setOnClickListener(v -> startSearch());
 
+        autoRemoveError(vb.externalId, vb.lblExternalId);
         vb.externalId.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 BaseActivity.hideKeyboard(v);
@@ -217,7 +218,7 @@ public class SearchBookByExternalIdFragment
         //noinspection ConstantConditions
         if (vb.externalId.getText().toString().trim().isEmpty()
             || vb.sitesGroup.getCheckedRadioButtonId() == View.NO_ID) {
-            showError(vb.lblExternalId, R.string.warning_requires_site_and_id);
+            vb.lblExternalId.setError(getString(R.string.warning_requires_site_and_id));
             return false;
         }
         return true;

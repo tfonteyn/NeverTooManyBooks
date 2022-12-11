@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 
 /**
  * Dialog to edit an <strong>EXISTING or NEW</strong> {@link Author}.
@@ -112,6 +111,8 @@ public class EditAuthorDialogFragment
         vb = DialogEditAuthorBinding.bind(view);
 
         final Context context = getContext();
+        final Author currentEdit = authorVm.getCurrentEdit();
+
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
         //noinspection ConstantConditions
@@ -119,32 +120,26 @@ public class EditAuthorDialogFragment
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
                 authorDao.getNames(DBKey.AUTHOR_FAMILY_NAME));
+        vb.familyName.setText(currentEdit.getFamilyName());
+        vb.familyName.setAdapter(familyNameAdapter);
+        autoRemoveError(vb.familyName, vb.lblFamilyName);
 
         final ExtArrayAdapter<String> givenNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
                 authorDao.getNames(DBKey.AUTHOR_GIVEN_NAMES));
-
-        final Author currentEdit = authorVm.getCurrentEdit();
-
-        vb.familyName.setText(currentEdit.getFamilyName());
-        vb.familyName.setAdapter(familyNameAdapter);
         vb.givenNames.setText(currentEdit.getGivenNames());
         vb.givenNames.setAdapter(givenNameAdapter);
-        vb.cbxIsComplete.setChecked(currentEdit.isComplete());
-        vb.realAuthor.setText(authorVm.getCurrentRealAuthorName(), false);
 
         final ExtArrayAdapter<String> realNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
                 authorDao.getNames(DBKey.AUTHOR_FORMATTED));
+        vb.realAuthor.setText(authorVm.getCurrentRealAuthorName(), false);
         vb.realAuthor.setAdapter(realNameAdapter);
-        vb.realAuthor.addTextChangedListener((ExtTextWatcher) s -> vb.lblRealAuthor.setError(null));
-        vb.realAuthor.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                vb.lblRealAuthor.setError(null);
-            }
-        });
+        autoRemoveError(vb.realAuthor, vb.lblRealAuthor);
+
+        vb.cbxIsComplete.setChecked(currentEdit.isComplete());
 
         vb.familyName.requestFocus();
     }
@@ -179,7 +174,7 @@ public class EditAuthorDialogFragment
         final Author currentEdit = authorVm.getCurrentEdit();
         // basic check only, we're doing more extensive checks later on.
         if (currentEdit.getFamilyName().isEmpty()) {
-            showError(vb.lblFamilyName, R.string.vldt_non_blank_required);
+            vb.lblFamilyName.setError(getString(R.string.vldt_non_blank_required));
             return false;
         }
 

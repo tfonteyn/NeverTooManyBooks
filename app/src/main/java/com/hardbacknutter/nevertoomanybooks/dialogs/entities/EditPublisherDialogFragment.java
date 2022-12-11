@@ -127,6 +127,7 @@ public class EditPublisherDialogFragment
 
         vb.publisherName.setText(currentEdit.getName());
         vb.publisherName.setAdapter(nameAdapter);
+        autoRemoveError(vb.publisherName, vb.lblPublisherName);
 
         vb.publisherName.requestFocus();
     }
@@ -159,7 +160,7 @@ public class EditPublisherDialogFragment
         viewToModel();
 
         if (currentEdit.getName().isEmpty()) {
-            showError(vb.lblPublisherName, R.string.vldt_non_blank_required);
+            vb.lblPublisherName.setError(getString(R.string.vldt_non_blank_required));
             return false;
         }
 

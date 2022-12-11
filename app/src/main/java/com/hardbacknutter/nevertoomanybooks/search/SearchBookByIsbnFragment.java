@@ -147,8 +147,8 @@ public class SearchBookByIsbnFragment
         } else {
             //noinspection ConstantConditions
             SoundManager.beepOnInvalidIsbn(context);
-            showError(vb.lblIsbn, getString(R.string.warning_x_is_not_a_valid_code,
-                                            code.asText()));
+            vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code,
+                                          code.asText()));
 
             if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Batch) {
                 // batch mode, ignore the code, go scan next book
@@ -179,6 +179,7 @@ public class SearchBookByIsbnFragment
         toolbar.setTitle(R.string.lbl_search_isbn);
 
         vb.isbn.setText(coordinator.getIsbnSearchText());
+        autoRemoveError(vb.isbn, vb.lblIsbn);
 
         vb.keypad.key0.setOnClickListener(v -> vb.isbn.onKey('0'));
         vb.keypad.key1.setOnClickListener(v -> vb.isbn.onKey('1'));
@@ -470,7 +471,7 @@ public class SearchBookByIsbnFragment
         if (code.isValid(strictIsbn)) {
             prepareSearch(code);
         } else {
-            showError(vb.lblIsbn, getString(R.string.warning_x_is_not_a_valid_code, barCode));
+            vb.lblIsbn.setError(getString(R.string.warning_x_is_not_a_valid_code, barCode));
         }
     }
 
@@ -524,7 +525,7 @@ public class SearchBookByIsbnFragment
         // So a valid result means we either need a title, or a third field.
         final String title = bookData.getString(DBKey.TITLE);
         if ((title == null || title.isEmpty()) && bookData.size() <= 2) {
-            showError(vb.lblIsbn, R.string.warning_no_matching_book_found);
+            vb.lblIsbn.setError(getString(R.string.warning_no_matching_book_found));
             return;
         }
         // edit book

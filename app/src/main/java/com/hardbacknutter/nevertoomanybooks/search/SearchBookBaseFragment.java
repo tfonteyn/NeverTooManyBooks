@@ -27,13 +27,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -43,7 +43,6 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookFromBundleContract;
@@ -56,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 
 public abstract class SearchBookBaseFragment
         extends BaseFragment {
@@ -271,16 +271,21 @@ public abstract class SearchBookBaseFragment
         onClearSearchCriteria();
     }
 
-    protected void showError(@NonNull final TextInputLayout til,
-                             @NonNull final CharSequence error) {
-        til.setError(error);
-        til.postDelayed(() -> til.setError(null), BaseActivity.DELAY_LONG_MS);
-    }
-
-    protected void showError(@NonNull final TextInputLayout til,
-                             @StringRes final int error) {
-        til.setError(getString(error));
-        til.postDelayed(() -> til.setError(null), BaseActivity.DELAY_LONG_MS);
+    /**
+     * Add the needed listeners to automatically remove any error text from
+     * a {@link TextInputLayout} when the user changes the content.
+     *
+     * @param editText inner text edit view
+     * @param til      outer layout view
+     */
+    protected void autoRemoveError(@NonNull final EditText editText,
+                                   @NonNull final TextInputLayout til) {
+        editText.addTextChangedListener((ExtTextWatcher) s -> til.setError(null));
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                til.setError(null);
+            }
+        });
     }
 
     class SearchSitesToolbarMenuProvider

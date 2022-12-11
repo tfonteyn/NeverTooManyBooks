@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
@@ -156,13 +155,7 @@ public class EditBookPublisherListDialogFragment
                 getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, vm.getAllPublisherNames());
         vb.publisherName.setAdapter(nameAdapter);
-        vb.publisherName.addTextChangedListener((ExtTextWatcher) s ->
-                vb.lblPublisherName.setError(null));
-        vb.publisherName.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                vb.lblPublisherName.setError(null);
-            }
-        });
+        autoRemoveError(vb.publisherName, vb.lblPublisherName);
 
         // soft-keyboards 'done' button act as a shortcut to add the publisher
         vb.publisherName.setOnEditorActionListener((v, actionId, event) -> {
