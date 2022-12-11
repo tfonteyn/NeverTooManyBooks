@@ -283,7 +283,7 @@ public class TocEntry
      * and the device in Danish.
      *
      * @param context    Current context
-     * @param bookLocale Locale to use if the item does not have a Locale of its own.
+     * @param bookLocale Locale to use if the item has none set
      *
      * @return the item Locale, or the bookLocale.
      */

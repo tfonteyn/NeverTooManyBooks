@@ -487,7 +487,7 @@ public class Series
      * This is defined as the Locale for the language from the first book in the Series.
      *
      * @param context    Current context
-     * @param bookLocale Locale to use if the Series does not have a Locale of its own.
+     * @param bookLocale Locale to use if the item has none set
      *
      * @return the Locale of the Series
      */
