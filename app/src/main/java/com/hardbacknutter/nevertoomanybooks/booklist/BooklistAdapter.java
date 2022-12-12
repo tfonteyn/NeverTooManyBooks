@@ -322,7 +322,7 @@ public class BooklistAdapter
                 break;
 
             case BooklistGroup.RATING:
-                holder = new RatingHolder(itemView, style.requireGroupById(groupId));
+                holder = new RatingHolder(this, itemView, style.requireGroupById(groupId));
                 break;
 
             default:
@@ -800,28 +800,33 @@ public class BooklistAdapter
     abstract static class RowViewHolder
             extends RecyclerView.ViewHolder {
 
+        /** The parent adapter. */
+        @NonNull
+        final BooklistAdapter adapter;
+
         /**
          * The view to install on-click listeners on. Can be the same as the itemView.
          * This is also the view where we can/should add tags,
          * as it is this View that will be passed to the onClick handlers.
          */
         @NonNull
-        View onClickTargetView;
+        final View onClickTargetView;
 
         /**
          * Constructor.
          *
+         * @param adapter  the hosting adapter
          * @param itemView the view specific for this holder
          */
-        RowViewHolder(@NonNull final View itemView) {
+        RowViewHolder(@NonNull final BooklistAdapter adapter,
+                      @NonNull final View itemView) {
             super(itemView);
-            // if present, redirect all clicks to this view
+            this.adapter = adapter;
+
             // 2022-09-07: not used for now, but keeping for future usage
-            onClickTargetView = itemView.findViewById(R.id.ROW_ONCLICK_TARGET);
-            if (onClickTargetView == null) {
-                // if not, then just let the main view get them.
-                onClickTargetView = itemView;
-            }
+            // If present, redirect all clicks to this view, otherwise let the main view get them.
+            onClickTargetView = Objects.requireNonNullElse(
+                    itemView.findViewById(R.id.ROW_ONCLICK_TARGET), itemView);
         }
 
         /**
@@ -842,10 +847,6 @@ public class BooklistAdapter
     @SuppressWarnings("WeakerAccess")
     static class BookHolder
             extends RowViewHolder {
-
-        /** The parent adapter. */
-        @NonNull
-        private final BooklistAdapter adapter;
 
         /** Format string. */
         @NonNull
@@ -875,8 +876,7 @@ public class BooklistAdapter
          */
         BookHolder(@NonNull final BooklistAdapter adapter,
                    @NonNull final View itemView) {
-            super(itemView);
-            this.adapter = adapter;
+            super(adapter, itemView);
 
             languages = ServiceLocator.getInstance().getLanguages();
 
@@ -1283,9 +1283,10 @@ public class BooklistAdapter
          * @param itemView the view specific for this holder
          * @param group    the group this holder represents
          */
-        RatingHolder(@NonNull final View itemView,
+        RatingHolder(@NonNull final BooklistAdapter adapter,
+                     @NonNull final View itemView,
                      @NonNull final BooklistGroup group) {
-            super(itemView);
+            super(adapter, itemView);
             key = group.getDisplayDomainExpression().getDomain().getName();
             ratingBar = itemView.findViewById(R.id.rating);
         }
@@ -1315,9 +1316,7 @@ public class BooklistAdapter
         /*** View to populate. */
         @NonNull
         final TextView textView;
-        /** The parent adapter. */
-        @NonNull
-        final BooklistAdapter adapter;
+
         /**
          * Key of the related data column.
          * It's ok to store this as it's intrinsically linked with the BooklistGroup.
@@ -1335,8 +1334,7 @@ public class BooklistAdapter
         GenericStringHolder(@NonNull final BooklistAdapter adapter,
                             @NonNull final View itemView,
                             @NonNull final BooklistGroup group) {
-            super(itemView);
-            this.adapter = adapter;
+            super(adapter, itemView);
             groupId = group.getId();
             key = group.getDisplayDomainExpression().getDomain().getName();
             textView = itemView.findViewById(R.id.level_text);
@@ -1421,6 +1419,7 @@ public class BooklistAdapter
                               @NonNull final DataHolder rowData,
                               @NonNull final Style style) {
             super.onBindViewHolder(position, rowData, style);
+
             completeView.setVisibility(rowData.getBoolean(
                     completeKey) ? View.VISIBLE : View.GONE);
         }
