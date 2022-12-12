@@ -156,8 +156,8 @@ public class SearchOrderFragment
 
         Holder(@NonNull final View itemView) {
             super(itemView);
-            nameView = itemView.findViewById(R.id.name);
-            infoView = itemView.findViewById(R.id.info);
+            nameView = itemView.findViewById(R.id.website_name);
+            infoView = itemView.findViewById(R.id.website_search_capabilities);
         }
     }
 
