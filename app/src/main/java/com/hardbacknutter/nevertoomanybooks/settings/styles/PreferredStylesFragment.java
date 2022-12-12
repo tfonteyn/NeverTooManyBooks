@@ -388,7 +388,7 @@ public class PreferredStylesFragment
 
             final Context context = getContext();
 
-            holder.vb.name.setText(style.getLabel(context));
+            holder.vb.styleName.setText(style.getLabel(context));
             holder.vb.type.setText(style.getTypeDescription(context));
             holder.vb.groups.setText(style.getGroupsSummaryText(context));
 
