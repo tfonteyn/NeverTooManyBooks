@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -18,31 +18,13 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- Copyright (c) 2002 JSON.org
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
-
- The Software shall be used for Good, not Evil.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
- */
 package com.hardbacknutter.org.json;
 
+/*
+Public Domain.
+ */
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
@@ -272,29 +254,23 @@ public class JSONArray
      */
     private static JSONException wrongValueFormatException(
             final int idx,
-            final String valueType,
+            @NonNull final String valueType,
+            @Nullable final Object value,
             @Nullable final Throwable cause) {
+        if (value == null) {
+            return new JSONException(
+                    "JSONArray[" + idx + "] is not a " + valueType + " (null)."
+                    , cause);
+        }
+        // don't try to toString collections or known object types that could be large.
+        if (value instanceof Map || value instanceof Iterable || value instanceof JSONObject) {
+            return new JSONException(
+                    "JSONArray[" + idx + "] is not a " + valueType + " (" + value.getClass() + ")."
+                    , cause);
+        }
         return new JSONException(
-                "JSONArray[" + idx + "] is not a " + valueType + "."
-                , cause);
-    }
-
-    /**
-     * Create a new JSONException in a common format for incorrect conversions.
-     *
-     * @param idx       index of the item
-     * @param valueType the type of value being coerced to
-     * @param cause     optional cause of the coercion failure
-     *
-     * @return JSONException that can be thrown.
-     */
-    private static JSONException wrongValueFormatException(
-            final int idx,
-            final String valueType,
-            final Object value,
-            @Nullable final Throwable cause) {
-        return new JSONException(
-                "JSONArray[" + idx + "] is not a " + valueType + " (" + value + ")."
+                "JSONArray[" + idx + "] is not a " + valueType
+                + " (" + value.getClass() + " : " + value + ")."
                 , cause);
     }
 
@@ -344,7 +320,7 @@ public class JSONArray
                 .equalsIgnoreCase((String) object))) {
             return true;
         }
-        throw wrongValueFormatException(index, "boolean", null);
+        throw wrongValueFormatException(index, "boolean", object, null);
     }
 
     /**
@@ -366,7 +342,7 @@ public class JSONArray
         try {
             return Double.parseDouble(object.toString());
         } catch (final Exception e) {
-            throw wrongValueFormatException(index, "double", e);
+            throw wrongValueFormatException(index, "double", object, e);
         }
     }
 
@@ -389,7 +365,7 @@ public class JSONArray
         try {
             return Float.parseFloat(object.toString());
         } catch (final Exception e) {
-            throw wrongValueFormatException(index, "float", e);
+            throw wrongValueFormatException(index, "float", object, e);
         }
     }
 
@@ -412,7 +388,7 @@ public class JSONArray
             }
             return JSONObject.stringToNumber(object.toString());
         } catch (final Exception e) {
-            throw wrongValueFormatException(index, "number", e);
+            throw wrongValueFormatException(index, "number", object, e);
         }
     }
 
@@ -437,7 +413,8 @@ public class JSONArray
             // If it did, I would re-implement this with the Enum.valueOf
             // method and place any thrown exception in the JSONException
             throw wrongValueFormatException(index, "enum of type "
-                                                   + JSONObject.quote(clazz.getSimpleName()), null);
+                                                   + JSONObject.quote(clazz.getSimpleName()),
+                                            opt(index), null);
         }
         return val;
     }
@@ -503,7 +480,7 @@ public class JSONArray
         try {
             return Integer.parseInt(object.toString());
         } catch (final Exception e) {
-            throw wrongValueFormatException(index, "int", e);
+            throw wrongValueFormatException(index, "int", object, e);
         }
     }
 
@@ -523,7 +500,7 @@ public class JSONArray
         if (object instanceof JSONArray) {
             return (JSONArray) object;
         }
-        throw wrongValueFormatException(index, "JSONArray", null);
+        throw wrongValueFormatException(index, "JSONArray", object, null);
     }
 
     /**
@@ -542,7 +519,7 @@ public class JSONArray
         if (object instanceof JSONObject) {
             return (JSONObject) object;
         }
-        throw wrongValueFormatException(index, "JSONObject", null);
+        throw wrongValueFormatException(index, "JSONObject", object, null);
     }
 
     /**
@@ -564,7 +541,7 @@ public class JSONArray
         try {
             return Long.parseLong(object.toString());
         } catch (final Exception e) {
-            throw wrongValueFormatException(index, "long", e);
+            throw wrongValueFormatException(index, "long", object, e);
         }
     }
 
@@ -583,7 +560,7 @@ public class JSONArray
         if (object instanceof String) {
             return (String) object;
         }
-        throw wrongValueFormatException(index, "String", null);
+        throw wrongValueFormatException(index, "String", object, null);
     }
 
     /**
@@ -1467,6 +1444,11 @@ public class JSONArray
                 if (!JSONObject.isNumberSimilar((Number) valueThis, (Number) valueOther)) {
                     return false;
                 }
+            } else if (valueThis instanceof JSONString && valueOther instanceof JSONString) {
+                if (!((JSONString) valueThis).toJSONString()
+                                             .equals(((JSONString) valueOther).toJSONString())) {
+                    return false;
+                }
             } else if (!valueThis.equals(valueOther)) {
                 return false;
             }
@@ -1487,7 +1469,7 @@ public class JSONArray
      * @throws JSONException If any of the names are null.
      */
     @Nullable
-    public JSONObject toJSONObject(final JSONArray names)
+    public JSONObject toJSONObject(@Nullable final JSONArray names)
             throws JSONException {
         if (names == null || names.isEmpty() || this.isEmpty()) {
             return null;

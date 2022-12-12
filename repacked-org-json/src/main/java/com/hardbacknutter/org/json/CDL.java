@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -18,30 +18,14 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
-Copyright (c) 2002 JSON.org
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-The Software shall be used for Good, not Evil.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
- */
 package com.hardbacknutter.org.json;
+
+/*
+Public Domain.
+ */
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * This provides static methods to convert comma delimited text into a
@@ -78,7 +62,8 @@ public final class CDL {
      *
      * @throws JSONException if the quoted string is badly formed.
      */
-    private static String getValue(final JSONTokener x)
+    @Nullable
+    private static String getValue(@NonNull final JSONTokener x)
             throws JSONException {
         char c;
         final char q;
@@ -130,7 +115,8 @@ public final class CDL {
      *
      * @throws JSONException if a called function fails
      */
-    public static JSONArray rowToJSONArray(final JSONTokener x)
+    @Nullable
+    public static JSONArray rowToJSONArray(@NonNull final JSONTokener x)
             throws JSONException {
         final JSONArray ja = new JSONArray();
         for (; ; ) {
@@ -167,8 +153,9 @@ public final class CDL {
      *
      * @throws JSONException if a called function fails
      */
-    public static JSONObject rowToJSONObject(final JSONArray names,
-                                             final JSONTokener x)
+    @Nullable
+    public static JSONObject rowToJSONObject(@Nullable final JSONArray names,
+                                             @NonNull final JSONTokener x)
             throws JSONException {
         final JSONArray ja = rowToJSONArray(x);
         return ja != null ? ja.toJSONObject(names) : null;
@@ -183,7 +170,7 @@ public final class CDL {
      *
      * @return A string ending in NEWLINE.
      */
-    public static String rowToString(final JSONArray ja) {
+    public static String rowToString(@NonNull final JSONArray ja) {
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < ja.length(); i += 1) {
             if (i > 0) {
@@ -223,6 +210,7 @@ public final class CDL {
      *
      * @throws JSONException if a called function fails
      */
+    @Nullable
     public static JSONArray toJSONArray(final String string)
             throws JSONException {
         return toJSONArray(new JSONTokener(string));
@@ -238,6 +226,7 @@ public final class CDL {
      *
      * @throws JSONException if a called function fails
      */
+    @Nullable
     public static JSONArray toJSONArray(final JSONTokener x)
             throws JSONException {
         return toJSONArray(rowToJSONArray(x), x);
@@ -254,6 +243,7 @@ public final class CDL {
      *
      * @throws JSONException if a called function fails
      */
+    @Nullable
     public static JSONArray toJSONArray(final JSONArray names,
                                         final String string)
             throws JSONException {
@@ -271,7 +261,8 @@ public final class CDL {
      *
      * @throws JSONException if a called function fails
      */
-    public static JSONArray toJSONArray(final JSONArray names,
+    @Nullable
+    public static JSONArray toJSONArray(@Nullable final JSONArray names,
                                         final JSONTokener x)
             throws JSONException {
         if (names == null || names.isEmpty()) {
@@ -303,6 +294,7 @@ public final class CDL {
      *
      * @throws JSONException if a called function fails
      */
+    @Nullable
     public static String toString(final JSONArray ja)
             throws JSONException {
         final JSONObject jo = ja.optJSONObject(0);
@@ -327,6 +319,7 @@ public final class CDL {
      *
      * @throws JSONException if a called function fails
      */
+    @Nullable
     public static String toString(final JSONArray names,
                                   final JSONArray ja)
             throws JSONException {
