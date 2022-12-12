@@ -1322,7 +1322,7 @@ public class BooklistAdapter
          * It's ok to store this as it's intrinsically linked with the BooklistGroup.
          */
         @NonNull
-        private final String key;
+        final String key;
 
         /**
          * Constructor.
@@ -1344,11 +1344,21 @@ public class BooklistAdapter
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
                               @NonNull final Style style) {
-            textView.setText(format(rowData.getString(key)));
+            final String text = adapter.format(itemView.getContext(), groupId,
+                                               rowData.getString(key), null);
+            textView.setText(text);
 
+            if (BuildConfig.DEBUG) {
+                dbgPosition(position, rowData);
+            }
+        }
+
+        void dbgPosition(final int position,
+                         @NonNull final DataHolder rowData) {
             // Debugger help: color the row according to state
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
-                itemView.setBackgroundColor(adapter.getDbgRowColor(rowData.getInt(DBKey.PK_ID)));
+                itemView.setBackgroundColor(
+                        adapter.getDbgRowColor(rowData.getInt(DBKey.PK_ID)));
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
@@ -1358,70 +1368,12 @@ public class BooklistAdapter
                 // just hang it of the existing text view.
                 final CharSequence text = textView.getText();
                 final SpannableString dbg = new SpannableString(text + dbgText);
-                dbg.setSpan(new ForegroundColorSpan(Color.BLUE), text.length(), dbg.length(), 0);
+                dbg.setSpan(new ForegroundColorSpan(Color.BLUE), text.length(), dbg.length(),
+                            0);
                 dbg.setSpan(new RelativeSizeSpan(0.7f), text.length(), dbg.length(), 0);
 
                 textView.setText(dbg);
             }
-        }
-
-        /**
-         * For a simple row, use the default group formatter to format it.
-         *
-         * @param text String to display; can be {@code null} or empty
-         *
-         * @return the formatted text
-         */
-        @NonNull
-        public String format(@Nullable final String text) {
-            return adapter.format(itemView.getContext(), groupId, text, null);
-        }
-    }
-
-    /**
-     * ViewHolder for a row that displays a generic string with a checkable icon at the 'end'.
-     */
-    static class CheckableStringHolder
-            extends GenericStringHolder {
-
-        @NonNull
-        final ImageView completeView;
-        /** Column name of related boolean column. */
-        private String completeKey;
-
-        /**
-         * Constructor.
-         *
-         * @param adapter  the hosting adapter
-         * @param itemView the view specific for this holder
-         * @param group    the group this holder represents
-         */
-        @SuppressLint("UseCompatLoadingForDrawables")
-        CheckableStringHolder(@NonNull final BooklistAdapter adapter,
-                              @NonNull final View itemView,
-                              @NonNull final BooklistGroup group) {
-            super(adapter, itemView, group);
-
-            completeView = itemView.findViewById(R.id.cbx_is_complete);
-        }
-
-        /**
-         * Set the Column name to use for the 'isComplete' status.
-         *
-         * @param columnKey key name
-         */
-        void setIsCompleteColumnKey(@NonNull final String columnKey) {
-            completeKey = columnKey;
-        }
-
-        @Override
-        void onBindViewHolder(final int position,
-                              @NonNull final DataHolder rowData,
-                              @NonNull final Style style) {
-            super.onBindViewHolder(position, rowData, style);
-
-            completeView.setVisibility(rowData.getBoolean(
-                    completeKey) ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -1429,7 +1381,10 @@ public class BooklistAdapter
      * ViewHolder for an Author.
      */
     static class AuthorHolder
-            extends CheckableStringHolder {
+            extends GenericStringHolder {
+
+        @NonNull
+        final ImageView completeView;
 
         /**
          * Constructor.
@@ -1442,7 +1397,17 @@ public class BooklistAdapter
                      @NonNull final View itemView,
                      @NonNull final BooklistGroup group) {
             super(adapter, itemView, group);
-            setIsCompleteColumnKey(DBKey.AUTHOR_IS_COMPLETE);
+            completeView = itemView.findViewById(R.id.cbx_is_complete);
+        }
+
+        @Override
+        void onBindViewHolder(final int position,
+                              @NonNull final DataHolder rowData,
+                              @NonNull final Style style) {
+            super.onBindViewHolder(position, rowData, style);
+
+            completeView.setVisibility(rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE)
+                                       ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -1450,10 +1415,10 @@ public class BooklistAdapter
      * ViewHolder for a Series.
      */
     static class SeriesHolder
-            extends CheckableStringHolder {
+            extends GenericStringHolder {
 
-        /** Stores this value in between the #onBindViewHolder and the #format methods. */
-        private String bookLanguage;
+        @NonNull
+        final ImageView completeView;
 
         /**
          * Constructor.
@@ -1466,30 +1431,38 @@ public class BooklistAdapter
                      @NonNull final View itemView,
                      @NonNull final BooklistGroup group) {
             super(adapter, itemView, group);
-            setIsCompleteColumnKey(DBKey.SERIES_IS_COMPLETE);
+
+            completeView = itemView.findViewById(R.id.cbx_is_complete);
         }
 
         @Override
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
                               @NonNull final Style style) {
-            // grab the book language first for use in #format
-            bookLanguage = rowData.getString(DBKey.LANGUAGE);
 
-            super.onBindViewHolder(position, rowData, style);
-        }
-
-        @Override
-        @NonNull
-        public String format(@Nullable final String text) {
             final Context context = itemView.getContext();
+
             // FIXME: translated series are reordered in the book's language
             // It should be done using the Series language
             // but as long as we don't store the Series language there is no point
-            @Nullable
-            final Locale bookLocale = ServiceLocator.getInstance().getAppLocale()
-                                                    .getLocale(context, bookLanguage);
-            return adapter.format(context, groupId, text, bookLocale);
+            final String lang = rowData.getString(DBKey.LANGUAGE);
+            final Locale bookLocale;
+            if (lang.isBlank()) {
+                bookLocale = null;
+            } else {
+                bookLocale = ServiceLocator.getInstance().getAppLocale().getLocale(context, lang);
+            }
+
+            final String text = adapter.format(context, groupId,
+                                               rowData.getString(key), bookLocale);
+            textView.setText(text);
+
+            completeView.setVisibility(rowData.getBoolean(DBKey.SERIES_IS_COMPLETE)
+                                       ? View.VISIBLE : View.GONE);
+
+            if (BuildConfig.DEBUG) {
+                dbgPosition(position, rowData);
+            }
         }
     }
 }
