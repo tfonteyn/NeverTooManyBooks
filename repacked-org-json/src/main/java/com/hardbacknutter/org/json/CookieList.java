@@ -24,12 +24,15 @@ package com.hardbacknutter.org.json;
 Public Domain.
  */
 
+import androidx.annotation.NonNull;
+
 /**
  * Convert a web browser cookie list string to a JSONObject and back.
  *
  * @author JSON.org
  * @version 2015-12-09
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public final class CookieList {
 
     private CookieList() {
@@ -51,6 +54,7 @@ public final class CookieList {
      *
      * @throws JSONException if a called function fails
      */
+    @NonNull
     public static JSONObject toJSONObject(final String string)
             throws JSONException {
         final JSONObject jo = new JSONObject();
@@ -76,7 +80,8 @@ public final class CookieList {
      *
      * @throws JSONException if a called function fails
      */
-    public static String toString(final JSONObject jo)
+    @NonNull
+    public static String toString(@NonNull final JSONObject jo)
             throws JSONException {
         boolean b = false;
         final StringBuilder sb = new StringBuilder();
@@ -89,6 +94,7 @@ public final class CookieList {
                 }
                 sb.append(Cookie.escape(key));
                 sb.append("=");
+                //noinspection ConstantConditions
                 sb.append(Cookie.escape(value.toString()));
                 b = true;
             }

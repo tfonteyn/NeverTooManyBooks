@@ -24,6 +24,8 @@ package com.hardbacknutter.org.json;
 Public Domain.
 */
 
+import androidx.annotation.NonNull;
+
 import java.util.Locale;
 
 /**
@@ -32,6 +34,7 @@ import java.util.Locale;
  * @author JSON.org
  * @version 2015-12-09
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public final class HTTP {
 
     /** Carriage return/line feed. */
@@ -75,6 +78,7 @@ public final class HTTP {
      *
      * @throws JSONException if a called function fails
      */
+    @NonNull
     public static JSONObject toJSONObject(final String string)
             throws JSONException {
         final JSONObject jo = new JSONObject();
@@ -135,6 +139,7 @@ public final class HTTP {
      * @throws JSONException if the object does not contain enough
      *                       information.
      */
+    @NonNull
     public static String toString(final JSONObject jo)
             throws JSONException {
         final StringBuilder sb = new StringBuilder();

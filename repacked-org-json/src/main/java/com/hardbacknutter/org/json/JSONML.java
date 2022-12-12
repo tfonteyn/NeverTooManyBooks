@@ -24,6 +24,7 @@ package com.hardbacknutter.org.json;
 Public Domain.
 */
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -53,7 +54,7 @@ public final class JSONML {
      * @throws JSONException if a parsing error occurs
      */
     private static Object parse(
-            final XMLTokener x,
+            @NonNull final XMLTokener x,
             final boolean arrayForm,
             @Nullable final JSONArray ja,
             final boolean keepStrings)
@@ -214,20 +215,18 @@ public final class JSONML {
                             throw x.syntaxError("Misshaped tag");
                         }
                         closeTag = (String) parse(x, arrayForm, newja, keepStrings);
-                        if (closeTag != null) {
-                            if (!closeTag.equals(tagName)) {
-                                throw x.syntaxError("Mismatched '" + tagName +
-                                                    "' and '" + closeTag + "'");
+                        if (!closeTag.equals(tagName)) {
+                            throw x.syntaxError("Mismatched '" + tagName +
+                                                "' and '" + closeTag + "'");
+                        }
+                        if (!arrayForm && !newja.isEmpty()) {
+                            newjo.put("childNodes", newja);
+                        }
+                        if (ja == null) {
+                            if (arrayForm) {
+                                return newja;
                             }
-                            if (!arrayForm && !newja.isEmpty()) {
-                                newjo.put("childNodes", newja);
-                            }
-                            if (ja == null) {
-                                if (arrayForm) {
-                                    return newja;
-                                }
-                                return newjo;
-                            }
+                            return newjo;
                         }
                     }
                 }
@@ -260,6 +259,7 @@ public final class JSONML {
      *
      * @throws JSONException Thrown on error converting to a JSONArray
      */
+    @NonNull
     public static JSONArray toJSONArray(final String string)
             throws JSONException {
         return (JSONArray) parse(new XMLTokener(string), true, null, false);
@@ -286,6 +286,7 @@ public final class JSONML {
      *
      * @throws JSONException Thrown on error converting to a JSONArray
      */
+    @NonNull
     public static JSONArray toJSONArray(final String string,
                                         final boolean keepStrings)
             throws JSONException {
@@ -313,6 +314,7 @@ public final class JSONML {
      *
      * @throws JSONException Thrown on error converting to a JSONArray
      */
+    @NonNull
     public static JSONArray toJSONArray(final XMLTokener x,
                                         final boolean keepStrings)
             throws JSONException {
@@ -335,6 +337,7 @@ public final class JSONML {
      *
      * @throws JSONException Thrown on error converting to a JSONArray
      */
+    @NonNull
     public static JSONArray toJSONArray(final XMLTokener x)
             throws JSONException {
         return (JSONArray) parse(x, true, null, false);
@@ -357,6 +360,7 @@ public final class JSONML {
      *
      * @throws JSONException Thrown on error converting to a JSONObject
      */
+    @NonNull
     public static JSONObject toJSONObject(final String string)
             throws JSONException {
         return (JSONObject) parse(new XMLTokener(string), false, null, false);
@@ -381,6 +385,7 @@ public final class JSONML {
      *
      * @throws JSONException Thrown on error converting to a JSONObject
      */
+    @NonNull
     public static JSONObject toJSONObject(final String string,
                                           final boolean keepStrings)
             throws JSONException {
@@ -404,6 +409,7 @@ public final class JSONML {
      *
      * @throws JSONException Thrown on error converting to a JSONObject
      */
+    @NonNull
     public static JSONObject toJSONObject(final XMLTokener x)
             throws JSONException {
         return (JSONObject) parse(x, false, null, false);
@@ -428,6 +434,7 @@ public final class JSONML {
      *
      * @throws JSONException Thrown on error converting to a JSONObject
      */
+    @NonNull
     public static JSONObject toJSONObject(final XMLTokener x,
                                           final boolean keepStrings)
             throws JSONException {
@@ -444,6 +451,7 @@ public final class JSONML {
      *
      * @throws JSONException Thrown on error converting to a string
      */
+    @NonNull
     public static String toString(final JSONArray ja)
             throws JSONException {
         int i;
@@ -496,16 +504,14 @@ public final class JSONML {
             do {
                 object = ja.get(i);
                 i += 1;
-                if (object != null) {
-                    if (object instanceof String) {
-                        sb.append(XML.escape(object.toString()));
-                    } else if (object instanceof JSONObject) {
-                        sb.append(toString((JSONObject) object));
-                    } else if (object instanceof JSONArray) {
-                        sb.append(toString((JSONArray) object));
-                    } else {
-                        sb.append(object);
-                    }
+                if (object instanceof String) {
+                    sb.append(XML.escape(object.toString()));
+                } else if (object instanceof JSONObject) {
+                    sb.append(toString((JSONObject) object));
+                } else if (object instanceof JSONArray) {
+                    sb.append(toString((JSONArray) object));
+                } else {
+                    sb.append(object);
                 }
             } while (i < length);
             sb.append('<');
@@ -578,16 +584,14 @@ public final class JSONML {
             length = ja.length();
             for (i = 0; i < length; i += 1) {
                 object = ja.get(i);
-                if (object != null) {
-                    if (object instanceof String) {
-                        sb.append(XML.escape(object.toString()));
-                    } else if (object instanceof JSONObject) {
-                        sb.append(toString((JSONObject) object));
-                    } else if (object instanceof JSONArray) {
-                        sb.append(toString((JSONArray) object));
-                    } else {
-                        sb.append(object);
-                    }
+                if (object instanceof String) {
+                    sb.append(XML.escape(object.toString()));
+                } else if (object instanceof JSONObject) {
+                    sb.append(toString((JSONObject) object));
+                } else if (object instanceof JSONArray) {
+                    sb.append(toString((JSONArray) object));
+                } else {
+                    sb.append(object);
                 }
             }
             sb.append('<');

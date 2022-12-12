@@ -23,6 +23,8 @@ package com.hardbacknutter.org.json;
 Public Domain.
 */
 
+import androidx.annotation.NonNull;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -201,6 +203,7 @@ public class XMLParserConfiguration {
      * Provides a new instance of the same configuration.
      */
     @Override
+    @NonNull
     protected XMLParserConfiguration clone() {
         // future modifications to this method should always ensure a "deep"
         // clone in the case of collections. i.e. if a Map is added as a configuration
@@ -319,7 +322,8 @@ public class XMLParserConfiguration {
      *
      * @return The existing configuration will not be modified. A new configuration is returned.
      */
-    public XMLParserConfiguration withXsiTypeMap(final Map<String, XMLXsiTypeConverter<?>> xsiTypeMap) {
+    public XMLParserConfiguration withXsiTypeMap(
+            final Map<String, XMLXsiTypeConverter<?>> xsiTypeMap) {
         final XMLParserConfiguration newConfig = this.clone();
         final Map<String, XMLXsiTypeConverter<?>> cloneXsiTypeMap = new HashMap<>(xsiTypeMap);
         newConfig.xsiTypeMap = Collections.unmodifiableMap(cloneXsiTypeMap);

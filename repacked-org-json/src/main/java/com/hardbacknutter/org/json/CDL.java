@@ -47,6 +47,7 @@ import androidx.annotation.Nullable;
  * @author JSON.org
  * @version 2016-05-01
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public final class CDL {
 
     private CDL() {
@@ -170,6 +171,7 @@ public final class CDL {
      *
      * @return A string ending in NEWLINE.
      */
+    @NonNull
     public static String rowToString(@NonNull final JSONArray ja) {
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < ja.length(); i += 1) {
@@ -244,7 +246,7 @@ public final class CDL {
      * @throws JSONException if a called function fails
      */
     @Nullable
-    public static JSONArray toJSONArray(final JSONArray names,
+    public static JSONArray toJSONArray(@Nullable final JSONArray names,
                                         final String string)
             throws JSONException {
         return toJSONArray(names, new JSONTokener(string));
@@ -320,8 +322,8 @@ public final class CDL {
      * @throws JSONException if a called function fails
      */
     @Nullable
-    public static String toString(final JSONArray names,
-                                  final JSONArray ja)
+    public static String toString(@Nullable final JSONArray names,
+                                  @NonNull final JSONArray ja)
             throws JSONException {
         if (names == null || names.isEmpty()) {
             return null;

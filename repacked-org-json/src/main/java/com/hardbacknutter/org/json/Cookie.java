@@ -20,6 +20,8 @@
 
 package com.hardbacknutter.org.json;
 
+import androidx.annotation.NonNull;
+
 import java.util.Locale;
 
 /*
@@ -34,6 +36,7 @@ Public Domain.
  * @author JSON.org
  * @version 2015-12-09
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public final class Cookie {
 
     private Cookie() {
@@ -53,7 +56,8 @@ public final class Cookie {
      *
      * @return The escaped result.
      */
-    public static String escape(final String string) {
+    @NonNull
+    public static String escape(@NonNull final String string) {
         char c;
         final String s = string.trim();
         final int length = s.length();
@@ -95,11 +99,11 @@ public final class Cookie {
      *                       Cookie strings must have at least one '=' character and the 'name'
      *                       portion of the cookie must not be blank.
      */
-    public static JSONObject toJSONObject(final String string) {
+    @NonNull
+    public static JSONObject toJSONObject(@NonNull final String string) {
         final JSONObject jo = new JSONObject();
         String name;
         Object value;
-
 
         final JSONTokener x = new JSONTokener(string);
 
@@ -156,7 +160,8 @@ public final class Cookie {
      *
      * @throws JSONException thrown if the cookie has no name.
      */
-    public static String toString(final JSONObject jo)
+    @NonNull
+    public static String toString(@NonNull final JSONObject jo)
             throws JSONException {
         final StringBuilder sb = new StringBuilder();
 
@@ -214,7 +219,8 @@ public final class Cookie {
      *
      * @return The unescaped string.
      */
-    public static String unescape(final CharSequence string) {
+    @NonNull
+    public static String unescape(@NonNull final CharSequence string) {
         final int length = string.length();
         final StringBuilder sb = new StringBuilder(length);
         for (int i = 0; i < length; ++i) {

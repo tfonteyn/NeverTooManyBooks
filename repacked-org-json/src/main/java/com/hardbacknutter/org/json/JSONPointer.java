@@ -20,6 +20,9 @@
 
 package com.hardbacknutter.org.json;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -51,6 +54,7 @@ Public Domain.
  * @author JSON.org
  * @version 2016-05-14
  */
+@SuppressWarnings("WeakerAccess")
 public class JSONPointer {
 
     // used for URL encoding and decoding
@@ -67,7 +71,8 @@ public class JSONPointer {
      *
      * @throws IllegalArgumentException if {@code pointer} is not a valid JSON pointer
      */
-    public JSONPointer(final String pointer) {
+    public JSONPointer(@NonNull final String pointer) {
+        //noinspection ConstantConditions
         if (pointer == null) {
             throw new NullPointerException("pointer cannot be null");
         }
@@ -132,6 +137,7 @@ public class JSONPointer {
      * @return a builder instance which can be used to construct a {@code JSONPointer}
      * instance by chained {@link Builder#append(String)} calls.
      */
+    @NonNull
     public static Builder builder() {
         return new Builder();
     }
@@ -139,6 +145,7 @@ public class JSONPointer {
     /**
      * @see <a href="https://tools.ietf.org/html/rfc6901#section-3">rfc6901 section 3</a>
      */
+    @NonNull
     private static String unescape(final String token) {
         return token.replace("~1", "/").replace("~0", "~");
     }
@@ -153,6 +160,7 @@ public class JSONPointer {
      *
      * @throws JSONPointerException is thrown if the index is out of bounds
      */
+    @NonNull
     private static Object readByIndexToken(final Object current,
                                            final String indexToken)
             throws JSONPointerException {
@@ -185,6 +193,7 @@ public class JSONPointer {
      *
      * @see <a href="https://tools.ietf.org/html/rfc6901#section-3">rfc6901 section 3</a>
      */
+    @NonNull
     private static String escape(final String token) {
         return token.replace("~", "~0")
                     .replace("/", "~1");
@@ -202,7 +211,8 @@ public class JSONPointer {
      *
      * @throws JSONPointerException if an error occurs during evaluation
      */
-    public Object queryFrom(final Object document)
+    @Nullable
+    public Object queryFrom(@NonNull final Object document)
             throws JSONPointerException {
         if (this.refTokens.isEmpty()) {
             return document;
@@ -215,7 +225,8 @@ public class JSONPointer {
                 current = readByIndexToken(current, token);
             } else {
                 throw new JSONPointerException(format(
-                        "value [%s] is not an array or object therefore its key %s cannot be resolved",
+                        "value [%s] is not an array or object"
+                        + " therefore its key %s cannot be resolved",
                         current,
                         token));
             }
@@ -228,6 +239,7 @@ public class JSONPointer {
      * representation
      */
     @Override
+    @NonNull
     public String toString() {
         final StringBuilder rval = new StringBuilder();
         for (final String token : this.refTokens) {
@@ -242,6 +254,7 @@ public class JSONPointer {
      *
      * @return a uri fragment string
      */
+    @NonNull
     public String toURIFragment() {
         try {
             final StringBuilder rval = new StringBuilder("#");
@@ -269,6 +282,7 @@ public class JSONPointer {
          *
          * @return a JSONPointer object
          */
+        @NonNull
         public JSONPointer build() {
             return new JSONPointer(this.refTokens);
         }
@@ -287,6 +301,7 @@ public class JSONPointer {
          *
          * @throws NullPointerException if {@code token} is null
          */
+        @NonNull
         public Builder append(final String token) {
             if (token == null) {
                 throw new NullPointerException("token cannot be null");
@@ -303,6 +318,7 @@ public class JSONPointer {
          *
          * @return {@code this}
          */
+        @NonNull
         public Builder append(final int arrayIndex) {
             this.refTokens.add(String.valueOf(arrayIndex));
             return this;

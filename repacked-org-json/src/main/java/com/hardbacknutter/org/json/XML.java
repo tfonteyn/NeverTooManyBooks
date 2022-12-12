@@ -24,6 +24,7 @@ package com.hardbacknutter.org.json;
 Public Domain.
 */
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.Reader;
@@ -39,6 +40,7 @@ import java.util.Iterator;
  * @author JSON.org
  * @version 2016-08-10
  */
+@SuppressWarnings("WeakerAccess")
 public final class XML {
 
     /** The Character '&amp;'. */
@@ -89,6 +91,7 @@ public final class XML {
     private static Iterable<Integer> codePointIterator(final String string) {
         return new Iterable<>() {
             @Override
+            @NonNull
             public Iterator<Integer> iterator() {
                 return new Iterator<>() {
                     private int nextIndex;
@@ -196,6 +199,7 @@ public final class XML {
      *
      * @return string with converted entities
      */
+    @NonNull
     public static String unescape(final String string) {
         final StringBuilder sb = new StringBuilder(string.length());
         for (int i = 0, length = string.length(); i < length; i++) {
@@ -474,6 +478,7 @@ public final class XML {
      *
      * @return JSON value of this string or the string
      */
+    @NonNull
     public static Object stringToValue(final String string,
                                        final XMLXsiTypeConverter<?> typeConverter) {
         if (typeConverter != null) {
@@ -492,7 +497,9 @@ public final class XML {
     // To maintain compatibility with the Android API, this method is a direct copy of
     // the one in JSONObject. Changes made here should be reflected there.
     // This method should not make calls out of the XML object.
-    public static Object stringToValue(final String string) {
+    @NonNull
+    public static Object stringToValue(@NonNull final String string) {
+        //noinspection ConstantConditions
         if (string != null && string.isEmpty()) {
             return string;
         }
@@ -514,7 +521,7 @@ public final class XML {
          */
 
         final char initial = string.charAt(0);
-        if ((initial >= '0' && initial <= '9') || initial == '-') {
+        if (Character.isDigit(initial) || initial == '-') {
             try {
                 return stringToNumber(string);
             } catch (final Exception ignore) {
@@ -529,7 +536,7 @@ public final class XML {
     private static Number stringToNumber(final String val)
             throws NumberFormatException {
         final char initial = val.charAt(0);
-        if ((initial >= '0' && initial <= '9') || initial == '-') {
+        if (Character.isDigit(initial) || initial == '-') {
             // decimal representation
             if (isDecimalNotation(val)) {
                 // Use a BigDecimal all the time so we keep the original
@@ -558,13 +565,13 @@ public final class XML {
             // block items like 00 01 etc. Java number parsers treat these as Octal.
             if (initial == '0' && val.length() > 1) {
                 final char at1 = val.charAt(1);
-                if (at1 >= '0' && at1 <= '9') {
+                if (Character.isDigit(at1)) {
                     throw new NumberFormatException("val [" + val + "] is not a valid number.");
                 }
             } else if (initial == '-' && val.length() > 2) {
                 final char at1 = val.charAt(1);
                 final char at2 = val.charAt(2);
-                if (at1 == '0' && at2 >= '0' && at2 <= '9') {
+                if (at1 == '0' && Character.isDigit(at2)) {
                     throw new NumberFormatException("val [" + val + "] is not a valid number.");
                 }
             }
@@ -638,6 +645,7 @@ public final class XML {
      *
      * @throws JSONException Thrown if there is an errors while parsing the string
      */
+    @NonNull
     public static JSONObject toJSONObject(final Reader reader)
             throws JSONException {
         return toJSONObject(reader, XMLParserConfiguration.ORIGINAL);
@@ -666,6 +674,7 @@ public final class XML {
      *
      * @throws JSONException Thrown if there is an errors while parsing the string
      */
+    @NonNull
     public static JSONObject toJSONObject(final Reader reader,
                                           final boolean keepStrings)
             throws JSONException {
@@ -697,6 +706,7 @@ public final class XML {
      *
      * @throws JSONException Thrown if there is an errors while parsing the string
      */
+    @NonNull
     public static JSONObject toJSONObject(final Reader reader,
                                           final XMLParserConfiguration config)
             throws JSONException {
@@ -734,6 +744,7 @@ public final class XML {
      *
      * @throws JSONException Thrown if there is an errors while parsing the string
      */
+    @NonNull
     public static JSONObject toJSONObject(final String string,
                                           final boolean keepStrings)
             throws JSONException {
@@ -762,6 +773,7 @@ public final class XML {
      *
      * @throws JSONException Thrown if there is an errors while parsing the string
      */
+    @NonNull
     public static JSONObject toJSONObject(final String string,
                                           final XMLParserConfiguration config)
             throws JSONException {
@@ -777,6 +789,7 @@ public final class XML {
      *
      * @throws JSONException Thrown if there is an error parsing the string
      */
+    @NonNull
     public static String toString(final Object object)
             throws JSONException {
         return toString(object, null, XMLParserConfiguration.ORIGINAL);
@@ -792,6 +805,7 @@ public final class XML {
      *
      * @throws JSONException Thrown if there is an error parsing the string
      */
+    @NonNull
     public static String toString(final Object object,
                                   final String tagName) {
         return toString(object, tagName, XMLParserConfiguration.ORIGINAL);
@@ -808,6 +822,7 @@ public final class XML {
      *
      * @throws JSONException Thrown if there is an error parsing the string
      */
+    @NonNull
     public static String toString(@Nullable final Object object,
                                   @Nullable final String tagName,
                                   final XMLParserConfiguration config)

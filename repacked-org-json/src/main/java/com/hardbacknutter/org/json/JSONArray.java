@@ -83,6 +83,7 @@ import java.util.Map;
  * @author JSON.org
  * @version 2016-08/15
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class JSONArray
         implements Iterable<Object> {
 
@@ -171,7 +172,7 @@ public class JSONArray
      *
      * @param collection A Collection.
      */
-    public JSONArray(final Collection<?> collection) {
+    public JSONArray(@Nullable final Collection<?> collection) {
         if (collection == null) {
             this.myArrayList = new ArrayList<>();
         } else {
@@ -252,6 +253,7 @@ public class JSONArray
      *
      * @return JSONException that can be thrown.
      */
+    @NonNull
     private static JSONException wrongValueFormatException(
             final int idx,
             @NonNull final String valueType,
@@ -275,6 +277,7 @@ public class JSONArray
     }
 
     @Override
+    @NonNull
     public Iterator<Object> iterator() {
         return this.myArrayList.iterator();
     }
@@ -288,6 +291,7 @@ public class JSONArray
      *
      * @throws JSONException If there is no value for the index.
      */
+    @NonNull
     public Object get(final int index)
             throws JSONException {
         final Object object = this.opt(index);
@@ -379,6 +383,7 @@ public class JSONArray
      * @throws JSONException if the key is not found or if the value is not a Number
      *                       object and cannot be converted to a number.
      */
+    @NonNull
     public Number getNumber(final int index)
             throws JSONException {
         final Object object = this.get(index);
@@ -404,7 +409,7 @@ public class JSONArray
      * @throws JSONException if the key is not found or if the value cannot be converted
      *                       to an enum.
      */
-    public <E extends Enum<E>> E getEnum(final Class<E> clazz,
+    public <E extends Enum<E>> E getEnum(@NonNull final Class<E> clazz,
                                          final int index)
             throws JSONException {
         final E val = optEnum(clazz, index);
@@ -432,6 +437,7 @@ public class JSONArray
      * @throws JSONException If the key is not found or if the value cannot be converted
      *                       to a BigDecimal.
      */
+    @NonNull
     public BigDecimal getBigDecimal(final int index)
             throws JSONException {
         final Object object = this.get(index);
@@ -452,6 +458,7 @@ public class JSONArray
      * @throws JSONException If the key is not found or if the value cannot be converted
      *                       to a BigInteger.
      */
+    @NonNull
     public BigInteger getBigInteger(final int index)
             throws JSONException {
         final Object object = this.get(index);
@@ -494,6 +501,7 @@ public class JSONArray
      * @throws JSONException If there is no value for the index. or if the value is not a
      *                       JSONArray
      */
+    @NonNull
     public JSONArray getJSONArray(final int index)
             throws JSONException {
         final Object object = this.get(index);
@@ -513,6 +521,7 @@ public class JSONArray
      * @throws JSONException If there is no value for the index or if the value is not a
      *                       JSONObject
      */
+    @NonNull
     public JSONObject getJSONObject(final int index)
             throws JSONException {
         final Object object = this.get(index);
@@ -554,6 +563,7 @@ public class JSONArray
      *
      * @throws JSONException If there is no string value for the index.
      */
+    @NonNull
     public String getString(final int index)
             throws JSONException {
         final Object object = this.get(index);
@@ -585,7 +595,8 @@ public class JSONArray
      *
      * @throws JSONException If the array contains an invalid number.
      */
-    public String join(final String separator)
+    @NonNull
+    public String join(@NonNull final String separator)
             throws JSONException {
         final int len = this.length();
         if (len == 0) {
@@ -770,7 +781,7 @@ public class JSONArray
      * @return The enum value at the index location or null if not found
      */
     @Nullable
-    public <E extends Enum<E>> E optEnum(final Class<E> clazz,
+    public <E extends Enum<E>> E optEnum(@NonNull final Class<E> clazz,
                                          final int index) {
         return this.optEnum(clazz, index, null);
     }
@@ -787,7 +798,7 @@ public class JSONArray
      * the value is not found or cannot be assigned to clazz
      */
     @Nullable
-    public <E extends Enum<E>> E optEnum(final Class<E> clazz,
+    public <E extends Enum<E>> E optEnum(@NonNull final Class<E> clazz,
                                          final int index,
                                          @Nullable final E defaultValue) {
         try {
@@ -795,6 +806,7 @@ public class JSONArray
             if (JSONObject.NULL.equals(val)) {
                 return defaultValue;
             }
+            //noinspection ConstantConditions
             if (clazz.isAssignableFrom(val.getClass())) {
                 // we just checked it!
                 @SuppressWarnings("unchecked")
@@ -819,7 +831,7 @@ public class JSONArray
      */
     @Nullable
     public BigInteger optBigInteger(final int index,
-                                    final BigInteger defaultValue) {
+                                    @Nullable final BigInteger defaultValue) {
         final Object val = this.opt(index);
         return JSONObject.objectToBigInteger(val, defaultValue);
     }
@@ -961,6 +973,7 @@ public class JSONArray
      *
      * @return A String value.
      */
+    @Nullable
     public String optString(final int index) {
         return this.optString(index, "");
     }
@@ -974,9 +987,11 @@ public class JSONArray
      *
      * @return A String value.
      */
+    @Nullable
     public String optString(final int index,
-                            final String defaultValue) {
+                            @Nullable final String defaultValue) {
         final Object object = this.opt(index);
+        //noinspection ConstantConditions
         return JSONObject.NULL.equals(object) ? defaultValue : object.toString();
     }
 
@@ -1330,6 +1345,7 @@ public class JSONArray
      *
      * @return the item matched by the JSONPointer, otherwise null
      */
+    @Nullable
     public Object query(final String jsonPointer) {
         return query(new JSONPointer(jsonPointer));
     }
@@ -1354,6 +1370,7 @@ public class JSONArray
      *
      * @return the item matched by the JSONPointer, otherwise null
      */
+    @Nullable
     public Object query(final JSONPointer jsonPointer) {
         return jsonPointer.queryFrom(this);
     }
@@ -1643,7 +1660,7 @@ public class JSONArray
     public List<Object> toList() {
         final List<Object> results = new ArrayList<>(this.myArrayList.size());
         for (final Object element : this.myArrayList) {
-            if (element == null || JSONObject.NULL.equals(element)) {
+            if (JSONObject.NULL.equals(element)) {
                 results.add(null);
             } else if (element instanceof JSONArray) {
                 results.add(((JSONArray) element).toList());

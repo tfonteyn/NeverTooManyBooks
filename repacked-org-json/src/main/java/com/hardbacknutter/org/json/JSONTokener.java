@@ -20,6 +20,9 @@
 
 package com.hardbacknutter.org.json;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +42,7 @@ Public Domain.
  * @author JSON.org
  * @version 2014-05-03
  */
-@SuppressWarnings("FieldNotUsedInToString")
+@SuppressWarnings({"FieldNotUsedInToString", "WeakerAccess", "unused"})
 public class JSONTokener {
 
     /** Reader for the input. */
@@ -65,7 +68,7 @@ public class JSONTokener {
      *
      * @param reader A reader.
      */
-    public JSONTokener(final Reader reader) {
+    public JSONTokener(@NonNull final Reader reader) {
         this.reader = reader.markSupported() ? reader : new BufferedReader(reader);
         this.eof = false;
         this.usePrevious = false;
@@ -82,7 +85,7 @@ public class JSONTokener {
      *
      * @param inputStream The source.
      */
-    public JSONTokener(final InputStream inputStream) {
+    public JSONTokener(@NonNull final InputStream inputStream) {
         this(new InputStreamReader(inputStream));
     }
 
@@ -92,7 +95,7 @@ public class JSONTokener {
      *
      * @param s A source string.
      */
-    public JSONTokener(final String s) {
+    public JSONTokener(@NonNull final String s) {
         this(new StringReader(s));
     }
 
@@ -340,6 +343,7 @@ public class JSONTokener {
      *
      * @throws JSONException Unterminated string.
      */
+    @NonNull
     public String nextString(final char quote)
             throws JSONException {
         char c;
@@ -407,6 +411,7 @@ public class JSONTokener {
      * @throws JSONException Thrown if there is an error while searching
      *                       for the delimiter
      */
+    @NonNull
     public String nextTo(final char delimiter)
             throws JSONException {
         final StringBuilder sb = new StringBuilder();
@@ -434,7 +439,8 @@ public class JSONTokener {
      * @throws JSONException Thrown if there is an error while searching
      *                       for the delimiter
      */
-    public String nextTo(final String delimiters)
+    @NonNull
+    public String nextTo(@NonNull final String delimiters)
             throws JSONException {
         char c;
         final StringBuilder sb = new StringBuilder();
@@ -460,6 +466,7 @@ public class JSONTokener {
      *
      * @throws JSONException If syntax error.
      */
+    @NonNull
     public Object nextValue()
             throws JSONException {
         char c = this.nextClean();
@@ -559,7 +566,8 @@ public class JSONTokener {
      *
      * @return A JSONException object, suitable for throwing
      */
-    public JSONException syntaxError(final String message) {
+    @NonNull
+    public JSONException syntaxError(@NonNull final String message) {
         return new JSONException(message + this);
     }
 
@@ -571,8 +579,9 @@ public class JSONTokener {
      *
      * @return A JSONException object, suitable for throwing
      */
-    public JSONException syntaxError(final String message,
-                                     final Throwable causedBy) {
+    @NonNull
+    public JSONException syntaxError(@NonNull final String message,
+                                     @Nullable final Throwable causedBy) {
         return new JSONException(message + this, causedBy);
     }
 
@@ -582,6 +591,7 @@ public class JSONTokener {
      * @return " at {index} [character {character} line {line}]"
      */
     @Override
+    @NonNull
     public String toString() {
         return " at " + this.index + " [character " + this.character + " line " +
                this.line + "]";

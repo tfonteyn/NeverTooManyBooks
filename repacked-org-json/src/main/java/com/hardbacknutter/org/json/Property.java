@@ -24,6 +24,8 @@ package com.hardbacknutter.org.json;
 Public Domain.
 */
 
+import androidx.annotation.NonNull;
+
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -48,6 +50,7 @@ public final class Property {
      *
      * @throws JSONException if a called function has an error
      */
+    @NonNull
     public static JSONObject toJSONObject(final java.util.Properties properties)
             throws JSONException {
         // can't use the new constructor for Android support
@@ -72,6 +75,7 @@ public final class Property {
      *
      * @throws JSONException if a called function has an error
      */
+    @NonNull
     public static Properties toProperties(final JSONObject jo)
             throws JSONException {
         final Properties properties = new Properties();
@@ -80,6 +84,7 @@ public final class Property {
             for (final String key : jo.keySet()) {
                 final Object value = jo.opt(key);
                 if (!JSONObject.NULL.equals(value)) {
+                    //noinspection ConstantConditions
                     properties.put(key, value.toString());
                 }
             }

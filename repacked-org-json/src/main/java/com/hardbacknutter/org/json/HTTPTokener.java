@@ -24,6 +24,8 @@ package com.hardbacknutter.org.json;
 Public Domain.
 */
 
+import androidx.annotation.NonNull;
+
 /**
  * The HTTPTokener extends the JSONTokener to provide additional methods
  * for the parsing of HTTP headers.
@@ -31,6 +33,7 @@ Public Domain.
  * @author JSON.org
  * @version 2015-12-09
  */
+@SuppressWarnings("WeakerAccess")
 public class HTTPTokener
         extends JSONTokener {
 
@@ -51,6 +54,7 @@ public class HTTPTokener
      *
      * @throws JSONException if a syntax error occurs
      */
+    @NonNull
     public String nextToken()
             throws JSONException {
         char c;
@@ -59,6 +63,7 @@ public class HTTPTokener
         do {
             c = next();
         } while (Character.isWhitespace(c));
+
         if (c == '"' || c == '\'') {
             q = c;
             for (; ; ) {

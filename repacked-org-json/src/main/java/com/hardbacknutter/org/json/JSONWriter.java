@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.org.json;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
@@ -60,6 +61,7 @@ Public Domain.
  * @author JSON.org
  * @version 2016-08-08
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class JSONWriter {
 
     private static final int maxdepth = 200;
@@ -127,7 +129,8 @@ public class JSONWriter {
      *
      * @throws JSONException If the value is or contains an invalid number.
      */
-    public static String valueToString(final Object value)
+    @NonNull
+    public static String valueToString(@Nullable final Object value)
             throws JSONException {
         if (value == null) {
             return "null";
