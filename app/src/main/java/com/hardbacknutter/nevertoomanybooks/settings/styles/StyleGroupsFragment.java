@@ -153,11 +153,11 @@ public class StyleGroupsFragment
             extends ItemTouchHelperViewHolderBase {
 
         @NonNull
-        final TextView nameView;
+        final TextView groupNameView;
 
         Holder(@NonNull final View itemView) {
             super(itemView);
-            nameView = itemView.findViewById(R.id.name);
+            groupNameView = itemView.findViewById(R.id.booklist_group_name);
         }
     }
 
@@ -207,7 +207,7 @@ public class StyleGroupsFragment
 
             final StyleViewModel.WrappedGroup wrappedGroup = getItem(position);
 
-            holder.nameView.setText(wrappedGroup.getGroup().getLabel(getContext()));
+            holder.groupNameView.setText(wrappedGroup.getGroup().getLabel(getContext()));
             //noinspection ConstantConditions
             holder.checkableButton.setChecked(wrappedGroup.isPresent());
         }
