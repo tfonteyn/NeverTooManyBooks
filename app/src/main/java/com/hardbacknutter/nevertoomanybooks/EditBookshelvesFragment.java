@@ -308,7 +308,7 @@ public class EditBookshelvesFragment
                     RowEditBookshelfBinding.inflate(getInflater(), parent, false));
 
             // click -> set the row as 'selected'.
-            holder.vb.name.setOnClickListener(v -> {
+            holder.vb.bookshelfName.setOnClickListener(v -> {
                 // first update the previous, now unselected, row.
                 final int oldListIndex = positionHandler.getSelectedPosition();
                 final int oldPosition = revert(oldListIndex);
@@ -327,7 +327,7 @@ public class EditBookshelvesFragment
             });
 
             // long-click -> context menu
-            holder.vb.name.setOnLongClickListener(v -> {
+            holder.vb.bookshelfName.setOnLongClickListener(v -> {
                 final int position = holder.getBindingAdapterPosition();
                 final int listIndex = transpose(position);
                 if (listIndex == -1) {
@@ -349,11 +349,11 @@ public class EditBookshelvesFragment
             if (listIndex >= 0) {
                 final Bookshelf bookshelf = bookshelfList.get(listIndex);
 
-                holder.vb.name.setVisibility(View.VISIBLE);
-                holder.vb.name.setText(bookshelf.getName());
+                holder.vb.bookshelfName.setVisibility(View.VISIBLE);
+                holder.vb.bookshelfName.setText(bookshelf.getName());
                 holder.itemView.setSelected(listIndex == positionHandler.getSelectedPosition());
             } else {
-                holder.vb.name.setVisibility(View.INVISIBLE);
+                holder.vb.bookshelfName.setVisibility(View.INVISIBLE);
             }
         }
 
