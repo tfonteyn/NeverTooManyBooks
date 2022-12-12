@@ -40,7 +40,6 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -1307,10 +1306,6 @@ public class BooklistAdapter
     static class GenericStringHolder
             extends RowViewHolder {
 
-        /*** Default resource id for the View with the main-level-text to populate. */
-        @IdRes
-        private static final int levelTextViewId = R.id.level_text;
-
         /**
          * The group this holder represents.
          * It's ok to store this as it's intrinsically linked with the ViewType.
@@ -1325,7 +1320,7 @@ public class BooklistAdapter
         final BooklistAdapter adapter;
         /**
          * Key of the related data column.
-         * It's ok to store this as it's intrinsically linked with the ViewType.
+         * It's ok to store this as it's intrinsically linked with the BooklistGroup.
          */
         @NonNull
         private final String key;
@@ -1344,7 +1339,7 @@ public class BooklistAdapter
             this.adapter = adapter;
             groupId = group.getId();
             key = group.getDisplayDomainExpression().getDomain().getName();
-            textView = itemView.findViewById(levelTextViewId);
+            textView = itemView.findViewById(R.id.level_text);
         }
 
         @Override
