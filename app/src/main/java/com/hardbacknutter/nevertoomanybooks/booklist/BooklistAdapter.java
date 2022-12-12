@@ -1307,9 +1307,9 @@ public class BooklistAdapter
     static class GenericStringHolder
             extends RowViewHolder {
 
-        /*** Default resource id for the View to populate. */
+        /*** Default resource id for the View with the main-level-text to populate. */
         @IdRes
-        private static final int textViewId = R.id.name;
+        private static final int levelTextViewId = R.id.level_text;
 
         /**
          * The group this holder represents.
@@ -1344,7 +1344,7 @@ public class BooklistAdapter
             this.adapter = adapter;
             groupId = group.getId();
             key = group.getDisplayDomainExpression().getDomain().getName();
-            textView = itemView.findViewById(textViewId);
+            textView = itemView.findViewById(levelTextViewId);
         }
 
         @Override
