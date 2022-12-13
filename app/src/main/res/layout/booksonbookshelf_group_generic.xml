@@ -29,13 +29,13 @@
 
     <TextView
         android:id="@+id/level_text"
-        style="@style/BoB.Group.Level3.Label"
+        style="@style/BoB.Group.Label"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/cbx_is_complete"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"
-        tools:text="Level 3 row"
+        tools:text="Level"
         />
 
     <ImageView

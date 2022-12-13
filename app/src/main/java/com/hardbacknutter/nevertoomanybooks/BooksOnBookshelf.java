@@ -958,7 +958,7 @@ public class BooksOnBookshelf
         if (menu.size() > 0) {
             // we have a menu to show, set the title according to the level.
             final int level = rowData.getInt(DBKey.BL_NODE_LEVEL);
-            contextMenu.setTitle(adapter.getLevelText(position, level));
+            contextMenu.setTitle(adapter.getLevelText(level, position));
 
             if (menu.size() < 5) {
                 // small menu, show it anchored to the row

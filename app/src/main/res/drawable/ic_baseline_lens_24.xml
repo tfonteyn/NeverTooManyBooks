@@ -1,5 +1,5 @@
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -18,14 +18,13 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- 0.33 scaled copy of ic_baseline_lens_24 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="8dp"
-    android:height="8dp"
-    android:tint="?attr/colorControlNormal"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-    <path
-        android:fillColor="@android:color/white"
-        android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z" />
+        android:width="24dp"
+        android:height="24dp"
+        android:autoMirrored="true"
+        android:tint="?attr/colorControlNormal"
+        android:viewportWidth="24"
+        android:viewportHeight="24">
+    <path android:fillColor="@android:color/white"
+          android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z" />
 </vector>

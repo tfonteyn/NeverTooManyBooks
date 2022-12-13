@@ -27,6 +27,8 @@ import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
@@ -39,8 +41,11 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
+import androidx.annotation.DimenRes;
 import androidx.annotation.Dimension;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -78,6 +83,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
@@ -122,21 +128,17 @@ public class BooklistAdapter
     /** caching the book condition strings. */
     @NonNull
     private final String[] conditionDescriptions;
-
-    /** Whether to use the covers DAO caching. */
-    private boolean imageCachingEnabled;
-
-    private boolean reorderTitleForDisplaying;
-
-    /** List style to apply. */
-    private Style style;
-
     /** Top margin to use for Level 1. */
     @Dimension
     private final int level1topMargin;
     /** The padding indent (in pixels) added for each level: padding = (level-1) * levelIndent. */
     @Dimension
     private final int levelIndent;
+    /** Whether to use the covers DAO caching. */
+    private boolean imageCachingEnabled;
+    private boolean reorderTitleForDisplaying;
+    /** List style to apply. */
+    private Style style;
     @Dimension
     private int groupRowHeight;
     /** Longest side for a cover in pixels. */
@@ -296,8 +298,51 @@ public class BooklistAdapter
     @NonNull
     public RowViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
                                             @BooklistGroup.Id final int groupId) {
+        @LayoutRes
+        final int layoutId;
+        switch (groupId) {
+            case BooklistGroup.BOOK:
+                layoutId = R.layout.booksonbookshelf_row_book;
+                break;
 
-        final View itemView = createView(parent, groupId);
+            case BooklistGroup.RATING:
+                layoutId = R.layout.booksonbookshelf_group_rating;
+                break;
+
+            default:
+                layoutId = R.layout.booksonbookshelf_group_generic;
+                break;
+        }
+
+        final View itemView = inflater.inflate(layoutId, parent, false);
+
+        //noinspection ConstantConditions
+        final int level = nodeData.getInt(DBKey.BL_NODE_LEVEL);
+
+        // set an indentation depending on level (2..)
+        if (level > 1) {
+            itemView.setPaddingRelative((level - 1) * levelIndent, 0, 0, 0);
+        }
+        // adjust row height and margins depending on level (1..)
+        if (level > 0) {
+            final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
+                    itemView.getLayoutParams();
+
+            // Adjust the line spacing as required
+            lp.height = groupRowHeight;
+            // Adjust the level 1 top margin if allowed
+            if (level == 1 && groupRowHeight != ViewGroup.LayoutParams.WRAP_CONTENT) {
+                lp.setMargins(0, level1topMargin, 0, 0);
+            }
+        }
+
+        // Scale text/padding (recursively) if required
+        final int textScale = style.getTextScale();
+        if (textScale != Style.DEFAULT_TEXT_SCALE) {
+            scaleTextViews(itemView, textScale);
+        }
+
+
         final RowViewHolder holder;
 
         // NEWTHINGS: BooklistGroup - add a new holder type if needed
@@ -307,11 +352,11 @@ public class BooklistAdapter
                 break;
 
             case BooklistGroup.AUTHOR:
-                holder = new AuthorHolder(this, itemView, style.requireGroupById(groupId));
+                holder = new AuthorHolder(this, level, itemView, style.requireGroupById(groupId));
                 break;
 
             case BooklistGroup.SERIES:
-                holder = new SeriesHolder(this, itemView, style.requireGroupById(groupId));
+                holder = new SeriesHolder(this, level, itemView, style.requireGroupById(groupId));
                 break;
 
             case BooklistGroup.RATING:
@@ -319,7 +364,7 @@ public class BooklistAdapter
                 break;
 
             default:
-                holder = new GenericStringHolder(this, itemView,
+                holder = new GenericStringHolder(this, level, itemView,
                                                  style.requireGroupById(groupId));
                 break;
         }
@@ -339,75 +384,6 @@ public class BooklistAdapter
         });
 
         return holder;
-    }
-
-    /**
-     * Create the View for the specified group.
-     *
-     * @param parent  The ViewGroup into which the new View will be added after it is bound to
-     *                an adapter position.
-     * @param groupId The view type of the new View == the group id
-     *
-     * @return the view
-     */
-    @NonNull
-    private View createView(@NonNull final ViewGroup parent,
-                            @BooklistGroup.Id final int groupId) {
-        //noinspection ConstantConditions
-        final int level = nodeData.getInt(DBKey.BL_NODE_LEVEL);
-
-        @LayoutRes
-        final int layoutId;
-        if (groupId == BooklistGroup.BOOK) {
-            layoutId = R.layout.booksonbookshelf_row_book;
-
-        } else if (groupId == BooklistGroup.RATING) {
-            layoutId = R.layout.booksonbookshelf_group_rating;
-
-        } else {
-            // for all other types, the level determines the view
-            switch (level) {
-                case 1:
-                    layoutId = R.layout.booksonbookshelf_group_level_1;
-                    break;
-                case 2:
-                    layoutId = R.layout.booksonbookshelf_group_level_2;
-                    break;
-                default:
-                    // level 0 is a book, see above
-                    // level 3 and higher all use the same layout.
-                    layoutId = R.layout.booksonbookshelf_group_level_3;
-                    break;
-            }
-        }
-
-        final View itemView = inflater.inflate(layoutId, parent, false);
-
-        if (groupId == BooklistGroup.BOOK) {
-            // Don't indent books
-            itemView.setPaddingRelative(0, 0, 0, 0);
-
-        } else {
-            // Indent (0..) based on level (1..)
-            itemView.setPaddingRelative((level - 1) * levelIndent, 0, 0, 0);
-
-            final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
-                    itemView.getLayoutParams();
-
-            // Adjust the line spacing as required
-            lp.height = groupRowHeight;
-            // Adjust the level 1 top margin if allowed
-            if (level == 1 && groupRowHeight != ViewGroup.LayoutParams.WRAP_CONTENT) {
-                lp.setMargins(0, level1topMargin, 0, 0);
-            }
-        }
-
-        // Scale text/padding (recursively) if required
-        final int textScale = style.getTextScale();
-        if (textScale != Style.DEFAULT_TEXT_SCALE) {
-            scaleTextViews(itemView, textScale);
-        }
-        return itemView;
     }
 
     @Override
@@ -645,7 +621,7 @@ public class BooklistAdapter
      * @param scaleFactor       to apply to the element padding
      */
     private void scaleTextViews(@NonNull final View root,
-                                final float textSizeInSpUnits,
+                                @Dimension(unit = Dimension.SP) final float textSizeInSpUnits,
                                 final float scaleFactor) {
         if (root instanceof TextView) {
             ((TextView) root).setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeInSpUnits);
@@ -674,21 +650,22 @@ public class BooklistAdapter
     @Override
     @NonNull
     public String[] getPopupText(final int position) {
-        return new String[]{getLevelText(position, 1),
-                            getLevelText(position, 2)};
+        return new String[]{
+                getLevelText(1, position),
+                getLevelText(2, position)};
     }
 
     /**
      * Get the text associated with the matching level group for the given position.
      *
-     * @param position to use
-     * @param level    to get
+     * @param level    the level in the Booklist tree
+     * @param position to get the text for
      *
      * @return the text for that level, or {@code null} if none present.
      */
     @Nullable
-    public String getLevelText(final int position,
-                               @IntRange(from = 1) final int level) {
+    public String getLevelText(@IntRange(from = 1) final int level,
+                               final int position) {
 
         // sanity check.
         if (BuildConfig.DEBUG /* always */) {
@@ -760,6 +737,70 @@ public class BooklistAdapter
             }
         }
         throw new IllegalStateException("Not in debug");
+    }
+
+    /**
+     * The style definition for the primary text in a {@link GenericStringHolder}.
+     */
+    private enum GenericStringLevelStyle {
+        Level1(R.attr.textAppearanceTitleLarge, Typeface.BOLD, 0, 0),
+        Level2(R.attr.textAppearanceTitleMedium, Typeface.NORMAL,
+               R.drawable.ic_baseline_lens_24, R.dimen.bob_group_level_2_drawable_size),
+        LevelX(R.attr.textAppearanceTitleSmall, Typeface.NORMAL,
+               R.drawable.ic_baseline_lens_24, R.dimen.bob_group_level_3_drawable_size);
+
+        @AttrRes
+        private final int textAttrId;
+        private final int textStyle;
+
+        @DrawableRes
+        private final int drawableResId;
+        @DimenRes
+        private final int sizeResId;
+
+        GenericStringLevelStyle(@AttrRes final int textAttrId,
+                                final int textStyle,
+                                @DrawableRes final int drawableResId,
+                                @DimenRes final int sizeResId) {
+            this.textAttrId = textAttrId;
+            this.textStyle = textStyle;
+            this.drawableResId = drawableResId;
+            this.sizeResId = sizeResId;
+        }
+
+        static void apply(@IntRange(from = 1) final int level,
+                          @NonNull final TextView textView) {
+            final GenericStringLevelStyle levelStyle;
+            switch (level) {
+                case 1:
+                    levelStyle = Level1;
+                    break;
+                case 2:
+                    levelStyle = Level2;
+                    break;
+                default:
+                    levelStyle = LevelX;
+                    break;
+            }
+
+            final Context context = textView.getContext();
+
+            textView.setTextAppearance(AttrUtils.getResId(context, levelStyle.textAttrId));
+            textView.setTypeface(null, levelStyle.textStyle);
+
+            if (levelStyle.drawableResId != 0) {
+                @SuppressLint("UseCompatLoadingForDrawables")
+                final Drawable drawable = context.getDrawable(levelStyle.drawableResId);
+
+                final Resources res = context.getResources();
+
+                final int size = res.getDimensionPixelSize(levelStyle.sizeResId);
+                drawable.setBounds(0, 0, size, size);
+                textView.setCompoundDrawablePadding(
+                        res.getDimensionPixelSize(R.dimen.bob_group_level_bullet_padding));
+                textView.setCompoundDrawablesRelative(drawable, null, null, null);
+            }
+        }
     }
 
     @FunctionalInterface
@@ -1322,16 +1363,20 @@ public class BooklistAdapter
          * Constructor.
          *
          * @param adapter  the hosting adapter
+         * @param level    the level in the Booklist tree
          * @param itemView the view specific for this holder
          * @param group    the group this holder represents
          */
         GenericStringHolder(@NonNull final BooklistAdapter adapter,
+                            @IntRange(from = 1) final int level,
                             @NonNull final View itemView,
                             @NonNull final BooklistGroup group) {
             super(adapter, itemView);
             groupId = group.getId();
             key = group.getDisplayDomainExpression().getDomain().getName();
             textView = itemView.findViewById(R.id.level_text);
+
+            GenericStringLevelStyle.apply(level, textView);
         }
 
         @Override
@@ -1384,13 +1429,15 @@ public class BooklistAdapter
          * Constructor.
          *
          * @param adapter  the hosting adapter
+         * @param level    the level in the Booklist tree
          * @param itemView the view specific for this holder
          * @param group    the group this holder represents
          */
         AuthorHolder(@NonNull final BooklistAdapter adapter,
+                     final int level,
                      @NonNull final View itemView,
                      @NonNull final BooklistGroup group) {
-            super(adapter, itemView, group);
+            super(adapter, level, itemView, group);
             completeView = itemView.findViewById(R.id.cbx_is_complete);
         }
 
@@ -1418,13 +1465,15 @@ public class BooklistAdapter
          * Constructor.
          *
          * @param adapter  the hosting adapter
+         * @param level    the level in the Booklist tree
          * @param itemView the view specific for this holder
          * @param group    the group this holder represents
          */
         SeriesHolder(@NonNull final BooklistAdapter adapter,
+                     final int level,
                      @NonNull final View itemView,
                      @NonNull final BooklistGroup group) {
-            super(adapter, itemView, group);
+            super(adapter, level, itemView, group);
 
             completeView = itemView.findViewById(R.id.cbx_is_complete);
         }
