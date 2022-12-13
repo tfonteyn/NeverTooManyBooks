@@ -340,6 +340,14 @@ public abstract class BaseStyle
         }
     }
 
+    /**
+     * Should rows be shown using the system's preferred height or minimum height.
+     *
+     * @return {@code true} for "?attr/listPreferredItemHeightSmall"
+     * or {@code false} for {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}
+     *
+     * @see #getGroupRowHeight(Context)
+     */
     public boolean isGroupRowUsesPreferredHeight() {
         return groupRowUsesPreferredHeight;
     }
