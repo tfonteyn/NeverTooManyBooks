@@ -139,7 +139,7 @@ public class BooklistGroup {
     public static final int PUBLISHER_NAME_1ST_CHAR = 33;
 
     /**
-     * NEWTHINGS: BooklistGroup.KEY
+     * NEWTHINGS: BooklistGroup
      * The highest valid index of GroupKey - ALWAYS to be updated after adding a group key.
      */
     @VisibleForTesting
@@ -387,7 +387,7 @@ public class BooklistGroup {
     @SuppressLint("SwitchIntDef")
     @NonNull
     public GroupKey createGroupKey(@Id final int id) {
-        // NEWTHINGS: BooklistGroup.KEY
+        // NEWTHINGS: BooklistGroup
         switch (id) {
             // Data without a linked table uses the display name as the key domain.
             case COLOR: {
