@@ -23,9 +23,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/BoB.Group.Level2"
-    tools:viewBindingIgnore="true"
-    >
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:viewBindingIgnore="true">
 
     <TextView
         android:id="@+id/level_text"

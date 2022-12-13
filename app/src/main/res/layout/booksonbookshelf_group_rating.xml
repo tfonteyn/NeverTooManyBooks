@@ -22,9 +22,9 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/BoB.Group.Rating"
     tools:viewBindingIgnore="true"
-    >
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <RatingBar
         android:id="@+id/rating"

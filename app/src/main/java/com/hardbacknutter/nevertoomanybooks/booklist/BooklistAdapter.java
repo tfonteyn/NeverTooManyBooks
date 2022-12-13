@@ -40,6 +40,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Dimension;
 import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -114,9 +115,6 @@ public class BooklistAdapter
     @NonNull
     private final Locale userLocale;
 
-    /** The padding indent (in pixels) added for each level: padding = (level-1) * levelIndent. */
-    private final int levelIndent;
-
     /** Cached inflater. */
     @NonNull
     private final LayoutInflater inflater;
@@ -133,12 +131,16 @@ public class BooklistAdapter
     /** List style to apply. */
     private Style style;
 
+    /** Top margin to use for Level 1. */
+    @Dimension
+    private final int level1topMargin;
+    /** The padding indent (in pixels) added for each level: padding = (level-1) * levelIndent. */
+    @Dimension
+    private final int levelIndent;
+    @Dimension
     private int groupRowHeight;
-
-    /** Top margin to use for Level 1 <strong>if</strong> the {@link #groupRowHeight} is wrap. */
-    private int groupLevel1topMargin;
-
     /** Longest side for a cover in pixels. */
+    @Dimension
     private int coverLongestSide;
 
     /** The cursor is the equivalent of the 'list of items'. */
@@ -146,12 +148,9 @@ public class BooklistAdapter
     private Cursor cursor;
     @Nullable
     private Booklist booklist;
-
-
     /** provides read only access to the row data. */
     @Nullable
     private DataHolder nodeData;
-
     @Nullable
     private OnRowClickListener rowClickListener;
     @Nullable
@@ -168,6 +167,7 @@ public class BooklistAdapter
         final Resources resources = context.getResources();
         userLocale = resources.getConfiguration().getLocales().get(0);
         levelIndent = resources.getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
+        level1topMargin = resources.getDimensionPixelSize(R.dimen.bob_group_level_1_margin_top);
         conditionDescriptions = resources.getStringArray(R.array.conditions_book);
 
         // getItemId returns the rowId
@@ -189,21 +189,14 @@ public class BooklistAdapter
         this.style = style;
         groupRowHeight = this.style.getGroupRowHeight(context);
 
-        final Resources resources = context.getResources();
-
-        if (groupRowHeight == ViewGroup.LayoutParams.WRAP_CONTENT) {
-            groupLevel1topMargin = resources
-                    .getDimensionPixelSize(R.dimen.bob_group_level_1_margin_top);
-        }
-
         if (this.style.isShowField(Style.Screen.List, FieldVisibility.COVER[0])) {
             @Style.CoverScale
             final int frontCoverScale = this.style.getCoverScale();
 
             // The thumbnail scale is used to retrieve the cover dimensions
             // We use a square space for the image so both portrait/landscape images work out.
-            final TypedArray coverSizes = resources
-                    .obtainTypedArray(R.array.cover_book_list_longest_side);
+            final TypedArray coverSizes = context
+                    .getResources().obtainTypedArray(R.array.cover_book_list_longest_side);
             try {
                 coverLongestSide = coverSizes.getDimensionPixelSize(frontCoverScale, 0);
             } finally {
@@ -307,7 +300,7 @@ public class BooklistAdapter
         final View itemView = createView(parent, groupId);
         final RowViewHolder holder;
 
-        // NEWTHINGS: BooklistGroup.KEY add a new holder type if needed
+        // NEWTHINGS: BooklistGroup - add a new holder type if needed
         switch (groupId) {
             case BooklistGroup.BOOK:
                 holder = new BookHolder(this, itemView);
@@ -388,32 +381,33 @@ public class BooklistAdapter
             }
         }
 
-        final View view = inflater.inflate(layoutId, parent, false);
+        final View itemView = inflater.inflate(layoutId, parent, false);
 
         if (groupId == BooklistGroup.BOOK) {
             // Don't indent books
-            view.setPaddingRelative(0, 0, 0, 0);
+            itemView.setPaddingRelative(0, 0, 0, 0);
 
         } else {
             // Indent (0..) based on level (1..)
-            view.setPaddingRelative((level - 1) * levelIndent, 0, 0, 0);
+            itemView.setPaddingRelative((level - 1) * levelIndent, 0, 0, 0);
 
             final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
-                    view.getLayoutParams();
+                    itemView.getLayoutParams();
 
             // Adjust the line spacing as required
             lp.height = groupRowHeight;
-            if (level == 1 && groupLevel1topMargin != 0) {
-                lp.setMargins(0, groupLevel1topMargin, 0, 0);
+            // Adjust the level 1 top margin if allowed
+            if (level == 1 && groupRowHeight != ViewGroup.LayoutParams.WRAP_CONTENT) {
+                lp.setMargins(0, level1topMargin, 0, 0);
             }
         }
 
         // Scale text/padding (recursively) if required
         final int textScale = style.getTextScale();
         if (textScale != Style.DEFAULT_TEXT_SCALE) {
-            scaleTextViews(view, textScale);
+            scaleTextViews(itemView, textScale);
         }
-        return view;
+        return itemView;
     }
 
     @Override
@@ -438,14 +432,14 @@ public class BooklistAdapter
      *                the user-locale will be used.
      *
      * @return Formatted string,
-     *         or original string when no special format was needed or on any failure
+     * or original string when no special format was needed or on any failure
      */
     @NonNull
     private String format(@NonNull final Context context,
                           @BooklistGroup.Id final int groupId,
                           @Nullable final String text,
                           @Nullable final Locale locale) {
-
+        // NEWTHINGS: BooklistGroup
         switch (groupId) {
             case BooklistGroup.AUTHOR: {
                 if (text == null || text.isEmpty()) {

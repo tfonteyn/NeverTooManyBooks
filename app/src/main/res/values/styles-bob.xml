@@ -58,34 +58,15 @@
 
     <!-- *************************************************************************************** -->
 
-    <!-- ConstraintLayout - A content container/row in the booklist. -->
-    <style name="Base.BoB.Group" parent="">
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_width">match_parent</item>
-    </style>
-
-    <!-- ConstraintLayout - Generic content container/row on levels 1..3. -->
-    <style name="BoB.Group.Level1" parent="Base.BoB.Group">
-        <item name="android:layout_marginTop">@dimen/bob_group_level_1_margin_top</item>
-    </style>
-
-    <style name="BoB.Group.Level2" parent="Base.BoB.Group">
-    </style>
-
-    <style name="BoB.Group.Level3" parent="Base.BoB.Group">
-    </style>
-
-
-    <!-- The Group rows label in the booklist. -->
+    <!-- The Group rows labels for (generic string) level 1..3 in the booklist. -->
     <style name="Base.BoB.Group.Label" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
-        <item name="android:textStyle">bold</item>
         <item name="android:textIsSelectable">false</item>
     </style>
 
-    <!-- Label for level 1..3 -->
     <style name="BoB.Group.Level1.Label" parent="Base.BoB.Group.Label">
+        <item name="android:textStyle">bold</item>
         <item name="android:textAppearance">?attr/textAppearanceTitleLarge</item>
     </style>
 
@@ -99,11 +80,6 @@
         <item name="android:drawableStart">@drawable/ic_bob_group_level_3</item>
         <item name="android:drawablePadding">@dimen/bob_group_level_bullet_padding</item>
         <item name="android:textAppearance">?attr/textAppearanceTitleSmall</item>
-    </style>
-
-
-    <!-- The content container/row for a rating bar. -->
-    <style name="BoB.Group.Rating" parent="Base.BoB.Group">
     </style>
 
     <!-- The content container/row for a book in the booklist. -->
