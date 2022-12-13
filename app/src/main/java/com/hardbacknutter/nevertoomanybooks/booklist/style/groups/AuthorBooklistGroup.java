@@ -50,6 +50,10 @@ public class AuthorBooklistGroup
         extends BooklistGroup
         implements UnderEachGroup {
 
+    private static final String[] PREF_KEYS = {
+            StyleDataStore.PK_GROUPS_AUTHOR_SHOW_BOOKS_UNDER_EACH,
+            StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE};
+
     /** DomainExpression for displaying the data. Style dependent. */
     @NonNull
     private final DomainExpression displayDomainExpression;
@@ -85,12 +89,12 @@ public class AuthorBooklistGroup
 
     @Override
     @NonNull
-    public GroupKey createGroupKey() {
+    public GroupKey createGroupKey(@Id final int id) {
         // We use the foreign ID to create the key-domain.
         // It is NOT used to display the data; instead we use #displayDomainExpression.
         // Neither the key-domain nor the display-domain is sorted;
         // Sorting is done with #sortingDomainExpression
-        return new GroupKey(R.string.lbl_author, "a",
+        return new GroupKey(id, R.string.lbl_author, "a",
                             new DomainExpression(DBDefinitions.DOM_FK_AUTHOR,
                                                  DBDefinitions.TBL_AUTHORS.dot(DBKey.PK_ID),
                                                  Sort.Unsorted))
@@ -136,9 +140,7 @@ public class AuthorBooklistGroup
 
         final PreferenceCategory category = screen.findPreference(StyleDataStore.PSK_STYLE_AUTHOR);
         if (category != null) {
-            final String[] keys = {StyleDataStore.PK_GROUPS_AUTHOR_SHOW_BOOKS_UNDER_EACH,
-                                   StyleDataStore.PK_GROUPS_AUTHOR_PRIMARY_TYPE};
-            setPreferenceVisibility(category, keys, visible);
+            setPreferenceVisibility(category, PREF_KEYS, visible);
         }
     }
 
