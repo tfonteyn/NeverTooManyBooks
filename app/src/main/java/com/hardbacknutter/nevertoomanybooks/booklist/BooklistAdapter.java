@@ -80,6 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfRowBookB
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
@@ -1445,7 +1446,33 @@ public class BooklistAdapter
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
                               @NonNull final Style style) {
-            super.onBindViewHolder(position, rowData, style);
+
+            CharSequence name = adapter.format(itemView.getContext(), groupId,
+                                               rowData.getString(key), null);
+
+            if (rowData.contains(DBKey.AUTHOR_PSEUDONYM)) {
+                final long pseudonym = rowData.getLong(DBKey.AUTHOR_PSEUDONYM);
+                if (pseudonym != 0) {
+                    final Author author = ServiceLocator.getInstance().getAuthorDao()
+                                                        .getById(pseudonym);
+                    if (author != null) {
+                        String pName = author.getFormattedName(
+                                adapter.style.isShowAuthorByGivenName());
+                        pName = textView.getContext().getString(
+                                R.string.a_bracket_b_bracket, name, pName);
+
+                        final SpannableString span = new SpannableString(pName);
+                        span.setSpan(new RelativeSizeSpan(0.6f), name.length(), span.length(), 0);
+                        name = span;
+                    }
+                }
+            }
+
+            textView.setText(name);
+
+            if (BuildConfig.DEBUG) {
+                dbgPosition(position, rowData);
+            }
 
             completeView.setVisibility(rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE)
                                        ? View.VISIBLE : View.GONE);

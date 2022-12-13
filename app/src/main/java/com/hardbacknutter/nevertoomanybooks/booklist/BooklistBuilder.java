@@ -65,6 +65,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHOR_PSEUDONYMS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
@@ -959,6 +960,8 @@ class BooklistBuilder {
             }
             // Join with Authors to make the names available
             sb.append(TBL_BOOK_AUTHOR.join(TBL_AUTHORS));
+            // and potential 'real' names if this one is a pseudonym
+            sb.append(TBL_AUTHORS.leftOuterJoin(TBL_AUTHOR_PSEUDONYMS));
         }
 
         private void joinWithSeries(@NonNull final StringBuilder sb) {
