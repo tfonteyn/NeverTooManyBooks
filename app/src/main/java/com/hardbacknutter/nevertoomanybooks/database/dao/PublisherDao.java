@@ -195,11 +195,12 @@ public interface PublisherDao {
      * @param publisher  to update
      * @param bookLocale Locale to use if the item has none set
      *
-     * @return {@code true} for success.
+     * @throws DaoWriteException on failure
      */
-    boolean update(@NonNull Context context,
-                   @NonNull Publisher publisher,
-                   @NonNull Locale bookLocale);
+    void update(@NonNull Context context,
+                @NonNull Publisher publisher,
+                @NonNull Locale bookLocale)
+            throws DaoWriteException;
 
     /**
      * Delete the given {@link Publisher}.

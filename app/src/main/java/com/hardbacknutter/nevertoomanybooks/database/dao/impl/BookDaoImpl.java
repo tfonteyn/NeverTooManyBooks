@@ -686,9 +686,7 @@ public class BookDaoImpl
                         throw new DaoWriteException("insert Publisher");
                     }
                 } else if (doUpdates) {
-                    if (!publisherDao.update(context, publisher, bookLocale)) {
-                        throw new DaoWriteException("update Publisher");
-                    }
+                    publisherDao.update(context, publisher, bookLocale);
                 }
 
                 position++;

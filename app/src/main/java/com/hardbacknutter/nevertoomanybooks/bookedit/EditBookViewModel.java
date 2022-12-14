@@ -769,14 +769,17 @@ public class EditBookViewModel
         // copy all new data
         original.copyFrom(modified);
 
-        if (ServiceLocator.getInstance().getPublisherDao()
-                          .update(context, original, book.getLocale(context))) {
+        try {
+            ServiceLocator.getInstance().getPublisherDao()
+                          .update(context, original, book.getLocale(context));
             book.prunePublishers(context, true);
             book.refreshPublishersList(context);
             return true;
+
+        } catch (@NonNull final DaoWriteException e) {
+            Logger.error(TAG, e, COULD_NOT_UPDATE, ORIGINAL + original,
+                         MODIFIED + modified);
         }
-        Logger.error(TAG, new Throwable(), COULD_NOT_UPDATE, ORIGINAL + original,
-                     MODIFIED + modified);
         return false;
     }
 
