@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,6 +50,9 @@ public class AuthorCoder
         if (author.getType() != Author.TYPE_UNKNOWN) {
             out.put(DBKey.AUTHOR_TYPE__BITMASK, author.getType());
         }
+        if (author.getRealAuthor() != null) {
+            out.put(DBKey.AUTHOR_PSEUDONYM, encode(author.getRealAuthor()));
+        }
 
         return out;
     }
@@ -77,6 +80,9 @@ public class AuthorCoder
             author.setType(data.getInt("type"));
         }
 
+        if (data.has(DBKey.AUTHOR_PSEUDONYM)) {
+            author.setRealAuthor(decode(data.getJSONObject(DBKey.AUTHOR_PSEUDONYM)));
+        }
         return author;
     }
 }
