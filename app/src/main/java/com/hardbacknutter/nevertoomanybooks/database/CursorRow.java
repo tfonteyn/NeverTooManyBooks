@@ -20,10 +20,12 @@
 package com.hardbacknutter.nevertoomanybooks.database;
 
 import android.database.Cursor;
+import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -204,4 +206,11 @@ public class CursorRow
 //        return cursor.getBlob(col);
 //    }
 
+    // Provide consistence with the other DataHolder methods in this class
+    // which will throw.
+    @NonNull
+    public <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final String key)
+            throws ColumnNotPresentException {
+        throw new ColumnNotPresentException(key);
+    }
 }
