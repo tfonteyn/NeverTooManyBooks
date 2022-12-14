@@ -99,7 +99,7 @@ public class BookTest {
      */
     @Before
     public void setup()
-            throws IOException, StorageException {
+            throws IOException, StorageException, DaoWriteException {
 
         bookshelfList.clear();
         authorList.clear();

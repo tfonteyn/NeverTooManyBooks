@@ -49,8 +49,8 @@ public class AuthorTest
      * Very basic test of insert/update/delete an Author.
      */
     @Test
-    public void crud() {
-        boolean updateOk;
+    public void crud()
+            throws DaoWriteException {
 
         final Context context = serviceLocator.getLocalizedAppContext();
         final AuthorDao authorDao = serviceLocator.getAuthorDao();
@@ -66,8 +66,7 @@ public class AuthorTest
         assertFalse(author[0].isComplete());
 
         author[0].setComplete(true);
-        updateOk = authorDao.update(context, author[0]);
-        assertTrue(updateOk);
+        authorDao.update(context, author[0]);
 
         author[0] = authorDao.getById(authorId[0]);
         assertNotNull(author[0]);
@@ -75,7 +74,7 @@ public class AuthorTest
         assertEquals(TestConstants.AUTHOR_GIVEN_NAME + "0", author[0].getGivenNames());
         assertTrue(author[0].isComplete());
 
-        updateOk = authorDao.delete(context, author[0]);
+        final boolean updateOk = authorDao.delete(context, author[0]);
         assertTrue(updateOk);
     }
 
@@ -106,8 +105,7 @@ public class AuthorTest
         author[0].setName(RENAMED_FAMILY_NAME + "_a", RENAMED_GIVEN_NAMES + "_a");
 
         idBefore = author[0].getId();
-        updateOk = authorDao.update(context, author[0]);
-        assertTrue(updateOk);
+        authorDao.update(context, author[0]);
         assertEquals(author[0].getId(), idBefore);
         authorDao.fixId(context, author[0], false, Locale.getDefault());
         assertEquals(author[0].getId(), idBefore);
@@ -172,8 +170,7 @@ public class AuthorTest
         author[1].setName(RENAMED_FAMILY_NAME + "_b", RENAMED_GIVEN_NAMES + "_b");
 
         idBefore = author[1].getId();
-        updateOk = authorDao.update(context, author[1]);
-        assertTrue(updateOk);
+        authorDao.update(context, author[1]);
         assertEquals(author[1].getId(), idBefore);
         authorDao.fixId(context, author[1], false, Locale.getDefault());
         assertEquals(author[1].getId(), idBefore);

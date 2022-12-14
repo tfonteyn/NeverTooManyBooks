@@ -29,10 +29,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Test;
-
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
+
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -77,7 +78,8 @@ public class AuthorTest
     }
 
     @Test
-    public void pruneAuthorList01() {
+    public void pruneAuthorList01()
+            throws DaoWriteException {
         final Context context = serviceLocator.getLocalizedAppContext();
         final AuthorDao authorDao = serviceLocator.getAuthorDao();
 
@@ -86,7 +88,8 @@ public class AuthorTest
 
         // Keep, position 0
         author = Author.from(ISAAC_ASIMOV);
-        final long id0 = authorDao.fixId(context, author, false, Locale.getDefault());
+        authorDao.fixId(context, author, false, Locale.getDefault());
+        final long id0 = author.getId();
         if (id0 == 0) {
             authorDao.insert(context, author);
         }
@@ -107,7 +110,8 @@ public class AuthorTest
 
         // keep, position 1
         author = Author.from(PHILIP_JOSE_FARMER);
-        final long id1 = authorDao.fixId(context, author, false, Locale.getDefault());
+        authorDao.fixId(context, author, false, Locale.getDefault());
+        final long id1 = author.getId();
         if (id1 == 0) {
             authorDao.insert(context, author);
         }
@@ -126,7 +130,8 @@ public class AuthorTest
 
         // keep, position 2
         author = Author.from(PHILIP_DICK);
-        final long id2 = authorDao.fixId(context, author, false, Locale.getDefault());
+        authorDao.fixId(context, author, false, Locale.getDefault());
+        final long id2 = author.getId();
         if (id2 == 0) {
             authorDao.insert(context, author);
         }
@@ -186,7 +191,8 @@ public class AuthorTest
 
         // keep, position 0
         author = Author.from(PHILIP_JOSE_FARMER_VARIANT);
-        final long id0 = authorDao.fixId(context, author, false, Locale.getDefault());
+        authorDao.fixId(context, author, false, Locale.getDefault());
+        final long id0 = author.getId();
         author.setId(FAKE_ID_1);
         author.setType(Author.TYPE_UNKNOWN);
         authorList.add(author);
