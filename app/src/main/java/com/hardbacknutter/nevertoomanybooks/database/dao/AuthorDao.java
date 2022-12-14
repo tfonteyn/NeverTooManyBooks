@@ -218,10 +218,8 @@ public interface AuthorDao {
      *                     during for example an import.
      * @param bookLocale   Locale to use if the item has none set,
      *                     or if lookupLocale was {@code false}
-     *
-     * @return the item id (also set on the item).
      */
-    long fixId(@NonNull Context context,
+    void fixId(@NonNull Context context,
                @NonNull Author author,
                boolean lookupLocale,
                @NonNull Locale bookLocale);
@@ -247,10 +245,14 @@ public interface AuthorDao {
      * @param context Current context
      * @param author  object to insert. Will be updated with the id.
      *
-     * @return the row id of the newly inserted Author, or {@code -1} if an error occurred
+     * @return the row id of the newly inserted Author
+     *
+     * @throws DaoWriteException on failure
      */
+    @IntRange(from = 1, to = Integer.MAX_VALUE)
     long insert(@NonNull Context context,
-                @NonNull Author author);
+                @NonNull Author author)
+            throws DaoWriteException;
 
     /**
      * Update an {@link Author}.
@@ -258,10 +260,11 @@ public interface AuthorDao {
      * @param context Current context
      * @param author  to update
      *
-     * @return {@code true} for success.
+     * @throws DaoWriteException on failure
      */
-    boolean update(@NonNull Context context,
-                   @NonNull Author author);
+    void update(@NonNull Context context,
+                @NonNull Author author)
+            throws DaoWriteException;
 
     /**
      * Delete the given {@link Author}.

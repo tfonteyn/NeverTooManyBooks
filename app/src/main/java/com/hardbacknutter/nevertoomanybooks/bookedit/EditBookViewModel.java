@@ -666,8 +666,8 @@ public class EditBookViewModel
     boolean changeForThisBook(@NonNull final Context context,
                               @NonNull final Author original,
                               @NonNull final Author modified) {
-
-        if (ServiceLocator.getInstance().getAuthorDao().insert(context, modified) > 0) {
+        try {
+            ServiceLocator.getInstance().getAuthorDao().insert(context, modified);
             final List<Author> list = book.getAuthors();
             // unlink the original, and link with the new one
             // Note that the original *might* be orphaned at this time.
@@ -677,9 +677,11 @@ public class EditBookViewModel
             book.setAuthors(list);
             book.pruneAuthors(context, true);
             return true;
+
+        } catch (@NonNull final DaoWriteException e) {
+            Logger.error(TAG, e, COULD_NOT_UPDATE, ORIGINAL + original,
+                         MODIFIED + modified);
         }
-        Logger.error(TAG, new Throwable(), COULD_NOT_UPDATE, ORIGINAL + original,
-                     MODIFIED + modified);
         return false;
     }
 
@@ -689,14 +691,16 @@ public class EditBookViewModel
         // copy all new data
         original.copyFrom(modified, true);
 
-        if (ServiceLocator.getInstance().getAuthorDao().update(context, original)) {
+        try {
+            ServiceLocator.getInstance().getAuthorDao().update(context, original);
             book.pruneAuthors(context, true);
             book.refreshAuthorList(context);
             return true;
-        }
 
-        Logger.error(TAG, new Throwable(), COULD_NOT_UPDATE, ORIGINAL + original,
-                     MODIFIED + modified);
+        } catch (@NonNull final DaoWriteException e) {
+            Logger.error(TAG, e, COULD_NOT_UPDATE, ORIGINAL + original,
+                         MODIFIED + modified);
+        }
         return false;
     }
 

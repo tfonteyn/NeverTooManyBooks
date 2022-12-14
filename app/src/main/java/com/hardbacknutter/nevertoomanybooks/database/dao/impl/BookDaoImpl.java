@@ -183,7 +183,8 @@ public class BookDaoImpl
                 throw new DaoWriteException(ERROR_CREATING_BOOK_FROM + book);
             }
 
-            // set the new id/uuid on the Book itself
+            // Set the new id/uuid on the Book itself
+            // We manually remove it again (see below) upon any error
             book.putLong(DBKey.PK_ID, newBookId);
             // always lookup the UUID
             // (even if we inserted with a uuid... to protect against future changes)
@@ -549,13 +550,9 @@ public class BookDaoImpl
             for (final Author author : list) {
                 // Always create if needed, but only update if allowed
                 if (author.getId() == 0) {
-                    if (authorDao.insert(context, author) == -1) {
-                        throw new DaoWriteException("insert Author");
-                    }
+                    authorDao.insert(context, author);
                 } else if (doUpdates) {
-                    if (!authorDao.update(context, author)) {
-                        throw new DaoWriteException("update Author");
-                    }
+                    authorDao.update(context, author);
                 }
 
                 position++;
@@ -759,9 +756,7 @@ public class BookDaoImpl
                 // Create if needed - do NOT do updates here
                 final Author author = tocEntry.getPrimaryAuthor();
                 if (author.getId() == 0) {
-                    if (authorDao.insert(context, author) == -1) {
-                        throw new DaoWriteException("insert Author");
-                    }
+                    authorDao.insert(context, author);
                 }
 
                 final OrderByHelper.OrderByData obd;

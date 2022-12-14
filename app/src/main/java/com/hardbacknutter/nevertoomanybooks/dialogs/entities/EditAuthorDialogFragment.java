@@ -227,7 +227,12 @@ public class EditAuthorDialogFragment
             final long existingId = dao.find(context, author, true, bookLocale);
             if (existingId == 0) {
                 // it's an entirely new one; add it.
-                success = dao.insert(context, author) > 0;
+                try {
+                    dao.insert(context, author);
+                    success = true;
+                } catch (@NonNull final DaoWriteException e) {
+                    return false;
+                }
             } else {
                 // There is one with the same name; ask whether to merge the 2
                 askToMerge(author, existingId);
@@ -239,14 +244,24 @@ public class EditAuthorDialogFragment
                 final long existingId = dao.find(context, author, true, bookLocale);
                 if (existingId == 0) {
                     // no-one else with the same name; so we just update this one
-                    success = dao.update(context, author);
+                    try {
+                        dao.update(context, author);
+                        success = true;
+                    } catch (@NonNull final DaoWriteException e) {
+                        return false;
+                    }
                 } else {
                     // There is one with the same name; ask whether to merge the 2
                     askToMerge(author, existingId);
                 }
             } else {
                 // The name was not changed; just update the other attributes
-                success = (dao.update(context, author));
+                try {
+                    dao.update(context, author);
+                    success = true;
+                } catch (@NonNull final DaoWriteException e) {
+                    return false;
+                }
             }
         }
 

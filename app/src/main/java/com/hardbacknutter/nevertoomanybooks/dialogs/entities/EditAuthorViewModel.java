@@ -34,6 +34,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 public class EditAuthorViewModel
@@ -121,7 +122,9 @@ public class EditAuthorViewModel
             dao.fixId(context, tmpRealAuthor, false, bookLocale);
             if (tmpRealAuthor.getId() == 0) {
                 if (create) {
-                    if (dao.insert(context, tmpRealAuthor) == -1) {
+                    try {
+                        dao.insert(context, tmpRealAuthor);
+                    } catch (@NonNull final DaoWriteException e) {
                         return false;
                     }
                 } else {

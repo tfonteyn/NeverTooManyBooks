@@ -69,6 +69,11 @@ public class AuthorDaoImpl
     /** Log tag. */
     private static final String TAG = "AuthorDaoImpl";
 
+    /** log error string. */
+    private static final String ERROR_CREATING_AUTHOR_FROM = "Failed creating author from\n";
+    /** log error string. */
+    private static final String ERROR_UPDATING_AUTHOR_FROM = "Failed updating author from\n";
+
     private static final String CASE_WHEN_ = "CASE WHEN ";
     private static final String _THEN_ = " THEN ";
     private static final String _ELSE_ = " ELSE ";
@@ -510,8 +515,11 @@ public class AuthorDaoImpl
     public long countBooks(@NonNull final Context context,
                            @NonNull final Author author,
                            @NonNull final Locale bookLocale) {
-        if (author.getId() == 0 && fixId(context, author, true, bookLocale) == 0) {
-            return 0;
+        if (author.getId() == 0) {
+            fixId(context, author, true, bookLocale);
+            if (author.getId() == 0) {
+                return 0;
+            }
         }
 
         try (SynchronizedStatement stmt = db.compileStatement(COUNT_BOOKS)) {
@@ -524,8 +532,11 @@ public class AuthorDaoImpl
     public long countTocEntries(@NonNull final Context context,
                                 @NonNull final Author author,
                                 @NonNull final Locale bookLocale) {
-        if (author.getId() == 0 && fixId(context, author, true, bookLocale) == 0) {
-            return 0;
+        if (author.getId() == 0) {
+            fixId(context, author, true, bookLocale);
+            if (author.getId() == 0) {
+                return 0;
+            }
         }
 
         try (SynchronizedStatement stmt = db.compileStatement(COUNT_TOC_ENTRIES)) {
@@ -573,13 +584,15 @@ public class AuthorDaoImpl
     }
 
     @Override
-    public long fixId(@NonNull final Context context,
+    public void fixId(@NonNull final Context context,
                       @NonNull final Author author,
                       final boolean lookupLocale,
                       @NonNull final Locale bookLocale) {
         final long id = find(context, author, lookupLocale, bookLocale);
         author.setId(id);
-        return id;
+        if (author.getRealAuthor() != null) {
+            fixId(context, author.getRealAuthor(), lookupLocale, bookLocale);
+        }
     }
 
     @Override
@@ -605,8 +618,10 @@ public class AuthorDaoImpl
     }
 
     @Override
+    @IntRange(from = 1, to = Integer.MAX_VALUE)
     public long insert(@NonNull final Context context,
-                       @NonNull final Author author) {
+                       @NonNull final Author author)
+            throws DaoWriteException {
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final Locale authorLocale = author.getLocale(context, userLocale);
@@ -631,20 +646,24 @@ public class AuthorDaoImpl
             if (iId > 0) {
                 final Author realAuthor = author.getRealAuthor();
                 if (realAuthor != null) {
-                    if (insertPseudonymLink(iId, realAuthor.getId()) <= 0) {
-                        return -1;
+                    if (realAuthor.getId() == 0) {
+                        insert(context, realAuthor);
                     }
+                    insertPseudonymLink(iId, realAuthor.getId());
                 }
-            }
 
-            if (txLock != null) {
-                db.setTransactionSuccessful();
-            }
+                if (txLock != null) {
+                    db.setTransactionSuccessful();
+                }
 
-            if (iId > 0) {
                 author.setId(iId);
+                return iId;
+
+            } else {
+                throw new DaoWriteException(ERROR_CREATING_AUTHOR_FROM + author);
             }
-            return iId;
+        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+            throw new DaoWriteException(ERROR_CREATING_AUTHOR_FROM + author, e);
 
         } finally {
             if (txLock != null) {
@@ -653,8 +672,9 @@ public class AuthorDaoImpl
         }
     }
 
-    private long insertPseudonymLink(final long authorID,
-                                     final long realAuthorId) {
+    private void insertPseudonymLink(final long authorID,
+                                     final long realAuthorId)
+            throws DaoWriteException {
         try (SynchronizedStatement stmt = db.compileStatement(
                 INSERT_INTO_ + TBL_AUTHOR_PSEUDONYMS.getName()
                 + '(' + DBKey.FK_AUTHOR
@@ -662,22 +682,30 @@ public class AuthorDaoImpl
                 + ") VALUES (?,?)")) {
             stmt.bindLong(1, authorID);
             stmt.bindLong(2, realAuthorId);
-            return stmt.executeInsert();
+            stmt.executeInsert();
+
+        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+            throw new DaoWriteException("Failed to insert PseudonymLink author=" + authorID
+                                        + ", real=" + realAuthorId, e);
         }
     }
 
-    private void deletePseudonymLink(final long authorID) {
+    private void deletePseudonymLink(final long authorID)
+            throws DaoWriteException {
         try (SynchronizedStatement stmt = db.compileStatement(
                 DELETE_FROM_ + TBL_AUTHOR_PSEUDONYMS.getName()
                 + _WHERE_ + DBKey.FK_AUTHOR + "=?")) {
             stmt.bindLong(1, authorID);
             stmt.executeUpdateDelete();
+        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+            throw new DaoWriteException("Failed to delete PseudonymLink author=" + authorID, e);
         }
     }
 
     @Override
-    public boolean update(@NonNull final Context context,
-                          @NonNull final Author author) {
+    public void update(@NonNull final Context context,
+                       @NonNull final Author author)
+            throws DaoWriteException {
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final Locale authorLocale = author.getLocale(context, userLocale);
@@ -706,20 +734,18 @@ public class AuthorDaoImpl
                 // just delete any previous link
                 deletePseudonymLink(author.getId());
                 if (realAuthor != null) {
-                    if (insertPseudonymLink(author.getId(),
-                                            realAuthor.getId()) <= 0) {
-                        return false;
-                    }
+                    // We do NOT need to update the actual realAuthor here, only relink.
+                    insertPseudonymLink(author.getId(), realAuthor.getId());
                 }
+
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }
+            } else {
+                throw new DaoWriteException(ERROR_UPDATING_AUTHOR_FROM + author);
             }
-
-            return success;
-
         } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
-            return false;
+            throw new DaoWriteException(ERROR_UPDATING_AUTHOR_FROM + author);
 
         } finally {
             if (txLock != null) {
