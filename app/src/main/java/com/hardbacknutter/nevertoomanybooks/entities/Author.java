@@ -246,9 +246,9 @@ public class Author
      * @param givenNames Given names
      */
     public Author(@NonNull final String familyName,
-                  @NonNull final String givenNames) {
+                  @Nullable final String givenNames) {
         this.familyName = familyName.trim();
-        this.givenNames = givenNames.trim();
+        this.givenNames = givenNames == null ? "" : givenNames.trim();
     }
 
     /**
@@ -260,10 +260,10 @@ public class Author
      *                   want from this Author.
      */
     public Author(@NonNull final String familyName,
-                  @NonNull final String givenNames,
+                  @Nullable final String givenNames,
                   final boolean isComplete) {
         this.familyName = familyName.trim();
-        this.givenNames = givenNames.trim();
+        this.givenNames = givenNames == null ? "" : givenNames.trim();
         complete = isComplete;
     }
 
