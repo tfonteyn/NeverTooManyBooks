@@ -59,9 +59,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * It's basically an extended Bundle with support for validators, Money and Bit types, parsing, ...
  *
  * <ul>
- *      <li>mRawData: stores the actual data</li>
- *      <li>mValidatorsMap: validators applied at 'save' time</li>
- *      <li>mCrossValidators: cross-validators applied at 'save' time</li>
+ *      <li>{@link #rawData}: stores the actual data</li>
+ *      <li>{@link #validatorsMap}: validators applied at 'save' time</li>
+ *      <li>{@link #crossValidators}: cross-validators applied at 'save' time</li>
  * </ul>
  */
 public class DataManager
@@ -277,7 +277,7 @@ public class DataManager
      *
      * @param key Key of data object
      *
-     * @return a boolean value.
+     * @return a boolean value {@code null} or empty becomes {@code false}
      *
      * @throws NumberFormatException if the source was not compatible.
      */
@@ -302,7 +302,7 @@ public class DataManager
      *
      * @param key Key of data object
      *
-     * @return an int value; {@code null} or empty becomes 0
+     * @return an int value; {@code null} or empty becomes {@code 0}
      *
      * @throws NumberFormatException if the source was not compatible.
      */
@@ -328,7 +328,7 @@ public class DataManager
      *
      * @param key Key of data object
      *
-     * @return a long value; {@code null} or empty becomes 0
+     * @return a long value; {@code null} or empty becomes {@code 0}
      *
      * @throws NumberFormatException if the source was not compatible.
      */
@@ -354,7 +354,7 @@ public class DataManager
      *
      * @param key Key of data object
      *
-     * @return a double value ({@code null} or empty becomes 0)
+     * @return a double value; {@code null} or empty becomes {@code 0}
      *
      * @throws NumberFormatException if the source was not compatible.
      */
@@ -379,7 +379,7 @@ public class DataManager
      *
      * @param key Key of data object
      *
-     * @return a float value ({@code null} or empty becomes 0)
+     * @return a float value {@code null} or empty becomes {@code 0}
      *
      * @throws NumberFormatException if the source was not compatible.
      */
