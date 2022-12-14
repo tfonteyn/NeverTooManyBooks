@@ -170,15 +170,15 @@ public class AuthorDaoImpl
     private static final String DELETE_BY_ID =
             DELETE_FROM_ + TBL_AUTHORS.getName() + _WHERE_ + DBKey.PK_ID + "=?";
 
-    /**
-     * Purge an {@link Author} if no longer in use (check both book_author AND toc_entries).
-     */
+    /** Purge an {@link Author} if no longer in use. */
     private static final String PURGE =
             DELETE_FROM_ + TBL_AUTHORS.getName()
             + _WHERE_ + DBKey.PK_ID + _NOT_IN_
             + "(SELECT DISTINCT " + DBKey.FK_AUTHOR + _FROM_ + TBL_BOOK_AUTHOR.getName() + ')'
             + " AND " + DBKey.PK_ID + _NOT_IN_
-            + "(SELECT DISTINCT " + DBKey.FK_AUTHOR + _FROM_ + TBL_TOC_ENTRIES.getName() + ')';
+            + "(SELECT DISTINCT " + DBKey.FK_AUTHOR + _FROM_ + TBL_TOC_ENTRIES.getName() + ')'
+            + " AND " + DBKey.PK_ID + _NOT_IN_
+            + "(SELECT DISTINCT " + DBKey.FK_AUTHOR + _FROM_ + TBL_AUTHOR_PSEUDONYMS.getName() + ')';
 
 
     private static final String DISPLAY_AUTHOR_FAMILY_FIRST =
