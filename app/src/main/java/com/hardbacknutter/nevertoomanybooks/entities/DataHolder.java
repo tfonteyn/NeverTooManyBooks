@@ -27,7 +27,6 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.database.ColumnNotPresentException;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
@@ -37,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  * <p>
  * <strong>Important</strong>:
  * {@link DataManager} will return default values if the key is not found.
- * {@link CursorRow} will throw {@link ColumnNotPresentException} instead.
+ * {@link CursorRow} will throw an exception instead.
  */
 public interface DataHolder {
 
