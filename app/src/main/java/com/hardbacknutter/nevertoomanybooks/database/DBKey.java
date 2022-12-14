@@ -132,6 +132,10 @@ public final class DBKey {
     public static final String AUTHOR_FAMILY_NAME = "family_name";
     public static final String AUTHOR_GIVEN_NAMES = "given_names";
     public static final String AUTHOR_IS_COMPLETE = "author_complete";
+    /**
+     * In some places used "both-ways";
+     * i.e. "X is a pseudonym of Y" and "Y has a pseudonym X"
+     */
     public static final String AUTHOR_PSEUDONYM = "pseudonym";
 
     /** Aliases for CASE expressions. */
