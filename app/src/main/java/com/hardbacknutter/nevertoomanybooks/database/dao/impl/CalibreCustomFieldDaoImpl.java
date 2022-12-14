@@ -103,10 +103,9 @@ public class CalibreCustomFieldDaoImpl
     }
 
     @Override
-    public long fixId(@NonNull final CalibreCustomField calibreCustomField) {
+    public void fixId(@NonNull final CalibreCustomField calibreCustomField) {
         final long id = find(calibreCustomField);
         calibreCustomField.setId(id);
-        return id;
     }
 
     @Override
