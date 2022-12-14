@@ -95,7 +95,7 @@ public interface CalibreLibraryDao {
      */
     long insert(@NonNull CalibreLibrary library);
 
-    long fixId(@NonNull CalibreLibrary library);
+    void fixId(@NonNull CalibreLibrary library);
 
     /**
      * Update a {@link CalibreLibrary}.

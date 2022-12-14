@@ -208,10 +208,9 @@ public class CalibreLibraryDaoImpl
     }
 
     @Override
-    public long fixId(@NonNull final CalibreLibrary library) {
+    public void fixId(@NonNull final CalibreLibrary library) {
         final long id = find(library);
         library.setId(id);
-        return id;
     }
 
     @Override
