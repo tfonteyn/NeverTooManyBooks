@@ -155,7 +155,7 @@ public class TocEntryDaoImpl
     }
 
     @Override
-    public long fixId(@NonNull final Context context,
+    public void fixId(@NonNull final Context context,
                       @NonNull final TocEntry tocEntry,
                       final boolean lookupLocale,
                       @NonNull final Locale bookLocale) {
@@ -165,7 +165,6 @@ public class TocEntryDaoImpl
 
         final long id = find(context, tocEntry, lookupLocale, bookLocale);
         tocEntry.setId(id);
-        return id;
     }
 
     @Override

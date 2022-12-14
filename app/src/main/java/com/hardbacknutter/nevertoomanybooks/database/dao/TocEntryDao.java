@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -67,10 +67,8 @@ public interface TocEntryDao {
      *                     during for example an import.
      * @param bookLocale   Locale to use if the item has none set,
      *                     or if lookupLocale was {@code false}
-     *
-     * @return the item id (also set on the item).
      */
-    long fixId(@NonNull Context context,
+    void fixId(@NonNull Context context,
                @NonNull TocEntry tocEntry,
                boolean lookupLocale,
                @NonNull Locale bookLocale);
