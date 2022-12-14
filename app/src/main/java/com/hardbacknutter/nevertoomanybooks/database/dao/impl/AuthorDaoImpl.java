@@ -591,6 +591,7 @@ public class AuthorDaoImpl
         final long id = find(context, author, lookupLocale, bookLocale);
         author.setId(id);
         if (author.getRealAuthor() != null) {
+            //URGENT: protect against recursion going haywire
             fixId(context, author.getRealAuthor(), lookupLocale, bookLocale);
         }
     }
@@ -647,6 +648,7 @@ public class AuthorDaoImpl
                 final Author realAuthor = author.getRealAuthor();
                 if (realAuthor != null) {
                     if (realAuthor.getId() == 0) {
+                        //URGENT: protect against recursion going haywire
                         insert(context, realAuthor);
                     }
                     insertPseudonymLink(iId, realAuthor.getId());
