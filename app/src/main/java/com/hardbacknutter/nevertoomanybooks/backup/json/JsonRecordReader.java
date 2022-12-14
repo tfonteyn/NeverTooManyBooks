@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -407,6 +407,8 @@ public class JsonRecordReader
                            @NonNull final ProgressListener progressListener)
             throws StorageException,
                    JSONException {
+
+        progressListener.publishProgress(0, context.getString(R.string.lbl_books));
 
         final JSONArray books = root.optJSONArray(RecordType.Books.getName());
         if (books == null || books.isEmpty()) {

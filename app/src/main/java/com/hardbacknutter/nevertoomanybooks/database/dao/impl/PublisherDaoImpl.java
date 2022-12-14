@@ -241,8 +241,11 @@ public class PublisherDaoImpl
     public long countBooks(@NonNull final Context context,
                            @NonNull final Publisher publisher,
                            @NonNull final Locale bookLocale) {
-        if (publisher.getId() == 0 && fixId(context, publisher, true, bookLocale) == 0) {
-            return 0;
+        if (publisher.getId() == 0) {
+            fixId(context, publisher, true, bookLocale);
+            if (publisher.getId() == 0) {
+                return 0;
+            }
         }
 
         try (SynchronizedStatement stmt = db
@@ -272,13 +275,12 @@ public class PublisherDaoImpl
     }
 
     @Override
-    public long fixId(@NonNull final Context context,
+    public void fixId(@NonNull final Context context,
                       @NonNull final Publisher publisher,
                       final boolean lookupLocale,
                       @NonNull final Locale bookLocale) {
         final long id = find(context, publisher, lookupLocale, bookLocale);
         publisher.setId(id);
-        return id;
     }
 
     @Override

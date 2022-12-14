@@ -28,10 +28,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Test;
-
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
+
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -71,7 +71,8 @@ public class PublisherTest
 
         // keep, position 0
         publisher = new Publisher(SOME_PUBLISHER);
-        long id0 = publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        long id0 = publisher.getId();
         if (id0 == 0) {
             id0 = publisherDao.insert(context, publisher, Locale.getDefault());
         }
@@ -80,7 +81,8 @@ public class PublisherTest
 
         // keep, position 1
         publisher = new Publisher(THE_PUBLISHER);
-        long id1 = publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        long id1 = publisher.getId();
         if (id1 == 0) {
             id1 = publisherDao.insert(context, publisher, Locale.getDefault());
         }
@@ -120,7 +122,8 @@ public class PublisherTest
 
         // Keep; list will not be modified
         publisher = new Publisher(SOME_PUBLISHER);
-        long id0 = publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        long id0 = publisher.getId();
         if (id0 == 0) {
             id0 = publisherDao.insert(context, publisher, Locale.getDefault());
         }
@@ -129,7 +132,8 @@ public class PublisherTest
 
         // Keep; list will not be modified
         publisher = new Publisher(THE_PUBLISHER);
-        long id1 = publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        long id1 = publisher.getId();
         if (id1 == 0) {
             id1 = publisherDao.insert(context, publisher, Locale.getDefault());
         }
@@ -138,7 +142,8 @@ public class PublisherTest
 
         // Discard; reordered but same as position 1
         publisher = new Publisher(PUBLISHER_THE);
-        long id2 = publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        long id2 = publisher.getId();
         if (id2 == 0) {
             id2 = publisherDao.insert(context, publisher, Locale.getDefault());
         }
@@ -173,7 +178,8 @@ public class PublisherTest
 
         // keep, position 0
         publisher = new Publisher(SOME_PUBLISHER);
-        long id0 = publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        long id0 = publisher.getId();
         if (id0 == 0) {
             id0 = publisherDao.insert(context, publisher, Locale.getDefault());
         }
@@ -182,7 +188,8 @@ public class PublisherTest
 
         // keep, position 1
         publisher = new Publisher(THE_PUBLISHER);
-        long id1 = publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        long id1 = publisher.getId();
         if (id1 == 0) {
             id1 = publisherDao.insert(context, publisher, Locale.getDefault());
         }
@@ -191,7 +198,8 @@ public class PublisherTest
 
         // Discard; reordered but same as position 1
         publisher = new Publisher(PUBLISHER_THE);
-        long id2 = publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        long id2 = publisher.getId();
         if (id2 == 0) {
             id2 = publisherDao.insert(context, publisher, Locale.getDefault());
         }
@@ -205,7 +213,8 @@ public class PublisherTest
 
         // Keep, but merge with the next entry and copy the id=1003
         publisher = new Publisher(JOSE_PUBLISHER);
-        long id3 = publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        long id3 = publisher.getId();
         if (id3 == 0) {
             id3 = publisherDao.insert(context, publisher, Locale.getDefault());
         }
