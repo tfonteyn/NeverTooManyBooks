@@ -45,7 +45,6 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DimenRes;
 import androidx.annotation.Dimension;
-import androidx.annotation.DrawableRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -744,28 +743,24 @@ public class BooklistAdapter
      * The style definition for the primary text in a {@link GenericStringHolder}.
      */
     private enum GenericStringLevelStyle {
-        Level1(R.attr.textAppearanceTitleLarge, Typeface.BOLD, 0, 0),
-        Level2(R.attr.textAppearanceTitleMedium, Typeface.NORMAL,
-               R.drawable.ic_baseline_lens_24, R.dimen.bob_group_level_2_drawable_size),
-        LevelX(R.attr.textAppearanceTitleSmall, Typeface.NORMAL,
-               R.drawable.ic_baseline_lens_24, R.dimen.bob_group_level_3_drawable_size);
+        Level1(R.attr.textAppearanceTitleLarge, Typeface.BOLD, 0),
+        Level2(R.attr.textAppearanceTitleMedium, Typeface.BOLD,
+               R.dimen.bob_group_level_2_drawable_size),
+        LevelX(R.attr.textAppearanceTitleSmall, Typeface.BOLD,
+               R.dimen.bob_group_level_3_drawable_size);
 
         @AttrRes
         private final int textAttrId;
         private final int textStyle;
 
-        @DrawableRes
-        private final int drawableResId;
         @DimenRes
         private final int sizeResId;
 
         GenericStringLevelStyle(@AttrRes final int textAttrId,
                                 final int textStyle,
-                                @DrawableRes final int drawableResId,
                                 @DimenRes final int sizeResId) {
             this.textAttrId = textAttrId;
             this.textStyle = textStyle;
-            this.drawableResId = drawableResId;
             this.sizeResId = sizeResId;
         }
 
@@ -789,9 +784,9 @@ public class BooklistAdapter
             textView.setTextAppearance(AttrUtils.getResId(context, levelStyle.textAttrId));
             textView.setTypeface(null, levelStyle.textStyle);
 
-            if (levelStyle.drawableResId != 0) {
+            if (levelStyle.sizeResId > 0) {
                 @SuppressLint("UseCompatLoadingForDrawables")
-                final Drawable drawable = context.getDrawable(levelStyle.drawableResId);
+                final Drawable drawable = context.getDrawable(R.drawable.ic_baseline_lens_24);
 
                 final Resources res = context.getResources();
 
@@ -1450,21 +1445,19 @@ public class BooklistAdapter
             CharSequence name = adapter.format(itemView.getContext(), groupId,
                                                rowData.getString(key), null);
 
-            if (rowData.contains(DBKey.AUTHOR_PSEUDONYM)) {
-                final long pseudonym = rowData.getLong(DBKey.AUTHOR_PSEUDONYM);
-                if (pseudonym != 0) {
-                    final Author author = ServiceLocator.getInstance().getAuthorDao()
-                                                        .getById(pseudonym);
-                    if (author != null) {
-                        String pName = author.getFormattedName(
-                                adapter.style.isShowAuthorByGivenName());
-                        pName = textView.getContext().getString(
-                                R.string.a_bracket_b_bracket, name, pName);
+            final long pseudonym = rowData.getLong(DBKey.AUTHOR_PSEUDONYM);
+            if (pseudonym != 0) {
+                final Author author = ServiceLocator.getInstance().getAuthorDao()
+                                                    .getById(pseudonym);
+                if (author != null) {
+                    String pName = author.getFormattedName(
+                            adapter.style.isShowAuthorByGivenName());
+                    pName = textView.getContext().getString(
+                            R.string.a_bracket_b_bracket, name, pName);
 
-                        final SpannableString span = new SpannableString(pName);
-                        span.setSpan(new RelativeSizeSpan(0.6f), name.length(), span.length(), 0);
-                        name = span;
-                    }
+                    final SpannableString span = new SpannableString(pName);
+                    span.setSpan(new RelativeSizeSpan(0.6f), name.length(), span.length(), 0);
+                    name = span;
                 }
             }
 
