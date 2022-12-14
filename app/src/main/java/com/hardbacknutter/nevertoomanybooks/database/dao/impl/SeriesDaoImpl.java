@@ -262,8 +262,11 @@ public class SeriesDaoImpl
     public long countBooks(@NonNull final Context context,
                            @NonNull final Series series,
                            @NonNull final Locale bookLocale) {
-        if (series.getId() == 0 && fixId(context, series, true, bookLocale) == 0) {
-            return 0;
+        if (series.getId() == 0) {
+            fixId(context, series, true, bookLocale);
+            if (series.getId() == 0) {
+                return 0;
+            }
         }
 
         try (SynchronizedStatement stmt = db.compileStatement(COUNT_BOOKS)) {
@@ -311,13 +314,12 @@ public class SeriesDaoImpl
     }
 
     @Override
-    public long fixId(@NonNull final Context context,
+    public void fixId(@NonNull final Context context,
                       @NonNull final Series series,
                       final boolean lookupLocale,
                       @NonNull final Locale bookLocale) {
         final long id = find(context, series, lookupLocale, bookLocale);
         series.setId(id);
-        return id;
     }
 
     @Override

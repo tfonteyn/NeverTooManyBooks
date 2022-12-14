@@ -195,10 +195,8 @@ public interface SeriesDao {
      *                     during for example an import.
      * @param bookLocale   Locale to use if the item has none set,
      *                     or if lookupLocale was {@code false}
-     *
-     * @return the item id (also set on the item).
      */
-    long fixId(@NonNull Context context,
+    void fixId(@NonNull Context context,
                @NonNull Series series,
                boolean lookupLocale,
                @NonNull Locale bookLocale);

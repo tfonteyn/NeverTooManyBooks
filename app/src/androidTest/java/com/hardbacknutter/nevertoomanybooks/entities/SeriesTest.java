@@ -28,10 +28,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Test;
-
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
+
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -68,7 +68,8 @@ public class SeriesTest
 
         // keep, position 0
         series = Series.from("The series (5)");
-        long id0 = seriesDao.fixId(context, series, false, Locale.getDefault());
+        seriesDao.fixId(context, series, false, Locale.getDefault());
+        long id0 = series.getId();
         if (id0 == 0) {
             id0 = seriesDao.insert(context, series, Locale.getDefault());
         }
@@ -93,7 +94,8 @@ public class SeriesTest
 
         // keep, position 1
         series = Series.from("De reeks (1)");
-        long id1 = seriesDao.fixId(context, series, false, Locale.getDefault());
+        seriesDao.fixId(context, series, false, Locale.getDefault());
+        long id1 = series.getId();
         if (id1 == 0) {
             id1 = seriesDao.insert(context, series, Locale.getDefault());
         }
@@ -109,7 +111,8 @@ public class SeriesTest
 
         // keep, position 2. Note duplicate id, but different nr as compared to position 0
         series = Series.from("The series (6)");
-        long id2 = seriesDao.fixId(context, series, false, Locale.getDefault());
+        seriesDao.fixId(context, series, false, Locale.getDefault());
+        long id2 = series.getId();
         if (id2 == 0) {
             id2 = seriesDao.insert(context, series, Locale.getDefault());
         }
