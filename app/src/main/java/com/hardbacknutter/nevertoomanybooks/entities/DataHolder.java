@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
-import android.database.Cursor;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
@@ -28,11 +27,17 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.database.ColumnNotPresentException;
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
- * Read-only interface that allows a method to take both a custom {@link Cursor}
+ * Read-only interface that allows a method to take both a custom {@link CursorRow}
  * and a {@link DataManager} as an argument without having to distinguish between them.
+ * <p>
+ * <strong>Important</strong>:
+ * {@link DataManager} will return default values if the key is not found.
+ * {@link CursorRow} will throw {@link ColumnNotPresentException} instead.
  */
 public interface DataHolder {
 
@@ -56,8 +61,7 @@ public interface DataHolder {
     boolean contains(@NonNull String key);
 
     /**
-     * Returns the value associated with the given key, or {@code 0} if
-     * no mapping of the desired type exists for the given key.
+     * Returns the value associated with the given key.
      *
      * @param key a String
      *
@@ -66,8 +70,7 @@ public interface DataHolder {
     int getInt(@NonNull String key);
 
     /**
-     * Returns the value associated with the given key, or {@code 0L} if
-     * no mapping of the desired type exists for the given key.
+     * Returns the value associated with the given key.
      *
      * @param key a String
      *
@@ -76,8 +79,7 @@ public interface DataHolder {
     long getLong(@NonNull String key);
 
     /**
-     * Returns the value associated with the given key, or {@code 0.0} if
-     * no mapping of the desired type exists for the given key.
+     * Returns the value associated with the given key.
      *
      * @param key a String
      *
@@ -86,8 +88,7 @@ public interface DataHolder {
     double getDouble(@NonNull String key);
 
     /**
-     * Returns the value associated with the given key, or {@code 0.0} if
-     * no mapping of the desired type exists for the given key.
+     * Returns the value associated with the given key.
      *
      * @param key a String
      *
@@ -96,8 +97,7 @@ public interface DataHolder {
     float getFloat(@NonNull String key);
 
     /**
-     * Returns the value associated with the given key, or {@code false} if
-     * no mapping of the desired type exists for the given key.
+     * Returns the value associated with the given key.
      *
      * @param key a String
      *
@@ -107,7 +107,7 @@ public interface DataHolder {
 
     /**
      * Returns the value associated with the given key.
-     * A {@code null} value will be returned as an empty String.
+     * If the key is present, but the value was {@code null}, an empty String will be returned.
      * <p>
      * If the value was not a String, implementations <strong>must</strong> stringify it.
      *
@@ -123,7 +123,7 @@ public interface DataHolder {
 
     /**
      * Returns the value associated with the given key.
-     * A {@code null} value will be substituted with the 'defValue'.
+     * If the key is present, but the value was {@code null}, the 'defValue' will be returned.
      * <p>
      * If the value was not a String, implementations <strong>must</strong> stringify it.
      *
@@ -138,8 +138,6 @@ public interface DataHolder {
 
     /**
      * Get a {@link Parcelable} {@link ArrayList} from the collection.
-     * <p>
-     * This default implementation simply returns an empty list.
      *
      * @param key Key of data object
      * @param <T> type of objects in the list
@@ -147,7 +145,5 @@ public interface DataHolder {
      * @return The list, can be empty, but never {@code null}
      */
     @NonNull
-    default <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final String key) {
-        return new ArrayList<>();
-    }
+    <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final String key);
 }
