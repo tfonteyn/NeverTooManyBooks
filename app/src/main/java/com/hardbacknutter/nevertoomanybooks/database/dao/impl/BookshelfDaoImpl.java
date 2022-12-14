@@ -315,10 +315,9 @@ public class BookshelfDaoImpl
     }
 
     @Override
-    public long fixId(@NonNull final Bookshelf bookshelf) {
+    public void fixId(@NonNull final Bookshelf bookshelf) {
         final long id = find(bookshelf);
         bookshelf.setId(id);
-        return id;
     }
 
     @Override

@@ -109,10 +109,8 @@ public interface BookshelfDao {
      * If found, sets the item's id with the id found in the database.
      *
      * @param bookshelf to update
-     *
-     * @return the item id (also set on the item).
      */
-    long fixId(@NonNull Bookshelf bookshelf);
+    void fixId(@NonNull Bookshelf bookshelf);
 
     /**
      * Creates a new bookshelf in the database.
