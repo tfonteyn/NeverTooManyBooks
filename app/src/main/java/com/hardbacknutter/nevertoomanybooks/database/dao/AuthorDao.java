@@ -303,8 +303,6 @@ public interface AuthorDao {
     /**
      * Check for books which do not have an {@link Author} at position 1.
      * For those that don't, read their list, and re-save them.
-     * <p>
-     * <strong>Transaction:</strong> participate, or runs in new.
      *
      * @param context Current context
      *

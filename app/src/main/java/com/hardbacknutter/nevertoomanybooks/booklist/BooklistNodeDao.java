@@ -100,8 +100,6 @@ public class BooklistNodeDao {
 
     /**
      * Expand or collapse <strong>all</strong> nodes.
-     * <p>
-     * <strong>Transaction:</strong> participate, or runs in new.
      *
      * @param topLevel the desired top-level which must be kept visible
      * @param expand   the state to apply to levels 'below' the topLevel (level > topLevel),
@@ -204,8 +202,6 @@ public class BooklistNodeDao {
      * We only store visible nodes and their expansion state.
      * <p>
      * <strong>Note:</strong> always use the current bookshelf/style
-     * <p>
-     * <strong>Transaction:</strong> participate, or runs in new.
      */
     private void saveAllNodes() {
         Synchronizer.SyncLock txLock = null;
@@ -263,8 +259,6 @@ public class BooklistNodeDao {
      * 'Expand': we set the children to the desired child state/visibility
      * (recurse up to the desired max child level)<br>
      * 'Collapse': all children will be set to Collapse/hidden
-     * <p>
-     * <strong>Transaction:</strong> participate, or runs in new.
      *
      * @param nodeRowId          of the node in the list
      * @param nodeLevel          the level of the node

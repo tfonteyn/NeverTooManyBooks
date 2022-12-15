@@ -150,8 +150,6 @@ public interface TocEntryDao {
     /**
      * Check for books which do not have a {@link TocEntry} at position 1.
      * For those that don't, read their list, and re-save them.
-     * <p>
-     * <strong>Transaction:</strong> participate, or runs in new.
      *
      * @param context Current context
      *

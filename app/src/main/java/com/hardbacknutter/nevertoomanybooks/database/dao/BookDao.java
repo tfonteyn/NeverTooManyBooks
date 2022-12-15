@@ -64,8 +64,6 @@ public interface BookDao {
 
     /**
      * Create a new Book using the details provided.
-     * <p>
-     * <strong>Transaction:</strong> participate, or runs in new.
      *
      * @param context Current context
      * @param book    A collection with the columns to be set. May contain extra data.
@@ -94,8 +92,6 @@ public interface BookDao {
      * Update the given {@link Book}.
      * This will update <strong>ONLY</strong> the fields present in the passed in Book.
      * Non-present fields will not be touched. i.e. this is a delta operation.
-     * <p>
-     * <strong>Transaction:</strong> participate, or runs in new.
      *
      * @param context Current context
      * @param book    A collection with the columns to be set.
