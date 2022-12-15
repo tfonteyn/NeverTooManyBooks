@@ -477,7 +477,7 @@ public class SeriesDaoImpl
 
         /** Count the number of {@link Book}'s in a {@link Series}. */
         private static final String COUNT_BOOKS =
-                "SELECT COUNT(" + DBKey.FK_BOOK + ')'
+                SELECT_ + "COUNT(" + DBKey.FK_BOOK + ')'
                 + _FROM_ + TBL_BOOK_SERIES.getName()
                 + _WHERE_ + DBKey.FK_SERIES + "=?";
 
@@ -497,14 +497,17 @@ public class SeriesDaoImpl
         private static final String PURGE =
                 DELETE_FROM_ + TBL_SERIES.getName()
                 + _WHERE_ + DBKey.PK_ID + _NOT_IN_
-                + "(SELECT DISTINCT " + DBKey.FK_SERIES + _FROM_ + TBL_BOOK_SERIES.getName() + ')';
+                + '(' + SELECT_DISTINCT_ + DBKey.FK_SERIES
+                + _FROM_ + TBL_BOOK_SERIES.getName() + ')';
 
         private static final String REPOSITION =
                 SELECT_ + DBKey.FK_BOOK
                 + _FROM_
-                + "(SELECT " + DBKey.FK_BOOK
-                + ", MIN(" + DBKey.BOOK_SERIES_POSITION + ')' + _AS_ + "mp"
-                + _FROM_ + TBL_BOOK_SERIES.getName() + _GROUP_BY_ + DBKey.FK_BOOK + ')'
-                + _WHERE_ + "mp > 1";
+                + '(' + SELECT_ + DBKey.FK_BOOK
+                + ",MIN(" + DBKey.BOOK_SERIES_POSITION + ')' + _AS_ + "mp"
+                + _FROM_ + TBL_BOOK_SERIES.getName()
+                + _GROUP_BY_ + DBKey.FK_BOOK
+                + ')'
+                + _WHERE_ + "mp>1";
     }
 }

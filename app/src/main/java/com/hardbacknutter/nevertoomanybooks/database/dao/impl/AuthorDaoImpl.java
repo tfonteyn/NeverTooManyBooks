@@ -708,7 +708,6 @@ public class AuthorDaoImpl
         private static final String SORT_AUTHOR_GIVEN_FIRST =
                 CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES_OB) + "=''"
                 + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
-
                 + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES_OB)
                 + "||" + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
                 + _END;
@@ -716,7 +715,6 @@ public class AuthorDaoImpl
         private static final String SORT_AUTHOR_FAMILY_FIRST =
                 CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES_OB) + "=''"
                 + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
-
                 + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
                 + "||" + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES_OB)
                 + _END;
@@ -827,13 +825,13 @@ public class AuthorDaoImpl
 
         /** Count the number of {@link Book}'s by an {@link Author}. */
         private static final String COUNT_BOOKS =
-                "SELECT COUNT(" + DBKey.FK_BOOK + ")"
+                SELECT_ + "COUNT(" + DBKey.FK_BOOK + ")"
                 + _FROM_ + TBL_BOOK_AUTHOR.getName()
                 + _WHERE_ + DBKey.FK_AUTHOR + "=?";
 
         /** Count the number of {@link TocEntry}'s by an {@link Author}. */
         private static final String COUNT_TOC_ENTRIES =
-                "SELECT COUNT(" + DBKey.PK_ID + ")"
+                SELECT_ + "COUNT(" + DBKey.PK_ID + ")"
                 + _FROM_ + TBL_TOC_ENTRIES.getName()
                 + _WHERE_ + DBKey.FK_AUTHOR + "=?";
 
@@ -853,13 +851,13 @@ public class AuthorDaoImpl
         private static final String PURGE =
                 DELETE_FROM_ + TBL_AUTHORS.getName()
                 + _WHERE_ + DBKey.PK_ID + _NOT_IN_
-                + "(SELECT DISTINCT " + DBKey.FK_AUTHOR
+                + '(' + SELECT_DISTINCT_ + DBKey.FK_AUTHOR
                 + _FROM_ + TBL_BOOK_AUTHOR.getName() + ')'
                 + _AND_ + DBKey.PK_ID + _NOT_IN_
-                + "(SELECT DISTINCT " + DBKey.FK_AUTHOR
+                + '(' + SELECT_DISTINCT_ + DBKey.FK_AUTHOR
                 + _FROM_ + TBL_TOC_ENTRIES.getName() + ')'
                 + _AND_ + DBKey.PK_ID + _NOT_IN_
-                + "(SELECT DISTINCT " + DBKey.FK_AUTHOR
+                + '(' + SELECT_DISTINCT_ + DBKey.FK_AUTHOR
                 + _FROM_ + TBL_AUTHOR_PSEUDONYMS.getName() + ')';
 
         /** {@link #getNames(String)} : 'Family name' in column 0. */
@@ -908,9 +906,11 @@ public class AuthorDaoImpl
         private static final String REPOSITION =
                 SELECT_ + DBKey.FK_BOOK
                 + _FROM_
-                + "(SELECT " + DBKey.FK_BOOK
-                + ", MIN(" + DBKey.BOOK_AUTHOR_POSITION + ')' + _AS_ + "mp"
-                + _FROM_ + TBL_BOOK_AUTHOR.getName() + _GROUP_BY_ + DBKey.FK_BOOK + ')'
-                + _WHERE_ + "mp > 1";
+                + '(' + SELECT_ + DBKey.FK_BOOK
+                + ",MIN(" + DBKey.BOOK_AUTHOR_POSITION + ')' + _AS_ + "mp"
+                + _FROM_ + TBL_BOOK_AUTHOR.getName()
+                + _GROUP_BY_ + DBKey.FK_BOOK
+                + ')'
+                + _WHERE_ + "mp>1";
     }
 }

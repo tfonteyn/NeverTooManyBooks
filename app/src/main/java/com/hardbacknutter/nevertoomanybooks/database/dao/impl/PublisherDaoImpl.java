@@ -437,7 +437,7 @@ public class PublisherDaoImpl
 
         /** Count the number of {@link Book}'s by an {@link Publisher}. */
         private static final String COUNT_BOOKS =
-                "SELECT COUNT(" + DBKey.FK_BOOK + ')'
+                SELECT_ + "COUNT(" + DBKey.FK_BOOK + ')'
                 + _FROM_ + TBL_BOOK_PUBLISHER.getName()
                 + _WHERE_ + DBKey.FK_PUBLISHER + "=?";
 
@@ -455,14 +455,17 @@ public class PublisherDaoImpl
         private static final String PURGE =
                 DELETE_FROM_ + TBL_PUBLISHERS.getName()
                 + _WHERE_ + DBKey.PK_ID + _NOT_IN_
-                + "(SELECT DISTINCT " + DBKey.FK_PUBLISHER
+                + '(' + SELECT_DISTINCT_ + DBKey.FK_PUBLISHER
                 + _FROM_ + TBL_BOOK_PUBLISHER.getName() + ')';
+
         private static final String REPOSITION =
                 SELECT_ + DBKey.FK_BOOK
                 + _FROM_
-                + "(SELECT " + DBKey.FK_BOOK
-                + ", MIN(" + DBKey.BOOK_PUBLISHER_POSITION + ')' + _AS_ + "mp"
-                + _FROM_ + TBL_BOOK_PUBLISHER.getName() + _GROUP_BY_ + DBKey.FK_BOOK + ')'
-                + _WHERE_ + "mp > 1";
+                + '(' + SELECT_ + DBKey.FK_BOOK
+                + ",MIN(" + DBKey.BOOK_PUBLISHER_POSITION + ')' + _AS_ + "mp"
+                + _FROM_ + TBL_BOOK_PUBLISHER.getName()
+                + _GROUP_BY_ + DBKey.FK_BOOK
+                + ')'
+                + _WHERE_ + "mp>1";
     }
 }
