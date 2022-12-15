@@ -189,12 +189,7 @@ public class EditPublisherDialogFragment
             if (publisher.getId() == 0) {
                 success = dao.insert(context, publisher, bookLocale) > 0;
             } else {
-                try {
-                    dao.update(context, publisher, bookLocale);
-                    success = true;
-                } catch (@NonNull final DaoWriteException e) {
-                    return false;
-                }
+                success = dao.update(context, publisher, bookLocale);
             }
         } else {
             // There is one with the same name; ask whether to merge the 2

@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import androidx.annotation.IntRange;
@@ -133,10 +132,7 @@ public class PublisherDaoImpl
             + _WHERE_ + DBKey.PK_ID + _NOT_IN_
             + "(SELECT DISTINCT " + DBKey.FK_PUBLISHER
             + _FROM_ + TBL_BOOK_PUBLISHER.getName() + ')';
-    /** log error string. */
-    private static final String ERROR_CREATING_PUBLISHER_FROM = "Failed creating publisher from\n";
-    /** log error string. */
-    private static final String ERROR_UPDATING_PUBLISHER_FROM = "Failed updating publisher from\n";
+
 
     /**
      * Constructor.
@@ -144,6 +140,7 @@ public class PublisherDaoImpl
     public PublisherDaoImpl() {
         super(TAG);
     }
+
 
     @Override
     @Nullable
@@ -328,27 +325,19 @@ public class PublisherDaoImpl
     }
 
     @Override
-    public void update(@NonNull final Context context,
-                       @NonNull final Publisher publisher,
-                       @NonNull final Locale bookLocale)
-            throws DaoWriteException {
+    public boolean update(@NonNull final Context context,
+                          @NonNull final Publisher publisher,
+                          @NonNull final Locale bookLocale) {
 
         final OrderByHelper.OrderByData obd = OrderByHelper.createOrderByData(
                 context, publisher.getName(), bookLocale, publisher::getLocale);
 
-        try {
-            final ContentValues cv = new ContentValues();
-            cv.put(DBKey.PUBLISHER_NAME, publisher.getName());
-            cv.put(DBKey.PUBLISHER_NAME_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
+        final ContentValues cv = new ContentValues();
+        cv.put(DBKey.PUBLISHER_NAME, publisher.getName());
+        cv.put(DBKey.PUBLISHER_NAME_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
 
-            final boolean success = 0 < db.update(TBL_PUBLISHERS.getName(), cv, DBKey.PK_ID + "=?",
-                                                  new String[]{String.valueOf(publisher.getId())});
-            if (!success) {
-                throw new DaoWriteException(ERROR_UPDATING_PUBLISHER_FROM + publisher);
-            }
-        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
-            throw new DaoWriteException(ERROR_UPDATING_PUBLISHER_FROM + publisher);
-        }
+        return 0 < db.update(TBL_PUBLISHERS.getName(), cv, DBKey.PK_ID + "=?",
+                             new String[]{String.valueOf(publisher.getId())});
     }
 
     @Override
