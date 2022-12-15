@@ -135,8 +135,8 @@ public class CalibreDaoImpl
     }
 
     @Override
-    public void delete(@NonNull final Book book) {
-        db.delete(TBL_CALIBRE_BOOKS.getName(), DBKey.FK_BOOK + "=?",
-                  new String[]{String.valueOf(book.getId())});
+    public boolean delete(@NonNull final Book book) {
+        return 0 < db.delete(TBL_CALIBRE_BOOKS.getName(), DBKey.FK_BOOK + "=?",
+                             new String[]{String.valueOf(book.getId())});
     }
 }

@@ -254,7 +254,6 @@ public class CalibreLibraryDaoImpl
     }
 
     @Override
-    @SuppressWarnings("UnusedReturnValue")
     public boolean delete(@NonNull final CalibreLibrary library) {
 
         final int rowsAffected;

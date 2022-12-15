@@ -251,6 +251,7 @@ public class TocEntryDaoImpl
                           @NonNull final TocEntry tocEntry) {
 
         final int rowsAffected;
+
         try (SynchronizedStatement stmt = db.compileStatement(DELETE_BY_ID)) {
             stmt.bindLong(1, tocEntry.getId());
             rowsAffected = stmt.executeUpdateDelete();

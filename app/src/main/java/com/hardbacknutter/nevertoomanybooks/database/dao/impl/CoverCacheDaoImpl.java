@@ -140,14 +140,16 @@ public class CoverCacheDaoImpl
     }
 
     @Override
-    public void delete(@NonNull final String uuid) {
+    public boolean delete(@NonNull final String uuid) {
         try {
             // starts with the uuid, remove all sizes and indexes
-            db.delete(CoversDbHelper.TBL_IMAGE.getName(), CoversDbHelper.CACHE_ID + " LIKE ?",
-                      new String[]{uuid + '%'});
+            return 0 < db.delete(CoversDbHelper.TBL_IMAGE.getName(),
+                                 CoversDbHelper.CACHE_ID + " LIKE ?",
+                                 new String[]{uuid + '%'});
         } catch (@NonNull final SQLiteException e) {
             Logger.error(TAG, e);
         }
+        return false;
     }
 
     @Override

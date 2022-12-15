@@ -398,7 +398,6 @@ public class BookshelfDaoImpl
     }
 
     @Override
-    @SuppressWarnings("UnusedReturnValue")
     public boolean delete(@NonNull final Bookshelf bookshelf) {
 
         final int rowsAffected;

@@ -285,7 +285,6 @@ public class StyleDaoImpl
 
 
     @Override
-    @SuppressWarnings("UnusedReturnValue")
     public boolean delete(@NonNull final Style style) {
 
         final int rowsAffected;

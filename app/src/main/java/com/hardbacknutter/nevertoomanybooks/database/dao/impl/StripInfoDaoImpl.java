@@ -94,8 +94,9 @@ public class StripInfoDaoImpl
     }
 
     @Override
-    public void delete(@NonNull final Book book) {
-        db.delete(DBDefinitions.TBL_STRIPINFO_COLLECTION.getName(), DBKey.FK_BOOK + "=?",
-                  new String[]{String.valueOf(book.getId())});
+    public boolean delete(@NonNull final Book book) {
+        return 0 < db.delete(DBDefinitions.TBL_STRIPINFO_COLLECTION.getName(),
+                             DBKey.FK_BOOK + "=?",
+                             new String[]{String.valueOf(book.getId())});
     }
 }

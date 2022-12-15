@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,8 +41,10 @@ public interface CoverCacheDao {
      * Delete the cached covers associated with the passed book uuid.
      *
      * @param uuid to delete
+     *
+     * @return {@code true} if a row was deleted
      */
-    void delete(@NonNull String uuid);
+    boolean delete(@NonNull String uuid);
 
     /**
      * delete all rows.

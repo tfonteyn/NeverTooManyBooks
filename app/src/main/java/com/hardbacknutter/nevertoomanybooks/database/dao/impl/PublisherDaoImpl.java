@@ -341,11 +341,11 @@ public class PublisherDaoImpl
     }
 
     @Override
-    @SuppressWarnings("UnusedReturnValue")
     public boolean delete(@NonNull final Context context,
                           @NonNull final Publisher publisher) {
 
         final int rowsAffected;
+
         try (SynchronizedStatement stmt = db.compileStatement(DELETE_BY_ID)) {
             stmt.bindLong(1, publisher.getId());
             rowsAffected = stmt.executeUpdateDelete();

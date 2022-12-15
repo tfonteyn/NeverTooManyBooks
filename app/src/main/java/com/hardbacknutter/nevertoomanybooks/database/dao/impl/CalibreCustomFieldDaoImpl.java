@@ -139,6 +139,7 @@ public class CalibreCustomFieldDaoImpl
 
     @Override
     public boolean delete(@NonNull final CalibreCustomField calibreCustomField) {
+
         final int rowsAffected;
 
         try (SynchronizedStatement stmt = db.compileStatement(DELETE_BY_ID)) {

@@ -59,6 +59,8 @@ public interface CalibreDao {
      * Delete all data related to Calibre from the database (but leaves them in the book object).
      *
      * @param book to process
+     *
+     * @return {@code true} if a row was deleted
      */
-    void delete(@NonNull Book book);
+    boolean delete(@NonNull Book book);
 }

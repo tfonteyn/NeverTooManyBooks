@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,6 +42,8 @@ public interface StripInfoDao {
      * Delete all data related to StripInfo from the database (but leaves them in the book object).
      *
      * @param book to process
+     *
+     * @return {@code true} if a row was deleted
      */
-    void delete(@NonNull Book book);
+    boolean delete(@NonNull Book book);
 }

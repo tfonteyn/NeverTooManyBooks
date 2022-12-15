@@ -382,11 +382,11 @@ public class SeriesDaoImpl
     }
 
     @Override
-    @SuppressWarnings("UnusedReturnValue")
     public boolean delete(@NonNull final Context context,
                           @NonNull final Series series) {
 
         final int rowsAffected;
+
         try (SynchronizedStatement stmt = db.compileStatement(DELETE_BY_ID)) {
             stmt.bindLong(1, series.getId());
             rowsAffected = stmt.executeUpdateDelete();
