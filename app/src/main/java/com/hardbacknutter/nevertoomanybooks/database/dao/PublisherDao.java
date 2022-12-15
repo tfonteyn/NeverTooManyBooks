@@ -56,7 +56,7 @@ public interface PublisherDao {
      *                     during for example an import.
      * @param bookLocale   Locale to use if the item has none set
      *
-     * @return the id, or 0 (i.e. 'new') when not found
+     * @return the id, or {@code 0} (i.e. 'new') when not found
      */
     long find(@NonNull Context context,
               @NonNull Publisher publisher,
@@ -72,11 +72,11 @@ public interface PublisherDao {
     ArrayList<String> getNames();
 
     /**
-     * Get a list of the Publisher for a book.
+     * Get a list of the {@link Publisher}s for a book.
      *
      * @param bookId of the book
      *
-     * @return list of Publisher
+     * @return list of {@link Publisher}s
      */
     @NonNull
     ArrayList<Publisher> getPublishersByBookId(@IntRange(from = 1) long bookId);
