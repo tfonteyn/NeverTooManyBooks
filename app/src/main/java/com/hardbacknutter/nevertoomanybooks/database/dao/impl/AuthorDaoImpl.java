@@ -909,7 +909,7 @@ public class AuthorDaoImpl
                 SELECT_ + DBKey.FK_BOOK
                 + _FROM_
                 + "(SELECT " + DBKey.FK_BOOK
-                + ", MIN(" + DBKey.BOOK_AUTHOR_POSITION + ")" + _AS_ + " mp"
+                + ", MIN(" + DBKey.BOOK_AUTHOR_POSITION + ')' + _AS_ + "mp"
                 + _FROM_ + TBL_BOOK_AUTHOR.getName() + _GROUP_BY_ + DBKey.FK_BOOK + ')'
                 + _WHERE_ + "mp > 1";
     }

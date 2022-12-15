@@ -58,85 +58,6 @@ public class BookshelfDaoImpl
     /** Log tag. */
     private static final String TAG = "BookshelfDaoImpl";
 
-    private static final String INSERT =
-            INSERT_INTO_ + TBL_BOOKSHELF.getName()
-            + '(' + DBKey.BOOKSHELF_NAME
-            + ',' + DBKey.FK_STYLE
-            + ',' + DBKey.BOOKSHELF_BL_TOP_POS
-            + ',' + DBKey.BOOKSHELF_BL_TOP_OFFSET
-            + ") VALUES (?,?,?,?)";
-
-    private static final String BOOK_LIST_NODE_STATE_BY_BOOKSHELF =
-            DELETE_FROM_ + TBL_BOOK_LIST_NODE_STATE.getName()
-            + _WHERE_ + DBKey.FK_BOOKSHELF + "=?";
-
-    /** Delete a {@link Bookshelf}. */
-    private static final String DELETE_BY_ID =
-            DELETE_FROM_ + TBL_BOOKSHELF.getName()
-            + _WHERE_ + DBKey.PK_ID + "=?";
-
-    /**
-     * Get the id of a {@link Bookshelf} by name.
-     * The lookup is by EQUALITY and CASE-SENSITIVE.
-     */
-    private static final String FIND_ID =
-            SELECT_ + DBKey.PK_ID + _FROM_ + TBL_BOOKSHELF.getName()
-            + _WHERE_ + DBKey.BOOKSHELF_NAME + "=?" + _COLLATION;
-
-    /** All {@link Bookshelf}, all columns; linked with the styles table. */
-    private static final String SELECT_ALL =
-            SELECT_ + TBL_BOOKSHELF.dotAs(DBKey.PK_ID,
-                                          DBKey.BOOKSHELF_NAME,
-                                          DBKey.BOOKSHELF_BL_TOP_POS,
-                                          DBKey.BOOKSHELF_BL_TOP_OFFSET,
-                                          DBKey.FK_STYLE)
-            + ',' + TBL_BOOKLIST_STYLES.dotAs(DBKey.STYLE_UUID)
-            + _FROM_ + TBL_BOOKSHELF.startJoin(TBL_BOOKLIST_STYLES);
-
-    /** User defined {@link Bookshelf}, all columns; linked with the styles table. */
-    private static final String SELECT_ALL_USER_SHELVES =
-            SELECT_ALL + _WHERE_ + TBL_BOOKSHELF.dot(DBKey.PK_ID) + ">0"
-            + _ORDER_BY_ + DBKey.BOOKSHELF_NAME + _COLLATION;
-
-    /** Get a {@link Bookshelf} by the Bookshelf id; linked with the styles table. */
-    private static final String SELECT_BY_ID =
-            SELECT_ALL + _WHERE_ + TBL_BOOKSHELF.dot(DBKey.PK_ID) + "=?";
-
-    /** Get a {@link Bookshelf} by its name; linked with the styles table. */
-    private static final String FIND =
-            SELECT_ALL + _WHERE_ + TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME) + "=?"
-            + _COLLATION;
-
-    /** All Bookshelves for a Book; ordered by name. */
-    private static final String BOOKSHELVES_BY_BOOK_ID =
-            SELECT_DISTINCT_ + TBL_BOOKSHELF.dotAs(DBKey.PK_ID,
-                                                   DBKey.BOOKSHELF_NAME,
-                                                   DBKey.BOOKSHELF_BL_TOP_POS,
-                                                   DBKey.BOOKSHELF_BL_TOP_OFFSET,
-                                                   DBKey.FK_STYLE)
-            + ',' + TBL_BOOKLIST_STYLES.dotAs(DBKey.STYLE_UUID)
-
-            + _FROM_ + TBL_BOOK_BOOKSHELF.startJoin(TBL_BOOKSHELF, TBL_BOOKLIST_STYLES)
-            + _WHERE_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOK) + "=?"
-            + _ORDER_BY_ + TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME) + _COLLATION;
-
-
-    private static final String SELECT_FILTERS =
-            SELECT_ + DBKey.FILTER_DBKEY + ',' + DBKey.FILTER_VALUE
-            + _FROM_ + TBL_BOOKSHELF_FILTERS.getName()
-            + _WHERE_ + DBKey.FK_BOOKSHELF + "=?";
-
-    private static final String DELETE_FILTERS =
-            DELETE_FROM_ + TBL_BOOKSHELF_FILTERS.getName()
-            + _WHERE_ + DBKey.FK_BOOKSHELF + "=?";
-
-    private static final String INSERT_FILTER =
-            INSERT_INTO_ + TBL_BOOKSHELF_FILTERS.getName()
-            + '(' + DBKey.FK_BOOKSHELF
-            + ',' + DBKey.FILTER_DBKEY
-            + ',' + DBKey.FILTER_VALUE
-            + ") VALUES (?,?,?)";
-
     /**
      * Constructor.
      */
@@ -178,7 +99,7 @@ public class BookshelfDaoImpl
     @Override
     @Nullable
     public Bookshelf getById(final long id) {
-        try (Cursor cursor = db.rawQuery(SELECT_BY_ID, new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = db.rawQuery(Sql.SELECT_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return new Bookshelf(id, new CursorRow(cursor));
             } else {
@@ -191,7 +112,7 @@ public class BookshelfDaoImpl
     @Nullable
     public Bookshelf findByName(@NonNull final String name) {
 
-        try (Cursor cursor = db.rawQuery(FIND, new String[]{name})) {
+        try (Cursor cursor = db.rawQuery(Sql.FIND, new String[]{name})) {
             if (cursor.moveToFirst()) {
                 final DataHolder rowData = new CursorRow(cursor);
                 return new Bookshelf(rowData.getLong(DBKey.PK_ID), rowData);
@@ -204,7 +125,7 @@ public class BookshelfDaoImpl
     @Override
     public long find(@NonNull final Bookshelf bookshelf) {
 
-        try (SynchronizedStatement stmt = db.compileStatement(FIND_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_ID)) {
             stmt.bindString(1, bookshelf.getName());
             return stmt.simpleQueryForLongOrZero();
         }
@@ -226,14 +147,14 @@ public class BookshelfDaoImpl
     @Override
     @NonNull
     public Cursor fetchAllUserShelves() {
-        return db.rawQuery(SELECT_ALL_USER_SHELVES, null);
+        return db.rawQuery(Sql.SELECT_ALL_USER_SHELVES, null);
     }
 
     @NonNull
     @Override
     public List<PFilter<?>> getFilters(final long bookshelfId) {
         final List<PFilter<?>> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(SELECT_FILTERS,
+        try (Cursor cursor = db.rawQuery(Sql.SELECT_FILTERS,
                                          new String[]{String.valueOf(bookshelfId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
@@ -270,7 +191,7 @@ public class BookshelfDaoImpl
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
             }
-            try (SynchronizedStatement stmt = db.compileStatement(DELETE_FILTERS)) {
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_FILTERS)) {
                 stmt.bindLong(1, bookshelfId);
                 stmt.executeUpdateDelete();
             }
@@ -279,7 +200,7 @@ public class BookshelfDaoImpl
                 return;
             }
 
-            try (SynchronizedStatement stmt = db.compileStatement(INSERT_FILTER)) {
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_FILTER)) {
                 list.forEach(filter -> {
                     stmt.bindLong(1, bookshelfId);
                     stmt.bindString(2, filter.getDBKey());
@@ -334,7 +255,7 @@ public class BookshelfDaoImpl
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
             }
-            try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                 stmt.bindString(1, bookshelf.getName());
                 stmt.bindLong(2, styleId);
                 stmt.bindLong(3, bookshelf.getFirstVisibleItemPosition());
@@ -410,7 +331,7 @@ public class BookshelfDaoImpl
 
             purgeNodeStates(bookshelf.getId());
 
-            try (SynchronizedStatement stmt = db.compileStatement(DELETE_BY_ID)) {
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
                 stmt.bindLong(1, bookshelf.getId());
                 rowsAffected = stmt.executeUpdateDelete();
             }
@@ -462,7 +383,7 @@ public class BookshelfDaoImpl
     @Override
     public void purgeNodeStates(final long bookshelfId) {
         try (SynchronizedStatement stmt = db
-                .compileStatement(BOOK_LIST_NODE_STATE_BY_BOOKSHELF)) {
+                .compileStatement(Sql.BOOK_LIST_NODE_STATE_BY_BOOKSHELF)) {
             stmt.bindLong(1, bookshelfId);
             stmt.executeUpdateDelete();
         }
@@ -472,7 +393,7 @@ public class BookshelfDaoImpl
     @NonNull
     public ArrayList<Bookshelf> getBookshelvesByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<Bookshelf> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(BOOKSHELVES_BY_BOOK_ID,
+        try (Cursor cursor = db.rawQuery(Sql.BOOKSHELVES_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
@@ -480,5 +401,87 @@ public class BookshelfDaoImpl
             }
             return list;
         }
+    }
+
+    private static class Sql {
+
+        private static final String INSERT =
+                INSERT_INTO_ + TBL_BOOKSHELF.getName()
+                + '(' + DBKey.BOOKSHELF_NAME
+                + ',' + DBKey.FK_STYLE
+                + ',' + DBKey.BOOKSHELF_BL_TOP_POS
+                + ',' + DBKey.BOOKSHELF_BL_TOP_OFFSET
+                + ") VALUES (?,?,?,?)";
+
+        private static final String BOOK_LIST_NODE_STATE_BY_BOOKSHELF =
+                DELETE_FROM_ + TBL_BOOK_LIST_NODE_STATE.getName()
+                + _WHERE_ + DBKey.FK_BOOKSHELF + "=?";
+
+        /** Delete a {@link Bookshelf}. */
+        private static final String DELETE_BY_ID =
+                DELETE_FROM_ + TBL_BOOKSHELF.getName()
+                + _WHERE_ + DBKey.PK_ID + "=?";
+
+        /**
+         * Get the id of a {@link Bookshelf} by name.
+         * The lookup is by EQUALITY and CASE-SENSITIVE.
+         */
+        private static final String FIND_ID =
+                SELECT_ + DBKey.PK_ID
+                + _FROM_ + TBL_BOOKSHELF.getName()
+                + _WHERE_ + DBKey.BOOKSHELF_NAME + "=?" + _COLLATION;
+
+        /** All {@link Bookshelf}, all columns; linked with the styles table. */
+        private static final String SELECT_ALL =
+                SELECT_ + TBL_BOOKSHELF.dotAs(DBKey.PK_ID,
+                                              DBKey.BOOKSHELF_NAME,
+                                              DBKey.BOOKSHELF_BL_TOP_POS,
+                                              DBKey.BOOKSHELF_BL_TOP_OFFSET,
+                                              DBKey.FK_STYLE)
+                + ',' + TBL_BOOKLIST_STYLES.dotAs(DBKey.STYLE_UUID)
+                + _FROM_ + TBL_BOOKSHELF.startJoin(TBL_BOOKLIST_STYLES);
+
+        /** Get a {@link Bookshelf} by its name; linked with the styles table. */
+        private static final String FIND =
+                SELECT_ALL
+                + _WHERE_ + TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME) + "=?" + _COLLATION;
+
+        /** Get a {@link Bookshelf} by the Bookshelf id; linked with the styles table. */
+        private static final String SELECT_BY_ID =
+                SELECT_ALL + _WHERE_ + TBL_BOOKSHELF.dot(DBKey.PK_ID) + "=?";
+
+        /** User defined {@link Bookshelf}, all columns; linked with the styles table. */
+        private static final String SELECT_ALL_USER_SHELVES =
+                SELECT_ALL + _WHERE_ + TBL_BOOKSHELF.dot(DBKey.PK_ID) + ">0"
+                + _ORDER_BY_ + DBKey.BOOKSHELF_NAME + _COLLATION;
+
+        /** All Bookshelves for a Book; ordered by name. */
+        private static final String BOOKSHELVES_BY_BOOK_ID =
+                SELECT_DISTINCT_ + TBL_BOOKSHELF.dotAs(DBKey.PK_ID,
+                                                       DBKey.BOOKSHELF_NAME,
+                                                       DBKey.BOOKSHELF_BL_TOP_POS,
+                                                       DBKey.BOOKSHELF_BL_TOP_OFFSET,
+                                                       DBKey.FK_STYLE)
+                + ',' + TBL_BOOKLIST_STYLES.dotAs(DBKey.STYLE_UUID)
+
+                + _FROM_ + TBL_BOOK_BOOKSHELF.startJoin(TBL_BOOKSHELF, TBL_BOOKLIST_STYLES)
+                + _WHERE_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOK) + "=?"
+                + _ORDER_BY_ + TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME) + _COLLATION;
+
+        private static final String SELECT_FILTERS =
+                SELECT_ + DBKey.FILTER_DBKEY + ',' + DBKey.FILTER_VALUE
+                + _FROM_ + TBL_BOOKSHELF_FILTERS.getName()
+                + _WHERE_ + DBKey.FK_BOOKSHELF + "=?";
+
+        private static final String DELETE_FILTERS =
+                DELETE_FROM_ + TBL_BOOKSHELF_FILTERS.getName()
+                + _WHERE_ + DBKey.FK_BOOKSHELF + "=?";
+
+        private static final String INSERT_FILTER =
+                INSERT_INTO_ + TBL_BOOKSHELF_FILTERS.getName()
+                + '(' + DBKey.FK_BOOKSHELF
+                + ',' + DBKey.FILTER_DBKEY
+                + ',' + DBKey.FILTER_VALUE
+                + ") VALUES (?,?,?)";
     }
 }

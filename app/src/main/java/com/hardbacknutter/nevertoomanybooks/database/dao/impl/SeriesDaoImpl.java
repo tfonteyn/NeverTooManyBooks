@@ -411,7 +411,6 @@ public class SeriesDaoImpl
 
     private static class Sql {
 
-
         /** All Books (id only) for a given Series. */
         private static final String SELECT_BOOK_IDS_BY_SERIES_ID =
                 SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID)
@@ -504,7 +503,7 @@ public class SeriesDaoImpl
                 SELECT_ + DBKey.FK_BOOK
                 + _FROM_
                 + "(SELECT " + DBKey.FK_BOOK
-                + ", MIN(" + DBKey.BOOK_SERIES_POSITION + ") AS mp"
+                + ", MIN(" + DBKey.BOOK_SERIES_POSITION + ')' + _AS_ + "mp"
                 + _FROM_ + TBL_BOOK_SERIES.getName() + _GROUP_BY_ + DBKey.FK_BOOK + ')'
                 + _WHERE_ + "mp > 1";
     }
