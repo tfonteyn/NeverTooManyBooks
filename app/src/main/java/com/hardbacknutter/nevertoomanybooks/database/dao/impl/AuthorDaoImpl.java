@@ -855,10 +855,10 @@ public class AuthorDaoImpl
                 + _WHERE_ + DBKey.PK_ID + _NOT_IN_
                 + "(SELECT DISTINCT " + DBKey.FK_AUTHOR
                 + _FROM_ + TBL_BOOK_AUTHOR.getName() + ')'
-                + " AND " + DBKey.PK_ID + _NOT_IN_
+                + _AND_ + DBKey.PK_ID + _NOT_IN_
                 + "(SELECT DISTINCT " + DBKey.FK_AUTHOR
                 + _FROM_ + TBL_TOC_ENTRIES.getName() + ')'
-                + " AND " + DBKey.PK_ID + _NOT_IN_
+                + _AND_ + DBKey.PK_ID + _NOT_IN_
                 + "(SELECT DISTINCT " + DBKey.FK_AUTHOR
                 + _FROM_ + TBL_AUTHOR_PSEUDONYMS.getName() + ')';
 
@@ -910,7 +910,7 @@ public class AuthorDaoImpl
                 + _FROM_
                 + "(SELECT " + DBKey.FK_BOOK
                 + ", MIN(" + DBKey.BOOK_AUTHOR_POSITION + ")" + _AS_ + " mp"
-                + _FROM_ + TBL_BOOK_AUTHOR.getName() + " GROUP BY " + DBKey.FK_BOOK + ')'
+                + _FROM_ + TBL_BOOK_AUTHOR.getName() + _GROUP_BY_ + DBKey.FK_BOOK + ')'
                 + _WHERE_ + "mp > 1";
     }
 }
