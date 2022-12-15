@@ -70,188 +70,9 @@ public class AuthorDaoImpl
     private static final String TAG = "AuthorDaoImpl";
 
     /** log error string. */
-    private static final String ERROR_CREATING_AUTHOR_FROM = "Failed creating author from\n";
+    private static final String ERROR_INSERT_FROM = "Insert from\n";
     /** log error string. */
-    private static final String ERROR_UPDATING_AUTHOR_FROM = "Failed updating author from\n";
-
-    private static final String CASE_WHEN_ = "CASE WHEN ";
-    private static final String _THEN_ = " THEN ";
-    private static final String _ELSE_ = " ELSE ";
-    private static final String _END = " END";
-
-    /** All Books (id only!) for a given Author. */
-    private static final String SELECT_BOOK_IDS_BY_AUTHOR_ID =
-            SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID)
-            + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_BOOKS)
-            + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR) + "=?";
-
-    /** All Books (id only!) for a given Author and Bookshelf. */
-    private static final String SELECT_BOOK_IDS_BY_AUTHOR_ID_AND_BOOKSHELF_ID =
-            SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID)
-            + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_BOOKS, TBL_BOOK_BOOKSHELF)
-            + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR) + "=?"
-            + _AND_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOKSHELF) + "=?";
-
-    /**
-     * All Book titles and their first pub. date, for an Author, returned as an {@link AuthorWork}.
-     * <p>
-     * ORDER BY clause NOT added here, as this statement is used in a union as well.
-     * <p>
-     * The pub. date is cut down to the year (4 year digits) only.
-     * We need TITLE_OB as it will be used to ORDER BY
-     */
-    private static final String SELECT_BOOK_TITLES_BY_AUTHOR_ID =
-            SELECT_
-            + "'" + AuthorWork.Type.BookLight.asChar() + "'" + _AS_ + DBKey.AUTHOR_WORK_TYPE
-            + ',' + TBL_BOOKS.dotAs(DBKey.PK_ID, DBKey.TITLE, DBKey.TITLE_OB)
-            + ",SUBSTR(" + TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION__DATE) + ",0,5)" +
-            _AS_ + DBKey.FIRST_PUBLICATION__DATE
-            + ',' + TBL_BOOKS.dotAs(DBKey.LANGUAGE)
-            + ",1" + _AS_ + DBKey.BOOK_COUNT
-            + _FROM_ + TBL_BOOKS.startJoin(TBL_BOOK_AUTHOR);
-
-
-    /** {@link Author}, all columns. */
-    private static final String SELECT_ALL =
-            "SELECT " + TBL_AUTHORS.dot("*")
-            + ',' + TBL_AUTHOR_PSEUDONYMS.dotAs(DBKey.AUTHOR_PSEUDONYM)
-            + _FROM_ + TBL_AUTHORS.ref() + TBL_AUTHORS.leftOuterJoin(TBL_AUTHOR_PSEUDONYMS);
-
-    /**
-     * All {@link TocEntry}'s for an Author, returned as an {@link AuthorWork}.
-     * <p>
-     * ORDER BY clause NOT added here, as this statement is used in a union as well.
-     * <p>
-     * The pub. date is cut down to the year (4 year digits) only.
-     * We need TITLE_OB as it will be used to ORDER BY
-     */
-    private static final String SELECT_TOC_ENTRIES_BY_AUTHOR_ID =
-            SELECT_
-            + "'" + AuthorWork.Type.TocEntry.asChar() + "'" + _AS_ + DBKey.AUTHOR_WORK_TYPE
-            + ',' + TBL_TOC_ENTRIES.dotAs(DBKey.PK_ID, DBKey.TITLE, DBKey.TITLE_OB)
-            // Year only
-            + ",SUBSTR(" + TBL_TOC_ENTRIES.dot(DBKey.FIRST_PUBLICATION__DATE) + ",0,5)" +
-            _AS_ + DBKey.FIRST_PUBLICATION__DATE
-            // The Toc table does not have a language field, just return an empty string
-            + ",''" + _AS_ + DBKey.LANGUAGE
-            // count the number of books this TOC entry is present in.
-            + ", COUNT(" + TBL_TOC_ENTRIES.dot(DBKey.PK_ID) + ")" + _AS_ + DBKey.BOOK_COUNT
-            // join with the books, so we can group by toc id, and get the number of books.
-            + _FROM_ + TBL_TOC_ENTRIES.startJoin(TBL_BOOK_TOC_ENTRIES);
-
-    /** Get an {@link Author} by the Author id. */
-    private static final String SELECT_BY_ID = SELECT_ALL + _WHERE_ + DBKey.PK_ID + "=?";
-
-    private static final String COUNT_ALL = SELECT_COUNT_FROM_ + TBL_AUTHORS.getName();
-
-    /**
-     * Get the id of a {@link Author} by name.
-     * The lookup is by EQUALITY and CASE-SENSITIVE.
-     * Can return more than one row if the AUTHOR_GIVEN_NAMES_OB is empty.
-     */
-    private static final String FIND_ID =
-            SELECT_ + DBKey.PK_ID + _FROM_ + TBL_AUTHORS.getName()
-            + _WHERE_ + DBKey.AUTHOR_FAMILY_NAME_OB + "=?" + _COLLATION
-            + _AND_ + DBKey.AUTHOR_GIVEN_NAMES_OB + "=?" + _COLLATION;
-
-    /** Count the number of {@link Book}'s by an {@link Author}. */
-    private static final String COUNT_BOOKS =
-            "SELECT COUNT(" + DBKey.FK_BOOK + ") FROM " + TBL_BOOK_AUTHOR.getName()
-            + _WHERE_ + DBKey.FK_AUTHOR + "=?";
-
-    /** Count the number of {@link TocEntry}'s by an {@link Author}. */
-    private static final String COUNT_TOC_ENTRIES =
-            "SELECT COUNT(" + DBKey.PK_ID + ") FROM " + TBL_TOC_ENTRIES.getName()
-            + _WHERE_ + DBKey.FK_AUTHOR + "=?";
-
-    private static final String INSERT =
-            INSERT_INTO_ + TBL_AUTHORS.getName()
-            + '(' + DBKey.AUTHOR_FAMILY_NAME + ',' + DBKey.AUTHOR_FAMILY_NAME_OB
-            + ',' + DBKey.AUTHOR_GIVEN_NAMES + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB
-            + ',' + DBKey.AUTHOR_IS_COMPLETE
-            + ") VALUES (?,?,?,?,?)";
-
-    /** Delete an {@link Author}. */
-    private static final String DELETE_BY_ID =
-            DELETE_FROM_ + TBL_AUTHORS.getName() + _WHERE_ + DBKey.PK_ID + "=?";
-
-    /** Purge an {@link Author} if no longer in use. */
-    private static final String PURGE =
-            DELETE_FROM_ + TBL_AUTHORS.getName()
-            + _WHERE_ + DBKey.PK_ID + _NOT_IN_
-            + "(SELECT DISTINCT " + DBKey.FK_AUTHOR + _FROM_ + TBL_BOOK_AUTHOR.getName() + ')'
-            + " AND " + DBKey.PK_ID + _NOT_IN_
-            + "(SELECT DISTINCT " + DBKey.FK_AUTHOR + _FROM_ + TBL_TOC_ENTRIES.getName() + ')'
-            + " AND " + DBKey.PK_ID + _NOT_IN_
-            + "(SELECT DISTINCT " + DBKey.FK_AUTHOR + _FROM_ + TBL_AUTHOR_PSEUDONYMS.getName() + ')';
-
-
-    private static final String DISPLAY_AUTHOR_FAMILY_FIRST =
-            CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES) + "=''"
-            + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME)
-            + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME)
-            + "||', '||" + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES)
-            + _END;
-    /** {@link #getNames(String)} : 'Display name' in column 0. */
-    private static final String SELECT_ALL_NAMES_FORMATTED_FAMILY_FIRST =
-            SELECT_ + DISPLAY_AUTHOR_FAMILY_FIRST
-            + _FROM_ + TBL_AUTHORS.ref()
-            + _ORDER_BY_ + DBKey.AUTHOR_FAMILY_NAME_OB + _COLLATION
-            + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB + _COLLATION;
-    private static final String DISPLAY_AUTHOR_GIVEN_FIRST =
-            CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES) + "=''"
-            + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME)
-            + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES)
-            + "||' '||" + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME)
-            + _END;
-    /** {@link #getNames(String)} : 'Display name' in column 0. */
-    private static final String SELECT_ALL_NAMES_FORMATTED_GIVEN_FIRST =
-            SELECT_ + DISPLAY_AUTHOR_GIVEN_FIRST
-            + _FROM_ + TBL_AUTHORS.ref()
-            + _ORDER_BY_ + DBKey.AUTHOR_FAMILY_NAME_OB + _COLLATION
-            + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB + _COLLATION;
-    private static final String SORT_AUTHOR_FAMILY_FIRST =
-            CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES_OB) + "=''"
-            + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
-
-            + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
-            + "||" + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES_OB)
-            + _END;
-    private static final String SORT_AUTHOR_GIVEN_FIRST =
-            CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES_OB) + "=''"
-            + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
-
-            + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES_OB)
-            + "||" + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
-            + _END;
-    /** {@link #getNames(String)} : 'Family name' in column 0. */
-    private static final String SELECT_ALL_FAMILY_NAMES =
-            SELECT_DISTINCT_ + DBKey.AUTHOR_FAMILY_NAME + _FROM_ + TBL_AUTHORS.getName()
-            + _ORDER_BY_ + DBKey.AUTHOR_FAMILY_NAME_OB + _COLLATION;
-    /** {@link #getNames(String)} : 'Given name' in column 0. */
-    private static final String SELECT_ALL_GIVEN_NAMES =
-            SELECT_DISTINCT_ + DBKey.AUTHOR_GIVEN_NAMES + _FROM_ + TBL_AUTHORS.getName()
-            + _WHERE_ + DBKey.AUTHOR_GIVEN_NAMES_OB + "<> ''"
-            + _ORDER_BY_ + DBKey.AUTHOR_GIVEN_NAMES_OB + _COLLATION;
-    /** All Authors for a Book; ordered by position, family, given. */
-    private static final String AUTHORS_BY_BOOK_ID =
-            SELECT_DISTINCT_ + TBL_AUTHORS.dotAs(DBKey.PK_ID,
-                                                 DBKey.AUTHOR_FAMILY_NAME,
-                                                 DBKey.AUTHOR_GIVEN_NAMES,
-                                                 DBKey.AUTHOR_IS_COMPLETE)
-
-            + ',' + TBL_BOOK_AUTHOR.dotAs(DBKey.BOOK_AUTHOR_POSITION,
-                                          DBKey.AUTHOR_TYPE__BITMASK)
-
-            + ',' + TBL_AUTHOR_PSEUDONYMS.dotAs(DBKey.AUTHOR_PSEUDONYM)
-
-            + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_AUTHORS)
-            + TBL_AUTHORS.leftOuterJoin(TBL_AUTHOR_PSEUDONYMS)
-            + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_BOOK) + "=?"
-
-            + _ORDER_BY_ + TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_POSITION)
-            + ',' + DBKey.AUTHOR_FAMILY_NAME_OB + _COLLATION
-            + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB + _COLLATION;
+    private static final String ERROR_UPDATE_FROM = "Update from\n";
 
     private static final String[] Z_ARRAY_STRING = new String[0];
 
@@ -279,9 +100,9 @@ public class AuthorDaoImpl
     @NonNull
     public static String getSortingDomainExpression(final boolean givenNameFirst) {
         if (givenNameFirst) {
-            return SORT_AUTHOR_GIVEN_FIRST;
+            return Sql.SORT_AUTHOR_GIVEN_FIRST;
         } else {
-            return SORT_AUTHOR_FAMILY_FIRST;
+            return Sql.SORT_AUTHOR_FAMILY_FIRST;
         }
     }
 
@@ -300,16 +121,16 @@ public class AuthorDaoImpl
     @NonNull
     public static String getDisplayDomainExpression(final boolean givenNameFirst) {
         if (givenNameFirst) {
-            return DISPLAY_AUTHOR_GIVEN_FIRST;
+            return Sql.DISPLAY_AUTHOR_GIVEN_FIRST;
         } else {
-            return DISPLAY_AUTHOR_FAMILY_FIRST;
+            return Sql.DISPLAY_AUTHOR_FAMILY_FIRST;
         }
     }
 
     @Override
     @Nullable
     public Author getById(final long id) {
-        try (Cursor cursor = db.rawQuery(SELECT_BY_ID, new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = db.rawQuery(Sql.SELECT_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return new Author(id, new CursorRow(cursor));
             } else {
@@ -331,7 +152,7 @@ public class AuthorDaoImpl
             authorLocale = bookLocale;
         }
 
-        try (SynchronizedStatement stmt = db.compileStatement(FIND_ID)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_ID)) {
             stmt.bindString(1, SqlEncode.orderByColumn(author.getFamilyName(), authorLocale));
             stmt.bindString(2, SqlEncode.orderByColumn(author.getGivenNames(), authorLocale));
             return stmt.simpleQueryForLongOrZero();
@@ -343,16 +164,16 @@ public class AuthorDaoImpl
     public ArrayList<String> getNames(@NonNull final String key) {
         switch (key) {
             case DBKey.AUTHOR_FAMILY_NAME:
-                return getColumnAsStringArrayList(SELECT_ALL_FAMILY_NAMES);
+                return getColumnAsStringArrayList(Sql.SELECT_ALL_FAMILY_NAMES);
 
             case DBKey.AUTHOR_GIVEN_NAMES:
-                return getColumnAsStringArrayList(SELECT_ALL_GIVEN_NAMES);
+                return getColumnAsStringArrayList(Sql.SELECT_ALL_GIVEN_NAMES);
 
             case DBKey.AUTHOR_FORMATTED:
-                return getColumnAsStringArrayList(SELECT_ALL_NAMES_FORMATTED_FAMILY_FIRST);
+                return getColumnAsStringArrayList(Sql.SELECT_ALL_NAMES_FORMATTED_FAMILY_FIRST);
 
             case DBKey.AUTHOR_FORMATTED_GIVEN_FIRST:
-                return getColumnAsStringArrayList(SELECT_ALL_NAMES_FORMATTED_GIVEN_FIRST);
+                return getColumnAsStringArrayList(Sql.SELECT_ALL_NAMES_FORMATTED_GIVEN_FIRST);
 
             default:
                 throw new IllegalArgumentException(key);
@@ -363,7 +184,7 @@ public class AuthorDaoImpl
     @NonNull
     public ArrayList<Author> getAuthorsByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<Author> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(AUTHORS_BY_BOOK_ID,
+        try (Cursor cursor = db.rawQuery(Sql.AUTHORS_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
@@ -377,7 +198,7 @@ public class AuthorDaoImpl
     @NonNull
     public ArrayList<Long> getBookIds(final long authorId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(SELECT_BOOK_IDS_BY_AUTHOR_ID,
+        try (Cursor cursor = db.rawQuery(Sql.SELECT_BOOK_IDS_BY_AUTHOR_ID,
                                          new String[]{String.valueOf(authorId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
@@ -391,7 +212,7 @@ public class AuthorDaoImpl
     public ArrayList<Long> getBookIds(final long authorId,
                                       final long bookshelfId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = db.rawQuery(SELECT_BOOK_IDS_BY_AUTHOR_ID_AND_BOOKSHELF_ID,
+        try (Cursor cursor = db.rawQuery(Sql.SELECT_BOOK_IDS_BY_AUTHOR_ID_AND_BOOKSHELF_ID,
                                          new String[]{String.valueOf(authorId),
                                                  String.valueOf(bookshelfId)})) {
             while (cursor.moveToNext()) {
@@ -434,7 +255,7 @@ public class AuthorDaoImpl
         // MUST be toc first, books second; otherwise the GROUP BY is done on the whole
         // UNION instead of on the toc only; and SqLite rejects () around the sub selects.
         if (withTocEntries) {
-            sql += SELECT_TOC_ENTRIES_BY_AUTHOR_ID
+            sql += Sql.SELECT_TOC_ENTRIES_BY_AUTHOR_ID
                    + (byShelf ? " JOIN " + TBL_BOOK_BOOKSHELF.ref()
                                 + " ON (" + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_BOOK)
                                 + '=' + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOK) + ")"
@@ -453,7 +274,7 @@ public class AuthorDaoImpl
         }
 
         if (withBooks) {
-            sql += SELECT_BOOK_TITLES_BY_AUTHOR_ID
+            sql += Sql.SELECT_BOOK_TITLES_BY_AUTHOR_ID
                    + (byShelf ? TBL_BOOKS.join(TBL_BOOK_BOOKSHELF) : "")
                    + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR) + "=?"
                    + (byShelf ? _AND_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOKSHELF) + "=?" : "");
@@ -501,12 +322,12 @@ public class AuthorDaoImpl
     @Override
     @NonNull
     public Cursor fetchAll() {
-        return db.rawQuery(SELECT_ALL, null);
+        return db.rawQuery(Sql.SELECT_ALL, null);
     }
 
     @Override
     public long count() {
-        try (SynchronizedStatement stmt = db.compileStatement(COUNT_ALL)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_ALL)) {
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -522,7 +343,7 @@ public class AuthorDaoImpl
             }
         }
 
-        try (SynchronizedStatement stmt = db.compileStatement(COUNT_BOOKS)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_BOOKS)) {
             stmt.bindLong(1, author.getId());
             return stmt.simpleQueryForLongOrZero();
         }
@@ -539,7 +360,7 @@ public class AuthorDaoImpl
             }
         }
 
-        try (SynchronizedStatement stmt = db.compileStatement(COUNT_TOC_ENTRIES)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.COUNT_TOC_ENTRIES)) {
             stmt.bindLong(1, author.getId());
             return stmt.simpleQueryForLongOrZero();
         }
@@ -635,7 +456,7 @@ public class AuthorDaoImpl
 
             final long iId;
 
-            try (SynchronizedStatement stmt = db.compileStatement(INSERT)) {
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                 stmt.bindString(1, author.getFamilyName());
                 stmt.bindString(2, SqlEncode.orderByColumn(author.getFamilyName(), authorLocale));
                 stmt.bindString(3, author.getGivenNames());
@@ -662,45 +483,15 @@ public class AuthorDaoImpl
                 return iId;
 
             } else {
-                throw new DaoWriteException(ERROR_CREATING_AUTHOR_FROM + author);
+                throw new DaoWriteException(ERROR_INSERT_FROM + author);
             }
         } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
-            throw new DaoWriteException(ERROR_CREATING_AUTHOR_FROM + author, e);
+            throw new DaoWriteException(ERROR_INSERT_FROM + author, e);
 
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
             }
-        }
-    }
-
-    private void insertPseudonymLink(final long authorID,
-                                     final long realAuthorId)
-            throws DaoWriteException {
-        try (SynchronizedStatement stmt = db.compileStatement(
-                INSERT_INTO_ + TBL_AUTHOR_PSEUDONYMS.getName()
-                + '(' + DBKey.FK_AUTHOR
-                + ',' + DBKey.AUTHOR_PSEUDONYM
-                + ") VALUES (?,?)")) {
-            stmt.bindLong(1, authorID);
-            stmt.bindLong(2, realAuthorId);
-            stmt.executeInsert();
-
-        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
-            throw new DaoWriteException("Failed to insert PseudonymLink author=" + authorID
-                                        + ", real=" + realAuthorId, e);
-        }
-    }
-
-    private void deletePseudonymLink(final long authorID)
-            throws DaoWriteException {
-        try (SynchronizedStatement stmt = db.compileStatement(
-                DELETE_FROM_ + TBL_AUTHOR_PSEUDONYMS.getName()
-                + _WHERE_ + DBKey.FK_AUTHOR + "=?")) {
-            stmt.bindLong(1, authorID);
-            stmt.executeUpdateDelete();
-        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
-            throw new DaoWriteException("Failed to delete PseudonymLink author=" + authorID, e);
         }
     }
 
@@ -744,10 +535,10 @@ public class AuthorDaoImpl
                     db.setTransactionSuccessful();
                 }
             } else {
-                throw new DaoWriteException(ERROR_UPDATING_AUTHOR_FROM + author);
+                throw new DaoWriteException(ERROR_UPDATE_FROM + author);
             }
         } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
-            throw new DaoWriteException(ERROR_UPDATING_AUTHOR_FROM + author);
+            throw new DaoWriteException(ERROR_UPDATE_FROM + author);
 
         } finally {
             if (txLock != null) {
@@ -757,12 +548,12 @@ public class AuthorDaoImpl
     }
 
     @Override
-    @SuppressWarnings("UnusedReturnValue")
     public boolean delete(@NonNull final Context context,
                           @NonNull final Author author) {
 
         final int rowsAffected;
-        try (SynchronizedStatement stmt = db.compileStatement(DELETE_BY_ID)) {
+
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_BY_ID)) {
             stmt.bindLong(1, author.getId());
             rowsAffected = stmt.executeUpdateDelete();
         }
@@ -772,6 +563,27 @@ public class AuthorDaoImpl
             repositionAuthor(context);
         }
         return rowsAffected == 1;
+    }
+
+    private void insertPseudonymLink(final long authorID,
+                                     final long realAuthorId)
+            throws DaoWriteException {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_PSEUDONYM_LINKS)) {
+            stmt.bindLong(1, authorID);
+            stmt.bindLong(2, realAuthorId);
+            final long id = stmt.executeInsert();
+            if (id < 0) {
+                throw new DaoWriteException("Failed to insert PseudonymLink author=" + authorID
+                                            + ", real=" + realAuthorId);
+            }
+        }
+    }
+
+    private void deletePseudonymLink(final long authorID) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_PSEUDONYM_LINKS)) {
+            stmt.bindLong(1, authorID);
+            stmt.executeUpdateDelete();
+        }
     }
 
     @Override
@@ -836,7 +648,7 @@ public class AuthorDaoImpl
 
     @Override
     public void purge() {
-        try (SynchronizedStatement stmt = db.compileStatement(PURGE)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.PURGE)) {
             stmt.executeUpdateDelete();
         }
     }
@@ -847,14 +659,8 @@ public class AuthorDaoImpl
     // as compared to the single stmt approach here.
     @Override
     public int repositionAuthor(@NonNull final Context context) {
-        final String sql =
-                "SELECT " + DBKey.FK_BOOK + " FROM "
-                + "(SELECT " + DBKey.FK_BOOK
-                + ", MIN(" + DBKey.BOOK_AUTHOR_POSITION + ")" + _AS_ + " mp"
-                + " FROM " + TBL_BOOK_AUTHOR.getName() + " GROUP BY " + DBKey.FK_BOOK
-                + ") WHERE mp > 1";
 
-        final ArrayList<Long> bookIds = getColumnAsLongArrayList(sql);
+        final ArrayList<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.w(TAG, "repositionAuthor|" + TBL_BOOK_AUTHOR.getName()
@@ -891,5 +697,220 @@ public class AuthorDaoImpl
             }
         }
         return bookIds.size();
+    }
+
+    private static class Sql {
+
+        private static final String CASE_WHEN_ = "CASE WHEN ";
+        private static final String _THEN_ = " THEN ";
+        private static final String _ELSE_ = " ELSE ";
+        private static final String _END = " END";
+        private static final String SORT_AUTHOR_GIVEN_FIRST =
+                CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES_OB) + "=''"
+                + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
+
+                + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES_OB)
+                + "||" + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
+                + _END;
+
+        private static final String SORT_AUTHOR_FAMILY_FIRST =
+                CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES_OB) + "=''"
+                + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
+
+                + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB)
+                + "||" + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES_OB)
+                + _END;
+
+        private static final String DISPLAY_AUTHOR_GIVEN_FIRST =
+                CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES) + "=''"
+                + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME)
+                + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES)
+                + "||' '||" + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME)
+                + _END;
+
+        /** {@link #getNames(String)} : 'Display name' in column 0. */
+        private static final String SELECT_ALL_NAMES_FORMATTED_GIVEN_FIRST =
+                SELECT_ + DISPLAY_AUTHOR_GIVEN_FIRST
+                + _FROM_ + TBL_AUTHORS.ref()
+                + _ORDER_BY_ + DBKey.AUTHOR_FAMILY_NAME_OB + _COLLATION
+                + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB + _COLLATION;
+
+        private static final String DISPLAY_AUTHOR_FAMILY_FIRST =
+                CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES) + "=''"
+                + _THEN_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME)
+                + _ELSE_ + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME)
+                + "||', '||" + TBL_AUTHORS.dot(DBKey.AUTHOR_GIVEN_NAMES)
+                + _END;
+
+        /** {@link #getNames(String)} : 'Display name' in column 0. */
+        private static final String SELECT_ALL_NAMES_FORMATTED_FAMILY_FIRST =
+                SELECT_ + DISPLAY_AUTHOR_FAMILY_FIRST
+                + _FROM_ + TBL_AUTHORS.ref()
+                + _ORDER_BY_ + DBKey.AUTHOR_FAMILY_NAME_OB + _COLLATION
+                + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB + _COLLATION;
+
+        /** All Books (id only!) for a given Author. */
+        private static final String SELECT_BOOK_IDS_BY_AUTHOR_ID =
+                SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID)
+                + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_BOOKS)
+                + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR) + "=?";
+
+        /** All Books (id only!) for a given Author and Bookshelf. */
+        private static final String SELECT_BOOK_IDS_BY_AUTHOR_ID_AND_BOOKSHELF_ID =
+                SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID)
+                + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_BOOKS, TBL_BOOK_BOOKSHELF)
+                + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR) + "=?"
+                + _AND_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOKSHELF) + "=?";
+
+        /**
+         * All Book titles and their first pub. date, for an Author,
+         * returned as an {@link AuthorWork}.
+         * <p>
+         * ORDER BY clause NOT added here, as this statement is used in a union as well.
+         * <p>
+         * The pub. date is cut down to the year (4 year digits) only.
+         * We need TITLE_OB as it will be used to ORDER BY
+         */
+        private static final String SELECT_BOOK_TITLES_BY_AUTHOR_ID =
+                SELECT_
+                + "'" + AuthorWork.Type.BookLight.asChar() + "'" + _AS_ + DBKey.AUTHOR_WORK_TYPE
+                + ',' + TBL_BOOKS.dotAs(DBKey.PK_ID, DBKey.TITLE, DBKey.TITLE_OB)
+                + ",SUBSTR(" + TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION__DATE) + ",0,5)" +
+                _AS_ + DBKey.FIRST_PUBLICATION__DATE
+                + ',' + TBL_BOOKS.dotAs(DBKey.LANGUAGE)
+                + ",1" + _AS_ + DBKey.BOOK_COUNT
+                + _FROM_ + TBL_BOOKS.startJoin(TBL_BOOK_AUTHOR);
+
+        /** {@link Author}, all columns. */
+        private static final String SELECT_ALL =
+                SELECT_ + TBL_AUTHORS.dot("*")
+                + ',' + TBL_AUTHOR_PSEUDONYMS.dotAs(DBKey.AUTHOR_PSEUDONYM)
+                + _FROM_ + TBL_AUTHORS.ref() + TBL_AUTHORS.leftOuterJoin(TBL_AUTHOR_PSEUDONYMS);
+
+        /** Get an {@link Author} by the Author id. */
+        private static final String SELECT_BY_ID = SELECT_ALL + _WHERE_ + DBKey.PK_ID + "=?";
+
+        /**
+         * All {@link TocEntry}'s for an Author, returned as an {@link AuthorWork}.
+         * <p>
+         * ORDER BY clause NOT added here, as this statement is used in a union as well.
+         * <p>
+         * The pub. date is cut down to the year (4 year digits) only.
+         * We need TITLE_OB as it will be used to ORDER BY
+         */
+        private static final String SELECT_TOC_ENTRIES_BY_AUTHOR_ID =
+                SELECT_
+                + "'" + AuthorWork.Type.TocEntry.asChar() + "'" + _AS_ + DBKey.AUTHOR_WORK_TYPE
+                + ',' + TBL_TOC_ENTRIES.dotAs(DBKey.PK_ID, DBKey.TITLE, DBKey.TITLE_OB)
+                // Year only
+                + ",SUBSTR(" + TBL_TOC_ENTRIES.dot(DBKey.FIRST_PUBLICATION__DATE) + ",0,5)" +
+                _AS_ + DBKey.FIRST_PUBLICATION__DATE
+                // The Toc table does not have a language field, just return an empty string
+                + ",''" + _AS_ + DBKey.LANGUAGE
+                // count the number of books this TOC entry is present in.
+                + ", COUNT(" + TBL_TOC_ENTRIES.dot(DBKey.PK_ID) + ")" + _AS_ + DBKey.BOOK_COUNT
+                // join with the books, so we can group by toc id, and get the number of books.
+                + _FROM_ + TBL_TOC_ENTRIES.startJoin(TBL_BOOK_TOC_ENTRIES);
+
+        private static final String COUNT_ALL = SELECT_COUNT_FROM_ + TBL_AUTHORS.getName();
+
+        /**
+         * Get the id of a {@link Author} by name.
+         * The lookup is by EQUALITY and CASE-SENSITIVE.
+         * Can return more than one row if the AUTHOR_GIVEN_NAMES_OB is empty.
+         */
+        private static final String FIND_ID =
+                SELECT_ + DBKey.PK_ID
+                + _FROM_ + TBL_AUTHORS.getName()
+                + _WHERE_ + DBKey.AUTHOR_FAMILY_NAME_OB + "=?" + _COLLATION
+                + _AND_ + DBKey.AUTHOR_GIVEN_NAMES_OB + "=?" + _COLLATION;
+
+        /** Count the number of {@link Book}'s by an {@link Author}. */
+        private static final String COUNT_BOOKS =
+                "SELECT COUNT(" + DBKey.FK_BOOK + ")"
+                + _FROM_ + TBL_BOOK_AUTHOR.getName()
+                + _WHERE_ + DBKey.FK_AUTHOR + "=?";
+
+        /** Count the number of {@link TocEntry}'s by an {@link Author}. */
+        private static final String COUNT_TOC_ENTRIES =
+                "SELECT COUNT(" + DBKey.PK_ID + ")"
+                + _FROM_ + TBL_TOC_ENTRIES.getName()
+                + _WHERE_ + DBKey.FK_AUTHOR + "=?";
+
+        private static final String INSERT =
+                INSERT_INTO_ + TBL_AUTHORS.getName()
+                + '(' + DBKey.AUTHOR_FAMILY_NAME + ',' + DBKey.AUTHOR_FAMILY_NAME_OB
+                + ',' + DBKey.AUTHOR_GIVEN_NAMES + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB
+                + ',' + DBKey.AUTHOR_IS_COMPLETE
+                + ") VALUES (?,?,?,?,?)";
+
+        /** Delete an {@link Author}. */
+        private static final String DELETE_BY_ID =
+                DELETE_FROM_ + TBL_AUTHORS.getName()
+                + _WHERE_ + DBKey.PK_ID + "=?";
+
+        /** Purge an {@link Author} if no longer in use. */
+        private static final String PURGE =
+                DELETE_FROM_ + TBL_AUTHORS.getName()
+                + _WHERE_ + DBKey.PK_ID + _NOT_IN_
+                + "(SELECT DISTINCT " + DBKey.FK_AUTHOR
+                + _FROM_ + TBL_BOOK_AUTHOR.getName() + ')'
+                + " AND " + DBKey.PK_ID + _NOT_IN_
+                + "(SELECT DISTINCT " + DBKey.FK_AUTHOR
+                + _FROM_ + TBL_TOC_ENTRIES.getName() + ')'
+                + " AND " + DBKey.PK_ID + _NOT_IN_
+                + "(SELECT DISTINCT " + DBKey.FK_AUTHOR
+                + _FROM_ + TBL_AUTHOR_PSEUDONYMS.getName() + ')';
+
+        /** {@link #getNames(String)} : 'Family name' in column 0. */
+        private static final String SELECT_ALL_FAMILY_NAMES =
+                SELECT_DISTINCT_ + DBKey.AUTHOR_FAMILY_NAME
+                + _FROM_ + TBL_AUTHORS.getName()
+                + _ORDER_BY_ + DBKey.AUTHOR_FAMILY_NAME_OB + _COLLATION;
+
+        /** {@link #getNames(String)} : 'Given name' in column 0. */
+        private static final String SELECT_ALL_GIVEN_NAMES =
+                SELECT_DISTINCT_ + DBKey.AUTHOR_GIVEN_NAMES
+                + _FROM_ + TBL_AUTHORS.getName()
+                + _WHERE_ + DBKey.AUTHOR_GIVEN_NAMES_OB + "<> ''"
+                + _ORDER_BY_ + DBKey.AUTHOR_GIVEN_NAMES_OB + _COLLATION;
+
+        /** All Authors for a Book; ordered by position, family, given. */
+        private static final String AUTHORS_BY_BOOK_ID =
+                SELECT_DISTINCT_ + TBL_AUTHORS.dotAs(DBKey.PK_ID,
+                                                     DBKey.AUTHOR_FAMILY_NAME,
+                                                     DBKey.AUTHOR_GIVEN_NAMES,
+                                                     DBKey.AUTHOR_IS_COMPLETE)
+
+                + ',' + TBL_BOOK_AUTHOR.dotAs(DBKey.BOOK_AUTHOR_POSITION,
+                                              DBKey.AUTHOR_TYPE__BITMASK)
+
+                + ',' + TBL_AUTHOR_PSEUDONYMS.dotAs(DBKey.AUTHOR_PSEUDONYM)
+
+                + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_AUTHORS)
+                + TBL_AUTHORS.leftOuterJoin(TBL_AUTHOR_PSEUDONYMS)
+                + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_BOOK) + "=?"
+
+                + _ORDER_BY_ + TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_POSITION)
+                + ',' + DBKey.AUTHOR_FAMILY_NAME_OB + _COLLATION
+                + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB + _COLLATION;
+
+        private static final String INSERT_PSEUDONYM_LINKS =
+                INSERT_INTO_ + TBL_AUTHOR_PSEUDONYMS.getName()
+                + '(' + DBKey.FK_AUTHOR
+                + ',' + DBKey.AUTHOR_PSEUDONYM
+                + ") VALUES (?,?)";
+
+        private static final String DELETE_PSEUDONYM_LINKS =
+                DELETE_FROM_ + TBL_AUTHOR_PSEUDONYMS.getName()
+                + _WHERE_ + DBKey.FK_AUTHOR + "=?";
+
+        private static final String REPOSITION =
+                SELECT_ + DBKey.FK_BOOK
+                + _FROM_
+                + "(SELECT " + DBKey.FK_BOOK
+                + ", MIN(" + DBKey.BOOK_AUTHOR_POSITION + ")" + _AS_ + " mp"
+                + _FROM_ + TBL_BOOK_AUTHOR.getName() + " GROUP BY " + DBKey.FK_BOOK + ')'
+                + _WHERE_ + "mp > 1";
     }
 }
