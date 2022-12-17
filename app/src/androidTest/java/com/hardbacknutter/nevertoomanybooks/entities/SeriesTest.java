@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 
 import org.junit.Test;
@@ -59,8 +60,10 @@ public class SeriesTest
     }
 
     @Test
-    public void pruneSeries01List() {
+    public void pruneSeries01List()
+            throws DaoWriteException {
         final Context context = serviceLocator.getLocalizedAppContext();
+        final Locale bookLocale = Locale.getDefault();
         final SeriesDao seriesDao = serviceLocator.getSeriesDao();
 
         final List<Series> list = new ArrayList<>();
@@ -68,10 +71,10 @@ public class SeriesTest
 
         // keep, position 0
         series = Series.from("The series (5)");
-        seriesDao.fixId(context, series, false, Locale.getDefault());
+        seriesDao.fixId(context, series, false, bookLocale);
         long id0 = series.getId();
         if (id0 == 0) {
-            id0 = seriesDao.insert(context, series, Locale.getDefault());
+            id0 = seriesDao.insert(context, series, bookLocale);
         }
         series.setId(100);
         series.setComplete(true);
@@ -94,10 +97,10 @@ public class SeriesTest
 
         // keep, position 1
         series = Series.from("De reeks (1)");
-        seriesDao.fixId(context, series, false, Locale.getDefault());
+        seriesDao.fixId(context, series, false, bookLocale);
         long id1 = series.getId();
         if (id1 == 0) {
-            id1 = seriesDao.insert(context, series, Locale.getDefault());
+            id1 = seriesDao.insert(context, series, bookLocale);
         }
         series.setId(200);
         list.add(series);
@@ -111,16 +114,16 @@ public class SeriesTest
 
         // keep, position 2. Note duplicate id, but different nr as compared to position 0
         series = Series.from("The series (6)");
-        seriesDao.fixId(context, series, false, Locale.getDefault());
+        seriesDao.fixId(context, series, false, bookLocale);
         long id2 = series.getId();
         if (id2 == 0) {
-            id2 = seriesDao.insert(context, series, Locale.getDefault());
+            id2 = seriesDao.insert(context, series, bookLocale);
         }
         series.setId(100);
         list.add(series);
 
         final boolean modified = seriesDao.pruneList(context, list, false,
-                                                     Locale.getDefault());
+                                                     bookLocale);
 
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 3, list.size());

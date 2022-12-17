@@ -53,10 +53,12 @@ public class AuthorTest
             throws DaoWriteException {
 
         final Context context = serviceLocator.getLocalizedAppContext();
+        final Locale bookLocale = Locale.getDefault();
+
         final AuthorDao authorDao = serviceLocator.getAuthorDao();
 
         author[0] = Author.from(TestConstants.AuthorFullName(0));
-        authorId[0] = authorDao.insert(context, author[0]);
+        authorId[0] = authorDao.insert(context, author[0], bookLocale);
         assertTrue(authorId[0] > 0);
 
         author[0] = authorDao.getById(authorId[0]);
@@ -66,7 +68,7 @@ public class AuthorTest
         assertFalse(author[0].isComplete());
 
         author[0].setComplete(true);
-        authorDao.update(context, author[0]);
+        authorDao.update(context, author[0], bookLocale);
 
         author[0] = authorDao.getById(authorId[0]);
         assertNotNull(author[0]);
@@ -87,7 +89,6 @@ public class AuthorTest
     @Test
     public void renameAuthor()
             throws DaoWriteException {
-        final boolean updateOk;
 
         ArrayList<Long> bookIdList;
 
@@ -96,6 +97,7 @@ public class AuthorTest
         final Author tmpAuthor;
 
         final Context context = serviceLocator.getLocalizedAppContext();
+        final Locale bookLocale = Locale.getDefault();
         final AuthorDao authorDao = serviceLocator.getAuthorDao();
 
         // rename an author
@@ -105,9 +107,9 @@ public class AuthorTest
         author[0].setName(RENAMED_FAMILY_NAME + "_a", RENAMED_GIVEN_NAMES + "_a");
 
         idBefore = author[0].getId();
-        authorDao.update(context, author[0]);
+        authorDao.update(context, author[0], bookLocale);
         assertEquals(author[0].getId(), idBefore);
-        authorDao.fixId(context, author[0], false, Locale.getDefault());
+        authorDao.fixId(context, author[0], false, bookLocale);
         assertEquals(author[0].getId(), idBefore);
 
         // rename an Author to another EXISTING name
@@ -117,7 +119,7 @@ public class AuthorTest
         author[1].setName(RENAMED_FAMILY_NAME + "_a", RENAMED_GIVEN_NAMES + "_a");
 
         idBefore = author[1].getId();
-        authorDao.fixId(context, author[1], false, Locale.getDefault());
+        authorDao.fixId(context, author[1], false, bookLocale);
         // should have become author[0]
         assertEquals(author[0].getId(), author[1].getId());
         // original should still be there with original name
@@ -128,7 +130,7 @@ public class AuthorTest
         // rename an Author to another EXISTING name and MERGE books
         author[2].setName(RENAMED_FAMILY_NAME + "_a", RENAMED_GIVEN_NAMES + "_a");
 
-        existingId = authorDao.find(context, author[2], false, Locale.getDefault());
+        existingId = authorDao.find(context, author[2], false, bookLocale);
         final Author destination = authorDao.getById(existingId);
         assertNotNull(destination);
 
@@ -136,7 +138,7 @@ public class AuthorTest
         // - the renamed author[2] will have been deleted
         assertEquals(0, author[2].getId());
         // find the author[2] again...
-        existingId = authorDao.find(context, author[2], false, Locale.getDefault());
+        existingId = authorDao.find(context, author[2], false, bookLocale);
         // should be recognized as author[0]
         assertEquals(author[0].getId(), existingId);
 
@@ -152,7 +154,6 @@ public class AuthorTest
     @Test
     public void renameAuthorWithTocs()
             throws DaoWriteException {
-        final boolean updateOk;
 
         final ArrayList<Long> bookIdList;
         final ArrayList<AuthorWork> works;
@@ -161,6 +162,7 @@ public class AuthorTest
         long existingId;
 
         final Context context = serviceLocator.getLocalizedAppContext();
+        final Locale bookLocale = Locale.getDefault();
         final AuthorDao authorDao = serviceLocator.getAuthorDao();
 
         // rename an author
@@ -170,22 +172,22 @@ public class AuthorTest
         author[1].setName(RENAMED_FAMILY_NAME + "_b", RENAMED_GIVEN_NAMES + "_b");
 
         idBefore = author[1].getId();
-        authorDao.update(context, author[1]);
+        authorDao.update(context, author[1], bookLocale);
         assertEquals(author[1].getId(), idBefore);
-        authorDao.fixId(context, author[1], false, Locale.getDefault());
+        authorDao.fixId(context, author[1], false, bookLocale);
         assertEquals(author[1].getId(), idBefore);
 
         // rename an Author to another EXISTING name and MERGE books
         author[2].setName(RENAMED_FAMILY_NAME + "_b", RENAMED_GIVEN_NAMES + "_b");
 
-        existingId = authorDao.find(context, author[2], false, Locale.getDefault());
+        existingId = authorDao.find(context, author[2], false, bookLocale);
         final Author destination = authorDao.getById(existingId);
         assertNotNull(destination);
         authorDao.moveBooks(context, author[2], destination);
         // - the renamed author[2] will have been deleted
         assertEquals(0, author[2].getId());
         // find the author[2] again...
-        existingId = authorDao.find(context, author[2], false, Locale.getDefault());
+        existingId = authorDao.find(context, author[2], false, bookLocale);
         // should be recognized as author[1]
         assertEquals(author[1].getId(), existingId);
 

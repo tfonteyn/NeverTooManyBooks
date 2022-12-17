@@ -48,14 +48,15 @@ public class TocEntryTest
     public void pruneTocEntries01()
             throws DaoWriteException {
         final Context context = serviceLocator.getLocalizedAppContext();
+        final Locale bookLocale = Locale.getDefault();
         final AuthorDao authorDao = serviceLocator.getAuthorDao();
         final TocEntryDao tocEntryDao = serviceLocator.getTocEntryDao();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
-        authorDao.fixId(context, author0, false, Locale.getDefault());
+        authorDao.fixId(context, author0, false, bookLocale);
         long authorId0 = author0.getId();
         if (authorId0 == 0) {
-            authorId0 = authorDao.insert(context, author0);
+            authorId0 = authorDao.insert(context, author0, bookLocale);
         }
         assertTrue(authorId0 > 0);
 
@@ -82,7 +83,7 @@ public class TocEntryTest
         list.add(tocEntry);
 
         final boolean modified = tocEntryDao.pruneList(context, list, false,
-                                                       Locale.getDefault());
+                                                       bookLocale);
 
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 2, list.size());
@@ -102,14 +103,15 @@ public class TocEntryTest
     public void pruneTocEntries02()
             throws DaoWriteException {
         final Context context = serviceLocator.getLocalizedAppContext();
+        final Locale bookLocale = Locale.getDefault();
         final AuthorDao authorDao = serviceLocator.getAuthorDao();
         final TocEntryDao tocEntryDao = serviceLocator.getTocEntryDao();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
-        authorDao.fixId(context, author0, false, Locale.getDefault());
+        authorDao.fixId(context, author0, false, bookLocale);
         long authorId0 = author0.getId();
         if (authorId0 == 0) {
-            authorId0 = authorDao.insert(context, author0);
+            authorId0 = authorDao.insert(context, author0, bookLocale);
         }
         assertTrue(authorId0 > 0);
 
@@ -131,7 +133,7 @@ public class TocEntryTest
 
         // pruning will reset the id's to 0 as the entries don't exist in the db
         final boolean modified = tocEntryDao.pruneList(context, list, false,
-                                                       Locale.getDefault());
+                                                       bookLocale);
 
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 2, list.size());
@@ -154,14 +156,15 @@ public class TocEntryTest
     public void pruneTocEntries03()
             throws DaoWriteException {
         final Context context = serviceLocator.getLocalizedAppContext();
+        final Locale bookLocale = Locale.getDefault();
         final AuthorDao authorDao = serviceLocator.getAuthorDao();
         final TocEntryDao tocEntryDao = serviceLocator.getTocEntryDao();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
-        authorDao.fixId(context, author0, false, Locale.getDefault());
+        authorDao.fixId(context, author0, false, bookLocale);
         long authorId0 = author0.getId();
         if (authorId0 == 0) {
-            authorId0 = authorDao.insert(context, author0);
+            authorId0 = authorDao.insert(context, author0, bookLocale);
         }
         assertTrue(authorId0 > 0);
 
@@ -202,7 +205,7 @@ public class TocEntryTest
         list.add(tocEntry);
 
         final boolean modified = tocEntryDao.pruneList(context, list, false,
-                                                       Locale.getDefault());
+                                                       bookLocale);
 
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 6, list.size());

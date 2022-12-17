@@ -81,6 +81,7 @@ public class AuthorTest
     public void pruneAuthorList01()
             throws DaoWriteException {
         final Context context = serviceLocator.getLocalizedAppContext();
+        final Locale bookLocale = Locale.getDefault();
         final AuthorDao authorDao = serviceLocator.getAuthorDao();
 
         final List<Author> list = new ArrayList<>();
@@ -88,10 +89,10 @@ public class AuthorTest
 
         // Keep, position 0
         author = Author.from(ISAAC_ASIMOV);
-        authorDao.fixId(context, author, false, Locale.getDefault());
+        authorDao.fixId(context, author, false, bookLocale);
         final long id0 = author.getId();
         if (id0 == 0) {
-            authorDao.insert(context, author);
+            authorDao.insert(context, author, bookLocale);
         }
         author.setId(FAKE_ID_0);
         author.setComplete(false);
@@ -110,10 +111,10 @@ public class AuthorTest
 
         // keep, position 1
         author = Author.from(PHILIP_JOSE_FARMER);
-        authorDao.fixId(context, author, false, Locale.getDefault());
+        authorDao.fixId(context, author, false, bookLocale);
         final long id1 = author.getId();
         if (id1 == 0) {
-            authorDao.insert(context, author);
+            authorDao.insert(context, author, bookLocale);
         }
         author.setId(FAKE_ID_1);
         list.add(author);
@@ -130,10 +131,10 @@ public class AuthorTest
 
         // keep, position 2
         author = Author.from(PHILIP_DICK);
-        authorDao.fixId(context, author, false, Locale.getDefault());
+        authorDao.fixId(context, author, false, bookLocale);
         final long id2 = author.getId();
         if (id2 == 0) {
-            authorDao.insert(context, author);
+            authorDao.insert(context, author, bookLocale);
         }
         author.setId(FAKE_ID_2);
         author.setType(Author.TYPE_WRITER);
@@ -151,8 +152,7 @@ public class AuthorTest
         author.setType(Author.TYPE_CONTRIBUTOR);
         list.add(author);
 
-        final boolean modified = authorDao.pruneList(context, list, false,
-                                                     Locale.getDefault());
+        final boolean modified = authorDao.pruneList(context, list, false, bookLocale);
 
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 3, list.size());
@@ -184,6 +184,7 @@ public class AuthorTest
     @Test
     public void pruneAuthorList02() {
         final Context context = serviceLocator.getLocalizedAppContext();
+        final Locale bookLocale = Locale.getDefault();
         final AuthorDao authorDao = serviceLocator.getAuthorDao();
 
         final List<Author> authorList = new ArrayList<>();
@@ -191,7 +192,7 @@ public class AuthorTest
 
         // keep, position 0
         author = Author.from(PHILIP_JOSE_FARMER_VARIANT);
-        authorDao.fixId(context, author, false, Locale.getDefault());
+        authorDao.fixId(context, author, false, bookLocale);
         final long id0 = author.getId();
         author.setId(FAKE_ID_1);
         author.setType(Author.TYPE_UNKNOWN);
@@ -209,8 +210,7 @@ public class AuthorTest
         author.setType(Author.TYPE_AFTERWORD);
         authorList.add(author);
 
-        final boolean modified = authorDao.pruneList(context, authorList, false,
-                                                     Locale.getDefault());
+        final boolean modified = authorDao.pruneList(context, authorList, false, bookLocale);
 
         assertTrue(modified);
         assertEquals(1, authorList.size());

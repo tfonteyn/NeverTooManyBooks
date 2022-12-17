@@ -115,6 +115,7 @@ public class BookTest {
         TestConstants.deletePublishers(db);
 
         final Context context = sl.getLocalizedAppContext();
+        final Locale bookLocale = Locale.getDefault();
 
         final int actualVolume = CoverDir.initVolume(context, 0);
         assertEquals(0, actualVolume);
@@ -138,20 +139,17 @@ public class BookTest {
         author[1] = Author.from(TestConstants.AuthorFullName(1));
 
         // insert author[0] but do NOT insert author[1]
-        authorId[0] = sl.getAuthorDao().insert(context, author[0]);
+        authorId[0] = sl.getAuthorDao().insert(context, author[0], bookLocale);
         authorList.clear();
         authorList.add(author[0]);
 
         publisher[0] = Publisher.from(TestConstants.PUBLISHER + "0");
         publisher[1] = Publisher.from(TestConstants.PUBLISHER + "1");
 
-        // insert publisher[0] but do NOT publisher author[1]
-
-        publisherId[0] = sl.getPublisherDao()
-                           .insert(context, publisher[0], Locale.getDefault());
+        // insert publisher[0] but do NOT insert publisher[1]
+        publisherId[0] = sl.getPublisherDao().insert(context, publisher[0], bookLocale);
         publisherList.clear();
         publisherList.add(publisher[0]);
-
 
 
         final List<File> files = FileUtils.collectFiles(coverDir, jpgFilter, 10);

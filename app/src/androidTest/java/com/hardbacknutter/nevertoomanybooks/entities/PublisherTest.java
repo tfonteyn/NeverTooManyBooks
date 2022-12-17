@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 
 import org.junit.Test;
@@ -62,8 +63,10 @@ public class PublisherTest
     }
 
     @Test
-    public void prunePublisherNames01() {
+    public void prunePublisherNames01()
+            throws DaoWriteException {
         final Context context = serviceLocator.getLocalizedAppContext();
+        final Locale bookLocale = Locale.getDefault();
         final PublisherDao publisherDao = serviceLocator.getPublisherDao();
 
         final List<Publisher> list = new ArrayList<>();
@@ -71,20 +74,20 @@ public class PublisherTest
 
         // keep, position 0
         publisher = new Publisher(SOME_PUBLISHER);
-        publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        publisherDao.fixId(context, publisher, false, bookLocale);
         long id0 = publisher.getId();
         if (id0 == 0) {
-            id0 = publisherDao.insert(context, publisher, Locale.getDefault());
+            id0 = publisherDao.insert(context, publisher, bookLocale);
         }
         publisher.setId(1001);
         list.add(publisher);
 
         // keep, position 1
         publisher = new Publisher(THE_PUBLISHER);
-        publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        publisherDao.fixId(context, publisher, false, bookLocale);
         long id1 = publisher.getId();
         if (id1 == 0) {
-            id1 = publisherDao.insert(context, publisher, Locale.getDefault());
+            id1 = publisherDao.insert(context, publisher, bookLocale);
         }
         publisher.setId(1002);
         list.add(publisher);
@@ -95,7 +98,7 @@ public class PublisherTest
         list.add(publisher);
 
         final boolean modified = publisherDao.pruneList(context, list, false,
-                                                        Locale.getDefault());
+                                                        bookLocale);
 
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 2, list.size());
@@ -113,8 +116,10 @@ public class PublisherTest
     }
 
     @Test
-    public void prunePublisherNames02() {
+    public void prunePublisherNames02()
+            throws DaoWriteException {
         final Context context = serviceLocator.getLocalizedAppContext();
+        final Locale bookLocale = Locale.getDefault();
         final PublisherDao publisherDao = serviceLocator.getPublisherDao();
 
         final List<Publisher> list = new ArrayList<>();
@@ -122,36 +127,36 @@ public class PublisherTest
 
         // Keep; list will not be modified
         publisher = new Publisher(SOME_PUBLISHER);
-        publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        publisherDao.fixId(context, publisher, false, bookLocale);
         long id0 = publisher.getId();
         if (id0 == 0) {
-            id0 = publisherDao.insert(context, publisher, Locale.getDefault());
+            id0 = publisherDao.insert(context, publisher, bookLocale);
         }
         publisher.setId(1001);
         list.add(publisher);
 
         // Keep; list will not be modified
         publisher = new Publisher(THE_PUBLISHER);
-        publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        publisherDao.fixId(context, publisher, false, bookLocale);
         long id1 = publisher.getId();
         if (id1 == 0) {
-            id1 = publisherDao.insert(context, publisher, Locale.getDefault());
+            id1 = publisherDao.insert(context, publisher, bookLocale);
         }
         publisher.setId(0);
         list.add(publisher);
 
         // Discard; reordered but same as position 1
         publisher = new Publisher(PUBLISHER_THE);
-        publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        publisherDao.fixId(context, publisher, false, bookLocale);
         long id2 = publisher.getId();
         if (id2 == 0) {
-            id2 = publisherDao.insert(context, publisher, Locale.getDefault());
+            id2 = publisherDao.insert(context, publisher, bookLocale);
         }
         publisher.setId(1002);
         list.add(publisher);
 
         final boolean modified = publisherDao.pruneList(context, list, false,
-                                                        Locale.getDefault());
+                                                        bookLocale);
 
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 2, list.size());
@@ -169,8 +174,10 @@ public class PublisherTest
     }
 
     @Test
-    public void prunePublisherNames03() {
+    public void prunePublisherNames03()
+            throws DaoWriteException {
         final Context context = serviceLocator.getLocalizedAppContext();
+        final Locale bookLocale = Locale.getDefault();
         final PublisherDao publisherDao = serviceLocator.getPublisherDao();
 
         final List<Publisher> list = new ArrayList<>();
@@ -178,30 +185,30 @@ public class PublisherTest
 
         // keep, position 0
         publisher = new Publisher(SOME_PUBLISHER);
-        publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        publisherDao.fixId(context, publisher, false, bookLocale);
         long id0 = publisher.getId();
         if (id0 == 0) {
-            id0 = publisherDao.insert(context, publisher, Locale.getDefault());
+            id0 = publisherDao.insert(context, publisher, bookLocale);
         }
         publisher.setId(1001);
         list.add(publisher);
 
         // keep, position 1
         publisher = new Publisher(THE_PUBLISHER);
-        publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        publisherDao.fixId(context, publisher, false, bookLocale);
         long id1 = publisher.getId();
         if (id1 == 0) {
-            id1 = publisherDao.insert(context, publisher, Locale.getDefault());
+            id1 = publisherDao.insert(context, publisher, bookLocale);
         }
         publisher.setId(1002);
         list.add(publisher);
 
         // Discard; reordered but same as position 1
         publisher = new Publisher(PUBLISHER_THE);
-        publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        publisherDao.fixId(context, publisher, false, bookLocale);
         long id2 = publisher.getId();
         if (id2 == 0) {
-            id2 = publisherDao.insert(context, publisher, Locale.getDefault());
+            id2 = publisherDao.insert(context, publisher, bookLocale);
         }
         publisher.setId(0);
         list.add(publisher);
@@ -213,10 +220,10 @@ public class PublisherTest
 
         // Keep, but merge with the next entry and copy the id=1003
         publisher = new Publisher(JOSE_PUBLISHER);
-        publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        publisherDao.fixId(context, publisher, false, bookLocale);
         long id3 = publisher.getId();
         if (id3 == 0) {
-            id3 = publisherDao.insert(context, publisher, Locale.getDefault());
+            id3 = publisherDao.insert(context, publisher, bookLocale);
         }
         publisher.setId(0);
         list.add(publisher);
@@ -227,7 +234,7 @@ public class PublisherTest
         list.add(publisher);
 
         final boolean modified = publisherDao.pruneList(context, list, false,
-                                                        Locale.getDefault());
+                                                        bookLocale);
 
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 3, list.size());
