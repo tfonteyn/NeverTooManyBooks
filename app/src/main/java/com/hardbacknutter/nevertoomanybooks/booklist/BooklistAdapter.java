@@ -32,6 +32,7 @@ import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -51,6 +52,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.math.MathUtils;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
@@ -1420,6 +1422,7 @@ public class BooklistAdapter
 
         @NonNull
         final ImageView completeView;
+        private final float pseudonymRelSize;
 
         /**
          * Constructor.
@@ -1435,6 +1438,8 @@ public class BooklistAdapter
                      @NonNull final BooklistGroup group) {
             super(adapter, level, itemView, group);
             completeView = itemView.findViewById(R.id.cbx_is_complete);
+            pseudonymRelSize = ResourcesCompat.getFloat(itemView.getContext().getResources(),
+                                                        R.dimen.bob_author_pseudonym_size);
         }
 
         @Override
@@ -1447,18 +1452,7 @@ public class BooklistAdapter
 
             final long pseudonym = rowData.getLong(DBKey.AUTHOR_PSEUDONYM);
             if (pseudonym != 0) {
-                final Author author = ServiceLocator.getInstance().getAuthorDao()
-                                                    .getById(pseudonym);
-                if (author != null) {
-                    String pName = author.getFormattedName(
-                            adapter.style.isShowAuthorByGivenName());
-                    pName = textView.getContext().getString(
-                            R.string.a_bracket_b_bracket, name, pName);
-
-                    final SpannableString span = new SpannableString(pName);
-                    span.setSpan(new RelativeSizeSpan(0.6f), name.length(), span.length(), 0);
-                    name = span;
-                }
+                name = getFormattedName(name, pseudonym, adapter.style.isShowAuthorByGivenName());
             }
 
             textView.setText(name);
@@ -1469,6 +1463,30 @@ public class BooklistAdapter
 
             completeView.setVisibility(rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE)
                                        ? View.VISIBLE : View.GONE);
+        }
+
+        @NonNull
+        private CharSequence getFormattedName(@NonNull final CharSequence pseudonym,
+                                              final long realAuthorId,
+                                              final boolean givenNameFirst) {
+
+            final Author realAuthor = ServiceLocator.getInstance().getAuthorDao()
+                                                    .getById(realAuthorId);
+            if (realAuthor != null) {
+                String realName = realAuthor.getFormattedName(givenNameFirst);
+
+                // Display the pseudonym as normal, but add the real-author name
+                // in a smaller font and slightly indented, as a second line underneath.
+                realName = String.format("%1s\n   %2s", pseudonym, realName);
+                final SpannableString span = new SpannableString(realName);
+                span.setSpan(new RelativeSizeSpan(pseudonymRelSize),
+                             pseudonym.length(), span.length(), 0);
+                span.setSpan(new StyleSpan(Typeface.ITALIC),
+                             pseudonym.length(), span.length(), 0);
+                return span;
+            } else {
+                return pseudonym;
+            }
         }
     }
 

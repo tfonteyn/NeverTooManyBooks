@@ -154,6 +154,9 @@
     <dimen name="bob_group_level_2_drawable_size">10dp</dimen>
     <dimen name="bob_group_level_3_drawable_size">6dp</dimen>
 
+    <!-- The relative size for the 'real-author' name of a pseudonym. -->
+    <item name="bob_author_pseudonym_size" format="float" type="dimen">0.6f</item>
+
     <!-- on larger screens we'll add a paddingEnd to allow easier scrolling.
          The width of the scrollbar "android.R.attr.fastScrollTrackDrawable" is 8dp
     -->
