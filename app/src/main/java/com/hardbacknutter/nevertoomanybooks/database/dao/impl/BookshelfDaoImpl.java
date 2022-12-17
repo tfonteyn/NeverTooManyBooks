@@ -351,7 +351,8 @@ public class BookshelfDaoImpl
     }
 
     @Override
-    public void moveBooks(@NonNull final Bookshelf source,
+    public void moveBooks(@NonNull final Context context,
+                          @NonNull final Bookshelf source,
                           @NonNull final Bookshelf target) {
 
         Synchronizer.SyncLock txLock = null;

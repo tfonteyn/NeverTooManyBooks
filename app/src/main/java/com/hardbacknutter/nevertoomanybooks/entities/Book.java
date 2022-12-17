@@ -307,9 +307,9 @@ public class Book
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         setBookshelves(serviceLocator.getBookshelfDao().getBookshelvesByBookId(bookId));
-        setAuthors(serviceLocator.getAuthorDao().getAuthorsByBookId(bookId));
-        setSeries(serviceLocator.getSeriesDao().getSeriesByBookId(bookId));
-        setPublishers(serviceLocator.getPublisherDao().getPublishersByBookId(bookId));
+        setAuthors(serviceLocator.getAuthorDao().getByBookId(bookId));
+        setSeries(serviceLocator.getSeriesDao().getByBookId(bookId));
+        setPublishers(serviceLocator.getPublisherDao().getByBookId(bookId));
         setToc(serviceLocator.getTocEntryDao().getTocEntryByBookId(bookId));
 
         // do NOT preload the full Calibre library object. We hardly ever need it as such.

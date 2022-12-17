@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import androidx.annotation.IntRange;
@@ -60,13 +61,15 @@ public class PublisherDaoImpl
     /** Log tag. */
     private static final String TAG = "PublisherDaoImpl";
 
+    private static final String ERROR_INSERT_FROM = "Insert from\n";
+    private static final String ERROR_UPDATE_FROM = "Update from\n";
+
     /**
      * Constructor.
      */
     public PublisherDaoImpl() {
         super(TAG);
     }
-
 
     @Override
     @Nullable
@@ -110,7 +113,7 @@ public class PublisherDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<Publisher> getPublishersByBookId(@IntRange(from = 1) final long bookId) {
+    public ArrayList<Publisher> getByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<Publisher> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.PUBLISHER_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
@@ -234,7 +237,8 @@ public class PublisherDaoImpl
     @Override
     public long insert(@NonNull final Context context,
                        @NonNull final Publisher publisher,
-                       @NonNull final Locale bookLocale) {
+                       @NonNull final Locale bookLocale)
+            throws DaoWriteException {
 
         final OrderByHelper.OrderByData obd = OrderByHelper.createOrderByData(
                 context, publisher.getName(), bookLocale, publisher::getLocale);
@@ -245,25 +249,40 @@ public class PublisherDaoImpl
             final long iId = stmt.executeInsert();
             if (iId > 0) {
                 publisher.setId(iId);
+                return iId;
             }
-            return iId;
+
+            throw new DaoWriteException(ERROR_INSERT_FROM + publisher);
+        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+            throw new DaoWriteException(ERROR_INSERT_FROM + publisher, e);
         }
     }
 
     @Override
-    public boolean update(@NonNull final Context context,
-                          @NonNull final Publisher publisher,
-                          @NonNull final Locale bookLocale) {
+    public void update(@NonNull final Context context,
+                       @NonNull final Publisher publisher,
+                       @NonNull final Locale bookLocale)
+            throws DaoWriteException {
 
         final OrderByHelper.OrderByData obd = OrderByHelper.createOrderByData(
                 context, publisher.getName(), bookLocale, publisher::getLocale);
 
-        final ContentValues cv = new ContentValues();
-        cv.put(DBKey.PUBLISHER_NAME, publisher.getName());
-        cv.put(DBKey.PUBLISHER_NAME_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
+        try {
+            final ContentValues cv = new ContentValues();
+            cv.put(DBKey.PUBLISHER_NAME, publisher.getName());
+            cv.put(DBKey.PUBLISHER_NAME_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
 
-        return 0 < db.update(TBL_PUBLISHERS.getName(), cv, DBKey.PK_ID + "=?",
-                             new String[]{String.valueOf(publisher.getId())});
+            final boolean success =
+                    0 < db.update(TBL_PUBLISHERS.getName(), cv, DBKey.PK_ID + "=?",
+                                  new String[]{String.valueOf(publisher.getId())});
+            if (success) {
+                return;
+            }
+
+            throw new DaoWriteException(ERROR_UPDATE_FROM + publisher);
+        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+            throw new DaoWriteException(ERROR_UPDATE_FROM + publisher, e);
+        }
     }
 
     @Override
@@ -279,7 +298,7 @@ public class PublisherDaoImpl
 
         if (rowsAffected > 0) {
             publisher.setId(0);
-            repositionPublishers(context);
+            fixPositions(context);
         }
         return rowsAffected == 1;
     }
@@ -308,7 +327,10 @@ public class PublisherDaoImpl
                 for (final Publisher item : fromBook) {
                     if (source.getId() == item.getId()) {
                         destList.add(target);
+                        // We could 'break' here as there should be no duplicates,
+                        // but paranoia...
                     } else {
+                        // just keep/copy
                         destList.add(item);
                     }
                 }
@@ -340,7 +362,7 @@ public class PublisherDaoImpl
     }
 
     @Override
-    public int repositionPublishers(@NonNull final Context context) {
+    public int fixPositions(@NonNull final Context context) {
 
         final ArrayList<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {
@@ -359,7 +381,7 @@ public class PublisherDaoImpl
                 }
 
                 for (final long bookId : bookIds) {
-                    final ArrayList<Publisher> list = getPublishersByBookId(bookId);
+                    final ArrayList<Publisher> list = getByBookId(bookId);
                     // We KNOW there are no updates needed.
                     bookDao.insertPublishers(context, bookId, false, list, false, bookLocale);
                 }

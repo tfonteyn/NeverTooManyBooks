@@ -667,7 +667,8 @@ public class EditBookViewModel
                               @NonNull final Author original,
                               @NonNull final Author modified) {
         try {
-            ServiceLocator.getInstance().getAuthorDao().insert(context, modified);
+            ServiceLocator.getInstance().getAuthorDao()
+                          .insert(context, modified, book.getLocale(context));
             final List<Author> list = book.getAuthors();
             // unlink the original, and link with the new one
             // Note that the original *might* be orphaned at this time.
@@ -679,8 +680,7 @@ public class EditBookViewModel
             return true;
 
         } catch (@NonNull final DaoWriteException e) {
-            Logger.error(TAG, e, COULD_NOT_UPDATE, ORIGINAL + original,
-                         MODIFIED + modified);
+            Logger.error(TAG, e, COULD_NOT_UPDATE, ORIGINAL + original, MODIFIED + modified);
         }
         return false;
     }
@@ -692,14 +692,14 @@ public class EditBookViewModel
         original.copyFrom(modified, true);
 
         try {
-            ServiceLocator.getInstance().getAuthorDao().update(context, original);
+            ServiceLocator.getInstance().getAuthorDao()
+                          .update(context, original, book.getLocale(context));
             book.pruneAuthors(context, true);
             book.refreshAuthorList(context);
             return true;
 
         } catch (@NonNull final DaoWriteException e) {
-            Logger.error(TAG, e, COULD_NOT_UPDATE, ORIGINAL + original,
-                         MODIFIED + modified);
+            Logger.error(TAG, e, COULD_NOT_UPDATE, ORIGINAL + original, MODIFIED + modified);
         }
         return false;
     }
@@ -707,8 +707,9 @@ public class EditBookViewModel
     boolean changeForThisBook(@NonNull final Context context,
                               @NonNull final Series original,
                               @NonNull final Series modified) {
-        if (ServiceLocator.getInstance().getSeriesDao()
-                          .insert(context, modified, book.getLocale(context)) > 0) {
+        try {
+            ServiceLocator.getInstance().getSeriesDao()
+                          .insert(context, modified, book.getLocale(context));
             final List<Series> list = book.getSeries();
             // unlink the original, and link with the new one
             // Note that the original *might* be orphaned at this time.
@@ -718,10 +719,10 @@ public class EditBookViewModel
             book.setSeries(list);
             book.pruneSeries(context, true);
             return true;
-        }
 
-        Logger.error(TAG, new Throwable(), COULD_NOT_UPDATE, ORIGINAL + original,
-                     MODIFIED + modified);
+        } catch (@NonNull final DaoWriteException e) {
+            Logger.error(TAG, e, COULD_NOT_UPDATE, ORIGINAL + original, MODIFIED + modified);
+        }
         return false;
     }
 
@@ -731,14 +732,17 @@ public class EditBookViewModel
         // copy all new data
         original.copyFrom(modified, true);
 
-        if (ServiceLocator.getInstance().getSeriesDao()
-                          .update(context, original, book.getLocale(context))) {
+        try {
+            ServiceLocator.getInstance().getSeriesDao()
+                          .update(context, original, book.getLocale(context));
             book.pruneSeries(context, true);
             book.refreshSeriesList(context);
             return true;
+
+        } catch (@NonNull final DaoWriteException e) {
+            Logger.error(TAG, e, COULD_NOT_UPDATE, ORIGINAL + original, MODIFIED + modified);
         }
-        Logger.error(TAG, new Throwable(), COULD_NOT_UPDATE, ORIGINAL + original,
-                     MODIFIED + modified);
+
         return false;
     }
 
@@ -746,8 +750,9 @@ public class EditBookViewModel
                               @NonNull final Publisher original,
                               @NonNull final Publisher modified) {
 
-        if (ServiceLocator.getInstance().getPublisherDao()
-                          .insert(context, modified, book.getLocale(context)) > 0) {
+        try {
+            ServiceLocator.getInstance().getPublisherDao()
+                          .insert(context, modified, book.getLocale(context));
             final List<Publisher> list = book.getPublishers();
             // unlink the original, and link with the new one
             // Note that the original *might* be orphaned at this time.
@@ -757,9 +762,10 @@ public class EditBookViewModel
             book.setPublishers(list);
             book.prunePublishers(context, true);
             return true;
+
+        } catch (@NonNull final DaoWriteException e) {
+            Logger.error(TAG, e, COULD_NOT_UPDATE, ORIGINAL + original, MODIFIED + modified);
         }
-        Logger.error(TAG, new Throwable(), COULD_NOT_UPDATE, ORIGINAL + original,
-                     MODIFIED + modified);
         return false;
     }
 
@@ -769,14 +775,17 @@ public class EditBookViewModel
         // copy all new data
         original.copyFrom(modified);
 
-        if (ServiceLocator.getInstance().getPublisherDao()
-                          .update(context, original, book.getLocale(context))) {
+        try {
+            ServiceLocator.getInstance().getPublisherDao()
+                          .update(context, original, book.getLocale(context));
             book.prunePublishers(context, true);
             book.refreshPublishersList(context);
             return true;
+
+        } catch (@NonNull final DaoWriteException e) {
+            Logger.error(TAG, e, COULD_NOT_UPDATE, ORIGINAL + original, MODIFIED + modified);
         }
-        Logger.error(TAG, new Throwable(), COULD_NOT_UPDATE, ORIGINAL + original,
-                     MODIFIED + modified);
+
         return false;
     }
 

@@ -100,7 +100,7 @@ public final class DataHolderUtils {
             // sanity check
             if (bookId > 0) {
                 final List<Author> list = ServiceLocator.getInstance().getAuthorDao()
-                                                        .getAuthorsByBookId(bookId);
+                                                        .getByBookId(bookId);
                 return list.isEmpty() ? null : list.get(0);
             }
         } else if (rowData.contains(DBKey.FK_AUTHOR)) {
@@ -138,7 +138,7 @@ public final class DataHolderUtils {
             // sanity check
             if (bookId > 0) {
                 final List<Series> list = ServiceLocator.getInstance().getSeriesDao()
-                                                        .getSeriesByBookId(bookId);
+                                                        .getByBookId(bookId);
                 return list.isEmpty() ? null : list.get(0);
             }
         } else if (rowData.contains(DBKey.FK_SERIES)) {
@@ -176,7 +176,7 @@ public final class DataHolderUtils {
             // sanity check
             if (bookId > 0) {
                 final List<Publisher> list = ServiceLocator.getInstance().getPublisherDao()
-                                                           .getPublishersByBookId(bookId);
+                                                           .getByBookId(bookId);
                 return list.isEmpty() ? null : list.get(0);
             }
         } else if (rowData.contains(DBKey.FK_PUBLISHER)) {

@@ -210,7 +210,7 @@ public final class DBDefinitions {
     public static final Domain DOM_AUTHOR_GIVEN_NAMES_OB;
     /** {@link #TBL_AUTHORS}. */
     public static final Domain DOM_AUTHOR_IS_COMPLETE;
-    /** {@link #TBL_AUTHORS}. */
+    /** {@link #TBL_AUTHOR_PSEUDONYMS}. */
     public static final Domain DOM_AUTHOR_PSEUDONYM;
     /** Virtual: "FamilyName, GivenName". */
     public static final Domain DOM_AUTHOR_FORMATTED_FAMILY_FIRST;
@@ -1358,6 +1358,7 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         TBL_AUTHOR_PSEUDONYMS
+                /* FK_AUTHOR is a pseudonym of AUTHOR_PSEUDONYM */
                 .addDomains(DOM_FK_AUTHOR,
                             DOM_AUTHOR_PSEUDONYM)
                 .setPrimaryKey(DOM_FK_AUTHOR, DOM_AUTHOR_PSEUDONYM)

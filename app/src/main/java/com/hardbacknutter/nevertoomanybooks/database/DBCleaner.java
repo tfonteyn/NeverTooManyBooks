@@ -95,9 +95,9 @@ public class DBCleaner {
 
         // re-sort positional links - theoretically this should never be needed... flw.
         int modified;
-        modified = serviceLocator.getAuthorDao().repositionAuthor(context);
-        modified += serviceLocator.getSeriesDao().repositionSeries(context);
-        modified += serviceLocator.getPublisherDao().repositionPublishers(context);
+        modified = serviceLocator.getAuthorDao().fixPositions(context);
+        modified += serviceLocator.getSeriesDao().fixPositions(context);
+        modified += serviceLocator.getPublisherDao().fixPositions(context);
         modified += serviceLocator.getTocEntryDao().repositionTocEntries(context);
 
         return modified;

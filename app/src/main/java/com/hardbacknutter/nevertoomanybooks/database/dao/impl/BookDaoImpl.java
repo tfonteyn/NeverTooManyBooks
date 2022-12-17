@@ -550,9 +550,9 @@ public class BookDaoImpl
             for (final Author author : list) {
                 // Always create if needed, but only update if allowed
                 if (author.getId() == 0) {
-                    authorDao.insert(context, author);
+                    authorDao.insert(context, author, bookLocale);
                 } else if (doUpdates) {
-                    authorDao.update(context, author);
+                    authorDao.update(context, author, bookLocale);
                 }
 
                 position++;
@@ -614,13 +614,9 @@ public class BookDaoImpl
             for (final Series series : list) {
                 // create if needed - do NOT do updates here
                 if (series.getId() == 0) {
-                    if (seriesDao.insert(context, series, bookLocale) == -1) {
-                        throw new DaoWriteException("insert Series");
-                    }
+                    seriesDao.insert(context, series, bookLocale);
                 } else if (doUpdates) {
-                    if (!seriesDao.update(context, series, bookLocale)) {
-                        throw new DaoWriteException("update Series");
-                    }
+                    seriesDao.update(context, series, bookLocale);
                 }
 
                 position++;
@@ -682,13 +678,9 @@ public class BookDaoImpl
             for (final Publisher publisher : list) {
                 // create if needed - do NOT do updates here
                 if (publisher.getId() == 0) {
-                    if (publisherDao.insert(context, publisher, bookLocale) == -1) {
-                        throw new DaoWriteException("insert Publisher");
-                    }
+                    publisherDao.insert(context, publisher, bookLocale);
                 } else if (doUpdates) {
-                    if (!publisherDao.update(context, publisher, bookLocale)) {
-                        throw new DaoWriteException("update Publisher");
-                    }
+                    publisherDao.update(context, publisher, bookLocale);
                 }
 
                 position++;
@@ -756,7 +748,7 @@ public class BookDaoImpl
                 // Create if needed - do NOT do updates here
                 final Author author = tocEntry.getPrimaryAuthor();
                 if (author.getId() == 0) {
-                    authorDao.insert(context, author);
+                    authorDao.insert(context, author, bookLocale);
                 }
 
                 final OrderByHelper.OrderByData obd;

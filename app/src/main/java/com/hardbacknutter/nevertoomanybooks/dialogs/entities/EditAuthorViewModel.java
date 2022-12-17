@@ -123,7 +123,7 @@ public class EditAuthorViewModel
             if (tmpRealAuthor.getId() == 0) {
                 if (create) {
                     try {
-                        dao.insert(context, tmpRealAuthor);
+                        dao.insert(context, tmpRealAuthor, bookLocale);
                     } catch (@NonNull final DaoWriteException e) {
                         return false;
                     }

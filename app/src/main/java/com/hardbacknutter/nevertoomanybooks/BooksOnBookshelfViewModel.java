@@ -572,7 +572,7 @@ public class BooksOnBookshelfViewModel
 
     @NonNull
     List<Author> getAuthorsByBookId(@IntRange(from = 1) final long bookId) {
-        return ServiceLocator.getInstance().getAuthorDao().getAuthorsByBookId(bookId);
+        return ServiceLocator.getInstance().getAuthorDao().getByBookId(bookId);
     }
 
     /**

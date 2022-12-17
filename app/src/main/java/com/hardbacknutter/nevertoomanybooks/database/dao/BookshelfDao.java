@@ -34,17 +34,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
-public interface BookshelfDao {
-
-    /**
-     * Get the {@link Bookshelf} based on the given id.
-     *
-     * @param id of Bookshelf to find
-     *
-     * @return the {@link Bookshelf}, or {@code null} if not found
-     */
-    @Nullable
-    Bookshelf getById(long id);
+@SuppressWarnings("UnusedReturnValue")
+public interface BookshelfDao
+        extends MoveBooksDao<Bookshelf> {
 
     /**
      * Find a {@link Bookshelf} by using the <strong>name</strong> fields
@@ -134,6 +126,7 @@ public interface BookshelfDao {
     boolean update(@NonNull Context context,
                    @NonNull Bookshelf bookshelf);
 
+
     /**
      * Delete the passed {@link Bookshelf}.
      * Cleans up {@link DBDefinitions#TBL_BOOK_LIST_NODE_STATE} as well.
@@ -142,21 +135,7 @@ public interface BookshelfDao {
      *
      * @return {@code true} if a row was deleted
      */
-    @SuppressWarnings("UnusedReturnValue")
     boolean delete(@NonNull Bookshelf bookshelf);
-
-    /**
-     * Moves all books from the 'source' {@link Bookshelf}, to the 'target' {@link Bookshelf}.
-     * The (now unused) 'source' {@link Bookshelf} is deleted.
-     *
-     * @param source from where to move
-     * @param target to move to
-     *
-     * @throws DaoWriteException on failure
-     */
-    void moveBooks(@NonNull Bookshelf source,
-                   @NonNull Bookshelf target)
-            throws DaoWriteException;
 
     /**
      * Purge book list node state data for the given {@link Bookshelf}.

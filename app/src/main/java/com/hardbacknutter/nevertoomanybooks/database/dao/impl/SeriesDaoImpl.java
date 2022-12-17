@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import androidx.annotation.IntRange;
@@ -59,6 +60,9 @@ public class SeriesDaoImpl
 
     /** Log tag. */
     private static final String TAG = "SeriesDaoImpl";
+
+    private static final String ERROR_INSERT_FROM = "Insert from\n";
+    private static final String ERROR_UPDATE_FROM = "Update from\n";
 
     /**
      * Constructor.
@@ -109,7 +113,7 @@ public class SeriesDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<Series> getSeriesByBookId(@IntRange(from = 1) final long bookId) {
+    public ArrayList<Series> getByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<Series> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.SERIES_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
@@ -199,6 +203,29 @@ public class SeriesDaoImpl
                              new String[]{String.valueOf(seriesId)});
     }
 
+    /**
+     * Remove duplicates.
+     * Consolidates series/- and series/number.
+     * <p>
+     * Remove Series from the list where the titles are the same, but one entry has a
+     * {@code null} or empty number.
+     * e.g. the following list should be processed as indicated:
+     * <ul>
+     * <li>foo(5)</li>
+     * <li>foo <-- delete</li>
+     * <li>bar <-- delete</li>
+     * <li>bar <-- delete</li>
+     * <li>bar(1)</li>
+     * <li>foo(5) <-- delete</li>
+     * <li>foo(6)</li>
+     * </ul>
+     * Note we keep BOTH foo(5) + foo(6)
+     * <p>
+     * ENHANCE: Add aliases table to allow further pruning
+     * (e.g. Foundation == The Foundation Saga).
+     * <p>
+     * {@inheritDoc}
+     */
     @Override
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<Series> list,
@@ -261,7 +288,8 @@ public class SeriesDaoImpl
     @Override
     public long insert(@NonNull final Context context,
                        @NonNull final Series series,
-                       @NonNull final Locale bookLocale) {
+                       @NonNull final Locale bookLocale)
+            throws DaoWriteException {
 
         final OrderByHelper.OrderByData obd = OrderByHelper.createOrderByData(
                 context, series.getTitle(), bookLocale, series::getLocale);
@@ -273,26 +301,41 @@ public class SeriesDaoImpl
             final long iId = stmt.executeInsert();
             if (iId > 0) {
                 series.setId(iId);
+                return iId;
             }
-            return iId;
+
+            throw new DaoWriteException(ERROR_INSERT_FROM + series);
+        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+            throw new DaoWriteException(ERROR_INSERT_FROM + series, e);
         }
     }
 
     @Override
-    public boolean update(@NonNull final Context context,
-                          @NonNull final Series series,
-                          @NonNull final Locale bookLocale) {
+    public void update(@NonNull final Context context,
+                       @NonNull final Series series,
+                       @NonNull final Locale bookLocale)
+            throws DaoWriteException {
 
         final OrderByHelper.OrderByData obd = OrderByHelper.createOrderByData(
                 context, series.getTitle(), bookLocale, series::getLocale);
 
-        final ContentValues cv = new ContentValues();
-        cv.put(DBKey.SERIES_TITLE, series.getTitle());
-        cv.put(DBKey.SERIES_TITLE_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
-        cv.put(DBKey.SERIES_IS_COMPLETE, series.isComplete());
+        try {
+            final ContentValues cv = new ContentValues();
+            cv.put(DBKey.SERIES_TITLE, series.getTitle());
+            cv.put(DBKey.SERIES_TITLE_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
+            cv.put(DBKey.SERIES_IS_COMPLETE, series.isComplete());
 
-        return 0 < db.update(TBL_SERIES.getName(), cv, DBKey.PK_ID + "=?",
-                             new String[]{String.valueOf(series.getId())});
+            final boolean success =
+                    0 < db.update(TBL_SERIES.getName(), cv, DBKey.PK_ID + "=?",
+                                  new String[]{String.valueOf(series.getId())});
+            if (success) {
+                return;
+            }
+
+            throw new DaoWriteException(ERROR_UPDATE_FROM + series);
+        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+            throw new DaoWriteException(ERROR_UPDATE_FROM + series, e);
+        }
     }
 
     @Override
@@ -308,7 +351,7 @@ public class SeriesDaoImpl
 
         if (rowsAffected > 0) {
             series.setId(0);
-            repositionSeries(context);
+            fixPositions(context);
         }
         return rowsAffected == 1;
     }
@@ -337,7 +380,10 @@ public class SeriesDaoImpl
                 for (final Series item : fromBook) {
                     if (source.getId() == item.getId()) {
                         destList.add(target);
+                        // We could 'break' here as there should be no duplicates,
+                        // but paranoia...
                     } else {
+                        // just keep/copy
                         destList.add(item);
                     }
                 }
@@ -369,7 +415,7 @@ public class SeriesDaoImpl
     }
 
     @Override
-    public int repositionSeries(@NonNull final Context context) {
+    public int fixPositions(@NonNull final Context context) {
 
         final ArrayList<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {
@@ -388,7 +434,7 @@ public class SeriesDaoImpl
                 }
 
                 for (final long bookId : bookIds) {
-                    final ArrayList<Series> list = getSeriesByBookId(bookId);
+                    final ArrayList<Series> list = getByBookId(bookId);
                     // We KNOW there are no updates needed.
                     bookDao.insertSeries(context, bookId, false, list, false, bookLocale);
                 }

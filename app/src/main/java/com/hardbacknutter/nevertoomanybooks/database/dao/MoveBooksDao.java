@@ -17,38 +17,41 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
-import android.database.Cursor;
+import android.content.Context;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-
-@SuppressWarnings("UnusedReturnValue")
-public interface PublisherDao
-        extends EntityBookLinksDao<Publisher> {
+public interface MoveBooksDao<T extends Entity> {
 
     /**
-     * Get a unique list of all publisher names.
+     * Get the {@link T} based on the given id.
      *
-     * @return The list
-     */
-    @NonNull
-    ArrayList<String> getNames();
-
-    /**
-     * Get all publishers; mainly for the purpose of exports.
+     * @param id of {@link T} to find
      *
-     * @return Cursor over all publishers
+     * @return the {@link T}, or {@code null} if not found
      */
-    @NonNull
-    Cursor fetchAll();
+    @Nullable
+    T getById(@IntRange(from = 1) long id);
 
     /**
-     * Delete orphaned records.
+     * Moves all books from the 'source' {@link T}, to the 'target' {@link T}.
+     * The (now unused) 'source' {@link T} is deleted.
+     *
+     * @param context Current context
+     * @param source  from where to move
+     * @param target  to move to
+     *
+     * @throws DaoWriteException on failure
      */
-    void purge();
+    void moveBooks(@NonNull Context context,
+                   @NonNull T source,
+                   @NonNull T target)
+            throws DaoWriteException;
 }

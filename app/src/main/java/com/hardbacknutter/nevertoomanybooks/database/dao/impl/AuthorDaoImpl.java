@@ -69,9 +69,7 @@ public class AuthorDaoImpl
     /** Log tag. */
     private static final String TAG = "AuthorDaoImpl";
 
-    /** log error string. */
     private static final String ERROR_INSERT_FROM = "Insert from\n";
-    /** log error string. */
     private static final String ERROR_UPDATE_FROM = "Update from\n";
 
     private static final String[] Z_ARRAY_STRING = new String[0];
@@ -182,7 +180,7 @@ public class AuthorDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<Author> getAuthorsByBookId(@IntRange(from = 1) final long bookId) {
+    public ArrayList<Author> getByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<Author> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.AUTHORS_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
@@ -376,6 +374,12 @@ public class AuthorDaoImpl
                              new String[]{String.valueOf(authorId)});
     }
 
+    /**
+     * Remove duplicates.
+     * Consolidates author/- and author/type.
+     * <p>
+     * {@inheritDoc}
+     */
     @Override
     public boolean pruneList(@NonNull final Context context,
                              @NonNull final Collection<Author> list,
@@ -442,8 +446,10 @@ public class AuthorDaoImpl
     @Override
     @IntRange(from = 1, to = Integer.MAX_VALUE)
     public long insert(@NonNull final Context context,
-                       @NonNull final Author author)
+                       @NonNull final Author author,
+                       @NonNull final Locale bookLocale)
             throws DaoWriteException {
+        // bookLocale is not used.
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final Locale authorLocale = author.getLocale(context, userLocale);
@@ -469,8 +475,7 @@ public class AuthorDaoImpl
                 final Author realAuthor = author.getRealAuthor();
                 if (realAuthor != null) {
                     if (realAuthor.getId() == 0) {
-                        //URGENT: protect against recursion going haywire
-                        insert(context, realAuthor);
+                        insert(context, realAuthor, bookLocale);
                     }
                     insertPseudonymLink(iId, realAuthor.getId());
                 }
@@ -481,10 +486,9 @@ public class AuthorDaoImpl
 
                 author.setId(iId);
                 return iId;
-
-            } else {
-                throw new DaoWriteException(ERROR_INSERT_FROM + author);
             }
+
+            throw new DaoWriteException(ERROR_INSERT_FROM + author);
         } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
             throw new DaoWriteException(ERROR_INSERT_FROM + author, e);
 
@@ -497,8 +501,10 @@ public class AuthorDaoImpl
 
     @Override
     public void update(@NonNull final Context context,
-                       @NonNull final Author author)
+                       @NonNull final Author author,
+                       @NonNull final Locale bookLocale)
             throws DaoWriteException {
+        // bookLocale is not used.
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final Locale authorLocale = author.getLocale(context, userLocale);
@@ -534,12 +540,11 @@ public class AuthorDaoImpl
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }
-            } else {
-                throw new DaoWriteException(ERROR_UPDATE_FROM + author);
             }
-        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
-            throw new DaoWriteException(ERROR_UPDATE_FROM + author);
 
+            throw new DaoWriteException(ERROR_UPDATE_FROM + author);
+        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+            throw new DaoWriteException(ERROR_UPDATE_FROM + author, e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
@@ -560,28 +565,29 @@ public class AuthorDaoImpl
 
         if (rowsAffected > 0) {
             author.setId(0);
-            repositionAuthor(context);
+            fixPositions(context);
         }
         return rowsAffected == 1;
     }
 
-    private void insertPseudonymLink(final long authorID,
+    private void insertPseudonymLink(final long authorId,
                                      final long realAuthorId)
             throws DaoWriteException {
+
         try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT_PSEUDONYM_LINKS)) {
-            stmt.bindLong(1, authorID);
+            stmt.bindLong(1, authorId);
             stmt.bindLong(2, realAuthorId);
             final long id = stmt.executeInsert();
             if (id < 0) {
-                throw new DaoWriteException("Failed to insert PseudonymLink author=" + authorID
+                throw new DaoWriteException("Failed to insert PseudonymLink author=" + authorId
                                             + ", real=" + realAuthorId);
             }
         }
     }
 
-    private void deletePseudonymLink(final long authorID) {
+    private void deletePseudonymLink(final long authorId) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_PSEUDONYM_LINKS)) {
-            stmt.bindLong(1, authorID);
+            stmt.bindLong(1, authorId);
             stmt.executeUpdateDelete();
         }
     }
@@ -606,7 +612,6 @@ public class AuthorDaoImpl
 
             // Relink books with the target Author,
             // respecting the position of the Author in the list for each book.
-            // In addition, we also must preserve the author type as originally set.
             final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
             for (final long bookId : getBookIds(source.getId())) {
                 final Book book = Book.from(bookId);
@@ -614,16 +619,16 @@ public class AuthorDaoImpl
                 final Collection<Author> fromBook = book.getAuthors();
                 final Collection<Author> destList = new ArrayList<>();
 
-                for (final Author originalBookAuthor : fromBook) {
-                    if (source.getId() == originalBookAuthor.getId()) {
-                        // replace this one but keep the original author type
-                        target.setType(originalBookAuthor.getType());
+                for (final Author item : fromBook) {
+                    if (source.getId() == item.getId()) {
+                        // We MUST preserve the author type as originally set.
+                        target.setType(item.getType());
                         destList.add(target);
                         // We could 'break' here as there should be no duplicates,
                         // but paranoia...
                     } else {
                         // just keep/copy
-                        destList.add(originalBookAuthor);
+                        destList.add(item);
                     }
                 }
 
@@ -658,7 +663,7 @@ public class AuthorDaoImpl
     // However, that means two statements to execute and overall a longer execution time
     // as compared to the single stmt approach here.
     @Override
-    public int repositionAuthor(@NonNull final Context context) {
+    public int fixPositions(@NonNull final Context context) {
 
         final ArrayList<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {
@@ -677,7 +682,7 @@ public class AuthorDaoImpl
                 }
 
                 for (final long bookId : bookIds) {
-                    final ArrayList<Author> list = getAuthorsByBookId(bookId);
+                    final ArrayList<Author> list = getByBookId(bookId);
                     // We KNOW there are no updates needed.
                     bookDao.insertAuthors(context, bookId, false, list, false, bookLocale);
                 }
