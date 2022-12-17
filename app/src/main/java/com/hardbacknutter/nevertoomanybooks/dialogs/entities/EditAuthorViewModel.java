@@ -43,8 +43,6 @@ public class EditAuthorViewModel
     private static final String TAG = "EditAuthorViewModel";
     public static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
-    private AuthorDao authorDao;
-
     /** FragmentResultListener request key to use for our response. */
     private String requestKey;
 
@@ -63,8 +61,7 @@ public class EditAuthorViewModel
      * @param args {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Bundle args) {
-        if (authorDao == null) {
-            authorDao = ServiceLocator.getInstance().getAuthorDao();
+        if (requestKey == null) {
 
             requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
             author = Objects.requireNonNull(args.getParcelable(DBKey.FK_AUTHOR), DBKey.FK_AUTHOR);
