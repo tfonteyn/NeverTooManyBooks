@@ -155,5 +155,5 @@ public interface BookshelfDao
      * @return the list
      */
     @NonNull
-    ArrayList<Bookshelf> getBookshelvesByBookId(@IntRange(from = 1) long bookId);
+    ArrayList<Bookshelf> getByBookId(@IntRange(from = 1) long bookId);
 }

@@ -214,7 +214,7 @@ public final class DataHolderUtils {
             // sanity check
             if (bookId > 0) {
                 final List<Bookshelf> list = ServiceLocator.getInstance().getBookshelfDao()
-                                                           .getBookshelvesByBookId(bookId);
+                                                           .getByBookId(bookId);
                 return list.isEmpty() ? null : list.get(0);
             }
         } else if (rowData.contains(DBKey.FK_BOOKSHELF)) {

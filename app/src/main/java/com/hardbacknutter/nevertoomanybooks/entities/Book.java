@@ -306,7 +306,7 @@ public class Book
         // load lists (or init with empty lists)
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
-        setBookshelves(serviceLocator.getBookshelfDao().getBookshelvesByBookId(bookId));
+        setBookshelves(serviceLocator.getBookshelfDao().getByBookId(bookId));
         setAuthors(serviceLocator.getAuthorDao().getByBookId(bookId));
         setSeries(serviceLocator.getSeriesDao().getByBookId(bookId));
         setPublishers(serviceLocator.getPublisherDao().getByBookId(bookId));

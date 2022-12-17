@@ -392,7 +392,7 @@ public class BookshelfDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<Bookshelf> getBookshelvesByBookId(@IntRange(from = 1) final long bookId) {
+    public ArrayList<Bookshelf> getByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<Bookshelf> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.BOOKSHELVES_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
