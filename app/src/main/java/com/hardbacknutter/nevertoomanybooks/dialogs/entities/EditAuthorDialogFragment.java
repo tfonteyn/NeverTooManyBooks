@@ -41,11 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.RowChangedListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
@@ -218,96 +215,12 @@ public class EditAuthorDialogFragment
         // store changes
         author.copyFrom(currentEdit, false);
 
-        final AuthorDao dao = ServiceLocator.getInstance().getAuthorDao();
-
-        boolean success = false;
-
-        if (author.getId() == 0) {
-            // It's a new one. Check if there is an existing one with the same name
-            final long existingId = dao.find(context, author, true, bookLocale);
-            if (existingId == 0) {
-                // it's an entirely new one; add it.
-                try {
-                    dao.insert(context, author);
-                    success = true;
-                } catch (@NonNull final DaoWriteException e) {
-                    return false;
-                }
-            } else {
-                // There is one with the same name; ask whether to merge the 2
-                askToMerge(author, existingId);
-            }
-        } else {
-            // It's an existing one
-            if (nameChanged) {
-                // but the name was changed. Check if there is an existing one with the same name
-                final long existingId = dao.find(context, author, true, bookLocale);
-                if (existingId == 0) {
-                    // no-one else with the same name; so we just update this one
-                    try {
-                        dao.update(context, author);
-                        success = true;
-                    } catch (@NonNull final DaoWriteException e) {
-                        return false;
-                    }
-                } else {
-                    // There is one with the same name; ask whether to merge the 2
-                    askToMerge(author, existingId);
-                }
-            } else {
-                // The name was not changed; just update the other attributes
-                try {
-                    dao.update(context, author);
-                    success = true;
-                } catch (@NonNull final DaoWriteException e) {
-                    return false;
-                }
-            }
-        }
-
-        if (success) {
-            RowChangedListener.setResult(this, authorVm.getRequestKey(),
-                                         DBKey.FK_AUTHOR, author.getId());
-        }
-        return success;
-    }
-
-    /**
-     * Ask whether to move the books from the current/modified Author
-     * to the already existing Author.
-     * <p>
-     * Note that extra attributes are <strong>NOT</strong> copied!
-     * URGENT: should we copy these extra attributes ? Probably NOT...
-     *  #isComplete
-     *  #pseudonym
-     */
-    private void askToMerge(@NonNull final Author source,
-                            final long targetId) {
-        final Context context = getContext();
-        //noinspection ConstantConditions
-        new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_warning_24)
-                .setTitle(source.getLabel(context))
-                .setMessage(R.string.confirm_merge_authors)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.action_merge, (d, w) -> {
-                    dismiss();
-                    try {
-                        final AuthorDao dao = ServiceLocator.getInstance().getAuthorDao();
-                        final Author target = Objects.requireNonNull(dao.getById(targetId));
-
-                        dao.moveBooks(context, source, target);
-
-                        // return the Author who 'lost' their books
-                        RowChangedListener.setResult(this, authorVm.getRequestKey(),
-                                                     DBKey.FK_AUTHOR, source.getId());
-                    } catch (@NonNull final DaoWriteException e) {
-                        Logger.error(TAG, e);
-                        StandardDialogs.showError(context, R.string.error_storage_not_writable);
-                    }
-                })
-                .create()
-                .show();
+        return SaveChangesHelper
+                .save(this, ServiceLocator.getInstance().getAuthorDao(),
+                      author, nameChanged, bookLocale,
+                      updatedId -> RowChangedListener.setResult(
+                              this, authorVm.getRequestKey(), DBKey.FK_AUTHOR, updatedId),
+                      R.string.confirm_merge_authors);
     }
 
     private void viewToModel() {

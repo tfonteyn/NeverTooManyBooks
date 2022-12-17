@@ -34,20 +34,15 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleOwner;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 /**
@@ -183,38 +178,13 @@ public class EditBookshelfDialogFragment
             }
         } else {
             // There is one with the same name; ask whether to merge the 2
-            askToMerge(bookshelf, existingId);
+            SaveChangesHelper.askToMerge(
+                    this, dao, bookshelf,
+                    (updatedId) -> Launcher.setResult(this, requestKey, updatedId),
+                    R.string.confirm_merge_bookshelves,
+                    existingId);
         }
-
         return false;
-    }
-
-    private void askToMerge(@NonNull final Bookshelf source,
-                            final long targetId) {
-        final Context context = getContext();
-        //noinspection ConstantConditions
-        new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_warning_24)
-                .setTitle(source.getLabel(context))
-                .setMessage(R.string.confirm_merge_bookshelves)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.action_merge, (d, w) -> {
-                    dismiss();
-                    try {
-                        final BookshelfDao dao = ServiceLocator.getInstance().getBookshelfDao();
-                        final Bookshelf target = Objects.requireNonNull(dao.getById(targetId));
-                        // By choice we do NOT copy any extra attributes (e.g. filters, style,...)
-                        dao.moveBooks(source, target);
-
-                        Launcher.setResult(this, requestKey, targetId);
-                    } catch (@NonNull final DaoWriteException e) {
-                        Logger.error(TAG, e);
-                        StandardDialogs.showError(context, R.string.error_storage_not_writable);
-                    }
-
-                })
-                .create()
-                .show();
     }
 
     private void viewToModel() {

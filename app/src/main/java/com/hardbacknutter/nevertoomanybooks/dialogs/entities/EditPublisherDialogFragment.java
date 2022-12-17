@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,8 +29,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import java.util.Locale;
 import java.util.Objects;
 
@@ -39,12 +36,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.RowChangedListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditPublisherBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
@@ -174,61 +167,15 @@ public class EditPublisherDialogFragment
         // store changes
         publisher.copyFrom(currentEdit);
 
-        final Context context = getContext();
-        final PublisherDao dao = ServiceLocator.getInstance().getPublisherDao();
-
         // There is no book involved here, so use the users Locale instead
         final Locale bookLocale = getResources().getConfiguration().getLocales().get(0);
 
-        boolean success = false;
-
-        // Check if there is an existing one with the same name
-        //noinspection ConstantConditions
-        final long existingId = dao.find(context, publisher, true, bookLocale);
-        if (existingId == 0) {
-            if (publisher.getId() == 0) {
-                success = dao.insert(context, publisher, bookLocale) > 0;
-            } else {
-                success = dao.update(context, publisher, bookLocale);
-            }
-        } else {
-            // There is one with the same name; ask whether to merge the 2
-            askToMerge(publisher, existingId);
-        }
-
-        if (success) {
-            RowChangedListener.setResult(this, requestKey, DBKey.FK_PUBLISHER, publisher.getId());
-        }
-        return success;
-    }
-
-    private void askToMerge(@NonNull final Publisher source,
-                            final long targetId) {
-        final Context context = getContext();
-        //noinspection ConstantConditions
-        new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_warning_24)
-                .setTitle(source.getLabel(context))
-                .setMessage(R.string.confirm_merge_publishers)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.action_merge, (d, w) -> {
-                    dismiss();
-                    try {
-                        final PublisherDao dao = ServiceLocator.getInstance().getPublisherDao();
-                        final Publisher target = Objects.requireNonNull(dao.getById(targetId));
-                        // There are no extra attributes, just move the books
-                        dao.moveBooks(context, source, target);
-
-                        // return the publisher who 'lost' it's books
-                        RowChangedListener.setResult(this, requestKey,
-                                                     DBKey.FK_PUBLISHER, source.getId());
-                    } catch (@NonNull final DaoWriteException e) {
-                        Logger.error(TAG, e);
-                        StandardDialogs.showError(context, R.string.error_storage_not_writable);
-                    }
-                })
-                .create()
-                .show();
+        return SaveChangesHelper
+                .save(this, ServiceLocator.getInstance().getPublisherDao(),
+                      publisher, nameChanged, bookLocale,
+                      updatedId -> RowChangedListener.setResult(
+                              this, requestKey, DBKey.FK_PUBLISHER, updatedId),
+                      R.string.confirm_merge_publishers);
     }
 
     private void viewToModel() {
