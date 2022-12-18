@@ -137,6 +137,11 @@
           ?attr/textAppearanceLabelMedium -> textSide: 12sp   -->
     <dimen name="btn_open_toc_text_size">12sp</dimen>
 
+    <!-- on larger screens we'll add a paddingEnd to allow easier scrolling.
+     The width of the scrollbar "android.R.attr.fastScrollTrackDrawable" is 8dp
+    -->
+    <dimen name="scrollbar_padding">2dp</dimen>
+
     <!-- The width of the BoB on the list/detail embedded screen.-->
     <dimen name="bob_embedded_list_width">400dp</dimen>
 
@@ -144,23 +149,9 @@
     <dimen name="bob_book_card_margin">8dp</dimen>
     <!-- The content padding used for the CardView content displaying a Book. -->
     <dimen name="bob_book_card_content_padding">4dp</dimen>
-    <!-- top margin for the top-level rows (groups); also known as "fat_finger_spacer" -->
-    <dimen name="bob_group_level_1_margin_top">4dp</dimen>
-    <!-- multipliers for the levels in the booklist:
-         paddingStart = (level-1) * bob_group_level_padding_start. -->
-    <dimen name="bob_group_level_padding_start">8dp</dimen>
-    <dimen name="bob_group_level_bullet_padding">4dp</dimen>
-
-    <dimen name="bob_group_level_2_drawable_size">10dp</dimen>
-    <dimen name="bob_group_level_3_drawable_size">6dp</dimen>
 
     <!-- The relative size for the 'real-author' name of a pseudonym. -->
     <item name="bob_author_pseudonym_size" format="float" type="dimen">0.6f</item>
-
-    <!-- on larger screens we'll add a paddingEnd to allow easier scrolling.
-         The width of the scrollbar "android.R.attr.fastScrollTrackDrawable" is 8dp
-    -->
-    <dimen name="scrollbar_padding">2dp</dimen>
 
     <!-- The text size (in sp units, but in float notation) for all text in a book list row. -->
     <array name="bob_text_size_in_sp">
@@ -183,6 +174,20 @@
         <item>1.22</item>
     </array>
 
+
+    <!-- top margin for the top-level rows (groups); also known as "fat_finger_spacer" -->
+    <dimen name="bob_group_level_1_margin_top">4dp</dimen>
+    <!-- multipliers for the levels in the booklist:
+         paddingStart = (level-1) * bob_group_level_padding_start. -->
+    <dimen name="bob_group_level_padding_start">8dp</dimen>
+    <!-- padding between the compound drawable and the text on the group levels. -->
+    <dimen name="bob_group_level_bullet_padding">4dp</dimen>
+    <!-- size (width == height) to use for the compound drawable on the group levels. -->
+    <array name="bob_group_level_generic_string_drawable_size">
+        <item>0dp</item>
+        <item>10dp</item>
+        <item>6dp</item>
+    </array>
 
     <!-- The width for the "@style/TopCentered" and similar -->
     <dimen name="centered_max_width">600dp</dimen>

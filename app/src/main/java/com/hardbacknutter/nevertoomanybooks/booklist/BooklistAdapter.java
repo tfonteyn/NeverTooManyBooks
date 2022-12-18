@@ -41,9 +41,8 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import androidx.annotation.AttrRes;
+import androidx.annotation.ArrayRes;
 import androidx.annotation.ColorInt;
-import androidx.annotation.DimenRes;
 import androidx.annotation.Dimension;
 import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
@@ -751,33 +750,6 @@ public class BooklistAdapter
         throw new IllegalStateException("Not in debug");
     }
 
-    /**
-     * The style definition for the primary text in a {@link GenericStringHolder}.
-     */
-    private enum GenericStringLevelStyle {
-        Level1(R.attr.textAppearanceTitleLarge, Typeface.BOLD, 0),
-        Level2(R.attr.textAppearanceTitleMedium, Typeface.BOLD,
-               R.dimen.bob_group_level_2_drawable_size),
-        LevelX(R.attr.textAppearanceTitleSmall, Typeface.BOLD,
-               R.dimen.bob_group_level_3_drawable_size);
-
-        @AttrRes
-        final int textAttrId;
-        final int textStyle;
-
-        @DimenRes
-        final int sizeResId;
-
-        GenericStringLevelStyle(@AttrRes final int textAttrId,
-                                final int textStyle,
-                                @DimenRes final int sizeResId) {
-            this.textAttrId = textAttrId;
-            this.textStyle = textStyle;
-            this.sizeResId = sizeResId;
-        }
-
-    }
-
     @FunctionalInterface
     public interface OnRowClickListener {
 
@@ -1316,6 +1288,10 @@ public class BooklistAdapter
     static class GenericStringHolder
             extends RowViewHolder {
 
+        private static final int[] TEXT_APP_ATTR = {
+                R.attr.textAppearanceTitleLarge,
+                R.attr.textAppearanceTitleMedium,
+                R.attr.textAppearanceTitleSmall};
         /**
          * The group this holder represents.
          * It's ok to store this as it's intrinsically linked with the ViewType.
@@ -1325,7 +1301,6 @@ public class BooklistAdapter
         /*** View to populate. */
         @NonNull
         final TextView textView;
-
         /**
          * Key of the related data column.
          * It's ok to store this as it's intrinsically linked with the BooklistGroup.
@@ -1350,35 +1325,36 @@ public class BooklistAdapter
             key = group.getDisplayDomainExpression().getDomain().getName();
             textView = itemView.findViewById(R.id.level_text);
 
-            final GenericStringLevelStyle levelStyle;
-            switch (level) {
-                case 1:
-                    levelStyle = GenericStringLevelStyle.Level1;
-                    break;
-                case 2:
-                    levelStyle = GenericStringLevelStyle.Level2;
-                    break;
-                default:
-                    levelStyle = GenericStringLevelStyle.LevelX;
-                    break;
-            }
-
             final Context context = textView.getContext();
 
-            textView.setTextAppearance(AttrUtils.getResId(context, levelStyle.textAttrId));
-            textView.setTypeface(null, levelStyle.textStyle);
+            textView.setTextAppearance(AttrUtils.getResId(
+                    context, TEXT_APP_ATTR[MathUtils.clamp(level - 1, 0, 2)]));
 
-            if (levelStyle.sizeResId > 0) {
+            textView.setTypeface(null, Typeface.BOLD);
+
+            final Resources res = context.getResources();
+
+            final int drawableSize = getPixelSize(
+                    res, level, R.array.bob_group_level_generic_string_drawable_size);
+            if (drawableSize > 0) {
                 @SuppressLint("UseCompatLoadingForDrawables")
                 final Drawable drawable = context.getDrawable(R.drawable.ic_baseline_lens_24);
-
-                final Resources res = context.getResources();
-
-                final int size = res.getDimensionPixelSize(levelStyle.sizeResId);
-                drawable.setBounds(0, 0, size, size);
+                drawable.setBounds(0, 0, drawableSize, drawableSize);
                 textView.setCompoundDrawablePadding(
                         res.getDimensionPixelSize(R.dimen.bob_group_level_bullet_padding));
                 textView.setCompoundDrawablesRelative(drawable, null, null, null);
+            }
+        }
+
+        @Dimension
+        static int getPixelSize(@NonNull final Resources res,
+                                @IntRange(from = 1) final int level,
+                                @ArrayRes final int type) {
+            final TypedArray ta = res.obtainTypedArray(type);
+            try {
+                return ta.getDimensionPixelSize(MathUtils.clamp(level - 1, 0, 2), 0);
+            } finally {
+                ta.recycle();
             }
         }
 
