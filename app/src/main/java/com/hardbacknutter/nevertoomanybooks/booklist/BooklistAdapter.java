@@ -32,7 +32,6 @@ import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
-import android.text.style.StyleSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -52,7 +51,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.core.math.MathUtils;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
@@ -402,52 +400,76 @@ public class BooklistAdapter
 
     /**
      * Format the source string according to the BooklistGroup id.
+     * <p>
+     * Formatting is centralized in this method; the alternative (and theoretically 'correct')
+     * way would be to have a {@link RowViewHolder} for (at least) each 'case' branch... which
+     * is overkill.
+     * To keep it all straightforward, even the Author/Series formatting is handled here.
      *
      * @param context Current context
      * @param groupId the BooklistGroup id
-     * @param text    value (as a String) to reformat
-     * @param locale  optional, if a locale is needed but not passed in,
-     *                the user-locale will be used.
      *
      * @return Formatted string,
      * or original string when no special format was needed or on any failure
      */
     @NonNull
-    private String format(@NonNull final Context context,
-                          @BooklistGroup.Id final int groupId,
-                          @Nullable final String text,
-                          @Nullable final Locale locale) {
+    private CharSequence format(@NonNull final Context context,
+                                @BooklistGroup.Id final int groupId,
+                                @NonNull final DataHolder rowData,
+                                @NonNull final String key) {
+        final String text = rowData.getString(key);
+
         // NEWTHINGS: BooklistGroup
         switch (groupId) {
             case BooklistGroup.AUTHOR: {
-                if (text == null || text.isEmpty()) {
+                if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_author);
                 } else {
-                    return text;
+                    final long pseudonym = rowData.getLong(DBKey.AUTHOR_PSEUDONYM);
+                    if (pseudonym != 0) {
+                        final Author realAuthor = ServiceLocator.getInstance().getAuthorDao()
+                                                                .getById(pseudonym);
+                        if (realAuthor != null) {
+                            final boolean givenNameFirst = style.isShowAuthorByGivenName();
+                            return realAuthor.getStyledName(context, text, givenNameFirst);
+                        }
+                    }
                 }
+                return text;
             }
             case BooklistGroup.SERIES: {
-                if (text == null || text.isEmpty()) {
+                if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_series);
 
                 } else if (reorderTitleForDisplaying) {
-                    return ReorderHelper.reorder(context, text, locale);
+                    // FIXME: translated series are reordered in the book's language
+                    // It should be done using the Series language
+                    // but as long as we don't store the Series language there is no point
+                    final Locale bookLocale;
+                    final String lang = rowData.getString(DBKey.LANGUAGE);
+                    if (lang.isBlank()) {
+                        bookLocale = null;
+                    } else {
+                        bookLocale = ServiceLocator.getInstance().getAppLocale()
+                                                   .getLocale(context, lang);
+                    }
+                    return ReorderHelper.reorder(context, text, bookLocale);
                 } else {
                     return text;
                 }
             }
             case BooklistGroup.PUBLISHER: {
-                if (text == null || text.isEmpty()) {
+                if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_publisher);
 
                 } else if (reorderTitleForDisplaying) {
-                    return ReorderHelper.reorder(context, text, locale);
+                    return ReorderHelper.reorder(context, text, null);
                 } else {
                     return text;
                 }
             }
             case BooklistGroup.READ_STATUS: {
-                if (text == null || text.isEmpty()) {
+                if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_read_status);
                 } else {
                     if (ParseUtils.parseBoolean(text, true)) {
@@ -458,7 +480,7 @@ public class BooklistAdapter
                 }
             }
             case BooklistGroup.LANGUAGE: {
-                if (text == null || text.isEmpty()) {
+                if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_language);
                 } else {
                     return ServiceLocator.getInstance().getLanguages()
@@ -466,7 +488,7 @@ public class BooklistAdapter
                 }
             }
             case BooklistGroup.CONDITION: {
-                if (text != null && !text.isEmpty()) {
+                if (!text.isEmpty()) {
                     try {
                         final int i = Integer.parseInt(text);
                         if (i < conditionDescriptions.length) {
@@ -480,7 +502,7 @@ public class BooklistAdapter
             }
             case BooklistGroup.RATING: {
                 // This is the text based formatting, as used by the level/scroller text.
-                if (text == null || text.isEmpty()) {
+                if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_rating);
                 } else {
                     try {
@@ -500,7 +522,7 @@ public class BooklistAdapter
                 }
             }
             case BooklistGroup.LENDING: {
-                if (text == null || text.isEmpty()) {
+                if (text.isEmpty()) {
                     return context.getString(R.string.lbl_available);
                 } else {
                     return text;
@@ -513,7 +535,7 @@ public class BooklistAdapter
             case BooklistGroup.DATE_PUBLISHED_YEAR:
             case BooklistGroup.DATE_FIRST_PUBLICATION_YEAR:
             case BooklistGroup.DATE_READ_YEAR: {
-                if (text == null || text.isEmpty()) {
+                if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_year);
                 } else {
                     return text;
@@ -526,7 +548,7 @@ public class BooklistAdapter
             case BooklistGroup.DATE_PUBLISHED_MONTH:
             case BooklistGroup.DATE_FIRST_PUBLICATION_MONTH:
             case BooklistGroup.DATE_READ_MONTH: {
-                if (text == null || text.isEmpty()) {
+                if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_month);
                 } else {
                     try {
@@ -535,7 +557,7 @@ public class BooklistAdapter
                         if (m > 0 && m <= 12) {
                             return Month.of(m).getDisplayName(
                                     TextStyle.FULL_STANDALONE,
-                                    Objects.requireNonNullElse(locale, userLocale));
+                                    Objects.requireNonNullElse(null, userLocale));
                         }
                     } catch (@NonNull final NumberFormatException e) {
                         if (BuildConfig.DEBUG /* always */) {
@@ -550,7 +572,7 @@ public class BooklistAdapter
             case BooklistGroup.DATE_ADDED_DAY:
             case BooklistGroup.DATE_LAST_UPDATE_DAY:
             case BooklistGroup.DATE_READ_DAY: {
-                if (text == null || text.isEmpty()) {
+                if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_day);
                 } else {
                     return text;
@@ -569,22 +591,13 @@ public class BooklistAdapter
             case BooklistGroup.AUTHOR_FAMILY_NAME_1ST_CHAR:
             case BooklistGroup.PUBLISHER_NAME_1ST_CHAR:
             default: {
-                if (text == null || text.isEmpty()) {
+                if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_field);
                 } else {
                     return text;
                 }
             }
         }
-    }
-
-    @NonNull
-    public Locale getUserLocale() {
-        return userLocale;
-    }
-
-    private boolean isImageCachingEnabled() {
-        return imageCachingEnabled;
     }
 
     private void scaleTextViews(@NonNull final View view,
@@ -651,8 +664,8 @@ public class BooklistAdapter
      */
     @Override
     @NonNull
-    public String[] getPopupText(final int position) {
-        return new String[]{
+    public CharSequence[] getPopupText(final int position) {
+        return new CharSequence[]{
                 getLevelText(1, position),
                 getLevelText(2, position)};
     }
@@ -666,8 +679,8 @@ public class BooklistAdapter
      * @return the text for that level, or {@code null} if none present.
      */
     @Nullable
-    public String getLevelText(@IntRange(from = 1) final int level,
-                               final int position) {
+    public CharSequence getLevelText(@IntRange(from = 1) final int level,
+                                     final int position) {
 
         // sanity check.
         if (BuildConfig.DEBUG /* always */) {
@@ -693,12 +706,9 @@ public class BooklistAdapter
             } else {
                 // it's a group; use the display domain as the text
                 final BooklistGroup group = style.getGroupByLevel(level);
+                final String key = group.getDisplayDomainExpression().getDomain().getName();
                 //noinspection ConstantConditions
-                final String value = nodeData.getString(
-                        group.getDisplayDomainExpression().getDomain().getName());
-                if (!value.isEmpty()) {
-                    return format(inflater.getContext(), group.getId(), value, null);
-                }
+                return format(inflater.getContext(), group.getId(), nodeData, key);
             }
         } catch (@NonNull final CursorIndexOutOfBoundsException e) {
             // Seen a number of times. No longer reproducible, but paranoia...
@@ -752,11 +762,11 @@ public class BooklistAdapter
                R.dimen.bob_group_level_3_drawable_size);
 
         @AttrRes
-        private final int textAttrId;
-        private final int textStyle;
+        final int textAttrId;
+        final int textStyle;
 
         @DimenRes
-        private final int sizeResId;
+        final int sizeResId;
 
         GenericStringLevelStyle(@AttrRes final int textAttrId,
                                 final int textStyle,
@@ -766,39 +776,6 @@ public class BooklistAdapter
             this.sizeResId = sizeResId;
         }
 
-        static void apply(@IntRange(from = 1) final int level,
-                          @NonNull final TextView textView) {
-            final GenericStringLevelStyle levelStyle;
-            switch (level) {
-                case 1:
-                    levelStyle = Level1;
-                    break;
-                case 2:
-                    levelStyle = Level2;
-                    break;
-                default:
-                    levelStyle = LevelX;
-                    break;
-            }
-
-            final Context context = textView.getContext();
-
-            textView.setTextAppearance(AttrUtils.getResId(context, levelStyle.textAttrId));
-            textView.setTypeface(null, levelStyle.textStyle);
-
-            if (levelStyle.sizeResId > 0) {
-                @SuppressLint("UseCompatLoadingForDrawables")
-                final Drawable drawable = context.getDrawable(R.drawable.ic_baseline_lens_24);
-
-                final Resources res = context.getResources();
-
-                final int size = res.getDimensionPixelSize(levelStyle.sizeResId);
-                drawable.setBounds(0, 0, size, size);
-                textView.setCompoundDrawablePadding(
-                        res.getDimensionPixelSize(R.dimen.bob_group_level_bullet_padding));
-                textView.setCompoundDrawablesRelative(drawable, null, null, null);
-            }
-        }
     }
 
     @FunctionalInterface
@@ -877,7 +854,6 @@ public class BooklistAdapter
     /**
      * ViewHolder for a {@link BooklistGroup#BOOK} row.
      */
-    @SuppressWarnings("WeakerAccess")
     static class BookHolder
             extends RowViewHolder {
 
@@ -1152,7 +1128,7 @@ public class BooklistAdapter
             String date = null;
             if (usePubDate) {
                 final String dateStr = rowData.getString(DBKey.BOOK_PUBLICATION__DATE);
-                date = new PartialDate(dateStr).toDisplay(adapter.getUserLocale(), dateStr);
+                date = new PartialDate(dateStr).toDisplay(adapter.userLocale, dateStr);
             }
 
             if (text != null && !text.isBlank() && date != null && !date.isBlank()) {
@@ -1196,7 +1172,7 @@ public class BooklistAdapter
             final Context context = vb.coverImage0.getContext();
 
             // 1. If caching is used, and we don't have cache building happening, check it.
-            if (adapter.isImageCachingEnabled()) {
+            if (adapter.imageCachingEnabled) {
                 final CoverCacheDao coverCacheDao = ServiceLocator.getInstance().getCoverCacheDao();
                 if (!coverCacheDao.isBusy()) {
                     final Bitmap bitmap = coverCacheDao.getCover(context, uuid, 0,
@@ -1225,7 +1201,7 @@ public class BooklistAdapter
             }
 
             // Once we get here, we know the file is valid
-            if (adapter.isImageCachingEnabled()) {
+            if (adapter.imageCachingEnabled) {
                 // 1. Gets the image from the file system and display it.
                 // 2. Start a subsequent task to send it to the cache.
                 //noinspection ConstantConditions
@@ -1374,15 +1350,44 @@ public class BooklistAdapter
             key = group.getDisplayDomainExpression().getDomain().getName();
             textView = itemView.findViewById(R.id.level_text);
 
-            GenericStringLevelStyle.apply(level, textView);
+            final GenericStringLevelStyle levelStyle;
+            switch (level) {
+                case 1:
+                    levelStyle = GenericStringLevelStyle.Level1;
+                    break;
+                case 2:
+                    levelStyle = GenericStringLevelStyle.Level2;
+                    break;
+                default:
+                    levelStyle = GenericStringLevelStyle.LevelX;
+                    break;
+            }
+
+            final Context context = textView.getContext();
+
+            textView.setTextAppearance(AttrUtils.getResId(context, levelStyle.textAttrId));
+            textView.setTypeface(null, levelStyle.textStyle);
+
+            if (levelStyle.sizeResId > 0) {
+                @SuppressLint("UseCompatLoadingForDrawables")
+                final Drawable drawable = context.getDrawable(R.drawable.ic_baseline_lens_24);
+
+                final Resources res = context.getResources();
+
+                final int size = res.getDimensionPixelSize(levelStyle.sizeResId);
+                drawable.setBounds(0, 0, size, size);
+                textView.setCompoundDrawablePadding(
+                        res.getDimensionPixelSize(R.dimen.bob_group_level_bullet_padding));
+                textView.setCompoundDrawablesRelative(drawable, null, null, null);
+            }
         }
 
         @Override
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
                               @NonNull final Style style) {
-            final String text = adapter.format(itemView.getContext(), groupId,
-                                               rowData.getString(key), null);
+            final CharSequence text =
+                    adapter.format(itemView.getContext(), groupId, rowData, key);
             textView.setText(text);
 
             if (BuildConfig.DEBUG) {
@@ -1422,7 +1427,6 @@ public class BooklistAdapter
 
         @NonNull
         final ImageView completeView;
-        private final float pseudonymRelSize;
 
         /**
          * Constructor.
@@ -1438,55 +1442,16 @@ public class BooklistAdapter
                      @NonNull final BooklistGroup group) {
             super(adapter, level, itemView, group);
             completeView = itemView.findViewById(R.id.cbx_is_complete);
-            pseudonymRelSize = ResourcesCompat.getFloat(itemView.getContext().getResources(),
-                                                        R.dimen.bob_author_pseudonym_size);
         }
 
         @Override
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
                               @NonNull final Style style) {
-
-            CharSequence name = adapter.format(itemView.getContext(), groupId,
-                                               rowData.getString(key), null);
-
-            final long pseudonym = rowData.getLong(DBKey.AUTHOR_PSEUDONYM);
-            if (pseudonym != 0) {
-                name = getFormattedName(name, pseudonym, adapter.style.isShowAuthorByGivenName());
-            }
-
-            textView.setText(name);
-
-            if (BuildConfig.DEBUG) {
-                dbgPosition(position, rowData);
-            }
+            super.onBindViewHolder(position, rowData, style);
 
             completeView.setVisibility(rowData.getBoolean(DBKey.AUTHOR_IS_COMPLETE)
                                        ? View.VISIBLE : View.GONE);
-        }
-
-        @NonNull
-        private CharSequence getFormattedName(@NonNull final CharSequence pseudonym,
-                                              final long realAuthorId,
-                                              final boolean givenNameFirst) {
-
-            final Author realAuthor = ServiceLocator.getInstance().getAuthorDao()
-                                                    .getById(realAuthorId);
-            if (realAuthor != null) {
-                String realName = realAuthor.getFormattedName(givenNameFirst);
-
-                // Display the pseudonym as normal, but add the real-author name
-                // in a smaller font and slightly indented, as a second line underneath.
-                realName = String.format("%1s\n   %2s", pseudonym, realName);
-                final SpannableString span = new SpannableString(realName);
-                span.setSpan(new RelativeSizeSpan(pseudonymRelSize),
-                             pseudonym.length(), span.length(), 0);
-                span.setSpan(new StyleSpan(Typeface.ITALIC),
-                             pseudonym.length(), span.length(), 0);
-                return span;
-            } else {
-                return pseudonym;
-            }
         }
     }
 
@@ -1512,7 +1477,6 @@ public class BooklistAdapter
                      @NonNull final View itemView,
                      @NonNull final BooklistGroup group) {
             super(adapter, level, itemView, group);
-
             completeView = itemView.findViewById(R.id.cbx_is_complete);
         }
 
@@ -1520,30 +1484,10 @@ public class BooklistAdapter
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
                               @NonNull final Style style) {
-
-            final Context context = itemView.getContext();
-
-            // FIXME: translated series are reordered in the book's language
-            // It should be done using the Series language
-            // but as long as we don't store the Series language there is no point
-            final String lang = rowData.getString(DBKey.LANGUAGE);
-            final Locale bookLocale;
-            if (lang.isBlank()) {
-                bookLocale = null;
-            } else {
-                bookLocale = ServiceLocator.getInstance().getAppLocale().getLocale(context, lang);
-            }
-
-            final String text = adapter.format(context, groupId,
-                                               rowData.getString(key), bookLocale);
-            textView.setText(text);
+            super.onBindViewHolder(position, rowData, style);
 
             completeView.setVisibility(rowData.getBoolean(DBKey.SERIES_IS_COMPLETE)
                                        ? View.VISIBLE : View.GONE);
-
-            if (BuildConfig.DEBUG) {
-                dbgPosition(position, rowData);
-            }
         }
     }
 }

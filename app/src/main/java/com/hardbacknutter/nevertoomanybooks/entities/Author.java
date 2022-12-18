@@ -20,12 +20,17 @@
 package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.SpannableString;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
@@ -219,10 +224,12 @@ public class Author
 
     /** Row ID. */
     private long id;
-    /** Family name(s). */
+    /** Family name(s). (NotNullFieldNotInitialized: see copy-constructor). */
+    @SuppressWarnings("NotNullFieldNotInitialized")
     @NonNull
     private String familyName;
-    /** Given name(s). */
+    /** Given name(s). (NotNullFieldNotInitialized: see copy-constructor). */
+    @SuppressWarnings("NotNullFieldNotInitialized")
     @NonNull
     private String givenNames;
     /** whether we have all we want from this Author. */
@@ -613,6 +620,106 @@ public class Author
             }
         }
     }
+
+    /**
+     * TODO: try to unify this with the {@link #getFormattedName(boolean)}
+     * <p>
+     * Return the <strong>specified</strong> 'human readable' version of the name.
+     * <p>
+     * Call this method if {@code this} is the pseudonym Author (name); otherwise call
+     * {@link #getStyledName(Context, Author, boolean)} or
+     * {@link #getStyledName(Context, CharSequence, boolean)}.
+     * <p>
+     * If this Author is a pseudonym, then the return value will be a 2-lines styled
+     * {@link SpannableString} with both pseudonym and real name of this Author.
+     *
+     * @param givenNameFirst {@code true} if we want "given-names family-name" formatted name.
+     *                       {@code false} for "last-family, first-names"
+     *
+     * @return formatted name
+     */
+    @NonNull
+    public CharSequence getStyledName(@NonNull final Context context,
+                                      final boolean givenNameFirst) {
+        if (realAuthor == null) {
+            return getFormattedName(givenNameFirst);
+        } else {
+            return realAuthor.getStyledName(context, this, givenNameFirst);
+        }
+    }
+
+    /**
+     * Return the <strong>specified</strong> 'human readable' version of the name.
+     * <p>
+     * Call this method if {@code this} is the real Author (name); otherwise call
+     * {@link #getStyledName(Context, boolean)}.
+     * <p>
+     * If this Author has a pseudonym, then the return value will be a 2-lines styled
+     * {@link SpannableString} with both pseudonym and real name of this Author.
+     *
+     * @param pseudonym      optional Author to combine with the actual name
+     * @param givenNameFirst {@code true} if we want "given-names family-name" formatted name.
+     *                       {@code false} for "last-family, first-names"
+     *
+     * @return formatted name
+     *
+     * @see #getStyledName(Context, Author, boolean)
+     */
+    @NonNull
+    public CharSequence getStyledName(@NonNull final Context context,
+                                      @Nullable final Author pseudonym,
+                                      final boolean givenNameFirst) {
+        if (pseudonym == null) {
+            return getFormattedName(givenNameFirst);
+        } else {
+            return getStyledName(context,
+                                 pseudonym.getFormattedName(givenNameFirst),
+                                 givenNameFirst);
+        }
+    }
+
+    /**
+     * Return the <strong>specified</strong> 'human readable' version of the name.
+     * <p>
+     * Call this method if {@code this} is the real Author (name); otherwise call
+     * {@link #getStyledName(Context, boolean)}.
+     * <p>
+     * If this Author has a pseudonym, then the return value will be a 2-lines styled
+     * {@link SpannableString} with both pseudonym and real name of this Author.
+     *
+     * @param pseudonymName  optional Author pseudonym name to combine with the actual name
+     * @param givenNameFirst {@code true} if we want "given-names family-name" formatted name.
+     *                       {@code false} for "last-family, first-names"
+     *
+     * @return formatted name
+     *
+     * @see #getStyledName(Context, Author, boolean)
+     */
+    @NonNull
+    public CharSequence getStyledName(@NonNull final Context context,
+                                      @Nullable final CharSequence pseudonymName,
+                                      final boolean givenNameFirst) {
+        if (pseudonymName == null) {
+            return getFormattedName(givenNameFirst);
+
+        } else {
+            // Display the pseudonym as the 'normal' Author, but add the real author (this one) name
+            // in a smaller font and slightly indented, as a second line underneath.
+            final String fullName = String.format("%1s\n   %2s",
+                                                  pseudonymName,
+                                                  getFormattedName(givenNameFirst));
+            final SpannableString span = new SpannableString(fullName);
+
+            final float relSize = ResourcesCompat
+                    .getFloat(context.getResources(), R.dimen.bob_author_pseudonym_size);
+            span.setSpan(new RelativeSizeSpan(relSize),
+                         pseudonymName.length(), span.length(), 0);
+            span.setSpan(new StyleSpan(Typeface.ITALIC),
+                         pseudonymName.length(), span.length(), 0);
+            return span;
+        }
+    }
+
 
     /**
      * Get a CSV string with the type of this author; or the empty string if no specific types
