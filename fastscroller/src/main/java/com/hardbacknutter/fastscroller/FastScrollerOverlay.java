@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -163,7 +163,7 @@ class FastScrollerOverlay
             return;
         }
 
-        final String[] popupLines = ((FastScroller.PopupTextProvider) adapter)
+        final CharSequence[] popupLines = ((FastScroller.PopupTextProvider) adapter)
                 .getPopupText(position);
 
         // Do we have at least one line of text ?
