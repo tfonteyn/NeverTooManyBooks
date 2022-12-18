@@ -429,8 +429,7 @@ public class BooklistAdapter
                         final Author realAuthor = ServiceLocator.getInstance().getAuthorDao()
                                                                 .getById(pseudonym);
                         if (realAuthor != null) {
-                            final boolean givenNameFirst = style.isShowAuthorByGivenName();
-                            return realAuthor.getStyledName(context, text, givenNameFirst);
+                            return realAuthor.getStyledName(context, text, style);
                         }
                     }
                 }
