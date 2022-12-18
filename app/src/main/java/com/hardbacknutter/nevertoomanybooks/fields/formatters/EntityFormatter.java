@@ -24,11 +24,13 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
- * A formatter which uses {@link Entity#getLabel} to display a single {@link Entity}.
+ * A formatter which uses {@link Entity#getLabel(Context, Details, Style)}
+ * to display a single {@link Entity}.
  *
  * <ul>
  *      <li>Multiple fields: <strong>no</strong></li>

@@ -35,7 +35,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowSizeClass;
 
 /**
- * A formatter which uses {@link Entity#getLabel} to display a list of Entities.
+ * A formatter which uses {@link Entity#getLabel(Context, Details, Style)}
+ * to display a list of {@link Entity}s.
  *
  * <ul>
  *      <li>Multiple fields: <strong>yes</strong> if they use the same Details/delimiter</li>
