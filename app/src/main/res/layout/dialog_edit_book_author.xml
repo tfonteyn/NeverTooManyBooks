@@ -145,6 +145,7 @@
 
 
             <com.google.android.material.divider.MaterialDivider
+                style="@style/Widget.Material3.MaterialDivider"
                 android:id="@+id/barrier_types_top"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -156,6 +156,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.divider.MaterialDivider
+            style="@style/Widget.Material3.MaterialDivider"
             android:id="@+id/barrier_ext_id"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
