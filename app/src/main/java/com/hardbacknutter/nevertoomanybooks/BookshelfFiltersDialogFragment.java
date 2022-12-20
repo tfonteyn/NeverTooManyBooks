@@ -30,11 +30,13 @@ import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -43,9 +45,6 @@ import com.google.android.material.divider.MaterialDividerItemDecoration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
@@ -54,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.PBooleanFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PEntityListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PStringEqualityFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfFiltersBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfFilterBitmaskBinding;
@@ -72,23 +70,18 @@ public class BookshelfFiltersDialogFragment
         extends FFBaseDialogFragment {
 
     public static final String TAG = "BookshelfFiltersDlg";
-    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
-
-    private static final String[] Z_ARRAY_STRING = new String[0];
-
-    /** The Bookshelf we're editing. */
-    private Bookshelf bookshelf;
 
     private FilterListAdapter listAdapter;
     /** View Binding. */
     @SuppressWarnings("FieldCanBeLocal")
     private DialogEditBookshelfFiltersBinding vb;
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
-    private boolean modified;
-    private final ModificationListener modificationListener = isModified -> modified = isModified;
-    /** The list we're editing. */
-    private List<PFilter<?>> filterList;
+
+    private BookshelfFiltersViewModel vm;
+
+
+    private final ModificationListener modificationListener =
+            isModified -> vm.setModified(isModified);
+
 
     /**
      * No-arg constructor for OS use.
@@ -103,12 +96,8 @@ public class BookshelfFiltersDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                            BKEY_REQUEST_KEY);
-        bookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
-                                           DBKey.FK_BOOKSHELF);
-        filterList = bookshelf.getFilters();
+        vm = new ViewModelProvider(this).get(BookshelfFiltersViewModel.class);
+        vm.init(requireArguments());
     }
 
     @Override
@@ -118,10 +107,10 @@ public class BookshelfFiltersDialogFragment
 
         vb = DialogEditBookshelfFiltersBinding.bind(view);
 
-        vb.toolbar.setSubtitle(bookshelf.getName());
+        vb.toolbar.setSubtitle(vm.getBookshelf().getName());
 
         //noinspection ConstantConditions
-        listAdapter = new FilterListAdapter(getContext(), filterList, modificationListener);
+        listAdapter = new FilterListAdapter(getContext(), vm.getFilterList(), modificationListener);
         vb.filterList.setAdapter(listAdapter);
         vb.filterList.addItemDecoration(
                 new MaterialDividerItemDecoration(getContext(), RecyclerView.VERTICAL));
@@ -130,7 +119,7 @@ public class BookshelfFiltersDialogFragment
     @Override
     public void onStart() {
         super.onStart();
-        if (filterList.isEmpty()) {
+        if (vm.getFilterList().isEmpty()) {
             onAdd();
         }
     }
@@ -154,8 +143,8 @@ public class BookshelfFiltersDialogFragment
         final int itemId = menuItem.getItemId();
         if (itemId == R.id.MENU_ACTION_CONFIRM && button != null) {
             if (button.getId() == R.id.btn_clear) {
-                modified = true;
-                filterList.clear();
+                vm.setModified(true);
+                vm.getFilterList().clear();
                 saveChanges();
                 dismiss();
                 return true;
@@ -176,29 +165,19 @@ public class BookshelfFiltersDialogFragment
 
     // We don't set the modified flag on adding a filter - the filter is NOT activated yet here.
     private void onAdd() {
-
-        // key: the label, sorted locale-alphabetically; value: the DBKey
-        final SortedMap<String, String> map = new TreeMap<>();
-
         final Context context = getContext();
-
         //noinspection ConstantConditions
-        FilterFactory.SUPPORTED
-                .entrySet()
-                .stream()
-                .filter(entry -> GlobalFieldVisibility.isUsed(entry.getKey()))
-                .forEach(entry -> map.put(context.getString(entry.getValue()), entry.getKey()));
+        final Pair<String[], String[]> items = vm.getFilterChoiceItems(context);
 
-        //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.lbl_add_filter)
-                .setSingleChoiceItems(map.keySet().toArray(Z_ARRAY_STRING), -1, (dialog, which) -> {
-                    final String dbKey = map.values().toArray(Z_ARRAY_STRING)[which];
-                    if (filterList.stream().noneMatch(f -> f.getDBKey().equals(dbKey))) {
+                .setSingleChoiceItems(items.first, -1, (dialog, which) -> {
+                    final String dbKey = items.second[which];
+                    if (vm.getFilterList().stream().noneMatch(f -> f.getDBKey().equals(dbKey))) {
                         final PFilter<?> filter = FilterFactory.createFilter(dbKey);
                         if (filter != null) {
-                            filterList.add(filter);
-                            listAdapter.notifyItemInserted(filterList.size());
+                            vm.getFilterList().add(filter);
+                            listAdapter.notifyItemInserted(vm.getFilterList().size());
                         }
                     }
 
@@ -209,13 +188,12 @@ public class BookshelfFiltersDialogFragment
     }
 
     protected boolean saveChanges() {
-        if (modified) {
-            bookshelf.setFilters(filterList);
-            //noinspection ConstantConditions
-            ServiceLocator.getInstance().getBookshelfDao().update(getContext(), bookshelf);
+        //noinspection ConstantConditions
+        final boolean success = vm.saveChanges(getContext());
+        if (success) {
+            Launcher.setResult(this, vm.getRequestKey(), vm.isModified());
         }
-        Launcher.setResult(this, requestKey, modified);
-        return true;
+        return success;
     }
 
     @FunctionalInterface
@@ -254,7 +232,7 @@ public class BookshelfFiltersDialogFragment
         public void launch(@NonNull final Bookshelf bookshelf) {
 
             final Bundle args = new Bundle(2);
-            args.putString(BKEY_REQUEST_KEY, requestKey);
+            args.putString(BookshelfFiltersViewModel.BKEY_REQUEST_KEY, requestKey);
             args.putParcelable(DBKey.FK_BOOKSHELF, bookshelf);
 
             final DialogFragment frag = new BookshelfFiltersDialogFragment();
@@ -304,16 +282,21 @@ public class BookshelfFiltersDialogFragment
             final View view = layoutInflater.inflate(viewType, parent, false);
 
             final Holder holder;
-            if (viewType == PBooleanFilter.LAYOUT_ID) {
-                holder = new BooleanHolder(view, modificationListener);
-            } else if (viewType == PStringEqualityFilter.LAYOUT_ID) {
-                holder = new StringEqualityHolder(view, modificationListener);
-            } else if (viewType == PEntityListFilter.LAYOUT_ID) {
-                holder = new EntityListHolder<>(view, modificationListener);
-            } else if (viewType == PBitmaskFilter.LAYOUT_ID) {
-                holder = new BitmaskHolder(view, modificationListener);
-            } else {
-                throw new IllegalArgumentException("Unknown viewType");
+            switch (viewType) {
+                case PBooleanFilter.LAYOUT_ID:
+                    holder = new BooleanHolder(view, modificationListener);
+                    break;
+                case PStringEqualityFilter.LAYOUT_ID:
+                    holder = new StringEqualityHolder(view, modificationListener);
+                    break;
+                case PEntityListFilter.LAYOUT_ID:
+                    holder = new EntityListHolder<>(view, modificationListener);
+                    break;
+                case PBitmaskFilter.LAYOUT_ID:
+                    holder = new BitmaskHolder(view, modificationListener);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown viewType");
             }
 
             if (holder.delBtn != null) {
