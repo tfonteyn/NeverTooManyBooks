@@ -247,8 +247,10 @@ public class SynchronizedDb
     /**
      * Locking-aware wrapper for underlying database method.
      * <p>
-     * <strong>Note:</strong> SQLite maintains a Statement cache based on sql string matching.
-     * However, to avoid the overhead, loops should use {@link #rawQuery(String, String[])} instead.
+     * <strong>Note:</strong> SQLite maintains a Statement cache in its
+     * <strong>native code</strong> based on sql string matching.
+     * However, to avoid the Android code overhead,
+     * loops should use {@link #compileStatement} instead.
      *
      * @param table  the table to insert the row into
      * @param values this map contains the initial column values for the
@@ -284,8 +286,10 @@ public class SynchronizedDb
     /**
      * Locking-aware wrapper for underlying database method.
      * <p>
-     * <strong>Note:</strong> SQLite maintains a Statement cache based on sql string matching.
-     * However, to avoid the overhead, loops should use {@link #compileStatement} instead.
+     * <strong>Note:</strong> SQLite maintains a Statement cache in its
+     * <strong>native code</strong> based on sql string matching.
+     * However, to avoid the Android code overhead,
+     * loops should use {@link #compileStatement} instead.
      *
      * @return the number of rows affected
      */
@@ -317,12 +321,14 @@ public class SynchronizedDb
     /**
      * Locking-aware wrapper for underlying database method.
      * <p>
-     * <strong>Note:</strong> SQLite maintains a Statement cache based on sql string matching.
-     * However, to avoid the overhead, loops should use {@link #compileStatement} instead.
+     * <strong>Note:</strong> SQLite maintains a Statement cache in its
+     * <strong>native code</strong> based on sql string matching.
+     * However, to avoid the Android code overhead,
+     * loops should use {@link #compileStatement} instead.
      *
      * @return the number of rows affected if a whereClause is passed in, 0
-     *         otherwise. To remove all rows and get a count pass "1" as the
-     *         whereClause.
+     * otherwise. To remove all rows and get a count pass "1" as the
+     * whereClause.
      */
     @SuppressWarnings("UnusedReturnValue")
     public int delete(@NonNull final String table,
