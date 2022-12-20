@@ -85,7 +85,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
 /**
  * Database access helper class.
@@ -736,8 +735,8 @@ public class BookDaoImpl
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
         try (SynchronizedStatement stmt = db.compileStatement(Sql.Insert.BOOK_TOC_ENTRY);
-             SynchronizedStatement stmtInsToc = db.compileStatement(Sql.Insert.TOC_ENTRY);
-             SynchronizedStatement stmtUpdToc = db.compileStatement(Sql.Update.TOCENTRY)) {
+             SynchronizedStatement stmtInsToc = db.compileStatement(TocEntryDaoImpl.Sql.INSERT);
+             SynchronizedStatement stmtUpdToc = db.compileStatement(TocEntryDaoImpl.Sql.UPDATE)) {
 
             long position = 0;
             for (final TocEntry tocEntry : list) {
@@ -1297,13 +1296,6 @@ public class BookDaoImpl
          */
         static final class Insert {
 
-            static final String TOC_ENTRY =
-                    INSERT_INTO_ + TBL_TOC_ENTRIES.getName()
-                    + '(' + DBKey.FK_AUTHOR
-                    + ',' + DBKey.TITLE
-                    + ',' + DBKey.TITLE_OB
-                    + ',' + DBKey.FIRST_PUBLICATION__DATE
-                    + ") VALUES (?,?,?,?)";
             static final String BOOK_TOC_ENTRY =
                     INSERT_INTO_ + TBL_BOOK_TOC_ENTRIES.getName()
                     + '(' + DBKey.FK_TOC_ENTRY
@@ -1344,14 +1336,6 @@ public class BookDaoImpl
          * Sql UPDATE.
          */
         static final class Update {
-
-            /** Update a single {@link TocEntry}. */
-            static final String TOCENTRY =
-                    UPDATE_ + TBL_TOC_ENTRIES.getName()
-                    + _SET_ + DBKey.TITLE + "=?"
-                    + ',' + DBKey.TITLE_OB + "=?"
-                    + ',' + DBKey.FIRST_PUBLICATION__DATE + "=?"
-                    + _WHERE_ + DBKey.PK_ID + "=?";
 
             /** Update a single Book's read status and read_end date. */
             static final String READ =

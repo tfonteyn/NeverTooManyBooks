@@ -242,7 +242,23 @@ public class TocEntryDaoImpl
         return bookIds.size();
     }
 
-    private static class Sql {
+    static final class Sql {
+
+        static final String INSERT =
+                INSERT_INTO_ + TBL_TOC_ENTRIES.getName()
+                + '(' + DBKey.FK_AUTHOR
+                + ',' + DBKey.TITLE
+                + ',' + DBKey.TITLE_OB
+                + ',' + DBKey.FIRST_PUBLICATION__DATE
+                + ") VALUES (?,?,?,?)";
+
+        /** Update a single {@link TocEntry}. */
+        static final String UPDATE =
+                UPDATE_ + TBL_TOC_ENTRIES.getName()
+                + _SET_ + DBKey.TITLE + "=?"
+                + ',' + DBKey.TITLE_OB + "=?"
+                + ',' + DBKey.FIRST_PUBLICATION__DATE + "=?"
+                + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** All Book id's for a given {@link TocEntry}. */
         private static final String SELECT_BOOK_IDS_BY_TOC_ENTRY_ID =
@@ -312,5 +328,8 @@ public class TocEntryDaoImpl
                 + _GROUP_BY_ + DBKey.FK_BOOK
                 + ')'
                 + _WHERE_ + "mp>1";
+
+        private Sql() {
+        }
     }
 }
