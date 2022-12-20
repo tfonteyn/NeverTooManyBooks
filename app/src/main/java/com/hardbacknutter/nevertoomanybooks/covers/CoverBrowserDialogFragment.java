@@ -76,10 +76,6 @@ public class CoverBrowserDialogFragment
 
     /** Log tag. */
     public static final String TAG = "CoverBrowserFragment";
-    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
-
-    /** FragmentResultListener request key to use for our response. */
-    private String requestKey;
 
     /** The adapter for the horizontal scrolling covers list. */
     @Nullable
@@ -144,11 +140,8 @@ public class CoverBrowserDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Bundle args = requireArguments();
-        requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
-
         vm = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
-        vm.init(args);
+        vm.init(requireArguments());
 
         final Resources res = getResources();
         previewMaxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_preview_width);
@@ -199,7 +192,7 @@ public class CoverBrowserDialogFragment
             }
 
             if (vm.getSelectedFileAbsPath() != null) {
-                Launcher.setResult(this, requestKey, vm.getSelectedFileAbsPath());
+                Launcher.setResult(this, vm.getRequestKey(), vm.getSelectedFileAbsPath());
             }
             // close the CoverBrowserDialogFragment
             dismiss();
@@ -374,7 +367,7 @@ public class CoverBrowserDialogFragment
                            @IntRange(from = 0, to = 1) final int cIdx) {
 
             final Bundle args = new Bundle(4);
-            args.putString(BKEY_REQUEST_KEY, requestKey);
+            args.putString(CoverBrowserViewModel.BKEY_REQUEST_KEY, requestKey);
             args.putString(DBKey.TITLE, bookTitle);
             args.putString(DBKey.BOOK_ISBN, isbn);
             args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);

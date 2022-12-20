@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -53,19 +54,18 @@ public class CoverBrowserViewModel
 
     /** Log tag. */
     private static final String TAG = "CoverBrowserViewModel";
+    public static final String BKEY_REQUEST_KEY = TAG + ":rk";
+
     /** int 0..1 */
     static final String BKEY_FILE_INDEX = TAG + ":cIdx";
-
     /** Progressbar for the gallery. */
     private final MutableLiveData<Boolean> showGalleryProgress = new MutableLiveData<>();
     /** GalleryImage. */
     private final MutableLiveData<ImageFileInfo> galleryImage = new MutableLiveData<>();
     /** SelectedImage. */
     private final MutableLiveData<ImageFileInfo> selectedImage = new MutableLiveData<>();
-
     /** Unique identifier generator for all tasks. */
     private final AtomicInteger taskIdCounter = new AtomicInteger();
-
     /** Executor for displaying gallery images. */
     private final Executor galleryDisplayExecutor = ASyncExecutor.create("gallery/d");
     /** Executor for fetching gallery images. */
@@ -74,19 +74,18 @@ public class CoverBrowserViewModel
     private final Executor previewDisplayExecutor = ASyncExecutor.MAIN;
     /** Executor for fetching preview images. */
     private final Executor previewNetworkExecutor = ASyncExecutor.MAIN;
-
     /**
      * Holder for all active tasks, so we can cancel them if needed.
      * key: isbn.
      */
     private final Map<String, FetchImageTask> galleryTasks = new HashMap<>();
-
     /** Editions. */
     private final SearchEditionsTask searchEditionsTask = new SearchEditionsTask();
-
     /** List of ISBN numbers for alternative editions. The base list for the gallery adapter. */
     @NonNull
     private final ArrayList<String> editions = new ArrayList<>();
+    /** FragmentResultListener request key to use for our response. */
+    private String requestKey;
     /** SelectedImage. */
     @Nullable
     private FetchImageTask selectedImageTask;
@@ -159,8 +158,11 @@ public class CoverBrowserViewModel
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Bundle args) {
-        if (baseIsbn == null) {
-            baseIsbn = SanityCheck.requireValue(args.getString(DBKey.BOOK_ISBN), DBKey.BOOK_ISBN);
+        if (requestKey == null) {
+            requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
+                                                BKEY_REQUEST_KEY);
+            baseIsbn = SanityCheck.requireValue(args.getString(DBKey.BOOK_ISBN),
+                                                DBKey.BOOK_ISBN);
             cIdx = args.getInt(BKEY_FILE_INDEX);
 
             // optional
@@ -170,6 +172,11 @@ public class CoverBrowserViewModel
             }
             fileManager = new FileManager(sites);
         }
+    }
+
+    @NonNull
+    public String getRequestKey() {
+        return requestKey;
     }
 
     public boolean isCancelled() {
