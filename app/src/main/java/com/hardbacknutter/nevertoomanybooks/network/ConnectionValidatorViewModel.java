@@ -55,7 +55,7 @@ public class ConnectionValidatorViewModel
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Exception>>> onConnectionFailed() {
+    public LiveData<LiveDataEvent<TaskResult<Throwable>>> onConnectionFailed() {
         return validatorTask.onFailure();
     }
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -56,7 +56,7 @@ public class EditBookTocViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<TaskResult<Exception>>> onIsfdbEditionsFailure() {
+    LiveData<LiveDataEvent<TaskResult<Throwable>>> onIsfdbEditionsFailure() {
         return isfdbGetEditionsTask.onFailure();
     }
 
@@ -76,7 +76,7 @@ public class EditBookTocViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<TaskResult<Exception>>> onIsfdbBookFailure() {
+    LiveData<LiveDataEvent<TaskResult<Throwable>>> onIsfdbBookFailure() {
         return isfdbGetBookTask.onFailure();
     }
 

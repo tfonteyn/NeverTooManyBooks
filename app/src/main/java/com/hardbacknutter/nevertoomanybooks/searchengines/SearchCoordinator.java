@@ -136,7 +136,7 @@ public class SearchCoordinator
             new EnumMap<>(EngineId.class);
 
     /** Accumulates the last message from <strong>individual</strong> search tasks. */
-    private final Map<EngineId, Exception> searchErrorsBySite =
+    private final Map<EngineId, Throwable> searchErrorsBySite =
             new EnumMap<>(EngineId.class);
 
     /** Accumulates the results from <strong>individual</strong> search tasks. */
@@ -408,7 +408,7 @@ public class SearchCoordinator
 
         @Override
         public void onFailure(final int taskId,
-                              @Nullable final Exception exception) {
+                              @Nullable final Throwable e) {
             synchronized (searchErrorsBySite) {
                 final EngineId engineId;
                 synchronized (activeTasks) {
@@ -417,7 +417,7 @@ public class SearchCoordinator
                                       .getSearchEngine().getEngineId();
                 }
                 // Always store, even if the Exception is null
-                searchErrorsBySite.put(engineId, exception);
+                searchErrorsBySite.put(engineId, e);
             }
             onSearchTaskFinished(taskId, null);
         }

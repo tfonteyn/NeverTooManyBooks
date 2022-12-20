@@ -294,7 +294,7 @@ public class CalibreHandler {
                 .make(hostView, R.string.cancelled, Snackbar.LENGTH_LONG).show());
     }
 
-    private void onFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
+    private void onFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         closeProgressDialog();
 
         message.getData().ifPresent(data -> {

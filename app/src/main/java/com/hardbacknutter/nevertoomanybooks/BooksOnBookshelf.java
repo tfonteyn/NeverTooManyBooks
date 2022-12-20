@@ -1551,7 +1551,7 @@ public class BooksOnBookshelf
      *
      * @param message from the task
      */
-    private void onBuildFailed(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
+    private void onBuildFailed(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         vb.progressCircle.hide();
         message.getData().ifPresent(data -> {
             Logger.error(TAG, data.getResult());

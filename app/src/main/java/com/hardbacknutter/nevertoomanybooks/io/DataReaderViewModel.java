@@ -57,7 +57,7 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Exception>>> onReadMetaDataFailure() {
+    public LiveData<LiveDataEvent<TaskResult<Throwable>>> onReadMetaDataFailure() {
         return metaDataTask.onFailure();
     }
 
@@ -77,7 +77,7 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Exception>>> onReadDataFailure() {
+    public LiveData<LiveDataEvent<TaskResult<Throwable>>> onReadDataFailure() {
         return readerTask.onFailure();
     }
 

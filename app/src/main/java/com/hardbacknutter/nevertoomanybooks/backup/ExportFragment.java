@@ -300,7 +300,7 @@ public class ExportFragment
         });
     }
 
-    private void onExportFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
+    private void onExportFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         closeProgressDialog();
 
         message.getData().ifPresent(data -> {

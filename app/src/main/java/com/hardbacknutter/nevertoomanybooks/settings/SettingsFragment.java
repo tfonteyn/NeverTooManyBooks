@@ -470,7 +470,7 @@ public class SettingsFragment
         }
     }
 
-    private void onMoveFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
+    private void onMoveFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         closeProgressDialog();
 
         message.getData().ifPresent(data -> {

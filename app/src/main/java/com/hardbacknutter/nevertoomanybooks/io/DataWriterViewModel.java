@@ -31,7 +31,6 @@ import androidx.lifecycle.ViewModel;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
-
 import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -60,7 +59,7 @@ public abstract class DataWriterViewModel<RESULTS>
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Exception>>> onWriteDataFailure() {
+    public LiveData<LiveDataEvent<TaskResult<Throwable>>> onWriteDataFailure() {
         return writerTask.onFailure();
     }
 

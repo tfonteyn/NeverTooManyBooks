@@ -78,7 +78,7 @@ public class SettingsViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<TaskResult<Exception>>> onMoveFailure() {
+    LiveData<LiveDataEvent<TaskResult<Throwable>>> onMoveFailure() {
         return storageMoverTask.onFailure();
     }
 

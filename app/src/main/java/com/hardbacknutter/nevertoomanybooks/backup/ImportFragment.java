@@ -420,7 +420,7 @@ public class ImportFragment
         });
     }
 
-    private void onImportFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
+    private void onImportFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         closeProgressDialog();
 
         message.getData().ifPresent(data -> {

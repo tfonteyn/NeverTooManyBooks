@@ -118,7 +118,7 @@ public class CoverBrowserViewModel
 
         @Override
         public void onFailure(final int taskId,
-                              @Nullable final Exception exception) {
+                              @Nullable final Throwable e) {
             if (taskId == R.id.TASK_ID_PREVIEW_IMAGE) {
                 selectedImageTask = null;
                 selectedImage.setValue(null);
@@ -359,7 +359,7 @@ public class CoverBrowserViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<TaskResult<Exception>>> onSearchEditionsTaskFailure() {
+    LiveData<LiveDataEvent<TaskResult<Throwable>>> onSearchEditionsTaskFailure() {
         return searchEditionsTask.onFailure();
     }
 

@@ -180,7 +180,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
         });
     }
 
-    private void onFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
+    private void onFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         closeProgressDialog();
 
         message.getData().ifPresent(data -> {

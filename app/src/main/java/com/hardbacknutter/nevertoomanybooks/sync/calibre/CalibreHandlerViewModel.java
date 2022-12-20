@@ -147,7 +147,7 @@ public class CalibreHandlerViewModel
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Exception>>> onFailure() {
+    public LiveData<LiveDataEvent<TaskResult<Throwable>>> onFailure() {
         return singleFileDownloadTask.onFailure();
     }
 

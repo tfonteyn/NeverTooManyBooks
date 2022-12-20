@@ -180,7 +180,7 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Exception>>> onFailure() {
+    public LiveData<LiveDataEvent<TaskResult<Throwable>>> onFailure() {
         return boBTask.onFailure();
     }
 

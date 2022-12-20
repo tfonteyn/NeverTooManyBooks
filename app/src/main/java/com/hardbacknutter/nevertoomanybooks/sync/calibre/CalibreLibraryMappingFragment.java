@@ -187,7 +187,7 @@ public class CalibreLibraryMappingFragment
         });
     }
 
-    private void onMetaDataFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
+    private void onMetaDataFailure(@NonNull final LiveDataEvent<TaskResult<Throwable>> message) {
         closeProgressDialog();
 
         message.getData().ifPresent(data -> {

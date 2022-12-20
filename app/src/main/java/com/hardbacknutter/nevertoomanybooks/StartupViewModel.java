@@ -111,7 +111,7 @@ public class StartupViewModel
 
         @Override
         public void onFailure(final int taskId,
-                              @Nullable final Exception exception) {
+                              @Nullable final Throwable e) {
             // We don't care about the status; just finish
             cleanup(taskId);
         }
