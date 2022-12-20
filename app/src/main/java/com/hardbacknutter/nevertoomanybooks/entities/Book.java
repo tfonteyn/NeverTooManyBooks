@@ -437,11 +437,7 @@ public class Book
 
     @NonNull
     public List<BookLight> getBookTitles(@NonNull final Context context) {
-        return Collections.singletonList(
-                new BookLight(getId(), getTitle(),
-                              getString(DBKey.LANGUAGE),
-                              getPrimaryAuthor(),
-                              getString(DBKey.FIRST_PUBLICATION__DATE)));
+        return Collections.singletonList(new BookLight(this));
     }
 
     /**

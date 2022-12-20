@@ -25,12 +25,14 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
@@ -128,16 +130,46 @@ public class TocEntry
      * @param firstPublicationDate year of first publication
      * @param bookCount            number of books this TocEntry appears in
      */
-    public TocEntry(final long id,
-                    @NonNull final Author author,
-                    @NonNull final String title,
-                    @Nullable final String firstPublicationDate,
-                    final int bookCount) {
+    @VisibleForTesting
+    TocEntry(final long id,
+             @NonNull final Author author,
+             @NonNull final String title,
+             @Nullable final String firstPublicationDate,
+             final int bookCount) {
         this.id = id;
         this.author = author;
         this.title = title.trim();
         this.firstPublicationDate = new PartialDate(firstPublicationDate);
         this.bookCount = bookCount;
+    }
+
+    /**
+     * Full constructor.
+     *
+     * @param id      ID of the TocEntry in the database.
+     * @param rowData with data
+     */
+    public TocEntry(final long id,
+                    @NonNull final DataHolder rowData) {
+        this(id, new Author(rowData.getLong(DBKey.FK_AUTHOR), rowData), rowData);
+    }
+
+    /**
+     * Full constructor.
+     *
+     * @param id      ID of the TocEntry in the database.
+     * @param author  Author of title
+     * @param rowData with data
+     */
+    public TocEntry(final long id,
+                    @NonNull final Author author,
+                    @NonNull final DataHolder rowData) {
+        this.id = id;
+        this.author = author;
+        this.title = rowData.getString(DBKey.TITLE);
+        this.firstPublicationDate = new PartialDate(
+                rowData.getString(DBKey.FIRST_PUBLICATION__DATE));
+        this.bookCount = rowData.getInt(DBKey.BOOK_COUNT);
     }
 
     /**

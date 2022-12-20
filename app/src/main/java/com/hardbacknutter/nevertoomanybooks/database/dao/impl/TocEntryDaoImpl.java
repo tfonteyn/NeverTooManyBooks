@@ -149,10 +149,7 @@ public class TocEntryDaoImpl
                                          new String[]{String.valueOf(id)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                list.add(new BookLight(rowData.getLong(DBKey.PK_ID),
-                                       rowData.getString(DBKey.TITLE),
-                                       rowData.getString(DBKey.LANGUAGE),
-                                       author, null));
+                list.add(new BookLight(rowData.getLong(DBKey.PK_ID), author, rowData));
             }
         }
 
@@ -167,11 +164,7 @@ public class TocEntryDaoImpl
                                          new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                list.add(new TocEntry(rowData.getLong(DBKey.PK_ID),
-                                      new Author(rowData.getLong(DBKey.FK_AUTHOR), rowData),
-                                      rowData.getString(DBKey.TITLE),
-                                      rowData.getString(DBKey.FIRST_PUBLICATION__DATE),
-                                      rowData.getInt(DBKey.BOOK_COUNT)));
+                list.add(new TocEntry(rowData.getLong(DBKey.PK_ID), rowData));
             }
         }
         return list;

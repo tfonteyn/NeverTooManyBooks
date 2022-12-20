@@ -30,6 +30,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
@@ -51,22 +52,32 @@ public class BookLight
     /**
      * Constructor.
      *
-     * @param id                   book id
-     * @param title                Title
-     * @param language             Language
-     * @param primaryAuthor        Author of title
-     * @param firstPublicationDate first publication
+     * @param book to base the new {@link BookLight} on
+     */
+    public BookLight(@NonNull final Book book) {
+        this.id = book.getId();
+        this.title = book.getTitle();
+        this.language = book.getString(DBKey.LANGUAGE);
+        this.primaryAuthor = book.getPrimaryAuthor();
+        this.firstPublicationDate = new PartialDate(book.getString(DBKey.FIRST_PUBLICATION__DATE));
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param id            book id
+     * @param primaryAuthor Author of title
+     * @param rowData       with data
      */
     public BookLight(final long id,
-                     @NonNull final String title,
-                     @NonNull final String language,
                      @Nullable final Author primaryAuthor,
-                     @Nullable final String firstPublicationDate) {
+                     @NonNull final DataHolder rowData) {
         this.id = id;
-        this.title = title;
-        this.language = language;
+        this.title = rowData.getString(DBKey.TITLE);
+        this.language = rowData.getString(DBKey.LANGUAGE);
         this.primaryAuthor = primaryAuthor;
-        this.firstPublicationDate = new PartialDate(firstPublicationDate);
+        this.firstPublicationDate = new PartialDate(
+                rowData.getString(DBKey.FIRST_PUBLICATION__DATE));
     }
 
     @Override

@@ -293,19 +293,11 @@ public class AuthorDaoImpl
 
                 switch (type) {
                     case TocEntry:
-                        list.add(new TocEntry(rowData.getLong(DBKey.PK_ID),
-                                              author, rowData.getString(DBKey.TITLE),
-                                              rowData.getString(DBKey.FIRST_PUBLICATION__DATE),
-                                              rowData.getInt(DBKey.BOOK_COUNT)));
+                        list.add(new TocEntry(rowData.getLong(DBKey.PK_ID), author, rowData));
                         break;
 
                     case BookLight:
-                        list.add(new BookLight(rowData.getLong(DBKey.PK_ID),
-                                               rowData.getString(DBKey.TITLE),
-                                               rowData.getString(DBKey.LANGUAGE),
-                                               author,
-                                               rowData.getString(DBKey.FIRST_PUBLICATION__DATE)
-                        ));
+                        list.add(new BookLight(rowData.getLong(DBKey.PK_ID), author, rowData));
                         break;
 
                     case Book:
@@ -461,7 +453,6 @@ public class AuthorDaoImpl
             }
 
             final long iId;
-
             try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                 stmt.bindString(1, author.getFamilyName());
                 stmt.bindString(2, SqlEncode.orderByColumn(author.getFamilyName(), authorLocale));
