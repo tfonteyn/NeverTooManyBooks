@@ -23,6 +23,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -58,6 +59,8 @@ public class BookshelfDaoImpl
 
     /** Log tag. */
     private static final String TAG = "BookshelfDaoImpl";
+    private static final String ERROR_INSERT_FROM = "Insert from\n";
+    private static final String ERROR_UPDATE_FROM = "Update from\n";
 
     /**
      * Constructor.
@@ -300,17 +303,18 @@ public class BookshelfDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final ContentValues cv = new ContentValues();
-            cv.put(DBKey.BOOKSHELF_NAME, bookshelf.getName());
-            cv.put(DBKey.BOOKSHELF_BL_TOP_POS, bookshelf.getFirstVisibleItemPosition());
-            cv.put(DBKey.BOOKSHELF_BL_TOP_OFFSET, bookshelf.getFirstVisibleItemViewOffset());
+            final boolean success;
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
+                stmt.bindString(1, bookshelf.getName());
+                stmt.bindLong(2, styleId);
+                stmt.bindLong(3, bookshelf.getFirstVisibleItemPosition());
+                stmt.bindLong(4, bookshelf.getFirstVisibleItemViewOffset());
+                stmt.bindLong(5, bookshelf.getId());
 
-            cv.put(DBKey.FK_STYLE, styleId);
-
-            rowsAffected = db.update(TBL_BOOKSHELF.getName(), cv, DBKey.PK_ID + "=?",
-                                     new String[]{String.valueOf(bookshelf.getId())});
-
-            storeFilters(context, bookshelf.getId(), bookshelf);
+                success = 0 < stmt.executeUpdateDelete();
+            }
+            if (success) {
+                storeFilters(context, bookshelf.getId(), bookshelf);
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();
@@ -423,6 +427,14 @@ public class BookshelfDaoImpl
                 + ',' + DBKey.BOOKSHELF_BL_TOP_POS
                 + ',' + DBKey.BOOKSHELF_BL_TOP_OFFSET
                 + ") VALUES (?,?,?,?)";
+
+        private static final String UPDATE =
+                UPDATE_ + TBL_BOOKSHELF.getName()
+                + _SET_ + DBKey.BOOKSHELF_NAME + "=?"
+                + ',' + DBKey.FK_STYLE + "=?"
+                + ',' + DBKey.BOOKSHELF_BL_TOP_POS + "=?"
+                + ',' + DBKey.BOOKSHELF_BL_TOP_OFFSET + "=?"
+                + _WHERE_ + DBKey.PK_ID + "=?";
 
         private static final String BOOK_LIST_NODE_STATE_BY_BOOKSHELF =
                 DELETE_FROM_ + TBL_BOOK_LIST_NODE_STATE.getName()

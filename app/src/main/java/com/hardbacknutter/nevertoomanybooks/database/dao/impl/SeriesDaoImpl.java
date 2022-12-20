@@ -319,15 +319,13 @@ public class SeriesDaoImpl
         final OrderByHelper.OrderByData obd = OrderByHelper.createOrderByData(
                 context, series.getTitle(), bookLocale, series::getLocale);
 
-        try {
-            final ContentValues cv = new ContentValues();
-            cv.put(DBKey.SERIES_TITLE, series.getTitle());
-            cv.put(DBKey.SERIES_TITLE_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
-            cv.put(DBKey.SERIES_IS_COMPLETE, series.isComplete());
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
+            stmt.bindString(1, series.getTitle());
+            stmt.bindString(2, SqlEncode.orderByColumn(obd.title, obd.locale));
+            stmt.bindBoolean(3, series.isComplete());
+            stmt.bindLong(4, series.getId());
 
-            final boolean success =
-                    0 < db.update(TBL_SERIES.getName(), cv, DBKey.PK_ID + "=?",
-                                  new String[]{String.valueOf(series.getId())});
+            final boolean success = 0 < stmt.executeUpdateDelete();
             if (success) {
                 return;
             }
@@ -533,6 +531,13 @@ public class SeriesDaoImpl
                 + ',' + DBKey.SERIES_TITLE_OB
                 + ',' + DBKey.SERIES_IS_COMPLETE
                 + ") VALUES (?,?,?)";
+
+        private static final String UPDATE =
+                UPDATE_ + TBL_SERIES.getName()
+                + _SET_ + DBKey.SERIES_TITLE + "=?"
+                + ',' + DBKey.SERIES_TITLE_OB + "=?"
+                + ',' + DBKey.SERIES_IS_COMPLETE + "=?"
+                + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Delete a {@link Series}. */
         private static final String DELETE_BY_ID =

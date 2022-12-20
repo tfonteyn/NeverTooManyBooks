@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import androidx.annotation.IntRange;
@@ -63,6 +64,8 @@ public class TocEntryDaoImpl
 
     /** Log tag. */
     private static final String TAG = "TocEntryDaoImpl";
+    private static final String ERROR_INSERT_FROM = "Insert from\n";
+    private static final String ERROR_UPDATE_FROM = "Update from\n";
 
     /**
      * Constructor.

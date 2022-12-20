@@ -506,18 +506,19 @@ public class AuthorDaoImpl
                 txLock = db.beginTransaction(true);
             }
 
-            final ContentValues cv = new ContentValues();
-            cv.put(DBKey.AUTHOR_FAMILY_NAME, author.getFamilyName());
-            cv.put(DBKey.AUTHOR_FAMILY_NAME_OB,
-                   SqlEncode.orderByColumn(author.getFamilyName(), authorLocale));
-            cv.put(DBKey.AUTHOR_GIVEN_NAMES, author.getGivenNames());
-            cv.put(DBKey.AUTHOR_GIVEN_NAMES_OB,
-                   SqlEncode.orderByColumn(author.getGivenNames(), authorLocale));
-            cv.put(DBKey.AUTHOR_IS_COMPLETE, author.isComplete());
+            final boolean success;
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
+                stmt.bindString(1, author.getFamilyName());
+                stmt.bindString(2, SqlEncode.
+                        orderByColumn(author.getFamilyName(), authorLocale));
+                stmt.bindString(3, author.getGivenNames());
+                stmt.bindString(4, SqlEncode.
+                        orderByColumn(author.getGivenNames(), authorLocale));
+                stmt.bindBoolean(5, author.isComplete());
+                stmt.bindLong(6, author.getId());
 
-            final boolean success =
-                    0 < db.update(TBL_AUTHORS.getName(), cv, DBKey.PK_ID + "=?",
-                                  new String[]{String.valueOf(author.getId())});
+                success = 0 < stmt.executeUpdateDelete();
+            }
 
             if (success) {
                 final Author realAuthor = author.getRealAuthor();
@@ -837,6 +838,13 @@ public class AuthorDaoImpl
                 + ',' + DBKey.AUTHOR_GIVEN_NAMES + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB
                 + ',' + DBKey.AUTHOR_IS_COMPLETE
                 + ") VALUES (?,?,?,?,?)";
+
+        private static final String UPDATE =
+                UPDATE_ + TBL_AUTHORS.getName()
+                + _SET_ + DBKey.AUTHOR_FAMILY_NAME + "=?," + DBKey.AUTHOR_FAMILY_NAME_OB + "=?"
+                + ',' + DBKey.AUTHOR_GIVEN_NAMES + "=?," + DBKey.AUTHOR_GIVEN_NAMES_OB + "=?"
+                + ',' + DBKey.AUTHOR_IS_COMPLETE + "=?"
+                + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Delete an {@link Author}. */
         private static final String DELETE_BY_ID =

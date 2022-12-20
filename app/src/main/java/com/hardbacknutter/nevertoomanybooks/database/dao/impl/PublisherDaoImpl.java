@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
@@ -267,14 +266,12 @@ public class PublisherDaoImpl
         final OrderByHelper.OrderByData obd = OrderByHelper.createOrderByData(
                 context, publisher.getName(), bookLocale, publisher::getLocale);
 
-        try {
-            final ContentValues cv = new ContentValues();
-            cv.put(DBKey.PUBLISHER_NAME, publisher.getName());
-            cv.put(DBKey.PUBLISHER_NAME_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
+            stmt.bindString(1, publisher.getName());
+            stmt.bindString(2, SqlEncode.orderByColumn(obd.title, obd.locale));
+            stmt.bindLong(3, publisher.getId());
 
-            final boolean success =
-                    0 < db.update(TBL_PUBLISHERS.getName(), cv, DBKey.PK_ID + "=?",
-                                  new String[]{String.valueOf(publisher.getId())});
+            final boolean success = 0 < stmt.executeUpdateDelete();
             if (success) {
                 return;
             }
@@ -468,6 +465,12 @@ public class PublisherDaoImpl
                 + '(' + DBKey.PUBLISHER_NAME
                 + ',' + DBKey.PUBLISHER_NAME_OB
                 + ") VALUES (?,?)";
+
+        private static final String UPDATE =
+                UPDATE_ + TBL_PUBLISHERS.getName()
+                + _SET_ + DBKey.PUBLISHER_NAME + "=?"
+                + ',' + DBKey.PUBLISHER_NAME_OB + "=?"
+                + _WHERE_ + DBKey.PK_ID + "=?";
 
         /** Delete a {@link Publisher}. */
         private static final String DELETE_BY_ID =
