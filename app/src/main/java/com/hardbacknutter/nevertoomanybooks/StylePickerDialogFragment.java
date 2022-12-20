@@ -87,9 +87,15 @@ public class StylePickerDialogFragment
         final Bundle args = requireArguments();
         requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                             BKEY_REQUEST_KEY);
-        currentStyleUuid = SanityCheck.requireValue(args.getString(Style.BKEY_UUID),
-                                                    Style.BKEY_UUID);
-        showAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
+
+        if (savedInstanceState == null) {
+            currentStyleUuid = SanityCheck.requireValue(args.getString(Style.BKEY_UUID),
+                                                        Style.BKEY_UUID);
+            showAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
+        } else {
+            currentStyleUuid = savedInstanceState.getString(Style.BKEY_UUID);
+            showAllStyles = savedInstanceState.getBoolean(BKEY_SHOW_ALL_STYLES);
+        }
     }
 
     @Override
@@ -106,6 +112,13 @@ public class StylePickerDialogFragment
                                                   currentStyleUuid,
                                                   uuid -> currentStyleUuid = uuid);
         stylesListView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(Style.BKEY_UUID, currentStyleUuid);
+        outState.putBoolean(BKEY_SHOW_ALL_STYLES, showAllStyles);
     }
 
     @Nullable
