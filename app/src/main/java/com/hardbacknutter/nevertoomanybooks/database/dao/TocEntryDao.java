@@ -123,7 +123,7 @@ public interface TocEntryDao {
      * @return list
      */
     @NonNull
-    ArrayList<TocEntry> getTocEntryByBookId(@IntRange(from = 1) long bookId);
+    ArrayList<TocEntry> getByBookId(@IntRange(from = 1) long bookId);
 
     /**
      * Get a list of book ID's (most often just the one) in which this {@link TocEntry}
@@ -155,5 +155,5 @@ public interface TocEntryDao {
      *
      * @return the number of books processed
      */
-    int repositionTocEntries(@NonNull Context context);
+    int fixPositions(@NonNull Context context);
 }

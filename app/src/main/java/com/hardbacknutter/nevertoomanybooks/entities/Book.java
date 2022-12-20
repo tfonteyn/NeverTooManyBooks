@@ -310,7 +310,7 @@ public class Book
         setAuthors(serviceLocator.getAuthorDao().getByBookId(bookId));
         setSeries(serviceLocator.getSeriesDao().getByBookId(bookId));
         setPublishers(serviceLocator.getPublisherDao().getByBookId(bookId));
-        setToc(serviceLocator.getTocEntryDao().getTocEntryByBookId(bookId));
+        setToc(serviceLocator.getTocEntryDao().getByBookId(bookId));
 
         // do NOT preload the full Calibre library object. We hardly ever need it as such.
         // see #getCalibreLibrary

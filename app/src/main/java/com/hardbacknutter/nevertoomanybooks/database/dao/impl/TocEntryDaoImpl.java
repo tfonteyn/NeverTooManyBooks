@@ -158,7 +158,7 @@ public class TocEntryDaoImpl
 
     @Override
     @NonNull
-    public ArrayList<TocEntry> getTocEntryByBookId(@IntRange(from = 1) final long bookId) {
+    public ArrayList<TocEntry> getByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<TocEntry> list = new ArrayList<>();
         try (Cursor cursor = db.rawQuery(Sql.TOC_ENTRIES_BY_BOOK_ID,
                                          new String[]{String.valueOf(bookId)})) {
@@ -196,13 +196,13 @@ public class TocEntryDaoImpl
 
         if (rowsAffected > 0) {
             tocEntry.setId(0);
-            repositionTocEntries(context);
+            fixPositions(context);
         }
         return rowsAffected == 1;
     }
 
     @Override
-    public int repositionTocEntries(@NonNull final Context context) {
+    public int fixPositions(@NonNull final Context context) {
 
         final ArrayList<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {
@@ -221,7 +221,7 @@ public class TocEntryDaoImpl
                 }
 
                 for (final long bookId : bookIds) {
-                    final ArrayList<TocEntry> list = getTocEntryByBookId(bookId);
+                    final ArrayList<TocEntry> list = getByBookId(bookId);
                     bookDao.insertOrUpdateToc(context, bookId, list, false, bookLocale);
                 }
                 if (txLock != null) {

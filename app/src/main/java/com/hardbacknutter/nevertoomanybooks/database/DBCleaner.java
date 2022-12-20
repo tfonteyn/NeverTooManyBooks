@@ -98,7 +98,7 @@ public class DBCleaner {
         modified = serviceLocator.getAuthorDao().fixPositions(context);
         modified += serviceLocator.getSeriesDao().fixPositions(context);
         modified += serviceLocator.getPublisherDao().fixPositions(context);
-        modified += serviceLocator.getTocEntryDao().repositionTocEntries(context);
+        modified += serviceLocator.getTocEntryDao().fixPositions(context);
 
         return modified;
     }
