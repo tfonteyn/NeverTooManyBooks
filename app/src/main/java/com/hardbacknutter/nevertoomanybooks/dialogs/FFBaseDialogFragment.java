@@ -231,7 +231,7 @@ public abstract class FFBaseDialogFragment
                 buttonPanel.setVisibility(View.VISIBLE);
 
                 // Toolbar navigation icon is always mapped to the cancel button. Both are visible.
-                final Button cancelBtn = buttonPanel.findViewById(R.id.btn_cancel);
+                final Button cancelBtn = buttonPanel.findViewById(R.id.btn_negative);
                 if (cancelBtn != null) {
                     // If the nav button has a ContentDescription,
                     // use it for the 'cancel' button text.
