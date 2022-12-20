@@ -113,7 +113,7 @@ public abstract class LTask<Result>
 
     @Override
     @WorkerThread
-    protected void setTaskFailure(@NonNull final Exception e) {
+    protected void setTaskFailure(@NonNull final Throwable e) {
         handler.post(() -> {
             if (taskListener.get() != null) {
                 taskListener.get().onFailure(getTaskId(), e);

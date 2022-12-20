@@ -35,6 +35,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedDaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedStorageException;
 
 /**
@@ -140,12 +141,9 @@ abstract class TaskBase<Result>
                 status = Status.Cancelled;
                 setTaskCancelled(null);
 
-            } catch (@NonNull final UncheckedStorageException e) {
-                status = Status.Failed;
-                //noinspection ConstantConditions
-                setTaskFailure(e.getCause());
-
-            } catch (@NonNull final UncheckedIOException e) {
+            } catch (@NonNull final UncheckedStorageException
+                                    | UncheckedDaoWriteException
+                                    | UncheckedIOException e) {
                 status = Status.Failed;
                 //noinspection ConstantConditions
                 setTaskFailure(e.getCause());
@@ -185,7 +183,7 @@ abstract class TaskBase<Result>
     /**
      * Called when the task fails with an Exception.
      */
-    protected abstract void setTaskFailure(@NonNull Exception e);
+    protected abstract void setTaskFailure(@NonNull Throwable e);
 
     @Override
     @CallSuper

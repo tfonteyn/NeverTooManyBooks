@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,11 +61,11 @@ public interface TaskListener<Result> {
     /**
      * Called when a task failed.
      *
-     * @param taskId    id
-     * @param exception which was thrown
+     * @param taskId id
+     * @param e      which was thrown
      */
     void onFailure(int taskId,
-                   @Nullable Exception exception);
+                   @Nullable Throwable e);
 
     /**
      * Progress messages.

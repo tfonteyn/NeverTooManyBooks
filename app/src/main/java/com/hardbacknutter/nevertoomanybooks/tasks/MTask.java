@@ -38,7 +38,7 @@ public abstract class MTask<Result>
             new MutableLiveData<>();
     private final MutableLiveData<LiveDataEvent<TaskResult<Result>>> onCanceled =
             new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> onFailure =
+    private final MutableLiveData<LiveDataEvent<TaskResult<Throwable>>> onFailure =
             new MutableLiveData<>();
     private final MutableLiveData<LiveDataEvent<TaskProgress>> onProgress =
             new MutableLiveData<>();
@@ -95,13 +95,13 @@ public abstract class MTask<Result>
      * @return the result is the Exception
      */
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Exception>>> onFailure() {
+    public LiveData<LiveDataEvent<TaskResult<Throwable>>> onFailure() {
         return onFailure;
     }
 
     @Override
     @WorkerThread
-    protected void setTaskFailure(@NonNull final Exception e) {
+    protected void setTaskFailure(@NonNull final Throwable e) {
         onFailure.postValue(new LiveDataEvent<>(new TaskResult<>(getTaskId(), e)));
     }
 
