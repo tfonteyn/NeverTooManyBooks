@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -243,51 +244,55 @@ public class BookshelfDaoImpl
 
     @Override
     public long insert(@NonNull final Context context,
-                       @NonNull final Bookshelf bookshelf) {
+                       @NonNull final Bookshelf bookshelf)
+            throws DaoWriteException {
 
         // validate the style first
         final long styleId = bookshelf.getStyle(context).getId();
-
-        final long iId;
 
         Synchronizer.SyncLock txLock = null;
         try {
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
             }
+
+            final long iId;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                 stmt.bindString(1, bookshelf.getName());
                 stmt.bindLong(2, styleId);
                 stmt.bindLong(3, bookshelf.getFirstVisibleItemPosition());
                 stmt.bindLong(4, bookshelf.getFirstVisibleItemViewOffset());
                 iId = stmt.executeInsert();
-                if (iId > 0) {
-                    storeFilters(context, iId, bookshelf);
+            }
+
+            if (iId > 0) {
+                storeFilters(context, iId, bookshelf);
+
+                if (txLock != null) {
+                    db.setTransactionSuccessful();
                 }
+
+                bookshelf.setId(iId);
+                return iId;
             }
-            if (txLock != null) {
-                db.setTransactionSuccessful();
-            }
+
+            throw new DaoWriteException(ERROR_INSERT_FROM + bookshelf);
+        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+            throw new DaoWriteException(ERROR_INSERT_FROM + bookshelf, e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
             }
         }
-
-        if (iId > 0) {
-            bookshelf.setId(iId);
-        }
-        return iId;
     }
 
     @Override
-    public boolean update(@NonNull final Context context,
-                          @NonNull final Bookshelf bookshelf) {
+    public void update(@NonNull final Context context,
+                       @NonNull final Bookshelf bookshelf)
+            throws DaoWriteException {
 
         // validate the style first
         final long styleId = bookshelf.getStyle(context).getId();
-
-        final int rowsAffected;
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -307,15 +312,20 @@ public class BookshelfDaoImpl
 
             storeFilters(context, bookshelf.getId(), bookshelf);
 
-            if (txLock != null) {
-                db.setTransactionSuccessful();
+                if (txLock != null) {
+                    db.setTransactionSuccessful();
+                }
+                return;
             }
+
+            throw new DaoWriteException(ERROR_UPDATE_FROM + bookshelf);
+        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+            throw new DaoWriteException(ERROR_UPDATE_FROM + bookshelf, e);
         } finally {
             if (txLock != null) {
                 db.endTransaction(txLock);
             }
         }
-        return 0 < rowsAffected;
     }
 
     @Override

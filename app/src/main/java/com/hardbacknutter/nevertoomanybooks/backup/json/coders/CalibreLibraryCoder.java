@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreVirtualLibrary;
@@ -137,7 +138,11 @@ public class CalibreLibraryCoder
 
         final Object tmpBS = data.opt(DBKey.FK_BOOKSHELF);
         if (tmpBS == null || tmpBS instanceof Number) {
-            return v3decode(data);
+            try {
+                return v3decode(data);
+            } catch (@NonNull final DaoWriteException e) {
+                throw new JSONException(e);
+            }
         }
 
         final Bookshelf libraryBookshelf = bookshelfCoder
@@ -183,7 +188,8 @@ public class CalibreLibraryCoder
     // installation.
     // There is no real (simple) recovery solution to that. So....
     @NonNull
-    private CalibreLibrary v3decode(@NonNull final JSONObject data) {
+    private CalibreLibrary v3decode(@NonNull final JSONObject data)
+            throws DaoWriteException {
 
         final String libName = data.getString(DBKey.CALIBRE_LIBRARY_NAME);
 
@@ -222,7 +228,8 @@ public class CalibreLibraryCoder
     }
 
     private long v3resolveBookshelf(@NonNull final JSONObject data,
-                                    @NonNull final String libName) {
+                                    @NonNull final String libName)
+            throws DaoWriteException {
         final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
         // try original

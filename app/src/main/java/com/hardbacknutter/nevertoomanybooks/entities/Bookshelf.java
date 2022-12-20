@@ -41,6 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.PFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
@@ -283,8 +285,12 @@ public class Bookshelf
 
         styleUuid = style.getUuid();
 
-        ServiceLocator.getInstance().getBookshelfDao().update(context, this);
-
+        try {
+            ServiceLocator.getInstance().getBookshelfDao().update(context, this);
+        } catch (@NonNull final DaoWriteException e) {
+            // log, but ignore - should never happen unless disk full
+            Logger.error(TAG, e, "");
+        }
     }
 
     /**
@@ -375,7 +381,12 @@ public class Bookshelf
         firstVisibleItemPosition = position;
         firstVisibleViewOffset = viewOffset;
 
-        ServiceLocator.getInstance().getBookshelfDao().update(context, this);
+        try {
+            ServiceLocator.getInstance().getBookshelfDao().update(context, this);
+        } catch (@NonNull final DaoWriteException e) {
+            // log, but ignore - should never happen unless disk full
+            Logger.error(TAG, e, "");
+        }
     }
 
     /**
@@ -387,7 +398,12 @@ public class Bookshelf
         final String uuid = styleUuid;
         final Style style = getStyle(context);
         if (!uuid.equals(style.getUuid())) {
-            ServiceLocator.getInstance().getBookshelfDao().update(context, this);
+            try {
+                ServiceLocator.getInstance().getBookshelfDao().update(context, this);
+            } catch (@NonNull final DaoWriteException e) {
+                // log, but ignore - should never happen unless disk full
+                Logger.error(TAG, e, "");
+            }
         }
     }
 

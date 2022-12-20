@@ -142,9 +142,7 @@ abstract class LibraryBase
                 .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
 
         final Bookshelf bookshelf = new Bookshelf(name, current.getStyle(context));
-        if (ServiceLocator.getInstance().getBookshelfDao().insert(context, bookshelf) == -1) {
-            throw new DaoWriteException("insert Bookshelf");
-        }
+        ServiceLocator.getInstance().getBookshelfDao().insert(context, bookshelf);
 
         mappedBookshelfId = bookshelf.getId();
         return bookshelf;

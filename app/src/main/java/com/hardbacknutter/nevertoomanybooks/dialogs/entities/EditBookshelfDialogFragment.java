@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
@@ -163,18 +164,20 @@ public class EditBookshelfDialogFragment
         }
 
         if (existingId == 0) {
-            // We have a unique/new name; either add or update and we're done
-            final boolean success;
-            if (bookshelf.getId() == 0) {
-                //noinspection ConstantConditions
-                success = dao.insert(context, bookshelf) > 0;
-            } else {
-                //noinspection ConstantConditions
-                success = dao.update(context, bookshelf);
-            }
-            if (success) {
+            try {
+                // We have a unique/new name; either add or update and we're done
+                if (bookshelf.getId() == 0) {
+                    //noinspection ConstantConditions
+                    dao.insert(context, bookshelf);
+                } else {
+                    //noinspection ConstantConditions
+                    dao.update(context, bookshelf);
+                }
                 Launcher.setResult(this, requestKey, bookshelf.getId());
                 return true;
+
+            } catch (@NonNull final DaoWriteException e) {
+                return false;
             }
         } else {
             // There is one with the same name; ask whether to merge the 2

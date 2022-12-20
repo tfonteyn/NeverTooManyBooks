@@ -69,6 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedDaoWriteException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -243,6 +244,12 @@ public class JsonRecordReader
                     }
                 }
             } catch (@NonNull final JSONException e) {
+                // Unpack if possible
+                if (e.getCause() instanceof DaoWriteException) {
+                    throw new DataReaderException(context.getString(
+                            R.string.error_import_failed_for_record, recordType.getName()),
+                                                  e.getCause());
+                }
                 throw new DataReaderException(context.getString(
                         R.string.error_import_failed_for_record, recordType.getName()), e);
 
@@ -311,7 +318,8 @@ public class JsonRecordReader
     private void readBookshelves(@NonNull final Context context,
                                  @NonNull final JSONObject root,
                                  @NonNull final ImportHelper helper)
-            throws JSONException {
+            throws JSONException,
+                   UncheckedDaoWriteException {
         final JSONArray jsonRoot = root.optJSONArray(RecordType.Bookshelves.getName());
         if (jsonRoot != null) {
             final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
@@ -324,7 +332,11 @@ public class JsonRecordReader
                             final DataReader.Updates updateOption = helper.getUpdateOption();
                             switch (updateOption) {
                                 case Overwrite: {
-                                    bookshelfDao.update(context, bookshelf);
+                                    try {
+                                        bookshelfDao.update(context, bookshelf);
+                                    } catch (@NonNull final DaoWriteException e) {
+                                        throw new UncheckedDaoWriteException(e);
+                                    }
                                     break;
                                 }
                                 case OnlyNewer:
@@ -332,7 +344,11 @@ public class JsonRecordReader
                                     break;
                             }
                         } else {
-                            bookshelfDao.insert(context, bookshelf);
+                            try {
+                                bookshelfDao.insert(context, bookshelf);
+                            } catch (@NonNull final DaoWriteException e) {
+                                throw new UncheckedDaoWriteException(e);
+                            }
                         }
                     });
         }

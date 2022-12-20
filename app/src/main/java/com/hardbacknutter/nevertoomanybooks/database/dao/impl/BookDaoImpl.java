@@ -489,9 +489,7 @@ public class BookDaoImpl
             for (final Bookshelf bookshelf : list) {
                 // create if needed - do NOT do updates here
                 if (bookshelf.getId() == 0) {
-                    if (bookshelfDao.insert(context, bookshelf) == -1) {
-                        throw new DaoWriteException("insert Bookshelf");
-                    }
+                    bookshelfDao.insert(context, bookshelf);
                 }
 
                 stmt.bindLong(1, bookId);

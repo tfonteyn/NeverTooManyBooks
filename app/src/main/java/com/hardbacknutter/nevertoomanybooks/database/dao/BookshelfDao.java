@@ -110,10 +110,14 @@ public interface BookshelfDao
      * @param context   Current context
      * @param bookshelf object to insert. Will be updated with the id.
      *
-     * @return the row id of the newly inserted row, or {@code -1} if an error occurred
+     * @return the row id of the newly inserted item
+     *
+     * @throws DaoWriteException on failure
      */
+    @IntRange(from = 1, to = Integer.MAX_VALUE)
     long insert(@NonNull Context context,
-                @NonNull Bookshelf bookshelf);
+                @NonNull Bookshelf bookshelf)
+            throws DaoWriteException;
 
     /**
      * Update a bookshelf.
@@ -121,10 +125,11 @@ public interface BookshelfDao
      * @param context   Current context
      * @param bookshelf to update
      *
-     * @return {@code true} for success.
+     * @throws DaoWriteException on failure
      */
-    boolean update(@NonNull Context context,
-                   @NonNull Bookshelf bookshelf);
+    void update(@NonNull Context context,
+                @NonNull Bookshelf bookshelf)
+            throws DaoWriteException;
 
 
     /**
