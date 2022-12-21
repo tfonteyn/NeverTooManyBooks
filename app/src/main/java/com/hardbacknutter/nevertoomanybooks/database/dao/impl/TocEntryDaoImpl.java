@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import androidx.annotation.IntRange;
@@ -46,8 +45,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.entities.EntityMerger;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.entities.TocEntryMergeHelper;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -83,22 +82,18 @@ public class TocEntryDaoImpl
             return false;
         }
 
-        final EntityMerger<TocEntry> entityMerger = new EntityMerger<>(list);
-        while (entityMerger.hasNext()) {
-            final TocEntry current = entityMerger.next();
-
-            final Locale locale;
-            if (lookupLocale) {
-                locale = current.getLocale(context, bookLocale);
-            } else {
-                locale = bookLocale;
-            }
-            // Don't lookup the locale a 2nd time.
-            fixId(context, current, false, locale);
-            entityMerger.merge(current);
-        }
-
-        return entityMerger.isListModified();
+        final TocEntryMergeHelper mergeHelper = new TocEntryMergeHelper();
+        return mergeHelper.merge(list,
+                                 current -> {
+                                     final Locale locale;
+                                     if (lookupLocale) {
+                                         locale = current.getLocale(context, bookLocale);
+                                     } else {
+                                         locale = bookLocale;
+                                     }
+                                     // Don't lookup the locale a 2nd time.
+                                     fixId(context, current, false, locale);
+                                 });
     }
 
     @Override

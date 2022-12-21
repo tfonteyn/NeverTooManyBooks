@@ -46,8 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.entities.EntityMerger;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.SeriesMergeHelper;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
@@ -235,23 +235,18 @@ public class SeriesDaoImpl
             return false;
         }
 
-        final EntityMerger<Series> entityMerger = new EntityMerger<>(list);
-        while (entityMerger.hasNext()) {
-            final Series current = entityMerger.next();
-
-            final Locale locale;
-            if (lookupLocale) {
-                locale = current.getLocale(context, bookLocale);
-            } else {
-                locale = bookLocale;
-            }
-
-            // Don't lookup the locale a 2nd time.
-            fixId(context, current, false, locale);
-            entityMerger.merge(current);
-        }
-
-        return entityMerger.isListModified();
+        final SeriesMergeHelper mergeHelper = new SeriesMergeHelper();
+        return mergeHelper.merge(list,
+                                 current -> {
+                                     final Locale locale;
+                                     if (lookupLocale) {
+                                         locale = current.getLocale(context, bookLocale);
+                                     } else {
+                                         locale = bookLocale;
+                                     }
+                                     // Don't lookup the locale a 2nd time.
+                                     fixId(context, current, false, locale);
+                                 });
     }
 
     @Override

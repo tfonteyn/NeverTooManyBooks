@@ -835,20 +835,6 @@ public class Author
         return userLocale;
     }
 
-    @Override
-    public boolean merge(@NonNull final Mergeable mergeable) {
-        final Author incoming = (Author) mergeable;
-
-        // always combine the types
-        type = type | incoming.getType();
-
-        // if this object has no id, and the incoming has an id, then we copy the id.
-        if (id == 0 && incoming.getId() > 0) {
-            id = incoming.getId();
-        }
-        return true;
-    }
-
     /**
      * Diacritic neutral version of {@link  #hashCode()} without id.
      * Used to merge two authors based on name alone.

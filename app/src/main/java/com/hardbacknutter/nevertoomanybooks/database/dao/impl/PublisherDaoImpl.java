@@ -45,8 +45,8 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.entities.EntityMerger;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.PublisherMergeHelper;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
@@ -192,14 +192,18 @@ public class PublisherDaoImpl
             return false;
         }
 
-        final EntityMerger<Publisher> entityMerger = new EntityMerger<>(list);
-        while (entityMerger.hasNext()) {
-            final Publisher current = entityMerger.next();
-            fixId(context, current, lookupLocale, bookLocale);
-            entityMerger.merge(current);
-        }
-
-        return entityMerger.isListModified();
+        final PublisherMergeHelper mergeHelper = new PublisherMergeHelper();
+        return mergeHelper.merge(list,
+                                 current -> {
+                                     final Locale locale;
+                                     if (lookupLocale) {
+                                         locale = current.getLocale(context, bookLocale);
+                                     } else {
+                                         locale = bookLocale;
+                                     }
+                                     // Don't lookup the locale a 2nd time.
+                                     fixId(context, current, false, locale);
+                                 });
     }
 
     @Override

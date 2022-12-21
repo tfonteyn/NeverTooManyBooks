@@ -512,47 +512,6 @@ public class Series
     }
 
     @Override
-    public boolean merge(@NonNull final Mergeable mergeable) {
-        final Series incoming = (Series) mergeable;
-
-        // If the incoming Series has no number set, we're done
-        if (incoming.getNumber().isEmpty()) {
-            if (id == 0 && incoming.getId() > 0) {
-                id = incoming.getId();
-            }
-            return true;
-        }
-
-        // If this Series has no number set, copy the incoming data
-        if (number.isEmpty()) {
-            number = incoming.getNumber();
-            if (id == 0 && incoming.getId() > 0) {
-                id = incoming.getId();
-            }
-            return true;
-        }
-
-        // Both have a number set.
-        // If they are the same, we're done
-        if (number.equals(incoming.getNumber())) {
-            if (id == 0 && incoming.getId() > 0) {
-                id = incoming.getId();
-            }
-            return true;
-        }
-
-        // The book has two numbers in a series.
-        // This might be strange, but absolutely valid.
-        // The user can clean up manually if needed.
-        // While we cannot merge the actual objects,
-        // we CAN copy the id if appropriate, as Series are distinguished by id AND number
-        if (id == 0 && incoming.getId() > 0) {
-            id = incoming.getId();
-        }
-        return false;
-    }
-
-    @Override
     public int asciiHashCodeNoId() {
         return Objects.hash(ParseUtils.toAscii(title));
     }

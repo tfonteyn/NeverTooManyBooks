@@ -17,18 +17,22 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.hardbacknutter.nevertoomanybooks.entities;
 
-interface Mergeable {
+import androidx.annotation.NonNull;
 
-    long getId();
+public class BookshelfMergeHelper
+        extends EntityMergeHelper<Bookshelf> {
 
-    void setId(long id);
-
-    /**
-     * Diacritic neutral version of {@link Object#hashCode()} <strong>without the id</strong>.
-     *
-     * @return hashcode
-     */
-    int asciiHashCodeNoId();
+    @Override
+    protected boolean merge(@NonNull final Bookshelf previous,
+                            @NonNull final Bookshelf current) {
+        // if the previous one has no id, and the current does, then we copy the id.
+        if (previous.getId() == 0 && current.getId() > 0) {
+            previous.setId(current.getId());
+        }
+        // no other attributes, so we can always merge
+        return true;
+    }
 }

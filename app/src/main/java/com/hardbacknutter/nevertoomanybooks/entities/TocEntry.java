@@ -329,44 +329,6 @@ public class TocEntry
     }
 
     @Override
-    public boolean merge(@NonNull final Mergeable mergeable) {
-        final TocEntry incoming = (TocEntry) mergeable;
-
-        // If the incoming TocEntry has no date set, we're done
-        if (!incoming.getFirstPublicationDate().isPresent()) {
-            if (id == 0 && incoming.getId() > 0) {
-                id = incoming.getId();
-            }
-            return true;
-        }
-
-        // If this TocEntry has no date set, copy the incoming data
-        if (!firstPublicationDate.isPresent()) {
-            firstPublicationDate = incoming.getFirstPublicationDate();
-            if (id == 0 && incoming.getId() > 0) {
-                id = incoming.getId();
-            }
-            return true;
-        }
-
-        // Both have a date set.
-        // If they are the same, we're done
-        if (firstPublicationDate.equals(incoming.getFirstPublicationDate())) {
-            if (id == 0 && incoming.getId() > 0) {
-                id = incoming.getId();
-            }
-            return true;
-        }
-
-        // The entries have a different date.
-        // This is almost certainly invalid.
-        // We can't decide which is the 'right' one.
-        // The user will need to clean up manually.
-        incoming.setId(0);
-        return false;
-    }
-
-    @Override
     public int asciiHashCodeNoId() {
         return Objects.hash(ParseUtils.toAscii(title), author.asciiHashCodeNoId());
     }

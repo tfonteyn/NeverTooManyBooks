@@ -44,8 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.BookshelfMergeHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.entities.EntityMerger;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
@@ -229,14 +229,8 @@ public class BookshelfDaoImpl
             return false;
         }
 
-        final EntityMerger<Bookshelf> entityMerger = new EntityMerger<>(list);
-        while (entityMerger.hasNext()) {
-            final Bookshelf current = entityMerger.next();
-            fixId(current);
-            entityMerger.merge(current);
-        }
-
-        return entityMerger.isListModified();
+        final BookshelfMergeHelper mergeHelper = new BookshelfMergeHelper();
+        return mergeHelper.merge(list, this::fixId);
     }
 
     @Override
