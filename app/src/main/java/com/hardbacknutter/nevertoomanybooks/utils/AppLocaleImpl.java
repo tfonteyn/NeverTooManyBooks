@@ -143,7 +143,7 @@ public final class AppLocaleImpl
         }
 
         // THIS IS A MUST
-        lang = languages.getLocaleIsoFromISO3(context, lang);
+        lang = languages.getLocaleIsoFromISO3(userLocale, lang);
 
         // lang should now be an ISO (2 or 3 characters) code (or an invalid string)
         Locale locale = cache.get(lang);
@@ -218,9 +218,10 @@ public final class AppLocaleImpl
         if (lang.length() == 2) {
             deltaConfig.setLocale(desiredLocale);
         } else {
+            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             // any 3-char code might need to be converted to 2-char be able to find the resource.
             final String iso = ServiceLocator.getInstance().getLanguages()
-                                             .getLocaleIsoFromISO3(context, lang);
+                                             .getLocaleIsoFromISO3(userLocale, lang);
             deltaConfig.setLocale(new Locale(iso));
         }
 

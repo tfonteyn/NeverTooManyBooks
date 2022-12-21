@@ -178,22 +178,20 @@ public class Languages {
      * <br><br>
      * <strong>Note:</strong> check the javadoc on {@link Locale#getISOLanguages()} for caveats.
      *
-     * @param context Current context
-     * @param iso3    ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
+     * @param userLocale Current Locale
+     * @param iso3       ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
      *
      * @return a language code that can be used with {@code new Locale(x)},
-     *         or the incoming string if conversion failed.
+     * or the incoming string if conversion failed.
      */
     @NonNull
-    String getLocaleIsoFromISO3(@NonNull final Context context,
+    String getLocaleIsoFromISO3(@NonNull final Locale userLocale,
                                 @NonNull final String iso3) {
 
         String iso2 = lang3ToLang2Map.get(iso3);
         if (iso2 != null) {
             return iso2;
         }
-
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         // try again ('terminology' seems to be preferred/standard on Android (ICU?)
         String lang = toTerminology(userLocale, iso3);
