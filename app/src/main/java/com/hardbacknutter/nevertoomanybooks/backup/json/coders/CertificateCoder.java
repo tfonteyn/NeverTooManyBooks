@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -68,7 +68,7 @@ public class CertificateCoder
             throws JSONException {
 
         String dataStr = data.optString(CERT);
-        if (!dataStr.isEmpty()) {
+        if (dataStr != null && !dataStr.isEmpty()) {
             dataStr = dataStr.replace(BEGIN_CERT, "").replace(END_CERT, "");
             final byte[] b = Base64.decode(dataStr.getBytes(StandardCharsets.US_ASCII), 0);
             try (InputStream is = new ByteArrayInputStream(b)) {

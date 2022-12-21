@@ -588,7 +588,7 @@ public class CalibreContentServerReader
         // "series": "Argos Mythos / The devil is dead",
         if (!calibreBook.isNull(CalibreBook.SERIES)) {
             final String seriesName = calibreBook.optString(CalibreBook.SERIES);
-            if (!seriesName.isEmpty()) {
+            if (seriesName != null && !seriesName.isEmpty()) {
                 if (VALUE_IS_NULL.equals(seriesName)) {
                     throw new IllegalArgumentException(ERROR_NULL_STRING);
                 }
@@ -596,7 +596,7 @@ public class CalibreContentServerReader
                 // "series_index": null,
                 // "series_index": 2,  --> it's a float, but we grab it as a string
                 String seriesNr = calibreBook.optString(CalibreBook.SERIES_INDEX);
-                if (!seriesNr.isEmpty() && !"0.0".equals(seriesNr)) {
+                if (seriesNr != null && !seriesNr.isEmpty() && !"0.0".equals(seriesNr)) {
                     // transform "3.0" to just "3" (and similar) but leave "3.1" alone
                     if (seriesNr.endsWith(".0")) {
                         seriesNr = seriesNr.substring(0, seriesNr.length() - 2);
@@ -611,7 +611,7 @@ public class CalibreContentServerReader
 
         if (!calibreBook.isNull(CalibreBook.PUBLISHER)) {
             final String publisherName = calibreBook.optString(CalibreBook.PUBLISHER);
-            if (!publisherName.isEmpty()) {
+            if (publisherName != null && !publisherName.isEmpty()) {
                 if (VALUE_IS_NULL.equals(publisherName)) {
                     throw new IllegalArgumentException(ERROR_NULL_STRING);
                 }
@@ -631,23 +631,26 @@ public class CalibreContentServerReader
                     // always overwrite
                     if (!remotes.isNull(key)) {
                         final Identifier identifier = Identifier.MAP.get(key);
-                        if (identifier != null) {
-                            if (identifier.isLocalLong) {
-                                try {
-                                    localBook.putLong(identifier.local,
-                                                      Long.parseLong(remotes.optString(key)));
-                                } catch (@NonNull final NumberFormatException ignore) {
-                                    // ignore
+                        final String idStr = remotes.optString(key);
+                        if (idStr != null && !idStr.isEmpty()) {
+                            if (identifier != null) {
+                                if (identifier.isLocalLong) {
+                                    try {
+                                        localBook.putLong(identifier.local,
+                                                          Long.parseLong(idStr));
+                                    } catch (@NonNull final NumberFormatException ignore) {
+                                        // ignore
+                                    }
+                                } else {
+                                    localBook.putString(identifier.local, idStr);
                                 }
-                            } else {
-                                localBook.putString(identifier.local, remotes.optString(key));
-                            }
 
-                        } else if (key.startsWith(Identifier.AMAZON)) {
-                            // Other than strict "amazon", there are variants
-                            // for local sites; e.g. "amazon_nl", "amazon_fr",...
-                            // Note if there is more then one, we end up with the 'last' one.
-                            localBook.putString(DBKey.SID_ASIN, remotes.optString(key));
+                            } else if (key.startsWith(Identifier.AMAZON)) {
+                                // Other than strict "amazon", there are variants
+                                // for local sites; e.g. "amazon_nl", "amazon_fr",...
+                                // Note if there is more then one, we end up with the 'last' one.
+                                localBook.putString(DBKey.SID_ASIN, idStr);
+                            }
                         }
                     }
                 }
@@ -657,7 +660,7 @@ public class CalibreContentServerReader
         if (doCovers) {
             if (!calibreBook.isNull(CalibreBook.COVER)) {
                 final String coverUrl = calibreBook.optString(CalibreBook.COVER);
-                if (!coverUrl.isEmpty()) {
+                if (coverUrl != null && !coverUrl.isEmpty()) {
                     final File file = server.getCover(calibreBookId, coverUrl).orElse(null);
                     try {
                         localBook.setCover(0, file);

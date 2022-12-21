@@ -529,7 +529,7 @@ public class OpenLibrarySearchEngine
         final int i;
 
         s = document.optString("title");
-        if (!s.isEmpty()) {
+        if (s != null && !s.isEmpty()) {
             bookData.putString(DBKey.TITLE, s);
         }
 
@@ -542,7 +542,7 @@ public class OpenLibrarySearchEngine
                 element = a.optJSONObject(ai);
                 if (element != null) {
                     final String name = element.optString("name");
-                    if (!name.isEmpty()) {
+                    if (name != null && !name.isEmpty()) {
                         authors.add(Author.from(name));
                     }
                 }
@@ -573,7 +573,7 @@ public class OpenLibrarySearchEngine
         }
 
         s = document.optString("publish_date");
-        if (!s.isEmpty()) {
+        if (s != null && !s.isEmpty()) {
             final LocalDateTime date = dateParser.parse(s, getLocale(context));
             if (date != null) {
                 bookData.putString(DBKey.BOOK_PUBLICATION__DATE,
@@ -591,7 +591,7 @@ public class OpenLibrarySearchEngine
 
         // "notes" is a specific (set of) remarks on this particular edition of the book.
         s = document.optString("notes");
-        if (!s.isEmpty()) {
+        if (s != null && !s.isEmpty()) {
             bookData.putString(DBKey.DESCRIPTION, s);
         }
 
@@ -604,7 +604,7 @@ public class OpenLibrarySearchEngine
                 element = a.optJSONObject(ai);
                 if (element != null) {
                     final String title = element.optString("title");
-                    if (!title.isEmpty()) {
+                    if (title != null && !title.isEmpty()) {
                         toc.add(new TocEntry(authors.get(0), title));
                     }
                 }
@@ -638,7 +638,7 @@ public class OpenLibrarySearchEngine
             element = a.optJSONObject(ai);
             if (element != null) {
                 final String name = element.optString("name");
-                if (!name.isEmpty()) {
+                if (name != null && !name.isEmpty()) {
                     publishers.add(Publisher.from(name));
                 }
             }
@@ -707,17 +707,17 @@ public class OpenLibrarySearchEngine
         if (o != null) {
             Size size = Size.Large;
             String coverUrl = o.optString("large");
-            if (coverUrl.isEmpty()) {
+            if (coverUrl == null || coverUrl.isEmpty()) {
                 size = Size.Medium;
                 coverUrl = o.optString("medium");
-                if (coverUrl.isEmpty()) {
+                if (coverUrl == null || coverUrl.isEmpty()) {
                     size = Size.Small;
                     coverUrl = o.optString("small");
                 }
             }
 
             // we assume that the download will work if there is a url.
-            if (!coverUrl.isEmpty()) {
+            if (coverUrl != null && !coverUrl.isEmpty()) {
                 final String fileSpec = saveImage(coverUrl, validIsbn, cIdx, size);
                 if (fileSpec != null) {
                     list.add(fileSpec);

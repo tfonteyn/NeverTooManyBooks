@@ -71,10 +71,14 @@ public class BookshelfCoder
                 final JSONObject details = new JSONObject(parts.get(1));
                 // It's quite possible that the UUID is not a style we (currently) know.
                 // But that does not matter as we'll check it upon first access.
-                if (details.has(DBKey.FK_STYLE)) {
-                    bookshelf.setStyleUuid(details.optString(DBKey.FK_STYLE));
-                } else if (details.has("style")) {
-                    bookshelf.setStyleUuid(details.optString("style"));
+                String styleUuid = details.optString(DBKey.FK_STYLE);
+                if (styleUuid != null && !styleUuid.isEmpty()) {
+                    bookshelf.setStyleUuid(styleUuid);
+                } else {
+                    styleUuid = details.optString("style");
+                    if (styleUuid != null && !styleUuid.isEmpty()) {
+                        bookshelf.setStyleUuid(styleUuid);
+                    }
                 }
             } catch (@NonNull final JSONException ignore) {
                 // ignore
