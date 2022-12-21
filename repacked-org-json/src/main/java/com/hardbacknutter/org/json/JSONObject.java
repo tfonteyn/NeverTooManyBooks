@@ -1084,6 +1084,7 @@ public class JSONObject {
      *
      * @throws JSONException If the value is or contains an invalid number.
      */
+    @NonNull
     public static String valueToString(final Object value)
             throws JSONException {
         // moves the implementation to JSONWriter as:
@@ -1263,6 +1264,7 @@ public class JSONObject {
         );
     }
 
+    @NonNull
     public Class<? extends Map> getMapType() {
         return map.getClass();
     }
@@ -1286,6 +1288,7 @@ public class JSONObject {
      * @throws JSONException        If the value is non-finite number.
      * @throws NullPointerException If the key is {@code null}.
      */
+    @NonNull
     public JSONObject accumulate(@NonNull final String key,
                                  @Nullable final Object value)
             throws JSONException {
@@ -1318,6 +1321,7 @@ public class JSONObject {
      *                              associated with the key is not a JSONArray.
      * @throws NullPointerException If the key is {@code null}.
      */
+    @NonNull
     public JSONObject append(@NonNull final String key,
                              @Nullable final Object value)
             throws JSONException {
@@ -1342,6 +1346,7 @@ public class JSONObject {
      *
      * @throws JSONException if the key is not found.
      */
+    @NonNull
     public Object get(@NonNull final String key)
             throws JSONException {
         //noinspection ConstantConditions
@@ -1367,6 +1372,7 @@ public class JSONObject {
      * @throws JSONException if the key is not found or if the value cannot be converted
      *                       to an enum.
      */
+    @NonNull
     public <E extends Enum<E>> E getEnum(final Class<E> clazz,
                                          final String key)
             throws JSONException {
@@ -1414,6 +1420,7 @@ public class JSONObject {
      * @throws JSONException if the key is not found or if the value cannot
      *                       be converted to BigInteger.
      */
+    @NonNull
     public BigInteger getBigInteger(@NonNull final String key)
             throws JSONException {
         final Object object = this.get(key);
@@ -1437,6 +1444,7 @@ public class JSONObject {
      * @throws JSONException if the key is not found or if the value
      *                       cannot be converted to BigDecimal.
      */
+    @NonNull
     public BigDecimal getBigDecimal(@NonNull final String key)
             throws JSONException {
         final Object object = this.get(key);
@@ -1503,6 +1511,7 @@ public class JSONObject {
      * @throws JSONException if the key is not found or if the value is not a Number
      *                       object and cannot be converted to a number.
      */
+    @NonNull
     public Number getNumber(@NonNull final String key)
             throws JSONException {
         final Object object = this.get(key);
@@ -1548,6 +1557,7 @@ public class JSONObject {
      *
      * @throws JSONException if the key is not found or if the value is not a JSONArray.
      */
+    @NonNull
     public JSONArray getJSONArray(@NonNull final String key)
             throws JSONException {
         final Object object = this.get(key);
@@ -1566,6 +1576,7 @@ public class JSONObject {
      *
      * @throws JSONException if the key is not found or if the value is not a JSONObject.
      */
+    @NonNull
     public JSONObject getJSONObject(@NonNull final String key)
             throws JSONException {
         final Object object = this.get(key);
@@ -1607,6 +1618,7 @@ public class JSONObject {
      *
      * @throws JSONException if there is no string value for the key.
      */
+    @NonNull
     public String getString(@NonNull final String key)
             throws JSONException {
         final Object object = this.get(key);
@@ -1642,6 +1654,7 @@ public class JSONObject {
      * @throws JSONException If there is already a property with this name that is not an
      *                       Integer, Long, Double, or Float.
      */
+    @NonNull
     public JSONObject increment(@NonNull final String key)
             throws JSONException {
         final Object value = this.opt(key);
@@ -1686,6 +1699,7 @@ public class JSONObject {
      *
      * @see Set#iterator()
      */
+    @NonNull
     public Iterator<String> keys() {
         return this.keySet().iterator();
     }
@@ -1698,6 +1712,7 @@ public class JSONObject {
      *
      * @see Map#keySet()
      */
+    @NonNull
     public Set<String> keySet() {
         return this.map.keySet();
     }
@@ -1714,6 +1729,7 @@ public class JSONObject {
      *
      * @see Map#entrySet()
      */
+    @NonNull
     protected Set<Entry<String, Object>> entrySet() {
         return this.map.entrySet();
     }
@@ -2221,6 +2237,7 @@ public class JSONObject {
      * @throws JSONException        If the value is non-finite number.
      * @throws NullPointerException If the key is {@code null}.
      */
+    @NonNull
     public JSONObject put(@NonNull final String key,
                           final boolean value)
             throws JSONException {
@@ -2239,6 +2256,7 @@ public class JSONObject {
      * @throws JSONException        If the value is non-finite number.
      * @throws NullPointerException If the key is {@code null}.
      */
+    @NonNull
     public JSONObject put(@NonNull final String key,
                           @Nullable final Collection<?> value)
             throws JSONException {
@@ -2256,6 +2274,7 @@ public class JSONObject {
      * @throws JSONException        If the value is non-finite number.
      * @throws NullPointerException If the key is {@code null}.
      */
+    @NonNull
     public JSONObject put(@NonNull final String key,
                           final double value)
             throws JSONException {
@@ -2273,6 +2292,7 @@ public class JSONObject {
      * @throws JSONException        If the value is non-finite number.
      * @throws NullPointerException If the key is {@code null}.
      */
+    @NonNull
     public JSONObject put(@NonNull final String key,
                           final float value)
             throws JSONException {
@@ -2290,6 +2310,7 @@ public class JSONObject {
      * @throws JSONException        If the value is non-finite number.
      * @throws NullPointerException If the key is {@code null}.
      */
+    @NonNull
     public JSONObject put(@NonNull final String key,
                           final int value)
             throws JSONException {
@@ -2307,6 +2328,7 @@ public class JSONObject {
      * @throws JSONException        If the value is non-finite number.
      * @throws NullPointerException If the key is {@code null}.
      */
+    @NonNull
     public JSONObject put(@NonNull final String key,
                           final long value)
             throws JSONException {
@@ -2325,6 +2347,7 @@ public class JSONObject {
      * @throws JSONException        If the value is non-finite number.
      * @throws NullPointerException If the key is {@code null}.
      */
+    @NonNull
     public JSONObject put(@NonNull final String key,
                           @Nullable final Map<?, ?> value)
             throws JSONException {
@@ -2345,6 +2368,7 @@ public class JSONObject {
      * @throws JSONException        If the value is non-finite number.
      * @throws NullPointerException If the key is {@code null}.
      */
+    @NonNull
     public JSONObject put(@NonNull final String key,
                           @Nullable final Object value)
             throws JSONException {
@@ -2399,6 +2423,7 @@ public class JSONObject {
      *
      * @throws JSONException If the value is a non-finite number.
      */
+    @NonNull
     public JSONObject putOpt(@Nullable final String key,
                              @Nullable final Object value)
             throws JSONException {
@@ -2653,6 +2678,7 @@ public class JSONObject {
      *
      * @throws JSONException if a called function has an error
      */
+    @NonNull
     public Writer write(@NonNull final Writer writer)
             throws JSONException {
         return this.write(writer, 0, 0);
@@ -2684,6 +2710,7 @@ public class JSONObject {
      * @throws JSONException if a called function has an error or a write error
      *                       occurs
      */
+    @NonNull
     public Writer write(@NonNull final Writer writer,
                         final int indentFactor,
                         final int indent)
