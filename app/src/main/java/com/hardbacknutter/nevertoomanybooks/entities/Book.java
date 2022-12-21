@@ -1304,6 +1304,7 @@ public class Book
      * NEWTHINGS: edition: add bit flag and add to mask
      * Never change the bit value!
      */
+    @SuppressWarnings("WeakerAccess")
     public static final class Edition {
 
         /** first edition ever of this work/content/story. */
