@@ -453,7 +453,7 @@ public class BooklistGroup {
                                 .build(),
                         "UPPER(SUBSTR(" + TBL_AUTHORS.dot(DBKey.AUTHOR_FAMILY_NAME_OB) + ",1,1))",
                         Sort.Asc);
-                return new GroupKey(id, R.string.lbl_group_1st_char_author_family_name, "afn",
+                return new GroupKey(id, R.string.lbl_group_1st_char_author_family_name, "af1",
                                     keyDomainExpression);
             }
             case SERIES_TITLE_1ST_CHAR: {
@@ -465,7 +465,7 @@ public class BooklistGroup {
                                 .build(),
                         "UPPER(SUBSTR(" + TBL_SERIES.dot(DBKey.SERIES_TITLE_OB) + ",1,1))",
                         Sort.Asc);
-                return new GroupKey(id, R.string.lbl_group_1st_char_series_title, "st",
+                return new GroupKey(id, R.string.lbl_group_1st_char_series_title, "st1",
                                     keyDomainExpression);
             }
             case PUBLISHER_NAME_1ST_CHAR: {
@@ -477,7 +477,7 @@ public class BooklistGroup {
                                 .build(),
                         "UPPER(SUBSTR(" + TBL_BOOKS.dot(DBKey.PUBLISHER_NAME_OB) + ",1,1))",
                         Sort.Asc);
-                return new GroupKey(id, R.string.lbl_group_1st_char_publisher_name, "p",
+                return new GroupKey(id, R.string.lbl_group_1st_char_publisher_name, "p1",
                                     keyDomainExpression);
             }
             case BOOK_TITLE_1ST_CHAR: {
@@ -489,7 +489,7 @@ public class BooklistGroup {
                                 .build(),
                         "UPPER(SUBSTR(" + TBL_BOOKS.dot(DBKey.TITLE_OB) + ",1,1))",
                         Sort.Asc);
-                return new GroupKey(id, R.string.lbl_group_1st_char_book_title, "t",
+                return new GroupKey(id, R.string.lbl_group_1st_char_book_title, "bt1",
                                     keyDomainExpression);
             }
 
