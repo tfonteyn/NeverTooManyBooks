@@ -86,8 +86,8 @@ public abstract class ItemTouchHelperViewHolderBase
         checkableButton = itemView.findViewById(R.id.ROW_CHECKABLE_BTN);
         dragHandleView = itemView.findViewById(R.id.ROW_GRABBER_ICON);
 
-        itemDraggedBackgroundColor = AttrUtils.getColorInt(itemView.getContext(),
-                                                           R.attr.colorPrimary);
+        itemDraggedBackgroundColor = AttrUtils.getColorInt(
+                itemView.getContext(), androidx.appcompat.R.attr.colorPrimary);
     }
 
     @Override

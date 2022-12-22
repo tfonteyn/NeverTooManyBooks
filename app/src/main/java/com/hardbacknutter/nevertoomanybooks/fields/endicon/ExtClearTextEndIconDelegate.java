@@ -158,7 +158,8 @@ public class ExtClearTextEndIconDelegate<V extends TextView, T>
     @Override
     public void setTextInputLayout(@NonNull final TextInputLayout til) {
         textInputLayout = til;
-        endIconView = textInputLayout.findViewById(R.id.text_input_end_icon);
+        endIconView = textInputLayout
+                .findViewById(com.google.android.material.R.id.text_input_end_icon);
         Objects.requireNonNull(endIconView, "NOT FOUND: R.id.text_input_end_icon");
 
         textInputLayout.setEndIconMode(TextInputLayout.END_ICON_CUSTOM);

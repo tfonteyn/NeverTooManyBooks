@@ -36,7 +36,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -331,8 +330,8 @@ public abstract class BaseStyle
     public int getGroupRowHeight(@NonNull final Context context) {
         if (groupRowUsesPreferredHeight) {
             if (listPreferredItemHeightSmall == 0) {
-                listPreferredItemHeightSmall = AttrUtils
-                        .getDimensionPixelSize(context, R.attr.listPreferredItemHeightSmall);
+                listPreferredItemHeightSmall = AttrUtils.getDimensionPixelSize(
+                        context, androidx.appcompat.R.attr.listPreferredItemHeightSmall);
             }
             return listPreferredItemHeightSmall;
         } else {

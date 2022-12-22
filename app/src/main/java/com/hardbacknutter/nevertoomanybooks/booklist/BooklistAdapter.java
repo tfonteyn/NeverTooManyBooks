@@ -1288,9 +1288,9 @@ public class BooklistAdapter
             extends RowViewHolder {
 
         private static final int[] TEXT_APP_ATTR = {
-                R.attr.textAppearanceTitleLarge,
-                R.attr.textAppearanceTitleMedium,
-                R.attr.textAppearanceTitleSmall};
+                com.google.android.material.R.attr.textAppearanceTitleLarge,
+                com.google.android.material.R.attr.textAppearanceTitleMedium,
+                com.google.android.material.R.attr.textAppearanceTitleSmall};
         /**
          * The group this holder represents.
          * It's ok to store this as it's intrinsically linked with the ViewType.

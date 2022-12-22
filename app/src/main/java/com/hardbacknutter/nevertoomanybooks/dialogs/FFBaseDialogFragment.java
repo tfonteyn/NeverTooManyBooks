@@ -166,7 +166,8 @@ public abstract class FFBaseDialogFragment
                 heightDimenResId = 0;
             }
             if (marginBottomDimenResId == USE_DEFAULT) {
-                marginBottomDimenResId = AttrUtils.getResId(context, R.attr.actionBarSize);
+                marginBottomDimenResId = AttrUtils
+                        .getResId(context, androidx.appcompat.R.attr.actionBarSize);
             }
         }
     }

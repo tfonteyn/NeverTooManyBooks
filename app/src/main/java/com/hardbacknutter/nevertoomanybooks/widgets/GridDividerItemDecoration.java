@@ -35,7 +35,6 @@ import androidx.annotation.Px;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 /**
@@ -71,7 +70,7 @@ public class GridDividerItemDecoration
         this.horizontalDivider = horizontalDivider;
         this.verticalDivider = verticalDivider;
 
-        color = AttrUtils.getColorInt(context, R.attr.colorOutline);
+        color = AttrUtils.getColorInt(context, com.google.android.material.R.attr.colorOutline);
 
         thickness = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1,
                                                     context.getResources().getDisplayMetrics());

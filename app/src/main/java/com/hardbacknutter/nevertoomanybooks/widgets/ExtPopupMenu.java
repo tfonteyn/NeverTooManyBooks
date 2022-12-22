@@ -102,8 +102,8 @@ public class ExtPopupMenu {
         popupWindow.setFocusable(true);
         popupWindow.setContentView(vb.rootView);
 
-        popupWindow.setBackgroundDrawable(
-                AttrUtils.getDrawable(context, R.attr.popupMenuBackground));
+        popupWindow.setBackgroundDrawable(AttrUtils.getDrawable(
+                context, com.google.android.material.R.attr.popupMenuBackground));
         popupWindow.setElevation(res.getDimensionPixelSize(R.dimen.popup_menu_elevation));
     }
 

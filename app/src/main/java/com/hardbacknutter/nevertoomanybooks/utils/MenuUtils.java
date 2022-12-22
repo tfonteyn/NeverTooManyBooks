@@ -85,7 +85,8 @@ public final class MenuUtils {
                                                @IdRes final int itemId) {
         final MenuItem item = menu.findItem(itemId);
         final SpannableString title = new SpannableString(item.getTitle());
-        final int color = AttrUtils.getColorInt(context, R.attr.colorAccent);
+        final int color = AttrUtils
+                .getColorInt(context, androidx.appcompat.R.attr.colorAccent);
         title.setSpan(new ForegroundColorSpan(color), 0, title.length(), 0);
         title.setSpan(new RelativeSizeSpan(0.88f), 0, title.length(), 0);
         item.setTitle(title);
