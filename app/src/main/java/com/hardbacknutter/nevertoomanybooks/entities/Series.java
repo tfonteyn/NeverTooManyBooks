@@ -512,7 +512,7 @@ public class Series
     }
 
     @Override
-    public int asciiHashCodeNoId() {
+    public int hashCodeOfNameOnly() {
         return Objects.hash(ParseUtils.toAscii(title));
     }
 

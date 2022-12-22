@@ -174,7 +174,7 @@ public class Publisher
     }
 
     @Override
-    public int asciiHashCodeNoId() {
+    public int hashCodeOfNameOnly() {
         return Objects.hash(ParseUtils.toAscii(name));
     }
 

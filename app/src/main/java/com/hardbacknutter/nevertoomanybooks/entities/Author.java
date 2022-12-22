@@ -835,13 +835,8 @@ public class Author
         return userLocale;
     }
 
-    /**
-     * Diacritic neutral version of {@link  #hashCode()} without id.
-     * Used to merge two authors based on name alone.
-     *
-     * @return hashcode
-     */
-    public int asciiHashCodeNoId() {
+    @Override
+    public int hashCodeOfNameOnly() {
         return Objects.hash(ParseUtils.toAscii(familyName), ParseUtils.toAscii(givenNames));
     }
 

@@ -202,8 +202,8 @@ public class EditAuthorDialogFragment
         final Author author = authorVm.getAuthor();
         final Author realAuthor = author.getRealAuthor();
 
-        final boolean nameChanged = !author.getFamilyName().equals(currentEdit.getFamilyName())
-                                    || !author.getGivenNames().equals(currentEdit.getGivenNames());
+        final boolean nameChanged = author.hashCodeOfNameOnly()
+                                    != currentEdit.hashCodeOfNameOnly();
 
         // anything changed at all ? If not, we're done.
         if (!nameChanged

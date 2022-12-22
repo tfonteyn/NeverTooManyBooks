@@ -466,13 +466,8 @@ public class Bookshelf
     }
 
 
-    /**
-     * Diacritic neutral version of {@link  #hashCode()} without id.
-     *
-     * @return hashcode
-     */
     @Override
-    public int asciiHashCodeNoId() {
+    public int hashCodeOfNameOnly() {
         return Objects.hash(ParseUtils.toAscii(name));
     }
 

@@ -329,8 +329,8 @@ public class TocEntry
     }
 
     @Override
-    public int asciiHashCodeNoId() {
-        return Objects.hash(ParseUtils.toAscii(title), author.asciiHashCodeNoId());
+    public int hashCodeOfNameOnly() {
+        return Objects.hash(ParseUtils.toAscii(title), author.hashCodeOfNameOnly());
     }
 
     @Override

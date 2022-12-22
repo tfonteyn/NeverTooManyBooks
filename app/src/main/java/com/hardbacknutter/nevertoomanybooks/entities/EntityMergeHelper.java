@@ -56,7 +56,7 @@ public abstract class EntityMergeHelper<T extends Mergeable> {
             idFixer.accept(current);
 
             final long id = current.getId();
-            final int hash = current.asciiHashCodeNoId();
+            final int hash = current.hashCodeOfNameOnly();
 
             // Check if there is a previous occurrence, either by id, or by value (hash)
             T previous = null;

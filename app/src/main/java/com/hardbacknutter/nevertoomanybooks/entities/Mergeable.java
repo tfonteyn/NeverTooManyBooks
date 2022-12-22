@@ -26,9 +26,13 @@ interface Mergeable {
     void setId(long id);
 
     /**
-     * Diacritic neutral version of {@link Object#hashCode()} <strong>without the id</strong>.
+     * Diacritic neutral version of {@link Object#hashCode()}.
+     * <p>
+     * Implementations must <strong>only</strong> use their "name" fields,
+     * and then only after preprocessing them with
+     * {@link com.hardbacknutter.nevertoomanybooks.utils.ParseUtils#toAscii(CharSequence)}
      *
      * @return hashcode
      */
-    int asciiHashCodeNoId();
+    int hashCodeOfNameOnly();
 }
