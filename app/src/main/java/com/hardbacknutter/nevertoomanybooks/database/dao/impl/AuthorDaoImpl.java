@@ -527,6 +527,8 @@ public class AuthorDaoImpl
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }
+
+                return;
             }
 
             throw new DaoWriteException(ERROR_UPDATE_FROM + author);
