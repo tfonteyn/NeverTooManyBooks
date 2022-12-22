@@ -282,21 +282,16 @@ public class BookshelfFiltersDialogFragment
             final View view = layoutInflater.inflate(viewType, parent, false);
 
             final Holder holder;
-            switch (viewType) {
-                case PBooleanFilter.LAYOUT_ID:
-                    holder = new BooleanHolder(view, modificationListener);
-                    break;
-                case PStringEqualityFilter.LAYOUT_ID:
-                    holder = new StringEqualityHolder(view, modificationListener);
-                    break;
-                case PEntityListFilter.LAYOUT_ID:
-                    holder = new EntityListHolder<>(view, modificationListener);
-                    break;
-                case PBitmaskFilter.LAYOUT_ID:
-                    holder = new BitmaskHolder(view, modificationListener);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown viewType");
+            if (viewType == PBooleanFilter.LAYOUT_ID) {
+                holder = new BooleanHolder(view, modificationListener);
+            } else if (viewType == PStringEqualityFilter.LAYOUT_ID) {
+                holder = new StringEqualityHolder(view, modificationListener);
+            } else if (viewType == PEntityListFilter.LAYOUT_ID) {
+                holder = new EntityListHolder<>(view, modificationListener);
+            } else if (viewType == PBitmaskFilter.LAYOUT_ID) {
+                holder = new BitmaskHolder(view, modificationListener);
+            } else {
+                throw new IllegalArgumentException("Unknown viewType");
             }
 
             if (holder.delBtn != null) {
