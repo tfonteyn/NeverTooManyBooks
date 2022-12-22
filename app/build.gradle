@@ -25,7 +25,8 @@ import java.time.format.DateTimeFormatter
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("de.mannodermaus.android-junit5")
+    // https://github.com/mannodermaus/android-junit5/issues/290
+//    id("de.mannodermaus.android-junit5")
 }
 
 /*
