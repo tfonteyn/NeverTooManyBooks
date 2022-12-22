@@ -90,9 +90,9 @@ public class AuthorTest
         // Keep, position 0
         author = Author.from(ISAAC_ASIMOV);
         authorDao.fixId(context, author, false, bookLocale);
-        final long id0 = author.getId();
+        long id0 = author.getId();
         if (id0 == 0) {
-            authorDao.insert(context, author, bookLocale);
+            id0 = authorDao.insert(context, author, bookLocale);
         }
         author.setId(FAKE_ID_0);
         author.setComplete(false);
@@ -112,9 +112,9 @@ public class AuthorTest
         // keep, position 1
         author = Author.from(PHILIP_JOSE_FARMER);
         authorDao.fixId(context, author, false, bookLocale);
-        final long id1 = author.getId();
+        long id1 = author.getId();
         if (id1 == 0) {
-            authorDao.insert(context, author, bookLocale);
+            id1 = authorDao.insert(context, author, bookLocale);
         }
         author.setId(FAKE_ID_1);
         list.add(author);
@@ -132,9 +132,9 @@ public class AuthorTest
         // keep, position 2
         author = Author.from(PHILIP_DICK);
         authorDao.fixId(context, author, false, bookLocale);
-        final long id2 = author.getId();
+        long id2 = author.getId();
         if (id2 == 0) {
-            authorDao.insert(context, author, bookLocale);
+            id2 = authorDao.insert(context, author, bookLocale);
         }
         author.setId(FAKE_ID_2);
         author.setType(Author.TYPE_WRITER);

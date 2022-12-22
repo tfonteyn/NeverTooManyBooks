@@ -163,6 +163,7 @@ public class PublisherTest
 
         assertTrue(id0 > 0);
         assertTrue(id1 > 0);
+        assertTrue(id2 > 0);
 
         publisher = list.get(0);
         assertEquals(id0, publisher.getId());
