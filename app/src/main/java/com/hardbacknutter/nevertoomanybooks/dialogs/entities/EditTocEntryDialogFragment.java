@@ -71,7 +71,7 @@ public class EditTocEntryDialogFragment
     /** the position of the tocEntry in the TOC list. */
     private int editPosition;
 
-    /** Current edit. */
+    /** Current edit. URGENT: replace with TocEntry currentEdit ? what about the Author ? */
     private String title;
     /** Current edit. */
     private PartialDate firstPublicationDate;
