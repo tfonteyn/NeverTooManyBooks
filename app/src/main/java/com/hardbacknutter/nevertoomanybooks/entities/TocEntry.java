@@ -225,7 +225,9 @@ public class TocEntry
      * @param source TocEntry to copy from
      */
     public void copyFrom(@NonNull final TocEntry source) {
-        author = source.author;
+        // While editing, the user was only giving us a (potential) new name,
+        // so don't use Author#copyFrom; and don't reference the entire author
+        author.setName(source.author.getFamilyName(), source.author.getGivenNames());
         title = source.title;
         firstPublicationDate = source.firstPublicationDate;
         bookCount = source.bookCount;
