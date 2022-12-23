@@ -37,6 +37,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 
@@ -45,6 +46,7 @@ public class AuthorTest
         extends BaseDBTest {
 
     private static final String ISAAC_ASIMOV = "Isaac Asimov";
+    private static final String PAUL_FRENCH = "Paul French";
 
     private static final String PHILIP_JOSE_FARMER = "Philip Jose Farmer";
     private static final String PHILIP_JOSE_FARMER_VARIANT = "Philip José Farmer";
@@ -54,6 +56,7 @@ public class AuthorTest
     private static final long FAKE_ID_0 = 2_000_100;
     private static final long FAKE_ID_1 = 2_000_200;
     private static final long FAKE_ID_2 = 2_000_300;
+    private static final long FAKE_ID_3 = 2_000_400;
 
     /**
      * Reminder: The base test {@code assertEquals(pAuthor, author)}
@@ -61,7 +64,8 @@ public class AuthorTest
      */
     @Test
     public void parcelling() {
-        final Author author = Author.from(ISAAC_ASIMOV);
+        final Author author = Author.from(PAUL_FRENCH);
+        author.setRealAuthor(Author.from(ISAAC_ASIMOV));
 
         final Parcel parcel = Parcel.obtain();
         author.writeToParcel(parcel, author.describeContents());
@@ -75,6 +79,7 @@ public class AuthorTest
         assertEquals(pAuthor.getGivenNames(), author.getGivenNames());
         assertEquals(pAuthor.isComplete(), author.isComplete());
         assertEquals(pAuthor.getType(), author.getType());
+        assertEquals(pAuthor.getRealAuthor(), author.getRealAuthor());
     }
 
     @Test
@@ -110,11 +115,22 @@ public class AuthorTest
         list.add(author);
 
         // keep, position 1
+        final Author author2 = Author.from(PAUL_FRENCH);
+        author2.setId(FAKE_ID_3);
+        author2.setRealAuthor(author);
+        authorDao.fixId(context, author2, false, bookLocale);
+        long id1 = author2.getId();
+        if (id1 == 0) {
+            id1 = authorDao.insert(context, author2, bookLocale);
+        }
+        list.add(author2);
+
+        // keep, position 2
         author = Author.from(PHILIP_JOSE_FARMER);
         authorDao.fixId(context, author, false, bookLocale);
-        long id1 = author.getId();
-        if (id1 == 0) {
-            id1 = authorDao.insert(context, author, bookLocale);
+        long id2 = author.getId();
+        if (id2 == 0) {
+            id2 = authorDao.insert(context, author, bookLocale);
         }
         author.setId(FAKE_ID_1);
         list.add(author);
@@ -129,12 +145,12 @@ public class AuthorTest
         author.setId(FAKE_ID_1);
         list.add(author);
 
-        // keep, position 2
+        // keep, position 3
         author = Author.from(PHILIP_DICK);
         authorDao.fixId(context, author, false, bookLocale);
-        long id2 = author.getId();
-        if (id2 == 0) {
-            id2 = authorDao.insert(context, author, bookLocale);
+        long id3 = author.getId();
+        if (id3 == 0) {
+            id3 = authorDao.insert(context, author, bookLocale);
         }
         author.setId(FAKE_ID_2);
         author.setType(Author.TYPE_WRITER);
@@ -146,7 +162,7 @@ public class AuthorTest
         author.setType(Author.TYPE_UNKNOWN);
         list.add(author);
 
-        // discard, but add type to existing author in position 2
+        // discard, but add type to existing author in position 3
         author = Author.from(PHILIP_DICK);
         author.setId(FAKE_ID_2);
         author.setType(Author.TYPE_CONTRIBUTOR);
@@ -155,11 +171,12 @@ public class AuthorTest
         final boolean modified = authorDao.pruneList(context, list, false, bookLocale);
 
         assertTrue(list.toString(), modified);
-        assertEquals(list.toString(), 3, list.size());
+        assertEquals(list.toString(), 4, list.size());
 
         assertTrue(id0 > 0);
         assertTrue(id1 > 0);
         assertTrue(id2 > 0);
+        assertTrue(id3 > 0);
 
         author = list.get(0);
         assertEquals(id0, author.getId());
@@ -170,12 +187,21 @@ public class AuthorTest
 
         author = list.get(1);
         assertEquals(id1, author.getId());
-        assertEquals("Farmer", author.getFamilyName());
-        assertEquals("Philip Jose", author.getGivenNames());
+        assertEquals("French", author.getFamilyName());
+        assertEquals("Paul", author.getGivenNames());
+        assertNotNull(author.getRealAuthor());
+        assertEquals("Asimov", author.getRealAuthor().getFamilyName());
+        assertEquals("Isaac", author.getRealAuthor().getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, author.getType());
 
         author = list.get(2);
         assertEquals(id2, author.getId());
+        assertEquals("Farmer", author.getFamilyName());
+        assertEquals("Philip Jose", author.getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, author.getType());
+
+        author = list.get(3);
+        assertEquals(id3, author.getId());
         assertEquals("Dick", author.getFamilyName());
         assertEquals("Philip K.", author.getGivenNames());
         assertEquals(Author.TYPE_WRITER | Author.TYPE_CONTRIBUTOR, author.getType());
