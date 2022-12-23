@@ -31,10 +31,8 @@ import androidx.annotation.WorkerThread;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
-
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -52,6 +50,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 /**
  * Current hardcoded to only search comics; could be extended to also search generic books.
@@ -72,6 +74,9 @@ public class LastDodoSearchEngine
      * Param 2: 147==comics.
      */
     private static final String BY_ISBN = "/nl/areas/search?q=%1$s&type_id=147";
+    private static final Pattern REAL_NAME_BRACKET_ALIAS_BRACKET =
+            Pattern.compile("(.*)\\(([a-z].*)\\)",
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -125,7 +130,6 @@ public class LastDodoSearchEngine
         }
         return bookData;
     }
-
 
     /**
      * A multi result page was returned. Try and parse it.
@@ -338,7 +342,6 @@ public class LastDodoSearchEngine
         }
 
 
-
         if (isCancelled()) {
             return;
         }
@@ -429,6 +432,62 @@ public class LastDodoSearchEngine
         return Optional.empty();
     }
 
+    /**
+     * Parse a name with potential pseudonyms.
+     * <p>
+     * 1. "Robert Velter (Rob-vel,Bozz)"
+     * 2. "Robert Velter (Rob Vel)"
+     * 3. "Ange (1/2)"
+     * 4. "Don (*3)"
+     * <p>
+     * 1+2: The () part are pseudonyms.
+     * 3: there are 2 people with the same name "Ange"; 1/2 and 2/2 makes the distinction.
+     * 4: presumably there are 3 Don's?
+     * <p>
+     * Assumption is that if the part between brackets starts with a alpha char,
+     * then those are pseudonyms, while the part before the brackets is the real name.
+     * This is handled here.
+     * <p>
+     * In the case of a non-alpha, we will take the entire "(...)" part as the last name.
+     * This is obviously not the best, but backwards compatible with what we did before.
+     *
+     * @param name to parse
+     *
+     * @return an array with [0] being the real-author-name;
+     * and optional [1..] with the pseudonyms found.
+     * The array is guaranteed to be length >= 1.
+     */
+    @VisibleForTesting
+    @NonNull
+    public static String[] parseAuthorNames(@NonNull final String name) {
+        String uName = ParseUtils.unEscape(name);
+        final Matcher brackets = REAL_NAME_BRACKET_ALIAS_BRACKET.matcher(uName);
+        if (brackets.find()) {
+            String group = brackets.group(1);
+            if (group != null) {
+                uName = group.strip();
+            }
+            int len = 1;
+            String[] pseudonyms = null;
+
+            if (brackets.groupCount() > 1) {
+                group = brackets.group(2);
+                if (group != null) {
+                    pseudonyms = group.strip().split(",");
+                    len += pseudonyms.length;
+                }
+            }
+
+            final String[] names = new String[len];
+            names[0] = uName;
+            if (pseudonyms != null) {
+                System.arraycopy(pseudonyms, 0, names, 1, len - 1);
+            }
+            return names;
+        } else {
+            return new String[]{uName};
+        }
+    }
 
     /**
      * Found an Author.
@@ -440,8 +499,16 @@ public class LastDodoSearchEngine
                                @Author.Type final int currentAuthorType) {
 
         for (final Element a : td.select("a")) {
-            final String name = a.text();
-            final Author currentAuthor = Author.from(name);
+            //URGENT: handle the pseudonyms.
+            // The problem is that the website lists the real-author name
+            // as the actual book author instead of the pseudonym as stated ON the book.
+            // e.g. consider a book "Robbedoes; by Rob-Vel"
+            // will have the author as "Velter, Robert (Rob-Vel,Bozz)"
+            // and we are simply not able to determine what to use.
+            // i.e. we should use "Rob-Vel" as the author,
+            // and set "Robert Velter" as the realAuthor.
+            final String names = a.text();
+            final Author currentAuthor = Author.from(names);
             boolean add = true;
             // check if already present
             for (final Author author : authorList) {

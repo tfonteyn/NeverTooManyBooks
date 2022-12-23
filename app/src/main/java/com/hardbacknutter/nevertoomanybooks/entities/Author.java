@@ -196,10 +196,6 @@ public class Author
             Pattern.compile("jr\\.|jr|junior|sr\\.|sr|senior|II|III",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
-    private static final Pattern REAL_NAME_BRACKET_ALIAS_BRACKET =
-            Pattern.compile("(.*)\\([a-z].*\\)",
-                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-
     /*
      * NEWTHINGS: author type: add the label for the type
      * This is a LinkedHashMap, so the order below is the order they will show up on the screen.
@@ -350,28 +346,6 @@ public class Author
     @NonNull
     public static Author from(@NonNull final String name) {
         String uName = ParseUtils.unEscape(name);
-
-        // 1. "Robert Velter (Rob-vel,Bozz)"
-        // 2. "Robert Velter (Rob Vel)"
-        // 3. "Ange (1/2)"
-        // 4. "Don (*3)"
-        // above examples from lastdodo...
-        //
-        // 1+2: The () part are pseudonyms.
-        // 3: there are 2 people with the same name "Ange"; 1/2 and 2/2 makes the distinction.
-        // 4: presumably there are 3 Don's?
-        //
-        // Assumption is that if the part between brackets starts with a alpha char,
-        // then we drop the () part (as we don't support pseudonyms for now)
-        // and decode the part before as a normal name.
-        // This is handled here.
-        // In the case of a non-alpha, we will take the entire "(...)" part as the last name.
-        // This is obviously not the best, but backwards compatible with what we did before.
-        final Matcher brackets = REAL_NAME_BRACKET_ALIAS_BRACKET.matcher(uName);
-        if (brackets.find()) {
-            //noinspection ConstantConditions
-            uName = brackets.group(1).strip();
-        }
 
         // take into account that there can be escaped commas....
         // do we really need this except when reading from a backup ?
