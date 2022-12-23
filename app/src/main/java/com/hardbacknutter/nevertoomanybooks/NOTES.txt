@@ -45,3 +45,37 @@ REMOVED:
 - all CSV and XML exports are removed. Use JSON instead.
 - TAR import is removed. Repack any tar archive as a zip and import the zip.
 
+----------------------------------------------------------------------------------------------------
+Pseudonyms:
+
+LastDodo:
+// The problem is that the website lists the real-author name
+// as the actual book author instead of the pseudonym as stated ON the book.
+// e.g. consider a book "Robbedoes; by Rob-Vel"
+// will have the author as "Velter, Robert (Rob-Vel,Bozz)"
+// and we are simply not able to determine what to use.
+// i.e. we should use "Rob-Vel" as the author,
+// and set "Robert Velter" as the realAuthor.
+
+StripInfo:
+// The real-name of a pseudonym is not listed on a book page at all.
+// Alternative: lookup Author names individually;
+// then on the findings, check the header "Auteurs, Exacte resultaten",
+   and follow the link to the author page
+// or if there was only one, we'll end up on the author page directly.
+
+ISFDB:
+// While reading the book page, we could follow the author url,
+// and from there check the header for "Used As Alternate Name By"
+// Problem: if it's the real-author anyhow, then loading
+// that url can become very slow if the author has many books.
+// Alternative: lookup Author names individually.
+
+Amazon
+// not available
+
+Google books
+// not available
+
+openlibrary
+// no structured data

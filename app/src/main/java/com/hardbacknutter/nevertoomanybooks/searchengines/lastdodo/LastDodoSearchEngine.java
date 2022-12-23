@@ -499,14 +499,6 @@ public class LastDodoSearchEngine
                                @Author.Type final int currentAuthorType) {
 
         for (final Element a : td.select("a")) {
-            //URGENT: handle the pseudonyms.
-            // The problem is that the website lists the real-author name
-            // as the actual book author instead of the pseudonym as stated ON the book.
-            // e.g. consider a book "Robbedoes; by Rob-Vel"
-            // will have the author as "Velter, Robert (Rob-Vel,Bozz)"
-            // and we are simply not able to determine what to use.
-            // i.e. we should use "Rob-Vel" as the author,
-            // and set "Robert Velter" as the realAuthor.
             final String names = a.text();
             final Author currentAuthor = Author.from(names);
             boolean add = true;
