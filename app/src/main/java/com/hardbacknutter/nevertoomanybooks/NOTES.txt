@@ -32,11 +32,11 @@ NEW:
 - new scanner code from 3.4 is considered stable.
 - update-from-internet is now available for a number of date based booklist groups
 - booklist groups for author and publisher 1st character
-- author pseudonym support
+- limited author pseudonym support. The user can manage/display pseudonyms,
+  but (most of) the search-engines cannot detect them automatically yet.
 
 FIXES:
-- merging author etc... is now consistent in not only moving books,
-  but also updating the target object itself
+- merging author etc... updated and made more robust
 - fixed filter name mismatches.
 - string duplicates cleanup effort.
 - potential memory leaks fixed: register/unregister calls matched
