@@ -24,7 +24,7 @@ plugins {
     id 'org.jetbrains.kotlin.android' version '1.7.10' apply false
     // https://github.com/mannodermaus/android-junit5
     // https://github.com/mannodermaus/android-junit5/issues/290
-//    id 'de.mannodermaus.android-junit5' version '1.8.2.1' apply false
+    id 'de.mannodermaus.android-junit5' version '1.8.2.1' apply false
 }
 
 task clean(type: Delete) {

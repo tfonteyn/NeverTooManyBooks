@@ -26,7 +26,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     // https://github.com/mannodermaus/android-junit5/issues/290
-//    id("de.mannodermaus.android-junit5")
+    id("de.mannodermaus.android-junit5")
 }
 
 /*
