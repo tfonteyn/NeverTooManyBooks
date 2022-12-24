@@ -22,9 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.goodreads;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -47,16 +44,6 @@ public class GoodreadsSearchEngine
     @Keep
     public GoodreadsSearchEngine(@NonNull final SearchEngineConfig config) {
         super(config);
-    }
-
-    public static void createConfig() {
-        new SearchEngineConfig.Builder(EngineId.Goodreads,
-                                       "https://www.goodreads.com")
-
-                .setDomainKey(DBKey.SID_GOODREADS_BOOK)
-                .setDomainViewId(R.id.site_goodreads)
-                .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS)
-                .build();
     }
 
     @NonNull
