@@ -1633,7 +1633,7 @@
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Wishlist mapped bookshelf</string>
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>
 
-    <string name="lbl_author_pseudonym">This author is a pseudonym for:</string>
+    <string name="lbl_author_pseudonym">This is a pen-name of:</string>
     <string name="err_real_author_must_be_valid">Must be blank or an existing Author</string>
     <string name="confirm_create_real_author">“%1$s” does not exist yet. Should it be created?</string>
 
