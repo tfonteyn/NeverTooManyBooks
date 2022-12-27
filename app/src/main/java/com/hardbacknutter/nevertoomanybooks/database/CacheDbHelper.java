@@ -36,50 +36,29 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 /**
- * {@link SQLiteOpenHelper}  for the covers database.
+ * {@link SQLiteOpenHelper} for the cache database.
  * Uses the application context.
  */
-public class CoversDbHelper
+public class CacheDbHelper
         extends SQLiteOpenHelper {
 
     /* Domain definitions. */
     public static final String PK_ID = "_id";
-    public static final String CACHE_ID = "key";
-    public static final String BLOB_IMAGE = "image";
-    public static final String LAST_UPDATED__UTC = "last_update_date";
-
+    public static final String IMAGE_ID = "key";
+    public static final String IMAGE_BLOB = "image";
+    public static final String IMAGE_LAST_UPDATED__UTC = "last_update_date";
+    /** pre-scaled images. */
+    public static final TableDefinition TBL_IMAGE;
     /** DB name. */
-    private static final String DATABASE_NAME = "covers.db";
-
-    private static final int DATABASE_VERSION = 2;
-
+    private static final String DATABASE_NAME = "cache.db";
+    private static final int DATABASE_VERSION = 1;
+    private static final Domain DOM_PK_ID;
     /** {@link #TBL_IMAGE}. */
-    private static final Domain DOM_PK_ID =
-            new Domain.Builder(PK_ID, SqLiteDataType.Integer)
-                    .primaryKey()
-                    .build();
-
-    private static final Domain DOM_CACHE_ID =
-            new Domain.Builder(CACHE_ID, SqLiteDataType.Text)
-                    .notNull()
-                    .build();
-
-    private static final Domain DOM_IMAGE =
-            new Domain.Builder(BLOB_IMAGE, SqLiteDataType.Blob)
-                    .notNull()
-                    .build();
-
-    private static final Domain DOM_UTC_DATETIME =
-            new Domain.Builder(LAST_UPDATED__UTC, SqLiteDataType.DateTime)
-                    .notNull()
-                    .withDefaultCurrentTimeStamp()
-                    .build();
-
-    /** table definitions. */
-    public static final TableDefinition TBL_IMAGE = new TableDefinition("image", "image")
-            .addDomains(DOM_PK_ID, DOM_IMAGE, DOM_UTC_DATETIME, DOM_CACHE_ID)
-            .setPrimaryKey(DOM_PK_ID);
-
+    private static final Domain DOM_IMAGE_ID;
+    /** {@link #TBL_IMAGE}. */
+    private static final Domain DOM_IMAGE_BLOB;
+    /** {@link #TBL_IMAGE}. */
+    private static final Domain DOM_IMAGE_LAST_UPDATED__UTC;
     /** Readers/Writer lock for <strong>this</strong> database. */
     private static final Synchronizer SYNCHRONIZER = new Synchronizer();
 
@@ -87,12 +66,39 @@ public class CoversDbHelper
     private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
             (db, d, et, q) -> new SynchronizedCursor(d, et, q, SYNCHRONIZER);
 
-    /* table indexes. */
     static {
-        TBL_IMAGE.addIndex("id", true, DOM_PK_ID)
-                 .addIndex(CACHE_ID, true, DOM_CACHE_ID)
-                 .addIndex(CACHE_ID + "_" + LAST_UPDATED__UTC,
-                           true, DOM_CACHE_ID, DOM_UTC_DATETIME);
+        DOM_PK_ID =
+                new Domain.Builder(PK_ID, SqLiteDataType.Integer)
+                        .primaryKey()
+                        .build();
+
+        DOM_IMAGE_ID =
+                new Domain.Builder(IMAGE_ID, SqLiteDataType.Text)
+                        .notNull()
+                        .build();
+
+        DOM_IMAGE_BLOB =
+                new Domain.Builder(IMAGE_BLOB, SqLiteDataType.Blob)
+                        .notNull()
+                        .build();
+
+        DOM_IMAGE_LAST_UPDATED__UTC =
+                new Domain.Builder(IMAGE_LAST_UPDATED__UTC, SqLiteDataType.DateTime)
+                        .notNull()
+                        .withDefaultCurrentTimeStamp()
+                        .build();
+
+        TBL_IMAGE =
+                new TableDefinition("image", "image")
+                        .addDomains(DOM_PK_ID,
+                                    DOM_IMAGE_BLOB,
+                                    DOM_IMAGE_LAST_UPDATED__UTC,
+                                    DOM_IMAGE_ID)
+                        .setPrimaryKey(DOM_PK_ID)
+                        .addIndex("id", true, DOM_PK_ID)
+                        .addIndex(IMAGE_ID, true, DOM_IMAGE_ID)
+                        .addIndex(IMAGE_ID + "_" + IMAGE_LAST_UPDATED__UTC,
+                                  true, DOM_IMAGE_ID, DOM_IMAGE_LAST_UPDATED__UTC);
     }
 
     /** DO NOT USE INSIDE THIS CLASS! ONLY FOR USE BY CLIENTS VIA {@link #getDb()}. */
@@ -104,7 +110,7 @@ public class CoversDbHelper
      *
      * @param context Current context
      */
-    public CoversDbHelper(@NonNull final Context context) {
+    public CacheDbHelper(@NonNull final Context context) {
         super(context.getApplicationContext(), DATABASE_NAME, CURSOR_FACTORY, DATABASE_VERSION);
     }
 

@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
  *  <li>{@link #DOM_STRIP_INFO_BE_LAST_SYNC__UTC}</li>
  * </ul>
  * <ul>Covers cache database:
- *   <li>{@link CoversDbHelper}#DATETIME_LAST_UPDATED__UTC}</li>
+ *   <li>{@link CacheDbHelper}#IMAGE_LAST_UPDATED__UTC}</li>
  * </ul>
  * <p>
  * All others, are considered USER local time zone.

@@ -37,7 +37,7 @@ import java.util.Locale;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
-import com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper;
+import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -114,7 +114,7 @@ public final class ServiceLocator {
 
     /** NOT an interface. Cannot be injected. */
     @Nullable
-    private CoversDbHelper coversDbHelper;
+    private CacheDbHelper cacheDbHelper;
 
     /** NOT an interface. Cannot be injected. The underlying {@link StyleDao} can be injected. */
     @Nullable
@@ -307,8 +307,8 @@ public final class ServiceLocator {
      */
     @VisibleForTesting
     void recreate() {
-        if (coversDbHelper != null) {
-            coversDbHelper.close();
+        if (cacheDbHelper != null) {
+            cacheDbHelper.close();
         }
         if (dbHelper != null) {
             dbHelper.close();
@@ -436,20 +436,20 @@ public final class ServiceLocator {
     }
 
     /**
-     * Main entry point for clients to get the covers database.
+     * Main entry point for clients to get the cache database.
      *
      * @return the database instance
      *
      * @see #getDb()
      */
     @NonNull
-    public SynchronizedDb getCoversDb() {
+    public SynchronizedDb getCacheDb() {
         synchronized (this) {
-            if (coversDbHelper == null) {
-                coversDbHelper = new CoversDbHelper(appContext);
+            if (cacheDbHelper == null) {
+                cacheDbHelper = new CacheDbHelper(appContext);
             }
         }
-        return coversDbHelper.getDb();
+        return cacheDbHelper.getDb();
     }
 
     public boolean isCollationCaseSensitive() {

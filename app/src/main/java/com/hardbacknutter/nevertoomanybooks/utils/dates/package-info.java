@@ -48,7 +48,7 @@
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#DATE_ADDED__UTC}
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#DATE_LAST_UPDATED__UTC}
  * and
- * {@link com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper}#CKEY_UTC_DATETIME
+ * {@link com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper}#IMAGE_LAST_UPDATED__UTC
  * <p>
  * Columns of type
  * {@link  com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType#Date}

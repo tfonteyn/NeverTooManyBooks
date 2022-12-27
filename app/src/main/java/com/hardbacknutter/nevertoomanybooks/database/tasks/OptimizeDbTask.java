@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -77,10 +76,8 @@ public class OptimizeDbTask
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         serviceLocator.getDb().optimize();
+        serviceLocator.getCacheDb().optimize();
 
-        if (ImageUtils.isImageCachingEnabled()) {
-            serviceLocator.getCoversDb().optimize();
-        }
         return true;
     }
 }
