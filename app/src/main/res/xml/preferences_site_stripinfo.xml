@@ -34,6 +34,14 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_search_prefer_isbn10" />
 
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_baseline_cloud_download_24"
+            android:key="stripinfo.resolve.authors.bedetheque"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_search_resolve_authors_bedetheque" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

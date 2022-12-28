@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -63,6 +65,8 @@ public class LastDodoSearchEngine
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByExternalId,
                    SearchEngine.ViewBookByExternalId {
+
+    private static final String PK_USE_BEDETHEQUE = "lastdodo.resolve.authors.bedetheque";
 
     /**
      * Param 1: external book ID; really a 'long'.
@@ -327,11 +331,20 @@ public class LastDodoSearchEngine
 
         // store accumulated ArrayList's *after* we parsed the TOC
         if (!authorList.isEmpty()) {
+            if (PreferenceManager.getDefaultSharedPreferences(context)
+                                 .getBoolean(PK_USE_BEDETHEQUE, false)) {
+                final AuthorResolver resolver = new AuthorResolver(context, this);
+                for (final Author author : authorList) {
+                    resolver.resolve(context, author);
+                }
+            }
             bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
         }
+
         if (!seriesList.isEmpty()) {
             bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
         }
+
         if (!publisherList.isEmpty()) {
             bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
         }

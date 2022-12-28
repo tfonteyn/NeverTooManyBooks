@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,11 +44,6 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
-import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -65,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.BookshelfMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.CollectionFormParser;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
@@ -73,6 +70,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.select.Elements;
 
 /**
  * <a href="https://stripinfo.be/">https://stripinfo.be/</a>
@@ -93,6 +95,9 @@ public class StripInfoSearchEngine
 
     /** Log tag. */
     private static final String TAG = "StripInfoSearchEngine";
+
+    private static final String PK_USE_BEDETHEQUE = "stripinfo.resolve.authors.bedetheque";
+
     /** Color string values as used on the site. Complete 2019-10-29. */
     private static final String COLOR_STRINGS = "Kleur|Zwart/wit|Zwart/wit met steunkleur";
     /** Param 1: external book ID; really a 'long'. */
@@ -492,12 +497,22 @@ public class StripInfoSearchEngine
         });
 
         // store accumulated ArrayList's *after* we parsed the TOC
+
         if (!authorList.isEmpty()) {
+            if (PreferenceManager.getDefaultSharedPreferences(context)
+                                 .getBoolean(PK_USE_BEDETHEQUE, false)) {
+                final AuthorResolver resolver = new AuthorResolver(context, this);
+                for (final Author author : authorList) {
+                    resolver.resolve(context, author);
+                }
+            }
             bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
         }
+
         if (!seriesList.isEmpty()) {
             bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
         }
+
         if (!publisherList.isEmpty()) {
             bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
         }

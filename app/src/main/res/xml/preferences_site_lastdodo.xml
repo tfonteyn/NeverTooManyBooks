@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -33,6 +33,14 @@
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_search_prefer_isbn10" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_baseline_cloud_download_24"
+            android:key="lastdodo.resolve.authors.bedetheque"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_search_resolve_authors_bedetheque" />
 
     </PreferenceCategory>
 
