@@ -272,7 +272,7 @@ public enum EngineId
                        .build();
         }
 
-        if (BuildConfig.ENABLE_STRIP_INFO || BuildConfig.ENABLE_LAST_DODO) {
+        if (BuildConfig.ENABLE_BEDETHEQUE) {
             Bedetheque.createConfiguration("https://www.bedetheque.com")
                       .setCountry("FR", "fr")
 
