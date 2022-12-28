@@ -89,11 +89,10 @@ android {
         // uses old google api which theoretically can be disabled at any time by google
         buildConfigField("boolean", "ENABLE_GOOGLE_BOOKS", "true")
 
-        // Dutch.
+        // Dutch comics.
         buildConfigField("boolean", "ENABLE_STRIP_INFO", "true")
-        // Dutch.
+        // Dutch comics.
         buildConfigField("boolean", "ENABLE_LAST_DODO", "true")
-
 
         buildConfigField("boolean", "ENABLE_LIBRARY_THING_ALT_ED", "true")
     }
@@ -118,6 +117,8 @@ android {
 
             // under development
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "false")
+            // under development
+            buildConfigField("boolean", "ENABLE_BEDETHEQUE", "false")
             // under development
             buildConfigField("boolean", "ENABLE_KB_NL", "false")
             // under development
@@ -150,6 +151,8 @@ android {
 
             // under development
             buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "true")
+            // under development
+            buildConfigField("boolean", "ENABLE_BEDETHEQUE", "true")
             // under development; adapting to the new site format.
             // 2021-04: the site has changed technology and our engine no longer works.
             buildConfigField("boolean", "ENABLE_KB_NL", "true")

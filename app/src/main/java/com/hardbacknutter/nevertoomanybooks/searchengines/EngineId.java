@@ -299,6 +299,8 @@ public enum EngineId
         // Dutch websites:
         final boolean enableIfDutch = ServiceLocator.getInstance().getLanguages()
                                                     .isLang(context, "nld");
+        final boolean enableIfFrench = ServiceLocator.getInstance().getLanguages()
+                                                     .isLang(context, "fra");
 
         //NEWTHINGS: add new search engine: add to the 3 lists as needed.
 
@@ -330,6 +332,9 @@ public enum EngineId
                 }
                 if (BuildConfig.ENABLE_LAST_DODO) {
                     type.addSite(LastDodoNl, enableIfDutch);
+                }
+                if (BuildConfig.ENABLE_BEDETHEQUE) {
+                    type.addSite(Bedetheque, enableIfFrench);
                 }
                 if (BuildConfig.ENABLE_KB_NL) {
                     type.addSite(KbNl, enableIfDutch);
