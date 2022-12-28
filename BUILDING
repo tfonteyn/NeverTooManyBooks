@@ -1,4 +1,5 @@
-* Use Android Studio Electric Eel or whichever later non-broken version of Studio that works at all...
+* Use Android Studio Flamingo or whichever later non-broken version
+  of Studio that works at all...
 * Use Java 17 to run Studio, and set Gradle to the same.
 * Coding is in Java 11 with desugaring as per Android needs.
 
