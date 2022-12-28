@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 abstract class BaseDaoImpl {
 
     /**
-     * In addition to SQLite's default BINARY collator (others: NOCASE and RTRIM),
+     * In addition to the SQLite default BINARY collator (others: NOCASE and RTRIM),
      * Android supplies two more.
      * LOCALIZED: using the system's current Locale,
      * UNICODE  : Unicode Collation Algorithm and not tailored to the current Locale.
