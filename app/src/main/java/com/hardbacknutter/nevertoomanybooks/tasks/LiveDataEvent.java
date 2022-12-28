@@ -31,7 +31,7 @@ import java.util.Optional;
  * See <a href="https://medium.com/androiddevelopers/ac2622673150">this Medium post</a>
  * <p>
  * <a href="https://medium.com/androiddevelopers/viewmodel-one-off-event-antipatterns-16a1da869b95">
- * *     ViewModel: One-off event antipatterns</a>
+ * *     ViewModel: One-off event anti-patterns</a>
  * <p>
  * <a href = "https://developer.android.com/topic/architecture/ui-layer/events#consuming-trigger-updates">
  * consuming-trigger-updates</a>
