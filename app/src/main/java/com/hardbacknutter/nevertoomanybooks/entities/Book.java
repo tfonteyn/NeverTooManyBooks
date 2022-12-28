@@ -1122,7 +1122,7 @@ public class Book
         final Locale bookLocale = getLocale(context);
         final ArrayList<Author> list = getParcelableArrayList(BKEY_AUTHOR_LIST);
         for (final Author author : list) {
-            authorDao.refresh(context, author, bookLocale);
+            authorDao.refresh(context, author, true, bookLocale);
         }
     }
 
@@ -1148,7 +1148,7 @@ public class Book
         final Locale bookLocale = getLocale(context);
         final ArrayList<Series> list = getParcelableArrayList(BKEY_SERIES_LIST);
         for (final Series series : list) {
-            seriesDao.refresh(context, series, bookLocale);
+            seriesDao.refresh(context, series, true, bookLocale);
         }
     }
 
@@ -1174,7 +1174,7 @@ public class Book
         final Locale bookLocale = getLocale(context);
         final ArrayList<Publisher> list = getParcelableArrayList(BKEY_PUBLISHER_LIST);
         for (final Publisher publisher : list) {
-            publisherDao.refresh(context, publisher, bookLocale);
+            publisherDao.refresh(context, publisher, true, bookLocale);
         }
     }
 
