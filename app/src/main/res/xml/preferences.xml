@@ -26,6 +26,7 @@
      - Actual preference elements <strong>may</strong> need to be mirrored in "Prefs.java"
      - defaultValue attribute must match with wherever the underlying preference is used.
  -->
+<!--suppress LongLine -->
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"

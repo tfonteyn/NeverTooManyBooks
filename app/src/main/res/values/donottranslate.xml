@@ -21,6 +21,7 @@
 
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
 
+<!--suppress LongLine -->
 <resources>
     <!-- ####################################################################################### -->
     <!-- == No translation required == -->

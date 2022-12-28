@@ -120,13 +120,15 @@
         <item name="endIconDrawable">@drawable/ic_baseline_edit_24</item>
     </style>
 
-    <!-- A TextInputLayout style specific for fields where the inner field is a (Material)AutoCompleteTextView.
+    <!-- A TextInputLayout style specific for fields where the inner field
+         is a (Material)AutoCompleteTextView.
 
       Reminder:
         AutoCompleteTextView is automatically replaced with MaterialAutoCompleteTextView
         and setOnItemSelectedListener() DOES NOT WORK with AutoCompleteTextView.
         Use setOnItemClickListener() instead!
-        Good read (but fails to mention setOnItemClickListener, and talks about text-change listener...)
+        Good read (but fails to mention setOnItemClickListener, and talks about
+        text-change listener...)
         https://blog.usejournal.com/there-is-no-material-design-spinner-for-android-3261b7c77da8
     -->
     <style name="TIL.AutoCompleteTextView"

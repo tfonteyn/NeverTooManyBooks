@@ -40,9 +40,9 @@
     <dimen name="floating_dialogs_cover_browser_width">100dp</dimen>
 
     <!--
-        Copy of "material:abc_alert_dialog_button_bar_height" which is used as minHeight for a button.
-        This is a work around for what seems to be a bug where the buttons end up with a 0-height
-        when their height is set to WRAP_CONTENT.
+        Copy of "material:abc_alert_dialog_button_bar_height" which is used as minHeight
+        for a button. This is a work around for what seems to be a bug where the buttons
+        end up with a 0-height when their height is set to WRAP_CONTENT.
         Instead we set the button height to this value.
     -->
     <dimen name="floating_dialogs_button_height">48dp</dimen>

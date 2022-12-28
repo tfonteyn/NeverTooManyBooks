@@ -97,7 +97,8 @@
     <dimen name="cover_browser_preview_height">250dp</dimen>
     <dimen name="cover_browser_preview_width">160dp</dimen>
 
-    <!-- BoB screen. We use a square space for the image so both portrait/landscape cover images work out.
+    <!-- BoB screen. We use a square space for the image so both
+         portrait/landscape cover images work out.
          The sizes are calculated at {0, 2, 3, 5} * 40dp
          Width is set at a ratio 0.60 (common for paperbacks)
     -->

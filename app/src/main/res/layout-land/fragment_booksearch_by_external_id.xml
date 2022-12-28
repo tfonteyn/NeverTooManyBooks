@@ -59,8 +59,9 @@
                 optional: external id KEY add a RadioButton widget
                 and add the name to the ConstraintRadioGroup#constraint_referenced_ids.
 
-             Warning: if we have more then 4 radio buttons visible we should split the layout into 2 columns
-             of radio buttons to avoid needing to scroll on small/land screens.
+             Warning: if we have more then 4 radio buttons visible we should split the
+             layout into 2 columns of radio buttons to avoid needing to scroll
+             on small/land screens.
 
              For now, Amazon search is disabled.
              -->

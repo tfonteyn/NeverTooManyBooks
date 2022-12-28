@@ -101,7 +101,7 @@ public class Languages {
      * @param iso3    the ISO code
      *
      * @return the display name for the language,
-     *         or the input string itself if it was an invalid ISO code
+     * or the input string itself if it was an invalid ISO code
      */
     @NonNull
     public String getDisplayNameFromISO3(@NonNull final Context context,
@@ -179,7 +179,8 @@ public class Languages {
      * <strong>Note:</strong> check the javadoc on {@link Locale#getISOLanguages()} for caveats.
      *
      * @param userLocale Current Locale
-     * @param iso3       ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
+     * @param iso3       ISO 639-2 (3-char) language code
+     *                   (either bibliographic or terminology coded)
      *
      * @return a language code that can be used with {@code new Locale(x)},
      * or the incoming string if conversion failed.

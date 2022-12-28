@@ -108,7 +108,8 @@
     <dimen name="field_margin_start">4dp</dimen>
     <!-- End margin applied to a field. Only used where deemed necessary. -->
     <dimen name="field_margin_end">4dp</dimen>
-    <!-- Start margin (and occasionally end) applied to the 2nd, 3rd.. field on a line of fields. -->
+    <!-- Start margin (and occasionally end) applied to the
+         2nd, 3rd.. field on a line of fields. -->
     <dimen name="field_margin_inline">6dp</dimen>
 
     <!-- variation on field_margin_end; see individual usage. -->

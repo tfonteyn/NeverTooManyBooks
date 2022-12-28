@@ -18,6 +18,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
+<!--suppress LongLine -->
 <resources>
     <!-- Main FAB; contains an icon, no text-->
     <style name="Widget.App.FloatingActionButton"
@@ -43,43 +44,52 @@
         <item name="android:layout_gravity">start</item>
     </style>
 
-    <style name="Widget.App.TabLayout" parent="Widget.Material3.TabLayout">
+    <style name="Widget.App.TabLayout"
+           parent="Widget.Material3.TabLayout">
         <item name="tabMode">scrollable</item>
         <!-- Both indicator and text color are set to colorSecondary. -->
         <item name="tabIndicatorColor">?attr/colorSecondary</item>
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.TabLayout</item>
     </style>
 
-    <style name="Widget.App.ChipGroup" parent="Widget.Material3.ChipGroup">
+    <style name="Widget.App.ChipGroup"
+           parent="Widget.Material3.ChipGroup">
         <!-- the default was 8dp. -->
         <item name="chipSpacingVertical">4dp</item>
     </style>
 
-    <style name="Widget.App.Snackbar.TextView" parent="Widget.Material3.Snackbar.TextView">
+    <style name="Widget.App.Snackbar.TextView"
+           parent="Widget.Material3.Snackbar.TextView">
         <item name="android:maxLines">2</item>
     </style>
 
-    <style name="Widget.App.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
+    <style name="Widget.App.CheckBox"
+           parent="Widget.Material3.CompoundButton.CheckBox">
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.CheckBox</item>
     </style>
 
-    <style name="Widget.App.RadioButton" parent="Widget.Material3.CompoundButton.RadioButton">
+    <style name="Widget.App.RadioButton"
+           parent="Widget.Material3.CompoundButton.RadioButton">
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.RadioButton</item>
     </style>
 
-    <style name="Widget.App.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+    <style name="Widget.App.Switch"
+           parent="Widget.Material3.CompoundButton.MaterialSwitch">
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.Switch</item>
     </style>
 
-    <style name="Widget.App.SwitchPreference" parent="Preference.SwitchPreference.Material">
+    <style name="Widget.App.SwitchPreference"
+           parent="Preference.SwitchPreference.Material">
         <item name="android:widgetLayout">@layout/widget_prefs_switch</item>
     </style>
 
-    <style name="Widget.App.LinearProgressIndicator" parent="Widget.Material3.LinearProgressIndicator">
+    <style name="Widget.App.LinearProgressIndicator"
+           parent="Widget.Material3.LinearProgressIndicator">
         <item name="android:padding">@dimen/progress_padding</item>
     </style>
 
-    <style name="Widget.App.CircularProgressIndicator" parent="Widget.Material3.CircularProgressIndicator">
+    <style name="Widget.App.CircularProgressIndicator"
+           parent="Widget.Material3.CircularProgressIndicator">
         <item name="android:clickable">true</item>
         <item name="android:alpha">0.8</item>
         <item name="android:elevation">@dimen/progress_z</item>
@@ -112,7 +122,8 @@
     <style name="ThemeOverlay.App.MaterialAlertDialog"
            parent="ThemeOverlay.Material3.MaterialAlertDialog">
 
-        <!-- We MUST set the styles separately! Just setting the common buttonBarButtonStyle is NOT enough -->
+        <!-- We MUST set the styles separately!
+             Just setting the common buttonBarButtonStyle is NOT enough -->
         <item name="buttonBarButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
         <item name="buttonBarPositiveButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
         <item name="buttonBarNegativeButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
@@ -122,7 +133,8 @@
     <style name="ThemeOverlay.App.MaterialCalendarTheme"
            parent="@style/ThemeOverlay.Material3.MaterialCalendar">
 
-        <!-- We MUST set the styles separately! Just setting the common buttonBarButtonStyle is NOT enough -->
+        <!-- We MUST set the styles separately!
+             Just setting the common buttonBarButtonStyle is NOT enough -->
         <item name="buttonBarButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
         <item name="buttonBarPositiveButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
         <item name="buttonBarNegativeButtonStyle">@style/ThemeOverlay.DialogButtonBarButtons</item>
@@ -140,7 +152,8 @@
         </item>
     </style>
 
-    <!-- We want the full screen calendar widget to use the same header style (toolbar) as all edit-screens. -->
+    <!-- We want the full screen calendar widget to use the same header style (toolbar)
+         as all edit-screens. -->
     <style name="ThemeOverlay.App.MaterialCalendarFullscreenTheme.MaterialCalendarHeaderLayout"
            parent="Widget.Material3.MaterialCalendar.HeaderLayout">
         <item name="android:background">?attr/colorPrimary</item>

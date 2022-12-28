@@ -53,8 +53,14 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
+/**
+ * Talk to the Bedetheque website to resolve author pseudonyms.
+ * <p>
+ * Aside of Bedetheque itself, this class is also used by StripInfo and LastDodo.
+ */
 public class AuthorResolver {
 
+    @NonNull
     private final BedethequeSearchEngine searchEngine;
     @NonNull
     private final Locale seLocale;

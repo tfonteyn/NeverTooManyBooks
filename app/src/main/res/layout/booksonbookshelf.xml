@@ -136,8 +136,8 @@
             />
 
         <!-- reminder: this is an MaterialButton, and NOT an ImageButton
-            Note the location on screen is NOT set, i.e. it's (0,0) relative to the 'fab' button itself.
-            We'll animate them to their proper (translationX,translationY) in code.
+            Note the location on screen is NOT set, i.e. it's (0,0) relative to the 'fab'
+            button itself. We'll animate them to their proper (translationX,translationY) in code.
         -->
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fab0_scan_barcode"

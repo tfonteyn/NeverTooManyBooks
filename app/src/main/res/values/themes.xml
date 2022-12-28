@@ -33,6 +33,7 @@
     Note that the "buttonBar*Style" attributes must be added at several places, as they don't seem
     to be inherited from the main Theme.
 -->
+<!--suppress LongLine -->
 <resources>
     <!-- Top level Theme for the startup activity so it looks like a dialog as intended. -->
     <style name="Theme.App.Startup" parent="Theme.Material3.DayNight.Dialog">

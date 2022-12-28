@@ -156,7 +156,8 @@ public class DBCleaner {
 
         for (final String key : columns) {
             try (Cursor cursor = db.rawQuery(
-                    "SELECT " + DBKey.PK_ID + ',' + key + " FROM " + DBDefinitions.TBL_BOOKS.getName()
+                    "SELECT " + DBKey.PK_ID + ',' + key
+                    + " FROM " + DBDefinitions.TBL_BOOKS.getName()
                     + " WHERE " + key + " LIKE '%T%'", null)) {
                 while (cursor.moveToNext()) {
                     rows.add(new Pair<>(cursor.getLong(0), cursor.getString(1)));

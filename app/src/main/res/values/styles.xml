@@ -19,6 +19,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!--suppress LongLine -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Label for a field (both view and edit screens). -->
