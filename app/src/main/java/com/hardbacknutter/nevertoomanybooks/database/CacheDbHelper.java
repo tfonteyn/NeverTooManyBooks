@@ -47,18 +47,46 @@ public class CacheDbHelper
     public static final String IMAGE_ID = "key";
     public static final String IMAGE_BLOB = "image";
     public static final String IMAGE_LAST_UPDATED__UTC = "last_update_date";
-    /** pre-scaled images. */
-    public static final TableDefinition TBL_IMAGE;
+
+    /** The pen-name or real name */
+    public static final String BDT_AUTHOR_NAME = "name";
+    public static final String BDT_AUTHOR_NAME_OB = "name_ob";
+    /** The url for the author page. */
+    public static final String BDT_AUTHOR_URL = "url";
+    /** The resolved name if any. */
+    public static final String BDT_AUTHOR_RESOLVED_NAME = "res_name";
+    public static final String BDT_AUTHOR_RESOLVED_NAME_OB = "res_name_ob";
+
     /** DB name. */
     private static final String DATABASE_NAME = "cache.db";
+
     private static final int DATABASE_VERSION = 1;
+
     private static final Domain DOM_PK_ID;
+
     /** {@link #TBL_IMAGE}. */
     private static final Domain DOM_IMAGE_ID;
+
     /** {@link #TBL_IMAGE}. */
     private static final Domain DOM_IMAGE_BLOB;
+
     /** {@link #TBL_IMAGE}. */
     private static final Domain DOM_IMAGE_LAST_UPDATED__UTC;
+    /** pre-scaled images. */
+    public static final TableDefinition TBL_IMAGE;
+    /** author page urls from Bedetheque. */
+    public static final TableDefinition TBL_BDT_AUTHORS;
+    /** {@link #TBL_BDT_AUTHORS}. */
+    private static final Domain DOM_BDT_AUTHOR_NAME;
+    /** {@link #TBL_BDT_AUTHORS}. */
+    private static final Domain DOM_BDT_AUTHOR_NAME_OB;
+    /** {@link #TBL_BDT_AUTHORS}. The url to the author page on Bedetheque. */
+    private static final Domain DOM_BDT_AUTHOR_URL;
+    /** {@link #TBL_BDT_AUTHORS}. */
+    private static final Domain DOM_BDT_AUTHOR_RESOLVED_NAME;
+    /** {@link #TBL_BDT_AUTHORS}. */
+    private static final Domain DOM_BDT_AUTHOR_RESOLVED_NAME_OB;
+
     /** Readers/Writer lock for <strong>this</strong> database. */
     private static final Synchronizer SYNCHRONIZER = new Synchronizer();
 
@@ -88,6 +116,28 @@ public class CacheDbHelper
                         .withDefaultCurrentTimeStamp()
                         .build();
 
+        DOM_BDT_AUTHOR_NAME =
+                new Domain.Builder(BDT_AUTHOR_NAME, SqLiteDataType.Text)
+                        .notNull()
+                        .build();
+
+        DOM_BDT_AUTHOR_NAME_OB =
+                new Domain.Builder(BDT_AUTHOR_NAME_OB, SqLiteDataType.Text)
+                        .notNull()
+                        .build();
+
+        DOM_BDT_AUTHOR_RESOLVED_NAME =
+                new Domain.Builder(BDT_AUTHOR_RESOLVED_NAME, SqLiteDataType.Text)
+                        .build();
+
+        DOM_BDT_AUTHOR_RESOLVED_NAME_OB =
+                new Domain.Builder(BDT_AUTHOR_RESOLVED_NAME_OB, SqLiteDataType.Text)
+                        .build();
+
+        DOM_BDT_AUTHOR_URL =
+                new Domain.Builder(BDT_AUTHOR_URL, SqLiteDataType.Text)
+                        .notNull()
+                        .build();
         TBL_IMAGE =
                 new TableDefinition("image", "image")
                         .addDomains(DOM_PK_ID,
@@ -99,6 +149,21 @@ public class CacheDbHelper
                         .addIndex(IMAGE_ID, true, DOM_IMAGE_ID)
                         .addIndex(IMAGE_ID + "_" + IMAGE_LAST_UPDATED__UTC,
                                   true, DOM_IMAGE_ID, DOM_IMAGE_LAST_UPDATED__UTC);
+
+        TBL_BDT_AUTHORS =
+                new TableDefinition("bdt_authors", "bdt_a")
+                        .addDomains(DOM_PK_ID,
+                                    DOM_BDT_AUTHOR_NAME,
+                                    DOM_BDT_AUTHOR_NAME_OB,
+                                    DOM_BDT_AUTHOR_RESOLVED_NAME,
+                                    DOM_BDT_AUTHOR_RESOLVED_NAME_OB,
+                                    DOM_BDT_AUTHOR_URL)
+                        .setPrimaryKey(DOM_PK_ID)
+                        .addIndex(BDT_AUTHOR_NAME_OB, true, DOM_BDT_AUTHOR_NAME_OB)
+                        .addIndex(BDT_AUTHOR_RESOLVED_NAME_OB, false,
+                                  DOM_BDT_AUTHOR_RESOLVED_NAME_OB)
+        ;
+
     }
 
     /** DO NOT USE INSIDE THIS CLASS! ONLY FOR USE BY CLIENTS VIA {@link #getDb()}. */
@@ -141,7 +206,7 @@ public class CacheDbHelper
 
     @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
-        TableDefinition.onCreate(db, List.of(TBL_IMAGE));
+        TableDefinition.onCreate(db, List.of(TBL_IMAGE, TBL_BDT_AUTHORS));
     }
 
     @Override
@@ -150,6 +215,7 @@ public class CacheDbHelper
                           final int newVersion) {
         // This is a cache, so no data needs preserving. Drop & recreate.
         db.execSQL("DROP TABLE IF EXISTS " + TBL_IMAGE.getName());
+        db.execSQL("DROP TABLE IF EXISTS " + TBL_BDT_AUTHORS.getName());
         onCreate(db);
     }
 
