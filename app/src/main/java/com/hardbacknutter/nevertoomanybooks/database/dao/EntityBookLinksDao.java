@@ -65,7 +65,7 @@ public interface EntityBookLinksDao<T extends Entity>
 
     /**
      * Find a {@link T} by using the <strong>name</strong> fields.
-     * If found, update the id with the id as found in the database.
+     * If found, updates <strong>ONLY</strong> the id with the one found in the database.
      *
      * @param context      Current context
      * @param item         to update
@@ -74,6 +74,8 @@ public interface EntityBookLinksDao<T extends Entity>
      *                     during for example an import.
      * @param bookLocale   Locale to use if the item has none set,
      *                     or if lookupLocale was {@code false}
+     *
+     * @see #refresh(Context, Entity, boolean, Locale)
      */
     void fixId(@NonNull Context context,
                @NonNull T item,
