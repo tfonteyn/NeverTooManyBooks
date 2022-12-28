@@ -195,12 +195,18 @@ public interface EntityBookLinksDao<T extends Entity>
      * Will <strong>NOT</strong> insert a new {@link T} if not found;
      * instead the id of the item will be set to {@code 0}, i.e. 'new'.
      *
-     * @param context    Current context
-     * @param item       to refresh
-     * @param bookLocale Locale to use if the item has none set
+     * @param context      Current context
+     * @param item         to refresh
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set
+     *
+     * @see #fixId(Context, Entity, boolean, Locale)
      */
     void refresh(@NonNull Context context,
                  @NonNull T item,
+                 final boolean lookupLocale,
                  @NonNull Locale bookLocale);
 
     /**

@@ -261,20 +261,23 @@ public class SeriesDaoImpl
     @Override
     public void refresh(@NonNull final Context context,
                         @NonNull final Series series,
+                        final boolean lookupLocale,
                         @NonNull final Locale bookLocale) {
 
+        // If needed, check if we already have it in the database.
         if (series.getId() == 0) {
-            // It wasn't saved before; see if it is now. If so, update ID.
-            fixId(context, series, true, bookLocale);
+            fixId(context, series, lookupLocale, bookLocale);
+        }
 
-        } else {
-            // It was saved, see if it still is and fetch possibly updated fields.
+        // If we do already have it, update the object
+        if (series.getId() > 0) {
             final Series dbSeries = getById(series.getId());
+            // Sanity check
             if (dbSeries != null) {
                 // copy any updated fields
                 series.copyFrom(dbSeries, false);
             } else {
-                // not found?, set as 'new'
+                // we shouldn't get here... but if we do, set it to 'new'
                 series.setId(0);
             }
         }

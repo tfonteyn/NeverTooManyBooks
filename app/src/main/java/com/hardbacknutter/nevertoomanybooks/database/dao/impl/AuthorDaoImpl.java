@@ -411,20 +411,23 @@ public class AuthorDaoImpl
     @Override
     public void refresh(@NonNull final Context context,
                         @NonNull final Author author,
+                        final boolean lookupLocale,
                         @NonNull final Locale bookLocale) {
 
+        // If needed, check if we already have it in the database.
         if (author.getId() == 0) {
-            // It wasn't saved before; see if it is now. If so, update ID.
-            fixId(context, author, true, bookLocale);
+            fixId(context, author, lookupLocale, bookLocale);
+        }
 
-        } else {
-            // It was saved, see if it still is and fetch possibly updated fields.
+        // If we do already have it, update the object
+        if (author.getId() > 0) {
             final Author dbAuthor = getById(author.getId());
+            // Sanity check
             if (dbAuthor != null) {
                 // copy any updated fields
                 author.copyFrom(dbAuthor, false);
             } else {
-                // not found?, set as 'new'
+                // we shouldn't get here... but if we do, set it to 'new'
                 author.setId(0);
             }
         }

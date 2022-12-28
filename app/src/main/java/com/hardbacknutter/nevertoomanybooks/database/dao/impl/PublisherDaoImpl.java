@@ -218,20 +218,23 @@ public class PublisherDaoImpl
     @Override
     public void refresh(@NonNull final Context context,
                         @NonNull final Publisher publisher,
+                        final boolean lookupLocale,
                         @NonNull final Locale bookLocale) {
 
+        // If needed, check if we already have it in the database.
         if (publisher.getId() == 0) {
-            // It wasn't saved before; see if it is now. If so, update ID.
-            fixId(context, publisher, true, bookLocale);
+            fixId(context, publisher, lookupLocale, bookLocale);
+        }
 
-        } else {
-            // It was saved, see if it still is and fetch possibly updated fields.
+        // If we do already have it, update the object
+        if (publisher.getId() > 0) {
             final Publisher dbPublisher = getById(publisher.getId());
+            // Sanity check
             if (dbPublisher != null) {
                 // copy any updated fields
                 publisher.copyFrom(dbPublisher);
             } else {
-                // not found?, set as 'new'
+                // we shouldn't get here... but if we do, set it to 'new'
                 publisher.setId(0);
             }
         }
