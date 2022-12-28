@@ -68,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
  *      <li>System.out when running in JUnit</li>
  * </ul>
  */
+@SuppressWarnings("UseOfSystemOutOrSystemErr")
 public final class Logger {
 
     /** serious errors are written to this file. */
