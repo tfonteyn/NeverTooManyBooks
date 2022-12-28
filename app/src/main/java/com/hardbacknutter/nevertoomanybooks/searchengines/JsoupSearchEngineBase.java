@@ -30,14 +30,14 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.jsoup.nodes.Document;
-
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+
+import org.jsoup.nodes.Document;
 
 public abstract class JsoupSearchEngineBase
         extends SearchEngineBase {
@@ -111,7 +111,10 @@ public abstract class JsoupSearchEngineBase
      *                    The array is guaranteed to have at least one element.
      * @param bookData    Bundle to update
      *
-     * @throws StorageException on storage related failures
+     * @throws StorageException     on storage related failures
+     * @throws CredentialsException on authentication/login failures
+     *                              This should only occur if the engine calls/relies on
+     *                              secondary sites.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @WorkerThread
@@ -120,7 +123,7 @@ public abstract class JsoupSearchEngineBase
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws StorageException, SearchException {
+            throws StorageException, SearchException, CredentialsException {
         // yes, instead of forcing child classes to call this super,
         // we could make them call a 'clear()' method instead.
         // But this way is more future oriented... maybe we'll need/can share more logic/data

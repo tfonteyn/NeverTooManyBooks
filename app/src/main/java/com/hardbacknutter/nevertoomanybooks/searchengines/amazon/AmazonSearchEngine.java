@@ -246,7 +246,7 @@ public class AmazonSearchEngine
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws StorageException, SearchException {
+            throws StorageException, SearchException, CredentialsException {
         super.parse(context, document, fetchCovers, bookData);
 
         final Locale siteLocale = getLocale(context, document.location().split("/")[2]);

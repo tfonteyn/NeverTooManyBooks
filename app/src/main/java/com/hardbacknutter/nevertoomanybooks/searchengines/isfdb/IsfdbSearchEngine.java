@@ -767,7 +767,7 @@ public class IsfdbSearchEngine
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws StorageException, SearchException {
+            throws StorageException, SearchException, CredentialsException {
         super.parse(context, document, fetchCovers, bookData);
 
         final DateParser dateParser = new FullDateParser(context);
