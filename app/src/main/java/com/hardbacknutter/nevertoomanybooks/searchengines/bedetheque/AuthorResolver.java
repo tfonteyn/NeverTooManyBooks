@@ -30,8 +30,8 @@ import androidx.annotation.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
+import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -68,21 +69,17 @@ public class AuthorResolver {
         searchEngine.setCaller(caller);
         seLocale = searchEngine.getLocale(context);
 
+        // no database in junit mode ... so we need to cheat.
+        if (BuildConfig.DEBUG && TestFlags.isJUnit) {
+            //noinspection ConstantConditions
+            cacheDb = null;
+            //noinspection ConstantConditions
+            authorDao = null;
+            return;
+        }
+
         cacheDb = ServiceLocator.getInstance().getCacheDb();
         authorDao = ServiceLocator.getInstance().getAuthorDao();
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    @VisibleForTesting
-    AuthorResolver(@NonNull final Context context,
-                   @Nullable final Cancellable caller,
-                   @Nullable final Objects dummy) {
-        searchEngine = (BedethequeSearchEngine) EngineId.Bedetheque.createSearchEngine();
-        searchEngine.setCaller(caller);
-        seLocale = searchEngine.getLocale(context);
-        // no database access in pure JUnit5 tests
-        cacheDb = null;
-        authorDao = null;
     }
 
     /**
@@ -96,6 +93,11 @@ public class AuthorResolver {
     public boolean resolve(@NonNull final Context context,
                            @NonNull final Author author)
             throws SearchException, CredentialsException {
+
+        // no database in junit mode ... so we need to cheat.
+        if (BuildConfig.DEBUG && TestFlags.isJUnit) {
+            return false;
+        }
 
         // We SHOULD pass in the book-locale here...
         authorDao.refresh(context, author, false, seLocale);

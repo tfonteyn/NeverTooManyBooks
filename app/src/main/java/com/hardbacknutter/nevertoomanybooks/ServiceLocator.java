@@ -259,10 +259,8 @@ public final class ServiceLocator {
     public static Locale getSystemLocale() {
         // While running JUnit tests we cannot get access or mock Resources.getSystem(),
         // ... so we need to cheat.
-        if (BuildConfig.DEBUG /* always */) {
-            if (TestFlags.isJUnit) {
-                return Locale.US;
-            }
+        if (BuildConfig.DEBUG && TestFlags.isJUnit) {
+            return Locale.US;
         }
 
         return Resources.getSystem().getConfiguration().getLocales().get(0);

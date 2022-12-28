@@ -75,10 +75,8 @@ public final class NetworkUtils {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     @AnyThread
     public static boolean isNetworkAvailable(@NonNull final Context context) {
-        if (BuildConfig.DEBUG /* always */) {
-            if (TestFlags.isJUnit) {
-                return TestFlags.isInternetConnected;
-            }
+        if (BuildConfig.DEBUG && TestFlags.isJUnit) {
+            return TestFlags.isInternetConnected;
         }
 
         final ConnectivityManager connMgr = (ConnectivityManager)
