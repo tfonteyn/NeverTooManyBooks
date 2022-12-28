@@ -48,7 +48,7 @@ class AuthorLookupTest
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
-        resolver = new AuthorResolver(context, new MockCancellable(), null);
+        resolver = new AuthorResolver(context, new MockCancellable());
     }
 
     @Test
