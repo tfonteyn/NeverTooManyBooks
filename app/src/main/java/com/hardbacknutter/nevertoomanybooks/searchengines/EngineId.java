@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks.GoogleBooksSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
@@ -126,7 +127,10 @@ public enum EngineId
     StripInfoBe("stripinfo", R.string.site_stripinfo_be, StripInfoSearchEngine.class),
 
     /** Dutch language (and to some extend other languages) comics. */
-    LastDodoNl("lastdodo", R.string.site_lastdodo_nl, LastDodoSearchEngine.class);
+    LastDodoNl("lastdodo", R.string.site_lastdodo_nl, LastDodoSearchEngine.class),
+
+    /** French language (and to some extend other languages) comics. */
+    Bedetheque("bedetheque", R.string.site_bedetheque, BedethequeSearchEngine.class);
 
     // NEWTHINGS: adding a new search engine: add the engine
 
@@ -268,6 +272,16 @@ public enum EngineId
                        .build();
         }
 
+        if (BuildConfig.ENABLE_STRIP_INFO || BuildConfig.ENABLE_LAST_DODO) {
+            Bedetheque.createConfiguration("https://www.bedetheque.com")
+                      .setCountry("FR", "fr")
+
+                      .setConnectTimeoutMs(8_000)
+                      .setReadTimeoutMs(60_000)
+                      .setStaticThrottler(BedethequeSearchEngine.THROTTLER)
+                      .build();
+        }
+
         // NEWTHINGS: adding a new search engine: add the search engine configuration
     }
 
@@ -378,7 +392,7 @@ public enum EngineId
     }
 
     @NonNull
-    SearchEngineConfig.Builder createConfiguration(@NonNull final String hostUrl) {
+    private SearchEngineConfig.Builder createConfiguration(@NonNull final String hostUrl) {
         return new SearchEngineConfig.Builder(this, hostUrl);
     }
 

@@ -44,6 +44,7 @@
     <string name="site_library_thing" translatable="false">LibraryThing</string>
     <string name="site_open_library" translatable="false">OpenLibrary</string>
     <string name="site_stripinfo_be" translatable="false">stripinfo.be</string>
+    <string name="site_bedetheque" translatable="false">bedetheque</string>
 
     <string name="site_calibre" translatable="false">Calibre</string>
 

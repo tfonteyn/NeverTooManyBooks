@@ -397,8 +397,10 @@ public class Languages {
 
         //NEWTHINGS: adding a new search engine: add mappings for site specific languages
 
-        // Dutch: StripInfoSearchEngine, KbNlSearchEngine
+        // Dutch: StripInfo, LastDodo, KbNl
         createLanguageMappingCache(new Locale("nl"));
+        // French: Bedetheque
+        //createLanguageMappingCache(new Locale("fr"));
     }
 
     /**
