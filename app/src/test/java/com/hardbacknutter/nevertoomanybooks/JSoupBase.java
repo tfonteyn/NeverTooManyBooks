@@ -26,17 +26,17 @@ import androidx.annotation.NonNull;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class JSoupBase
         extends Base {
@@ -47,7 +47,8 @@ public class JSoupBase
                             @NonNull final String charsetName,
                             @NonNull final String locationHeader,
                             @NonNull final String filename,
-                            final boolean[] fetchCovers) {
+                            final boolean[] fetchCovers)
+            throws IOException, SearchException, CredentialsException, StorageException {
         final Document document;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
@@ -61,9 +62,6 @@ public class JSoupBase
             assertFalse(rawData.isEmpty());
 
             System.out.println(rawData);
-
-        } catch (@NonNull final IOException | StorageException | SearchException e) {
-            fail(e);
         }
     }
 }

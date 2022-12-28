@@ -19,14 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
-
 import javax.xml.parsers.ParserConfigurationException;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
@@ -36,7 +32,14 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.xml.sax.SAXException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -57,7 +60,8 @@ class LastDodoTest
     }
 
     @Test
-    void parse01() {
+    void parse01()
+            throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.FRANCE);
         final String locationHeader = "https://www.lastdodo.nl/nl/items/7323911-de-37ste-parallel";
         final String filename = "/lastdodo/7323911-de-37ste-parallel.html";

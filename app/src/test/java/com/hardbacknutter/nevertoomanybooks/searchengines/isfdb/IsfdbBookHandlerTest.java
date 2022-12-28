@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
 import androidx.preference.PreferenceManager;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
@@ -34,8 +35,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,7 +75,8 @@ class IsfdbBookHandlerTest
     }
 
     @Test
-    void parse01() {
+    void parse01()
+            throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.UK);
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?112781";
         final String filename = "/isfdb/112781.html";
@@ -141,7 +146,8 @@ class IsfdbBookHandlerTest
     }
 
     @Test
-    void parse02() {
+    void parse02()
+            throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.UK);
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?431964";
         final String filename = "/isfdb/431964.html";
@@ -198,7 +204,8 @@ class IsfdbBookHandlerTest
     }
 
     @Test
-    void parse03() {
+    void parse03()
+            throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.UK);
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?542125";
         final String filename = "/isfdb/542125.html";

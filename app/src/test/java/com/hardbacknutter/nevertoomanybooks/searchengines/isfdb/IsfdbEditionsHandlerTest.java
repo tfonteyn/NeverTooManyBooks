@@ -19,20 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
-import androidx.annotation.NonNull;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
-
 import javax.xml.parsers.ParserConfigurationException;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
@@ -41,10 +32,15 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.xml.sax.SAXException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test parsing the Jsoup Document for ISFDB multi-edition data.
@@ -68,7 +64,8 @@ class IsfdbEditionsHandlerTest
     }
 
     @Test
-    void parseMultiEdition() {
+    void parseMultiEdition()
+            throws IOException {
         setLocale(Locale.UK);
         final String locationHeader = "http://www.isfdb.org/cgi-bin/title.cgi?11169";
         final String filename = "/isfdb/11169-multi-edition.html";
@@ -77,8 +74,6 @@ class IsfdbEditionsHandlerTest
         try (InputStream in = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(in);
             document = Jsoup.parse(in, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader);
-        } catch (@NonNull final IOException e) {
-            fail(e);
         }
         assertNotNull(document);
         assertTrue(document.hasText());
@@ -93,7 +88,8 @@ class IsfdbEditionsHandlerTest
     }
 
     @Test
-    void parseMultiEdition2() {
+    void parseMultiEdition2()
+            throws IOException {
         setLocale(Locale.UK);
         final String locationHeader = "http://www.isfdb.org/cgi-bin/title.cgi?1360173";
         final String filename = "/isfdb/1360173-multi-edition.html";
@@ -102,8 +98,6 @@ class IsfdbEditionsHandlerTest
         try (InputStream in = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(in);
             document = Jsoup.parse(in, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader);
-        } catch (@NonNull final IOException e) {
-            fail(e);
         }
         assertNotNull(document);
         assertTrue(document.hasText());
@@ -127,15 +121,11 @@ class IsfdbEditionsHandlerTest
      * Resulting url should have "pl.cgi".
      */
     @Test
-    void searchSingleEditionIsbn() {
+    void searchSingleEditionIsbn()
+            throws SearchException, CredentialsException {
 
         final String path = sBaseUrl + "/cgi-bin/se.cgi?arg=0887331602&type=ISBN";
-        Document document = null;
-        try {
-            document = searchEngine.loadDocument(context, path);
-        } catch (@NonNull final SearchException | CredentialsException e) {
-            fail(e);
-        }
+        final Document document = searchEngine.loadDocument(context, path);
         assertNotNull(document);
         assertTrue(document.hasText());
 
@@ -150,15 +140,12 @@ class IsfdbEditionsHandlerTest
      * @see #searchSingleEditionIsbn()
      */
     @Test
-    void searchMultiEditionIsbn() {
+    void searchMultiEditionIsbn()
+            throws SearchException, CredentialsException {
 
         final String path = sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN";
-        Document document = null;
-        try {
-            document = searchEngine.loadDocument(context, path);
-        } catch (@NonNull final SearchException | CredentialsException e) {
-            fail(e);
-        }
+        final Document document = searchEngine.loadDocument(context, path);
+
         assertNotNull(document);
         assertTrue(document.hasText());
 

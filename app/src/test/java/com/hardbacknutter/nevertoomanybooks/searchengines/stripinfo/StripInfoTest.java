@@ -19,20 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo;
 
-import androidx.annotation.NonNull;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Locale;
-
 import javax.xml.parsers.ParserConfigurationException;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
@@ -50,12 +41,17 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.xml.sax.SAXException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Network access for covers in all tests.
@@ -78,7 +74,8 @@ class StripInfoTest
     }
 
     @Test
-    void parse01() {
+    void parse01()
+            throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.FRANCE);
         final String locationHeader = "https://www.stripinfo.be/reeks/strip"
                                       + "/336348_Hauteville_House_14_De_37ste_parallel";
@@ -145,7 +142,8 @@ class StripInfoTest
     }
 
     @Test
-    void parse02() {
+    void parse02()
+            throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.FRANCE);
         final String locationHeader = "https://www.stripinfo.be/reeks/strip"
                                       + "/2060_De_boom_van_de_twee_lentes_1"
@@ -213,7 +211,8 @@ class StripInfoTest
     }
 
     @Test
-    void parse03() {
+    void parse03()
+            throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.FRANCE);
         final String locationHeader = "https://www.stripinfo.be/reeks/strip"
                                       + "/181604_Okiya_het_huis_van_verboden_geneugten"
@@ -275,7 +274,8 @@ class StripInfoTest
     }
 
     @Test
-    void parseIntegrale() {
+    void parseIntegrale()
+            throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.FRANCE);
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/"
                                       + "316016_Johan_en_Pirrewiet_INT_5_De_integrale_5";
@@ -334,7 +334,8 @@ class StripInfoTest
     }
 
     @Test
-    void parseIntegrale2() {
+    void parseIntegrale2()
+            throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.FRANCE);
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/"
                                       + "17030_Comanche_1_Red_Dust";
@@ -390,7 +391,8 @@ class StripInfoTest
     }
 
     @Test
-    void parseFavReeks2() {
+    void parseFavReeks2()
+            throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.FRANCE);
         final String locationHeader = "https://www.stripinfo.be/reeks/strip/"
                                       + "8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot";
@@ -444,7 +446,7 @@ class StripInfoTest
     /** Network access! */
     @Test
     void parseMultiResult()
-            throws SearchException, CredentialsException, StorageException {
+            throws SearchException, CredentialsException, StorageException, IOException {
         setLocale(Locale.FRANCE);
         final String locationHeader = "https://stripinfo.be/zoek/zoek?zoekstring=pluvi";
         final String filename = "/stripinfo/multi-result-pluvi.html";
@@ -453,9 +455,6 @@ class StripInfoTest
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
             document = Jsoup.parse(is, null, locationHeader);
-
-        } catch (@NonNull final IOException e) {
-            fail(e);
         }
 
         assertNotNull(document);

@@ -19,14 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.amazon;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
-
 import javax.xml.parsers.ParserConfigurationException;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
@@ -35,8 +31,15 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.xml.sax.SAXException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -58,7 +61,8 @@ class AmazonHtmlHandlerTest
     }
 
     @Test
-    void parse01() {
+    void parse01()
+            throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.UK);
 
         final String locationHeader = "https://www.amazon.co.uk/gp/product/0575090677";
@@ -92,7 +96,8 @@ class AmazonHtmlHandlerTest
     }
 
     @Test
-    void parse02() {
+    void parse02()
+            throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.UK);
         final String locationHeader = "https://www.amazon.co.uk/gp/product/1473210208";
         final String filename = "/amazon/1473210208.html";
@@ -127,7 +132,8 @@ class AmazonHtmlHandlerTest
     }
 
     @Test
-    void parse10() {
+    void parse10()
+            throws SearchException, IOException, CredentialsException, StorageException {
         setLocale(Locale.FRANCE);
         final String locationHeader = "https://www.amazon.fr/gp/product/2205057332";
         final String filename = "/amazon/2205057332.html";

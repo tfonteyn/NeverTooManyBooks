@@ -19,20 +19,18 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Arrays;
 
-import org.junit.jupiter.api.Test;
-
 import com.hardbacknutter.nevertoomanybooks.Base;
+
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 class ISBNTest
         extends Base {
@@ -50,7 +48,7 @@ class ISBNTest
             {"068418818X", "9780684188188"},
 
             {"90-6334-994-7", "9789063349943"},
-            };
+    };
 
     /**
      * same as above, but one digit changed so the checksum fails.
@@ -66,7 +64,7 @@ class ISBNTest
             {"06841A828X", "978068418A288"},
 
             {"91-6334-994-7", "9789163349943"},
-            };
+    };
 
     /**
      * UPC codes which can be translated to ISBN-10.
@@ -205,12 +203,8 @@ class ISBNTest
             final ISBN isbn10 = new ISBN(isbnPair[0], true);
             final ISBN isbn13 = new ISBN(isbnPair[1], true);
 
-            try {
-                assertEquals(isbn10.asText(ISBN.Type.Isbn13), isbn13.asText(ISBN.Type.Isbn13));
-                assertEquals(isbn10.asText(ISBN.Type.Isbn10), isbn13.asText(ISBN.Type.Isbn10));
-            } catch (@NonNull final NumberFormatException e) {
-                fail(e);
-            }
+            assertEquals(isbn10.asText(ISBN.Type.Isbn13), isbn13.asText(ISBN.Type.Isbn13));
+            assertEquals(isbn10.asText(ISBN.Type.Isbn10), isbn13.asText(ISBN.Type.Isbn10));
         }
     }
 
