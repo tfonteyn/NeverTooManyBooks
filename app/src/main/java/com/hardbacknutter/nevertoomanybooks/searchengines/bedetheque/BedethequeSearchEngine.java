@@ -172,7 +172,7 @@ public class BedethequeSearchEngine
                         }
                         break;
                     }
-                    case "Achev. impr. :": {
+                    case "Dépot légal :": {
                         final Node textNode = label.nextSibling();
                         if (textNode != null) {
                             String date = textNode.toString().trim();
