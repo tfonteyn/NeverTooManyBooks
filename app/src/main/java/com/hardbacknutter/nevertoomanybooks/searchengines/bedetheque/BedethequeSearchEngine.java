@@ -194,6 +194,7 @@ public class BedethequeSearchEngine
                     case "Format : ": {
                         final Element span = label.nextElementSibling();
                         if (span != null) {
+                            // can be overwritten by "Autres info :"
                             bookData.putString(DBKey.FORMAT, span.text());
                         }
                         break;
@@ -230,7 +231,8 @@ public class BedethequeSearchEngine
                         }
                         break;
                     }
-                    case "Scénario :": {
+                    case "Scénario :":
+                    case "Adapté de :": {
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_WRITER;
@@ -270,8 +272,22 @@ public class BedethequeSearchEngine
                         }
                         break;
                     }
-
-                    // There is no field for the language :(
+                    case "Traduction :": {
+                        final Element a = label.nextElementSibling();
+                        if (a != null) {
+                            lastAuthorType = Author.TYPE_TRANSLATOR;
+                            processAuthor(a, Author.TYPE_TRANSLATOR);
+                        }
+                        break;
+                    }
+                    case "Autres info :": {
+                        if (label.nextElementSiblings()
+                                 .stream()
+                                 .map(sib -> sib.attr("title"))
+                                 .anyMatch("Couverture souple"::equals)) {
+                            bookData.putString(DBKey.FORMAT, "Couverture souple");
+                        }
+                    }
                 }
             }
 
