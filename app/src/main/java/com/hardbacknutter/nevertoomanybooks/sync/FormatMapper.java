@@ -66,6 +66,13 @@ public final class FormatMapper
         MAPPER.put("softcover", R.string.book_format_softcover);
         MAPPER.put("digitaal", R.string.book_format_ebook);
 
+        // bedetheque
+        MAPPER.put("Couverture souple", R.string.book_format_softcover);
+        MAPPER.put("format normal", R.string.book_format_hardcover);
+        MAPPER.put("format grand", R.string.book_format_hardcover);
+        MAPPER.put("format poche", R.string.book_format_paperback);
+
+
         // Others as seen in the wild
         MAPPER.put("hardback", R.string.book_format_hardcover);
     }
