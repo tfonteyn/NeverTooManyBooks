@@ -217,7 +217,6 @@ public class SearchCoordinator
         }
 
 
-
         // ALWAYS store, even when null!
         // Presence of the site/task id in the map is an indication that the site was processed
         synchronized (searchResultsBySite) {
@@ -1100,24 +1099,8 @@ public class SearchCoordinator
                      if (siteData != null && siteData.result != null
                          && !siteData.result.isEmpty()) {
                          final Locale siteLocale = searchEngine.getLocale(context);
-
-                         for (final String key : siteData.result.keySet()) {
-                             if (DBKey.DATE_KEYS.contains(key)) {
-                                 processDate(siteLocale, key, siteData.result, bookData);
-
-                             } else if (LIST_KEYS.contains(key)) {
-                                 processList(key, siteData.result, bookData);
-
-                             } else {
-                                 //FIXME: doing this will for example put a LONG id in
-                                 // the bundle as a String. This is as-designed, but you
-                                 // do get an Exception in the log when the data gets to
-                                 // the EditBook formatters. Harmless, but not clean.
-
-                                 // handle all normal String based entries
-                                 processString(key, siteData.result, bookData);
-                             }
-                         }
+                         siteData.result.keySet().forEach(
+                                 key -> processKey(key, siteData.result, siteLocale, bookData));
                      }
                  });
 
@@ -1126,6 +1109,58 @@ public class SearchCoordinator
 
             // Pick the best covers for each list (if any) and clean/delete all others.
             coverFilter.filter(bookData);
+        }
+
+        private void processKey(@NonNull final String key,
+                                @NonNull final Bundle siteData,
+                                @NonNull final Locale siteLocale,
+                                @NonNull final Bundle bookData) {
+            if (DBKey.DATE_KEYS.contains(key)) {
+                processDate(siteLocale, key, siteData, bookData);
+
+            } else if (LIST_KEYS.contains(key)) {
+                processList(key, siteData, bookData);
+
+            } else if (DBKey.LANGUAGE.equals(key)) {
+                processLanguage(siteLocale, key, siteData, bookData);
+
+            } else {
+                //FIXME: doing this will for example put a LONG id in the bundle as a String.
+                // This is as-designed, but you do get an Exception in the log when the data
+                // gets to the EditBook formatters. Harmless, but not clean.
+                processString(key, siteData, bookData);
+            }
+        }
+
+        private void processLanguage(@NonNull final Locale siteLocale,
+                                     @NonNull final String key,
+                                     @NonNull final Bundle siteData,
+                                     @NonNull final Bundle bookData) {
+            String dataToAdd = siteData.getString(key);
+            if (dataToAdd == null || dataToAdd.trim().isEmpty()) {
+                return;
+            }
+
+            final String current = bookData.getString(key);
+            if (current == null || current.isEmpty()) {
+                if (dataToAdd.length() > 3) {
+                    // If more than 3 characters, it's likely a 'display' name of a language.
+                    dataToAdd = ServiceLocator.getInstance().getLanguages()
+                                              .getISO3FromDisplayName(siteLocale, dataToAdd);
+                    bookData.putString(key, dataToAdd);
+                } else {
+                    // just use it
+                    bookData.putString(key, dataToAdd);
+                }
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                    Log.d(TAG, "processLanguage|copied"
+                               + "|key=" + key + "|value=`" + dataToAdd + '`');
+                }
+            } else {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                    Log.d(TAG, "processLanguage|skipping|key=" + key);
+                }
+            }
         }
 
         /**
@@ -1142,10 +1177,10 @@ public class SearchCoordinator
                                  @NonNull final String key,
                                  @NonNull final Bundle siteData,
                                  @NonNull final Bundle bookData) {
-            final String currentDateHeld = bookData.getString(key);
+            final String current = bookData.getString(key);
             final String dataToAdd = siteData.getString(key);
 
-            if (currentDateHeld == null || currentDateHeld.isEmpty()) {
+            if (current == null || current.isEmpty()) {
                 // copy, even if the incoming date might not be valid.
                 // We'll deal with that later.
                 bookData.putString(key, dataToAdd);
@@ -1159,7 +1194,7 @@ public class SearchCoordinator
                 if (dataToAdd != null) {
                     final LocalDateTime newDate = dateParser.parse(dataToAdd, siteLocale);
                     if (newDate != null) {
-                        if (dateParser.parse(currentDateHeld, siteLocale) == null) {
+                        if (dateParser.parse(current, siteLocale) == null) {
                             // current date was invalid, use the new one instead.
                             // (theoretically this check was not needed, as we should not have
                             // an invalid date stored anyhow... but paranoia rules)
@@ -1231,8 +1266,8 @@ public class SearchCoordinator
                 return;
             }
 
-            final String dest = bookData.getString(key);
-            if (dest == null || dest.isEmpty()) {
+            final String current = bookData.getString(key);
+            if (current == null || current.isEmpty()) {
                 // just use it
                 bookData.putString(key, dataToAdd.toString());
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
