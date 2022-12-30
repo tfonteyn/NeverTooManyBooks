@@ -43,12 +43,9 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
-
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
-
-import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -58,6 +55,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedSAXException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedStorageException;
 
+import org.xml.sax.SAXException;
+
+@SuppressWarnings({"UnusedReturnValue", "WeakerAccess", "unused"})
 public abstract class FutureHttpBase<T> {
 
     /** The default number of times we try to connect; i.e. one RETRY. */
@@ -97,6 +97,11 @@ public abstract class FutureHttpBase<T> {
     /** -1: use the static default. */
     private int readTimeoutInMs = -1;
 
+    /**
+     * Constructor.
+     *
+     * @param siteResId string resource for the site name
+     */
     FutureHttpBase(@StringRes final int siteResId) {
         this.siteResId = siteResId;
     }

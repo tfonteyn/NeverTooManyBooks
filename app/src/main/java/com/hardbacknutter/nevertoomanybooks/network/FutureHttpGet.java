@@ -38,15 +38,32 @@ import java.util.function.Function;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
-public class FutureHttpGet<T>
+public final class FutureHttpGet<T>
         extends FutureHttpBase<T> {
 
     private static final String TAG = "FutureHttpGet";
+    @NonNull
+    private final String command;
 
-    private static final String GET = "GET";
-
-    public FutureHttpGet(@StringRes final int siteResId) {
+    /**
+     * Constructor.
+     *
+     * @param siteResId string resource for the site name
+     */
+    private FutureHttpGet(@StringRes final int siteResId,
+                          @NonNull final String command) {
         super(siteResId);
+        this.command = command;
+    }
+
+    @NonNull
+    public static <T> FutureHttpGet<T> createGet(@StringRes final int siteResId) {
+        return new FutureHttpGet<>(siteResId, "GET");
+    }
+
+    @NonNull
+    public static <T> FutureHttpGet<T> createHead(@StringRes final int siteResId) {
+        return new FutureHttpGet<>(siteResId, "HEAD");
     }
 
     /**
@@ -79,8 +96,8 @@ public class FutureHttpGet<T>
 
                 // these exceptions CAN be retried
             } catch (@NonNull final InterruptedIOException
-                    | FileNotFoundException
-                    | UnknownHostException e) {
+                                    | FileNotFoundException
+                                    | UnknownHostException e) {
                 // InterruptedIOException / SocketTimeoutException: connection timeout
                 // UnknownHostException: DNS or other low-level network issue
                 // FileNotFoundException: seen on some sites. A retry and the site was ok.
@@ -118,7 +135,7 @@ public class FutureHttpGet<T>
                    SocketTimeoutException,
                    IOException {
 
-        return Objects.requireNonNull(execute(url, GET, false, request -> {
+        return Objects.requireNonNull(execute(url, command, false, request -> {
             try {
                 connect(request);
                 return callable.apply(request);
