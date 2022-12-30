@@ -105,7 +105,7 @@ import com.hardbacknutter.org.json.JSONObject;
  * Is this still developed ?</li>
  * </ul>
  * Implementing SearchEngine.ByText is possible, but an issue is how much data could be returned.
- * Example: https://openlibrary.org/search.json?author=tolkien&title=hobbit
+ * Example: {@code https://openlibrary.org/search.json?author=tolkien&title=hobbit}
  * will return a 9000+ lines long document...
  * <p>
  *  Below is a rudimentary "data" implementation. "details" was tested with curl.
@@ -151,7 +151,7 @@ public class OpenLibrarySearchEngine
      * L: Large
      * The URL pattern to access book covers is:
      * <p>
-     * http://covers.openlibrary.org/b/$key/$value-$size.jpg
+     * {@code http://covers.openlibrary.org/b/$key/$value-$size.jpg}
      * <p>
      * Where:
      * <p>
