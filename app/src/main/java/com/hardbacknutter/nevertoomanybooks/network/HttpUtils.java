@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,13 +37,13 @@ public final class HttpUtils {
     /** HTTP Request Header. */
     static final String USER_AGENT = "User-Agent";
     /**
-     * RELEASE: Chrome 2022-04-01. Continuously update to latest version.
+     * RELEASE: Chrome 2022-12-30. Continuously update to latest version.
      * Some sites don't return full data unless the user agent is set to a valid browser.
      */
     static final String USER_AGENT_VALUE =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
             + " AppleWebKit/537.36 (KHTML, like Gecko)"
-            + " Chrome/99.0.4844.84 Safari/537.36";
+            + " Chrome/108.0.0.0 Safari/537.36";
 
 
     /** HTTP Response Header. */
