@@ -414,7 +414,7 @@ public class StripInfoSearchEngine
                                     break;
 
                                 case "Taal":
-                                    i += processLanguage(context, td, bookData);
+                                    i += processText(td, DBKey.LANGUAGE, bookData);
                                     break;
 
                                 case "Collectie":
@@ -951,19 +951,6 @@ public class StripInfoSearchEngine
             return 1;
         }
         return 0;
-    }
-
-    private int processLanguage(@NonNull final Context context,
-                                @NonNull final Element td,
-                                @NonNull final Bundle bookData) {
-        final int found = processText(td, DBKey.LANGUAGE, bookData);
-        String lang = bookData.getString(DBKey.LANGUAGE);
-        if (lang != null && !lang.isEmpty()) {
-            lang = ServiceLocator.getInstance().getLanguages()
-                                 .getISO3FromDisplayName(getLocale(context), lang);
-            bookData.putString(DBKey.LANGUAGE, lang);
-        }
-        return found;
     }
 
     /**

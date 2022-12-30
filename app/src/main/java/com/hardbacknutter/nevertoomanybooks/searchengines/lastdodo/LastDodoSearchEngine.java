@@ -285,7 +285,7 @@ public class LastDodoSearchEngine
                         break;
 
                     case "Taal / dialect":
-                        processLanguage(context, td, bookData);
+                        processText(td, DBKey.LANGUAGE, bookData);
                         break;
 
                     case "Soort":
@@ -567,18 +567,6 @@ public class LastDodoSearchEngine
             publisherList.add(currentPublisher);
         }
 
-    }
-
-    private void processLanguage(@NonNull final Context context,
-                                 @NonNull final Element td,
-                                 @NonNull final Bundle bookData) {
-        processText(td, DBKey.LANGUAGE, bookData);
-        String lang = bookData.getString(DBKey.LANGUAGE);
-        if (lang != null && !lang.isEmpty()) {
-            lang = ServiceLocator.getInstance().getLanguages()
-                                 .getISO3FromDisplayName(getLocale(context), lang);
-            bookData.putString(DBKey.LANGUAGE, lang);
-        }
     }
 
     private void processType(@NonNull final Element td,

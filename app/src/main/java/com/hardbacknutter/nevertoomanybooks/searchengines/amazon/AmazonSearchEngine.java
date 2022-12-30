@@ -352,7 +352,7 @@ public class AmazonSearchEngine
             // but that fails when the data is spread over multiple child nodes.
             // so we now just cut out the label, and use the text itself.
             li.child(0).remove();
-            String data = li.text().trim();
+            final String data = li.text().trim();
             switch (label.toLowerCase(siteLocale)) {
                 case "isbn-13":
                     bookData.putString(DBKey.BOOK_ISBN, data);
@@ -379,8 +379,6 @@ public class AmazonSearchEngine
                 case "langue":
                 case "sprache":
                 case "taal":
-                    data = ServiceLocator.getInstance().getLanguages()
-                                         .getISO3FromDisplayName(siteLocale, data);
                     bookData.putString(DBKey.LANGUAGE, data);
                     break;
 
