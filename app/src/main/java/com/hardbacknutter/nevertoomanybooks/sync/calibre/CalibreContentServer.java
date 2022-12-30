@@ -66,7 +66,6 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.CancellationException;
 import java.util.stream.Collectors;
-
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
@@ -416,7 +415,7 @@ public class CalibreContentServer
 
     @NonNull
     private <FRT> FutureHttpGet<FRT> createFutureGetRequest() {
-        final FutureHttpGet<FRT> httpGet = new FutureHttpGet<>(R.string.site_calibre);
+        final FutureHttpGet<FRT> httpGet = FutureHttpGet.createGet(R.string.site_calibre);
         httpGet.setConnectTimeout(connectTimeoutInMs)
                .setReadTimeout(readTimeoutInMs)
                .setRequestProperty(HttpUtils.AUTHORIZATION, authHeader)
