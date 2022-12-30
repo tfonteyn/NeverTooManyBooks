@@ -218,7 +218,20 @@ public abstract class SearchEngineBase
      */
     @NonNull
     public <T> FutureHttpGet<T> createFutureGetRequest() {
-        final FutureHttpGet<T> httpGet = new FutureHttpGet<>(config.getEngineId().getLabelResId());
+        final FutureHttpGet<T> httpGet = FutureHttpGet
+                .createGet(config.getEngineId().getLabelResId());
+
+        httpGet.setConnectTimeout(config.getConnectTimeoutInMs())
+               .setReadTimeout(config.getReadTimeoutInMs())
+               .setThrottler(config.getThrottler());
+        return httpGet;
+    }
+
+    @NonNull
+    public <T> FutureHttpGet<T> createFutureHeadRequest() {
+        final FutureHttpGet<T> httpGet = FutureHttpGet
+                .createHead(config.getEngineId().getLabelResId());
+
         httpGet.setConnectTimeout(config.getConnectTimeoutInMs())
                .setReadTimeout(config.getReadTimeoutInMs())
                .setThrottler(config.getThrottler());
