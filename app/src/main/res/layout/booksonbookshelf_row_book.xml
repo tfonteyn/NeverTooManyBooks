@@ -115,7 +115,6 @@
             style="@style/BoB.Group.Book.RatingBar"
             android:layout_width="0dp"
             android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
             app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/series_title"
             tools:visibility="visible"
