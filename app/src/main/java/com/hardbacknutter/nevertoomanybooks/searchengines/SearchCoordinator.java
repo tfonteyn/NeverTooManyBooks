@@ -326,7 +326,7 @@ public class SearchCoordinator
         cancel();
     }
 
-    public void cancelTask(@IdRes final int taskId) {
+    public void cancelTask(@SuppressWarnings("unused") @IdRes final int taskId) {
         // reminder: this object, the SearchCoordinator is a pseudo task
         // we're only using "cancelTask" to conform with other usage
         cancel();
