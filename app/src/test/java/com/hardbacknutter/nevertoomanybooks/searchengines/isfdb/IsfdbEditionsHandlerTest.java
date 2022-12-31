@@ -125,7 +125,7 @@ class IsfdbEditionsHandlerTest
             throws SearchException, CredentialsException {
 
         final String path = sBaseUrl + "/cgi-bin/se.cgi?arg=0887331602&type=ISBN";
-        final Document document = searchEngine.loadDocument(context, path);
+        final Document document = searchEngine.loadDocument(context, path, null);
         assertNotNull(document);
         assertTrue(document.hasText());
 
@@ -144,7 +144,7 @@ class IsfdbEditionsHandlerTest
             throws SearchException, CredentialsException {
 
         final String path = sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN";
-        final Document document = searchEngine.loadDocument(context, path);
+        final Document document = searchEngine.loadDocument(context, path, null);
 
         assertNotNull(document);
         assertTrue(document.hasText());
