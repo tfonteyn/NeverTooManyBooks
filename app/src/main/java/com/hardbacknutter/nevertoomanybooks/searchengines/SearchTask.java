@@ -49,9 +49,9 @@ public class SearchTask
 
     @NonNull
     private final SearchEngine searchEngine;
-    /** Whether to fetch covers. */
-    @Nullable
-    private boolean[] fetchCovers;
+    /** Whether to fetch covers. {false,false} by default. */
+    @NonNull
+    private final boolean[] fetchCovers = new boolean[2];
     /** What criteria to search by. */
     private By by;
     /** Search criteria. Usage depends on {@link #by}. */
@@ -159,9 +159,14 @@ public class SearchTask
      */
     void setFetchCovers(@Nullable final boolean[] fetchCovers) {
         if (fetchCovers == null || fetchCovers.length == 0) {
-            this.fetchCovers = new boolean[2];
+            this.fetchCovers[0] = false;
+            this.fetchCovers[1] = false;
+        } else if (fetchCovers.length == 1) {
+            this.fetchCovers[0] = fetchCovers[0];
+            this.fetchCovers[1] = false;
         } else {
-            this.fetchCovers = fetchCovers;
+            this.fetchCovers[0] = fetchCovers[0];
+            this.fetchCovers[1] = fetchCovers[1];
         }
     }
 
@@ -195,11 +200,6 @@ public class SearchTask
 
         // can we reach the site ?
         searchEngine.ping();
-
-        // sanity check, see #setFetchCovers
-        if (fetchCovers == null) {
-            fetchCovers = new boolean[2];
-        }
 
         final Bundle bookData;
         switch (by) {
