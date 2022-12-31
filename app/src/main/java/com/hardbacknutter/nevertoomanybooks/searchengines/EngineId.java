@@ -69,7 +69,9 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSea
  *         It will be used in preferences, database settings,...
  *     </li>
  *
- *     <li>Add this enum identifier to {@link #DATA_RELIABILITY_ORDER}.</li>
+ *     <li>Add this enum identifier to {@link #DATA_RELIABILITY_ORDER}.
+ *          This <strong>MUST</strong> be done or, as coded now, the new site will
+ *          be ignored when processing the search results.</li>
  *
  *     <li>Configure the engine in the method {@link #registerSearchEngines()},
  *          using {@link #createConfiguration(String)}
@@ -157,6 +159,7 @@ public enum EngineId
     static final List<EngineId> DATA_RELIABILITY_ORDER =
             List.of(Isfdb,
                     StripInfoBe,
+                    Bedetheque,
                     Amazon,
                     GoogleBooks,
                     LastDodoNl,
@@ -276,7 +279,7 @@ public enum EngineId
             Bedetheque.createConfiguration("https://www.bedetheque.com")
                       .setCountry("FR", "fr")
 
-                      .setConnectTimeoutMs(8_000)
+                      .setConnectTimeoutMs(15_000)
                       .setReadTimeoutMs(60_000)
                       .setStaticThrottler(BedethequeSearchEngine.THROTTLER)
                       .build();
