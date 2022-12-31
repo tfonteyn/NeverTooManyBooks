@@ -365,9 +365,8 @@ public class BedethequeSearchEngine
                 return;
             }
 
-            if (fetchCovers[0]) {
-                final String isbn = bookData.getString(DBKey.BOOK_ISBN);
-                parseCovers(document, isbn, bookData);
+            if (fetchCovers[0] || fetchCovers[1]) {
+                parseCovers(document, fetchCovers, bookData);
             }
         }
     }
@@ -425,22 +424,36 @@ public class BedethequeSearchEngine
     }
 
     private void parseCovers(@NonNull final Document document,
-                             @Nullable final String isbn,
+                             @NonNull final boolean[] fetchCovers,
                              @NonNull final Bundle bookData)
             throws StorageException {
 
-        final Element a = document.selectFirst(
-                "div.bandeau-principal > div.bandeau-image > a");
+        if (fetchCovers[0]) {
+            final Element a = document.selectFirst(
+                    "div.bandeau-principal > div.bandeau-image > a");
+            processCover(a, 0, bookData);
+        }
+
+        if (fetchCovers[1]) {
+            // bandeau-vignette contains a list, each "li" contains an "a"
+            final Elements as = document.select("div.bandeau-vignette a");
+            processCover(as.last(), 1, bookData);
+        }
+    }
+
+    private void processCover(@Nullable final Element a,
+                              final int cIdx,
+                              @NonNull final Bundle bookData)
+            throws StorageException {
         if (a != null) {
             final String url = a.attr("href");
-            final String fileSpec = saveImage(url, isbn, 0, null);
+            final String isbn = bookData.getString(DBKey.BOOK_ISBN);
+            final String fileSpec = saveImage(url, isbn, cIdx, null);
             if (fileSpec != null) {
                 final ArrayList<String> list = new ArrayList<>();
                 list.add(fileSpec);
-                bookData.putStringArrayList(
-                        SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
+                bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[cIdx], list);
             }
-
         }
     }
 
