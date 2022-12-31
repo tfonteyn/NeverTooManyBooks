@@ -134,6 +134,9 @@ public class Languages {
         if (source.isEmpty()) {
             return "";
         }
+        // create the mappings for the given locale if they don't exist yet
+        createLanguageMappingCache(locale);
+
         return getCacheFile().getString(source, source);
     }
 
@@ -396,12 +399,7 @@ public class Languages {
         // Always add English
         createLanguageMappingCache(Locale.ENGLISH);
 
-        //NEWTHINGS: adding a new search engine: add mappings for site specific languages
-
-        // Dutch: StripInfo, LastDodo, KbNl
-        createLanguageMappingCache(new Locale("nl"));
-        // French: Bedetheque
-        //createLanguageMappingCache(new Locale("fr"));
+        // Locales from SearchEngine's are added automatically as/when needed
     }
 
     /**
