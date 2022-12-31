@@ -177,7 +177,7 @@ public class AmazonSearchEngine
                                  @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final Document document = loadDocument(context, url);
+        final Document document = loadDocument(context, url, null);
         final Bundle bookData = ServiceLocator.newBundle();
         if (!isCancelled()) {
             parse(context, document, fetchCovers, bookData);
@@ -229,7 +229,7 @@ public class AmazonSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, validIsbn);
-        final Document document = loadDocument(context, url);
+        final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             final ArrayList<String> imageList = parseCovers(document, validIsbn, 0);
             if (!imageList.isEmpty()) {

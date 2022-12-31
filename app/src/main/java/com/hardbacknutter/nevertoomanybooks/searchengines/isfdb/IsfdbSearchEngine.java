@@ -64,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
 import com.hardbacknutter.nevertoomanybooks.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
@@ -274,7 +275,11 @@ public class IsfdbSearchEngine
         final Bundle bookData = ServiceLocator.newBundle();
 
         final String url = getHostUrl() + String.format(CGI_BY_EXTERNAL_ID, externalId);
-        final Document document = loadDocument(context, url);
+
+        // added due to https://github.com/square/okhttp/issues/1517
+        // it's a server issue, this is a workaround.
+        final Document document = loadDocument(context, url, Map.of(HttpUtils.CONNECTION,
+                                                                    HttpUtils.CONNECTION_CLOSE));
         if (!isCancelled()) {
             parse(context, document, fetchCovers, bookData);
             // ISFDB only shows the books language on the publications page.
@@ -1279,7 +1284,7 @@ public class IsfdbSearchEngine
                                         @NonNull final String url)
             throws SearchException, CredentialsException {
 
-        final Document document = loadDocument(context, url);
+        final Document document = loadDocument(context, url, null);
 
         if (!isCancelled()) {
             return parseEditions(context, document);
@@ -1300,7 +1305,10 @@ public class IsfdbSearchEngine
 
         // go get it.
         final String url = getHostUrl() + String.format(CGI_BY_EXTERNAL_ID, edition.getIsfdbId());
-        return loadDocument(context, url);
+        // added due to https://github.com/square/okhttp/issues/1517
+        // it's a server issue, this is a workaround.
+        return loadDocument(context, url, Map.of(HttpUtils.CONNECTION,
+                                                 HttpUtils.CONNECTION_CLOSE));
     }
 
 

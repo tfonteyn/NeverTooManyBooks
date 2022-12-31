@@ -107,7 +107,7 @@ public class LastDodoSearchEngine
         final Bundle bookData = ServiceLocator.newBundle();
 
         final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
-        final Document document = loadDocument(context, url);
+        final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             parse(context, document, fetchCovers, bookData);
         }
@@ -127,7 +127,7 @@ public class LastDodoSearchEngine
         // 2022-05-31: searching the site with the ISBN now REQUIRES the dashes between
         // the digits.
         final String url = getHostUrl() + String.format(BY_ISBN, ISBN.formatIsbn(validIsbn));
-        final Document document = loadDocument(context, url);
+        final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
             parseMultiResult(context, document, fetchCovers, bookData);
@@ -166,7 +166,7 @@ public class LastDodoSearchEngine
                 if (url.startsWith("/")) {
                     url = getHostUrl() + url;
                 }
-                final Document redirected = loadDocument(context, url);
+                final Document redirected = loadDocument(context, url, null);
                 if (!isCancelled()) {
                     parse(context, redirected, fetchCovers, bookData);
                 }

@@ -41,6 +41,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -179,7 +180,8 @@ public class StripInfoSearchEngine
     @NonNull
     @Override
     public Document loadDocument(@NonNull final Context context,
-                                 @NonNull final String url)
+                                 @NonNull final String url,
+                                 @Nullable final Map<String, String> requestProperties)
             throws SearchException, CredentialsException {
 
         if (StripInfoAuth.isLoginToSearch(context)) {
@@ -197,7 +199,7 @@ public class StripInfoSearchEngine
             collectionFormParser = new CollectionFormParser(context, new BookshelfMapper());
         }
 
-        return super.loadDocument(context, url);
+        return super.loadDocument(context, url, requestProperties);
     }
 
     @NonNull
@@ -210,7 +212,7 @@ public class StripInfoSearchEngine
         final Bundle bookData = ServiceLocator.newBundle();
 
         final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
-        final Document document = loadDocument(context, url);
+        final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             parse(context, document, fetchCovers, bookData);
         }
@@ -232,7 +234,7 @@ public class StripInfoSearchEngine
         final Bundle bookData = ServiceLocator.newBundle();
 
         final String url = getHostUrl() + String.format(BY_ISBN, validIsbn);
-        final Document document = loadDocument(context, url);
+        final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             processDocument(context, validIsbn, document, fetchCovers, bookData);
         }
@@ -301,7 +303,7 @@ public class StripInfoSearchEngine
             //      _Het_narrenschip_2_Pluvior_627">Pluvior 627</a>
             final Element urlElement = section.selectFirst(A_HREF_STRIP);
             if (urlElement != null) {
-                final Document redirected = loadDocument(context, urlElement.attr("href"));
+                final Document redirected = loadDocument(context, urlElement.attr("href"), null);
                 if (!isCancelled()) {
                     // prevent looping.
                     if (!isMultiResult(redirected)) {

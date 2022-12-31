@@ -132,7 +132,7 @@ public class AuthorResolver {
 
         if (bdtAuthor.getResolvedName().isBlank()) {
             // The resolved name is not in the cache, load the author page
-            final Document document = searchEngine.loadDocument(context, bdtAuthor.getUrl());
+            final Document document = searchEngine.loadDocument(context, bdtAuthor.getUrl(), null);
             if (!searchEngine.isCancelled()) {
                 if (parseAuthor(document, bdtAuthor)) {
                     storeAuthorInCache(bdtAuthor);
@@ -240,7 +240,7 @@ public class AuthorResolver {
         }
 
         final String url = searchEngine.getHostUrl() + "/liste_auteurs_BD_" + c + ".html";
-        final Document document = searchEngine.loadDocument(context, url);
+        final Document document = searchEngine.loadDocument(context, url, null);
         if (!searchEngine.isCancelled()) {
             return parseAuthorList(document);
         }
