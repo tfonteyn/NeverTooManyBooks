@@ -93,6 +93,41 @@ public class AuthorTest
         Assert.assertNull(realAuthor.getRealAuthor());
     }
 
+    @Test
+    public void lookup03()
+            throws SearchException, CredentialsException {
+
+        final boolean lookup;
+        final Author author;
+        final Author realAuthor;
+
+        author = Author.from("61Chi");
+        lookup = resolver.resolve(context, author);
+        Assert.assertTrue(lookup);
+        Assert.assertEquals("61Chi", author.getFamilyName());
+        realAuthor = author.getRealAuthor();
+        Assert.assertNotNull(realAuthor);
+        Assert.assertEquals("Liu", realAuthor.getFamilyName());
+        Assert.assertEquals("Yi-chi", realAuthor.getGivenNames());
+        Assert.assertNull(realAuthor.getRealAuthor());
+    }
+
+    @Test
+    public void lookup04()
+            throws SearchException, CredentialsException {
+
+        final boolean lookup;
+        final Author author;
+        final Author realAuthor;
+
+        author = Author.from("<Indéterminé>");
+        lookup = resolver.resolve(context, author);
+        Assert.assertFalse(lookup);
+        Assert.assertEquals("<Indéterminé>", author.getFamilyName());
+        realAuthor = author.getRealAuthor();
+        Assert.assertNull(realAuthor);
+    }
+
     private static class FakeCancellable
             implements Cancellable {
         @Override
