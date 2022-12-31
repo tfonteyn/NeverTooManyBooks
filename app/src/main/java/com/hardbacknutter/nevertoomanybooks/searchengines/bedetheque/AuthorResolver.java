@@ -259,7 +259,7 @@ public class AuthorResolver {
     List<BdtAuthor> parseAuthorList(@NonNull final Document document) {
         final List<BdtAuthor> list = new ArrayList<>();
 
-        final Elements all = document.select("ul.nav-liste li a");
+        final Elements all = document.select("ul.nav-liste > li > a");
         for (final Element a : all) {
             final String url = a.attr("href");
             final Element span = a.firstElementChild();
