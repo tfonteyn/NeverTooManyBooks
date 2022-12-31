@@ -318,20 +318,22 @@ public class BooklistAdapter
         //noinspection ConstantConditions
         final int level = nodeData.getInt(DBKey.BL_NODE_LEVEL);
 
-        // set an indentation depending on level (2..)
-        if (level > 1) {
-            itemView.setPaddingRelative((level - 1) * levelIndent, 0, 0, 0);
-        }
-        // adjust row height and margins depending on level (1..)
-        if (level > 0) {
-            final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
-                    itemView.getLayoutParams();
+        if (groupId != BooklistGroup.BOOK) {
+            // set an indentation depending on level (2..)
+            if (level > 1) {
+                itemView.setPaddingRelative((level - 1) * levelIndent, 0, 0, 0);
+            }
+            // adjust row height and margins depending on level (1..)
+            if (level > 0) {
+                final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
+                        itemView.getLayoutParams();
 
-            // Adjust the line spacing as required
-            lp.height = groupRowHeight;
-            // Adjust the level 1 top margin if allowed
-            if (level == 1 && groupRowHeight != ViewGroup.LayoutParams.WRAP_CONTENT) {
-                lp.setMargins(0, level1topMargin, 0, 0);
+                // Adjust the line spacing as required
+                lp.height = groupRowHeight;
+                // Adjust the level 1 top margin if allowed
+                if (level == 1 && groupRowHeight != ViewGroup.LayoutParams.WRAP_CONTENT) {
+                    lp.setMargins(0, level1topMargin, 0, 0);
+                }
             }
         }
 
