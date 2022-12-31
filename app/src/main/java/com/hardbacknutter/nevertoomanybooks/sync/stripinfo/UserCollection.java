@@ -35,9 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -47,6 +44,9 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 /**
  * Fetches and parses the user collection list from the site.
@@ -185,7 +185,7 @@ public class UserCollection {
         final String url = searchEngine.getHostUrl()
                            + String.format(URL_MY_BOOKS, userId, pageNr, FLAGS);
 
-        final Document document = jsoupLoader.loadDocument(context, url);
+        final Document document = jsoupLoader.loadDocument(context, url, null);
         return parseDocument(context, document, pageNr, progressListener);
     }
 
