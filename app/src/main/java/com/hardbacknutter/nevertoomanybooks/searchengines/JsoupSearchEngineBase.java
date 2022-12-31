@@ -24,11 +24,13 @@ import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -78,8 +80,9 @@ public abstract class JsoupSearchEngineBase
     /**
      * Load the url into a parsed {@link org.jsoup.nodes.Document}.
      *
-     * @param context Current context
-     * @param url     to load
+     * @param context           Current context
+     * @param url               to load
+     * @param requestProperties optional
      *
      * @return the document
      *
@@ -88,10 +91,11 @@ public abstract class JsoupSearchEngineBase
     @WorkerThread
     @NonNull
     public Document loadDocument(@NonNull final Context context,
-                                 @NonNull final String url)
+                                 @NonNull final String url,
+                                 @Nullable final Map<String, String> requestProperties)
             throws SearchException, CredentialsException {
         try {
-            return jsoupLoader.loadDocument(context, url);
+            return jsoupLoader.loadDocument(context, url, requestProperties);
 
         } catch (@NonNull final IOException e) {
             throw new SearchException(getName(context), e);

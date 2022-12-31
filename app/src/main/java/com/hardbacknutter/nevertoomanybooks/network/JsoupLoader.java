@@ -29,17 +29,17 @@ import java.io.BufferedInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-
+import java.util.Map;
 import javax.net.ssl.SSLProtocolException;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 /**
  * Provide a more or less robust base to load a url and parse the html with Jsoup.
@@ -50,7 +50,7 @@ public class JsoupLoader {
     /** Log tag. */
     private static final String TAG = "JsoupLoader";
     @NonNull
-    private final FutureHttpGet<Document> futureHttpGet;
+    protected final FutureHttpGet<Document> futureHttpGet;
     /** The downloaded and parsed web page. */
     @Nullable
     private Document document;
@@ -103,8 +103,9 @@ public class JsoupLoader {
      * <p>
      * The content encoding is: "Accept-Encoding", "gzip"
      *
-     * @param context Current context
-     * @param url     to fetch
+     * @param context           Current context
+     * @param url               to fetch
+     * @param requestProperties optional
      *
      * @return the parsed Document
      *
@@ -113,7 +114,8 @@ public class JsoupLoader {
     @WorkerThread
     @NonNull
     public Document loadDocument(@NonNull final Context context,
-                                 @NonNull final String url)
+                                 @NonNull final String url,
+                                 @Nullable final Map<String, String> requestProperties)
             throws IOException {
 
         // are we requesting the same url again ?
@@ -142,12 +144,15 @@ public class JsoupLoader {
             try {
                 // Don't retry if the initial connection fails...
                 futureHttpGet.setRetryCount(0);
-                // added due to https://github.com/square/okhttp/issues/1517
-                // it's a server issue, this is a workaround.
-                futureHttpGet.setRequestProperty(HttpUtils.CONNECTION, HttpUtils.CONNECTION_CLOSE);
                 // some sites refuse to return content if they don't like the user-agent
                 if (userAgent != null) {
                     futureHttpGet.setRequestProperty(HttpUtils.USER_AGENT, userAgent);
+                }
+
+                if (requestProperties != null) {
+                    for (final Map.Entry<String, String> entry : requestProperties.entrySet()) {
+                        futureHttpGet.setRequestProperty(entry.getKey(), entry.getValue());
+                    }
                 }
 
                 document = futureHttpGet.get(docRequestUrl, request -> {

@@ -67,6 +67,33 @@ public final class FutureHttpGet<T>
     }
 
     /**
+     * Send the GET/HEAD.
+     *
+     * @param url               to use
+     * @param responseProcessor which will receive the response InputStream
+     *
+     * @return the processed response
+     */
+    @NonNull
+    public T get(@NonNull final String url,
+                 @NonNull final Function<HttpURLConnection, T> responseProcessor)
+            throws StorageException,
+                   CancellationException,
+                   SocketTimeoutException,
+                   IOException {
+
+        return Objects.requireNonNull(execute(url, command, false, request -> {
+            try {
+                connect(request);
+                return responseProcessor.apply(request);
+
+            } catch (@NonNull final IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }));
+    }
+
+    /**
      * Perform the actual opening of the connection.
      *
      * @throws IOException on generic/other IO failures
@@ -125,24 +152,5 @@ public final class FutureHttpGet<T>
             Log.d(TAG, "open|giving up|url=`" + request.getURL() + '`');
         }
         throw new NetworkException("Giving up");
-    }
-
-    @NonNull
-    public T get(@NonNull final String url,
-                 @NonNull final Function<HttpURLConnection, T> callable)
-            throws StorageException,
-                   CancellationException,
-                   SocketTimeoutException,
-                   IOException {
-
-        return Objects.requireNonNull(execute(url, command, false, request -> {
-            try {
-                connect(request);
-                return callable.apply(request);
-
-            } catch (@NonNull final IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        }));
     }
 }

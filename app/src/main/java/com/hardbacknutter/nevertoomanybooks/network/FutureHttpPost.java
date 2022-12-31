@@ -47,6 +47,15 @@ public class FutureHttpPost<T>
         super(siteResId);
     }
 
+    /**
+     * Send the POST.
+     *
+     * @param url               to use
+     * @param postBody          to send
+     * @param responseProcessor which will receive the response InputStream
+     *
+     * @return the processed response; can be {@code null} if there was no response body.
+     */
     @Nullable
     public T post(@NonNull final String url,
                   @NonNull final String postBody,

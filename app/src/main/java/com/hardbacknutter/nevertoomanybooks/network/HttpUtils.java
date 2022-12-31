@@ -19,14 +19,18 @@
  */
 package com.hardbacknutter.nevertoomanybooks.network;
 
+@SuppressWarnings("WeakerAccess")
 public final class HttpUtils {
 
     /** HTTP Request Header. */
     public static final String AUTHORIZATION = "Authorization";
 
     /** HTTP Request Header. */
-    static final String CONNECTION = "Connection";
-    static final String CONNECTION_CLOSE = "close";
+    public static final String REFERER = "Referer";
+
+    /** HTTP Request Header. */
+    public static final String CONNECTION = "Connection";
+    public static final String CONNECTION_CLOSE = "close";
 
     /** HTTP Request Header. */
     public static final String CONTENT_TYPE = "Content-Type";
@@ -35,19 +39,19 @@ public final class HttpUtils {
             "application/x-www-form-urlencoded; charset=UTF-8";
 
     /** HTTP Request Header. */
-    static final String USER_AGENT = "User-Agent";
+    public static final String USER_AGENT = "User-Agent";
     /**
-     * RELEASE: Chrome 2022-12-30. Continuously update to latest version.
+     * RELEASE: 2022-12-30. Continuously update to latest version.
      * Some sites don't return full data unless the user agent is set to a valid browser.
      */
-    static final String USER_AGENT_VALUE =
+    public static final String USER_AGENT_VALUE =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
             + " AppleWebKit/537.36 (KHTML, like Gecko)"
             + " Chrome/108.0.0.0 Safari/537.36";
 
 
     /** HTTP Response Header. */
-    static final String LOCATION = "location";
+    public static final String LOCATION = "location";
 
     private HttpUtils() {
     }
