@@ -87,6 +87,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.notifier.Notifier;
 import com.hardbacknutter.nevertoomanybooks.utils.notifier.NotifierImpl;
 
+@SuppressWarnings("unused")
 public final class ServiceLocator {
 
     /**
