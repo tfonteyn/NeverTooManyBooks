@@ -29,16 +29,25 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.net.CookieManager;
+import java.net.HttpCookie;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
 import com.hardbacknutter.nevertoomanybooks.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
@@ -59,7 +68,19 @@ public class BedethequeSearchEngine
 
     public static final Throttler THROTTLER = new Throttler(1_000);
     private static final Pattern PUB_DATE = Pattern.compile("\\d\\d/\\d\\d\\d\\d");
-    private static final Pattern SERIES_WITH_BRACKETS = Pattern.compile("(.*)\\((.*)\\)");
+
+    /** The "en" must be as-is. */
+    private static final Pattern SERIES_WITH_LANGUAGE = Pattern
+            .compile("(.*)\\s+\\(en (.*)\\)");
+    private static final Pattern SERIES_WITH_SIMPLE_PREFIX = Pattern
+            .compile("(.*)\\s+\\((le|la|les|l')\\)",
+                     Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+    private static final String COOKIE = "csrf_cookie_bel";
+    private static final String COOKIE_DOMAIN = ".bedetheque.com";
+    private final CookieManager cookieManager;
+    private final Map<String, String> extraRequestProperties;
+    @Nullable
+    private HttpCookie csrfCookie;
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -70,8 +91,36 @@ public class BedethequeSearchEngine
     public BedethequeSearchEngine(@NonNull final SearchEngineConfig config) {
         super(config);
 
-        // Setup BEFORE doing first request!
-        ServiceLocator.getInstance().getCookieManager();
+        cookieManager = ServiceLocator.getInstance().getCookieManager();
+
+        extraRequestProperties = Map.of(HttpUtils.REFERER, getHostUrl() + "/search");
+    }
+
+    @NonNull
+    private String requireCookieNameValueString(@NonNull final Context context)
+            throws SearchException {
+        if (csrfCookie == null || csrfCookie.hasExpired()) {
+            try {
+                final FutureHttpGet<HttpCookie> head = createFutureHeadRequest();
+                // Reminder: the "request" will be connected and the response code will be OK,
+                // so just extract the cookie we need for the next request
+                csrfCookie = head.get(getHostUrl() + "/search", request -> cookieManager
+                        .getCookieStore()
+                        .getCookies()
+                        .stream()
+                        .filter(c -> COOKIE_DOMAIN.equals(c.getDomain())
+                                     && COOKIE.equals(c.getName()))
+                        .findFirst()
+                        .orElse(new HttpCookie(COOKIE, "")));
+            } catch (@NonNull final IOException | UncheckedIOException | StorageException e) {
+                throw new SearchException(getName(context), e);
+            }
+        }
+        if (csrfCookie == null || csrfCookie.getValue().isEmpty()) {
+            throw new SearchException(getName(context), context.getString(R.string.httpError));
+        }
+
+        return csrfCookie.getName() + '=' + Objects.requireNonNull(csrfCookie.getValue());
     }
 
     @NonNull
@@ -83,8 +132,19 @@ public class BedethequeSearchEngine
 
         final Bundle bookData = ServiceLocator.newBundle();
 
-        final String url = getHostUrl() + "/search/albums?RechISBN=" + validIsbn;
-        final Document document = loadDocument(context, url);
+        //The site is very "defensive". We must specify the full url and set the "Referer".
+        final String url = getHostUrl() + "/search/albums?RechIdSerie=&RechIdAuteur="
+                           + '&' + requireCookieNameValueString(context)
+                           + "&RechSerie=&RechTitre=&RechEditeur=&RechCollection="
+                           + "&RechStyle=&RechAuteur="
+                           + "&RechISBN=" + validIsbn
+                           + "&RechParution=&RechOrigine=&RechLangue="
+                           + "&RechMotCle=&RechDLDeb=&RechDLFin="
+                           + "&RechCoteMin=&RechCoteMax="
+                           + "&RechEO=0";
+
+        final Document document = loadDocument(context, url, extraRequestProperties);
+
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
             parseMultiResult(context, document, fetchCovers, bookData);
@@ -119,7 +179,7 @@ public class BedethequeSearchEngine
             if (urlElement != null) {
                 final String url = urlElement.attr("href");
                 if (!url.isBlank()) {
-                    final Document redirected = loadDocument(context, url);
+                    final Document redirected = loadDocument(context, url, extraRequestProperties);
                     if (!isCancelled()) {
                         parse(context, redirected, fetchCovers, bookData);
                     }
@@ -141,7 +201,6 @@ public class BedethequeSearchEngine
                 "div.tab_content_liste_albums > ul.infos-albums");
         if (section != null) {
             int lastAuthorType = -1;
-            Series currentSeries = null;
 
             final Elements labels = section.select("li > label");
             for (final Element label : labels) {
@@ -191,36 +250,26 @@ public class BedethequeSearchEngine
                         }
                         break;
                     }
-                    case "Format : ": {
-                        final Element span = label.nextElementSibling();
-                        if (span != null) {
+                    case "Format :": {
+                        final Node textNode = label.nextSibling();
+                        if (textNode != null) {
                             // can be overwritten by "Autres info :"
-                            bookData.putString(DBKey.FORMAT, span.text());
+                            bookData.putString(DBKey.FORMAT, textNode.toString().trim());
                         }
                         break;
                     }
                     case "Série :": {
                         final Node textNode = label.nextSibling();
                         if (textNode != null) {
-                            String name = textNode.toString().trim();
-                            // Series are formatted like "Fond du monde (Le)"
-                            // If we find this pattern, transform it to "Le Fond du monde"
-                            final Matcher matcher = SERIES_WITH_BRACKETS.matcher(name);
-                            if (matcher.find()) {
-                                final String n = matcher.group(1);
-                                final String prefix = matcher.group(2);
-                                if (prefix != null) {
-                                    name = prefix + ' ' + n;
-                                }
-                            }
-                            currentSeries = Series.from(name);
+                            seriesList.add(processSeries(bookData, textNode.toString().trim()));
                         }
                         break;
                     }
                     case "Tome :": {
                         final Node textNode = label.nextSibling();
-                        if (textNode != null && currentSeries != null) {
-                            currentSeries.setNumber(textNode.toString().trim());
+                        if (textNode != null && !seriesList.isEmpty()) {
+                            seriesList.get(seriesList.size() - 1)
+                                      .setNumber(textNode.toString().trim());
                         }
                         break;
                     }
@@ -291,10 +340,6 @@ public class BedethequeSearchEngine
                 }
             }
 
-            if (currentSeries != null) {
-                seriesList.add(currentSeries);
-            }
-
             if (!authorList.isEmpty()) {
                 final AuthorResolver resolver = new AuthorResolver(context, this);
                 for (final Author author : authorList) {
@@ -325,6 +370,58 @@ public class BedethequeSearchEngine
                 parseCovers(document, isbn, bookData);
             }
         }
+    }
+
+    /**
+     * Parsing the series title is done <strong>locally</strong> to this search-engine.
+     */
+    @VisibleForTesting
+    @NonNull
+    Series processSeries(@NonNull final Bundle bookData,
+                         @NonNull final String name) {
+        // Series names can be formatted in a LOT of ways.
+        // We're not going to try and capture each and every special format
+        // but stick to the most common ones.
+        String seriesName = name;
+
+        Matcher matcher;
+
+        // Try extracting a language
+        matcher = SERIES_WITH_LANGUAGE.matcher(name);
+        if (matcher.find()) {
+            String maybeLanguage = matcher.group(2);
+            if (maybeLanguage != null) {
+                final int space = maybeLanguage.indexOf(' ');
+                if (space > 1) {
+                    // Lucky Luke Classics (en espagnol - Ediciones Kraken)
+                    maybeLanguage = maybeLanguage.substring(0, space);
+                } else {
+                    // The brackets part was a 'pure' language; strip it
+                    final String n = matcher.group(1);
+                    if (n != null) {
+                        seriesName = n;
+                    }
+                }
+                bookData.putString(DBKey.LANGUAGE, maybeLanguage);
+            }
+        }
+
+        // Find/move a simple "Le|La/Les|L'" prefix
+        matcher = SERIES_WITH_SIMPLE_PREFIX.matcher(name);
+        if (matcher.find()) {
+            final String n = matcher.group(1);
+            final String prefix = matcher.group(2);
+            if (n != null && prefix != null) {
+                if (prefix.endsWith("'")) {
+                    seriesName = prefix + n;
+                } else {
+                    seriesName = prefix + ' ' + n;
+                }
+            }
+        }
+
+        // plain constructor, no extra parsing
+        return new Series(seriesName);
     }
 
     private void parseCovers(@NonNull final Document document,
