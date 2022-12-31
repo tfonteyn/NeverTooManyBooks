@@ -75,9 +75,11 @@ public class BedethequeTest
                  new boolean[]{true, true});
 
         assertEquals("La grande terre", rawData.getString(DBKey.TITLE));
-        assertEquals("46", rawData.getString(DBKey.PAGE_COUNT));
+
+        assertEquals("2002-10", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("Grand format", rawData.getString(DBKey.FORMAT));
         assertEquals("2840557428", rawData.getString(DBKey.BOOK_ISBN));
-        assertEquals("2002-09", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("46", rawData.getString(DBKey.PAGE_COUNT));
 
         final ArrayList<Publisher> allPublishers = rawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
@@ -117,7 +119,7 @@ public class BedethequeTest
         assertEquals("Yves", author.getGivenNames());
         assertEquals(Author.TYPE_FOREWORD, author.getType());
 
-        assertTrue(rawData.getString(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0])
-                          .endsWith("1672259114746_bedetheque_2840557428_0_.jpg"));
+        assertTrue(rawData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0])
+                          .get(0).endsWith("1672259114746_bedetheque_2840557428_0_.jpg"));
     }
 }
