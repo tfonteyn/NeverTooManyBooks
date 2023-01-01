@@ -38,12 +38,12 @@ public final class ColorMapper
     static {
         // stripinfo.be
         MAPPER.put("kleur", R.string.book_color_full_color);
-        MAPPER.put("zwart/wit", R.string.book_color_uncolored);
+        MAPPER.put("zwart/wit", R.string.book_color_black_and_white);
         MAPPER.put("Zwart/wit met steunkleur", R.string.book_color_support_color);
 
         // lastdodo.nl
         MAPPER.put("gekleurd", R.string.book_color_full_color);
-        MAPPER.put("ongekleurd", R.string.book_color_uncolored);
+        MAPPER.put("ongekleurd", R.string.book_color_black_and_white);
     }
 
     @NonNull

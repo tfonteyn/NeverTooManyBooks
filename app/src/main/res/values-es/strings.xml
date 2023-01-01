@@ -127,7 +127,7 @@
     <string name="bob_empty_year">(Año no establecido)</string>
     <string name="book_color_full_color">De colores</string>
     <string name="book_color_support_color">Bicolor</string>
-    <string name="book_color_uncolored">en blanco y negro</string>
+    <string name="book_color_black_and_white">en blanco y negro</string>
     <string name="book_format_audiobook">Audio libro</string>
     <string name="book_format_digest">Pequeño</string>
     <string name="book_format_dimensions">Dimensiones</string>

@@ -127,7 +127,7 @@
     <string name="bob_empty_year">(Το έτος δεν έχει οριστεί)</string>
     <string name="book_color_full_color">Εγχρωμος</string>
     <string name="book_color_support_color">Δίχρωμος</string>
-    <string name="book_color_uncolored">"γραπτώς "</string>
+    <string name="book_color_black_and_white">γραπτώς</string>
     <string name="book_format_audiobook">Ακουστικό βιβλίο</string>
     <string name="book_format_digest">Kleines</string>
     <string name="book_format_dimensions">Διαστάσεις</string>

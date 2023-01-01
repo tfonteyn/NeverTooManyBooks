@@ -125,7 +125,7 @@
     <string name="bob_empty_year">(Jaar niet ingevuld)</string>
     <string name="book_color_full_color">Gekleurd</string>
     <string name="book_color_support_color">Tweekleurig</string>
-    <string name="book_color_uncolored">Ongekleurd</string>
+    <string name="book_color_black_and_white">Ongekleurd</string>
     <string name="book_format_audiobook">Luisterboek</string>
     <string name="book_format_digest">Klein</string>
     <string name="book_format_dimensions">Afmetingen</string>

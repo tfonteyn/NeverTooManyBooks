@@ -129,7 +129,7 @@
     <string name="bob_empty_year">(Yıl ayarlanmadı)</string>
     <string name="book_color_full_color">Renkli</string>
     <string name="book_color_support_color">çok renkli</string>
-    <string name="book_color_uncolored">siyah ve beyaz</string>
+    <string name="book_color_black_and_white">siyah ve beyaz</string>
     <string name="book_format_audiobook">Sesli kitap</string>
     <string name="book_format_digest">Küçük</string>
     <string name="book_format_dimensions">Boyutlar</string>

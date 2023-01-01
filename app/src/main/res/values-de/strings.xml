@@ -127,7 +127,7 @@
     <string name="bob_empty_year">(Jahr nicht festgelegt)</string>
     <string name="book_color_full_color">Farbig</string>
     <string name="book_color_support_color">Zweifarbig</string>
-    <string name="book_color_uncolored">"schwarzweiß "</string>
+    <string name="book_color_black_and_white">schwarzweiß</string>
     <string name="book_format_audiobook">Hörbuch</string>
     <string name="book_format_digest">Heft</string>
     <string name="book_format_dimensions">Abmessungen</string>

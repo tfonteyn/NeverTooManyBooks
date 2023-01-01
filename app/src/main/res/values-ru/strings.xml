@@ -127,7 +127,7 @@
     <string name="bob_empty_year">(Год не указан)</string>
     <string name="book_color_full_color">цветной</string>
     <string name="book_color_support_color">двухцветных</string>
-    <string name="book_color_uncolored">рисунок пером</string>
+    <string name="book_color_black_and_white">рисунок пером</string>
     <string name="book_format_audiobook">Аудиокнига</string>
     <string name="book_format_digest">Малый</string>
     <string name="book_format_dimensions">размеры</string>

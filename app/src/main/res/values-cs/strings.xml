@@ -126,7 +126,7 @@
     <string name="bob_empty_year">(Rok není nastaven)</string>
     <string name="book_color_full_color">Barevný</string>
     <string name="book_color_support_color">Dvoubarevné</string>
-    <string name="book_color_uncolored">"černobílý "</string>
+    <string name="book_color_black_and_white">černobílý</string>
     <string name="book_format_audiobook">Audio kniha</string>
     <string name="book_format_digest">Malý</string>
     <string name="book_format_dimensions">Rozměry</string>
