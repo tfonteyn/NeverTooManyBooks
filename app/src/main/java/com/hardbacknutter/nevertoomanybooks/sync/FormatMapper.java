@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * Good description at
  * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Format">isfdb</a>
  * <p>
- * Bedetheque specific formats are handled in the search engine itself.
+ * Some search engines will do their own mapping.
  */
 public final class FormatMapper
         extends MapperBase {
