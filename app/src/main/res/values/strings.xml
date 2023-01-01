@@ -474,12 +474,21 @@
 
     <!--  book format - traditional 'hardcover' also known as 'hardback' -->
     <string name="book_format_hardcover">Hardcover</string>
-    <!-- book format - A Softcover is not necessarily a paperback -->
-    <string name="book_format_softcover">Softcover</string>
     <!--  book format - traditional 'paperback' also known as 'pocketbook' -->
     <string name="book_format_paperback">Paperback</string>
     <!--  book format - a large format paperback -->
     <string name="book_format_paperback_large">Trade Paperback</string>
+
+
+    <!-- book format - A Softcover is not necessarily a paperback - mostly used by comics -->
+    <string name="book_format_softcover">Softcover</string>
+    <!-- -book format - oblong, landscape, A l'italienne -->
+    <string name="book_format_hardcover_oblong">Hardcover Oblong</string>
+    <string name="book_format_softcover_oblong">Softcover Oblong</string>
+    <string name="book_format_comic">Comic</string>
+    <string name="book_format_other">Other</string>
+
+
     <!--  book format - mostly used for magazines like 'readers digest'
           A lot of english monthly magazines use the same format.
           In French this is semi-officially known as "Petit format" or "Small size".
