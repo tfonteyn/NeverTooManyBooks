@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -69,11 +70,13 @@ public class BedethequeSearchEngine
     public static final Throttler THROTTLER = new Throttler(1_000);
     private static final Pattern PUB_DATE = Pattern.compile("\\d\\d/\\d\\d\\d\\d");
 
+    private static final String PK_BEDETHEQUE_PRESERVE_FORMAT_NAMES = "bedetheque.resolve.formats";
+
     /** The "en" must be as-is. */
     private static final Pattern SERIES_WITH_LANGUAGE = Pattern
             .compile("(.*)\\s+\\(en (.*)\\)");
     private static final Pattern SERIES_WITH_SIMPLE_PREFIX = Pattern
-            .compile("(.*)\\s+\\((le|la|les|l')\\)",
+            .compile("(.*)\\s+\\((le|la|les|l'|the)\\)",
                      Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     private static final String COOKIE = "csrf_cookie_bel";
     private static final String COOKIE_DOMAIN = ".bedetheque.com";
@@ -255,6 +258,7 @@ public class BedethequeSearchEngine
                         if (textNode != null) {
                             // can be overwritten by "Autres info :"
                             bookData.putString(DBKey.FORMAT, textNode.toString().trim());
+                            mapFormat(context, bookData, false);
                         }
                         break;
                     }
@@ -266,6 +270,12 @@ public class BedethequeSearchEngine
                         break;
                     }
                     case "Tome :": {
+                        //FIXME: some books (non-french?) have two numbers which the site
+                        // concatenates... uh???
+                        // e.g. the series "Lucky Luke (en anglais):
+                        // https://www.bedetheque.com/BD-Lucky-Luke-en-anglais-Tome-148-Dick-Digger-s-Gold-Mine-227463.html
+                        // seems to have BOTH "1" and "48" ... and we end up with "148"
+                        // This is clearly a bug on the site... not sure what we can do about that
                         final Node textNode = label.nextSibling();
                         if (textNode != null && !seriesList.isEmpty()) {
                             seriesList.get(seriesList.size() - 1)
@@ -334,7 +344,7 @@ public class BedethequeSearchEngine
                                  .stream()
                                  .map(sib -> sib.attr("title"))
                                  .anyMatch("Couverture souple"::equals)) {
-                            bookData.putString(DBKey.FORMAT, "Couverture souple");
+                            mapFormat(context, bookData, true);
                         }
                     }
                 }
@@ -369,6 +379,62 @@ public class BedethequeSearchEngine
                 parseCovers(document, fetchCovers, bookData);
             }
         }
+    }
+
+    /**
+     * Map Bedetheque specific formats to our generalized ones if allowed.
+     *
+     * @param context   Current context
+     * @param bookData  Bundle to update
+     * @param softcover {@code true} if the books is a softcover, {@code false} for hardcover
+     */
+    private void mapFormat(@NonNull final Context context,
+                           @NonNull final Bundle bookData,
+                           final boolean softcover) {
+        if (PreferenceManager.getDefaultSharedPreferences(context)
+                             .getBoolean(PK_BEDETHEQUE_PRESERVE_FORMAT_NAMES, false)) {
+            return;
+        }
+
+        String format = bookData.getString(DBKey.FORMAT);
+        switch (format) {
+            case "Couverture souple":
+                format = context.getString(R.string.book_format_softcover);
+                break;
+
+            case "":
+            case "Format normal":
+            case "Grand format":
+                format = context.getString(softcover ? R.string.book_format_softcover
+                                                     : R.string.book_format_hardcover);
+                break;
+
+            case "A l'italienne":
+                format = context.getString(softcover ? R.string.book_format_softcover_oblong
+                                                     : R.string.book_format_hardcover_oblong);
+                break;
+
+            case "Format comics":
+                format = context.getString(softcover ? R.string.book_format_comic
+                                                     : R.string.book_format_hardcover);
+                break;
+
+            case "Format manga":
+            case "Format poche":
+                format = context.getString(softcover ? R.string.book_format_paperback
+                                                     : R.string.book_format_hardcover);
+                break;
+
+            case "Autre format":
+                format = context.getString(R.string.book_format_other);
+                break;
+
+            default:
+                // keep
+                break;
+        }
+
+        bookData.putString(DBKey.FORMAT, format);
     }
 
     /**
