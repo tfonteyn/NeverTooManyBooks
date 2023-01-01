@@ -25,7 +25,7 @@
     <PreferenceCategory
         android:title="@string/site_lastdodo_nl">
 
-        <!-- defaults to "true" ! -->
+        <!-- By exception defaults to "true" ! -->
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_barcode"
