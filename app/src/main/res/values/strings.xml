@@ -1646,6 +1646,7 @@
     <string name="err_real_author_must_be_valid">Must be blank or an existing Author</string>
     <string name="confirm_create_real_author">“%1$s” does not exist yet. Should it be created?</string>
     <string name="pt_search_resolve_authors_bedetheque">Resolve author pen-names using the Bedetheque website</string>
+    <string name="pt_bedetheque_search_resolve_formats">Preserve Bedetheque (french) format naming</string>
 
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
