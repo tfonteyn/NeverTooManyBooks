@@ -33,47 +33,44 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * <p>
  * Good description at
  * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Format">isfdb</a>
+ * <p>
+ * Bedetheque specific formats are handled in the search engine itself.
  */
 public final class FormatMapper
         extends MapperBase {
 
     // use all lowercase keys!
     static {
-        // ISFDB
-        // mass market paperback
         MAPPER.put("mmpb", R.string.book_format_paperback);
+        MAPPER.put("mass market paperback", R.string.book_format_paperback);
         MAPPER.put("pb", R.string.book_format_paperback);
+        MAPPER.put("paperback", R.string.book_format_paperback);
+
         MAPPER.put("tp", R.string.book_format_paperback_large);
+
         MAPPER.put("hc", R.string.book_format_hardcover);
+        MAPPER.put("hardcover", R.string.book_format_hardcover);
+
         MAPPER.put("ebook", R.string.book_format_ebook);
         MAPPER.put("digest", R.string.book_format_digest);
         MAPPER.put("audio cassette", R.string.book_format_audiobook);
         MAPPER.put("audio cd", R.string.book_format_audiobook);
         MAPPER.put("unknown", R.string.unknown);
 
-        MAPPER.put("mass market paperback", R.string.book_format_paperback);
-        MAPPER.put("paperback", R.string.book_format_paperback);
-        MAPPER.put("hardcover", R.string.book_format_hardcover);
-
-        // GoogleBooks, not already listed above.
+        // english - GoogleBooks
         MAPPER.put("dimensions", R.string.book_format_dimensions);
 
-        // KBNL, not already listed above.
+        // dutch - KBNL
         MAPPER.put("geb.", R.string.book_format_hardcover);
+        // dutch - KBNL
         MAPPER.put("gebonden", R.string.book_format_hardcover);
 
-        // stripinfo.be
+        // dutch - stripinfo.be
         MAPPER.put("softcover", R.string.book_format_softcover);
+        // dutch - stripinfo.be
         MAPPER.put("digitaal", R.string.book_format_ebook);
 
-        // bedetheque
-        MAPPER.put("Couverture souple", R.string.book_format_softcover);
-        MAPPER.put("format normal", R.string.book_format_hardcover);
-        MAPPER.put("format grand", R.string.book_format_hardcover);
-        MAPPER.put("format poche", R.string.book_format_paperback);
-
-
-        // Others as seen in the wild
+        // Others
         MAPPER.put("hardback", R.string.book_format_hardcover);
     }
 
