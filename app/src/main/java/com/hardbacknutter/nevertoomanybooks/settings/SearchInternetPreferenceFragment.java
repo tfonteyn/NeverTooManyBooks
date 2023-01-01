@@ -55,11 +55,15 @@ public class SearchInternetPreferenceFragment
                 .setVisible(BuildConfig.ENABLE_LAST_DODO);
 
         //noinspection ConstantConditions
-        findPreference(PSK_SEARCH_SITE_ + "librarything")
-                .setVisible(BuildConfig.ENABLE_LIBRARY_THING_ALT_ED);
-
-        //noinspection ConstantConditions
         findPreference(PSK_SEARCH_SITE_ + "stripinfo")
                 .setVisible(BuildConfig.ENABLE_STRIP_INFO);
+
+        //noinspection ConstantConditions
+        findPreference(PSK_SEARCH_SITE_ + "bedetheque")
+                .setVisible(BuildConfig.ENABLE_BEDETHEQUE);
+
+        //noinspection ConstantConditions
+        findPreference(PSK_SEARCH_SITE_ + "librarything")
+                .setVisible(BuildConfig.ENABLE_LIBRARY_THING_ALT_ED);
     }
 }

@@ -54,6 +54,12 @@
         </Preference>
 
         <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequePreferencesFragment"
+            android:key="psk_search_site_bedetheque"
+            android:title="@string/site_bedetheque">
+        </Preference>
+
+        <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks.GoogleBooksPreferencesFragment"
             android:key="psk_search_site_googlebooks"
             android:title="@string/site_google_books">
