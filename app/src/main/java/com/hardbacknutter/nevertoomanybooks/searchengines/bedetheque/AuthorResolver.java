@@ -279,8 +279,8 @@ public class AuthorResolver {
                 + CacheDbHelper.BDT_AUTHOR_NAME + "=?"
                 + ',' + CacheDbHelper.BDT_AUTHOR_NAME_OB + "=?"
                 + ',' + CacheDbHelper.BDT_AUTHOR_URL + "=?"
-                + ',' + CacheDbHelper.BDT_AUTHOR_NAME + "=?"
-                + ',' + CacheDbHelper.BDT_AUTHOR_NAME_OB + "=?"
+                + ',' + CacheDbHelper.BDT_AUTHOR_RESOLVED_NAME + "=?"
+                + ',' + CacheDbHelper.BDT_AUTHOR_RESOLVED_NAME_OB + "=?"
                 + " WHERE " + CacheDbHelper.PK_ID + "=?")) {
             stmt.bindString(1, bdtAuthor.getName());
             stmt.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(), seLocale));
