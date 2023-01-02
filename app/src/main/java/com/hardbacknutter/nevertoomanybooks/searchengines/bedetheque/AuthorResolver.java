@@ -285,8 +285,10 @@ public class AuthorResolver {
             stmt.bindString(1, bdtAuthor.getName());
             stmt.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(), seLocale));
             stmt.bindString(3, bdtAuthor.getUrl());
-            stmt.bindString(1, bdtAuthor.getResolvedName());
-            stmt.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getResolvedName(), seLocale));
+            stmt.bindString(4, bdtAuthor.getResolvedName());
+            stmt.bindString(5, SqlEncode.orderByColumn(bdtAuthor.getResolvedName(), seLocale));
+
+            stmt.bindLong(6, bdtAuthor.getId());
             stmt.executeUpdateDelete();
         }
     }
