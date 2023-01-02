@@ -149,7 +149,7 @@ public class ListFormatter<T extends Entity>
             case Full: {
                 return rawValue.stream()
                                .map(entity -> entity.getLabel(context, itemDetails, style))
-                               .map(s -> "<li>" + escapeBedetheque(s) + "</li>")
+                               .map(s -> "<li>" + s + "</li>")
                                .collect(Collectors.joining("", "<ul>", "</ul>"));
             }
             case Normal: {
@@ -174,13 +174,5 @@ public class ListFormatter<T extends Entity>
             default:
                 throw new IllegalArgumentException("listDetails=" + listDetails);
         }
-    }
-
-    // FIXME: quick hack to escape the 'generic' authors from bedetheque
-    private String escapeBedetheque(@NonNull final String s) {
-        if (s.startsWith("<") && s.endsWith(">")) {
-            return "&lt;" + s.substring(1, s.length() - 1) + "&gt;";
-        }
-        return s;
     }
 }
