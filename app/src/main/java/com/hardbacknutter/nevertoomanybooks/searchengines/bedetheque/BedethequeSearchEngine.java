@@ -212,7 +212,7 @@ public class BedethequeSearchEngine
                 if (text.isBlank() && lastAuthorType != -1) {
                     final Element span = label.nextElementSibling();
                     if (span != null) {
-                        processAuthor(span, lastAuthorType);
+                        processAuthor(context, span.text(), lastAuthorType);
                     }
                     continue;
                 }
@@ -295,7 +295,7 @@ public class BedethequeSearchEngine
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_WRITER;
-                            processAuthor(a, Author.TYPE_WRITER);
+                            processAuthor(context, a.text(), Author.TYPE_WRITER);
                         }
                         break;
                     }
@@ -303,15 +303,50 @@ public class BedethequeSearchEngine
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_ARTIST;
-                            processAuthor(a, Author.TYPE_ARTIST);
+                            processAuthor(context, a.text(), Author.TYPE_ARTIST);
                         }
                         break;
                     }
+                    case "Encrage :": {
+                        final Element a = label.nextElementSibling();
+                        if (a != null) {
+                            lastAuthorType = Author.TYPE_INKING;
+                            processAuthor(context, a.text(), Author.TYPE_INKING);
+                        }
+                        break;
+                    }
+
                     case "Couleurs :": {
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_COLORIST;
-                            processAuthor(a, Author.TYPE_COLORIST);
+
+                            // These are generic authors which are really the colors used.
+                            switch (a.text()) {
+                                case "<N&B>":
+                                case "<Monochromie>":
+                                    bookData.putString(DBKey.COLOR, context.getString(
+                                            R.string.book_color_black_and_white));
+                                    break;
+
+                                case "<Bichromie>":
+                                    // B&W with 1 or 2 support colors
+                                case "<Trichromie>":
+                                    // extremely seldom used; we'll set to same as "Bi"
+                                    bookData.putString(DBKey.COLOR, context.getString(
+                                            R.string.book_color_support_color));
+                                    break;
+
+                                case "<Quadrichromie>":
+                                    bookData.putString(DBKey.COLOR, context.getString(
+                                            R.string.book_color_full_color));
+                                    break;
+
+                                default:
+                                    // it's a real name
+                                    processAuthor(context, a.text(), Author.TYPE_COLORIST);
+                                    break;
+                            }
                         }
                         break;
                     }
@@ -319,7 +354,7 @@ public class BedethequeSearchEngine
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_COVER_ARTIST;
-                            processAuthor(a, Author.TYPE_COVER_ARTIST);
+                            processAuthor(context, a.text(), Author.TYPE_COVER_ARTIST);
                         }
                         break;
                     }
@@ -327,7 +362,7 @@ public class BedethequeSearchEngine
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_FOREWORD;
-                            processAuthor(a, Author.TYPE_FOREWORD);
+                            processAuthor(context, a.text(), Author.TYPE_FOREWORD);
                         }
                         break;
                     }
@@ -335,7 +370,15 @@ public class BedethequeSearchEngine
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_TRANSLATOR;
-                            processAuthor(a, Author.TYPE_TRANSLATOR);
+                            processAuthor(context, a.text(), Author.TYPE_TRANSLATOR);
+                        }
+                        break;
+                    }
+                    case "Autres :": {
+                        final Element a = label.nextElementSibling();
+                        if (a != null) {
+                            lastAuthorType = Author.TYPE_CONTRIBUTOR;
+                            processAuthor(context, a.text(), Author.TYPE_CONTRIBUTOR);
                         }
                         break;
                     }
@@ -523,11 +566,38 @@ public class BedethequeSearchEngine
         }
     }
 
-    private void processAuthor(@NonNull final Element a,
+    private void processAuthor(@NonNull final Context context,
+                               @NonNull final String names,
                                @Author.Type final int currentAuthorType) {
 
-        final String names = a.text();
-        final Author currentAuthor = Author.from(names);
+        final Author currentAuthor;
+
+        // colors - handled by "Couleurs"
+        //"<N&B>", "<Monochromie>", "<Bichromie>", "<Trichromie>", "<Quadrichromie>"
+        // scenario author for an art-book; ignore
+        // "<Art Book>"
+        // Used for books; The authors for "dessin" and "couleurs"; ignore
+        // "<Texte non illustré>"
+        switch (names) {
+            case "<Indéterminé>":
+            case "<Anonyme>":
+                currentAuthor = Author.createUnknownAuthor(context);
+                break;
+
+            case "<Collectif>":
+                currentAuthor = Author.from(names.substring(1, names.length() - 1));
+                break;
+
+            case "<Art Book>":
+            case "<Texte non illustré>":
+                // ignore these
+                return;
+
+            default:
+                currentAuthor = Author.from(names);
+                break;
+        }
+
         boolean add = true;
         // check if already present
         for (final Author author : authorList) {
