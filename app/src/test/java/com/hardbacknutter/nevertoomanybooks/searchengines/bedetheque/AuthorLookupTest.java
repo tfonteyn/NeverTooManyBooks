@@ -67,7 +67,6 @@ class AuthorLookupTest
 
             final List<AuthorResolver.BdtAuthor> list = resolver.parseAuthorList(document);
             assertEquals(2585, list.size());
-
         }
     }
 
@@ -91,7 +90,7 @@ class AuthorLookupTest
             assertTrue(modified);
             assertEquals("Leloup, Roger", bdtAuthor.getName());
             assertEquals("Leloup, Roger", bdtAuthor.getResolvedName());
-
+            assertTrue(bdtAuthor.isResolved());
         }
     }
 
@@ -115,7 +114,7 @@ class AuthorLookupTest
             assertTrue(modified);
             assertEquals("Leo", bdtAuthor.getName());
             assertEquals("De Oliveira, Luiz Eduardo", bdtAuthor.getResolvedName());
-
+            assertTrue(bdtAuthor.isResolved());
         }
     }
 }

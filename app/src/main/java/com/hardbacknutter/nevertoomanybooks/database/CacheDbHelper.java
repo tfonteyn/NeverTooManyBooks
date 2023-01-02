@@ -53,6 +53,7 @@ public class CacheDbHelper
     public static final String BDT_AUTHOR_NAME_OB = "name_ob";
     /** The url for the author page. */
     public static final String BDT_AUTHOR_URL = "url";
+    public static final String BDT_AUTHOR_IS_RESOLVED = "res";
     /** The resolved name if any. */
     public static final String BDT_AUTHOR_RESOLVED_NAME = "res_name";
     public static final String BDT_AUTHOR_RESOLVED_NAME_OB = "res_name_ob";
@@ -82,6 +83,8 @@ public class CacheDbHelper
     private static final Domain DOM_BDT_AUTHOR_NAME_OB;
     /** {@link #TBL_BDT_AUTHORS}. The url to the author page on Bedetheque. */
     private static final Domain DOM_BDT_AUTHOR_URL;
+    /** {@link #TBL_BDT_AUTHORS}. */
+    private static final Domain DOM_BDT_AUTHOR_IS_RESOLVED;
     /** {@link #TBL_BDT_AUTHORS}. */
     private static final Domain DOM_BDT_AUTHOR_RESOLVED_NAME;
     /** {@link #TBL_BDT_AUTHORS}. */
@@ -138,6 +141,13 @@ public class CacheDbHelper
                 new Domain.Builder(BDT_AUTHOR_URL, SqLiteDataType.Text)
                         .notNull()
                         .build();
+
+        DOM_BDT_AUTHOR_IS_RESOLVED =
+                new Domain.Builder(BDT_AUTHOR_IS_RESOLVED, SqLiteDataType.Boolean)
+                        .notNull()
+                        .withDefault(false)
+                        .build();
+
         TBL_IMAGE =
                 new TableDefinition("image", "image")
                         .addDomains(DOM_PK_ID,
@@ -155,6 +165,7 @@ public class CacheDbHelper
                         .addDomains(DOM_PK_ID,
                                     DOM_BDT_AUTHOR_NAME,
                                     DOM_BDT_AUTHOR_NAME_OB,
+                                    DOM_BDT_AUTHOR_IS_RESOLVED,
                                     DOM_BDT_AUTHOR_RESOLVED_NAME,
                                     DOM_BDT_AUTHOR_RESOLVED_NAME_OB,
                                     DOM_BDT_AUTHOR_URL)

@@ -115,14 +115,19 @@ public class AuthorResolver {
 
         // Check if we have the author in the cache at all.
         BdtAuthor bdtAuthor = findInCache(author);
-        // If not found, load/refresh the list-page on which the author should/could be
         if (bdtAuthor == null) {
+            // If not found,
             final char c1 = author.getFamilyName().charAt(0);
-            final List<BdtAuthor> list = fetchAuthorListFromSite(context, c1);
-            if (!list.isEmpty()) {
-                storeAuthorListInCache(list);
+            // and the list-page was never fetched before,
+            if (!isAuthorPageCached(c1)) {
+                // go fetch the the list-page on which the author should/could be
+                final List<BdtAuthor> list = fetchAuthorListFromSite(context, c1);
+                if (!list.isEmpty()) {
+                    storeAuthorListInCache(list);
+                    // If the author was on the list page, we should find it now.
+                    bdtAuthor = findInCache(author);
+                }
             }
-            bdtAuthor = findInCache(author);
         }
 
         // If the author is unknown on the site, we're done.
@@ -130,13 +135,20 @@ public class AuthorResolver {
             return false;
         }
 
-        if (bdtAuthor.getResolvedName().isBlank()) {
-            // The resolved name is not in the cache, load the author page
+        // The author is on the site + in our cache.
+        if (!bdtAuthor.isResolved()) {
+            // but we have never resolved the name yet, so load the author details page
             final Document document = searchEngine.loadDocument(context, bdtAuthor.getUrl(),
                                                                 null);
             if (!searchEngine.isCancelled()) {
                 if (parseAuthor(document, bdtAuthor)) {
+                    // Always update; this will correct any diacritics
+                    // The 'resolved' flag will have been set to 'true'
+                    // (and the resolved name if appropriate)
                     updateAuthorInCache(bdtAuthor);
+                } else {
+                    // parsing went wrong... we should never get here... flw
+                    return false;
                 }
             }
         }
@@ -146,16 +158,16 @@ public class AuthorResolver {
             return false;
         }
 
-        // Resolve and set the real-author
+        // The name was a pen-name and we have resolved it to their real name
+        // Add it accordingly to the original Author object
         final Author realAuthor = Author.from(bdtAuthor.getResolvedName());
         authorDao.refresh(context, realAuthor, false, seLocale);
         author.setRealAuthor(realAuthor);
 
-        // Overwrite the pen-name; this will correct any diacritics
+        // sanity check that the original name and the pen-name match
         final Author penAuthor = Author.from(bdtAuthor.getName());
-        // sanity check; they should match
         if (penAuthor.hashCodeOfNameOnly() == author.hashCodeOfNameOnly()) {
-            // Overwrite the name; this will correct any diacritics
+            // Always overwrite the name; this will correct any diacritics
             author.setName(penAuthor.getFamilyName(), penAuthor.getGivenNames());
         }
 
@@ -163,12 +175,15 @@ public class AuthorResolver {
     }
 
     /**
-     * Parse the downloaded document and update the given BdtAuthor if possible.
+     * Parse the downloaded document and update the given {@link BdtAuthor} if possible.
+     * <p>
+     * If successful, the 'resolved' flag for the given BdtAuthor will be set {@code true}.
      *
      * @param document  to parse
      * @param bdtAuthor to update
      *
-     * @return {@code true} if the BdtAuthor was modified; {@code false} otherwise
+     * @return {@code true} if the {@link BdtAuthor} was resolved;
+     * {@code false} otherwise, this should never be the case though
      */
     @VisibleForTesting
     boolean parseAuthor(@NonNull final Document document,
@@ -206,15 +221,12 @@ public class AuthorResolver {
                     }
                 }
             }
-            // TODO: another sanity check: test if the penName matches the bdtAuthor name
 
+            final String resolvedName = familyName + (givenName.isBlank() ? "" : ", " + givenName);
+            bdtAuthor.setResolvedName(resolvedName);
+            bdtAuthor.setResolved(true);
 
-            // sanity check, we always should have the family name at the very least
-            if (!familyName.isBlank()) {
-                bdtAuthor.setResolvedName(familyName + (givenName.isBlank() ? ""
-                                                                            : ", " + givenName));
-                return true;
-            }
+            return true;
         }
         return false;
     }
@@ -274,21 +286,20 @@ public class AuthorResolver {
     }
 
     private void updateAuthorInCache(@NonNull final BdtAuthor bdtAuthor) {
-        try (SynchronizedStatement stmt = cacheDb.compileStatement(
-                "UPDATE " + CacheDbHelper.TBL_BDT_AUTHORS + " SET "
-                + CacheDbHelper.BDT_AUTHOR_NAME + "=?"
-                + ',' + CacheDbHelper.BDT_AUTHOR_NAME_OB + "=?"
-                + ',' + CacheDbHelper.BDT_AUTHOR_URL + "=?"
-                + ',' + CacheDbHelper.BDT_AUTHOR_RESOLVED_NAME + "=?"
-                + ',' + CacheDbHelper.BDT_AUTHOR_RESOLVED_NAME_OB + "=?"
-                + " WHERE " + CacheDbHelper.PK_ID + "=?")) {
+        try (SynchronizedStatement stmt = cacheDb.compileStatement(BdtAuthor.UPDATE)) {
             stmt.bindString(1, bdtAuthor.getName());
             stmt.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(), seLocale));
             stmt.bindString(3, bdtAuthor.getUrl());
-            stmt.bindString(4, bdtAuthor.getResolvedName());
-            stmt.bindString(5, SqlEncode.orderByColumn(bdtAuthor.getResolvedName(), seLocale));
-
-            stmt.bindLong(6, bdtAuthor.getId());
+            if (bdtAuthor.isResolved()) {
+                stmt.bindBoolean(4, true);
+                stmt.bindNull(5);
+                stmt.bindNull(6);
+            } else {
+                stmt.bindBoolean(4, false);
+                stmt.bindString(5, bdtAuthor.getResolvedName());
+                stmt.bindString(6, SqlEncode.orderByColumn(bdtAuthor.getResolvedName(), seLocale));
+            }
+            stmt.bindLong(7, bdtAuthor.getId());
             stmt.executeUpdateDelete();
         }
     }
@@ -301,15 +312,7 @@ public class AuthorResolver {
      * @param list to insert/update
      */
     private void storeAuthorListInCache(@NonNull final List<BdtAuthor> list) {
-        try (SynchronizedStatement stmt = cacheDb.compileStatement(
-                "INSERT INTO " + CacheDbHelper.TBL_BDT_AUTHORS
-                + "(" + CacheDbHelper.BDT_AUTHOR_NAME
-                + ',' + CacheDbHelper.BDT_AUTHOR_NAME_OB
-                + ',' + CacheDbHelper.BDT_AUTHOR_URL
-                + ") VALUES(?,?,?) ON CONFLICT(" + CacheDbHelper.BDT_AUTHOR_NAME_OB
-                + ") DO UPDATE SET " + CacheDbHelper.BDT_AUTHOR_URL
-                + "=excluded." + CacheDbHelper.BDT_AUTHOR_URL)) {
-
+        try (SynchronizedStatement stmt = cacheDb.compileStatement(BdtAuthor.INSERT)) {
             for (final BdtAuthor bdtAuthor : list) {
                 stmt.bindString(1, bdtAuthor.getName());
                 stmt.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(), seLocale));
@@ -328,13 +331,14 @@ public class AuthorResolver {
      */
     @Nullable
     private BdtAuthor findInCache(@NonNull final Author author) {
-        final String nameOb = SqlEncode.orderByColumn(author.getFormattedName(false),
-                                                      seLocale);
+        final String nameOb = SqlEncode
+                .orderByColumn(author.getFormattedName(false), seLocale);
 
         try (Cursor cursor = cacheDb.rawQuery(
                 "SELECT "
                 + CacheDbHelper.PK_ID
                 + ',' + CacheDbHelper.BDT_AUTHOR_NAME
+                + ',' + CacheDbHelper.BDT_AUTHOR_IS_RESOLVED
                 + ',' + CacheDbHelper.BDT_AUTHOR_RESOLVED_NAME
                 + ',' + CacheDbHelper.BDT_AUTHOR_URL
                 + " FROM " + CacheDbHelper.TBL_BDT_AUTHORS
@@ -349,13 +353,41 @@ public class AuthorResolver {
         return null;
     }
 
+    private boolean isAuthorPageCached(final char c1) {
+        try (SynchronizedStatement stmt = cacheDb.compileStatement(
+                "SELECT DISTINCT 1 FROM " + CacheDbHelper.TBL_BDT_AUTHORS
+                + " WHERE " + CacheDbHelper.BDT_AUTHOR_NAME + " LIKE ?")) {
+            stmt.bindString(1, c1 + "%");
+            return stmt.simpleQueryForLongOrZero() != 0;
+        }
+    }
+
     @VisibleForTesting
     static class BdtAuthor {
+        public static final String INSERT =
+                "INSERT INTO " + CacheDbHelper.TBL_BDT_AUTHORS
+                + "(" + CacheDbHelper.BDT_AUTHOR_NAME
+                + ',' + CacheDbHelper.BDT_AUTHOR_NAME_OB
+                + ',' + CacheDbHelper.BDT_AUTHOR_URL
+                + ") VALUES(?,?,?) ON CONFLICT(" + CacheDbHelper.BDT_AUTHOR_NAME_OB
+                + ") DO UPDATE SET " + CacheDbHelper.BDT_AUTHOR_URL
+                + "=excluded." + CacheDbHelper.BDT_AUTHOR_URL;
+        private static final String UPDATE =
+                "UPDATE " + CacheDbHelper.TBL_BDT_AUTHORS + " SET "
+                + CacheDbHelper.BDT_AUTHOR_NAME + "=?"
+                + ',' + CacheDbHelper.BDT_AUTHOR_NAME_OB + "=?"
+                + ',' + CacheDbHelper.BDT_AUTHOR_URL + "=?"
+                + ',' + CacheDbHelper.BDT_AUTHOR_IS_RESOLVED + "=?"
+                + ',' + CacheDbHelper.BDT_AUTHOR_RESOLVED_NAME + "=?"
+                + ',' + CacheDbHelper.BDT_AUTHOR_RESOLVED_NAME_OB + "=?"
+                + " WHERE " + CacheDbHelper.PK_ID + "=?";
         private final long id;
         @NonNull
         private final String name;
         @NonNull
         private final String url;
+
+        private boolean resolved;
         @NonNull
         private String resolvedName;
 
@@ -371,6 +403,7 @@ public class AuthorResolver {
                   @NonNull final DataHolder data) {
             this.id = id;
             this.name = data.getString(CacheDbHelper.BDT_AUTHOR_NAME);
+            this.resolved = data.getBoolean(CacheDbHelper.BDT_AUTHOR_IS_RESOLVED);
             this.resolvedName = data.getString(CacheDbHelper.BDT_AUTHOR_RESOLVED_NAME);
             this.url = data.getString(CacheDbHelper.BDT_AUTHOR_URL);
         }
@@ -384,11 +417,31 @@ public class AuthorResolver {
             return name;
         }
 
+        public boolean isResolved() {
+            return resolved;
+        }
+
+        public void setResolved(final boolean resolved) {
+            this.resolved = resolved;
+        }
+
+        /**
+         * Get the resolved name. <strong>Only</strong> valid
+         * if {@link #isResolved()} returns {@code true}.
+         * Undefined if {@link #isResolved()} returns {@code false}.
+         *
+         * @return resolved name
+         */
         @NonNull
         String getResolvedName() {
             return resolvedName;
         }
 
+        /**
+         * Set the resolved name.
+         *
+         * @param resolvedName to set
+         */
         void setResolvedName(@NonNull final String resolvedName) {
             this.resolvedName = resolvedName;
         }
