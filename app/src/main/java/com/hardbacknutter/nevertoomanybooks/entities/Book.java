@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -1184,15 +1185,17 @@ public class Book
      * <b>"I'm reading " + title + series + " by " + author + ratingString</b>
      *
      * @param context Current context
+     * @param style   to apply
      *
      * @return the intent
      */
     @NonNull
-    public Intent getShareIntent(@NonNull final Context context) {
+    public Intent getShareIntent(@NonNull final Context context,
+                                 @NonNull final Style style) {
         final String title = getTitle();
 
         final Author author = getPrimaryAuthor();
-        final String authorStr = author != null ? author.getFormattedName(true)
+        final String authorStr = author != null ? author.getFormattedName(context, style)
                                                 : context.getString(R.string.unknown_author);
 
         final String seriesStr = getPrimarySeries()

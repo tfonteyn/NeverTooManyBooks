@@ -640,7 +640,7 @@ public class ShowBookDetailsFragment
 
             } else if (itemId == R.id.MENU_SHARE) {
                 //noinspection ConstantConditions
-                startActivity(book.getShareIntent(context));
+                startActivity(book.getShareIntent(context, aVm.getStyle()));
                 return true;
 
             } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {

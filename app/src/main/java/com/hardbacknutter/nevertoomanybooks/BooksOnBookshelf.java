@@ -1084,7 +1084,7 @@ public class BooksOnBookshelf
 
                 } else if (itemId == R.id.MENU_SHARE) {
                     final Book book = DataHolderUtils.requireBook(rowData);
-                    startActivity(book.getShareIntent(this));
+                    startActivity(book.getShareIntent(this, vm.getStyle(this)));
                     return true;
                 }
                 break;
