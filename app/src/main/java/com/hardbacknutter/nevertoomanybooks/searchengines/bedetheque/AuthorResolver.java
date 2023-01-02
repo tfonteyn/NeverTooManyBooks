@@ -131,19 +131,12 @@ public class AuthorResolver {
         }
 
         if (bdtAuthor.getResolvedName().isBlank()) {
-            if (bdtAuthor.getName().startsWith("<")) {
-                // This is a special "generic" author as used by the site.
-                // Set the resolved name for future usage.
-                bdtAuthor.setResolvedName(bdtAuthor.getName());
-                updateAuthorInCache(bdtAuthor);
-            } else {
-                // The resolved name is not in the cache, load the author page
-                final Document document = searchEngine.loadDocument(context, bdtAuthor.getUrl(),
-                                                                    null);
-                if (!searchEngine.isCancelled()) {
-                    if (parseAuthor(document, bdtAuthor)) {
-                        updateAuthorInCache(bdtAuthor);
-                    }
+            // The resolved name is not in the cache, load the author page
+            final Document document = searchEngine.loadDocument(context, bdtAuthor.getUrl(),
+                                                                null);
+            if (!searchEngine.isCancelled()) {
+                if (parseAuthor(document, bdtAuthor)) {
+                    updateAuthorInCache(bdtAuthor);
                 }
             }
         }
