@@ -48,7 +48,7 @@ public class CacheDbHelper
     public static final String IMAGE_BLOB = "image";
     public static final String IMAGE_LAST_UPDATED__UTC = "last_update_date";
 
-    /** The pen-name or real name */
+    /** The pen-name or real name. */
     public static final String BDT_AUTHOR_NAME = "name";
     public static final String BDT_AUTHOR_NAME_OB = "name_ob";
     /** The url for the author page. */
@@ -172,9 +172,7 @@ public class CacheDbHelper
                         .setPrimaryKey(DOM_PK_ID)
                         .addIndex(BDT_AUTHOR_NAME_OB, true, DOM_BDT_AUTHOR_NAME_OB)
                         .addIndex(BDT_AUTHOR_RESOLVED_NAME_OB, false,
-                                  DOM_BDT_AUTHOR_RESOLVED_NAME_OB)
-        ;
-
+                                  DOM_BDT_AUTHOR_RESOLVED_NAME_OB);
     }
 
     /** DO NOT USE INSIDE THIS CLASS! ONLY FOR USE BY CLIENTS VIA {@link #getDb()}. */

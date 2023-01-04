@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * A replacement for
- * {@link androidx.activity.result.contract.ActivityResultContracts.CreateDocument()}.
+ * {@link androidx.activity.result.contract.ActivityResultContracts.CreateDocument}.
  * <p>
  * Allows us to set the mimeType properly, and use an Optional as the return type.
  */

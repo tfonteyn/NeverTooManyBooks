@@ -216,6 +216,8 @@ public class StartupViewModel
      * Run a number of essential tasks (sequentially).
      *
      * @param context Current context
+     *
+     * @return {@code true} if at least one task was started; {@code false} if none were started
      */
     boolean startTasks(@NonNull final Context context) {
         if (!startTasks) {

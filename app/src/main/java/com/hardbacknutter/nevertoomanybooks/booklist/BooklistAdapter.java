@@ -409,6 +409,8 @@ public class BooklistAdapter
      *
      * @param context Current context
      * @param groupId the BooklistGroup id
+     * @param rowData read only access to the row data
+     * @param key     the {@link DBKey} for the item to be formatted
      *
      * @return Formatted string,
      * or original string when no special format was needed or on any failure

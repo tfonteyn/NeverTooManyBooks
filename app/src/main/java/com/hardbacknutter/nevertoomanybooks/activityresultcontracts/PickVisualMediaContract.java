@@ -50,6 +50,8 @@ public class PickVisualMediaContract
     /**
      * Check if the current device has support for the photo picker by checking
      * the running Android version or the SDK extension version.
+     *
+     * @return {@code true} if it is
      */
     @SuppressLint({"ClassVerificationFailure", "NewApi"})
     private static boolean isPhotoPickerAvailable() {

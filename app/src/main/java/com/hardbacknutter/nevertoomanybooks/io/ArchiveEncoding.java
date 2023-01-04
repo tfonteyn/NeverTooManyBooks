@@ -103,7 +103,9 @@ public enum ArchiveEncoding
     /**
      * Constructor.
      *
-     * @param fileExt to use as the proposed archive filename extension
+     * @param fileExt        to use as the proposed archive filename extension
+     * @param selectorResId  the string resource to show in the dropdown
+     * @param shortDescResId the matching short description to show below the dropdown
      */
     ArchiveEncoding(@NonNull final String fileExt,
                     final int selectorResId,
@@ -239,6 +241,9 @@ public enum ArchiveEncoding
      * @param helper  writer configuration
      *
      * @return a new writer
+     *
+     * @throws FileNotFoundException if the writer could not open a file
+     * @throws IllegalStateException if there is no writer available (which would be a bug)
      */
     @WorkerThread
     @NonNull
@@ -271,6 +276,7 @@ public enum ArchiveEncoding
      *
      * @return a new reader
      *
+     * @throws DataReaderException  if the input is not recognized
      * @throws StorageException     on storage related failures
      * @throws IOException          on generic/other IO failures
      * @throws CredentialsException on authentication/login failures

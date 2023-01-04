@@ -53,9 +53,12 @@ public final class OrderByHelper {
      * Conditionally reformat titles for <strong>use as the OrderBy column</strong>.
      * Optionally lookup/verify the actual Locale of the item.
      *
-     * @param context    Current context
-     * @param title      to reorder
-     * @param bookLocale to use if the lookup fails, or if lookupLocale was {@code false}
+     * @param context      Current context
+     * @param title        to reorder
+     * @param bookLocale   to use if the lookup fails, or if lookupLocale was {@code false}
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
      *
      * @return title and locale data which should be used to construct ORDER-BY columns
      */

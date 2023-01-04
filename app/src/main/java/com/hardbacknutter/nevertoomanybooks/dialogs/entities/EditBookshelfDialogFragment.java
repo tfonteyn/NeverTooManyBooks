@@ -183,7 +183,7 @@ public class EditBookshelfDialogFragment
             // There is one with the same name; ask whether to merge the 2
             SaveChangesHelper.askToMerge(
                     this, dao, bookshelf,
-                    (updatedId) -> Launcher.setResult(this, requestKey, updatedId),
+                    updatedId -> Launcher.setResult(this, requestKey, updatedId),
                     R.string.confirm_merge_bookshelves,
                     existingId);
         }

@@ -759,7 +759,7 @@ public class ExtArrayAdapter<T>
     private class DiacriticArrayFilter
             extends AbstractArrayFilter {
 
-        private final Pattern DIACRITICS_PATTERN = Pattern.compile("[^\\p{ASCII}]");
+        private final Pattern diacriticsPattern = Pattern.compile("[^\\p{ASCII}]");
 
         @Override
         @NonNull
@@ -821,9 +821,9 @@ public class ExtArrayAdapter<T>
          */
         @NonNull
         private String toAsciiLowerCase(@NonNull final CharSequence text) {
-            return DIACRITICS_PATTERN.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
-                                     .replaceAll("")
-                                     .toLowerCase(Locale.getDefault());
+            return diacriticsPattern.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
+                                    .replaceAll("")
+                                    .toLowerCase(Locale.getDefault());
         }
     }
 

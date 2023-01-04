@@ -206,7 +206,7 @@ public interface EntityBookLinksDao<T extends Entity>
      */
     void refresh(@NonNull Context context,
                  @NonNull T item,
-                 final boolean lookupLocale,
+                 boolean lookupLocale,
                  @NonNull Locale bookLocale);
 
     /**

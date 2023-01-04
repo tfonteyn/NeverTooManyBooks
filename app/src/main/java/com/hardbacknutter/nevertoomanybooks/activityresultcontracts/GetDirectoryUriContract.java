@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * A replacement for
- * {@link androidx.activity.result.contract.ActivityResultContracts.OpenDocumentTree()}.
+ * {@link androidx.activity.result.contract.ActivityResultContracts.OpenDocumentTree}.
  * <p>
  * Allows us to use an Optional as the return type.
  */

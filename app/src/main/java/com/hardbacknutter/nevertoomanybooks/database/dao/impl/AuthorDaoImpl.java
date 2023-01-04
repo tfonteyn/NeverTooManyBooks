@@ -507,11 +507,11 @@ public class AuthorDaoImpl
             final boolean success;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
                 stmt.bindString(1, author.getFamilyName());
-                stmt.bindString(2, SqlEncode.
-                        orderByColumn(author.getFamilyName(), authorLocale));
+                stmt.bindString(2, SqlEncode
+                        .orderByColumn(author.getFamilyName(), authorLocale));
                 stmt.bindString(3, author.getGivenNames());
-                stmt.bindString(4, SqlEncode.
-                        orderByColumn(author.getGivenNames(), authorLocale));
+                stmt.bindString(4, SqlEncode
+                        .orderByColumn(author.getGivenNames(), authorLocale));
                 stmt.bindBoolean(5, author.isComplete());
                 stmt.bindLong(6, author.getId());
 
@@ -770,8 +770,8 @@ public class AuthorDaoImpl
                 SELECT_
                 + "'" + AuthorWork.Type.BookLight.asChar() + "'" + _AS_ + DBKey.AUTHOR_WORK_TYPE
                 + ',' + TBL_BOOKS.dotAs(DBKey.PK_ID, DBKey.TITLE, DBKey.TITLE_OB)
-                + ",SUBSTR(" + TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION__DATE) + ",0,5)" +
-                _AS_ + DBKey.FIRST_PUBLICATION__DATE
+                + ",SUBSTR(" + TBL_BOOKS.dot(DBKey.FIRST_PUBLICATION__DATE) + ",0,5)"
+                + _AS_ + DBKey.FIRST_PUBLICATION__DATE
                 + ',' + TBL_BOOKS.dotAs(DBKey.LANGUAGE)
                 + ",1" + _AS_ + DBKey.BOOK_COUNT
                 + _FROM_ + TBL_BOOKS.startJoin(TBL_BOOK_AUTHOR);
@@ -798,8 +798,8 @@ public class AuthorDaoImpl
                 + "'" + AuthorWork.Type.TocEntry.asChar() + "'" + _AS_ + DBKey.AUTHOR_WORK_TYPE
                 + ',' + TBL_TOC_ENTRIES.dotAs(DBKey.PK_ID, DBKey.TITLE, DBKey.TITLE_OB)
                 // Year only
-                + ",SUBSTR(" + TBL_TOC_ENTRIES.dot(DBKey.FIRST_PUBLICATION__DATE) + ",0,5)" +
-                _AS_ + DBKey.FIRST_PUBLICATION__DATE
+                + ",SUBSTR(" + TBL_TOC_ENTRIES.dot(DBKey.FIRST_PUBLICATION__DATE) + ",0,5)"
+                + _AS_ + DBKey.FIRST_PUBLICATION__DATE
                 // The Toc table does not have a language field, just return an empty string
                 + ",''" + _AS_ + DBKey.LANGUAGE
                 // count the number of books this TOC entry is present in.

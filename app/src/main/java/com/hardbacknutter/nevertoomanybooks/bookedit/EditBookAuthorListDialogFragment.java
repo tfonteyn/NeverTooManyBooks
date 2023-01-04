@@ -298,8 +298,8 @@ public class EditBookAuthorListDialogFragment
         // The name was not changed OR
         // the name was modified but not used by any other books.
         //noinspection ConstantConditions
-        if ((original.getFamilyName().equals(modified.getFamilyName())
-             && original.getGivenNames().equals(modified.getGivenNames()))
+        if (original.getFamilyName().equals(modified.getFamilyName())
+            && original.getGivenNames().equals(modified.getGivenNames())
             || vm.isSingleUsage(context, original)) {
 
             original.copyFrom(modified, true);

@@ -288,8 +288,8 @@ public class TocEntryDaoImpl
                                           DBKey.AUTHOR_IS_COMPLETE)
 
                 // count the number of books this TOC entry is present in.
-                + ", (" +
-                SELECT_COUNT_FROM_ + TBL_BOOK_TOC_ENTRIES.getName()
+                + ", ("
+                + SELECT_COUNT_FROM_ + TBL_BOOK_TOC_ENTRIES.getName()
                 // use the full table name on the left as we need a full table scan
                 + _WHERE_ + TBL_BOOK_TOC_ENTRIES.getName() + '.' + DBKey.FK_TOC_ENTRY
                 // but filtered on the results from the main query (i.e. alias on the right).

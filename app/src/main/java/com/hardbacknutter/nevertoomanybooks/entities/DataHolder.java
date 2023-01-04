@@ -144,5 +144,5 @@ public interface DataHolder {
      * @return The list, can be empty, but never {@code null}
      */
     @NonNull
-    <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final String key);
+    <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull String key);
 }

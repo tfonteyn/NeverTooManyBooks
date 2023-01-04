@@ -275,6 +275,15 @@ public interface SearchEngine
         return showAlert;
     }
 
+    @WorkerThread
+    default void ping()
+            throws UnknownHostException,
+                   IOException,
+                   SocketTimeoutException,
+                   MalformedURLException {
+        NetworkUtils.ping(getHostUrl(), getEngineId().requireConfig().getConnectTimeoutInMs());
+    }
+
     enum RegistrationAction {
         /** User selected to 'learn more' and register on the given site. */
         Register,
@@ -471,8 +480,8 @@ public interface SearchEngine
          * @param cIdx      0..n image index
          *
          * @return ArrayList with a single fileSpec (This is for convenience, as the result
-         *         is meant to be stored into the book-data as a parcelable array;
-         *         and it allows extending to multiple images at a future time)
+         * is meant to be stored into the book-data as a parcelable array;
+         * and it allows extending to multiple images at a future time)
          *
          * @throws CredentialsException on authentication/login failures
          * @throws StorageException     on storage related failures
@@ -524,14 +533,5 @@ public interface SearchEngine
                                                @NonNull String validIsbn)
                 throws SearchException,
                        CredentialsException;
-    }
-
-    @WorkerThread
-    default void ping()
-            throws UnknownHostException,
-                   IOException,
-                   SocketTimeoutException,
-                   MalformedURLException {
-        NetworkUtils.ping(getHostUrl(), getEngineId().requireConfig().getConnectTimeoutInMs());
     }
 }
