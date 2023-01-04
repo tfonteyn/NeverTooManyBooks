@@ -228,62 +228,6 @@ public class SearchBookByIsbnFragment
         vb.btnStopScanning.setOnClickListener(v -> stopScanner());
     }
 
-    private class ToolbarMenuProvider
-            implements MenuProvider {
-
-        @Override
-        public void onCreateMenu(@NonNull final Menu menu,
-                                 @NonNull final MenuInflater menuInflater) {
-            MenuCompat.setGroupDividerEnabled(menu, true);
-            menuInflater.inflate(R.menu.search_by_isbn, menu);
-        }
-
-        @Override
-        public void onPrepareMenu(@NonNull final Menu menu) {
-            menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT)
-                .setChecked(coordinator.isStrictIsbn());
-        }
-
-        @Override
-        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            final int itemId = menuItem.getItemId();
-
-            if (itemId == R.id.MENU_BARCODE_SCAN) {
-                vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Single);
-                startScanner();
-                return true;
-
-            } else if (itemId == R.id.MENU_BARCODE_SCAN_BATCH) {
-                vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Batch);
-                startScanner();
-                return true;
-
-            } else if (itemId == R.id.MENU_BARCODE_IMPORT) {
-                // See remarks in
-                // {@link com.hardbacknutter.nevertoomanybooks.backup.ImportFragment}
-                //URGENT: getContext() throws an exception stating the fragment is
-                // not attached to a host???
-                // Getting the context works fine in ShowBookDetailsFragment though
-//                //noinspection ConstantConditions
-//                TipManager.getInstance().display(getContext(), R.string.tip_import_isbn_list,
-//                                                 () -> openUriLauncher.launch("*/*"));
-                openUriLauncher.launch("*/*");
-                return true;
-
-            } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
-                final boolean checked = !menuItem.isChecked();
-                coordinator.setStrictIsbn(checked);
-
-                final ISBN.Validity validity = checked ? ISBN.Validity.Strict : ISBN.Validity.None;
-                isbnCleanupTextWatcher.setValidityLevel(validity);
-                isbnValidationTextWatcher.setValidityLevel(validity);
-                return true;
-            }
-
-            return false;
-        }
-    }
-
     @NonNull
     private ISBN removeFromQueue(@NonNull final View chip) {
         final ISBN code = (ISBN) chip.getTag();
@@ -538,5 +482,59 @@ public class SearchBookByIsbnFragment
         vb.queueGroup.setVisibility(visibility);
     }
 
+    private class ToolbarMenuProvider
+            implements MenuProvider {
 
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            MenuCompat.setGroupDividerEnabled(menu, true);
+            menuInflater.inflate(R.menu.search_by_isbn, menu);
+        }
+
+        @Override
+        public void onPrepareMenu(@NonNull final Menu menu) {
+            menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT)
+                .setChecked(coordinator.isStrictIsbn());
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            final int itemId = menuItem.getItemId();
+
+            if (itemId == R.id.MENU_BARCODE_SCAN) {
+                vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Single);
+                startScanner();
+                return true;
+
+            } else if (itemId == R.id.MENU_BARCODE_SCAN_BATCH) {
+                vm.setScannerMode(SearchBookByIsbnViewModel.ScanMode.Batch);
+                startScanner();
+                return true;
+
+            } else if (itemId == R.id.MENU_BARCODE_IMPORT) {
+                // See remarks in
+                // {@link com.hardbacknutter.nevertoomanybooks.backup.ImportFragment}
+                //URGENT: getContext() throws an exception stating the fragment is
+                // not attached to a host???
+                // Getting the context works fine in ShowBookDetailsFragment though
+//                //noinspection ConstantConditions
+//                TipManager.getInstance().display(getContext(), R.string.tip_import_isbn_list,
+//                                                 () -> openUriLauncher.launch("*/*"));
+                openUriLauncher.launch("*/*");
+                return true;
+
+            } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
+                final boolean checked = !menuItem.isChecked();
+                coordinator.setStrictIsbn(checked);
+
+                final ISBN.Validity validity = checked ? ISBN.Validity.Strict : ISBN.Validity.None;
+                isbnCleanupTextWatcher.setValidityLevel(validity);
+                isbnValidationTextWatcher.setValidityLevel(validity);
+                return true;
+            }
+
+            return false;
+        }
+    }
 }
