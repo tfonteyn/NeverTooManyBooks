@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -87,12 +86,6 @@ public class StripInfoSearchEngine
         implements SearchEngine.ByExternalId,
                    SearchEngine.ViewBookByExternalId,
                    SearchEngine.ByBarcode {
-
-    /**
-     * There are no specific usage rules (that I found) but as a courtesy/precaution,
-     * we're only going to send one request a second.
-     */
-    public static final Throttler THROTTLER = new Throttler(1_000);
 
     /** Log tag. */
     private static final String TAG = "StripInfoSearchEngine";

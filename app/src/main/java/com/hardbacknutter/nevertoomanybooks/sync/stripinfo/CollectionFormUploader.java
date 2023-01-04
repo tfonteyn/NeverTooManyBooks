@@ -93,7 +93,7 @@ public class CollectionFormUploader {
         futureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
         futureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())
                       .setReadTimeout(config.getReadTimeoutInMs())
-                      .setThrottler(StripInfoSearchEngine.THROTTLER)
+                      .setThrottler(config.getThrottler())
                       .setRequestProperty(HttpUtils.CONTENT_TYPE,
                                           HttpUtils.CONTENT_TYPE_FORM_URL_ENCODED);
     }

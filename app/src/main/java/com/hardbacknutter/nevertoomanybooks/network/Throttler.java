@@ -61,6 +61,7 @@ public class Throttler {
      * simultaneously, one will return immediately, one will return 1 second later,
      * another two seconds etc.
      */
+    @SuppressWarnings("WeakerAccess")
     public void waitUntilRequestAllowed() {
         long wait;
         synchronized (this) {

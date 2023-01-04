@@ -65,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
-import com.hardbacknutter.nevertoomanybooks.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
@@ -107,13 +106,7 @@ public class IsfdbSearchEngine
     /** Preferences - Type: {@code boolean}. */
     public static final String PK_USE_PUBLISHER = EngineId.Isfdb.getPreferenceKey()
                                                   + ".search.uses.publisher";
-    /**
-     * As proposed by another user on the ISFDB wiki,
-     * we're only going to send one request a second.
-     *
-     * @see <a href="http://www.isfdb.org/wiki/index.php/ISFDB:Help_desk#Some_Downloading_Questions_and_a_Request">throttling</a>
-     */
-    public static final Throttler THROTTLER = new Throttler(1_000);
+
     /**
      * The site claims to use ISO-8859-1.
      * <pre>

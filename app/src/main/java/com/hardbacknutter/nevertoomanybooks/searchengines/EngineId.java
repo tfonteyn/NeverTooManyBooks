@@ -210,10 +210,16 @@ public enum EngineId
              .setDomainKey(DBKey.SID_ISFDB)
              .setDomainViewId(R.id.site_isfdb)
              .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB)
-
+             // default timeouts based on limited testing
              .setConnectTimeoutMs(20_000)
              .setReadTimeoutMs(60_000)
-             .setStaticThrottler(IsfdbSearchEngine.THROTTLER)
+             /*
+              * As proposed by another user on the ISFDB wiki,
+              * we're only going to send one request a second.
+              *
+              * @see <a href="http://www.isfdb.org/wiki/index.php/ISFDB:Help_desk#Some_Downloading_Questions_and_a_Request">throttling</a>
+              */
+             .setThrottlerTimeoutMs(1_000)
              .build();
 
         OpenLibrary.createConfiguration("https://openlibrary.org")
@@ -269,9 +275,12 @@ public enum EngineId
                        .setDomainViewId(R.id.site_strip_info_be)
                        .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE)
 
+                       // default timeouts based on limited testing
                        .setConnectTimeoutMs(7_000)
                        .setReadTimeoutMs(60_000)
-                       .setStaticThrottler(StripInfoSearchEngine.THROTTLER)
+                       // There are no specific usage rules but as a courtesy/precaution,
+                       // we're only going to send one request a second.
+                       .setThrottlerTimeoutMs(1_000)
                        .build();
         }
 
@@ -279,9 +288,12 @@ public enum EngineId
             Bedetheque.createConfiguration("https://www.bedetheque.com")
                       .setCountry("FR", "fr")
 
+                      // default timeouts based on limited testing
                       .setConnectTimeoutMs(15_000)
                       .setReadTimeoutMs(60_000)
-                      .setStaticThrottler(BedethequeSearchEngine.THROTTLER)
+                      // There are no specific usage rules but as a courtesy/precaution,
+                      // we're only going to send one request a second.
+                      .setThrottlerTimeoutMs(1_000)
                       .build();
         }
 
@@ -441,13 +453,13 @@ public enum EngineId
         return config;
     }
 
+    public void setConfig(@NonNull final SearchEngineConfig config) {
+        this.config = config;
+    }
+
     @NonNull
     public SearchEngineConfig requireConfig() {
         return Objects.requireNonNull(config);
-    }
-
-    public void setConfig(@NonNull final SearchEngineConfig config) {
-        this.config = config;
     }
 
     /**
@@ -463,7 +475,7 @@ public enum EngineId
             return c.newInstance(config);
 
         } catch (@NonNull final NoSuchMethodException | IllegalAccessException
-                | InstantiationException | InvocationTargetException e) {
+                                | InstantiationException | InvocationTargetException e) {
             throw new IllegalStateException(
                     clazz + " must implement SearchEngine(SearchEngineConfig)", e);
         }

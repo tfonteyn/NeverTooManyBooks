@@ -93,7 +93,11 @@ public final class SearchEngineConfig {
 
         connectTimeoutMs = builder.connectTimeoutMs;
         readTimeoutMs = builder.readTimeoutMs;
-        throttler = builder.throttler;
+        if (builder.throttlerTimeoutMs > 0) {
+            throttler = new Throttler(builder.throttlerTimeoutMs);
+        } else {
+            throttler = null;
+        }
     }
 
     // Called during startup from the App class + from test code
@@ -322,8 +326,7 @@ public final class SearchEngineConfig {
         /** The DEFAULT for the engine. */
         private int readTimeoutMs = TEN_SECONDS;
 
-        @Nullable
-        private Throttler throttler;
+        private int throttlerTimeoutMs;
 
         /** {@link SearchEngine.CoverByIsbn} only. */
         private boolean supportsMultipleCoverSizes;
@@ -351,8 +354,8 @@ public final class SearchEngineConfig {
         }
 
         @NonNull
-        Builder setStaticThrottler(@Nullable final Throttler staticThrottler) {
-            throttler = staticThrottler;
+        Builder setThrottlerTimeoutMs(@SuppressWarnings("SameParameterValue") final int timeoutInMillis) {
+            throttlerTimeoutMs = timeoutInMillis;
             return this;
         }
 
@@ -370,7 +373,7 @@ public final class SearchEngineConfig {
         }
 
         @NonNull
-        public Builder setDomainKey(@NonNull final String domainKey) {
+        Builder setDomainKey(@NonNull final String domainKey) {
             if (domainKey.isEmpty()) {
                 externalIdDomain = null;
             } else {
@@ -380,13 +383,13 @@ public final class SearchEngineConfig {
         }
 
         @NonNull
-        public Builder setDomainMenuId(@IdRes final int domainMenuId) {
+        Builder setDomainMenuId(@IdRes final int domainMenuId) {
             this.domainMenuId = domainMenuId;
             return this;
         }
 
         @NonNull
-        public Builder setDomainViewId(@IdRes final int domainViewId) {
+        Builder setDomainViewId(@IdRes final int domainViewId) {
             this.domainViewId = domainViewId;
             return this;
         }
