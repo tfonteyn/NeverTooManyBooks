@@ -163,7 +163,7 @@ public abstract class EditBookBaseFragment
             }
             toolbar.setTitle(title);
             //noinspection ConstantConditions
-            toolbar.setSubtitle(Author.getCondensedNames(getContext(), book.getAuthors()));
+            toolbar.setSubtitle(Author.getLabel(getContext(), book.getAuthors()));
         }
     }
 

@@ -83,7 +83,7 @@ public class TocViewModel
 
             final List<Author> authorList = args.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
             if (authorList != null && !authorList.isEmpty()) {
-                authors = Author.getCondensedNames(context, authorList);
+                authors = Author.getLabel(context, authorList);
                 primaryAuthor = authorList.get(0);
             }
         }
@@ -103,7 +103,7 @@ public class TocViewModel
 
         final List<Author> authorList = book.getAuthors();
         if (!authorList.isEmpty()) {
-            authors = Author.getCondensedNames(context, authorList);
+            authors = Author.getLabel(context, authorList);
             primaryAuthor = authorList.get(0);
         }
     }

@@ -406,7 +406,8 @@ public class Author
     }
 
     /**
-     * Get the Authors. If there is more than one, we get the first Author + an ellipsis.
+     * Get the label to use for <strong>displaying</strong> a list of Authors.
+     * If there is more than one, we get the first Author + an ellipsis.
      *
      * @param context Current context
      * @param authors list to condense
@@ -414,8 +415,8 @@ public class Author
      * @return a formatted string for author list.
      */
     @NonNull
-    public static String getCondensedNames(@NonNull final Context context,
-                                           @NonNull final List<Author> authors) {
+    public static String getLabel(@NonNull final Context context,
+                                  @NonNull final List<Author> authors) {
         // could/should? use ListFormatter
         if (authors.isEmpty()) {
             return "";

@@ -358,7 +358,7 @@ public class ShowBookDetailsFragment
     private void updateToolbarTitle(@NonNull final Book book) {
         final Toolbar toolbar = getToolbar();
         //noinspection ConstantConditions
-        toolbar.setTitle(Author.getCondensedNames(getContext(), book.getAuthors()));
+        toolbar.setTitle(Author.getLabel(getContext(), book.getAuthors()));
 
         String bookTitle = book.getString(DBKey.TITLE);
         if (BuildConfig.DEBUG /* always */) {
