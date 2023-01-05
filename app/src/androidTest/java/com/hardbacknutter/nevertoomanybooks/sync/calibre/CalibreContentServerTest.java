@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,14 +24,15 @@ import android.content.Context;
 import java.io.FileNotFoundException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
-
-import org.junit.Test;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
@@ -41,10 +42,10 @@ public class CalibreContentServerTest {
     public void filenames()
             throws CertificateException, FileNotFoundException {
 
-        final ArrayList<Author> authors = new ArrayList<>();
-        authors.add(Author.from("Arthur C. Clarke"));
-        final ArrayList<Series> series = new ArrayList<>();
-        series.add(Series.from("Rama"));
+        final List<Author> authors = new ArrayList<>();
+        authors.add(new Author("Clarke", "Arthur C. "));
+        final List<Series> series = new ArrayList<>();
+        series.add(new Series("Rama"));
 
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
