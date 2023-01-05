@@ -64,14 +64,14 @@ public class AuthorTest
         final Author author;
         final Author realAuthor;
 
-        author = Author.from("Leloup, Roger");
+        author = new Author("Leloup", "Roger");
         lookup = resolver.resolve(context, author);
         // no pen-name
         Assert.assertFalse(lookup);
         Assert.assertEquals("Leloup", author.getFamilyName());
         Assert.assertEquals("Roger", author.getGivenNames());
         realAuthor = author.getRealAuthor();
-        Assert.assertNotNull(realAuthor);
+        Assert.assertNull(realAuthor);
     }
 
     @Test
@@ -82,7 +82,7 @@ public class AuthorTest
         final Author author;
         final Author realAuthor;
 
-        author = Author.from("Jije");
+        author = new Author("Jije", "");
         lookup = resolver.resolve(context, author);
         Assert.assertTrue(lookup);
         Assert.assertEquals("Jijé", author.getFamilyName());
@@ -101,7 +101,7 @@ public class AuthorTest
         final Author author;
         final Author realAuthor;
 
-        author = Author.from("61Chi");
+        author = new Author("61Chi", "");
         lookup = resolver.resolve(context, author);
         Assert.assertTrue(lookup);
         Assert.assertEquals("61Chi", author.getFamilyName());
@@ -120,7 +120,7 @@ public class AuthorTest
         final Author author;
         final Author realAuthor;
 
-        author = Author.from("<Indéterminé>");
+        author = new Author("<Indéterminé>", "");
         lookup = resolver.resolve(context, author);
         Assert.assertFalse(lookup);
         Assert.assertEquals("<Indéterminé>", author.getFamilyName());
