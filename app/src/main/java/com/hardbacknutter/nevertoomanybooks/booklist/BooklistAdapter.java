@@ -81,6 +81,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
@@ -433,7 +434,7 @@ public class BooklistAdapter
                         final Author realAuthor = ServiceLocator.getInstance().getAuthorDao()
                                                                 .getById(pseudonym);
                         if (realAuthor != null) {
-                            return realAuthor.getStyledName(context, text, style);
+                            return realAuthor.getStyledName(context, Details.Normal, style, text);
                         }
                     }
                 }

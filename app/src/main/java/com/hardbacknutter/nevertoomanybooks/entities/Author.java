@@ -66,7 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * <a href="http://www.loc.gov/marc/relators/relaterm.html">
  * http://www.loc.gov/marc/relators/relaterm.html</a>
  * <p>
- * TODO: further cleanup of the {@link #getLabel} and {@link #getStyledName} methods
+ * TODO: further cleanup of the {@link #getStyledName} and {@link #getStyledName} methods
  */
 public class Author
         implements ParcelableEntity, Mergeable {
@@ -317,6 +317,19 @@ public class Author
         realAuthor = in.readParcelable(getClass().getClassLoader());
     }
 
+    /**
+     * A precaution to names like {@literal "<someName>"}.
+     * The various {@link #getLabel} and {@link #getStyledName} use this method to
+     * prevent html failures. It's not foolproof, but should be enough for now.
+     *
+     * @param name to filter
+     *
+     * @return filtered name
+     */
+    private static String filterLtG(@NonNull final String name) {
+        return name.replace("<", "").replace(">", "");
+    }
+
     @NonNull
     public static Author createUnknownAuthor(@NonNull final Context context) {
         final String unknownAuthor = context.getString(R.string.unknown_author);
@@ -429,20 +442,47 @@ public class Author
         }
     }
 
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeLong(id);
-        dest.writeString(familyName);
-        dest.writeString(givenNames);
-        dest.writeByte((byte) (complete ? 1 : 0));
-        dest.writeInt(type);
-        dest.writeParcelable(realAuthor, flags);
+    /**
+     * Return the formatted version of the name.
+     *
+     * @param givenNameFirst {@code true} if we want "given-names family-name" formatted name.
+     *                       {@code false} for "last-family, first-names"
+     *
+     * @return formatted, but unfiltered, name
+     */
+    @NonNull
+    public String getFormattedName(final boolean givenNameFirst) {
+        if (givenNames.isEmpty()) {
+            return familyName;
+        } else {
+            if (givenNameFirst) {
+                return givenNames + ' ' + familyName;
+            } else {
+                return familyName + ", " + givenNames;
+            }
+        }
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    /**
+     * Return the formatted version of the name.
+     *
+     * @param context Current context
+     * @param style   to apply
+     *
+     * @return formatted, but unfiltered, name
+     */
+    @NonNull
+    public String getFormattedName(@NonNull final Context context,
+                                   @Nullable final Style style) {
+        final boolean givenNameFirst;
+        if (style != null) {
+            givenNameFirst = style.isShowAuthorByGivenName();
+        } else {
+            givenNameFirst = PreferenceManager.getDefaultSharedPreferences(context)
+                                              .getBoolean(PK_SHOW_AUTHOR_NAME_GIVEN_FIRST, false);
+        }
+
+        return getFormattedName(givenNameFirst);
     }
 
     /**
@@ -516,6 +556,7 @@ public class Author
 
     /**
      * Get the label to use for <strong>displaying</strong>.
+     * Suitable for (and may contain) HTML output.
      *
      * <ul>
      *     <li>{@link Details#Full}: standard formatted name combined
@@ -536,9 +577,10 @@ public class Author
     public String getLabel(@NonNull final Context context,
                            @NonNull final Details details,
                            @Nullable final Style style) {
+        String label;
         switch (details) {
             case Full: {
-                String label = getFormattedName(context, style);
+                label = getFormattedName(context, style);
 
                 if (GlobalFieldVisibility.isUsed(DBKey.AUTHOR_TYPE__BITMASK)) {
                     final String typeLabels = getTypeLabels(context);
@@ -546,175 +588,139 @@ public class Author
                         label += " <small><i>" + typeLabels + "</i></small>";
                     }
                 }
-                return label;
+                break;
             }
             case Auto:
             case Normal: {
-                return getFormattedName(context, style);
+                label = getFormattedName(context, style);
+                break;
             }
             case Short: {
                 if (givenNames.isEmpty()) {
-                    return familyName;
-                }
-
-                final boolean givenNameFirst;
-                if (style != null) {
-                    givenNameFirst = style.isShowAuthorByGivenName();
+                    label = familyName;
                 } else {
-                    givenNameFirst = PreferenceManager
-                            .getDefaultSharedPreferences(context)
-                            .getBoolean(PK_SHOW_AUTHOR_NAME_GIVEN_FIRST, false);
-                }
+                    final boolean givenNameFirst;
+                    if (style != null) {
+                        givenNameFirst = style.isShowAuthorByGivenName();
+                    } else {
+                        givenNameFirst = PreferenceManager
+                                .getDefaultSharedPreferences(context)
+                                .getBoolean(PK_SHOW_AUTHOR_NAME_GIVEN_FIRST, false);
+                    }
 
-                if (givenNameFirst) {
-                    return givenNames.substring(0, 1) + ' ' + familyName;
-                } else {
-                    return familyName + ' ' + givenNames.charAt(0);
+                    if (givenNameFirst) {
+                        label = givenNames.substring(0, 1) + ' ' + familyName;
+                    } else {
+                        label = familyName + ' ' + givenNames.charAt(0);
+                    }
                 }
+                break;
             }
             default:
                 throw new IllegalArgumentException("details=" + details);
         }
+
+        return filterLtG(label);
     }
 
     /**
-     * Return the <strong>specified</strong> 'human readable' version of the name.
-     *
-     * @param givenNameFirst {@code true} if we want "given-names family-name" formatted name.
-     *                       {@code false} for "last-family, first-names"
-     *
-     * @return formatted name
-     */
-    @NonNull
-    public String getFormattedName(final boolean givenNameFirst) {
-        if (givenNames.isEmpty()) {
-            return familyName;
-        } else {
-            if (givenNameFirst) {
-                return givenNames + ' ' + familyName;
-            } else {
-                return familyName + ", " + givenNames;
-            }
-        }
-    }
-
-    @NonNull
-    public String getFormattedName(@NonNull final Context context,
-                                   @Nullable final Style style) {
-        final boolean givenNameFirst;
-        if (style != null) {
-            givenNameFirst = style.isShowAuthorByGivenName();
-        } else {
-            givenNameFirst = PreferenceManager.getDefaultSharedPreferences(context)
-                                              .getBoolean(PK_SHOW_AUTHOR_NAME_GIVEN_FIRST, false);
-        }
-
-        if (givenNames.isEmpty()) {
-            return familyName;
-        } else {
-            if (givenNameFirst) {
-                return givenNames + ' ' + familyName;
-            } else {
-                return familyName + ", " + givenNames;
-            }
-        }
-    }
-
-    /**
-     * TODO: try to unify this with the {@link #getFormattedName(boolean)}
+     * TODO: try to unify this with the {@link #getLabel(Context, Details, Style)}
      * <p>
-     * Return the <strong>specified</strong> 'human readable' version of the name.
+     * Return the <strong>styled and formatted</strong> version of the name.
      * <p>
-     * Call this method if {@code this} is the pseudonym Author (name); otherwise call
-     * {@link #getStyledName(Context, Author, Style)} or
-     * {@link #getStyledName(Context, CharSequence, Style)}.
+     * Call this method if {@code this} is the pseudonym Author itself; otherwise call
+     * {@link #getStyledName(Context, Details, Style, Author)} or
+     * {@link #getStyledName(Context, Details, Style, CharSequence)}.
      * <p>
      * If this Author is a pseudonym, then the return value will be a 2-lines styled
+     * {@link SpannableString} with both pen-name and real-name of this Author.
+     *
+     * @param context Current context
+     * @param details the amount of details wanted
+     * @param style   (optional) to use
+     *
+     * @return styled and formatted name
+     */
+    @NonNull
+    public CharSequence getStyledName(@NonNull final Context context,
+                                      @NonNull final Details details,
+                                      @Nullable final Style style) {
+        final CharSequence name = getStyledName(context, details, style, (CharSequence) null);
+        if (realAuthor == null) {
+            return name;
+        } else {
+            return realAuthor.getStyledName(context, details, style, name);
+        }
+    }
+
+    /**
+     * Syntax sugar for {@link #getStyledName(Context, Details, Style, CharSequence)}
+     *
+     * @param context   Current context
+     * @param details   the amount of details wanted
+     * @param style     (optional) to use
+     * @param pseudonym optional Author to combine with the actual name
+     *
+     * @return styled and formatted name
+     *
+     * @see #getStyledName(Context, Details, Style, CharSequence)
+     */
+    @NonNull
+    public CharSequence getStyledName(@NonNull final Context context,
+                                      @NonNull final Details details,
+                                      @Nullable final Style style,
+                                      @Nullable final Author pseudonym) {
+        final CharSequence penName =
+                pseudonym == null ? null : pseudonym.getStyledName(context, details, style,
+                                                                   (CharSequence) null);
+        return getStyledName(context, details, style, penName);
+    }
+
+    /**
+     * Return the <strong>styled and formatted</strong> version of the name
+     * combined with the given pseudonym.
+     * <p>
+     * Call this method if {@code this} is the real Author; otherwise call
+     * {@link #getStyledName(Context, Details, Style)}.
+     * <p>
+     * If this Author has a pseudonym, then the return value will be a 2-lines styled
      * {@link SpannableString} with both pseudonym and real name of this Author.
      *
      * @param context Current context
+     * @param details the amount of details wanted
      * @param style   (optional) to use
+     * @param penName optional Author pen-name to combine with the actual name
      *
-     * @return formatted name
+     * @return styled and formatted name
+     *
+     * @see #getStyledName(Context, Details, Style, Author)
      */
     @NonNull
     public CharSequence getStyledName(@NonNull final Context context,
-                                      @Nullable final Style style) {
-        if (realAuthor == null) {
-            return getFormattedName(context, style);
-        } else {
-            return realAuthor.getStyledName(context, this, style);
-        }
-    }
+                                      @NonNull final Details details,
+                                      @Nullable final Style style,
+                                      @Nullable final CharSequence penName) {
 
-    /**
-     * Return the <strong>specified</strong> 'human readable' version of the name.
-     * <p>
-     * Call this method if {@code this} is the real Author (name); otherwise call
-     * {@link #getStyledName(Context, Style)}.
-     * <p>
-     * If this Author has a pseudonym, then the return value will be a 2-lines styled
-     * {@link SpannableString} with both pseudonym and real name of this Author.
-     *
-     * @param context   Current context
-     * @param pseudonym optional Author to combine with the actual name
-     * @param style     (optional) to use
-     *
-     * @return formatted name
-     *
-     * @see #getStyledName(Context, CharSequence, Style)
-     */
-    @NonNull
-    public CharSequence getStyledName(@NonNull final Context context,
-                                      @Nullable final Author pseudonym,
-                                      @Nullable final Style style) {
-        if (pseudonym == null) {
-            return getFormattedName(context, style);
-        } else {
-            return getStyledName(context,
-                                 pseudonym.getFormattedName(context, style),
-                                 style);
-        }
-    }
+        final String realName = getLabel(context, details, style);
 
-    /**
-     * Return the <strong>specified</strong> 'human readable' version of the name.
-     * <p>
-     * Call this method if {@code this} is the real Author (name); otherwise call
-     * {@link #getStyledName(Context, Style)}.
-     * <p>
-     * If this Author has a pseudonym, then the return value will be a 2-lines styled
-     * {@link SpannableString} with both pseudonym and real name of this Author.
-     *
-     * @param context       Current context
-     * @param pseudonymName optional Author pseudonym name to combine with the actual name
-     * @param style         (optional) to use
-     *
-     * @return formatted name
-     *
-     * @see #getStyledName(Context, Author, Style)
-     */
-    @NonNull
-    public CharSequence getStyledName(@NonNull final Context context,
-                                      @Nullable final CharSequence pseudonymName,
-                                      @Nullable final Style style) {
-        if (pseudonymName == null) {
-            return getFormattedName(context, style);
+        if (penName == null) {
+            return realName;
 
         } else {
-            // Display the pseudonym as the 'normal' Author, but add the real author (this one) name
-            // in a smaller font and slightly indented, as a second line underneath.
-            final String fullName = String.format("%1s\n   %2s",
-                                                  pseudonymName,
-                                                  getFormattedName(context, style));
+            final String filteredPenName = filterLtG(penName.toString());
+
+            // Display the pseudonym as the 'normal' Author, but add the real
+            // author ('this') name in a smaller font and slightly indented,
+            // as a second line underneath.
+            final String fullName = String.format("%1s\n   %2s", filteredPenName, realName);
             final SpannableString span = new SpannableString(fullName);
 
             final float relSize = ResourcesCompat
                     .getFloat(context.getResources(), R.dimen.bob_author_pseudonym_size);
             span.setSpan(new RelativeSizeSpan(relSize),
-                         pseudonymName.length(), span.length(), 0);
+                         filteredPenName.length(), span.length(), 0);
             span.setSpan(new StyleSpan(Typeface.ITALIC),
-                         pseudonymName.length(), span.length(), 0);
+                         filteredPenName.length(), span.length(), 0);
             return span;
         }
     }
@@ -808,6 +814,22 @@ public class Author
                             @NonNull final Locale userLocale) {
         //ENHANCE: The Author Locale should be based on the main language the author writes in.
         return userLocale;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeLong(id);
+        dest.writeString(familyName);
+        dest.writeString(givenNames);
+        dest.writeByte((byte) (complete ? 1 : 0));
+        dest.writeInt(type);
+        dest.writeParcelable(realAuthor, flags);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     @Override
