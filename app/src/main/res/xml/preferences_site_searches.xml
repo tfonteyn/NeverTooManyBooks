@@ -72,7 +72,7 @@
         </Preference>
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.kbnl.KbNlPreferencesFragment"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.searchengines.kbnl2.KbNl2PreferencesFragment"
             android:key="psk_search_site_kbnl"
             android:title="@string/site_kb_nl">
         </Preference>
