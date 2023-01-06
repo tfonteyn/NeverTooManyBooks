@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
@@ -39,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
+import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
@@ -66,18 +66,19 @@ public class BedethequeTest
     @Test
     void parse01()
             throws SearchException, IOException, CredentialsException, StorageException {
-        setLocale(Locale.FRANCE);
+        setLocale(searchEngine.getLocale(context));
         final String locationHeader = "https://www.bedetheque.com"
                                       + "/BD-Fond-du-monde-Tome-6-La-grande-terre-19401.html";
         final String filename = "/bedetheque/BD-Fond-du-monde-Tome-6-La-grande-terre-19401.html";
 
-        loadData(context, searchEngine, UTF_8, locationHeader, filename,
-                 new boolean[]{true, true});
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        searchEngine.parse(context, document, new boolean[]{true, true}, rawData);
+        System.out.println(rawData);
 
         assertEquals("La grande terre", rawData.getString(DBKey.TITLE));
 
         assertEquals("2002-10", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
-        assertEquals("Grand format", rawData.getString(DBKey.FORMAT));
+        assertEquals("Hardcover", rawData.getString(DBKey.FORMAT));
         assertEquals("2840557428", rawData.getString(DBKey.BOOK_ISBN));
         assertEquals("46", rawData.getString(DBKey.PAGE_COUNT));
 
@@ -119,7 +120,17 @@ public class BedethequeTest
         assertEquals("Yves", author.getGivenNames());
         assertEquals(Author.TYPE_FOREWORD, author.getType());
 
-        assertTrue(rawData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0])
-                          .get(0).endsWith("1672259114746_bedetheque_2840557428_0_.jpg"));
+        ArrayList<String> coverList;
+        coverList = rawData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
+        assertNotNull(coverList);
+        assertEquals(1, coverList.size());
+        String cover;
+        cover = coverList.get(0);
+        assertTrue(cover.endsWith("bedetheque_2840557428_0_.jpg"));
+        coverList = rawData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
+        assertNotNull(coverList);
+        assertEquals(1, coverList.size());
+        cover = coverList.get(0);
+        assertTrue(cover.endsWith("bedetheque_2840557428_1_.jpg"));
     }
 }

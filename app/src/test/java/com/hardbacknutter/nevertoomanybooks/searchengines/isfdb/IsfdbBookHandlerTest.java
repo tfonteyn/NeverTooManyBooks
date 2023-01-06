@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
+import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
@@ -81,8 +82,10 @@ class IsfdbBookHandlerTest
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?112781";
         final String filename = "/isfdb/112781.html";
 
-        loadData(context, searchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
-                 locationHeader, filename, new boolean[]{false, false});
+        final Document document = loadDocument(filename, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                                               locationHeader);
+        searchEngine.parse(context, document, new boolean[]{false, false}, rawData);
+        // System.out.println(rawData);
 
         assertEquals("Like Nothing on Earth", rawData.getString(DBKey.TITLE));
         assertEquals(112781L, rawData.getLong(DBKey.SID_ISFDB));
@@ -152,8 +155,10 @@ class IsfdbBookHandlerTest
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?431964";
         final String filename = "/isfdb/431964.html";
 
-        loadData(context, searchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
-                 locationHeader, filename, new boolean[]{false, false});
+        final Document document = loadDocument(filename, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                                               locationHeader);
+        searchEngine.parse(context, document, new boolean[]{false, false}, rawData);
+        // System.out.println(rawData);
 
         assertEquals("Mort", rawData.getString(DBKey.TITLE));
         assertEquals(431964L, rawData.getLong(DBKey.SID_ISFDB));
@@ -210,8 +215,10 @@ class IsfdbBookHandlerTest
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?542125";
         final String filename = "/isfdb/542125.html";
 
-        loadData(context, searchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
-                 locationHeader, filename, new boolean[]{false, false});
+        final Document document = loadDocument(filename, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                                               locationHeader);
+        searchEngine.parse(context, document, new boolean[]{false, false}, rawData);
+        // System.out.println(rawData);
 
         assertEquals("The Shepherd's Crown", rawData.getString(DBKey.TITLE));
         assertEquals(542125L, rawData.getLong(DBKey.SID_ISFDB));

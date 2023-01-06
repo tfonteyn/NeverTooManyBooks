@@ -23,14 +23,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -39,6 +34,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.xml.sax.SAXException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -46,7 +45,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class KbNlBookHandlerTest
         extends Base {
 
-    private static final String bookFilename = "/kbnl/kbnl-book-1.xml";
+    private static final String book_1_list_filename = "/kbnl/kbnl-list-1.xml";
+    private static final String book_1_filename = "/kbnl/kbnl-book-1.xml";
     private static final String comicFilename = "/kbnl/kbnl-comic-1.xml";
 
     private KbNlBookHandler bookHandler;
@@ -60,6 +60,60 @@ class KbNlBookHandlerTest
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         bookHandler = new KbNlBookHandler(rawData);
         saxParser = factory.newSAXParser();
+    }
+
+    @Test
+    void parseList01()
+            throws IOException, SAXException {
+        try (InputStream in = this.getClass().getResourceAsStream(book_1_list_filename)) {
+            saxParser.parse(in, bookHandler);
+        }
+
+        assertEquals("SHW?FRST=1", rawData.getString(KbNlHandlerBase.SHOW_URL));
+    }
+
+
+    @Test
+    void parseBook01()
+            throws IOException, SAXException {
+
+        try (InputStream in = this.getClass().getResourceAsStream(book_1_filename)) {
+            saxParser.parse(in, bookHandler);
+        }
+
+        assertEquals("De Foundation", rawData.getString(DBKey.TITLE));
+
+        assertEquals("1983", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("9022953351", rawData.getString(DBKey.BOOK_ISBN));
+        assertEquals("geb.", rawData.getString(DBKey.FORMAT));
+        assertEquals("156", rawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("nld", rawData.getString(DBKey.LANGUAGE));
+
+        final ArrayList<Publisher> allPublishers = rawData
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+
+        assertEquals("Bruna", allPublishers.get(0).getName());
+
+        final List<Author> authors = rawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        assertNotNull(authors);
+        assertFalse(authors.isEmpty());
+        Author expectedAuthor;
+        expectedAuthor = new Author("Asimov", "Isaac");
+        assertEquals(expectedAuthor, authors.get(0));
+        expectedAuthor = new Author("Ozimov", "Isaak Judovič");
+        assertEquals(expectedAuthor, authors.get(1));
+        expectedAuthor = new Author("Kröner", "Jack");
+        assertEquals(expectedAuthor, authors.get(2));
+
+        final List<Series> series = rawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+        assertNotNull(series);
+        assertFalse(series.isEmpty());
+        final Series expectedSeries;
+        expectedSeries = new Series("Foundation-trilogie");
+        expectedSeries.setNumber("1");
+        assertEquals(expectedSeries, series.get(0));
     }
 
     @Test
@@ -90,14 +144,17 @@ class KbNlBookHandlerTest
         assertNotNull(authors);
         assertFalse(authors.isEmpty());
         Author expectedAuthor;
-        expectedAuthor = Author.from("Silvio Camboni");
+        expectedAuthor = new Author("Camboni", "Silvio");
         assertEquals(expectedAuthor, authors.get(0));
-        expectedAuthor = Author.from("Denis-Pierre Filippi");
+        // yes, twice... this list has NOT been pruned, so this is correct.
         assertEquals(expectedAuthor, authors.get(1));
-        expectedAuthor = Author.from("Gaspard Yvan");
+
+        expectedAuthor = new Author("Filippi", "Denis-Pierre");
         assertEquals(expectedAuthor, authors.get(2));
-        expectedAuthor = Author.from("Mariella Manfré");
+        expectedAuthor = new Author("Yvan", "Gaspard");
         assertEquals(expectedAuthor, authors.get(3));
+        expectedAuthor = new Author("Manfré", "Mariella");
+        assertEquals(expectedAuthor, authors.get(4));
 
         final List<Series> series = rawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
         assertNotNull(series);
@@ -109,44 +166,4 @@ class KbNlBookHandlerTest
 
     }
 
-    @Test
-    void parseBook()
-            throws IOException, SAXException {
-
-        try (InputStream in = this.getClass().getResourceAsStream(bookFilename)) {
-            saxParser.parse(in, bookHandler);
-        }
-
-        assertEquals("De Foundation", rawData.getString(DBKey.TITLE));
-
-        assertEquals("1983", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
-        assertEquals("9022953351", rawData.getString(DBKey.BOOK_ISBN));
-        assertEquals("geb.", rawData.getString(DBKey.FORMAT));
-        assertEquals("156", rawData.getString(DBKey.PAGE_COUNT));
-        assertEquals("nld", rawData.getString(DBKey.LANGUAGE));
-
-        final ArrayList<Publisher> allPublishers = rawData
-                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
-        assertNotNull(allPublishers);
-        assertEquals(1, allPublishers.size());
-
-        assertEquals("Bruna", allPublishers.get(0).getName());
-
-        final List<Author> authors = rawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
-        assertNotNull(authors);
-        assertFalse(authors.isEmpty());
-        Author expectedAuthor;
-        expectedAuthor = Author.from("Isaak Judovič Ozimov");
-        assertEquals(expectedAuthor, authors.get(0));
-        expectedAuthor = Author.from("Jack Kröner");
-        assertEquals(expectedAuthor, authors.get(1));
-
-        final List<Series> series = rawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
-        assertNotNull(series);
-        assertFalse(series.isEmpty());
-        final Series expectedSeries;
-        expectedSeries = new Series("Foundation-trilogie");
-        expectedSeries.setNumber("1");
-        assertEquals(expectedSeries, series.get(0));
-    }
 }

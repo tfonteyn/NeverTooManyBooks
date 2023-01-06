@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
+import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
@@ -68,15 +69,16 @@ class AmazonHtmlHandlerTest
         final String locationHeader = "https://www.amazon.co.uk/gp/product/0575090677";
         final String filename = "/amazon/0575090677.html";
 
-        loadData(context, searchEngine, UTF_8, locationHeader, filename,
-                 new boolean[]{false, false});
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        searchEngine.parse(context, document, new boolean[]{false, false}, rawData);
+        // System.out.println(rawData);
 
         assertEquals("Bone Silence", rawData.getString(DBKey.TITLE));
         assertEquals("978-0575090675", rawData.getString(DBKey.BOOK_ISBN));
         assertEquals("30 Jan. 2020", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
         assertEquals("608", rawData.getString(DBKey.PAGE_COUNT));
         assertEquals("Hardcover", rawData.getString(DBKey.FORMAT));
-        assertEquals("eng", rawData.getString(DBKey.LANGUAGE));
+        assertEquals("English", rawData.getString(DBKey.LANGUAGE));
         assertEquals(14.49d, rawData.getDouble(DBKey.PRICE_LISTED));
         assertEquals(Money.GBP, rawData.getString(DBKey.PRICE_LISTED_CURRENCY));
 
@@ -102,15 +104,16 @@ class AmazonHtmlHandlerTest
         final String locationHeader = "https://www.amazon.co.uk/gp/product/1473210208";
         final String filename = "/amazon/1473210208.html";
 
-        loadData(context, searchEngine, UTF_8, locationHeader, filename,
-                 new boolean[]{false, false});
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        searchEngine.parse(context, document, new boolean[]{false, false}, rawData);
+        // System.out.println(rawData);
 
         assertEquals("The Medusa Chronicles", rawData.getString(DBKey.TITLE));
         assertEquals("978-1473210202", rawData.getString(DBKey.BOOK_ISBN));
         assertEquals("12 Jan. 2017", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
         assertEquals("336", rawData.getString(DBKey.PAGE_COUNT));
         assertEquals("Paperback", rawData.getString(DBKey.FORMAT));
-        assertEquals("eng", rawData.getString(DBKey.LANGUAGE));
+        assertEquals("English", rawData.getString(DBKey.LANGUAGE));
         assertEquals(5.84d, rawData.getDouble(DBKey.PRICE_LISTED));
         assertEquals(Money.GBP, rawData.getString(DBKey.PRICE_LISTED_CURRENCY));
 
@@ -138,8 +141,9 @@ class AmazonHtmlHandlerTest
         final String locationHeader = "https://www.amazon.fr/gp/product/2205057332";
         final String filename = "/amazon/2205057332.html";
 
-        loadData(context, searchEngine, UTF_8, locationHeader, filename,
-                 new boolean[]{false, false});
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        searchEngine.parse(context, document, new boolean[]{false, false}, rawData);
+        // System.out.println(rawData);
 
         assertEquals("Le retour à la terre, 1 : La vraie vie",
                      rawData.getString(DBKey.TITLE));

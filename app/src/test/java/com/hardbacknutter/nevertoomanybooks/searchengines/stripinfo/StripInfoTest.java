@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
@@ -41,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -81,15 +79,16 @@ class StripInfoTest
                                       + "/336348_Hauteville_House_14_De_37ste_parallel";
         final String filename = "/stripinfo/336348_Hauteville_House_14_De_37ste_parallel.html";
 
-        loadData(context, searchEngine, UTF_8, locationHeader, filename,
-                 new boolean[]{true, true});
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        searchEngine.parse(context, document, new boolean[]{true, true}, rawData);
+        // System.out.println(rawData);
 
         assertEquals("De 37ste parallel", rawData.getString(DBKey.TITLE));
         assertEquals("9789463064385", rawData.getString(DBKey.BOOK_ISBN));
         assertEquals("2018", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
         assertEquals("48", rawData.getString(DBKey.PAGE_COUNT));
         assertEquals("Hardcover", rawData.getString(DBKey.FORMAT));
-        assertEquals("nld", rawData.getString(DBKey.LANGUAGE));
+        assertEquals("Nederlands", rawData.getString(DBKey.LANGUAGE));
         assertEquals("Kleur", rawData.getString(DBKey.COLOR));
 
         final ArrayList<Publisher> allPublishers = rawData
@@ -151,15 +150,16 @@ class StripInfoTest
         final String filename = "/stripinfo/2060_De_boom_van_de_twee_lentes_1"
                                 + "_De_boom_van_de_twee_lentes.html";
 
-        loadData(context, searchEngine, UTF_8, locationHeader, filename,
-                 new boolean[]{true, true});
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        searchEngine.parse(context, document, new boolean[]{true, true}, rawData);
+        // System.out.println(rawData);
 
         assertEquals("De boom van de twee lentes", rawData.getString(DBKey.TITLE));
         assertEquals("905581315X", rawData.getString(DBKey.BOOK_ISBN));
         assertEquals("2000", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
         assertEquals("64", rawData.getString(DBKey.PAGE_COUNT));
         assertEquals("Softcover", rawData.getString(DBKey.FORMAT));
-        assertEquals("nld", rawData.getString(DBKey.LANGUAGE));
+        assertEquals("Nederlands", rawData.getString(DBKey.LANGUAGE));
         assertEquals("Kleur", rawData.getString(DBKey.COLOR));
 
         final ArrayList<Publisher> allPublishers = rawData
@@ -219,8 +219,9 @@ class StripInfoTest
                                       + "_1_Het_huis_van_verboden_geneugten";
         final String filename = "/stripinfo/181604_mat_cover.html";
 
-        loadData(context, searchEngine, UTF_8, locationHeader, filename,
-                 new boolean[]{true, false});
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        searchEngine.parse(context, document, new boolean[]{true, true}, rawData);
+        // System.out.println(rawData);
 
         assertEquals("Het huis van verboden geneugten",
                      rawData.getString(DBKey.TITLE));
@@ -228,7 +229,7 @@ class StripInfoTest
         assertEquals("2012", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
         assertEquals("64", rawData.getString(DBKey.PAGE_COUNT));
         assertEquals("Hardcover", rawData.getString(DBKey.FORMAT));
-        assertEquals("nld", rawData.getString(DBKey.LANGUAGE));
+        assertEquals("Nederlands", rawData.getString(DBKey.LANGUAGE));
         assertEquals("Kleur", rawData.getString(DBKey.COLOR));
 
         final ArrayList<Publisher> allPublishers = rawData
@@ -281,15 +282,16 @@ class StripInfoTest
                                       + "316016_Johan_en_Pirrewiet_INT_5_De_integrale_5";
         final String filename = "/stripinfo/316016_Johan_en_Pirrewiet_INT_5_De_integrale_5.html";
 
-        loadData(context, searchEngine, UTF_8, locationHeader, filename,
-                 new boolean[]{false, false});
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        searchEngine.parse(context, document, new boolean[]{false, false}, rawData);
+        // System.out.println(rawData);
 
         assertEquals("De integrale 5", rawData.getString(DBKey.TITLE));
         assertEquals("9789055819485", rawData.getString(DBKey.BOOK_ISBN));
         assertEquals("2017", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
         assertEquals("224", rawData.getString(DBKey.PAGE_COUNT));
         assertEquals("Hardcover", rawData.getString(DBKey.FORMAT));
-        assertEquals("nld", rawData.getString(DBKey.LANGUAGE));
+        assertEquals("Nederlands", rawData.getString(DBKey.LANGUAGE));
         assertEquals("Kleur", rawData.getString(DBKey.COLOR));
 
         final ArrayList<Publisher> allPublishers = rawData
@@ -341,14 +343,15 @@ class StripInfoTest
                                       + "17030_Comanche_1_Red_Dust";
         final String filename = "/stripinfo/17030_Comanche_1_Red_Dust.html";
 
-        loadData(context, searchEngine, UTF_8, locationHeader, filename,
-                 new boolean[]{false, false});
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        searchEngine.parse(context, document, new boolean[]{false, false}, rawData);
+        // System.out.println(rawData);
 
         assertEquals("Red Dust", rawData.getString(DBKey.TITLE));
         assertEquals("1972", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
         assertEquals("48", rawData.getString(DBKey.PAGE_COUNT));
         assertEquals("Softcover", rawData.getString(DBKey.FORMAT));
-        assertEquals("nld", rawData.getString(DBKey.LANGUAGE));
+        assertEquals("Nederlands", rawData.getString(DBKey.LANGUAGE));
         assertEquals("Kleur", rawData.getString(DBKey.COLOR));
 
         final ArrayList<Publisher> allPublishers = rawData
@@ -398,13 +401,14 @@ class StripInfoTest
                                       + "8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot";
         final String filename = "/stripinfo/8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot.html";
 
-        loadData(context, searchEngine, UTF_8, locationHeader, filename,
-                 new boolean[]{false, false});
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        searchEngine.parse(context, document, new boolean[]{false, false}, rawData);
+        // System.out.println(rawData);
 
         assertEquals("Spoken in de grot", rawData.getString(DBKey.TITLE));
         assertEquals("1977", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
         assertEquals("Softcover", rawData.getString(DBKey.FORMAT));
-        assertEquals("nld", rawData.getString(DBKey.LANGUAGE));
+        assertEquals("Nederlands", rawData.getString(DBKey.LANGUAGE));
         assertEquals("Kleur", rawData.getString(DBKey.COLOR));
 
         final ArrayList<Publisher> allPublishers = rawData
@@ -451,14 +455,7 @@ class StripInfoTest
         final String locationHeader = "https://stripinfo.be/zoek/zoek?zoekstring=pluvi";
         final String filename = "/stripinfo/multi-result-pluvi.html";
 
-        Document document = null;
-        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(is);
-            document = Jsoup.parse(is, null, locationHeader);
-        }
-
-        assertNotNull(document);
-        assertTrue(document.hasText());
+        final Document document = loadDocument(filename, null, locationHeader);
 
         // we've set the doc, but will redirect.. so an internet download WILL be done.
         searchEngine.processDocument(context, "9782756010830",
@@ -472,7 +469,7 @@ class StripInfoTest
         assertEquals("2009", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
         assertEquals("172", rawData.getString(DBKey.PAGE_COUNT));
         assertEquals("Hardcover", rawData.getString(DBKey.FORMAT));
-        assertEquals("fra", rawData.getString(DBKey.LANGUAGE));
+        assertEquals("Frans", rawData.getString(DBKey.LANGUAGE));
         assertEquals("Kleur", rawData.getString(DBKey.COLOR));
 
         final ArrayList<Publisher> allPublishers = rawData

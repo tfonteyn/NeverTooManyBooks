@@ -21,21 +21,18 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AuthorLookupTest
@@ -57,17 +54,9 @@ class AuthorLookupTest
         final String locationHeader = "https://www.bedetheque.com/liste_auteurs_BD_L.html";
         final String filename = "/bedetheque/liste_auteurs_BD_L.html";
 
-        final Document document;
-        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(is);
-            document = Jsoup.parse(is, UTF_8, locationHeader);
-
-            assertNotNull(document);
-            assertTrue(document.hasText());
-
-            final List<AuthorResolver.BdtAuthor> list = resolver.parseAuthorList(document);
-            assertEquals(2585, list.size());
-        }
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        final List<AuthorResolver.BdtAuthor> list = resolver.parseAuthorList(document);
+        assertEquals(2585, list.size());
     }
 
     @Test
@@ -78,20 +67,12 @@ class AuthorLookupTest
         final AuthorResolver.BdtAuthor bdtAuthor =
                 new AuthorResolver.BdtAuthor("Leloup, Roger", locationHeader);
 
-        final Document document;
-        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(is);
-            document = Jsoup.parse(is, UTF_8, locationHeader);
-
-            assertNotNull(document);
-            assertTrue(document.hasText());
-
-            final boolean modified = resolver.parseAuthor(document, bdtAuthor);
-            assertTrue(modified);
-            assertEquals("Leloup, Roger", bdtAuthor.getName());
-            assertEquals("Leloup, Roger", bdtAuthor.getResolvedName());
-            assertTrue(bdtAuthor.isResolved());
-        }
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        final boolean modified = resolver.parseAuthor(document, bdtAuthor);
+        assertTrue(modified);
+        assertEquals("Leloup, Roger", bdtAuthor.getName());
+        assertEquals("Leloup, Roger", bdtAuthor.getResolvedName());
+        assertTrue(bdtAuthor.isResolved());
     }
 
     @Test
@@ -102,19 +83,11 @@ class AuthorLookupTest
         final AuthorResolver.BdtAuthor bdtAuthor =
                 new AuthorResolver.BdtAuthor("Leo", locationHeader);
 
-        final Document document;
-        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(is);
-            document = Jsoup.parse(is, UTF_8, locationHeader);
-
-            assertNotNull(document);
-            assertTrue(document.hasText());
-
-            final boolean modified = resolver.parseAuthor(document, bdtAuthor);
-            assertTrue(modified);
-            assertEquals("Leo", bdtAuthor.getName());
-            assertEquals("De Oliveira, Luiz Eduardo", bdtAuthor.getResolvedName());
-            assertTrue(bdtAuthor.isResolved());
-        }
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        final boolean modified = resolver.parseAuthor(document, bdtAuthor);
+        assertTrue(modified);
+        assertEquals("Leo", bdtAuthor.getName());
+        assertEquals("De Oliveira, Luiz Eduardo", bdtAuthor.getResolvedName());
+        assertTrue(bdtAuthor.isResolved());
     }
 }

@@ -19,49 +19,33 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JSoupBase
         extends Base {
 
-    /** Helper: Load the data from the given file, and populate {@link #rawData} */
-    protected void loadData(@NonNull final Context context,
-                            @NonNull final JsoupSearchEngineBase searchEngine,
-                            @NonNull final String charsetName,
-                            @NonNull final String locationHeader,
-                            @NonNull final String filename,
-                            final boolean[] fetchCovers)
-            throws IOException, SearchException, CredentialsException, StorageException {
+    @NonNull
+    protected Document loadDocument(@NonNull final String filename,
+                                    @Nullable final String charset,
+                                    @NonNull final String locationHeader)
+            throws IOException {
         final Document document;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
-            document = Jsoup.parse(is, charsetName, locationHeader);
-
+            document = Jsoup.parse(is, charset, locationHeader);
             assertNotNull(document);
             assertTrue(document.hasText());
-
-            searchEngine.parse(context, document, fetchCovers, rawData);
-
-            assertFalse(rawData.isEmpty());
-
-            System.out.println(rawData);
         }
+        return document;
     }
 }

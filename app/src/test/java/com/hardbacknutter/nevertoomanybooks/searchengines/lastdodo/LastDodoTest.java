@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
+import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
@@ -66,15 +67,16 @@ class LastDodoTest
         final String locationHeader = "https://www.lastdodo.nl/nl/items/7323911-de-37ste-parallel";
         final String filename = "/lastdodo/7323911-de-37ste-parallel.html";
 
-        loadData(context, searchEngine, UTF_8, locationHeader, filename,
-                 new boolean[]{false, false});
+        final Document document = loadDocument(filename, UTF_8, locationHeader);
+        searchEngine.parse(context, document, new boolean[]{false, false}, rawData);
+        // System.out.println(rawData);
 
         assertEquals("De 37ste parallel", rawData.getString(DBKey.TITLE));
         assertEquals("9789463064385", rawData.getString(DBKey.BOOK_ISBN));
         assertEquals("2018", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
         assertEquals("48", rawData.getString(DBKey.PAGE_COUNT));
         assertEquals("Hardcover", rawData.getString(DBKey.FORMAT));
-        assertEquals("nld", rawData.getString(DBKey.LANGUAGE));
+        assertEquals("Nederlands", rawData.getString(DBKey.LANGUAGE));
         assertEquals("Gekleurd", rawData.getString(DBKey.COLOR));
 
         final ArrayList<Publisher> allPublishers = rawData
