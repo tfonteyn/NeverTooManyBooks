@@ -19,38 +19,54 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.kbnl;
 
+import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.debug.XmlDumpParser;
 
 abstract class KbNlHandlerBase
-        extends XmlDumpParser {
+        extends DefaultHandler {
 
-    /** XML tags. */
+    protected static final String SHOW_URL = "href";
     private static final String XML_LABEL = "psi:labelledLabel";
     private static final String XML_DATA = "psi:labelledData";
     private static final String XML_LINE = "psi:line";
     private static final String XML_TEXT = "psi:text";
+    /** XML tags. */
+    private static final String XML_RECORD = "psi:record";
+    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s{2,}");
+    /** The final output will be written to this bundle as passed in to the constructor. */
+    @NonNull
+    protected final Bundle data;
 
-    /** XML content. */
+    /** XML content of a single element. */
     @SuppressWarnings("StringBufferField")
     private final StringBuilder builder = new StringBuilder();
+    /** content of labelledData found. */
     private final List<String> currentData = new ArrayList<>();
+    /** The current labelledLabel. */
+    @Nullable
+    private String currentLabel;
+    private boolean inRecord;
     private boolean inLabel;
     private boolean inData;
     private boolean inLine;
     private boolean inText;
-    @Nullable
-    private String currentLabel;
+    /** Are we parsing a list of records {@code true}; or a detail page {@code false}. */
+    private boolean isList;
 
-    protected abstract void processEntry(@NonNull String currentLabel,
-                                         @NonNull List<String> currentData);
+    KbNlHandlerBase(@NonNull final Bundle data) {
+        this.data = data;
+    }
 
     /**
      * Filter a string of all non-digits. Used to clean isbn strings, years... etc.
@@ -79,21 +95,48 @@ abstract class KbNlHandlerBase
     }
 
     @Override
+    public void startDocument()
+            throws SAXException {
+        super.startDocument();
+
+        data.clear();
+        builder.setLength(0);
+        currentData.clear();
+        currentLabel = null;
+
+        inRecord = false;
+        inLabel = false;
+        inData = false;
+        inLine = false;
+        inText = false;
+
+        isList = false;
+    }
+
+    @Override
     public void startElement(@NonNull final String uri,
                              @NonNull final String localName,
                              @NonNull final String qName,
-                             @NonNull final Attributes attributes) {
+                             @NonNull final Attributes attributes)
+            throws SAXException {
         super.startElement(uri, localName, qName, attributes);
 
         switch (qName) {
+            case XML_RECORD:
+                inRecord = true;
+                // a list-page record will have a ppn attribute
+                final String ppn = attributes.getValue("ppn");
+                isList = ppn != null && !ppn.isEmpty();
+                break;
+
             case XML_LABEL:
-                currentLabel = null;
                 inLabel = true;
+                currentLabel = null;
                 break;
 
             case XML_DATA:
-                currentData.clear();
                 inData = true;
+                currentData.clear();
                 break;
 
             case XML_LINE:
@@ -101,8 +144,12 @@ abstract class KbNlHandlerBase
                 break;
 
             case XML_TEXT:
-                builder.setLength(0);
                 inText = true;
+                // if in list-page mode, store the first reference found.
+                if (isList && inRecord && inLine && !data.containsKey(SHOW_URL)) {
+                    data.putString(SHOW_URL, attributes.getValue("href"));
+                }
+                builder.setLength(0);
                 break;
 
             default:
@@ -113,16 +160,21 @@ abstract class KbNlHandlerBase
     @Override
     public void endElement(@NonNull final String uri,
                            @NonNull final String localName,
-                           @NonNull final String qName) {
+                           @NonNull final String qName)
+            throws SAXException {
         super.endElement(uri, localName, qName);
 
         switch (qName) {
+            case XML_RECORD:
+                inRecord = false;
+                break;
+
             case XML_LABEL:
                 inLabel = false;
                 break;
 
             case XML_DATA:
-                if (currentLabel != null && !currentLabel.isEmpty()) {
+                if (!isList && currentLabel != null && !currentLabel.isEmpty()) {
                     processEntry(currentLabel, currentData);
                 }
                 inData = false;
@@ -133,11 +185,15 @@ abstract class KbNlHandlerBase
                 break;
 
             case XML_TEXT:
-                if (inLabel) {
-                    currentLabel = builder.toString().split(":")[0].trim();
-
-                } else if (inLine) {
-                    currentData.add(builder.toString().trim());
+                if (!isList) {
+                    if (inLabel && inLine && inText) {
+                        currentLabel = builder.toString().split(":")[0].trim();
+                    } else if (inData && inLine) {
+                        // reduce whitespace; this also removed cr/lf
+                        final String s = WHITESPACE_PATTERN.matcher(builder.toString())
+                                                           .replaceAll(" ");
+                        currentData.add(s);
+                    }
                 }
                 inText = false;
                 break;
@@ -150,9 +206,13 @@ abstract class KbNlHandlerBase
     @Override
     public void characters(final char[] ch,
                            final int start,
-                           final int length) {
+                           final int length)
+            throws SAXException {
         super.characters(ch, start, length);
 
         builder.append(ch, start, length);
     }
+
+    protected abstract void processEntry(@NonNull String currentLabel,
+                                         @NonNull List<String> currentData);
 }

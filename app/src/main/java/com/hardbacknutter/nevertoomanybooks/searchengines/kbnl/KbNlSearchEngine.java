@@ -31,13 +31,9 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
@@ -50,6 +46,9 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedSAXException;
+
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * <a href="https://www.kb.nl/">Koninklijke Bibliotheek (KB), Nederland.</a>
@@ -80,18 +79,30 @@ public class KbNlSearchEngine
      * Response with Dutch or English labels.
      * /LNG=NE (default)
      * /LNG=EN
+     * <p>
+     * 2023-01-05
      */
-    // https://opc-kb.oclc.org/DB=1/SET=1/TTL=1/CMD?ACT=SRCHA&IKT=1007&SRT=YOP&TRM=9020612476
-    private static final String BOOK_URL =
-            "/DB=1/SET=1/TTL=1/CMD?"
+    private static final String SEARCH_URL =
+            "/cbs" +
+            "/DB=2.37" +
+            // the set number normally goes up for each search; but we only go
+            // through a single search/session, so we can just use '1'
+            "/SET=1" +
+            "/TTL=1" +
+            "/CMD?"
             + "ACT=SRCHA&"
             + "IKT=1007&"
-            // Year of publication, newest edition first.
-            // "SRT=YOP&"
-            // "selection date"... *seems* to be give us the oldest publication first.
-            + "SRT=LST_dtay&"
+            // Year of publication
+            // "SRT=LST_Ya&"
+            // Relevance
+            + "SRT=RLV&"
             // param 1: isbn
             + "TRM=%1$s";
+
+    private static final String BOOK_URL = "/cbs/DB=2.37/SET=1/TTL=1/";
+
+    @Nullable
+    private FutureHttpGet<Boolean> futureHttpGet;
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -102,9 +113,6 @@ public class KbNlSearchEngine
     public KbNlSearchEngine(@NonNull final SearchEngineConfig config) {
         super(config);
     }
-
-    @Nullable
-    private FutureHttpGet<Boolean> futureHttpGet;
 
     @Override
     public void cancel() {
@@ -130,8 +138,6 @@ public class KbNlSearchEngine
 
         futureHttpGet = createFutureGetRequest();
 
-        final String url = getHostUrl() + String.format(BOOK_URL, validIsbn);
-
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final DefaultHandler handler = new KbNlBookHandler(bookData);
 
@@ -141,10 +147,14 @@ public class KbNlSearchEngine
             // Don't follow redirects, so we get the XML instead of the rendered page
             futureHttpGet.setInstanceFollowRedirects(false);
 
+            // do the actual search.
+            String url = getHostUrl() + String.format(SEARCH_URL, validIsbn);
             futureHttpGet.get(url, request -> {
-                try (BufferedInputStream bis = new BufferedInputStream(request.getInputStream())) {
+                // We'll either get a parsed list-page back,
+                // or the parsed book page.
+                try (BufferedInputStream bis = new BufferedInputStream(
+                        request.getInputStream())) {
                     parser.parse(bis, handler);
-                    checkForSeriesNameInTitle(bookData);
                     return true;
 
                 } catch (@NonNull final IOException e) {
@@ -154,6 +164,26 @@ public class KbNlSearchEngine
                 }
             });
 
+            // If it was a list page, fetch and parse the 1st book found;
+            // If it was a book page, we're already done and can skip this step.
+            final String show = bookData.getString(KbNlHandlerBase.SHOW_URL);
+            if (show != null && !show.isEmpty()) {
+                url = getHostUrl() + BOOK_URL + show;
+                bookData.clear();
+
+                futureHttpGet.get(url, request -> {
+                    try (BufferedInputStream bis = new BufferedInputStream(
+                            request.getInputStream())) {
+                        parser.parse(bis, handler);
+                        return true;
+
+                    } catch (@NonNull final IOException e) {
+                        throw new UncheckedIOException(e);
+                    } catch (@NonNull final SAXException e) {
+                        throw new UncheckedSAXException(e);
+                    }
+                });
+            }
         } catch (@NonNull final SAXException e) {
             // unwrap SAXException using getException() !
             final Exception cause = e.getException();

@@ -32,11 +32,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
+import org.xml.sax.SAXException;
+
 class KbNlBookHandler
         extends KbNlHandlerBase {
 
-    @NonNull
-    private final Bundle bookData;
     /** accumulate all authors for this book. */
     @NonNull
     private final ArrayList<Author> authorList = new ArrayList<>();
@@ -50,39 +50,40 @@ class KbNlBookHandler
     /**
      * Constructor.
      *
-     * @param bookData Bundle to update <em>(passed in to allow mocking)</em>
+     * @param data Bundle to update <em>(passed in to allow mocking)</em>
      */
-    KbNlBookHandler(@NonNull final Bundle bookData) {
-        this.bookData = bookData;
-    }
-
-    /**
-     * Get the results.
-     *
-     * @return Bundle with book data
-     */
-    @NonNull
-    public Bundle getResult() {
-        return bookData;
+    KbNlBookHandler(@NonNull final Bundle data) {
+        super(data);
     }
 
     @Override
-    public void endDocument() {
+    public void startDocument()
+            throws SAXException {
+        super.startDocument();
+
+        authorList.clear();
+        seriesList.clear();
+        publisherList.clear();
+    }
+
+    @Override
+    public void endDocument()
+            throws SAXException {
         super.endDocument();
 
         if (!authorList.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
+            data.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
         }
         if (!seriesList.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
+            data.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
         }
         if (!publisherList.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
+            data.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
         }
         // As kb.nl is dutch, and there is no 'language' field,
         // we're going to assume that all books are in Dutch.
-        if (!bookData.isEmpty() && !bookData.containsKey(DBKey.LANGUAGE)) {
-            bookData.putString(DBKey.LANGUAGE, "nld");
+        if (!data.isEmpty() && !data.containsKey(DBKey.LANGUAGE)) {
+            data.putString(DBKey.LANGUAGE, "nld");
         }
     }
 
@@ -226,9 +227,22 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processTitle(@NonNull final Iterable<String> currentData) {
-        final String cleanedTitle = String.join(" ", currentData)
-                                          .split("/")[0].trim();
-        bookData.putString(DBKey.TITLE, cleanedTitle);
+        String[] cleanedData = String.join(" ", currentData).split("/");
+
+        data.putString(DBKey.TITLE, cleanedData[0].trim());
+        if (cleanedData.length > 1) {
+            cleanedData = cleanedData[1].split(";");
+            final Author author = Author.from(cleanedData[0]);
+            // for books this is the writer, but for comics? So we do NOT set a type here
+            authorList.add(author);
+
+            // TODO: extract the translator
+//            if (cleanedData.length > 1) {
+//                if (cleanedData[1].startsWith(" [vert.")) {
+//
+//                }
+//            }
+        }
     }
 
     /**
@@ -253,6 +267,11 @@ class KbNlBookHandler
      *   </psi:line>
      * </psi:labelledData>
      *
+     * <psi:labelledData>
+     *   <psi:line>
+     *     <psi:text href="REL?PPN=068852002">Ruurd Feenstra (1904-1974) (ISNI 0000 0000 2173 3650) </psi:text>
+     *     </psi:line>
+     *   </psi:labelledData>
      * }</pre>
      *
      *
@@ -260,10 +279,9 @@ class KbNlBookHandler
      * <p>
      * Note that the author name in the above example can be the "actual" name, and not
      * the publicly known/used name, i.e. in this case "Isaac Asimov"
-     * The second sample shows how the site is creative (hum) about authors using pen-names.
-     * The 3rd sample shows that dates can be added... and that ";" are considered authors.
-     * <p>
-     * ENHANCE: we *really* need to create an 'alias' table for authors.
+     * The 2nd sample shows how the site is creative (hum) about authors using pen-names.
+     * The 3rd example has a list of authors for the same author type.
+     * The 4th sample shows that dates and other info can be added
      * <p>
      * Getting author names:
      * http://opc4.kb.nl/DB=1/SET=1/TTL=1/REL?PPN=068561504
@@ -313,7 +331,7 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processSeriesNumber(@NonNull final List<String> currentData) {
-        final String title = bookData.getString(DBKey.TITLE);
+        final String title = data.getString(DBKey.TITLE);
         // should never happen, but paranoia...
         if (title != null) {
             final Series series = Series.from(title, currentData.get(0));
@@ -342,16 +360,16 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processIsbn(@NonNull final List<String> currentData) {
-        if (!bookData.containsKey(DBKey.BOOK_ISBN)) {
-            bookData.putString(DBKey.BOOK_ISBN, digits(currentData.get(0), true));
+        if (!data.containsKey(DBKey.BOOK_ISBN)) {
+            data.putString(DBKey.BOOK_ISBN, digits(currentData.get(0), true));
             if (currentData.size() > 1) {
-                if (!bookData.containsKey(DBKey.FORMAT)) {
+                if (!data.containsKey(DBKey.FORMAT)) {
                     String format = currentData.get(1).trim();
                     if (format.startsWith("(")) {
                         format = format.substring(1, format.length() - 1);
                     }
                     if (!format.isEmpty()) {
-                        bookData.putString(DBKey.FORMAT, format);
+                        data.putString(DBKey.FORMAT, format);
                     }
                 }
             }
@@ -420,10 +438,10 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processDatePublished(@NonNull final List<String> currentData) {
-        if (!bookData.containsKey(DBKey.BOOK_PUBLICATION__DATE)) {
+        if (!data.containsKey(DBKey.BOOK_PUBLICATION__DATE)) {
             final String year = digits(currentData.get(0), false);
             if (year != null && !year.isEmpty()) {
-                bookData.putString(DBKey.BOOK_PUBLICATION__DATE, year);
+                data.putString(DBKey.BOOK_PUBLICATION__DATE, year);
             }
         }
     }
@@ -444,14 +462,14 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processPages(@NonNull final List<String> currentData) {
-        if (!bookData.containsKey(DBKey.PAGE_COUNT)) {
+        if (!data.containsKey(DBKey.PAGE_COUNT)) {
             try {
                 final String cleanedString = currentData.get(0).split(" ")[0];
                 final int pages = Integer.parseInt(cleanedString);
-                bookData.putString(DBKey.PAGE_COUNT, String.valueOf(pages));
+                data.putString(DBKey.PAGE_COUNT, String.valueOf(pages));
             } catch (@NonNull final NumberFormatException e) {
                 // use source
-                bookData.putString(DBKey.PAGE_COUNT, currentData.get(0));
+                data.putString(DBKey.PAGE_COUNT, currentData.get(0));
             }
         }
     }
