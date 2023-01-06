@@ -345,8 +345,8 @@ public final class SearchEngineConfig {
         }
 
         @NonNull
-        Builder setCountry(@NonNull final String country,
-                           @SuppressWarnings("SameParameterValue") @NonNull final String lang) {
+        Builder setLocale(@SuppressWarnings("SameParameterValue") @NonNull final String lang,
+                          @NonNull final String country) {
             if (!lang.isEmpty() && !country.isEmpty()) {
                 locale = new Locale(lang, country.toUpperCase(Locale.ENGLISH));
             }

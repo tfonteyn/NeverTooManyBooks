@@ -213,12 +213,9 @@ public enum EngineId
              // default timeouts based on limited testing
              .setConnectTimeoutMs(20_000)
              .setReadTimeoutMs(60_000)
-             /*
-              * As proposed by another user on the ISFDB wiki,
-              * we're only going to send one request a second.
-              *
-              * @see <a href="http://www.isfdb.org/wiki/index.php/ISFDB:Help_desk#Some_Downloading_Questions_and_a_Request">throttling</a>
-              */
+             // As proposed by another user on the ISFDB wiki,
+             // we're only going to send one request a second.
+             //<a href="https://isfdb.org/wiki/index.php/ISFDB:Help_desk/archives/archive_34#Some_Downloading_Questions_and_a_Request">throttling</a>
              .setThrottlerTimeoutMs(1_000)
              .build();
 
@@ -249,15 +246,15 @@ public enum EngineId
 
         // Dutch.
         if (BuildConfig.ENABLE_KB_NL) {
-            KbNl.createConfiguration("https://opc-kb.oclc.org")
-                .setCountry("NL", "nl")
+            KbNl.createConfiguration("https://webggc.oclc.org")
+                .setLocale("nl", "NL")
                 .setSupportsMultipleCoverSizes(true)
                 .build();
         }
         // Dutch.
         if (BuildConfig.ENABLE_LAST_DODO) {
             LastDodoNl.createConfiguration("https://www.lastdodo.nl")
-                      .setCountry("NL", "nl")
+                      .setLocale("nl", "NL")
 
                       .setPrefersIsbn10(true)
 
@@ -269,7 +266,7 @@ public enum EngineId
         // Dutch.
         if (BuildConfig.ENABLE_STRIP_INFO) {
             StripInfoBe.createConfiguration("https://www.stripinfo.be")
-                       .setCountry("BE", "nl")
+                       .setLocale("nl", "BE")
 
                        .setDomainKey(DBKey.SID_STRIP_INFO)
                        .setDomainViewId(R.id.site_strip_info_be)
@@ -286,7 +283,7 @@ public enum EngineId
 
         if (BuildConfig.ENABLE_BEDETHEQUE) {
             Bedetheque.createConfiguration("https://www.bedetheque.com")
-                      .setCountry("FR", "fr")
+                      .setLocale("fr", "FR")
 
                       // default timeouts based on limited testing
                       .setConnectTimeoutMs(15_000)
