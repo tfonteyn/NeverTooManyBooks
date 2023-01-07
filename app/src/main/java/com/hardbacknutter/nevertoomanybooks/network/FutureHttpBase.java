@@ -104,6 +104,10 @@ public abstract class FutureHttpBase<T> {
      */
     FutureHttpBase(@StringRes final int siteResId) {
         this.siteResId = siteResId;
+
+        // Set the default user agent.
+        // Potentially overridden by calling #setRequestProperty.
+        requestProperties.put(HttpUtils.USER_AGENT, HttpUtils.USER_AGENT_VALUE);
     }
 
     public static void dumpSSLException(@NonNull final HttpsURLConnection request,
@@ -268,12 +272,12 @@ public abstract class FutureHttpBase<T> {
                    IOException {
         try {
             futureHttp = ASyncExecutor.SERVICE.submit(() -> {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
+                    Log.d(TAG, "url=\"" + url + '\"');
+                }
+
                 HttpURLConnection request = null;
                 try {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                        Log.d(TAG, "url=\"" + url + '\"');
-                    }
-
                     request = (HttpURLConnection) new URL(url).openConnection();
                     request.setRequestMethod(method);
                     request.setDoOutput(doOutput);
