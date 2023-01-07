@@ -31,6 +31,7 @@ is by design not foolproof. The nodes 'expanded' flag WILL get out of sync with
 NEW:
 - new scanner code from 3.4 is considered stable.
 - new search-engine for Bedetheque (BDGest) for french comics
+- updated and re-enabled search-engine for KB NL for dutch books
 - author pseudonym support:
   - The user can manage/display pseudonyms.
   - automatic resolving is available for stripinfo/lastdodo
