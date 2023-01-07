@@ -28,6 +28,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
@@ -51,7 +52,7 @@ public class IsbnTest
 
     private Context context;
 
-    private BedethequeSearchEngine searchEngine;
+    private SearchEngine searchEngine;
 
     @Before
     public void setup()
@@ -60,15 +61,14 @@ public class IsbnTest
 
         context = serviceLocator.getLocalizedAppContext();
 
-        searchEngine = (BedethequeSearchEngine) Site.Type.Data
-                .getSite(EngineId.Bedetheque).getSearchEngine();
+        searchEngine = Site.Type.Data.getSite(EngineId.Bedetheque).getSearchEngine();
         searchEngine.setCaller(new MockCancellable());
     }
 
     @Test
     public void Isbn9781849182089()
             throws SearchException, CredentialsException, StorageException {
-        // {series_list=[Series{id=0, title=`Lucky Luke`, complete=false, number=`148`}],
+        // {series_list=[Series{id=0, title=`Lucky Luke`, complete=false, number=`148`},
         // language=anglais, format=Couverture souple,
         // date_published=2014-08, isbn=9781849182089,
         // pages=48, title=Dick Digger's Gold Mine,
@@ -78,12 +78,12 @@ public class IsbnTest
         // realAuthor=Author{id=0, familyName=`De Bevere`, givenNames=`Maurice`, complete=false,
         // type=0b0: Type{}, realAuthor=null}}],
         // publisher_list=[Publisher{id=0, name=`Cinebook`}]}]
-        final Bundle bundle = searchEngine.searchByIsbn(context, "9781849182089",
-                                                        new boolean[]{false, false});
+        final Bundle bundle = ((SearchEngine.ByIsbn) searchEngine)
+                .searchByIsbn(context, "9781849182089", new boolean[]{false, false});
         Logger.d(TAG, "", bundle.toString());
         assertNotNull(bundle);
         assertFalse(bundle.isEmpty());
-        assertEquals("Couverture souple", bundle.getString(DBKey.FORMAT));
+        assertEquals("Softcover", bundle.getString(DBKey.FORMAT));
         assertEquals("anglais", bundle.getString(DBKey.LANGUAGE));
         // this is good enough... the local junit tests do the full parse test
     }
