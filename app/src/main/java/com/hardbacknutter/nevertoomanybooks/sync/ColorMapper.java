@@ -30,6 +30,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
  * System wide book color representation. Color is mainly meant for comics.
+ * <p>
+ * Note that the KBNL SearchEngine does it's own mapping.
  */
 public final class ColorMapper
         extends MapperBase {
@@ -44,8 +46,17 @@ public final class ColorMapper
         // lastdodo.nl
         MAPPER.put("gekleurd", R.string.book_color_full_color);
         MAPPER.put("ongekleurd", R.string.book_color_black_and_white);
-    }
 
+        // bedetheque
+        MAPPER.put("N&B", R.string.book_color_black_and_white);
+        MAPPER.put("Monochromie", R.string.book_color_black_and_white);
+        // B&W with 1 or 2 support colors
+        MAPPER.put("Bichromie", R.string.book_color_support_color);
+        // extremely seldom used; we'll set to same as "Bichromie"
+        MAPPER.put("Trichromie", R.string.book_color_support_color);
+        MAPPER.put("Quadrichromie", R.string.book_color_full_color);
+
+    }
     @NonNull
     @Override
     public String getKey() {
