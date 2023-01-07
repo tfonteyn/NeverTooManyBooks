@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<?xml-stylesheet type="text/xsl" href="/get/BASE=http%253A%252F%252Fopc4imgbase.kb.nl%253A80%252Foclc_gui/path/%253Fid%253DLONGTITLE%2526db%253D1"?>
+<?xml-stylesheet type="text/xsl" href="/cbs/get/worldcat_gui/%253Fid%253DLONGTITLE%2526db%253D2.37"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -21,331 +21,331 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- Copyright (c) 2019 by OCLC -->
-<!--suppress ALL -->
-<psi:response xmlns:psi="http://www.oclcpica.org/xml/"
-              name="LONGTITLE">
+<!-- Copyright (c) 2023 by OCLC -->
+<!-- Release: cbs-8.4.6.1; cbscfg-8.4.5; pusher_proxy-1.0.1; lib: cbs-8.4.6.1  -->
+<psi:response xmlns:psi="http://www.oclcpica.org/xml/" name="LONGTITLE">
     <psi:context>
         <psi:session>
             <psi:sessionVar name="LNG">NE</psi:sessionVar>
-            <psi:sessionVar name="DB">1</psi:sessionVar>
-            <psi:sessionVar name="SID">1619ab44-13b</psi:sessionVar>
-            <psi:sessionVar name="SET">1</psi:sessionVar>
-            <psi:sessionVar name="COOKIE"></psi:sessionVar>
-            <psi:sessionVar name="CMD_COLLAPSE">N</psi:sessionVar>
+            <psi:sessionVar name="DB">2.37</psi:sessionVar>
+            <psi:sessionVar name="SID">d055c206-2bc</psi:sessionVar>
+            <psi:sessionVar name="SET">8</psi:sessionVar>
+            <psi:sessionVar name="COOKIE">
+                U93,KKOBLogin,I2,B0003++++++,SY,NKOB+ORS+default+login,D2.37,Ed055c206-2bc,A,H,R82.14.237.133,FY
+            </psi:sessionVar>
+            <psi:sessionVar name="COOKIE_ENC">
+                U93,KKOBLogin,I2,B0003%2B%2B%2B%2B%2B%2B,SY,NKOB%2BORS%2Bdefault%2Blogin,D2.37,Ed055c206-2bc,A,H,R82.14.237.133,FY
+            </psi:sessionVar>
+            <psi:sessionVar name="SESID"></psi:sessionVar>
+            <psi:sessionVar name="CMD_COLLAPSE"></psi:sessionVar>
+            <psi:sessionVar name="ALTCFG"></psi:sessionVar>
+            <psi:sessionVar name="AUTHDB"></psi:sessionVar>
         </psi:session>
         <psi:contextVar name="CharSet">UTF-8</psi:contextVar>
-        <psi:contextVar name="userName"></psi:contextVar>
-        <psi:contextVar name="UserNum"></psi:contextVar>
-        <psi:contextVar name="libId"></psi:contextVar>
+        <psi:contextVar name="userName">KOB ORS default login</psi:contextVar>
+        <psi:contextVar name="UserNum">93</psi:contextVar>
+        <psi:contextVar name="libId">0003</psi:contextVar>
+        <psi:contextVar name="fullLibId">0003</psi:contextVar>
         <psi:contextVar name="relativeUrl">/NXT</psi:contextVar>
-        <psi:contextVar name="currentyear">2019</psi:contextVar>
-        <psi:contextVar name="versionName">opc4</psi:contextVar>
-        <psi:contextVar name="versionNumber">2.11-44</psi:contextVar>
+        <psi:contextVar name="currentyear">2023</psi:contextVar>
+        <psi:contextVar name="versionName"></psi:contextVar>
+        <psi:contextVar name="versionNumber"></psi:contextVar>
         <psi:contextVar name="ppn">422449148</psi:contextVar>
         <psi:contextVar name="prs"></psi:contextVar>
         <psi:contextVar name="ttl">1</psi:contextVar>
         <psi:contextVar name="ttlmatcode">MAT_B</psi:contextVar>
-        <psi:contextVar name="HMSOPC_OUSUSERNR">888</psi:contextVar>
+        <psi:contextVar name="webcatFullScreen"></psi:contextVar>
+        <psi:contextVar name="ccwEditMode"></psi:contextVar>
+        <psi:contextVar name="ccwReferer"></psi:contextVar>
     </psi:context>
     <psi:urls>
-        <psi:url name="ie_docbase">
-            http://opc4.kb.nl/get/BASE=http%25253A%25252F%25252Fopc4imgbase.kb.nl%25253A80%25252Foclc_gui/path/
-        </psi:url>
-        <psi:url name="SERVER_BASE">http://opc4.kb.nl</psi:url>
-        <psi:url name="SCRIPT_NAME"></psi:url>
-        <psi:url name="CBS_BASE"></psi:url>
-        <psi:url name="urlcontext">DB=1/SET=1/TTL=1/</psi:url>
+        <psi:url name="ie_docbase">https://webggc.oclc.org/cbs/get/worldcat_gui/</psi:url>
+        <psi:url name="SERVER_BASE">https://webggc.oclc.org/cbs</psi:url>
+        <psi:url name="SERVER_BASE_BASIC">https://webggc.oclc.org/cbs</psi:url>
+        <psi:url name="SCRIPT_NAME">/</psi:url>
+        <psi:url name="CBS_BASE">https://webggc.oclc.org/cbs</psi:url>
+        <psi:url name="urlcontext">/cbsDB=2.37/SET=8/TTL=1/</psi:url>
         <psi:url name="ACQUIRE">
-            /DB=1/SET=1/TTL=1/RESULTS_ACQUIRE?PPN=422449148&amp;TTLMATCODE=MAT_B
+            https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/RESULTS_ACQUIRE?PPN=422449148&amp;TTLMATCODE=MAT_B
         </psi:url>
-        <psi:url name="ARROW">http://192.87.31.182/~opc4_beh/img_psi/2.0/gui/inline_arrow.gif
+        <psi:url name="ARROW">
+            https://webggc.oclc.org/~r_cbs/psi_images/img_psi/2.0/gui/inline_arrow.gif
         </psi:url>
-        <psi:url name="BORROWER">https://opc4imgbase.kb.nl:443/LBS_WEB/borrower/borrower.htm?USR=888&amp;BES=1&amp;LAN=NE</psi:url>
+        <psi:url name="BORROWER">
+            https://webggc.oclc.org/cbs/loan/FORCETT=HTML/DB=2.37/SET=8/TTL=1/USERINFO_LOGIN
+        </psi:url>
         <psi:url name="BORROWER_CHANGEPASSWORD">
-            /loan/FORCETT=HTML/DB=1/SET=1/TTL=1/USERINFO?ACT=UI_CHUPW&amp;BOR_U=&amp;BOR_PW_ENC=
+            https://webggc.oclc.org/cbs/loan/FORCETT=HTML/DB=2.37/SET=8/TTL=1/USERINFO?ACT=UI_CHUPW&amp;BOR_U=&amp;BOR_PW_ENC=
         </psi:url>
-        <psi:url name="BORROWER_LISTOFCOSTS">/loan/FORCETT=HTML/DB=1/SET=1/TTL=1/USERINFO?ACT=UI_LOC&amp;BOR_U=&amp;BOR_PW_ENC=</psi:url>
-        <psi:url name="BORROWER_LISTOFLOANS">/loan/FORCETT=HTML/DB=1/SET=1/TTL=1/USERINFO?ACT=UI_LOL&amp;BOR_U=&amp;BOR_PW_ENC=</psi:url>
+        <psi:url name="BORROWER_LISTOFCOSTS">
+            https://webggc.oclc.org/cbs/loan/FORCETT=HTML/DB=2.37/SET=8/TTL=1/USERINFO?ACT=UI_LOC&amp;BOR_U=&amp;BOR_PW_ENC=
+        </psi:url>
+        <psi:url name="BORROWER_LISTOFLOANS">
+            https://webggc.oclc.org/cbs/loan/FORCETT=HTML/DB=2.37/SET=8/TTL=1/USERINFO?ACT=UI_LOL&amp;BOR_U=&amp;BOR_PW_ENC=
+        </psi:url>
         <psi:url name="BORROWER_LISTOFRESERVATIONS">
-            /loan/FORCETT=HTML/DB=1/SET=1/TTL=1/USERINFO?ACT=UI_LOR&amp;BOR_U=&amp;BOR_PW_ENC=
+            https://webggc.oclc.org/cbs/loan/FORCETT=HTML/DB=2.37/SET=8/TTL=1/USERINFO?ACT=UI_LOR&amp;BOR_U=&amp;BOR_PW_ENC=
         </psi:url>
-        <psi:url name="BORROWER_USERDATA">/loan/FORCETT=HTML/DB=1/SET=1/TTL=1/USERINFO?ACT=UI_DATA&amp;BOR_U=&amp;BOR_PW_ENC=</psi:url>
-        <psi:url name="CBSLOGIN">/login/DB=1/SET=1/TTL=1/ENDUSER</psi:url>
+        <psi:url name="BORROWER_USERDATA">
+            https://webggc.oclc.org/cbs/loan/FORCETT=HTML/DB=2.37/SET=8/TTL=1/USERINFO?ACT=UI_DATA&amp;BOR_U=&amp;BOR_PW_ENC=
+        </psi:url>
+        <psi:url name="CBSLOGIN">https://webggc.oclc.org/cbs/login/DB=2.37/SET=8/TTL=1/ENDUSER
+        </psi:url>
+        <psi:url name="CCWEB"></psi:url>
+        <psi:url name="CCWEB_ADMINISTRATION"></psi:url>
+        <psi:url name="CCWEB_MYACCOUNT"></psi:url>
+        <psi:url name="CCWEB_MYLIBRARY"></psi:url>
+        <psi:url name="CONTRIBUTE_GEN">https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/CONTRIBUTE
+        </psi:url>
         <psi:url name="DOMAIN">nl</psi:url>
-        <psi:url name="FAVICON_ROOT">http://192.87.31.182/~opc4_beh/img_psi/2.0/favicons/</psi:url>
-        <psi:url name="HM_PHP_BASE">http://192.87.31.182/~opc4_beh/psi/php</psi:url>
+        <psi:url name="FAVICON_ROOT">
+            https://webggc.oclc.org/~r_cbs/psi_images/img_psi/2.0/favicons/
+        </psi:url>
+        <psi:url name="HM_PHP_BASE">https://webggc.oclc.org/~r_cbs/psi_images/psi/php</psi:url>
         <psi:url name="IPORT_LANG">ned</psi:url>
         <psi:url name="LANG">ne</psi:url>
-        <psi:url name="LOG">login/DB=1/SET=1/TTL=1/ENDUSER/REQUEST</psi:url>
-        <psi:url name="LOGIN">/DB=1/SET=1/TTL=1/LOGIN=TRUE/</psi:url>
-        <psi:url name="LOGIN_RESOURCES">/login/DB=1/SET=1/TTL=1/DBMENU</psi:url>
-        <psi:url name="MAIN">/DB=1/SET=1/TTL=1/</psi:url>
-        <psi:url name="PICARTA">http://opc4.kb.nl/DB=2.41/XMLPRS=Y/LNG=NE/?COOKIE=</psi:url>
-        <psi:url name="PROFILE_ADDRESS">/adr/FORCETT=HTML/DB=1/SET=1/TTL=1/ADRESGEGEVENS</psi:url>
+        <psi:url name="LOG">https://webggc.oclc.org/cbs/login/DB=2.37/SET=8/TTL=1/ENDUSER/REQUEST
+        </psi:url>
+        <psi:url name="LOGIN">https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/LOGIN=TRUE/</psi:url>
+        <psi:url name="LOGIN_RESOURCES_NCC">https://webggc.oclc.org/cbs/DB=2.4/</psi:url>
+        <psi:url name="LOGIN_RESOURCES_PICARTA">https://webggc.oclc.org/cbs/DB=2.41/</psi:url>
+        <psi:url name="LOGIN_RESOURCES_SPECIAL">
+            https://webggc.oclc.org/cbs/login/DB=2.37/SET=8/TTL=1/DBMENU?GROUP=SPECIAL&amp;MODE=LOGIN
+        </psi:url>
+        <psi:url name="MAIN">https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/</psi:url>
+        <psi:url name="MAIN_PORTAL">https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/START_WELCOME
+        </psi:url>
+        <psi:url name="MARKLISTS">https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/PSSL</psi:url>
+        <psi:url name="MARKLISTS_CONTRIBUTE">
+            https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/CONTRIBUTE
+        </psi:url>
+        <psi:url name="MARKLISTS_HISTORY">
+            https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/HIST?HIST_MODE=PSS
+        </psi:url>
+        <psi:url name="MARKLISTS_HOLDING">
+            https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/NO_PSS_SELECTED
+        </psi:url>
+        <psi:url name="MARKLISTS_LONGTITLE">
+            https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/NO_PSS_SELECTED
+        </psi:url>
+        <psi:url name="MARKLISTS_PPNLIST">
+            https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/NO_PSS_SELECTED
+        </psi:url>
+        <psi:url name="MODE_BORROWER">
+            https://protect-us.mimecast.com/s/DPKtCjRBV0I3jmwpuWq1z4?domain=kb.alma.exlibrisgroup.com
+        </psi:url>
+        <psi:url name="NICK">
+            https://webggc.oclc.org/cbs/login/DB=2.37/SET=8/TTL=1/LOGIN=TRUE/?REDIRECT=http%3A%2F%2Fwebggc.oclc.org%2Fcbs%2FDB%3D2.37%2FSET%3D8%2FTTL%3D1%2FNICK
+        </psi:url>
+        <psi:url name="PICARTA">
+            https://webggc.oclc.org/cbs/DB=2.41/XMLPRS=Y/LNG=NE/?COOKIE=U93,KKOBLogin,I2,B0003++++++,SY,NKOB+ORS+default+login,D2.37,Ed055c206-2bc,A,H,R82.14.237.133,FY
+        </psi:url>
+        <psi:url name="PRIVACY">https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/PRIVACY</psi:url>
+        <psi:url name="PROFILE_ADDRESS">
+            https://webggc.oclc.org/cbs/adr/DB=2.37/SET=8/TTL=1/ADRESGEGEVENS
+        </psi:url>
         <psi:url name="PROFILE_DEPOSIT">
-            /dpo/FORCETT=HTML/DB=1/SET=1/TTL=1/FORM/REQUEST?P3C=TOO%1FDPO%1FUSE%1F%1F%1F&amp;P3S=NT&amp;P3B=NT
+            https://webggc.oclc.org/cbs/dpo/DB=2.37/SET=8/TTL=1/FORM/REQUEST?P3C=TOO%1FDPO%1FUSE%1F%1F%1F&amp;P3S=NT&amp;P3B=NT
         </psi:url>
         <psi:url name="PROFILE_PASSWORD">
-            /usr/FORCETT=HTML/DB=1/SET=1/TTL=1/FORM/REQUEST?P3C=MUT%1FPAS%1F&amp;P3S=UF&amp;P3B=UF&quot;
+            https://webggc.oclc.org/cbs/usr/DB=2.37/SET=8/TTL=1/FORM/REQUEST?P3C=MUT%1FPAS%1F&amp;P3S=UF&amp;P3B=UF
         </psi:url>
         <psi:url name="PROFILE_REQUESTS">
-            /avr/FORCETT=HTML/DB=1/SET=1/TTL=1/FORM/REQUEST?P3C=SEL%1FING%1F&amp;P3S=AF&amp;P3B=AF
+            https://webggc.oclc.org/cbs/avr/DB=2.37/SET=8/TTL=1/FORM/REQUEST?P3C=SEL%1FING%1F&amp;P3S=AF&amp;P3B=AF
         </psi:url>
         <psi:url name="PROFILE_SDIREQUESTS">
-            /sdi/FORCETT=HTML/DB=1/SET=1/TTL=1/FORM/REQUEST?P3C=TOO%1FSDI%1F1-%1F&amp;P3S=S3&amp;P3B=S3
+            https://webggc.oclc.org/cbs/sdi/DB=2.37/SET=8/TTL=1/FORM/REQUEST?P3C=TOO%1FSDI%1F1-%1F&amp;P3S=S3&amp;P3B=S3
         </psi:url>
-        <psi:url name="REFERER">http://opc4.kb.nl/DB=1/SET=1/TTL=1/NXT</psi:url>
-        <psi:url name="REFERER_URL">http%3A%2F%2Fopc4.kb.nl%2FDB%3D1%2FSET%3D1%2FTTL%3D1%2FNXT
+        <psi:url name="REFERER">https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/NXT</psi:url>
+        <psi:url name="REFERER_PRS_REL">/DB=2.37/SET=8/TTL=1/PRS=/NXT</psi:url>
+        <psi:url name="REFERER_PRS_REL_ENC">%2FDB%3D2.37%2FSET%3D8%2FTTL%3D1%2FPRS%3D%2FNXT
         </psi:url>
-        <psi:url name="REPOSITORY_UPLOAD">/DB=1/SET=1/TTL=1/REPOSITORY_UPLOAD</psi:url>
-        <psi:url name="REPOSITORY_UPLOAD_FORMACTION">
-            http://192.87.31.182/~opc4_beh/psi/php/upload.php?action=upload
+        <psi:url name="REFERER_URL">
+            http%3A%2F%2Fwebggc.oclc.org%2Fcbs%2FDB%3D2.37%2FSET%3D8%2FTTL%3D1%2FNXT
         </psi:url>
-        <psi:url name="RESULTSET">/DB=1/SET=1/TTL=1/NXT?FRST=1&amp;SET=1</psi:url>
-        <psi:url name="RESULTSET_HIST">/DB=1/SET=1/TTL=1/HIST</psi:url>
-        <psi:url name="RESULTSET_HOLDING">/DB=1/SET=1/TTL=1/PRS=HOL/SHW?FRST=1</psi:url>
-        <psi:url name="RESULTSET_OVERVIEW">/DB=1/SET=1/TTL=1/NXT?FRST=1</psi:url>
-        <psi:url name="RESULTSET_PPNLIST">/DB=1/SET=1/TTL=1/NXT?FRST=1</psi:url>
+        <psi:url name="RESULTSET">https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/NXT?FRST=1&amp;SET=8</psi:url>
+        <psi:url name="RESULTSET_CONTRIBUTE">
+            https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/CONTRIBUTE
+        </psi:url>
+        <psi:url name="RESULTSET_HIST">https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/HIST
+        </psi:url>
+        <psi:url name="RESULTSET_HOLDING">
+            https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/PRS=HOL/SHW?FRST=1
+        </psi:url>
+        <psi:url name="RESULTSET_OVERVIEW">
+            https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/NXT?FRST=1
+        </psi:url>
+        <psi:url name="RESULTSET_PPNLIST">
+            https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/NXT?FRST=1
+        </psi:url>
         <psi:url name="RESULTSET_TREFWOORD">
-            https://www.kb.nl/bronnen-zoekwijzers/zoekwijzers/meer-informatie-over-zoeken/trefwoorden-in-de-kb-catalogus
+            https://protect-us.mimecast.com/s/wnwyC82g7MIP0kmJfnsJVJ?domain=kb.nl
         </psi:url>
-        <psi:url name="RSC_URL_krantenbank">http://picarta.pica.nl/login/COOKIE/REQUEST?DB=2.45&amp;LNG=NE&amp;REDIRECT=http%3A%2F%2Fpicarta.pica.nl%3A80%2FDB%3D2.45%2F</psi:url>
-        <psi:url name="RSC_URL_website">http://oclcpica.org/?id=2&amp;ln=nl</psi:url>
-        <psi:url name="SAVESET">/DB=1/SET=1/TTL=1/ERROR_MYSHELF_EMPTY</psi:url>
-        <psi:url name="SAVESET_HOLDING">/DB=1/SET=1/TTL=1/PRS=HOL/SHW?FRST=1</psi:url>
-        <psi:url name="SAVESET_LONGTITLE">/DB=1/SET=1/TTL=1/SHW?FRST=1</psi:url>
-        <psi:url name="SAVESET_PPNLIST">/DB=1/SET=1/TTL=1/NXT?FRST=1</psi:url>
-        <psi:url name="SEARCH_ADVANCED">/DB=1/SET=1/TTL=1/ADVANCED_SEARCHFILTER</psi:url>
-        <psi:url name="SEARCH_HELP">/?DB=1&amp;LNG=NE&amp;COOKIE=</psi:url>
-        <psi:url name="SEARCH_PLUGIN">http://opc4.kb.nl/DB=1/SET=1/TTL=1/XML=1.0/SEARCHPLUGIN?NAME=&amp;FAVICON=</psi:url>
-        <psi:url name="SEARCH_SUBJECTS">/DB=1/SET=1/TTL=1/ADVANCED_SUBJECTS</psi:url>
-        <psi:url name="server_adr">/adr/FORCETT=HTML/DB=1/SET=1/TTL=1/</psi:url>
-        <psi:url name="server_avr">/avr/FORCETT=HTML/DB=1/SET=1/TTL=1/</psi:url>
-        <psi:url name="server_current">/DB=1/SET=1/TTL=1/</psi:url>
-        <psi:url name="server_dpo">/dpo/FORCETT=HTML/DB=1/SET=1/TTL=1/</psi:url>
-        <psi:url name="server_hml">/loan/FORCETT=HTML/DB=1/SET=1/TTL=1/</psi:url>
-        <psi:url name="server_hms">/DB=1/SET=1/TTL=1/</psi:url>
-        <psi:url name="server_ind">/request/FORCETT=HTML/DB=1/SET=1/TTL=1/</psi:url>
-        <psi:url name="server_log">login/DB=1/SET=1/TTL=1/</psi:url>
-        <psi:url name="server_sdi">/sdi/FORCETT=HTML/DB=1/SET=1/TTL=1/</psi:url>
-        <psi:url name="server_usr">/usr/FORCETT=HTML/DB=1/SET=1/TTL=1/</psi:url>
-        <psi:url name="SIGNOFF">
-            /DB=1/SET=1/TTL=1/EXIT?DEST=http%3A%2F%2F192.87.31.191%2Fcgi-bin%2Fwwwopc4menu
+        <psi:url name="RSC_URL_website">https://oclcpica.org/?id=2&amp;ln=nl</psi:url>
+        <psi:url name="SAVESET"></psi:url>
+        <psi:url name="SAVESET_CONTRIBUTE">
+            https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/CONTRIBUTE
         </psi:url>
+        <psi:url name="SAVESET_HOLDING">
+            https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/PRS=HOL/SHW?FRST=1
+        </psi:url>
+        <psi:url name="SAVESET_LONGTITLE">
+            https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/SHW?FRST=1
+        </psi:url>
+        <psi:url name="SAVESET_PPNLIST">https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/NXT?FRST=1
+        </psi:url>
+        <psi:url name="SEARCH_ADVANCED">
+            https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/ADVANCED_SEARCHFILTER
+        </psi:url>
+        <psi:url name="SEARCH_HELP">/?DB=2.37&amp;LNG=NE&amp;COOKIE=U93,KKOBLogin,I2,B0003++++++,SY,NKOB+ORS+default+login,D2.37,Ed055c206-2bc,A,H,R82.14.237.133,FY</psi:url>
+        <psi:url name="SEARCH_PLUGIN">
+            https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/XML=1.0/SEARCHPLUGIN?NAME=Koninklijke+Bibliotheek&amp;FAVICON=
+        </psi:url>
+        <psi:url name="SEARCH_SUBJECTS">
+            https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/ADVANCED_SUBJECTS
+        </psi:url>
+        <psi:url name="server_adr">https://webggc.oclc.org/cbs/adr/DB=2.37/SET=8/TTL=1/</psi:url>
+        <psi:url name="server_avr">https://webggc.oclc.org/cbs/avr/DB=2.37/SET=8/TTL=1/</psi:url>
+        <psi:url name="server_current">https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/</psi:url>
+        <psi:url name="server_current_enc">
+            http%3A%2F%2Fwebggc.oclc.org%2Fcbs%2FDB%3D2.37%2FSET%3D8%2FTTL%3D1%2F
+        </psi:url>
+        <psi:url name="server_current_rel">/DB=2.37/SET=8/TTL=1/</psi:url>
+        <psi:url name="server_dpo">https://webggc.oclc.org/cbs/dpo/DB=2.37/SET=8/TTL=1/</psi:url>
+        <psi:url name="server_hml">
+            https://webggc.oclc.org/cbs/loan/FORCETT=HTML/DB=2.37/SET=8/TTL=1/
+        </psi:url>
+        <psi:url name="server_hms">https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/</psi:url>
+        <psi:url name="server_ind">https://webggc.oclc.org/cbs/request/DB=2.37/SET=8/TTL=1/
+        </psi:url>
+        <psi:url name="server_log">https://webggc.oclc.org/cbs/login/DB=2.37/SET=8/TTL=1/</psi:url>
+        <psi:url name="server_msearch">https://webggc.oclc.org/cbs/msearch/LNG=NE/</psi:url>
+        <psi:url name="server_portal">https://webggc.oclc.org/cbs/portal/DB=2.37/SET=8/TTL=1/
+        </psi:url>
+        <psi:url name="server_sdi">https://webggc.oclc.org/cbs/sdi/DB=2.37/SET=8/TTL=1/</psi:url>
+        <psi:url name="server_search">https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/</psi:url>
+        <psi:url name="server_usr">https://webggc.oclc.org/cbs/usr/DB=2.37/SET=8/TTL=1/</psi:url>
+        <psi:url name="SIGNOFF">https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/EXIT?DEST=</psi:url>
         <psi:url name="SIGNON">
-            login/DB=1/SET=1/TTL=1/ENDUSER/REQUEST?REDIRECT=http%3A%2F%2Fopc4.kb.nl%2FDB%3D1%2FSET%3D1%2FTTL%3D1%2F
+            https://webggc.oclc.org/cbs/login/DB=2.37/SET=8/TTL=1/ENDUSER/REQUEST?REDIRECT=http%3A%2F%2Fwebggc.oclc.org%2Fcbs%2FDB%3D2.37%2FSET%3D8%2FTTL%3D1%2F
         </psi:url>
-        <psi:url name="START_ABOUT">/DB=1/SET=1/TTL=1/START_ABOUT</psi:url>
-        <psi:url name="START_RESOURCES">/login/DB=1/SET=1/TTL=1/DBMENU</psi:url>
-        <psi:url name="START_WELCOME">/DB=1/SET=1/TTL=1/START_WELCOME</psi:url>
-        <psi:url name="TO_KBSITE">http://www.kb.nl</psi:url>
-        <psi:url name="USE_OPC">http://opc4.kb.nl/DB=1/</psi:url>
-        <psi:url name="USE_PORTAL">http://opc4.kb.nl/portal/DB=portal/</psi:url>
+        <psi:url name="START_ABOUT">https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/START_ABOUT
+        </psi:url>
+        <psi:url name="START_RESOURCES_NCC">https://webggc.oclc.org/cbs/DB=2.4/</psi:url>
+        <psi:url name="START_RESOURCES_PICARTA">https://webggc.oclc.org/cbs/DB=2.41/</psi:url>
+        <psi:url name="START_RESOURCES_SPECIAL">
+            https://webggc.oclc.org/cbs/login/DB=2.37/SET=8/TTL=1/DBMENU?GROUP=SPECIAL
+        </psi:url>
+        <psi:url name="START_WELCOME">
+            https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/START_WELCOME
+        </psi:url>
+        <psi:url name="TERMS_OF_USE">https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/TERMS_OF_USE
+        </psi:url>
+        <psi:url name="USE_OPC">
+            https://webggc.oclc.org/cbs/DB=1/LNG=NE/?COOKIE=U93,KKOBLogin,I2,B0003++++++,SY,NKOB+ORS+default+login,D2.37,Ed055c206-2bc,A,H,R82.14.237.133,FY
+        </psi:url>
+        <psi:url name="USE_PORTAL">
+            https://webggc.oclc.org/cbs/portal/DB=portal/XMLPRS=Y/LNG=NE/?COOKIE=U93,KKOBLogin,I2,B0003++++++,SY,NKOB+ORS+default+login,D2.37,Ed055c206-2bc,A,H,R82.14.237.133,FY
+        </psi:url>
+        <psi:url name="USERCONFIG">https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/USERCONFIG
+        </psi:url>
         <psi:url name="VOPC_LOGO"></psi:url>
         <psi:url name="WEBCAT"></psi:url>
-        <psi:url name="WORLDCAT">http://opc4.kb.nl/portal/DB=13.2/XMLPRS=Y/LNG=NE/?COOKIE=</psi:url>
-        <psi:url name="tophits_base">
-            http://opc4.kb.nl/get/BASE=/path/psi_tophits.php%253Fdb%253D1%2526NR_OF_HITS%253D20%2526COOKIE%253D
-        </psi:url>
-        <psi:url name="ie_tophits_base">
-            http://opc4.kb.nl/get/BASE=/path/psi_tophits.php%25253Fdb%25253D1%252526NR_OF_HITS%25253D20%252526COOKIE%25253D
-        </psi:url>
+        <psi:url name="WORLDCAT">https://www.worldcat.org</psi:url>
 
 
-        <psi:url name="PRS">PRS=PP%7F/NXT</psi:url>
-        <psi:url name="PERMALINK"
-                 alt=""
-                 img=""
-                 target="_blank"
-                 title="">http://opc4.kb.nl/DB=1/XMLPRS=Y/PPN?PPN=422449148
+        <psi:url name="PRS">PRS=PP/NXT</psi:url>
+        <psi:url name="PERMALINK" alt="" img="" target="_blank" title="">
+            https://webggc.oclc.org/cbs/DB=2.37/XMLPRS=Y/PPN?PPN=422449148
         </psi:url>
-        <psi:url name="SDI">/sdi/FORCETT=HTML/DB=1/SET=1/TTL=1/FORM/REQUEST?P3C=INV%1FSDI%1F&amp;P3S=S0&amp;P3B=B0&amp;SEARCH=00yS!i1007!t978-9-46373-145-4!aY!cN.oY.vD.wD&amp;SEARCHTEXT=S%01(isbn,+issn)%01978-9-46373-145-4%01%01%01Y%01%01%02</psi:url>
-        <psi:url name="SAVEINFO_LONGTITLE">/DB=1/SET=1/TTL=1/RESULTS_SAVEINFO_LONG?FRST=1&amp;LAST=1&amp;HITS=1&amp;PPN=422449148</psi:url>
-        <psi:url name="ANALYSIS">/DB=1/SET=1/TTL=1/ADIGRP?IKT=&amp;SET=1</psi:url>
-        <psi:url name="LOAN">/request/FORCETT=HTML/DB=1/SET=1/TTL=1/FORM/LOAN?PPN=422449148&amp;LANGCODE=NE&amp;COOKIE=&amp;REFERER=http%3A%2F%2Fopc4.kb.nl%2FDB%3D1%2FSET%3D1%2FTTL%3D1%2FNXT</psi:url>
-        <psi:url name="COPY">/request/FORCETT=HTML/DB=1/SET=1/TTL=1/FORM/COPY?PPN=422449148&amp;LANGCODE=NE&amp;COOKIE=&amp;REFERER=http%3A%2F%2Fopc4.kb.nl%2FDB%3D1%2FSET%3D1%2FTTL%3D1%2FNXT</psi:url>
-        <psi:url name="FAMLINK">FAM?PPN=422449148</psi:url>
-        <psi:url name="LBS_TITLES_INFO_PATH">
-            http%253A%252F%252Fopc4imgbase.kb.nl%253A80%252FLBS_WS%252Favailability
+        <psi:url name="SDI">
+            https://webggc.oclc.org/cbs/sdi/DB=2.37/SET=8/TTL=1/FORM/REQUEST?P3C=INV%1FSDI%1F&amp;P3S=S0&amp;P3B=B0&amp;SEARCH=00yS!i1007!t9789463731454!m!r1!aY!o2!cN.oR.vD.wD&amp;SEARCHTEXT=S%01(isbn,+issn)%019789463731454%01%01%01Y%01%01%02
         </psi:url>
-        <psi:url name="LBS_TITLES_INFO_CMD">
-            titleinfo%253FBES%253D1%2526LAN%253DNE%2526USR%253D888%2526PPN%253D422449148
+        <psi:url name="SAVEINFO_LONGTITLE">
+            https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/RESULTS_SAVEINFO_LONG?FRST=1&amp;LAST=1&amp;HITS=1&amp;PPN=422449148
         </psi:url>
-        <psi:url name="LBS_TITLES_INFO_PATH_IE">
-            http%25253A%25252F%25252Fopc4imgbase.kb.nl%25253A80%25252FLBS_WS%25252Favailability
-        </psi:url>
-        <psi:url name="LBS_TITLES_INFO_CMD_IE">
-            titleinfo%25253FBES%25253D1%252526LAN%25253DNE%252526USR%25253D888%252526PPN%25253D422449148
-        </psi:url>
-        <psi:url name="LBS_TITLE_INFO">
-            http://opc4imgbase.kb.nl:80/LBS_WS/availability/titleinfo?BES=1&amp;LAN=NE&amp;USR=888&amp;PPN=422449148
-        </psi:url>
-        <psi:url name="LBS_TITLE_RESERVATION">
-            http://opc4imgbase.kb.nl:80/LBS_WEB/titleReservation.htm?BES=1&amp;LAN=NE&amp;USR=888&amp;PPN=422449148
-        </psi:url>
+        <psi:url name="ANALYSIS">https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/ADIGRP?IKT=&amp;SET=8</psi:url>
+        <psi:url name="FAMLINK">FAM?PPN=422449148&amp;MPSORT=A</psi:url>
+        <psi:url name="REL_LINK">REL?PPN=422449148&amp;RELTYPE=</psi:url>
+        <psi:url name="RSSLINK">?DB=2.37&amp;SEARCH=00yS!i1007!t9789463731454!m!r1!aY!o2!cN.oR.vD.wD&amp;SEARCHTEXT=S%01(isbn,+issn)%019789463731454%01%01%01Y%01%01%02&amp;EDOC=2302190565&amp;COOKIE=U93,KKOBLogin,I2,B0003++++++,SY,NKOB+ORS+default+login,D2.37,Ed055c206-2bc,A,H,R82.14.237.133,FY</psi:url>
     </psi:urls>
     <psi:data>
-        <psi:logo_alt></psi:logo_alt>
+        <psi:logo_alt>Koninklijke Bibliotheek</psi:logo_alt>
         <psi:iktList>
-            <psi:ikt iktnr="1016"
-                     mnemonic="ALL">alle woorden
-            </psi:ikt>
-            <psi:ikt iktnr="4"
-                     mnemonic="TTL">titelwoorden
-            </psi:ikt>
-            <psi:ikt iktnr="2001"
-                     mnemonic="HTL">hele titel tijdschrift
-            </psi:ikt>
-            <psi:ikt iktnr="1004"
-                     mnemonic="AUT">auteur, medewerker
-            </psi:ikt>
-            <psi:ikt iktnr="1009"
-                     mnemonic="PAO">trefwoord persoon
-            </psi:ikt>
-            <psi:ikt iktnr="5200"
-                     mnemonic="BTR">trefwoord Depot
-            </psi:ikt>
-            <psi:ikt iktnr="5040"
-                     mnemonic="GTR">trefwoord (GOO)
-            </psi:ikt>
-            <psi:ikt iktnr="4050"
-                     mnemonic="BCL">basisclassificatie
-            </psi:ikt>
-            <psi:ikt iktnr="4014"
-                     mnemonic="SYS">code KB
-            </psi:ikt>
-            <psi:ikt iktnr="53"
-                     mnemonic="SIG">aanvraagnummer
-            </psi:ikt>
-            <psi:ikt iktnr="1007"
-                     mnemonic="NUM">isbn, issn
-            </psi:ikt>
-            <psi:ikt iktnr="2"
-                     mnemonic="COR">organisatie, congres
-            </psi:ikt>
-            <psi:ikt iktnr="3003"
-                     mnemonic="IMP">uitgever, drukker
-            </psi:ikt>
-            <psi:ikt iktnr="1"
-                     mnemonic="PRS">persoonsnaam
-            </psi:ikt>
-            <psi:ikt iktnr="3"
-                     mnemonic="CON">congres
-            </psi:ikt>
-            <psi:ikt iktnr="5"
-                     mnemonic="RKS">reeks
-            </psi:ikt>
-            <psi:ikt iktnr="7"
-                     mnemonic="ISB">ISBN (monografieen)
-            </psi:ikt>
-            <psi:ikt iktnr="8"
-                     mnemonic="ISS">ISSN (periodieken)
-            </psi:ikt>
-            <psi:ikt iktnr="12"
-                     mnemonic="PPN">Pica produktienummer
-            </psi:ikt>
-            <psi:ikt iktnr="13"
-                     mnemonic="DEW">Dewey code
-            </psi:ikt>
-            <psi:ikt iktnr="14"
-                     mnemonic="UDC">UDC code
-            </psi:ikt>
-            <psi:ikt iktnr="16"
-                     mnemonic="LCN">LC nummer
-            </psi:ikt>
-            <psi:ikt iktnr="17"
-                     mnemonic="NLM">NLM nummer
-            </psi:ikt>
-            <psi:ikt iktnr="20"
-                     mnemonic="SSY">onderwerpscode
-            </psi:ikt>
-            <psi:ikt iktnr="21"
-                     mnemonic="TRF">trefwoord
-            </psi:ikt>
-            <psi:ikt iktnr="25"
-                     mnemonic="MSH">medisch trefwoord (MESH)
-            </psi:ikt>
-            <psi:ikt iktnr="27"
-                     mnemonic="LCS">LC trefwoord
-            </psi:ikt>
-            <psi:ikt iktnr="45"
-                     mnemonic="PRC">PRECIS trefwoord
-            </psi:ikt>
-            <psi:ikt iktnr="1000"
-                     mnemonic="ATS">auteur-titel sleutel(4/4)
-            </psi:ikt>
-            <psi:ikt iktnr="1018"
-                     mnemonic="UIT">uitgever
-            </psi:ikt>
-            <psi:ikt iktnr="2000"
-                     mnemonic="TTI">titelwoorden: tijdschrift
-            </psi:ikt>
-            <psi:ikt iktnr="2010"
-                     mnemonic="TSL">titelsleutel
-            </psi:ikt>
-            <psi:ikt iktnr="2520"
-                     mnemonic="INP">persoon vervaardiger handschrift
-            </psi:ikt>
-            <psi:ikt iktnr="2521"
-                     mnemonic="INZ">instelling vervaardiger handschrift
-            </psi:ikt>
-            <psi:ikt iktnr="4000"
-                     mnemonic="SY2">systematische code
-            </psi:ikt>
-            <psi:ikt iktnr="4100"
-                     mnemonic="SIS">SISO code
-            </psi:ikt>
-            <psi:ikt iktnr="5102"
-                     mnemonic="TOE">Tournooi
-            </psi:ikt>
-            <psi:ikt iktnr="5240"
-                     mnemonic="BEZ">bezettingscode
-            </psi:ikt>
-            <psi:ikt iktnr="5242"
-                     mnemonic="TMU">trefwoord muziek
-            </psi:ikt>
-            <psi:ikt iktnr="6054"
-                     mnemonic="URL">Uniform Resource Locator
-            </psi:ikt>
-            <psi:ikt iktnr="6101"
-                     mnemonic="EPN">epn
-            </psi:ikt>
-            <psi:ikt iktnr="6151"
-                     mnemonic="CAT">catalogusnummer
-            </psi:ikt>
-            <psi:ikt iktnr="6202"
-                     mnemonic="KEY">selectiesleutel
-            </psi:ikt>
-            <psi:ikt iktnr="6216"
-                     mnemonic="BIB">bibliografische soort
-            </psi:ikt>
-            <psi:ikt iktnr="6258"
-                     mnemonic="CLL">Collectie
-            </psi:ikt>
-            <psi:ikt iktnr="9000"
-                     mnemonic="JVU">jaar van uitgave
-            </psi:ikt>
-            <psi:ikt iktnr="9001"
-                     mnemonic="MAT">materiaalcode
-            </psi:ikt>
-            <psi:ikt iktnr="9004"
-                     mnemonic="TAA">taalcode
-            </psi:ikt>
-            <psi:ikt iktnr="9005"
-                     mnemonic="LAN">landcode
-            </psi:ikt>
-            <psi:ikt iktnr="9022"
-                     mnemonic="ABI">Additionele bestel informatie
-            </psi:ikt>
+            <psi:ikt iktnr="1016" mnemonic="ALL">alle woorden</psi:ikt>
+            <psi:ikt iktnr="4" mnemonic="TTL">titelwoorden</psi:ikt>
+            <psi:ikt iktnr="2001" mnemonic="HTL">hele titel tijdschrift</psi:ikt>
+            <psi:ikt iktnr="1004" mnemonic="AUT">auteur, medewerker</psi:ikt>
+            <psi:ikt iktnr="1009" mnemonic="PAO">trefwoord persoon</psi:ikt>
+            <psi:ikt iktnr="8050" mnemonic="BTR">trefwoord Depot</psi:ikt>
+            <psi:ikt iktnr="5040" mnemonic="GTR">trefwoord (GOO)</psi:ikt>
+            <psi:ikt iktnr="5004" mnemonic="BCL">basisclassificatie</psi:ikt>
+            <psi:ikt iktnr="4014" mnemonic="SYS">code KB</psi:ikt>
+            <psi:ikt iktnr="53" mnemonic="SIG">aanvraagnummer</psi:ikt>
+            <psi:ikt iktnr="1007" mnemonic="NUM">isbn, issn</psi:ikt>
+            <psi:ikt iktnr="2" mnemonic="COR">organisatie, congres</psi:ikt>
+            <psi:ikt iktnr="3003" mnemonic="IMP">uitgever, drukker</psi:ikt>
+            <psi:ikt iktnr="1" mnemonic="PRS">persoon</psi:ikt>
+            <psi:ikt iktnr="3" mnemonic="CON">Congres</psi:ikt>
+            <psi:ikt iktnr="5" mnemonic="TTI">Woord(en) uit Tijdschrifttitel</psi:ikt>
+            <psi:ikt iktnr="7" mnemonic="ISB">ISBN</psi:ikt>
+            <psi:ikt iktnr="8" mnemonic="ISS">ISSN</psi:ikt>
+            <psi:ikt iktnr="12" mnemonic="PPN">Pica Productienummer</psi:ikt>
+            <psi:ikt iktnr="13" mnemonic="DEW">Dewey classificatie</psi:ikt>
+            <psi:ikt iktnr="16" mnemonic="LCN">LC classificatie</psi:ikt>
+            <psi:ikt iktnr="17" mnemonic="NLM">NLM-code</psi:ikt>
+            <psi:ikt iktnr="20" mnemonic="SYS">Systematische codering</psi:ikt>
+            <psi:ikt iktnr="21" mnemonic="TR0">trefwoord</psi:ikt>
+            <psi:ikt iktnr="25" mnemonic="MSH">MESH-trefwoord</psi:ikt>
+            <psi:ikt iktnr="27" mnemonic="LCS">LC trefwoord</psi:ikt>
+            <psi:ikt iktnr="1000" mnemonic="ATS">Auteur/Titel-sleutel</psi:ikt>
+            <psi:ikt iktnr="1018" mnemonic="UIT">Uitgever</psi:ikt>
+            <psi:ikt iktnr="2000" mnemonic="TTI">titelwoorden: tijdschrift</psi:ikt>
+            <psi:ikt iktnr="5102" mnemonic="GT2">GOO corporatie</psi:ikt>
+            <psi:ikt iktnr="6120" mnemonic="OCN">OCLC number</psi:ikt>
+            <psi:ikt iktnr="9000" mnemonic="JVU">Jaar van uitgave</psi:ikt>
+            <psi:ikt iktnr="9001" mnemonic="MAT">Materiaalcode</psi:ikt>
+            <psi:ikt iktnr="9004" mnemonic="TCO">Taalcode</psi:ikt>
+            <psi:ikt iktnr="9005" mnemonic="LLC">Landcode</psi:ikt>
+            <psi:ikt iktnr="9" mnemonic="LCC">LC card-nummer</psi:ikt>
+            <psi:ikt iktnr="10" mnemonic="BNB">BNB nummer</psi:ikt>
+            <psi:ikt iktnr="48" mnemonic="BRI">Brinkman nummer</psi:ikt>
+            <psi:ikt iktnr="51" mnemonic="CAT">Catalogus nummer</psi:ikt>
+            <psi:ikt iktnr="63" mnemonic="ANN">Annotaties</psi:ikt>
+            <psi:ikt iktnr="1002" mnemonic="ANM">Achternaam</psi:ikt>
+            <psi:ikt iktnr="1003" mnemonic="WAU">Auteur (persoon)</psi:ikt>
+            <psi:ikt iktnr="1033" mnemonic="RKS">reeksveld</psi:ikt>
+            <psi:ikt iktnr="2524" mnemonic="VMP">[VMP]</psi:ikt>
+            <psi:ikt iktnr="5100" mnemonic="GT0">GOO Descriptor</psi:ikt>
+            <psi:ikt iktnr="6241" mnemonic="HVN">Huidig inventarisnummer</psi:ikt>
+            <psi:ikt iktnr="9003" mnemonic="BCO">Basiscode (GOO)</psi:ikt>
+            <psi:ikt iktnr="9008" mnemonic="SUP">Leverancier</psi:ikt>
         </psi:iktList>
+        <psi:date_option_list>
+            <psi:date_option label="DATERANGE_DESC"></psi:date_option>
+            <psi:date_option label="DATERANGE_D7">20221229 {RANGE} 20230105
+            </psi:date_option><!-- 7 days -->
+            <psi:date_option label="DATERANGE_M1">20221206 {RANGE} 20230105
+            </psi:date_option><!-- 30 days -->
+            <psi:date_option label="DATERANGE_M3">20221006 {RANGE} 20230105
+            </psi:date_option><!-- 91 days -->
+            <psi:date_option label="DATERANGE_M6">20220707 {RANGE} 20230105
+            </psi:date_option><!-- 182 days -->
+            <psi:date_option label="DATERANGE_M12">20220105 {RANGE} 20230105
+            </psi:date_option><!-- 365 days -->
+        </psi:date_option_list>
         <psi:sortOptions>
-            <psi:sortOp>RLV</psi:sortOp>
             <psi:sortOp>YOP</psi:sortOp>
+            <psi:sortOp>RLV</psi:sortOp>
             <psi:sortOp>LST_aty</psi:sortOp>
             <psi:sortOp>LST_tay</psi:sortOp>
         </psi:sortOptions>
-        <psi:loaninfo_from_lbs>Y</psi:loaninfo_from_lbs>
+        <psi:prs_types>
+            <psi:prs_type name="DEFAULT"
+                          link="https://webggc.oclc.org/cbs/DB=2.37/SET=8/TTL=1/PRS=/NXT" />
+        </psi:prs_types>
+        <psi:oclc>1100417071</psi:oclc>
+        <psi:isbn13>9789463731454</psi:isbn13>
     </psi:data>
     <psi:records>
         <psi:record prs="">
@@ -353,13 +353,13 @@
                 <psi:labelledRow>
                     <psi:labelledLabel>
                         <psi:line>
-                            <psi:text>Titel:&#xA0;</psi:text>
+                            <psi:text>Titel: </psi:text>
                         </psi:line>
                     </psi:labelledLabel>
                     <psi:labelledData>
                         <psi:line>
-                            <psi:text href="CLK?IKT=12&amp;TRM=422449059&amp;REC=*">
-                                De buitengewone reis / Silvio Camboni
+                            <psi:text href="CLK?IKT=12&amp;TRM=422449059&amp;REC=*">De buitengewone
+                                reis / Silvio Camboni
                             </psi:text>
                         </psi:line>
                     </psi:labelledData>
@@ -367,7 +367,7 @@
                 <psi:labelledRow>
                     <psi:labelledLabel>
                         <psi:line>
-                            <psi:text>Deel / delen:&#xA0;</psi:text>
+                            <psi:text>Deel / delen: </psi:text>
                         </psi:line>
                     </psi:labelledLabel>
                     <psi:labelledData>
@@ -379,24 +379,13 @@
                 <psi:labelledRow>
                     <psi:labelledLabel>
                         <psi:line>
-                            <psi:text>Kunstenaar:&#xA0;</psi:text>
+                            <psi:text>Kunstenaar: </psi:text>
                         </psi:line>
                     </psi:labelledLabel>
                     <psi:labelledData>
                         <psi:line>
-                            <psi:text href="REL?PPN=299374009">Silvio Camboni</psi:text>
-                        </psi:line>
-                    </psi:labelledData>
-                </psi:labelledRow>
-                <psi:labelledRow>
-                    <psi:labelledLabel>
-                        <psi:line>
-                            <psi:text>Auteur:&#xA0;</psi:text>
-                        </psi:line>
-                    </psi:labelledLabel>
-                    <psi:labelledData>
-                        <psi:line>
-                            <psi:text href="REL?PPN=296443417">Denis-Pierre Filippi (1972-)
+                            <psi:text href="REL?PPN=299374009">Silvio Camboni (1967-) (ISNI 0000
+                                0000 0095 8826)
                             </psi:text>
                         </psi:line>
                     </psi:labelledData>
@@ -404,31 +393,49 @@
                 <psi:labelledRow>
                     <psi:labelledLabel>
                         <psi:line>
-                            <psi:text>Colorist:&#xA0;</psi:text>
+                            <psi:text>Auteur: </psi:text>
                         </psi:line>
                     </psi:labelledLabel>
                     <psi:labelledData>
                         <psi:line>
-                            <psi:text href="REL?PPN=418237638">Gaspard Yvan (1988-)</psi:text>
+                            <psi:text href="REL?PPN=296443417">Denis-Pierre Filippi (1972-) (ISNI
+                                0000 0001 1758 3538)
+                            </psi:text>
                         </psi:line>
                     </psi:labelledData>
                 </psi:labelledRow>
                 <psi:labelledRow>
                     <psi:labelledLabel>
                         <psi:line>
-                            <psi:text>Vertaler:&#xA0;</psi:text>
+                            <psi:text>Colorist: </psi:text>
                         </psi:line>
                     </psi:labelledLabel>
                     <psi:labelledData>
                         <psi:line>
-                            <psi:text href="REL?PPN=377277630">Mariella Manfré</psi:text>
+                            <psi:text href="REL?PPN=418237638">Gaspard Yvan (1988-) (ISNI 0000 0004
+                                6517 2890)
+                            </psi:text>
                         </psi:line>
                     </psi:labelledData>
                 </psi:labelledRow>
                 <psi:labelledRow>
                     <psi:labelledLabel>
                         <psi:line>
-                            <psi:text>Jaar:&#xA0;</psi:text>
+                            <psi:text>Vertaler: </psi:text>
+                        </psi:line>
+                    </psi:labelledLabel>
+                    <psi:labelledData>
+                        <psi:line>
+                            <psi:text href="REL?PPN=377277630">Mariella Manfré (ISNI 0000 0004 4381
+                                6392)
+                            </psi:text>
+                        </psi:line>
+                    </psi:labelledData>
+                </psi:labelledRow>
+                <psi:labelledRow>
+                    <psi:labelledLabel>
+                        <psi:line>
+                            <psi:text>Jaar: </psi:text>
                         </psi:line>
                     </psi:labelledLabel>
                     <psi:labelledData>
@@ -440,7 +447,7 @@
                 <psi:labelledRow>
                     <psi:labelledLabel>
                         <psi:line>
-                            <psi:text>Uitgever:&#xA0;</psi:text>
+                            <psi:text>Uitgever: </psi:text>
                         </psi:line>
                     </psi:labelledLabel>
                     <psi:labelledData>
@@ -458,7 +465,7 @@
                 <psi:labelledRow>
                     <psi:labelledLabel>
                         <psi:line>
-                            <psi:text>Annotatie:&#xA0;</psi:text>
+                            <psi:text>Annotatie: </psi:text>
                         </psi:line>
                     </psi:labelledLabel>
                     <psi:labelledData>
@@ -466,8 +473,8 @@
                             <psi:text>Beeldverhaal</psi:text>
                         </psi:line>
                         <psi:line>
-                            <psi:text>Vertaling van:&#xA0;Le voyage extraordinaire. - Editions
-                                Glénat/Vents d'Ouest, 2012
+                            <psi:text>Vertaling van: Le voyage extraordinaire. - Editions
+                                Glénat/Vents d&apos;Ouest, 2012
                             </psi:text>
                         </psi:line>
                     </psi:labelledData>
@@ -475,19 +482,19 @@
                 <psi:labelledRow>
                     <psi:labelledLabel>
                         <psi:line>
-                            <psi:text>Omvang:&#xA0;</psi:text>
+                            <psi:text>Omvang: </psi:text>
                         </psi:line>
                     </psi:labelledLabel>
                     <psi:labelledData>
                         <psi:line>
-                            <psi:text>48 pagina's</psi:text>
+                            <psi:text>48 pagina&apos;s</psi:text>
                         </psi:line>
                     </psi:labelledData>
                 </psi:labelledRow>
                 <psi:labelledRow>
                     <psi:labelledLabel>
                         <psi:line>
-                            <psi:text>Illustratie:&#xA0;</psi:text>
+                            <psi:text>Illustratie: </psi:text>
                         </psi:line>
                     </psi:labelledLabel>
                     <psi:labelledData>
@@ -499,7 +506,7 @@
                 <psi:labelledRow>
                     <psi:labelledLabel>
                         <psi:line>
-                            <psi:text>Formaat:&#xA0;</psi:text>
+                            <psi:text>Formaat: </psi:text>
                         </psi:line>
                     </psi:labelledLabel>
                     <psi:labelledData>
@@ -511,23 +518,23 @@
                 <psi:labelledRow>
                     <psi:labelledLabel>
                         <psi:line>
-                            <psi:text>ISBN:&#xA0;</psi:text>
+                            <psi:text>ISBN: </psi:text>
                         </psi:line>
                     </psi:labelledLabel>
                     <psi:labelledData>
                         <psi:line>
-                            <psi:text mark="highlight">978-94-6373145-4</psi:text>
+                            <psi:text mark="highlight">978-94-6373-145-4</psi:text>
                             <psi:text>(paperback)</psi:text>
                         </psi:line>
                         <psi:line>
-                            <psi:text>&#xA0;</psi:text>
+                            <psi:text> </psi:text>
                         </psi:line>
                     </psi:labelledData>
                 </psi:labelledRow>
                 <psi:labelledRow>
                     <psi:labelledLabel>
                         <psi:line>
-                            <psi:text>Aanvraagnummer:&#xA0;</psi:text>
+                            <psi:text>Aanvraagnummer: </psi:text>
                         </psi:line>
                     </psi:labelledLabel>
                     <psi:labelledData>
@@ -536,24 +543,33 @@
                         </psi:line>
                     </psi:labelledData>
                 </psi:labelledRow>
-                <psi:LBS_holding epn="1283074737" />
+                <psi:labelledRow>
+                    <psi:labelledLabel>
+                        <psi:line>
+                            <psi:text>Uitleeninformatie: </psi:text>
+                        </psi:line>
+                    </psi:labelledLabel>
+                    <psi:labelledData>
+                        <psi:line>
+                            <psi:text>geblokkeerd</psi:text>
+                        </psi:line>
+                    </psi:labelledData>
+                </psi:labelledRow>
             </psi:labelledTable>
         </psi:record>
     </psi:records>
     <psi:query>
         <psi:queryVar name="hits">1</psi:queryVar>
         <psi:queryVar name="command">CMD</psi:queryVar>
-        <psi:queryVar name="frm">978-9-46373-145-4</psi:queryVar>
+        <psi:queryVar name="frm">9789463731454</psi:queryVar>
         <psi:queryVar name="impland">Y</psi:queryVar>
         <psi:queryVar name="act">SRCHA</psi:queryVar>
-        <psi:queryVar name="srt">YOP</psi:queryVar>
+        <psi:queryVar name="srt">RLV</psi:queryVar>
         <psi:queryVar name="fkt">1007</psi:queryVar>
-        <psi:queryVar name="srchActs"
-                      flag="Y"
-                      ikt="(isbn, issn)"
-                      mode="S">978-9-46373-145-4
+        <psi:queryVar name="srchSort">RLV</psi:queryVar>
+        <psi:queryVar name="srchActs" flag="Y" ikt="(isbn, issn)" mode="S">9789463731454
         </psi:queryVar>
         <psi:queryVar name="scantype"></psi:queryVar>
-        <psi:queryVar name="scanctrm">978-9-46373-145-4</psi:queryVar>
+        <psi:queryVar name="scanctrm">9789463731454</psi:queryVar>
     </psi:query>
 </psi:response>

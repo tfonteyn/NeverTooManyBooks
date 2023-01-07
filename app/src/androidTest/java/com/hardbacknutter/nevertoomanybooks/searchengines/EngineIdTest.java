@@ -21,13 +21,10 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class EngineIdTest {
@@ -57,44 +54,5 @@ public class EngineIdTest {
                 Log.d(TAG, "\n" + config + "\n\n" + site + "\n\n" + searchEngine);
             }
         }
-    }
-
-    @Test
-    public void order() {
-        final ArrayList<Site> sites = Site.Type.Data.getSites();
-        // LIBRARY_THING should be removed, STRIP_INFO_BE + LAST_DODO
-        // added as loadPrefs will have been called
-        assertEquals(List.of(EngineId.Amazon,
-                             EngineId.Goodreads,
-                             EngineId.GoogleBooks,
-                             EngineId.Isfdb,
-                             EngineId.StripInfoBe,
-                             EngineId.KbNl,
-                             EngineId.LastDodoNl,
-                             EngineId.OpenLibrary),
-                     sites.stream()
-                          .map(Site::getEngineId)
-                          .collect(Collectors.toList()));
-
-        final List<Site> reordered = Site.Type.reorder(
-                sites, List.of(EngineId.GoogleBooks,
-                               EngineId.Amazon,
-                               EngineId.LibraryThing,
-                               EngineId.Isfdb,
-                               EngineId.KbNl,
-                               EngineId.StripInfoBe,
-                               EngineId.LastDodoNl));
-
-        // LIBRARY_THING should be removed, GOODREADS/OPEN_LIBRARY
-        // NOT added as loadPrefs will NOT have been called
-        assertEquals(List.of(EngineId.GoogleBooks,
-                             EngineId.Amazon,
-                             EngineId.Isfdb,
-                             EngineId.KbNl,
-                             EngineId.StripInfoBe,
-                             EngineId.LastDodoNl),
-                     reordered.stream()
-                              .map(Site::getEngineId)
-                              .collect(Collectors.toList()));
     }
 }

@@ -45,9 +45,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class KbNlBookHandlerTest
         extends Base {
 
-    private static final String book_1_list_filename = "/kbnl/kbnl-list-1.xml";
-    private static final String book_1_filename = "/kbnl/kbnl-book-1.xml";
-    private static final String comicFilename = "/kbnl/kbnl-comic-1.xml";
+    private static final String file_list = "/kbnl/kbnl-list-1.xml";
+    private static final String file_book_1 = "/kbnl/kbnl-book-1.xml";
+    private static final String file_comic_1 = "/kbnl/kbnl-comic-1.xml";
+    private static final String file_old_book = "/kbnl/kbnl-old-book.xml";
 
     private KbNlBookHandler bookHandler;
     private SAXParser saxParser;
@@ -58,18 +59,18 @@ class KbNlBookHandlerTest
         super.setup();
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
-        bookHandler = new KbNlBookHandler(rawData);
+        bookHandler = new KbNlBookHandler(context, rawData);
         saxParser = factory.newSAXParser();
     }
 
     @Test
     void parseList01()
             throws IOException, SAXException {
-        try (InputStream in = this.getClass().getResourceAsStream(book_1_list_filename)) {
+        try (InputStream in = this.getClass().getResourceAsStream(file_list)) {
             saxParser.parse(in, bookHandler);
         }
 
-        assertEquals("SHW?FRST=1", rawData.getString(KbNlHandlerBase.SHOW_URL));
+        assertEquals("SHW?FRST=1", rawData.getString(KbNlHandlerBase.BKEY_SHOW_URL));
     }
 
 
@@ -77,7 +78,7 @@ class KbNlBookHandlerTest
     void parseBook01()
             throws IOException, SAXException {
 
-        try (InputStream in = this.getClass().getResourceAsStream(book_1_filename)) {
+        try (InputStream in = this.getClass().getResourceAsStream(file_book_1)) {
             saxParser.parse(in, bookHandler);
         }
 
@@ -100,19 +101,16 @@ class KbNlBookHandlerTest
         assertNotNull(authors);
         assertFalse(authors.isEmpty());
         Author expectedAuthor;
-        expectedAuthor = new Author("Asimov", "Isaac");
-        assertEquals(expectedAuthor, authors.get(0));
         expectedAuthor = new Author("Ozimov", "Isaak Judovič");
-        assertEquals(expectedAuthor, authors.get(1));
+        assertEquals(expectedAuthor, authors.get(0));
         expectedAuthor = new Author("Kröner", "Jack");
-        assertEquals(expectedAuthor, authors.get(2));
+        assertEquals(expectedAuthor, authors.get(1));
 
         final List<Series> series = rawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
         assertNotNull(series);
         assertFalse(series.isEmpty());
         final Series expectedSeries;
         expectedSeries = new Series("Foundation-trilogie");
-        expectedSeries.setNumber("1");
         assertEquals(expectedSeries, series.get(0));
     }
 
@@ -120,7 +118,7 @@ class KbNlBookHandlerTest
     void parseComic()
             throws IOException, SAXException {
 
-        try (InputStream in = this.getClass().getResourceAsStream(comicFilename)) {
+        try (InputStream in = this.getClass().getResourceAsStream(file_comic_1)) {
             saxParser.parse(in, bookHandler);
         }
 
@@ -146,15 +144,12 @@ class KbNlBookHandlerTest
         Author expectedAuthor;
         expectedAuthor = new Author("Camboni", "Silvio");
         assertEquals(expectedAuthor, authors.get(0));
-        // yes, twice... this list has NOT been pruned, so this is correct.
-        assertEquals(expectedAuthor, authors.get(1));
-
         expectedAuthor = new Author("Filippi", "Denis-Pierre");
-        assertEquals(expectedAuthor, authors.get(2));
+        assertEquals(expectedAuthor, authors.get(1));
         expectedAuthor = new Author("Yvan", "Gaspard");
-        assertEquals(expectedAuthor, authors.get(3));
+        assertEquals(expectedAuthor, authors.get(2));
         expectedAuthor = new Author("Manfré", "Mariella");
-        assertEquals(expectedAuthor, authors.get(4));
+        assertEquals(expectedAuthor, authors.get(3));
 
         final List<Series> series = rawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
         assertNotNull(series);
@@ -166,4 +161,49 @@ class KbNlBookHandlerTest
 
     }
 
+    @Test
+    void parseOldBook()
+            throws IOException, SAXException {
+        // Test an "old" book where the data is rather unstructured.
+        // The parser will do a best-effort.
+        try (InputStream in = this.getClass().getResourceAsStream(file_old_book)) {
+            saxParser.parse(in, bookHandler);
+        }
+
+        assertEquals("De Discus valt aan", rawData.getString(DBKey.TITLE));
+        assertEquals("1973", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+        assertEquals("9020612476", rawData.getString(DBKey.BOOK_ISBN));
+        assertEquals("157", rawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("nld", rawData.getString(DBKey.LANGUAGE));
+
+        final ArrayList<Publisher> allPublishers = rawData
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+        assertNotNull(allPublishers);
+        assertEquals(2, allPublishers.size());
+
+        assertEquals("Kluitman", allPublishers.get(0).getName());
+        assertEquals("Koninklijke Bibliotheek", allPublishers.get(1).getName());
+
+        final List<Author> authors = rawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        assertNotNull(authors);
+        assertEquals(2, authors.size());
+        Author expectedAuthor;
+
+        expectedAuthor = new Author("Feenstra", "Ruurd");
+        expectedAuthor.setType(Author.TYPE_WRITER);
+        assertEquals(expectedAuthor, authors.get(0));
+        assertEquals(expectedAuthor.getType(), authors.get(0).getType());
+
+        expectedAuthor = new Author("van Straaten", "Gerard");
+        expectedAuthor.setType(Author.TYPE_ARTIST);
+        assertEquals(expectedAuthor, authors.get(1));
+        assertEquals(expectedAuthor.getType(), authors.get(1).getType());
+
+        final List<Series> series = rawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+        assertNotNull(series);
+        assertEquals(1, series.size());
+        final Series expectedSeries;
+        expectedSeries = new Series("Discus-serie");
+        assertEquals(expectedSeries, series.get(0));
+    }
 }
