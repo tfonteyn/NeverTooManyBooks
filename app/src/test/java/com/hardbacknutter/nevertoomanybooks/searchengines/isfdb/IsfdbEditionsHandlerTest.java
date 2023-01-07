@@ -50,7 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class IsfdbEditionsHandlerTest
         extends Base {
 
-    private static final String sBaseUrl = "http://www.isfdb.org";
+    private String sBaseUrl;
 
     private IsfdbSearchEngine searchEngine;
 
@@ -61,13 +61,14 @@ class IsfdbEditionsHandlerTest
         searchEngine = (IsfdbSearchEngine) Site.Type.Data
                 .getSite(EngineId.Isfdb).getSearchEngine();
         searchEngine.setCaller(new MockCancellable());
+        sBaseUrl = searchEngine.getHostUrl();
     }
 
     @Test
     void parseMultiEdition()
             throws IOException {
         setLocale(Locale.UK);
-        final String locationHeader = "http://www.isfdb.org/cgi-bin/title.cgi?11169";
+        final String locationHeader = "https://www.isfdb.org/cgi-bin/title.cgi?11169";
         final String filename = "/isfdb/11169-multi-edition.html";
 
         Document document = null;
@@ -91,7 +92,7 @@ class IsfdbEditionsHandlerTest
     void parseMultiEdition2()
             throws IOException {
         setLocale(Locale.UK);
-        final String locationHeader = "http://www.isfdb.org/cgi-bin/title.cgi?1360173";
+        final String locationHeader = "https://www.isfdb.org/cgi-bin/title.cgi?1360173";
         final String filename = "/isfdb/1360173-multi-edition.html";
 
         Document document = null;
