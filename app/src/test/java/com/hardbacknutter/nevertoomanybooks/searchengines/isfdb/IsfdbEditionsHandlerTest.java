@@ -118,19 +118,19 @@ class IsfdbEditionsHandlerTest
      * There have been some hick-ups from ISFDB with redirecting (Apache web server config issues);
      * and the JSoup parser is not fully redirect proof either.
      * <p>
-     * Search for 0-88733-160-2; which has a single edition, so should redirect to the book.
+     * Search for 9020612476; which has a single edition, so should redirect to the book.
      * Resulting url should have "pl.cgi".
      */
     @Test
     void searchSingleEditionIsbn()
             throws SearchException, CredentialsException {
 
-        final String path = sBaseUrl + "/cgi-bin/se.cgi?arg=0887331602&type=ISBN";
+        final String path = sBaseUrl + "/cgi-bin/se.cgi?arg=9020612476&type=ISBN";
         final Document document = searchEngine.loadDocument(context, path, null);
         assertNotNull(document);
         assertTrue(document.hasText());
 
-        assertEquals(sBaseUrl + "/cgi-bin/pl.cgi?326539", document.location());
+        assertEquals(sBaseUrl + "/cgi-bin/pl.cgi?406329", document.location());
     }
 
 
