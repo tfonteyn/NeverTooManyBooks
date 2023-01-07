@@ -76,33 +76,39 @@ public class KbNlSearchEngine
     //    + "/DB=1/SET=1/TTL=1/REL?PPN=%1$s";
 
     /**
-     * Response with Dutch or English labels.
-     * /LNG=NE (default)
-     * /LNG=EN
-     * <p>
-     * 2023-01-05
+     * param 1: db version (part of the site session vars)
+     * param 2: the set number (part of the site session vars)
+     * param 3: the ISBN
      */
     private static final String SEARCH_URL =
             "/cbs" +
-            "/DB=2.37" +
-            // the set number normally goes up for each search; but we only go
-            // through a single search/session, so we can just use '1'
-            "/SET=1" +
+            "/DB=%1$s" +
+            "/SET=%2$s" +
             "/TTL=1" +
             "/CMD?"
+            // Action is a search
             + "ACT=SRCHA&"
+            // by ISBN/ISSN
             + "IKT=1007&"
-            // Year of publication
-            // "SRT=LST_Ya&"
-            // Relevance
+            // Results sorted by Relevance
             + "SRT=RLV&"
-            // param 1: isbn
-            + "TRM=%1$s";
+            // search term
+            + "TRM=%3$s";
 
-    private static final String BOOK_URL = "/cbs/DB=2.37/SET=1/TTL=1/";
+    /**
+     * param 1: db version (part of the site session vars)
+     * param 2: the set number (part of the site session params)
+     * Param 3: the SHW part of the url as found in a multi-result
+     */
+    private static final String BOOK_URL = "/cbs/DB=%1$s/SET=%2$s/TTL=1/%3$s";
 
     @Nullable
     private FutureHttpGet<Boolean> futureHttpGet;
+
+    @NonNull
+    private String dbVersion = "2.37";
+    @NonNull
+    private String setNr = "1";
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -112,6 +118,8 @@ public class KbNlSearchEngine
     @Keep
     public KbNlSearchEngine(@NonNull final SearchEngineConfig config) {
         super(config);
+
+        ServiceLocator.getInstance().getCookieManager();
     }
 
     @Override
@@ -132,29 +140,35 @@ public class KbNlSearchEngine
                    SearchException,
                    CredentialsException {
 
-        ServiceLocator.getInstance().getCookieManager();
+        futureHttpGet = createFutureHeadRequest();
+        try {
+            futureHttpGet.get(getHostUrl() + "/cbs/", request -> true);
+        } catch (@NonNull final IOException e) {
+            throw new SearchException(getName(context), e);
+        }
 
         final Bundle bookData = ServiceLocator.newBundle();
 
         futureHttpGet = createFutureGetRequest();
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
-        final DefaultHandler handler = new KbNlBookHandler(bookData);
+        final DefaultHandler handler = new KbNlBookHandler(context, bookData);
 
         try {
             final SAXParser parser = factory.newSAXParser();
 
             // Don't follow redirects, so we get the XML instead of the rendered page
-            futureHttpGet.setInstanceFollowRedirects(false);
+            //futureHttpGet.setInstanceFollowRedirects(false);
 
             // do the actual search.
-            String url = getHostUrl() + String.format(SEARCH_URL, validIsbn);
+            String url = getHostUrl() + String.format(SEARCH_URL, dbVersion, setNr, validIsbn);
             futureHttpGet.get(url, request -> {
                 // We'll either get a parsed list-page back,
                 // or the parsed book page.
                 try (BufferedInputStream bis = new BufferedInputStream(
                         request.getInputStream())) {
                     parser.parse(bis, handler);
+                    updateSessionVariables(bookData);
                     return true;
 
                 } catch (@NonNull final IOException e) {
@@ -164,17 +178,19 @@ public class KbNlSearchEngine
                 }
             });
 
+
             // If it was a list page, fetch and parse the 1st book found;
             // If it was a book page, we're already done and can skip this step.
-            final String show = bookData.getString(KbNlHandlerBase.SHOW_URL);
+            final String show = bookData.getString(KbNlHandlerBase.BKEY_SHOW_URL);
             if (show != null && !show.isEmpty()) {
-                url = getHostUrl() + BOOK_URL + show;
+                url = getHostUrl() + String.format(BOOK_URL, dbVersion, setNr, show);
                 bookData.clear();
 
                 futureHttpGet.get(url, request -> {
                     try (BufferedInputStream bis = new BufferedInputStream(
                             request.getInputStream())) {
                         parser.parse(bis, handler);
+                        updateSessionVariables(bookData);
                         return true;
 
                     } catch (@NonNull final IOException e) {
@@ -208,6 +224,11 @@ public class KbNlSearchEngine
             }
         }
         return bookData;
+    }
+
+    private void updateSessionVariables(@NonNull final Bundle bookData) {
+        dbVersion = bookData.getString(KbNlHandlerBase.BKEY_DB_VERSION);
+        setNr = bookData.getString(KbNlHandlerBase.BKEY_SET_NUMBER);
     }
 
     /**

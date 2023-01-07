@@ -19,23 +19,31 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.kbnl;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.sync.ColorMapper;
 
 import org.xml.sax.SAXException;
 
 class KbNlBookHandler
         extends KbNlHandlerBase {
+
+    private static final Pattern ISBN_BOUNDARY_PATTERN = Pattern.compile("[;)]");
 
     /** accumulate all authors for this book. */
     @NonNull
@@ -46,14 +54,22 @@ class KbNlBookHandler
     /** accumulate all Publishers for this book. */
     @NonNull
     private final ArrayList<Publisher> publisherList = new ArrayList<>();
+    @NonNull
+    private final Context context;
+
+    @Nullable
+    private String tmpSeriesNr;
 
     /**
      * Constructor.
      *
-     * @param data Bundle to update <em>(passed in to allow mocking)</em>
+     * @param context Current context
+     * @param data    Bundle to update <em>(passed in to allow mocking)</em>
      */
-    KbNlBookHandler(@NonNull final Bundle data) {
+    KbNlBookHandler(@NonNull final Context context,
+                    @NonNull final Bundle data) {
         super(data);
+        this.context = context;
     }
 
     @Override
@@ -64,12 +80,22 @@ class KbNlBookHandler
         authorList.clear();
         seriesList.clear();
         publisherList.clear();
+        tmpSeriesNr = null;
     }
 
     @Override
     public void endDocument()
             throws SAXException {
         super.endDocument();
+
+        if (tmpSeriesNr != null) {
+            final String title = data.getString(DBKey.TITLE);
+            // should never happen, but paranoia...
+            if (title != null) {
+                final Series series = Series.from(title, tmpSeriesNr);
+                seriesList.add(series);
+            }
+        }
 
         if (!authorList.isEmpty()) {
             data.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
@@ -80,8 +106,9 @@ class KbNlBookHandler
         if (!publisherList.isEmpty()) {
             data.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
         }
-        // As kb.nl is dutch, and there is no 'language' field,
-        // we're going to assume that all books are in Dutch.
+
+        // There is no language field; e.g. french books data is the same as dutch ones.
+        // just add Dutch and hope for the best.
         if (!data.isEmpty() && !data.containsKey(DBKey.LANGUAGE)) {
             data.putString(DBKey.LANGUAGE, "nld");
         }
@@ -104,12 +131,18 @@ class KbNlBookHandler
             case "Auteur":
                 processAuthor(currentData, Author.TYPE_WRITER);
                 break;
+
             case "Collaborator":
             case "Medewerker":
                 processAuthor(currentData, Author.TYPE_CONTRIBUTOR);
                 break;
+
             case "Artist":
             case "Kunstenaar":
+                // artist is for comics etc
+            case "Illustrator":
+                // illustrator (label is same in dutch) is for books
+                // Just put them both down as artists
                 processAuthor(currentData, Author.TYPE_ARTIST);
                 break;
 
@@ -128,8 +161,6 @@ class KbNlBookHandler
 
             case "Part(s)":
             case "Deel / delen":
-                // This label can appear without there being a "Series" label.
-                // In that case, the book title is presumed to also be the Series title.
                 processSeriesNumber(currentData);
                 break;
 
@@ -152,27 +183,36 @@ class KbNlBookHandler
                 processIsbn(currentData);
                 break;
 
-
             case "Illustration":
             case "Illustratie":
-                // seen, but skipped for now.
-                // Lookup: 9789063349943
-                // Illustratie:  gekleurde ill
+                processIllustration(currentData);
                 break;
 
             case "Size":
             case "Formaat":
-                // seen, but skipped for now.
-                // Lookup: 9789063349943
+                // seen, but skipped for now; it's one dimension, presumably the height.
                 // Formaat: 30 cm
+                break;
+
+            case "Physical information":
+            case "Fysieke informatie":
+                // "1 file (PDF)"
                 break;
 
             case "Editie":
                 // [2e dr.]
                 break;
 
+            case "Contains":
+            case "Bevat / omvat":
+                processDescription(currentData);
+                break;
+
             case "Note":
             case "Annotatie":
+                // Note/Annotatie seems to have been replaced on newer books by
+            case "Annotation edition":
+            case "Annotatie editie":
                 // Omslag vermeldt: K2
                 //Opl. van 750 genummerde ex
                 //Vert. van: Cromwell Stone. - Delcourt, cop. 1993
@@ -198,6 +238,10 @@ class KbNlBookHandler
                 // not used
             case "Lending information":
             case "Aanvraaginfo":
+                // not used
+                break;
+            case "Manufacturer":
+            case "Vervaardiger":
                 // not used
                 break;
 
@@ -227,22 +271,10 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processTitle(@NonNull final Iterable<String> currentData) {
-        String[] cleanedData = String.join(" ", currentData).split("/");
-
-        data.putString(DBKey.TITLE, cleanedData[0].trim());
-        if (cleanedData.length > 1) {
-            cleanedData = cleanedData[1].split(";");
-            final Author author = Author.from(cleanedData[0]);
-            // for books this is the writer, but for comics? So we do NOT set a type here
-            authorList.add(author);
-
-            // TODO: extract the translator
-//            if (cleanedData.length > 1) {
-//                if (cleanedData[1].startsWith(" [vert.")) {
-//
-//                }
-//            }
-        }
+        final String[] cleanedData = String.join(" ", currentData).split("/");
+        data.putString(DBKey.TITLE, cleanedData[0].strip());
+        // It's temping to decode [1], as this is the author as it appears on the cover,
+        // but the data has proven to be very unstructured and mostly unusable.
     }
 
     /**
@@ -269,7 +301,8 @@ class KbNlBookHandler
      *
      * <psi:labelledData>
      *   <psi:line>
-     *     <psi:text href="REL?PPN=068852002">Ruurd Feenstra (1904-1974) (ISNI 0000 0000 2173 3650) </psi:text>
+     *     <psi:text href="REL?PPN=068852002">Ruurd Feenstra (1904-1974)
+     *       (ISNI 0000 0000 2173 3650) </psi:text>
      *     </psi:line>
      *   </psi:labelledData>
      * }</pre>
@@ -288,9 +321,9 @@ class KbNlBookHandler
      */
     private void processAuthor(@NonNull final Iterable<String> currentData,
                                @Author.Type final int type) {
-        for (final String name : currentData) {
-            // remove a year part in the name
-            final String cleanedString = name.split("\\(")[0].trim();
+        for (final String text : currentData) {
+            // remove any "(..)" parts in the name
+            final String cleanedString = text.split("\\(")[0].strip();
             // reject separators as for example: <psi:text>;</psi:text>
             if (cleanedString.length() == 1) {
                 return;
@@ -311,31 +344,40 @@ class KbNlBookHandler
      *     <psi:text href="CLK?IKT=12&amp;TRM=841288933&amp;REC=*">dl. 1</psi:text>
      *   </psi:line>
      * </psi:labelledData>
+     *
+     * <psi:labelledData>
+     *   <psi:line>
+     *     <psi:text href="CLK?IKT=12&amp;TRM=851863523&amp;REC=*">Discus-serie</psi:text>
+     *     <psi:text>; </psi:text>
+     *     <psi:text href="CLK?IKT=12&amp;TRM=821611178&amp;REC=*">Kluitman jeugdserie</psi:text>
+     *     <psi:text> ; </psi:text>
+     *     <psi:text href="CLK?IKT=12&amp;TRM=821611178&amp;REC=*">J 1247</psi:text>
+     *   </psi:line>
+     *  </psi:labelledData>
      * }</pre>
      */
     private void processSeries(@NonNull final List<String> currentData) {
-        if (currentData.size() > 2) {
-            seriesList.add(Series.from(currentData.get(0), currentData.get(2)));
-        } else {
-            seriesList.add(Series.from(currentData.get(0)));
-        }
+        seriesList.add(Series.from(currentData.get(0)));
+        // the number part is totally unstructured
     }
 
     /**
      * <pre>{@code
      * <psi:labelledData>
      *   <psi:line>
-     *     <psi:text>Deel 1</psi:text>
+     *     <psi:text>Deel 1 / blah</psi:text>
      *   </psi:line>
      * </psi:labelledData>
      * }</pre>
      */
     private void processSeriesNumber(@NonNull final List<String> currentData) {
-        final String title = data.getString(DBKey.TITLE);
-        // should never happen, but paranoia...
-        if (title != null) {
-            final Series series = Series.from(title, currentData.get(0));
-            seriesList.add(series);
+        // This element is listed BEFORE the Series ("reeks") itself so store it tmp.
+        // Note it's often missing altogether
+        final String[] nrStr = currentData.get(0).split("/")[0].split(" ");
+        if (nrStr.length > 1) {
+            tmpSeriesNr = nrStr[1];
+        } else {
+            tmpSeriesNr = nrStr[0];
         }
     }
 
@@ -357,19 +399,43 @@ class KbNlBookHandler
      *     <psi:text>&#xA0;</psi:text>
      *   </psi:line>
      * </psi:labelledData>
+     *
+     * <psi:labelledData>
+     *   <psi:line>
+     *     <psi:text> (Geb.; f. 4,50)</psi:text>
+     *   </psi:line>
+     * </psi:labelledData>
+     *
+     * <psi:labelledData>
+     *   <psi:line>
+     *     <psi:text>2-256-90374-5 : 40.00F</psi:text>
+     *   </psi:line>
+     * </psi:labelledData>
+     *
+     * <psi:labelledData>
+     *   <psi:line>
+     *     <psi:text> : 42.00F</psi:text>
+     *   </psi:line>
+     * </psi:labelledData>
      * }</pre>
      */
     private void processIsbn(@NonNull final List<String> currentData) {
-        if (!data.containsKey(DBKey.BOOK_ISBN)) {
-            data.putString(DBKey.BOOK_ISBN, digits(currentData.get(0), true));
-            if (currentData.size() > 1) {
-                if (!data.containsKey(DBKey.FORMAT)) {
-                    String format = currentData.get(1).trim();
-                    if (format.startsWith("(")) {
-                        format = format.substring(1, format.length() - 1);
+        for (final String text : currentData) {
+            if (Character.isDigit(text.charAt(0))) {
+                if (!data.containsKey(DBKey.BOOK_ISBN)) {
+                    final String digits = digits(text.split(":")[0], true);
+                    // Do a crude test on the length and hope for the best
+                    // (don't do a full ISBN test here, no need)
+                    if (digits != null && (digits.length() == 10 || digits.length() == 13)) {
+                        data.putString(DBKey.BOOK_ISBN, digits);
                     }
-                    if (!format.isEmpty()) {
-                        data.putString(DBKey.FORMAT, format);
+                }
+            } else if (text.charAt(0) == '(') {
+                if (!data.containsKey(DBKey.FORMAT)) {
+                    // Skip the 1th bracket, and split either on closing or on semicolon
+                    final String value = ISBN_BOUNDARY_PATTERN.split(text.substring(1))[0].strip();
+                    if (!value.isBlank()) {
+                        data.putString(DBKey.FORMAT, value);
                     }
                 }
             }
@@ -401,16 +467,13 @@ class KbNlBookHandler
      * </psi:labelledData>
      * }</pre>
      */
-    private void processPublisher(@NonNull final Iterable<String> currentData) {
-        final StringBuilder sbPublisher = new StringBuilder();
-        for (final String name : currentData) {
-            if (!name.isEmpty()) {
-                sbPublisher.append(name).append(" ");
-            }
-        }
-        String publisherName = sbPublisher.toString();
+    private void processPublisher(@NonNull final List<String> currentData) {
+        String publisherName = currentData.stream()
+                                          .filter(name -> !name.isEmpty())
+                                          .collect(Collectors.joining(" "));
+        // the part before the ":" is (usually?) the city. 2nd part is the publisher
         if (publisherName.contains(":")) {
-            publisherName = publisherName.split(":")[1].trim();
+            publisherName = publisherName.split(":")[1].strip();
         }
         publisherList.add(Publisher.from(publisherName));
     }
@@ -435,11 +498,17 @@ class KbNlBookHandler
      *   </psi:line>
      * </psi:labelledData>
      *
+     * <psi:labelledData>
+     *   <psi:line>
+     *     <psi:text>c1977, cover 1978</psi:text>
+     *   </psi:line>
+     * </psi:labelledData>
      * }</pre>
      */
     private void processDatePublished(@NonNull final List<String> currentData) {
         if (!data.containsKey(DBKey.BOOK_PUBLICATION__DATE)) {
-            final String year = digits(currentData.get(0), false);
+            // Grab the first bit before a comma, and strip it for digits + hope for the best
+            final String year = digits(currentData.get(0).split(",")[0], false);
             if (year != null && !year.isEmpty()) {
                 data.putString(DBKey.BOOK_PUBLICATION__DATE, year);
             }
@@ -472,5 +541,59 @@ class KbNlBookHandler
                 data.putString(DBKey.PAGE_COUNT, currentData.get(0));
             }
         }
+    }
+
+    /**
+     * <pre>{@code
+     * <psi:labelledData>
+     *   <psi:line>
+     *     <psi:text>gekleurde illustraties</psi:text>
+     *   </psi:line>
+     * </psi:labelledData>
+     *
+     * <psi:labelledData>
+     *   <psi:line>
+     *     <psi:text>zw. ill</psi:text>
+     *   </psi:line>
+     * </psi:labelledData>
+     * }</pre>
+     */
+    private void processIllustration(@NonNull final List<String> currentData) {
+        if (!data.containsKey(DBKey.COLOR)) {
+            if (ColorMapper.isMappingAllowed(context)) {
+                int resId = 0;
+                // As usual on this site, the data is unstructured... we do our best
+                // Anything not recognized is rejected as it could not be a color at all.
+                //noinspection SwitchStatementWithoutDefaultBranch
+                switch (currentData.get(0)) {
+                    case "gekleurde illustraties":
+                    case "gekleurde ill":
+                        resId = R.string.book_color_full_color;
+                        break;
+
+                    case "blauw-witte illustraties":
+                    case "ill":
+                    case "zw. ill":
+                    case "zw. tek":
+                    case "ill.(zw./w.)":
+                        resId = R.string.book_color_black_and_white;
+                        break;
+                }
+
+                if (resId != 0) {
+                    data.putString(DBKey.COLOR, context.getString(resId));
+                }
+            } else {
+                // Leave it to the user as requested
+                data.putString(DBKey.COLOR, currentData.get(0));
+            }
+        }
+    }
+
+    private void processDescription(final List<String> currentData) {
+        data.putString(DBKey.DESCRIPTION, currentData
+                .stream()
+                .filter(name -> !name.isEmpty())
+                .collect(Collectors.joining(" ")));
     }
 }

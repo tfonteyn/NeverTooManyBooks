@@ -35,14 +35,21 @@ import org.xml.sax.helpers.DefaultHandler;
 
 abstract class KbNlHandlerBase
         extends DefaultHandler {
+//        extends XmlDumpParser {
 
-    protected static final String SHOW_URL = "href";
-    private static final String XML_LABEL = "psi:labelledLabel";
-    private static final String XML_DATA = "psi:labelledData";
-    private static final String XML_LINE = "psi:line";
-    private static final String XML_TEXT = "psi:text";
+    /** Special key into the data bundle for the KBNL 'SHW' url part is this was a list-page. */
+    protected static final String BKEY_SHOW_URL = "kbnl_href";
+    /** Special key into the data bundle for the KBNL 'db' number of this request. */
+    static final String BKEY_DB_VERSION = "kbnl_DB";
+    /** Special key into the data bundle for the KBNL 'set' number of this request. */
+    static final String BKEY_SET_NUMBER = "kbnl_SET";
+    private static final String PSI_SESSION_VAR = "psi:sessionVar";
+    private static final String PSI_LABEL = "psi:labelledLabel";
+    private static final String PSI_DATA = "psi:labelledData";
+    private static final String PSI_LINE = "psi:line";
+    private static final String PSI_TEXT = "psi:text";
     /** XML tags. */
-    private static final String XML_RECORD = "psi:record";
+    private static final String PSI_RECORD = "psi:record";
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s{2,}");
     /** The final output will be written to this bundle as passed in to the constructor. */
     @NonNull
@@ -56,6 +63,10 @@ abstract class KbNlHandlerBase
     /** The current labelledLabel. */
     @Nullable
     private String currentLabel;
+    @Nullable
+    private String currentSessionVar;
+
+    private boolean inSessionVar;
     private boolean inRecord;
     private boolean inLabel;
     private boolean inData;
@@ -122,39 +133,45 @@ abstract class KbNlHandlerBase
         super.startElement(uri, localName, qName, attributes);
 
         switch (qName) {
-            case XML_RECORD:
+            case PSI_SESSION_VAR:
+                inSessionVar = true;
+                currentSessionVar = attributes.getValue("name");
+                break;
+
+            case PSI_RECORD:
                 inRecord = true;
                 // a list-page record will have a ppn attribute
                 final String ppn = attributes.getValue("ppn");
                 isList = ppn != null && !ppn.isEmpty();
                 break;
 
-            case XML_LABEL:
+            case PSI_LABEL:
                 inLabel = true;
                 currentLabel = null;
                 break;
 
-            case XML_DATA:
+            case PSI_DATA:
                 inData = true;
                 currentData.clear();
                 break;
 
-            case XML_LINE:
+            case PSI_LINE:
                 inLine = true;
                 break;
 
-            case XML_TEXT:
+            case PSI_TEXT:
                 inText = true;
                 // if in list-page mode, store the first reference found.
-                if (isList && inRecord && inLine && !data.containsKey(SHOW_URL)) {
-                    data.putString(SHOW_URL, attributes.getValue("href"));
+                if (isList && inRecord && inLine && !data.containsKey(BKEY_SHOW_URL)) {
+                    data.putString(BKEY_SHOW_URL, attributes.getValue("href"));
                 }
-                builder.setLength(0);
                 break;
 
             default:
                 break;
         }
+
+        builder.setLength(0);
     }
 
     @Override
@@ -165,34 +182,54 @@ abstract class KbNlHandlerBase
         super.endElement(uri, localName, qName);
 
         switch (qName) {
-            case XML_RECORD:
+            case PSI_SESSION_VAR:
+                // sanity check, should not be null at this point
+                if (currentSessionVar != null) {
+                    switch (currentSessionVar) {
+                        case "DB":
+                            data.putString(BKEY_DB_VERSION, builder.toString());
+                            break;
+                        case "SET":
+                            data.putString(BKEY_SET_NUMBER, builder.toString());
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                inSessionVar = false;
+                break;
+
+            case PSI_RECORD:
                 inRecord = false;
                 break;
 
-            case XML_LABEL:
+            case PSI_LABEL:
                 inLabel = false;
                 break;
 
-            case XML_DATA:
+            case PSI_DATA:
                 if (!isList && currentLabel != null && !currentLabel.isEmpty()) {
                     processEntry(currentLabel, currentData);
                 }
                 inData = false;
                 break;
 
-            case XML_LINE:
+            case PSI_LINE:
                 inLine = false;
                 break;
 
-            case XML_TEXT:
+            case PSI_TEXT:
                 if (!isList) {
                     if (inLabel && inLine && inText) {
-                        currentLabel = builder.toString().split(":")[0].trim();
+                        currentLabel = builder.toString().split(":")[0].strip();
                     } else if (inData && inLine) {
-                        // reduce whitespace; this also removed cr/lf
+                        // reduce whitespace; this also removes cr/lf
                         final String s = WHITESPACE_PATTERN.matcher(builder.toString())
-                                                           .replaceAll(" ");
-                        currentData.add(s);
+                                                           .replaceAll(" ")
+                                                           .strip();
+                        if (!s.isBlank()) {
+                            currentData.add(s);
+                        }
                     }
                 }
                 inText = false;
@@ -201,6 +238,8 @@ abstract class KbNlHandlerBase
             default:
                 break;
         }
+
+        builder.setLength(0);
     }
 
     @Override

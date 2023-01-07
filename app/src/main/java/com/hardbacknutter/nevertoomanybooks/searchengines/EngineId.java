@@ -70,8 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSea
  *     </li>
  *
  *     <li>Add this enum identifier to {@link #DATA_RELIABILITY_ORDER}.
- *          This <strong>MUST</strong> be done or, as coded now, the new site will
- *          be ignored when processing the search results.</li>
+ *         If this step is skipped, the new site will be at the "end" of the reliability list</li>
  *
  *     <li>Configure the engine in the method {@link #registerSearchEngines()},
  *          using {@link #createConfiguration(String)}

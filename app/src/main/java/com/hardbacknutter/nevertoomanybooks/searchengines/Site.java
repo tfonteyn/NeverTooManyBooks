@@ -367,38 +367,23 @@ public final class Site
          */
         @NonNull
         static List<Site> getDataSitesByReliability() {
-            return Collections.unmodifiableList(
-                    reorder(Data.getSites(), EngineId.DATA_RELIABILITY_ORDER));
-        }
-
-        /**
-         * Create a new list, but reordered according to the given order list of EngineId's.
-         * The site objects are the <strong>same</strong> as in the original list.
-         * The original list order is NOT modified.
-         * <p>
-         * The reordered list <strong>MAY</strong> be shorter than the original,
-         * as sites from the original which are not present in the order string
-         * are <strong>NOT</strong> added.
-         *
-         * @param sites list to reorder
-         * @param order list with engine id's
-         *
-         * @return new list instance containing the <strong>original</strong> site objects
-         *         in the desired order.
-         */
-        @VisibleForTesting
-        @NonNull
-        public static List<Site> reorder(@NonNull final Collection<Site> sites,
-                                         @NonNull final List<EngineId> order) {
 
             final List<Site> reorderedList = new ArrayList<>();
+            final ArrayList<Site> dataSites = Data.getSites();
 
-            order.forEach(id -> sites.stream()
-                                     .filter(site -> site.engineId == id)
-                                     .findFirst()
-                                     .ifPresent(reorderedList::add));
+            EngineId.DATA_RELIABILITY_ORDER.forEach(id -> dataSites
+                    .stream()
+                    .filter(site -> site.engineId == id)
+                    .findFirst()
+                    .ifPresent(reorderedList::add));
 
-            return reorderedList;
+            // add any data sites which are not in the 'reliability' list
+            // at the end of the new list
+            dataSites.stream()
+                     .filter(site -> !reorderedList.contains(site))
+                     .forEach(reorderedList::add);
+
+            return Collections.unmodifiableList(reorderedList);
         }
 
         /**
@@ -474,8 +459,8 @@ public final class Site
          * @param engineId the search engine id
          * @param enabled  flag
          */
-        public void addSite(@NonNull final EngineId engineId,
-                            final boolean enabled) {
+        void addSite(@NonNull final EngineId engineId,
+                     final boolean enabled) {
             siteList.add(new Site(this, engineId, enabled));
         }
 
@@ -483,7 +468,7 @@ public final class Site
          * Load the site settings and the order of the list.
          */
         @VisibleForTesting
-        public void loadPrefs() {
+        void loadPrefs() {
             final SharedPreferences prefs = ServiceLocator.getPreferences();
             siteList.forEach(site -> site.loadFromPrefs(prefs));
 
@@ -497,8 +482,12 @@ public final class Site
                                                 .findFirst()
                                                 .ifPresent(list::add));
 
-                // Reorder keeps the original list members.
-                final List<Site> reorderedList = reorder(siteList, list);
+                // Reorder keeping the original list members.
+                final List<Site> reorderedList = new ArrayList<>();
+                list.forEach(id -> siteList.stream()
+                                           .filter(site -> site.engineId == id)
+                                           .findFirst()
+                                           .ifPresent(reorderedList::add));
 
                 if (reorderedList.size() < siteList.size()) {
                     // This is a fringe case: a new engine was added, and the user upgraded
@@ -519,7 +508,7 @@ public final class Site
         /**
          * Save the settings for each site in this list + the order of the sites in the list.
          */
-        public void savePrefs() {
+        void savePrefs() {
             final SharedPreferences.Editor ed = ServiceLocator.getPreferences().edit();
 
             final String order = siteList.stream().map(site -> {
