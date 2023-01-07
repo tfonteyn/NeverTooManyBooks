@@ -20,18 +20,19 @@
 package com.hardbacknutter.nevertoomanybooks.debug;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * DEBUG only.
  */
+@SuppressWarnings("RedundantThrows")
 @SuppressLint("LogConditional")
 public class XmlDumpParser
         extends DefaultHandler {
@@ -54,32 +55,33 @@ public class XmlDumpParser
     }
 
     @CallSuper
-    public void startDocument() {
+    public void startDocument()
+            throws SAXException {
         Logger.d(TAG, "startDocument", "<?xml version=\"1.0\"?>");
     }
 
     @CallSuper
-    public void endDocument() {
+    public void endDocument()
+            throws SAXException {
+        Logger.d(TAG, "endDocument", "");
     }
 
     @CallSuper
     public void startPrefixMapping(final String prefix,
-                                   final String uri) {
+                                   final String uri)
+            throws SAXException {
         namespaceBegin = true;
         currentNamespace = prefix;
         currentNamespaceUri = uri;
     }
 
     @CallSuper
-    public void endPrefixMapping(final String prefix) {
-    }
-
-
-    @CallSuper
     public void startElement(@NonNull final String namespaceURI,
                              @NonNull final String localName,
                              @NonNull final String qName,
-                             @NonNull final Attributes attributes) {
+                             @NonNull final Attributes attributes)
+            throws SAXException {
+
         final StringBuilder sb = new StringBuilder();
         sb.append("<").append(qName);
         if (namespaceBegin) {
@@ -98,14 +100,16 @@ public class XmlDumpParser
     @CallSuper
     public void endElement(final String namespaceURI,
                            final String localName,
-                           final String qName) {
+                           final String qName)
+            throws SAXException {
         Logger.d(TAG, "endElement", "</" + qName + ">");
     }
 
     @CallSuper
     public void characters(final char[] ch,
                            final int start,
-                           final int length) {
+                           final int length)
+            throws SAXException {
         final StringBuilder sb = new StringBuilder();
         for (int i = start; i < start + length; i++) {
             sb.append(ch[i]);
@@ -116,7 +120,8 @@ public class XmlDumpParser
     @CallSuper
     public void ignorableWhitespace(final char[] ch,
                                     final int start,
-                                    final int length) {
+                                    final int length)
+            throws SAXException {
         final StringBuilder sb = new StringBuilder();
         for (int i = start; i < start + length; i++) {
             sb.append(ch[i]);
@@ -126,12 +131,14 @@ public class XmlDumpParser
 
     @CallSuper
     public void processingInstruction(final String target,
-                                      final String data) {
+                                      final String data)
+            throws SAXException {
         Logger.d(TAG, "processingInstruction", "<?" + target + " " + data + "?>");
     }
 
     @CallSuper
-    public void skippedEntity(final String name) {
-        Log.d(TAG, "&" + name + ";");
+    public void skippedEntity(final String name)
+            throws SAXException {
+        Logger.d(TAG, "skippedEntity", "&" + name + ";");
     }
 }
