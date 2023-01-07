@@ -41,37 +41,51 @@ public final class FormatMapper
 
     // use all lowercase keys!
     static {
-        MAPPER.put("mmpb", R.string.book_format_paperback);
-        MAPPER.put("mass market paperback", R.string.book_format_paperback);
-        MAPPER.put("pb", R.string.book_format_paperback);
-        MAPPER.put("paperback", R.string.book_format_paperback);
-
-        MAPPER.put("tp", R.string.book_format_paperback_large);
-
+        // ### Plain hardcover ###
         MAPPER.put("hc", R.string.book_format_hardcover);
         MAPPER.put("hardcover", R.string.book_format_hardcover);
-
-        MAPPER.put("ebook", R.string.book_format_ebook);
-        MAPPER.put("digest", R.string.book_format_digest);
-        MAPPER.put("audio cassette", R.string.book_format_audiobook);
-        MAPPER.put("audio cd", R.string.book_format_audiobook);
-        MAPPER.put("unknown", R.string.unknown);
-
-        // english - GoogleBooks
-        MAPPER.put("dimensions", R.string.book_format_dimensions);
-
+        MAPPER.put("hardback", R.string.book_format_hardcover);
         // dutch - KBNL
         MAPPER.put("geb.", R.string.book_format_hardcover);
         // dutch - KBNL
         MAPPER.put("gebonden", R.string.book_format_hardcover);
 
+
+        // ### Plain paperback ###
+
+        MAPPER.put("mmpb", R.string.book_format_paperback);
+        MAPPER.put("mass market paperback", R.string.book_format_paperback);
+        MAPPER.put("pb", R.string.book_format_paperback);
+        MAPPER.put("paperback", R.string.book_format_paperback);
+        // dutch - KBNL
+        MAPPER.put("pbk.", R.string.book_format_paperback);
+
+
+        // ### Mid-size (a.k.a 'trade') format paperback ###
+        MAPPER.put("tp", R.string.book_format_paperback_large);
+
+
+        // ### Large format softcover ###
         // dutch - stripinfo.be
         MAPPER.put("softcover", R.string.book_format_softcover);
+
+
+        // ### e-books ###
+        MAPPER.put("ebook", R.string.book_format_ebook);
         // dutch - stripinfo.be
         MAPPER.put("digitaal", R.string.book_format_ebook);
 
-        // Others
-        MAPPER.put("hardback", R.string.book_format_hardcover);
+
+        // ### Audio-books ###
+        MAPPER.put("audio cassette", R.string.book_format_audiobook);
+        MAPPER.put("audio cd", R.string.book_format_audiobook);
+
+
+        // ### Special ###
+        MAPPER.put("digest", R.string.book_format_digest);
+        MAPPER.put("unknown", R.string.unknown);
+        // english - GoogleBooks
+        MAPPER.put("dimensions", R.string.book_format_dimensions);
     }
 
     public static boolean isMappingAllowed(@NonNull final Context context) {
