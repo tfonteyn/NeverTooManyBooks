@@ -35,6 +35,7 @@ import java.io.UncheckedIOException;
 import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -69,6 +70,10 @@ public class BedethequeSearchEngine
     private static final Pattern PUB_DATE = Pattern.compile("\\d\\d/\\d\\d\\d\\d");
 
     private static final String PK_BEDETHEQUE_PRESERVE_FORMAT_NAMES = "bedetheque.resolve.formats";
+
+    /** These are generic author names which are really the color. */
+    private static final List<String> AUTHOR_NAME_COLOR =
+            List.of("<N&B>", "<Monochromie>", "<Bichromie>", "<Trichromie>", "<Quadrichromie>");
 
     /** The "en" must be as-is. */
     private static final Pattern SERIES_WITH_LANGUAGE = Pattern
@@ -319,31 +324,14 @@ public class BedethequeSearchEngine
                         if (a != null) {
                             lastAuthorType = Author.TYPE_COLORIST;
 
-                            // These are generic authors which are really the colors used.
-                            switch (a.text()) {
-                                case "<N&B>":
-                                case "<Monochromie>":
-                                    bookData.putString(DBKey.COLOR, context.getString(
-                                            R.string.book_color_black_and_white));
-                                    break;
-
-                                case "<Bichromie>":
-                                    // B&W with 1 or 2 support colors
-                                case "<Trichromie>":
-                                    // extremely seldom used; we'll set to same as "Bi"
-                                    bookData.putString(DBKey.COLOR, context.getString(
-                                            R.string.book_color_support_color));
-                                    break;
-
-                                case "<Quadrichromie>":
-                                    bookData.putString(DBKey.COLOR, context.getString(
-                                            R.string.book_color_full_color));
-                                    break;
-
-                                default:
-                                    // it's a real name
-                                    processAuthor(context, a.text(), Author.TYPE_COLORIST);
-                                    break;
+                            final String colorOrColorist = a.text();
+                            if (AUTHOR_NAME_COLOR.contains(colorOrColorist)) {
+                                // REMOVE the "<>" as we really don't want fake html tags
+                                bookData.putString(DBKey.COLOR, colorOrColorist
+                                        .substring(1, colorOrColorist.length() - 1));
+                            } else {
+                                // it's a real name
+                                processAuthor(context, colorOrColorist, Author.TYPE_COLORIST);
                             }
                         }
                         break;
@@ -565,8 +553,17 @@ public class BedethequeSearchEngine
     }
 
     private void processAuthor(@NonNull final Context context,
-                               @NonNull final String names,
+                               @NonNull final String text,
                                @Author.Type final int currentAuthorType) {
+
+        // REMOVE potential "<>" as we really don't want fake html tags
+        String names = text;
+        if (names.startsWith("<")) {
+            names = names.substring(1);
+        }
+        if (names.endsWith(">")) {
+            names = names.substring(0, names.length() - 1);
+        }
 
         final Author currentAuthor;
 
@@ -577,20 +574,17 @@ public class BedethequeSearchEngine
         // Used for books; The authors for "dessin" and "couleurs"; ignore
         // "<Texte non illustré>"
         switch (names) {
-            case "<Indéterminé>":
-            case "<Anonyme>":
+            case "Indéterminé":
+            case "Anonyme":
                 currentAuthor = Author.createUnknownAuthor(context);
                 break;
 
-            case "<Collectif>":
-                currentAuthor = Author.from(names.substring(1, names.length() - 1));
-                break;
-
-            case "<Art Book>":
-            case "<Texte non illustré>":
+            case "Art Book":
+            case "Texte non illustré":
                 // ignore these
                 return;
 
+            case "Collectif":
             default:
                 currentAuthor = Author.from(names);
                 break;
