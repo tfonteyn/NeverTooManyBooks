@@ -208,6 +208,8 @@ public class BedethequeSearchEngine
         if (section != null) {
             int lastAuthorType = -1;
 
+            String currentFormat = null;
+
             final Elements labels = section.select("li > label");
             for (final Element label : labels) {
                 final String text = label.text();
@@ -259,9 +261,8 @@ public class BedethequeSearchEngine
                     case "Format :": {
                         final Node textNode = label.nextSibling();
                         if (textNode != null) {
-                            // can be overwritten by "Autres info :"
-                            bookData.putString(DBKey.FORMAT, textNode.toString().trim());
-                            mapFormat(context, bookData, false);
+                            currentFormat = textNode.toString().trim();
+                            mapFormat(context, bookData, currentFormat, false);
                         }
                         break;
                     }
@@ -373,7 +374,11 @@ public class BedethequeSearchEngine
                                  .stream()
                                  .map(sib -> sib.attr("title"))
                                  .anyMatch("Couverture souple"::equals)) {
-                            mapFormat(context, bookData, true);
+                            // Sanity check, it should never be null at this point.
+                            if (currentFormat == null) {
+                                currentFormat = "Couverture souple";
+                            }
+                            mapFormat(context, bookData, currentFormat, true);
                         }
                     }
                 }
@@ -413,25 +418,28 @@ public class BedethequeSearchEngine
     /**
      * Map Bedetheque specific formats to our generalized ones if allowed.
      *
-     * @param context   Current context
-     * @param bookData  Bundle to update
-     * @param softcover {@code true} if the books is a softcover, {@code false} for hardcover
+     * @param context       Current context
+     * @param bookData      Bundle to update
+     * @param currentFormat original french format string
+     * @param softcover     {@code true} if the books is a softcover, {@code false} for hardcover
      */
     private void mapFormat(@NonNull final Context context,
                            @NonNull final Bundle bookData,
+                           @NonNull final String currentFormat,
                            final boolean softcover) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
                              .getBoolean(PK_BEDETHEQUE_PRESERVE_FORMAT_NAMES, false)) {
+            bookData.putString(DBKey.FORMAT, currentFormat
+                                             + (softcover ? "; Couverture souple" : ""));
             return;
         }
 
-        String format = bookData.getString(DBKey.FORMAT);
-        switch (format) {
+        final String format;
+        switch (currentFormat) {
             case "Couverture souple":
                 format = context.getString(R.string.book_format_softcover);
                 break;
 
-            case "":
             case "Format normal":
             case "Grand format":
                 format = context.getString(softcover ? R.string.book_format_softcover
@@ -459,7 +467,8 @@ public class BedethequeSearchEngine
                 break;
 
             default:
-                // keep
+                // fallback
+                format = currentFormat;
                 break;
         }
 
