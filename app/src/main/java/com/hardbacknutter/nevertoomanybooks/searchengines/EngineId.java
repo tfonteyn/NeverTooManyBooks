@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BedethequeS
 import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks.GoogleBooksSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.kbnl2.KbNl2SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.kbnl.KbNlSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo.LastDodoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
@@ -123,7 +123,7 @@ public enum EngineId
     OpenLibrary("openlibrary", R.string.site_open_library, OpenLibrarySearchEngine.class),
 
     /** Dutch language books & comics. */
-    KbNl("kbnl", R.string.site_kb_nl, KbNl2SearchEngine.class),
+    KbNl("kbnl", R.string.site_kb_nl, KbNlSearchEngine.class),
 
     /** Dutch language (and to some extend other languages) comics. */
     StripInfoBe("stripinfo", R.string.site_stripinfo_be, StripInfoSearchEngine.class),
@@ -163,7 +163,7 @@ public enum EngineId
                     Amazon,
                     GoogleBooks,
                     LastDodoNl,
-                    /* KB_NL, */
+                    KbNl,
                     OpenLibrary);
 
     @NonNull
