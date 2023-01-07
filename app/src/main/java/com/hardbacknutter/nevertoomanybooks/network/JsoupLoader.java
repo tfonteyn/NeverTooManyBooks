@@ -50,32 +50,19 @@ public class JsoupLoader {
     /** Log tag. */
     private static final String TAG = "JsoupLoader";
     @NonNull
-    protected final FutureHttpGet<Document> futureHttpGet;
+    private final FutureHttpGet<Document> futureHttpGet;
     /** The downloaded and parsed web page. */
     @Nullable
     private Document document;
     /** The <strong>request</strong> url for the web page. */
     @Nullable
     private String docRequestUrl;
-    /** The user agent to send. Call {@link #setUserAgent(String)} to override. */
-    @Nullable
-    private String userAgent = HttpUtils.USER_AGENT_VALUE;
     /** {@code null} by default: for Jsoup to figure it out. */
     @Nullable
     private String charSetName;
 
     public JsoupLoader(@NonNull final FutureHttpGet<Document> futureHttpGet) {
         this.futureHttpGet = futureHttpGet;
-    }
-
-    /**
-     * Optionally override the user agent; can be set to {@code null} to revert to JSoup default.
-     *
-     * @param userAgent string to use
-     */
-    @SuppressWarnings("unused")
-    public void setUserAgent(@Nullable final String userAgent) {
-        this.userAgent = userAgent;
     }
 
     /**
@@ -144,15 +131,9 @@ public class JsoupLoader {
             try {
                 // Don't retry if the initial connection fails...
                 futureHttpGet.setRetryCount(0);
-                // some sites refuse to return content if they don't like the user-agent
-                if (userAgent != null) {
-                    futureHttpGet.setRequestProperty(HttpUtils.USER_AGENT, userAgent);
-                }
 
                 if (requestProperties != null) {
-                    for (final Map.Entry<String, String> entry : requestProperties.entrySet()) {
-                        futureHttpGet.setRequestProperty(entry.getKey(), entry.getValue());
-                    }
+                    requestProperties.forEach(futureHttpGet::setRequestProperty);
                 }
 
                 document = futureHttpGet.get(docRequestUrl, request -> {
