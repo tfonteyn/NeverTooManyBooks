@@ -81,16 +81,18 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSea
  *          in {@link #registerSites}
  *      </li>
  *
- *      <li>Optional: if the engine/site will store a external book id (or any other specific
- *          fields) in the local database, extra steps will need to be taken.
- *          TODO: document steps: search the code for "NEWTHINGS: adding a new search engine"
- *      </li>
- *
  *      <li>Optional: Add a preference fragment for the user to configure the engine.
  *          See the OpenLibrary engine for an simple example:
  *          a class, an xml file, and an entry in "src/main/res/xml/preferences_site_searches.xml"
  *          Look at the other engines for more complex examples.
  *      </li>
+ *
+ *      <li>Optional: if the engine/site will store a external book id (or any other specific
+ *          fields) in the local database, extra steps will need to be taken.
+ *          TODO: document steps: search the code for "NEWTHINGS: adding a new search engine"
+ *          and/or search for an existing one, e.g. {@link DBKey#SID_OPEN_LIBRARY}
+ *      </li>
+ *
  * </ol>
  * <p>
  *
@@ -159,9 +161,9 @@ public enum EngineId
             List.of(Isfdb,
                     StripInfoBe,
                     Bedetheque,
+                    LastDodoNl,
                     Amazon,
                     GoogleBooks,
-                    LastDodoNl,
                     KbNl,
                     OpenLibrary);
 
