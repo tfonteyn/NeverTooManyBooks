@@ -51,7 +51,7 @@
             android:id="@+id/sites_group"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:constraint_referenced_ids="site_amazon,site_isfdb,site_last_dodo_nl,site_open_library,site_strip_info_be"
+            app:constraint_referenced_ids="site_amazon,site_open_library,site_isfdb,site_strip_info_be,site_last_dodo_nl"
             tools:ignore="MissingConstraints"
             />
 

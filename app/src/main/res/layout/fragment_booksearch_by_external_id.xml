@@ -43,7 +43,7 @@
             android:id="@+id/sites_group"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:constraint_referenced_ids="site_amazon,site_isfdb,site_last_dodo_nl,site_open_library,site_strip_info_be"
+            app:constraint_referenced_ids="site_amazon,site_open_library,site_isfdb,site_strip_info_be,site_last_dodo_nl"
             tools:ignore="MissingConstraints"
             />
 
@@ -137,7 +137,8 @@
             android:text="@android:string/search_go"
             app:icon="@drawable/ic_baseline_search_24"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_external_id"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_external_id"
+            app:layout_constraintTop_toTopOf="@id/lbl_external_id"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
