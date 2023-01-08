@@ -40,8 +40,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:constraint_referenced_ids="lbl_site_goodreads,lbl_site_isfdb,lbl_site_library_thing,lbl_site_open_library,lbl_site_strip_info_be,lbl_site_last_dodo_nl"
-            app:flow_horizontalBias="0.5"
             app:flow_horizontalAlign="start"
+            app:flow_horizontalBias="0.5"
             app:flow_horizontalGap="@dimen/field_margin_inline"
             app:flow_horizontalStyle="packed"
             app:flow_maxElementsWrap="4"
@@ -49,9 +49,9 @@
             app:flow_verticalGap="@dimen/field_margin_top"
             app:flow_wrapMode="aligned"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_goodreads"
@@ -154,6 +154,11 @@
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- NEWTHINGS: adding a new search engine:
+                optional: external id KEY add a TextInputLayout widget
+                and add the name to the Flow#constraint_referenced_ids.
+        -->
 
         <com.google.android.material.divider.MaterialDivider
             style="@style/Widget.Material3.MaterialDivider"
