@@ -648,8 +648,10 @@ public class CalibreContentServerReader
                             } else if (key.startsWith(Identifier.AMAZON)) {
                                 // Other than strict "amazon", there are variants
                                 // for local sites; e.g. "amazon_nl", "amazon_fr",...
-                                // Note if there is more then one, we end up with the 'last' one.
-                                localBook.putString(DBKey.SID_ASIN, idStr);
+                                // We always use the first one found.
+                                if (!localBook.contains(DBKey.SID_ASIN)) {
+                                    localBook.putString(DBKey.SID_ASIN, idStr);
+                                }
                             }
                         }
                     }
