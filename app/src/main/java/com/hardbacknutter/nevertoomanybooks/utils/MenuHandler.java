@@ -30,7 +30,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 public interface MenuHandler {
 
-    void onCreateMenu(@NonNull Menu menu,
+    void onCreateMenu(@NonNull Context context,
+                      @NonNull Menu menu,
                       @NonNull MenuInflater inflater);
 
     void onPrepareMenu(@NonNull Menu menu,

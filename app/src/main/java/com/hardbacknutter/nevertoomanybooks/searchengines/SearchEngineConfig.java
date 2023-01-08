@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.IntegerRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -61,6 +62,8 @@ public final class SearchEngineConfig {
     private final int domainViewId;
     @IdRes
     private final int domainMenuId;
+    @IntegerRes
+    private final int domainMenuOrder;
     private final int connectTimeoutMs;
     private final int readTimeoutMs;
     /**
@@ -90,6 +93,7 @@ public final class SearchEngineConfig {
         externalIdDomain = builder.externalIdDomain;
         domainViewId = builder.domainViewId;
         domainMenuId = builder.domainMenuId;
+        domainMenuOrder = builder.domainMenuOrder;
 
         connectTimeoutMs = builder.connectTimeoutMs;
         readTimeoutMs = builder.readTimeoutMs;
@@ -135,7 +139,7 @@ public final class SearchEngineConfig {
     public static Optional<SearchEngineConfig> getByMenuId(@IdRes final int menuId) {
         return getAll()
                 .stream()
-                .filter(config -> config.getDomainMenuId() == menuId)
+                .filter(config -> config.getDomainMenuResId() == menuId)
                 .findFirst();
     }
 
@@ -236,14 +240,37 @@ public final class SearchEngineConfig {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     @IdRes
-    private int getDomainViewId() {
+    public int getDomainViewId() {
         return domainViewId;
     }
 
+    /**
+     * Get the resource id to use for the "View on" menu item.
+     *
+     * @return res id
+     */
     @IdRes
-    private int getDomainMenuId() {
+    public int getDomainMenuResId() {
         return domainMenuId;
+    }
+
+    /**
+     * Get the <strong>resource id</strong> to use for the "View on" menu item order.
+     * Typical use will require code like this:
+     * <pre>
+     * {@code
+     *  int resId = x.getDomainMenuOrderResId();
+     *  int order = context.getResources().getInteger(resId)
+     *  }
+     *  </pre>
+     *
+     * @return res id
+     */
+    @IntegerRes
+    public int getDomainMenuOrderResId() {
+        return domainMenuOrder;
     }
 
     /**
@@ -290,6 +317,7 @@ public final class SearchEngineConfig {
                + ", externalIdDomain=" + externalIdDomain
                + ", domainViewId=" + domainViewId
                + ", domainMenuId=" + domainMenuId
+               + ", domainMenuOrder=" + domainMenuOrder
                + ", connectTimeoutMs=" + connectTimeoutMs
                + ", readTimeoutMs=" + readTimeoutMs
                + ", throttler=" + throttler
@@ -320,6 +348,8 @@ public final class SearchEngineConfig {
 
         @IdRes
         private int domainMenuId;
+        @IntegerRes
+        private int domainMenuOrder;
 
         /** The DEFAULT for the engine. */
         private int connectTimeoutMs = FIVE_SECONDS;
@@ -383,8 +413,10 @@ public final class SearchEngineConfig {
         }
 
         @NonNull
-        Builder setDomainMenuId(@IdRes final int domainMenuId) {
+        Builder setDomainMenuId(@IdRes final int domainMenuId,
+                                @IntegerRes final int domainMenuOrder) {
             this.domainMenuId = domainMenuId;
+            this.domainMenuOrder = domainMenuOrder;
             return this;
         }
 

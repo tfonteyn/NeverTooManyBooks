@@ -35,6 +35,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -47,10 +48,24 @@ public class ViewBookOnWebsiteHandler
         implements MenuHandler {
 
     @Override
-    public void onCreateMenu(@NonNull final Menu menu,
+    public void onCreateMenu(@NonNull final Context context,
+                             @NonNull final Menu menu,
                              @NonNull final MenuInflater inflater) {
         if (menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE) == null) {
             inflater.inflate(R.menu.sm_view_on_site, menu);
+
+            final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
+            final SubMenu subMenu = subMenuItem.getSubMenu();
+
+            for (final Site site : Site.Type.ViewOnSite.getSites()) {
+                final EngineId engineId = site.getEngineId();
+                final SearchEngineConfig config = Objects.requireNonNull(engineId.getConfig());
+                subMenu.add(R.id.MENU_GROUP_BOOK,
+                            config.getDomainMenuResId(),
+                            context.getResources().getInteger(config.getDomainMenuOrderResId()),
+                            engineId.getLabelResId())
+                       .setIcon(R.drawable.ic_baseline_link_24);
+            }
         }
     }
 

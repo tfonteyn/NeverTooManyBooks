@@ -69,7 +69,8 @@ public class AmazonHandler
     private static final String ADV_SEARCH_BOOKS = "/gp/search?index=books";
 
     @Override
-    public void onCreateMenu(@NonNull final Menu menu,
+    public void onCreateMenu(@NonNull final Context context,
+                             @NonNull final Menu menu,
                              @NonNull final MenuInflater inflater) {
         if (menu.findItem(R.id.SUBMENU_AMAZON_SEARCH) == null) {
             inflater.inflate(R.menu.sm_search_on_amazon, menu);

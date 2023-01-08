@@ -27,44 +27,7 @@
             android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_SITE"
             android:title="@string/option_view_book_at"
             >
-            <menu>
-                <!-- //NEWTHINGS: adding a new search engine: optional: add menu item. -->
-                <item
-                    android:id="@id/MENU_VIEW_BOOK_AT_GOODREADS"
-                    android:icon="@drawable/ic_baseline_link_24"
-                    android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_GOODREADS"
-                    android:title="@string/site_goodreads" />
-                <item
-                    android:id="@id/MENU_VIEW_BOOK_AT_LIBRARY_THING"
-                    android:icon="@drawable/ic_baseline_link_24"
-                    android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_LIBRARY_THING"
-                    android:title="@string/site_library_thing" />
-                <item
-                    android:id="@id/MENU_VIEW_BOOK_AT_OPEN_LIBRARY"
-                    android:icon="@drawable/ic_baseline_link_24"
-                    android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_OPEN_LIBRARY"
-                    android:title="@string/site_open_library" />
-                <item
-                    android:id="@id/MENU_VIEW_BOOK_AT_ISFDB"
-                    android:icon="@drawable/ic_baseline_link_24"
-                    android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_ISFDB"
-                    android:title="@string/site_isfdb" />
-                <item
-                    android:id="@id/MENU_VIEW_BOOK_AT_STRIP_INFO_BE"
-                    android:icon="@drawable/ic_baseline_link_24"
-                    android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_STRIPINFO_BE"
-                    android:title="@string/site_stripinfo_be" />
-                <item
-                    android:id="@id/MENU_VIEW_BOOK_AT_LAST_DODO_NL"
-                    android:icon="@drawable/ic_baseline_link_24"
-                    android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_LAST_DODO_NL"
-                    android:title="@string/site_lastdodo_nl" />
-                <item
-                    android:id="@id/MENU_VIEW_BOOK_AT_AMAZON"
-                    android:icon="@drawable/ic_baseline_link_24"
-                    android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_AMAZON"
-                    android:title="@string/site_amazon" />
-            </menu>
+            <menu><!-- auto-generated from code --></menu>
         </item>
     </group>
 </menu>

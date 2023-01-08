@@ -380,7 +380,8 @@ public abstract class EditBookBaseFragment
         @Override
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
-            vm.getMenuHandlers().forEach(h -> h.onCreateMenu(menu, menuInflater));
+            //noinspection ConstantConditions
+            vm.getMenuHandlers().forEach(h -> h.onCreateMenu(getContext(), menu, menuInflater));
         }
 
         @Override

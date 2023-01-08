@@ -202,13 +202,15 @@ public enum EngineId
         Goodreads.createConfiguration("https://www.goodreads.com")
                  .setDomainKey(DBKey.SID_GOODREADS_BOOK)
                  .setDomainViewId(R.id.site_goodreads)
-                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS)
+                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS,
+                                  R.integer.MENU_ORDER_VIEW_BOOK_AT_GOODREADS)
                  .build();
 
         Isfdb.createConfiguration("https://www.isfdb.org")
              .setDomainKey(DBKey.SID_ISFDB)
              .setDomainViewId(R.id.site_isfdb)
-             .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB)
+             .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB,
+                              R.integer.MENU_ORDER_VIEW_BOOK_AT_ISFDB)
              // default timeouts based on limited testing
              .setConnectTimeoutMs(20_000)
              .setReadTimeoutMs(60_000)
@@ -223,7 +225,8 @@ public enum EngineId
 
                    .setDomainKey(DBKey.SID_OPEN_LIBRARY)
                    .setDomainViewId(R.id.site_open_library)
-                   .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY)
+                   .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
+                                    R.integer.MENU_ORDER_VIEW_BOOK_AT_OPEN_LIBRARY)
                    .build();
 
         if (BuildConfig.ENABLE_GOOGLE_BOOKS) {
@@ -238,7 +241,8 @@ public enum EngineId
 
                         .setDomainKey(DBKey.SID_LIBRARY_THING)
                         .setDomainViewId(R.id.site_library_thing)
-                        .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING)
+                        .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
+                                         R.integer.MENU_ORDER_VIEW_BOOK_AT_LIBRARY_THING)
                         .build();
         }
 
@@ -259,7 +263,8 @@ public enum EngineId
 
                       .setDomainKey(DBKey.SID_LAST_DODO_NL)
                       .setDomainViewId(R.id.site_last_dodo_nl)
-                      .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LAST_DODO_NL)
+                      .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LAST_DODO_NL,
+                                       R.integer.MENU_ORDER_VIEW_BOOK_AT_LAST_DODO_NL)
                       .build();
         }
         // Dutch.
@@ -269,7 +274,8 @@ public enum EngineId
 
                        .setDomainKey(DBKey.SID_STRIP_INFO)
                        .setDomainViewId(R.id.site_strip_info_be)
-                       .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE)
+                       .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE,
+                                        R.integer.MENU_ORDER_VIEW_BOOK_AT_STRIPINFO_BE)
 
                        // default timeouts based on limited testing
                        .setConnectTimeoutMs(7_000)

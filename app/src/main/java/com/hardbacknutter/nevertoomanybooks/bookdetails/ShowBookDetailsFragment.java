@@ -593,7 +593,8 @@ public class ShowBookDetailsFragment
                 calibreHandler.onCreateMenu(menu, inflater);
             }
 
-            aVm.getMenuHandlers().forEach(h -> h.onCreateMenu(menu, inflater));
+            //noinspection ConstantConditions
+            aVm.getMenuHandlers().forEach(h -> h.onCreateMenu(getContext(), menu, inflater));
         }
 
         @Override
