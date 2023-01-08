@@ -313,6 +313,8 @@ public final class DBDefinitions {
     public static final Domain DOM_ESID_STRIP_INFO_BE;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_ESID_LAST_DODO_NL;
+    /** {@link #TBL_BOOKS}. */
+    public static final Domain DOM_ESID_BEDETHEQUE;
 
     /**
      * {@link #TBL_CALIBRE_LIBRARIES}.
@@ -895,6 +897,10 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.SID_LAST_DODO_NL, SqLiteDataType.Integer)
                         .build();
 
+        DOM_ESID_BEDETHEQUE =
+                new Domain.Builder(DBKey.SID_BEDETHEQUE, SqLiteDataType.Integer)
+                        .build();
+
         //NEWTHINGS: adding a new search engine: optional: add specific/extra domains.
 
         /* ======================================================================================
@@ -1312,6 +1318,7 @@ public final class DBDefinitions {
                             DOM_ESID_OPEN_LIBRARY,
                             DOM_ESID_STRIP_INFO_BE,
                             DOM_ESID_LAST_DODO_NL,
+                            DOM_ESID_BEDETHEQUE,
                             //NEWTHINGS: adding a new search engine:
                             // optional: add engine specific DOM
 
@@ -1331,6 +1338,8 @@ public final class DBDefinitions {
                 .addIndex(DBKey.SID_ISFDB, false, DOM_ESID_ISFDB)
                 .addIndex(DBKey.SID_OPEN_LIBRARY, false, DOM_ESID_OPEN_LIBRARY)
                 .addIndex(DBKey.SID_STRIP_INFO, false, DOM_ESID_STRIP_INFO_BE)
+                .addIndex(DBKey.SID_LAST_DODO_NL, false, DOM_ESID_LAST_DODO_NL)
+                .addIndex(DBKey.SID_BEDETHEQUE, false, DOM_ESID_BEDETHEQUE)
         // we probably do not need this one (and have not created it)
         //.addIndex(DBKey.SID_LIBRARY_THING, false, DOM_ESID_LIBRARY_THING)
         ;

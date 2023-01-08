@@ -292,6 +292,8 @@ public enum EngineId
             Bedetheque.createConfiguration("https://www.bedetheque.com")
                       .setLocale("fr", "FR")
 
+                      .setDomainKey(DBKey.SID_BEDETHEQUE)
+
                       // default timeouts based on limited testing
                       .setConnectTimeoutMs(15_000)
                       .setReadTimeoutMs(60_000)

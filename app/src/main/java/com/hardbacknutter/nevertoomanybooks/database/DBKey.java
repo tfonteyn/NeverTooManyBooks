@@ -65,6 +65,8 @@ public final class DBKey {
     public static final String SID_STRIP_INFO = "si_book_id";
     /** External Site id. - Long. */
     public static final String SID_LAST_DODO_NL = "ld_book_id";
+    /** External Site id. - Long. */
+    public static final String SID_BEDETHEQUE = "bdt_book_id";
 
     //NEWTHINGS: adding a new search engine: optional: add external id KEY
 

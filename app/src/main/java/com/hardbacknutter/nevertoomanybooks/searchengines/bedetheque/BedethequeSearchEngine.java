@@ -225,6 +225,13 @@ public class BedethequeSearchEngine
 
                 //noinspection SwitchStatementWithoutDefaultBranch
                 switch (text) {
+                    case "Identifiant :": {
+                        final Node textNode = label.nextSibling();
+                        if (textNode != null) {
+                            bookData.putString(DBKey.SID_BEDETHEQUE, textNode.toString().trim());
+                        }
+                        break;
+                    }
                     case "Titre :": {
                         final Node textNode = label.nextSibling();
                         if (textNode != null) {

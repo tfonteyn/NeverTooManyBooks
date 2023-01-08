@@ -31,6 +31,7 @@ public final class Identifier {
     static final String AMAZON = "amazon";
     /** Key is the remote (Calibre) identifier. */
     static final Map<String, Identifier> MAP = new HashMap<>();
+    private static final String BEDETHEQUE = "bedetheque";
     private static final String GOODREADS = "goodreads";
     private static final String GOOGLE = "google";
     private static final String ISBN = "isbn";
@@ -45,30 +46,29 @@ public final class Identifier {
     static {
         Identifier identifier;
 
-        identifier = new Identifier(ISBN, DBKey.BOOK_ISBN, false);
-        MAP.put(identifier.remote, identifier);
-        identifier = new Identifier(OPENLIBRARY, DBKey.SID_OPEN_LIBRARY, false);
-        MAP.put(identifier.remote, identifier);
-
-        identifier = new Identifier(GOODREADS, DBKey.SID_GOODREADS_BOOK, true);
-        MAP.put(identifier.remote, identifier);
-        identifier = new Identifier(ISFDB, DBKey.SID_ISFDB, true);
-        MAP.put(identifier.remote, identifier);
-        identifier = new Identifier(LIBRARYTHING, DBKey.SID_LIBRARY_THING, true);
-        MAP.put(identifier.remote, identifier);
-        identifier = new Identifier(STRIPINFO, DBKey.SID_STRIP_INFO, true);
-        MAP.put(identifier.remote, identifier);
-        identifier = new Identifier(LASTDODO, DBKey.SID_LAST_DODO_NL, true);
-        MAP.put(identifier.remote, identifier);
-
-        // ENHANCE: Not stored locally for now, but recognised.
         identifier = new Identifier(AMAZON, DBKey.SID_ASIN, false, false);
+        MAP.put(identifier.remote, identifier);
+        identifier = new Identifier(BEDETHEQUE, DBKey.SID_BEDETHEQUE, true);
+        MAP.put(identifier.remote, identifier);
+        identifier = new Identifier(GOODREADS, DBKey.SID_GOODREADS_BOOK, true);
         MAP.put(identifier.remote, identifier);
         identifier = new Identifier(GOOGLE, DBKey.SID_GOOGLE, false, false);
         MAP.put(identifier.remote, identifier);
+        identifier = new Identifier(ISBN, DBKey.BOOK_ISBN, false);
+        MAP.put(identifier.remote, identifier);
+        identifier = new Identifier(ISFDB, DBKey.SID_ISFDB, true);
+        MAP.put(identifier.remote, identifier);
+        identifier = new Identifier(LASTDODO, DBKey.SID_LAST_DODO_NL, true);
+        MAP.put(identifier.remote, identifier);
         identifier = new Identifier(LCCN, DBKey.SID_LCCN, false, false);
         MAP.put(identifier.remote, identifier);
+        identifier = new Identifier(LIBRARYTHING, DBKey.SID_LIBRARY_THING, true);
+        MAP.put(identifier.remote, identifier);
         identifier = new Identifier(OCLC, DBKey.SID_OCLC, false, false);
+        MAP.put(identifier.remote, identifier);
+        identifier = new Identifier(OPENLIBRARY, DBKey.SID_OPEN_LIBRARY, false);
+        MAP.put(identifier.remote, identifier);
+        identifier = new Identifier(STRIPINFO, DBKey.SID_STRIP_INFO, true);
         MAP.put(identifier.remote, identifier);
     }
 

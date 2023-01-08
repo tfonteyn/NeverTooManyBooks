@@ -805,6 +805,8 @@ public class DBHelper
         }
         if (oldVersion < 23) {
             TBL_AUTHOR_PSEUDONYMS.create(db, true);
+
+            TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_ESID_BEDETHEQUE);
         }
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table:
