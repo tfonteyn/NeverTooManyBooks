@@ -1136,6 +1136,9 @@ public class EditBookViewModel
                                        longNumberFormatter, true)
                            .setTextInputLayoutId(R.id.lbl_site_last_dodo_nl)
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
+
+        //NEWTHINGS: adding a new search engine: optional: add external id DOM
+        // first add it to the layout
     }
 
     /**
