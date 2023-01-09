@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.AnyThread;
@@ -41,18 +40,18 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -197,12 +196,12 @@ public class StripInfoSearchEngine
 
     @NonNull
     @Override
-    public Bundle searchByExternalId(@NonNull final Context context,
-                                     @NonNull final String externalId,
-                                     @NonNull final boolean[] fetchCovers)
+    public BookData searchByExternalId(@NonNull final Context context,
+                                       @NonNull final String externalId,
+                                       @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final Bundle bookData = ServiceLocator.newBundle();
+        final BookData bookData = new BookData();
 
         final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, null);
@@ -219,12 +218,12 @@ public class StripInfoSearchEngine
      */
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
-                               @NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchCovers)
+    public BookData searchByIsbn(@NonNull final Context context,
+                                 @NonNull final String validIsbn,
+                                 @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final Bundle bookData = ServiceLocator.newBundle();
+        final BookData bookData = new BookData();
 
         final String url = getHostUrl() + String.format(BY_ISBN, validIsbn);
         final Document document = loadDocument(context, url, null);
@@ -239,7 +238,7 @@ public class StripInfoSearchEngine
                                 @NonNull final String validIsbn,
                                 @NonNull final Document document,
                                 @NonNull final boolean[] fetchCovers,
-                                @NonNull final Bundle bookData)
+                                @NonNull final BookData bookData)
             throws StorageException, SearchException, CredentialsException {
         if (isMultiResult(document)) {
             parseMultiResult(context, document, fetchCovers, bookData);
@@ -254,9 +253,9 @@ public class StripInfoSearchEngine
 
     @NonNull
     @Override
-    public Bundle searchByBarcode(@NonNull final Context context,
-                                  @NonNull final String barcode,
-                                  @NonNull final boolean[] fetchCovers)
+    public BookData searchByBarcode(@NonNull final Context context,
+                                    @NonNull final String barcode,
+                                    @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
         // the search url is the same but we need to specifically support barcodes
         // to allow non-isbn codes.
@@ -284,7 +283,7 @@ public class StripInfoSearchEngine
     private void parseMultiResult(@NonNull final Context context,
                                   @NonNull final Document document,
                                   @NonNull final boolean[] fetchCovers,
-                                  @NonNull final Bundle bookData)
+                                  @NonNull final BookData bookData)
             throws StorageException, SearchException, CredentialsException {
 
         for (final Element section : document.select("section.c6")) {
@@ -320,13 +319,28 @@ public class StripInfoSearchEngine
         }
     }
 
-    @Override
+    /**
+     * Parses the downloaded {@link org.jsoup.nodes.Document}.
+     * We only parse the <strong>first book</strong> found.
+     *
+     * @param context     Current context
+     * @param document    to parse
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
+     * @param bookData    Bundle to update
+     *
+     * @throws StorageException     on storage related failures
+     * @throws CredentialsException on authentication/login failures
+     *                              This should only occur if the engine calls/relies on
+     *                              secondary sites.
+     */
+    @VisibleForTesting
+    @WorkerThread
     public void parse(@NonNull final Context context,
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
-                      @NonNull final Bundle bookData)
+                      @NonNull final BookData bookData)
             throws StorageException, SearchException, CredentialsException {
-        super.parse(context, document, fetchCovers, bookData);
 
         // extracted from the page header.
         final String primarySeriesTitle = processPrimarySeriesTitle(document);
@@ -362,34 +376,34 @@ public class StripInfoSearchEngine
                             switch (label) {
                                 case "Scenario":
                                 case "Naar":
-                                    i += processAuthor(td, Author.TYPE_WRITER);
+                                    i += processAuthor(td, Author.TYPE_WRITER, bookData);
                                     break;
 
                                 case "Tekeningen":
-                                    i += processAuthor(td, Author.TYPE_ARTIST);
+                                    i += processAuthor(td, Author.TYPE_ARTIST, bookData);
                                     break;
 
                                 case "Kleuren":
-                                    i += processAuthor(td, Author.TYPE_COLORIST);
+                                    i += processAuthor(td, Author.TYPE_COLORIST, bookData);
                                     break;
                                 case "Inkting":
-                                    i += processAuthor(td, Author.TYPE_INKING);
+                                    i += processAuthor(td, Author.TYPE_INKING, bookData);
                                     break;
 
                                 case "Cover":
-                                    i += processAuthor(td, Author.TYPE_COVER_ARTIST);
+                                    i += processAuthor(td, Author.TYPE_COVER_ARTIST, bookData);
                                     break;
 
                                 case "Inkting cover":
-                                    i += processAuthor(td, Author.TYPE_COVER_INKING);
+                                    i += processAuthor(td, Author.TYPE_COVER_INKING, bookData);
                                     break;
 
                                 case "Vertaling":
-                                    i += processAuthor(td, Author.TYPE_TRANSLATOR);
+                                    i += processAuthor(td, Author.TYPE_TRANSLATOR, bookData);
                                     break;
 
                                 case "Uitgever(s)":
-                                    i += processPublisher(td);
+                                    i += processPublisher(td, bookData);
                                     break;
 
                                 case "Jaar":
@@ -413,7 +427,7 @@ public class StripInfoSearchEngine
                                     break;
 
                                 case "Collectie":
-                                    i += processSeriesOrCollection(td);
+                                    i += processSeriesOrCollection(td, bookData);
                                     break;
 
                                 case "Oplage":
@@ -478,42 +492,33 @@ public class StripInfoSearchEngine
             final Series series = Series.from3(primarySeriesTitle);
             series.setNumber(primarySeriesBookNr);
             // add to the top as this is the primary series.
-            seriesList.add(0, series);
+            bookData.add(0, series);
         }
 
         // We DON'T store a toc with a single entry (i.e. the book title itself).
-        parseToc(context, document).ifPresent(toc -> {
-            bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
+        parseToc(context, document, bookData).ifPresent(toc -> {
+            bookData.addAll(toc);
             if (TocEntry.hasMultipleAuthors(toc)) {
-                bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Anthology.getId());
+                bookData.putLong(DBKey.TOC_TYPE__BITMASK, BookData.ContentType.Anthology.getId());
             } else {
-                bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Collection.getId());
+                bookData.putLong(DBKey.TOC_TYPE__BITMASK, BookData.ContentType.Collection.getId());
             }
         });
 
         // store accumulated ArrayList's *after* we parsed the TOC
 
-        if (!authorList.isEmpty()) {
+        if (!bookData.getAuthors().isEmpty()) {
             if (PreferenceManager.getDefaultSharedPreferences(context)
                                  .getBoolean(PK_USE_BEDETHEQUE, false)) {
                 final AuthorResolver resolver = new AuthorResolver(context, this);
-                for (final Author author : authorList) {
+                for (final Author author : bookData.getAuthors()) {
                     resolver.resolve(context, author);
                 }
             }
-            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
-        }
-
-        if (!seriesList.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
-        }
-
-        if (!publisherList.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
         }
 
         // It's extremely unlikely, but should the language be missing, add dutch.
-        if (!bookData.containsKey(DBKey.LANGUAGE)) {
+        if (!bookData.contains(DBKey.LANGUAGE)) {
             bookData.putString(DBKey.LANGUAGE, "nld");
         }
 
@@ -538,9 +543,9 @@ public class StripInfoSearchEngine
 
     @VisibleForTesting
     public void processBarcode(@NonNull final String searchIsbnText,
-                               @NonNull final Bundle bookData) {
+                               @NonNull final BookData bookData) {
 
-        final String barcode = bookData.getString(SiteField.BARCODE);
+        final String barcode = bookData.getString(SiteField.BARCODE, null);
         if (barcode != null && !barcode.isEmpty()) {
             final ISBN isbnFromBarcode = new ISBN(barcode, true);
             // We found a valid barcode
@@ -568,7 +573,7 @@ public class StripInfoSearchEngine
     @WorkerThread
     private void processCover(@NonNull final Document document,
                               @IntRange(from = 0, to = 1) final int cIdx,
-                              @NonNull final Bundle bookData)
+                              @NonNull final BookData bookData)
             throws StorageException {
 
         final String isbn = bookData.getString(DBKey.BOOK_ISBN);
@@ -576,9 +581,8 @@ public class StripInfoSearchEngine
         if (url != null) {
             final String fileSpec = saveCover(isbn, cIdx, url);
             if (fileSpec != null && !fileSpec.isEmpty()) {
-                final ArrayList<String> list = new ArrayList<>();
-                list.add(fileSpec);
-                bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[cIdx], list);
+                bookData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[cIdx])
+                        .add(fileSpec);
             }
         }
     }
@@ -690,7 +694,8 @@ public class StripInfoSearchEngine
      */
     @NonNull
     private Optional<ArrayList<TocEntry>> parseToc(@NonNull final Context context,
-                                                   @NonNull final Document document) {
+                                                   @NonNull final Document document,
+                                                   @NonNull final BookData bookData) {
         for (final Element section : document.select("div.c12")) {
             final Element divs = section.selectFirst("div");
             if (divs != null) {
@@ -726,6 +731,7 @@ public class StripInfoSearchEngine
 
                             if (title != null && !title.isEmpty()) {
                                 final Author author;
+                                final List<Author> authorList = bookData.getAuthors();
                                 if (authorList.isEmpty()) {
                                     author = Author.createUnknownAuthor(context);
                                 } else {
@@ -755,7 +761,7 @@ public class StripInfoSearchEngine
      *         The latter should never happen unless the website structure was changed.
      */
     private long processExternalId(@NonNull final Element titleUrlElement,
-                                   @NonNull final Bundle bookData) {
+                                   @NonNull final BookData bookData) {
         long bookId = 0;
         try {
             final String titleUrl = titleUrlElement.attr("href");
@@ -785,7 +791,7 @@ public class StripInfoSearchEngine
      */
     private int processText(@NonNull final Element td,
                             @NonNull final String key,
-                            @NonNull final Bundle bookData) {
+                            @NonNull final BookData bookData) {
         final Element dataElement = td.nextElementSibling();
         if (dataElement != null && dataElement.childNodeSize() == 1) {
             bookData.putString(key, ParseUtils.cleanText(dataElement.text()));
@@ -807,7 +813,7 @@ public class StripInfoSearchEngine
      * @return 1 if we found a value td; 0 otherwise.
      */
     private int processEmptyLabel(@NonNull final Element td,
-                                  @NonNull final Bundle bookData) {
+                                  @NonNull final BookData bookData) {
         final Element dataElement = td.nextElementSibling();
         if (dataElement != null && dataElement.childNodeSize() == 1) {
             final String text = dataElement.text().trim();
@@ -830,7 +836,8 @@ public class StripInfoSearchEngine
      * @return 1 if we found a value td; 0 otherwise.
      */
     private int processAuthor(@NonNull final Element td,
-                              @Author.Type final int currentAuthorType) {
+                              @Author.Type final int currentAuthorType,
+                              @NonNull final BookData bookData) {
         final Element dataElement = td.nextElementSibling();
         if (dataElement != null) {
             final Elements as = dataElement.select("a");
@@ -839,7 +846,7 @@ public class StripInfoSearchEngine
                 final Author currentAuthor = Author.from(name);
                 boolean add = true;
                 // check if already present
-                for (final Author author : authorList) {
+                for (final Author author : bookData.getAuthors()) {
                     if (author.equals(currentAuthor)) {
                         // merge types.
                         author.addType(currentAuthorType);
@@ -850,7 +857,7 @@ public class StripInfoSearchEngine
 
                 if (add) {
                     currentAuthor.setType(currentAuthorType);
-                    authorList.add(currentAuthor);
+                    bookData.add(currentAuthor);
                 }
             }
             return 1;
@@ -903,7 +910,8 @@ public class StripInfoSearchEngine
      *
      * @return 1 if we found a value td; 0 otherwise.
      */
-    private int processSeriesOrCollection(@NonNull final Element td) {
+    private int processSeriesOrCollection(@NonNull final Element td,
+                                          @NonNull final BookData bookData) {
         final Element dataElement = td.nextElementSibling();
         if (dataElement != null) {
             final Elements as = dataElement.select("a");
@@ -911,11 +919,12 @@ public class StripInfoSearchEngine
                 final String text = ParseUtils.cleanText(as.get(i).text());
                 final Series currentSeries = Series.from3(text);
                 // check if already present
-                if (seriesList.stream().anyMatch(series -> series.equals(currentSeries))) {
+                if (bookData.getSeries().stream()
+                            .anyMatch(series -> series.equals(currentSeries))) {
                     return 1;
                 }
                 // just add
-                seriesList.add(currentSeries);
+                bookData.add(currentSeries);
             }
             return 1;
         }
@@ -929,7 +938,8 @@ public class StripInfoSearchEngine
      *
      * @return 1 if we found a value td; 0 otherwise.
      */
-    private int processPublisher(@NonNull final Element td) {
+    private int processPublisher(@NonNull final Element td,
+                                 @NonNull final BookData bookData) {
         final Element dataElement = td.nextElementSibling();
         if (dataElement != null) {
             final Elements aas = dataElement.select("a");
@@ -937,11 +947,12 @@ public class StripInfoSearchEngine
                 final String name = ParseUtils.cleanText(aas.get(i).text());
                 final Publisher currentPublisher = Publisher.from(name);
                 // check if already present
-                if (publisherList.stream().anyMatch(pub -> pub.equals(currentPublisher))) {
+                if (bookData.getPublishers().stream()
+                            .anyMatch(pub -> pub.equals(currentPublisher))) {
                     return 1;
                 }
                 // just add
-                publisherList.add(currentPublisher);
+                bookData.add(currentPublisher);
             }
             return 1;
         }
@@ -964,7 +975,7 @@ public class StripInfoSearchEngine
      * @param bookData Bundle to update
      */
     private void processDescription(@NonNull final Element item,
-                                    @NonNull final Bundle bookData) {
+                                    @NonNull final BookData bookData) {
         final Elements sections = item.select("section.c4");
         if (!sections.isEmpty()) {
             final StringBuilder content = new StringBuilder();
@@ -998,7 +1009,7 @@ public class StripInfoSearchEngine
      * @param externalId StripInfo id for the book
      */
     private void processUserdata(@NonNull final Element document,
-                                 @NonNull final Bundle bookData,
+                                 @NonNull final BookData bookData,
                                  final long externalId) {
 
         final long collectionId = jSoupHelper.getInt(document, "stripCollectie-" + externalId);
