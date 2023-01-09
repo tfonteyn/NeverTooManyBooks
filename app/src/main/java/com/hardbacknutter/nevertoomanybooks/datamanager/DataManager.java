@@ -19,23 +19,18 @@
  */
 package com.hardbacknutter.nevertoomanybooks.datamanager;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -48,25 +43,29 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * Class to manage a set of related data.
- * It's basically an extended Bundle with support for validators, Money and Bit types, parsing, ...
- *
- * <ul>
- *      <li>{@link #rawData}: stores the actual data</li>
- *      <li>{@link #validatorsMap}: validators applied at 'save' time</li>
- *      <li>{@link #crossValidators}: cross-validators applied at 'save' time</li>
- * </ul>
+ * It's basically an extended Bundle with support for Money and Bit types,
+ * parsing, easier list handling, nullability...
+ * <p>
+ * The actual data is stored in a single member variable {@link #rawData}.
  */
 public class DataManager
-        implements DataHolder {
+        implements DataHolder, Parcelable {
 
-    /** re-usable validator. */
-    protected static final DataValidator LONG_VALIDATOR = new LongValidator();
-    /** re-usable validator. */
-    protected static final DataValidator NON_BLANK_VALIDATOR = new NonBlankValidator();
-    /** re-usable validator. */
-    protected static final DataValidator PRICE_VALIDATOR = new OrValidator(
-            new BlankValidator(),
-            new DoubleValidator());
+    public static final Creator<DataManager> CREATOR = new Creator<>() {
+
+        @Override
+        @NonNull
+        public DataManager createFromParcel(@NonNull final Parcel in) {
+            return new DataManager(in);
+        }
+
+        @Override
+        @NonNull
+        public DataManager[] newArray(final int size) {
+            return new DataManager[size];
+        }
+    };
+
 
     /** Log tag. */
     private static final String TAG = "DataManager";
@@ -83,7 +82,7 @@ public class DataManager
     }
 
     /**
-     * Constructor for Mock tests. Loads the bundle <strong>without</strong> type checks.
+     * Constructor for Mock tests. Loads the data <strong>without</strong> type checks.
      */
     @VisibleForTesting
     protected DataManager(@NonNull final Bundle rawData) {
@@ -91,10 +90,41 @@ public class DataManager
     }
 
     /**
+     * Constructor for Mock tests. Loads the data <strong>without</strong> type checks.
+     */
+    @VisibleForTesting
+    protected DataManager(@NonNull final DataManager dataManager) {
+        this.rawData = dataManager.rawData;
+    }
+
+    protected DataManager(@NonNull final Parcel in) {
+        rawData = in.readBundle(getClass().getClassLoader());
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeBundle(rawData);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    /**
      * Clear all data in this instance.
      */
-    protected void clearData() {
+    public void clearData() {
         rawData.clear();
+    }
+
+    public boolean isEmpty() {
+        return rawData.isEmpty();
+    }
+
+    public int size() {
+        return rawData.size();
     }
 
     @NonNull
@@ -123,13 +153,12 @@ public class DataManager
         return rawData.containsKey(key);
     }
 
-
     /**
      * Store all passed values in our collection (with type checking).
      *
-     * @param src bundle to copy from
+     * @param src DataManager to copy from
      */
-    protected void putAll(@NonNull final Bundle src) {
+    protected void putAll(@NonNull final DataManager src) {
         for (final String key : src.keySet()) {
             put(key, src.get(key));
         }
@@ -435,6 +464,26 @@ public class DataManager
         if (money.getCurrency() != null) {
             rawData.putString(key + DBKey.CURRENCY_SUFFIX, money.getCurrencyCode());
         }
+    }
+
+
+    /**
+     * Get a {@link String} {@link ArrayList} from the collection.
+     *
+     * @param key Key of data object
+     *
+     * @return The list, can be empty, but never {@code null}
+     */
+    @NonNull
+    public ArrayList<String> getStringArrayList(@NonNull final String key) {
+        Object o = rawData.get(key);
+        if (o == null) {
+            o = new ArrayList<>();
+            //noinspection unchecked
+            rawData.putStringArrayList(key, (ArrayList<String>) o);
+        }
+        //noinspection unchecked
+        return (ArrayList<String>) o;
     }
 
     /**
