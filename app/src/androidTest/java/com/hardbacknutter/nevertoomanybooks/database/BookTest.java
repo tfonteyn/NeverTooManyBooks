@@ -57,9 +57,13 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /** Do NOT extend BaseSetup ! */
+@SuppressWarnings({"TypeMayBeWeakened",
+        "MismatchedQueryAndUpdateOfCollection",
+        "MismatchedReadAndWriteOfArray"})
 @MediumTest
 public class BookTest {
 
@@ -239,7 +243,7 @@ public class BookTest {
 
         assertEquals(tempDir.getAbsolutePath()
                      + File.separatorChar + TestConstants.COVER[1],
-                     book.getString(Book.BKEY_TMP_FILE_SPEC[1]));
+                     book.getString(Book.BKEY_TMP_FILE_SPEC[1], null));
 
         assertEquals(EntityStage.Stage.Dirty, book.getStage());
         bookDao.update(context, book);
@@ -251,7 +255,9 @@ public class BookTest {
         book = Book.from(bookId[0]);
         assertEquals(bookId[0], book.getId());
 
-        uuid = book.getString(DBKey.BOOK_UUID);
+        uuid = book.getString(DBKey.BOOK_UUID, null);
+        assertNotNull(uuid);
+        assertFalse(uuid.isEmpty());
 
         assertEquals(TestConstants.BOOK_TITLE + "0_upd", book.getTitle());
         bookshelves = book.getBookshelves();
@@ -268,14 +274,14 @@ public class BookTest {
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
 
-        Optional<File> coverFile = book.getCoverFile(0);
+        Optional<File> coverFile = book.getCover(0);
         assertTrue(coverFile.isPresent());
         cover = coverFile.get();
         assertNotNull(cover);
         assertEquals(originalImageSize[0], cover.length());
         assertEquals(uuid + EXT_JPG, cover.getName());
 
-        coverFile = book.getCoverFile(1);
+        coverFile = book.getCover(1);
         assertTrue(coverFile.isPresent());
         cover = coverFile.get();
         assertNotNull(cover);
@@ -294,7 +300,9 @@ public class BookTest {
         book = Book.from(bookId[0]);
         assertEquals(bookId[0], book.getId());
 
-        uuid = book.getString(DBKey.BOOK_UUID);
+        uuid = book.getString(DBKey.BOOK_UUID, null);
+        assertNotNull(uuid);
+        assertFalse(uuid.isEmpty());
 
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
@@ -312,7 +320,7 @@ public class BookTest {
         cover = new File(coverDir, uuid + "_1" + EXT_JPG);
         assertFalse(cover.exists());
 
-        coverFile = book.getCoverFile(0);
+        coverFile = book.getCover(0);
         assertFalse(coverFile.isPresent());
 
         /*
@@ -329,7 +337,7 @@ public class BookTest {
         cover = new File(coverDir, uuid + "_1" + EXT_JPG);
         assertTrue(cover.exists());
 
-        coverFile = book.getCoverFile(1);
+        coverFile = book.getCover(1);
         assertTrue(coverFile.isPresent());
         cover = coverFile.get();
         assertNotNull(cover);
@@ -383,7 +391,7 @@ public class BookTest {
 
         assertEquals(CoverDir.getTemp(context).getAbsolutePath()
                      + File.separatorChar + TestConstants.COVER[0],
-                     book.getString(Book.BKEY_TMP_FILE_SPEC[0]));
+                     book.getString(Book.BKEY_TMP_FILE_SPEC[0], null));
 
         assertEquals(EntityStage.Stage.Dirty, book.getStage());
         final long bookId = bookDao.insert(context, book);
@@ -401,14 +409,15 @@ public class BookTest {
 
         assertEquals(EntityStage.Stage.Clean, book.getStage());
 
-        final String uuid = book.getString(DBKey.BOOK_UUID);
+        final String uuid = book.getString(DBKey.BOOK_UUID, null);
+        assertNotNull(uuid);
         assertFalse(uuid.isEmpty());
         assertEquals(TestConstants.BOOK_TITLE + "0", book.getTitle());
 
         assertEquals(TestConstants.BOOK_ISFDB_123, book.getLong(DBKey.SID_ISFDB));
 
-        // not saved, hence empty
-        assertEquals("", book.getString(DBKey.SID_LCCN));
+        // not saved, hence null
+        assertNull(book.getString(DBKey.SID_LCCN, null));
 
 
         final List<Bookshelf> bookshelves = book.getBookshelves();
@@ -426,7 +435,7 @@ public class BookTest {
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
 
-        final Optional<File> coverFile = book.getCoverFile(0);
+        final Optional<File> coverFile = book.getCover(0);
         assertTrue(coverFile.isPresent());
         final File cover = coverFile.get();
         assertNotNull(cover);

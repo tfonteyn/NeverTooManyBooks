@@ -31,9 +31,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -53,6 +50,9 @@ import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -159,7 +159,7 @@ public class JsonArchiveWriterTest
 
         final Book book = Book.from(modifiedBookId);
         book.putString(DBKey.PERSONAL_NOTES,
-                       "MODIFIED" + book.getString(DBKey.PERSONAL_NOTES));
+                       "MODIFIED " + book.getString(DBKey.PERSONAL_NOTES, null));
         bookDao.update(context, book);
 
         final ImportHelper importHelper = new ImportHelper(context, Uri.fromFile(file));
