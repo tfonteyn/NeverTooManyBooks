@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,6 +30,7 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * Searches a single {@link SearchEngine}.
  */
 public class SearchTask
-        extends LTask<Bundle> {
+        extends LTask<BookData> {
 
     /** Log tag. */
     private static final String TAG = "SearchTask";
@@ -85,7 +85,7 @@ public class SearchTask
      */
     SearchTask(final int taskId,
                @NonNull final SearchEngine searchEngine,
-               @NonNull final TaskListener<Bundle> taskListener) {
+               @NonNull final TaskListener<BookData> taskListener) {
         super(taskId, TAG + ' ' + searchEngine.getName(ServiceLocator.getAppContext()),
               taskListener);
 
@@ -185,7 +185,7 @@ public class SearchTask
     @NonNull
     @Override
     @WorkerThread
-    protected Bundle doWork(@NonNull final Context context)
+    protected BookData doWork(@NonNull final Context context)
             throws StorageException, SearchException, CredentialsException, IOException {
 
         publishProgress(1, context.getString(R.string.progress_msg_searching_site,
@@ -201,7 +201,7 @@ public class SearchTask
         // can we reach the site ?
         searchEngine.ping();
 
-        final Bundle bookData;
+        final BookData bookData;
         switch (by) {
             case ExternalId:
                 SanityCheck.requireValue(externalId, "externalId");
