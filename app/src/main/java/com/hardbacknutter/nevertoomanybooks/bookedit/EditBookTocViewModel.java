@@ -19,14 +19,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.Edition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbGetBookTask;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbGetEditionsTask;
@@ -66,12 +65,12 @@ public class EditBookTocViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<TaskResult<Bundle>>> onIsfdbBook() {
+    LiveData<LiveDataEvent<TaskResult<BookData>>> onIsfdbBook() {
         return isfdbGetBookTask.onFinished();
     }
 
     @NonNull
-    LiveData<LiveDataEvent<TaskResult<Bundle>>> onIsfdbBookCancelled() {
+    LiveData<LiveDataEvent<TaskResult<BookData>>> onIsfdbBookCancelled() {
         return isfdbGetBookTask.onCancelled();
     }
 
