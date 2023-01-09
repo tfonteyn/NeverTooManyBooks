@@ -20,12 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.kbnl;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -33,7 +31,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.sync.ColorMapper;
@@ -45,15 +43,6 @@ class KbNlBookHandler
 
     private static final Pattern ISBN_BOUNDARY_PATTERN = Pattern.compile("[;)]");
 
-    /** accumulate all authors for this book. */
-    @NonNull
-    private final ArrayList<Author> authorList = new ArrayList<>();
-    /** accumulate all authors for this book. */
-    @NonNull
-    private final ArrayList<Series> seriesList = new ArrayList<>();
-    /** accumulate all Publishers for this book. */
-    @NonNull
-    private final ArrayList<Publisher> publisherList = new ArrayList<>();
     @NonNull
     private final Context context;
 
@@ -67,7 +56,7 @@ class KbNlBookHandler
      * @param data    Bundle to update <em>(passed in to allow mocking)</em>
      */
     KbNlBookHandler(@NonNull final Context context,
-                    @NonNull final Bundle data) {
+                    @NonNull final BookData data) {
         super(data);
         this.context = context;
     }
@@ -77,9 +66,6 @@ class KbNlBookHandler
             throws SAXException {
         super.startDocument();
 
-        authorList.clear();
-        seriesList.clear();
-        publisherList.clear();
         tmpSeriesNr = null;
     }
 
@@ -89,27 +75,17 @@ class KbNlBookHandler
         super.endDocument();
 
         if (tmpSeriesNr != null) {
-            final String title = data.getString(DBKey.TITLE);
+            final String title = data.getString(DBKey.TITLE, null);
             // should never happen, but paranoia...
-            if (title != null) {
+            if (title != null && !title.isBlank()) {
                 final Series series = Series.from(title, tmpSeriesNr);
-                seriesList.add(series);
+                data.add(series);
             }
-        }
-
-        if (!authorList.isEmpty()) {
-            data.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
-        }
-        if (!seriesList.isEmpty()) {
-            data.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
-        }
-        if (!publisherList.isEmpty()) {
-            data.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
         }
 
         // There is no language field; e.g. french books data is the same as dutch ones.
         // just add Dutch and hope for the best.
-        if (!data.isEmpty() && !data.containsKey(DBKey.LANGUAGE)) {
+        if (!data.isEmpty() && !data.contains(DBKey.LANGUAGE)) {
             data.putString(DBKey.LANGUAGE, "nld");
         }
     }
@@ -331,7 +307,7 @@ class KbNlBookHandler
 
             final Author author = Author.from(cleanedString);
             author.setType(type);
-            authorList.add(author);
+            data.add(author);
         }
     }
 
@@ -357,7 +333,7 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processSeries(@NonNull final List<String> currentData) {
-        seriesList.add(Series.from(currentData.get(0)));
+        data.add(Series.from(currentData.get(0)));
         // the number part is totally unstructured
     }
 
@@ -422,7 +398,7 @@ class KbNlBookHandler
     private void processIsbn(@NonNull final List<String> currentData) {
         for (final String text : currentData) {
             if (Character.isDigit(text.charAt(0))) {
-                if (!data.containsKey(DBKey.BOOK_ISBN)) {
+                if (!data.contains(DBKey.BOOK_ISBN)) {
                     final String digits = digits(text.split(":")[0], true);
                     // Do a crude test on the length and hope for the best
                     // (don't do a full ISBN test here, no need)
@@ -431,7 +407,7 @@ class KbNlBookHandler
                     }
                 }
             } else if (text.charAt(0) == '(') {
-                if (!data.containsKey(DBKey.FORMAT)) {
+                if (!data.contains(DBKey.FORMAT)) {
                     // Skip the 1th bracket, and split either on closing or on semicolon
                     final String value = ISBN_BOUNDARY_PATTERN.split(text.substring(1))[0].strip();
                     if (!value.isBlank()) {
@@ -475,7 +451,7 @@ class KbNlBookHandler
         if (publisherName.contains(":")) {
             publisherName = publisherName.split(":")[1].strip();
         }
-        publisherList.add(Publisher.from(publisherName));
+        data.add(Publisher.from(publisherName));
     }
 
     /**
@@ -506,7 +482,7 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processDatePublished(@NonNull final List<String> currentData) {
-        if (!data.containsKey(DBKey.BOOK_PUBLICATION__DATE)) {
+        if (!data.contains(DBKey.BOOK_PUBLICATION__DATE)) {
             // Grab the first bit before a comma, and strip it for digits + hope for the best
             final String year = digits(currentData.get(0).split(",")[0], false);
             if (year != null && !year.isEmpty()) {
@@ -531,7 +507,7 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processPages(@NonNull final List<String> currentData) {
-        if (!data.containsKey(DBKey.PAGE_COUNT)) {
+        if (!data.contains(DBKey.PAGE_COUNT)) {
             try {
                 final String cleanedString = currentData.get(0).split(" ")[0];
                 final int pages = Integer.parseInt(cleanedString);
@@ -559,7 +535,7 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processIllustration(@NonNull final List<String> currentData) {
-        if (!data.containsKey(DBKey.COLOR)) {
+        if (!data.contains(DBKey.COLOR)) {
             if (ColorMapper.isMappingAllowed(context)) {
                 int resId = 0;
                 // As usual on this site, the data is unstructured... we do our best
