@@ -1301,18 +1301,20 @@ public class SearchCoordinator
         @AnyThread
         public void filter(@NonNull final BookData bookData) {
             for (int cIdx = 0; cIdx < 2; cIdx++) {
-                final List<String> imageList =
-                        bookData.getStringArrayList(BKEY_FILE_SPEC_ARRAY[cIdx]);
+                if (bookData.contains(BKEY_FILE_SPEC_ARRAY[cIdx])) {
+                    final List<String> imageList =
+                            bookData.getStringArrayList(BKEY_FILE_SPEC_ARRAY[cIdx]);
 
-                if (imageList != null && !imageList.isEmpty()) {
-                    // ALWAYS call even if we only have 1 image...
-                    // We want to remove bad ones if needed.
-                    final String coverName = getBestImage(imageList);
-                    if (coverName != null) {
-                        bookData.putString(Book.BKEY_TMP_FILE_SPEC[cIdx], coverName);
+                    if (!imageList.isEmpty()) {
+                        // ALWAYS call even if we only have 1 image...
+                        // We want to remove bad ones if needed.
+                        final String coverName = getBestImage(imageList);
+                        if (coverName != null) {
+                            bookData.putString(Book.BKEY_TMP_FILE_SPEC[cIdx], coverName);
+                        }
                     }
+                    bookData.remove(BKEY_FILE_SPEC_ARRAY[cIdx]);
                 }
-                bookData.remove(BKEY_FILE_SPEC_ARRAY[cIdx]);
             }
         }
 
