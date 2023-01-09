@@ -181,8 +181,8 @@ public final class SyncReaderProcessor
 
                             } else {
                                 // If the original was blank/zero, add to list
-                                final String value = book.getString(field.key);
-                                if (value.isEmpty() || "0".equals(value)) {
+                                final String value = book.getString(field.key, null);
+                                if (value == null || value.isEmpty() || "0".equals(value)) {
                                     filteredMap.put(field.key, field);
                                 }
                             }
@@ -268,11 +268,11 @@ public final class SyncReaderProcessor
         // Commit the new data
         if (!bookData.isEmpty()) {
             // Get the language, if there was one requested for updating.
-            String bookLang = bookData.getString(DBKey.LANGUAGE);
+            String bookLang = bookData.getString(DBKey.LANGUAGE, null);
             if (bookLang == null || bookLang.isEmpty()) {
                 // Otherwise add the original one.
-                bookLang = book.getString(DBKey.LANGUAGE);
-                if (!bookLang.isEmpty()) {
+                bookLang = book.getString(DBKey.LANGUAGE, null);
+                if (bookLang != null && !bookLang.isEmpty()) {
                     bookData.putString(DBKey.LANGUAGE, bookLang);
                 }
             }
@@ -324,8 +324,8 @@ public final class SyncReaderProcessor
                               @NonNull final BookData bookData,
                               @IntRange(from = 0, to = 1) final int cIdx) {
 
-        final String fileSpec = bookData.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
-        if (fileSpec != null) {
+        final String fileSpec = bookData.getString(Book.BKEY_TMP_FILE_SPEC[cIdx], null);
+        if (fileSpec != null && !fileSpec.isEmpty()) {
             try {
                 book.persistCover(new File(fileSpec), cIdx);
 
@@ -333,7 +333,7 @@ public final class SyncReaderProcessor
                 // We're called in a loop, and the chance of an exception here is very low
                 // so let's log it, and quietly continue.
                 Logger.error(TAG, e, "processCoverImage|uuid="
-                                     + book.getString(DBKey.BOOK_UUID)
+                                     + book.getString(DBKey.BOOK_UUID, null)
                                      + "|cIdx=" + cIdx);
             }
         }
