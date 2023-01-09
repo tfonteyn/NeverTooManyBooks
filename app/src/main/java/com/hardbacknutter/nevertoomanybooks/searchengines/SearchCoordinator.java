@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.sync.ColorMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.FormatMapper;
@@ -116,9 +117,9 @@ public class SearchCoordinator
 
     protected final MutableLiveData<LiveDataEvent<TaskProgress>>
             searchCoordinatorProgress = new MutableLiveData<>();
-    protected final MutableLiveData<LiveDataEvent<TaskResult<Bundle>>>
+    protected final MutableLiveData<LiveDataEvent<TaskResult<BookData>>>
             searchCoordinatorCancelled = new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskResult<Bundle>>>
+    private final MutableLiveData<LiveDataEvent<TaskResult<BookData>>>
             searchCoordinatorFinished = new MutableLiveData<>();
 
 
@@ -198,7 +199,7 @@ public class SearchCoordinator
      * @param result of a search (can be null for failed/cancelled searches)
      */
     private synchronized void onSearchTaskFinished(final int taskId,
-                                                   @Nullable final Bundle result) {
+                                                   @Nullable final BookData result) {
 
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
         final SearchTask searchTask;
@@ -269,13 +270,13 @@ public class SearchCoordinator
         if (stopSearching) {
             final long processTime = System.nanoTime();
 
-            final Bundle bookData = accumulateResults(context);
+            final BookData bookData = accumulateResults(context);
             final String searchErrors = accumulateErrors(context);
             if (searchErrors != null && !searchErrors.isEmpty()) {
                 bookData.putString(BKEY_SEARCH_ERROR, searchErrors);
             }
 
-            final LiveDataEvent<TaskResult<Bundle>> message =
+            final LiveDataEvent<TaskResult<BookData>> message =
                     new LiveDataEvent<>(new TaskResult<>(R.id.TASK_ID_SEARCH_COORDINATOR,
                                                          bookData));
             if (cancelRequested.get()) {
@@ -302,12 +303,12 @@ public class SearchCoordinator
      * The Bundle will (optionally) contain {@link #BKEY_SEARCH_ERROR} with a list of errors.
      */
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Bundle>>> onSearchFinished() {
+    public LiveData<LiveDataEvent<TaskResult<BookData>>> onSearchFinished() {
         return searchCoordinatorFinished;
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Bundle>>> onSearchCancelled() {
+    public LiveData<LiveDataEvent<TaskResult<BookData>>> onSearchCancelled() {
         return searchCoordinatorCancelled;
     }
 
@@ -372,8 +373,101 @@ public class SearchCoordinator
         }
     }
 
+    /**
+     * Called when all is said and done. Accumulate data from all sites.
+     * <p>
+     * <strong>Developer note:</strong> before you think you can simplify this method
+     * by working directly with engine-id and SearchEngines... DON'T
+     * Read class docs for {@link EngineId} and {@link Site.Type#getDataSitesByReliability}.
+     *
+     * @param context Current context
+     *
+     * @return the accumulated book data bundle
+     */
+    @NonNull
+    private BookData accumulateResults(@NonNull final Context context) {
+        // This list will be the actual order of the result we apply, based on the
+        // actual results and the default order.
+        final List<Site> sites = new ArrayList<>();
+
+        final BookData bookData = new BookData();
+
+        // determine the order of the sites which should give us the most reliable data.
+        if (isbn.isValid(strictIsbn)) {
+            final Collection<Site> sitesWithoutIsbn = new ArrayList<>();
+
+            for (final Site site : Site.Type.getDataSitesByReliability()) {
+                // no synchronized needed, at this point all other threads have finished.
+                if (searchResultsBySite.containsKey(site.getEngineId())) {
+                    final WrappedTaskResult siteData = searchResultsBySite.get(site.getEngineId());
+
+                    // any results for this site?
+                    if (siteData != null && siteData.result != null
+                        && !siteData.result.isEmpty()) {
+
+                        if (siteData.searchBy == SearchTask.By.ExternalId && !strictIsbn) {
+                            // We searched by website id and didn't insist on an exact ISBN
+                            // so we SHOULD be pretty sure about the data...
+                            sites.add(site);
+
+                        } else if (siteData.result.contains(DBKey.BOOK_ISBN)) {
+                            // We did a general search with an ISBN; check if it matches
+                            final String isbnFound = siteData.result
+                                    .getString(DBKey.BOOK_ISBN, null);
+                            if (isbnFound != null && !isbnFound.isEmpty()
+                                && isbn.equals(new ISBN(isbnFound, strictIsbn))) {
+                                sites.add(site);
+                            }
+                            // else {
+                            // The ISBN found does not match the ISBN we searched for;
+                            // SKIP/IGNORE this site.
+                            // }
+
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                                Log.d(TAG, "accumulateResults"
+                                           + "|isbn=" + isbn
+                                           + "|isbnFound=" + isbnFound);
+                            }
+                        } else {
+                            // The result did not have an ISBN at all.
+                            sitesWithoutIsbn.add(site);
+                        }
+                    }
+                }
+            }
+
+            // now add the less reliable ones at the end of the list.
+            sites.addAll(sitesWithoutIsbn);
+            // Add the ISBN we initially searched for.
+            // This avoids overwriting with a potentially different isbn from the sites
+            bookData.putString(DBKey.BOOK_ISBN, isbnSearchText);
+
+        } else {
+            // We did not have an ISBN as a search criteria; use the default order
+            sites.addAll(Site.Type.getDataSitesByReliability());
+        }
+
+        // Merge the data we have in the order as decided upon above.
+        // no synchronized needed, at this point all other threads have finished.
+        resultsAccumulator.process(context, sites, searchResultsBySite, bookData);
+
+        // If we did not get an ISBN, use the one we originally searched for.
+        final String isbnStr = bookData.getString(DBKey.BOOK_ISBN, null);
+        if (isbnStr == null || isbnStr.isEmpty()) {
+            bookData.putString(DBKey.BOOK_ISBN, isbnSearchText);
+        }
+
+        // If we did not get a title, use the one we originally searched for.
+        final String title = bookData.getString(DBKey.TITLE, null);
+        if (title == null || title.isEmpty()) {
+            bookData.putString(DBKey.TITLE, titleSearchText);
+        }
+
+        return bookData;
+    }
+
     /** Listener for <strong>individual</strong> search tasks. */
-    private final TaskListener<Bundle> searchTaskListener = new TaskListener<>() {
+    private final TaskListener<BookData> searchTaskListener = new TaskListener<>() {
 
         @Override
         public void onProgress(@NonNull final TaskProgress message) {
@@ -392,14 +486,14 @@ public class SearchCoordinator
 
         @Override
         public void onFinished(final int taskId,
-                               @Nullable final Bundle result) {
+                               @Nullable final BookData result) {
             // The result MUST NOT be null
             onSearchTaskFinished(taskId, Objects.requireNonNull(result, "result"));
         }
 
         @Override
         public void onCancelled(final int taskId,
-                                @Nullable final Bundle result) {
+                                @Nullable final BookData result) {
             // we'll deliver what we have found up to now (includes previous searches)
             // The result MAY be null
             onSearchTaskFinished(taskId, result);
@@ -559,85 +653,9 @@ public class SearchCoordinator
      *
      * @return the accumulated book data bundle
      */
-    @NonNull
-    private Bundle accumulateResults(@NonNull final Context context) {
-        // This list will be the actual order of the result we apply, based on the
-        // actual results and the default order.
-        final List<Site> sites = new ArrayList<>();
-
-        final Bundle bookData = ServiceLocator.newBundle();
-
-        // determine the order of the sites which should give us the most reliable data.
-        if (isbn.isValid(strictIsbn)) {
-            final Collection<Site> sitesWithoutIsbn = new ArrayList<>();
-
-            for (final Site site : Site.Type.getDataSitesByReliability()) {
-                // no synchronized needed, at this point all other threads have finished.
-                if (searchResultsBySite.containsKey(site.getEngineId())) {
-                    final WrappedTaskResult siteData = searchResultsBySite.get(site.getEngineId());
-
-                    // any results for this site?
-                    if (siteData != null && siteData.result != null
-                        && !siteData.result.isEmpty()) {
-
-                        if (siteData.searchBy == SearchTask.By.ExternalId && !strictIsbn) {
-                            // We searched by website id and didn't insist on an exact ISBN
-                            // so we SHOULD be pretty sure about the data...
-                            sites.add(site);
-
-                        } else if (siteData.result.containsKey(DBKey.BOOK_ISBN)) {
-                            // We did a general search with an ISBN; check if it matches
-                            final String isbnFound = siteData.result.getString(DBKey.BOOK_ISBN);
-                            if (isbnFound != null && !isbnFound.isEmpty()
-                                && isbn.equals(new ISBN(isbnFound, strictIsbn))) {
-                                sites.add(site);
-                            }
-                            // else {
-                            // The ISBN found does not match the ISBN we searched for;
-                            // SKIP/IGNORE this site.
-                            // }
-
-                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                                Log.d(TAG, "accumulateResults"
-                                           + "|isbn=" + isbn
-                                           + "|isbnFound=" + isbnFound);
-                            }
-                        } else {
-                            // The result did not have an ISBN at all.
-                            sitesWithoutIsbn.add(site);
-                        }
-                    }
-                }
-            }
-
-            // now add the less reliable ones at the end of the list.
-            sites.addAll(sitesWithoutIsbn);
-            // Add the ISBN we initially searched for.
-            // This avoids overwriting with a potentially different isbn from the sites
-            bookData.putString(DBKey.BOOK_ISBN, isbnSearchText);
-
-        } else {
-            // We did not have an ISBN as a search criteria; use the default order
-            sites.addAll(Site.Type.getDataSitesByReliability());
-        }
-
-        // Merge the data we have in the order as decided upon above.
-        // no synchronized needed, at this point all other threads have finished.
-        resultsAccumulator.process(context, sites, searchResultsBySite, bookData);
-
-        // If we did not get an ISBN, use the one we originally searched for.
-        final String isbnStr = bookData.getString(DBKey.BOOK_ISBN);
-        if (isbnStr == null || isbnStr.isEmpty()) {
-            bookData.putString(DBKey.BOOK_ISBN, isbnSearchText);
-        }
-
-        // If we did not get an title, use the one we originally searched for.
-        final String title = bookData.getString(DBKey.TITLE);
-        if (title == null || title.isEmpty()) {
-            bookData.putString(DBKey.TITLE, titleSearchText);
-        }
-
-        return bookData;
+    private boolean hasIsbn(@NonNull final BookData bookData) {
+        final String isbnStr = bookData.getString(DBKey.BOOK_ISBN, null);
+        return isbnStr != null && !isbnStr.isEmpty();
     }
 
     /**
@@ -926,16 +944,18 @@ public class SearchCoordinator
         this.baseMessage = baseMessage;
     }
 
-    /**
-     * Check if passed Bundle contains a non-blank ISBN string. Does not check if the ISBN is valid.
-     *
-     * @param bundle to check
-     *
-     * @return Present/absent
-     */
-    private boolean hasIsbn(@NonNull final Bundle bundle) {
-        final String isbnStr = bundle.getString(DBKey.BOOK_ISBN);
-        return isbnStr != null && !isbnStr.trim().isEmpty();
+    public static class WrappedTaskResult {
+
+        @Nullable
+        final SearchTask.By searchBy;
+        @Nullable
+        final BookData result;
+
+        WrappedTaskResult(@Nullable final SearchTask.By searchBy,
+                          @Nullable final BookData result) {
+            this.searchBy = searchBy;
+            this.result = result;
+        }
     }
 
     private void debugEnteredOnSearchTaskFinished(@NonNull final Context context,
@@ -1033,26 +1053,13 @@ public class SearchCoordinator
         }
     }
 
-    public static class WrappedTaskResult {
-
-        @Nullable
-        final SearchTask.By searchBy;
-        @Nullable
-        final Bundle result;
-
-        WrappedTaskResult(@Nullable final SearchTask.By searchBy,
-                          @Nullable final Bundle result) {
-            this.searchBy = searchBy;
-            this.result = result;
-        }
-    }
-
     private static class ResultsAccumulator {
 
-        private static final Set<String> LIST_KEYS = Set.of(Book.BKEY_AUTHOR_LIST,
-                                                            Book.BKEY_SERIES_LIST,
-                                                            Book.BKEY_PUBLISHER_LIST,
-                                                            Book.BKEY_TOC_LIST,
+        private static final Set<String> LIST_KEYS = Set.of(BookData.BKEY_AUTHOR_LIST,
+                                                            BookData.BKEY_SERIES_LIST,
+                                                            BookData.BKEY_PUBLISHER_LIST,
+                                                            BookData.BKEY_TOC_LIST,
+                                                            BookData.BKEY_BOOKSHELF_LIST,
                                                             BKEY_FILE_SPEC_ARRAY[0],
                                                             BKEY_FILE_SPEC_ARRAY[1]);
 
@@ -1089,7 +1096,7 @@ public class SearchCoordinator
         public void process(@NonNull final Context context,
                             @NonNull final List<Site> sites,
                             @NonNull final Map<EngineId, WrappedTaskResult> searchResultsBySite,
-                            @NonNull final Bundle bookData) {
+                            @NonNull final BookData bookData) {
             sites.stream()
                  .map(Site::getSearchEngine)
                  .forEach(searchEngine -> {
@@ -1112,9 +1119,9 @@ public class SearchCoordinator
         }
 
         private void processKey(@NonNull final String key,
-                                @NonNull final Bundle siteData,
+                                @NonNull final BookData siteData,
                                 @NonNull final Locale siteLocale,
-                                @NonNull final Bundle bookData) {
+                                @NonNull final BookData bookData) {
             if (DBKey.DATE_KEYS.contains(key)) {
                 processDate(siteLocale, key, siteData, bookData);
 
@@ -1134,14 +1141,14 @@ public class SearchCoordinator
 
         private void processLanguage(@NonNull final Locale siteLocale,
                                      @NonNull final String key,
-                                     @NonNull final Bundle siteData,
-                                     @NonNull final Bundle bookData) {
-            String dataToAdd = siteData.getString(key);
+                                     @NonNull final BookData siteData,
+                                     @NonNull final BookData bookData) {
+            String dataToAdd = siteData.getString(key, null);
             if (dataToAdd == null || dataToAdd.trim().isEmpty()) {
                 return;
             }
 
-            final String current = bookData.getString(key);
+            final String current = bookData.getString(key, null);
             if (current == null || current.isEmpty()) {
                 if (dataToAdd.length() > 3) {
                     // If more than 3 characters, it's likely a 'display' name of a language.
@@ -1175,11 +1182,14 @@ public class SearchCoordinator
          */
         private void processDate(@NonNull final Locale siteLocale,
                                  @NonNull final String key,
-                                 @NonNull final Bundle siteData,
-                                 @NonNull final Bundle bookData) {
-            final String current = bookData.getString(key);
-            final String dataToAdd = siteData.getString(key);
+                                 @NonNull final BookData siteData,
+                                 @NonNull final BookData bookData) {
+            final String dataToAdd = siteData.getString(key, null);
+            if (dataToAdd == null || dataToAdd.isEmpty()) {
+                return;
+            }
 
+            final String current = bookData.getString(key, null);
             if (current == null || current.isEmpty()) {
                 // copy, even if the incoming date might not be valid.
                 // We'll deal with that later.
@@ -1191,23 +1201,21 @@ public class SearchCoordinator
                 //
                 // Overwrite with the new date if we can parse it and
                 // if the current one was present but not valid.
-                if (dataToAdd != null) {
-                    final LocalDateTime newDate = dateParser.parse(dataToAdd, siteLocale);
-                    if (newDate != null) {
-                        if (dateParser.parse(current, siteLocale) == null) {
-                            // current date was invalid, use the new one instead.
-                            // (theoretically this check was not needed, as we should not have
-                            // an invalid date stored anyhow... but paranoia rules)
-                            bookData.putString(key,
-                                               newDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
-                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                                Log.d(TAG, "processDate|copied"
-                                           + "|key=" + key + "|value=`" + dataToAdd + '`');
-                            }
-                        } else {
-                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                                Log.d(TAG, "processDate|skipped|key=" + key);
-                            }
+                final LocalDateTime newDate = dateParser.parse(dataToAdd, siteLocale);
+                if (newDate != null) {
+                    if (dateParser.parse(current, siteLocale) == null) {
+                        // current date was invalid, use the new one instead.
+                        // (theoretically this check was not needed, as we should not have
+                        // an invalid date stored anyhow... but paranoia rules)
+                        bookData.putString(key,
+                                           newDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                            Log.d(TAG, "processDate|copied"
+                                       + "|key=" + key + "|value=`" + dataToAdd + '`');
+                        }
+                    } else {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                            Log.d(TAG, "processDate|skipped|key=" + key);
                         }
                     }
                 }
@@ -1224,8 +1232,8 @@ public class SearchCoordinator
          * @param bookData Destination bundle
          */
         private <T extends Parcelable> void processList(@NonNull final String key,
-                                                        @NonNull final Bundle siteData,
-                                                        @NonNull final Bundle bookData) {
+                                                        @NonNull final BookData siteData,
+                                                        @NonNull final BookData bookData) {
             final ArrayList<T> dataToAdd = siteData.getParcelableArrayList(key);
             if (dataToAdd == null || dataToAdd.isEmpty()) {
                 return;
@@ -1259,14 +1267,15 @@ public class SearchCoordinator
          * @param bookData Destination bundle
          */
         private void processString(@NonNull final String key,
-                                   @NonNull final Bundle siteData,
-                                   @NonNull final Bundle bookData) {
+                                   @NonNull final BookData siteData,
+                                   @NonNull final BookData bookData) {
+            // Fetch as Object, as engines MAY store typed data
             final Object dataToAdd = siteData.get(key);
-            if (dataToAdd == null || dataToAdd.toString().trim().isEmpty()) {
+            if (dataToAdd == null || dataToAdd.toString().isEmpty()) {
                 return;
             }
 
-            final String current = bookData.getString(key);
+            final String current = bookData.getString(key, null);
             if (current == null || current.isEmpty()) {
                 // just use it
                 bookData.putString(key, dataToAdd.toString());
@@ -1292,9 +1301,9 @@ public class SearchCoordinator
          * @param bookData to filter
          */
         @AnyThread
-        public void filter(@NonNull final Bundle bookData) {
+        public void filter(@NonNull final BookData bookData) {
             for (int cIdx = 0; cIdx < 2; cIdx++) {
-                final ArrayList<String> imageList =
+                final List<String> imageList =
                         bookData.getStringArrayList(BKEY_FILE_SPEC_ARRAY[cIdx]);
 
                 if (imageList != null && !imageList.isEmpty()) {
@@ -1318,7 +1327,7 @@ public class SearchCoordinator
          */
         @AnyThread
         @Nullable
-        private String getBestImage(@NonNull final ArrayList<String> imageList) {
+        private String getBestImage(@NonNull final List<String> imageList) {
 
             // biggest size based on height * width
             long bestImageSize = -1;
