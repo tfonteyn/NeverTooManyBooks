@@ -47,7 +47,7 @@ public class NonBlankValidator
             throw new ValidatorException(context.getString(R.string.vldt_non_blank_required_for_x,
                                                            context.getString(errorLabelResId)));
 
-        } else if (o instanceof String && dataManager.getString(key).trim().isEmpty()) {
+        } else if (o instanceof String && dataManager.getString(key).isEmpty()) {
             throw new ValidatorException(context.getString(R.string.vldt_non_blank_required_for_x,
                                                            context.getString(errorLabelResId)));
         } else if (o instanceof ArrayList && dataManager.getParcelableArrayList(key).isEmpty()) {

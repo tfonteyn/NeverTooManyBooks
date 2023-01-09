@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,10 +40,14 @@ public class BlankValidator
                          @StringRes final int errorLabelResId)
             throws ValidatorException {
 
-        final String s = dataManager.getString(key).trim();
+        final String s = dataManager.getString(key, null);
+        if (s == null) {
+            // store an empty string.
+            dataManager.putString(key, "");
+            return;
+        }
         if (s.isEmpty()) {
-            // store the trimmed string.
-            dataManager.putString(key, s);
+            // all ok
             return;
         }
         throw new ValidatorException(context.getString(R.string.vldt_blank_required_for_x,

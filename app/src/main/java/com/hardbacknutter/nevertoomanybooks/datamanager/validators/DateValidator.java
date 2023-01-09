@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,8 +59,8 @@ public class DateValidator
                          @StringRes final int errorLabelResId)
             throws ValidatorException {
 
-        String value = dataManager.getString(key);
-        if (value.isEmpty()) {
+        String value = dataManager.getString(key, null);
+        if (value == null || value.isEmpty()) {
             value = defaultValue;
         } else {
             final LocalDateTime date = new FullDateParser(context).parse(value);
