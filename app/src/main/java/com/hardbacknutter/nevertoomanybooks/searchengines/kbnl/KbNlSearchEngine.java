@@ -185,7 +185,7 @@ public class KbNlSearchEngine
 
             // If it was a list page, fetch and parse the 1st book found;
             // If it was a book page, we're already done and can skip this step.
-            final String show = bookData.getString(KbNlHandlerBase.BKEY_SHOW_URL);
+            final String show = bookData.getString(KbNlHandlerBase.BKEY_SHOW_URL, null);
             if (show != null && !show.isEmpty()) {
                 url = getHostUrl() + String.format(BOOK_URL, dbVersion, setNr, show);
                 bookData.clearData();
