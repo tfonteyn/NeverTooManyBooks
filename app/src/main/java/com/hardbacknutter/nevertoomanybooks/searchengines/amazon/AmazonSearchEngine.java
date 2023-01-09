@@ -313,10 +313,11 @@ public class AmazonSearchEngine
         final Element price = document.selectFirst("span.offer-price");
         if (price != null) {
             final Money money = new Money(siteLocale, price.text());
-            if (money.getCurrency() != null) {
-                bookData.putDouble(DBKey.PRICE_LISTED, money.doubleValue());
-                bookData.putString(DBKey.PRICE_LISTED_CURRENCY, money.getCurrencyCode());
+            if (money.isValid()) {
+                // parsing was ok, store it
+                bookData.putMoney(DBKey.PRICE_LISTED, money);
             } else {
+                // parsing failed, store as-is
                 bookData.putString(DBKey.PRICE_LISTED, price.text());
             }
         }
