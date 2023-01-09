@@ -405,8 +405,8 @@ public class StripInfoReader
     private void downloadFrontCover(@IntRange(from = 1) final long externalId,
                                     @NonNull final BookData cData)
             throws StorageException {
-        final String url = cData.getString(UserCollection.BKEY_FRONT_COVER_URL);
-        if (url != null) {
+        final String url = cData.getString(UserCollection.BKEY_FRONT_COVER_URL, null);
+        if (url != null && !url.isEmpty()) {
             final String fileSpec = searchEngine
                     .saveImage(url, String.valueOf(externalId), 0, null);
             if (fileSpec != null) {
