@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExternalIdBinding;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -233,7 +234,7 @@ public class SearchBookByExternalIdFragment
     }
 
     @Override
-    void onSearchResults(@NonNull final Bundle bookData) {
+    void onSearchResults(@NonNull final BookData bookData) {
         // A non-empty result will have a title, or at least 3 fields:
         // The external id field for the site should be present as we searched on one.
         // The title field, *might* be there but *might* be empty.

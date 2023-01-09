@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookFromBundleContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesSingleListContract;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -60,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 public abstract class SearchBookBaseFragment
         extends BaseFragment {
 
-    private final ActivityResultLauncher<Bundle> editBookFoundLauncher = registerForActivityResult(
+    private final ActivityResultLauncher<BookData> editBookFoundLauncher = registerForActivityResult(
             new EditBookFromBundleContract(), o -> o.ifPresent(this::onBookEditingDone));
 
     /** Set the hosting Activity result, and close it. */
@@ -131,7 +132,7 @@ public abstract class SearchBookBaseFragment
         }
     }
 
-    private void onSearchFinished(@NonNull final LiveDataEvent<TaskResult<Bundle>> message) {
+    private void onSearchFinished(@NonNull final LiveDataEvent<TaskResult<BookData>> message) {
         closeProgressDialog();
         message.getData().map(TaskResult::requireResult).ifPresent(result -> {
             final String searchErrors = result.getString(SearchCoordinator.BKEY_SEARCH_ERROR);
@@ -166,7 +167,7 @@ public abstract class SearchBookBaseFragment
     }
 
     @CallSuper
-    void onSearchCancelled(@NonNull final LiveDataEvent<TaskResult<Bundle>> message) {
+    void onSearchCancelled(@NonNull final LiveDataEvent<TaskResult<BookData>> message) {
         closeProgressDialog();
         //noinspection ConstantConditions
         Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
@@ -210,7 +211,7 @@ public abstract class SearchBookBaseFragment
      * Start the actual search with the {@link SearchCoordinator} in the background.
      * <p>
      * This is final; override {@link #onPreSearch()} and {@link #onSearch()} as needed.
-     * The results come in {@link #onSearchResults(Bundle)}.
+     * The results come in {@link #onSearchResults(BookData)}.
      */
     final void startSearch() {
         // check if we have an active search, if so, quit silently.
@@ -264,9 +265,9 @@ public abstract class SearchBookBaseFragment
      * Process the search results.
      * The default implementation starts the book-edit activity.
      *
-     * @param bookData Bundle with the results
+     * @param bookData results of the search
      */
-    void onSearchResults(@NonNull final Bundle bookData) {
+    void onSearchResults(@NonNull final BookData bookData) {
         editBookFoundLauncher.launch(bookData);
         onClearSearchCriteria();
     }

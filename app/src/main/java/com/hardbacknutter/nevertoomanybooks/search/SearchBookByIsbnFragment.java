@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUr
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
@@ -359,7 +360,7 @@ public class SearchBookByIsbnFragment
     }
 
     @Override
-    void onSearchCancelled(@NonNull final LiveDataEvent<TaskResult<Bundle>> message) {
+    void onSearchCancelled(@NonNull final LiveDataEvent<TaskResult<BookData>> message) {
         super.onSearchCancelled(message);
         // Quit scan mode until the user manually starts it again
         stopScanner();
@@ -462,7 +463,7 @@ public class SearchBookByIsbnFragment
     }
 
     @Override
-    void onSearchResults(@NonNull final Bundle bookData) {
+    void onSearchResults(@NonNull final BookData bookData) {
         // A non-empty result will have a title, or at least 3 fields:
         // The isbn field should be present as we searched on one.
         // The title field, *might* be there but *might* be empty.

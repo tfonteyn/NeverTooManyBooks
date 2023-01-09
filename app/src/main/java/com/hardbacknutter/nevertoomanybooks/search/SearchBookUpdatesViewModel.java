@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -77,7 +78,7 @@ public class SearchBookUpdatesViewModel
     /** Prefix to store the settings. */
     private static final String SYNC_PROCESSOR_PREFIX = "fields.update.usage.";
 
-    private final MutableLiveData<LiveDataEvent<TaskResult<Bundle>>> listFinished =
+    private final MutableLiveData<LiveDataEvent<TaskResult<BookData>>> listFinished =
             new MutableLiveData<>();
     private final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> listFailed =
             new MutableLiveData<>();
@@ -118,7 +119,7 @@ public class SearchBookUpdatesViewModel
     private int currentCursorCount;
 
     @NonNull
-    LiveData<LiveDataEvent<TaskResult<Bundle>>> onAllDone() {
+    LiveData<LiveDataEvent<TaskResult<BookData>>> onAllDone() {
         return listFinished;
     }
 
@@ -197,13 +198,13 @@ public class SearchBookUpdatesViewModel
         map.put(context.getString(R.string.lbl_genre),
                 new String[]{DBKey.GENRE});
         map.put(context.getString(R.string.lbl_authors),
-                new String[]{DBKey.FK_AUTHOR, Book.BKEY_AUTHOR_LIST});
+                new String[]{DBKey.FK_AUTHOR, BookData.BKEY_AUTHOR_LIST});
         map.put(context.getString(R.string.lbl_series_multiple),
-                new String[]{DBKey.FK_SERIES, Book.BKEY_SERIES_LIST});
+                new String[]{DBKey.FK_SERIES, BookData.BKEY_SERIES_LIST});
         map.put(context.getString(R.string.lbl_table_of_content),
-                new String[]{DBKey.TOC_TYPE__BITMASK, Book.BKEY_TOC_LIST});
+                new String[]{DBKey.TOC_TYPE__BITMASK, BookData.BKEY_TOC_LIST});
         map.put(context.getString(R.string.lbl_publishers),
-                new String[]{DBKey.FK_PUBLISHER, Book.BKEY_PUBLISHER_LIST});
+                new String[]{DBKey.FK_PUBLISHER, BookData.BKEY_PUBLISHER_LIST});
 
         map.forEach(builder::add);
 
@@ -437,13 +438,13 @@ public class SearchBookUpdatesViewModel
      * Process the search-result data for one book.
      *
      * @param context  Current context
-     * @param bookData result-data to process
+     * @param bookData results of the search
      *
      * @return {@code true} if a new search (for the next book) was started.
      */
     @SuppressWarnings("UnusedReturnValue")
     boolean processOne(@NonNull final Context context,
-                       @Nullable final Bundle bookData) {
+                       @Nullable final BookData bookData) {
 
         if (!isCancelled() && bookData != null && !bookData.isEmpty()) {
             //noinspection ConstantConditions
@@ -495,7 +496,7 @@ public class SearchBookUpdatesViewModel
         // the last book id which was handled; can be used to restart the update.
         lastBookIdProcessed = currentBookId;
 
-        final Bundle results = ServiceLocator.newBundle();
+        final BookData results = new BookData();
         results.putLong(BKEY_LAST_BOOK_ID_PROCESSED, lastBookIdProcessed);
 
         // all books || a list of books (i.e. 2 or more books)
@@ -516,7 +517,7 @@ public class SearchBookUpdatesViewModel
             results.putLong(DBKey.FK_BOOK, bookIdList.get(0));
         }
 
-        final LiveDataEvent<TaskResult<Bundle>> message =
+        final LiveDataEvent<TaskResult<BookData>> message =
                 new LiveDataEvent<>(new TaskResult<>(R.id.TASK_ID_UPDATE_FIELDS, results));
         if (wasCancelled) {
             searchCoordinatorCancelled.setValue(message);

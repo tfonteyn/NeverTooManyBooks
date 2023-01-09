@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByTextBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -235,27 +235,25 @@ public class SearchBookByTextFragment
     }
 
     @Override
-    void onSearchResults(@NonNull final Bundle bookData) {
+    void onSearchResults(@NonNull final BookData bookData) {
         // Don't check on any results... just accept them and create a new book.
 
         // If any of the search fields are not present in the result,
         // we add them manually as the template for a new book.
 
-        if (!bookData.containsKey(DBKey.TITLE)) {
+        if (!bookData.contains(DBKey.TITLE)) {
             bookData.putString(DBKey.TITLE, coordinator.getTitleSearchText());
         }
 
-        final ArrayList<Author> authors =
-                bookData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
-        if (authors == null || authors.isEmpty()) {
+        final ArrayList<Author> authors = bookData.getAuthors();
+        if (authors.isEmpty()) {
             // do NOT use the array, that's reserved for verified names.
             bookData.putString(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
                                coordinator.getAuthorSearchText());
         }
 
-        final ArrayList<Publisher> publishers =
-                bookData.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
-        if (publishers == null || publishers.isEmpty()) {
+        final ArrayList<Publisher> publishers = bookData.getPublishers();
+        if (publishers.isEmpty()) {
             // do NOT use the array, that's reserved for verified names.
             bookData.putString(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER,
                                coordinator.getPublisherSearchText());
