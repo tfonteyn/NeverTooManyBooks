@@ -645,15 +645,11 @@ public class SearchCoordinator
     }
 
     /**
-     * Called when all is said and done. Accumulate data from all sites.
-     * <p>
-     * <strong>Developer note:</strong> before you think you can simplify this method
-     * by working directly with engine-id and SearchEngines... DON'T
-     * Read class docs for {@link EngineId} and {@link Site.Type#getDataSitesByReliability}.
+     * Check if passed Bundle contains a non-blank ISBN string. Does not check if the ISBN is valid.
      *
-     * @param context Current context
+     * @param bookData to check
      *
-     * @return the accumulated book data bundle
+     * @return Present/absent
      */
     private boolean hasIsbn(@NonNull final BookData bookData) {
         final String isbnStr = bookData.getString(DBKey.BOOK_ISBN, null);
