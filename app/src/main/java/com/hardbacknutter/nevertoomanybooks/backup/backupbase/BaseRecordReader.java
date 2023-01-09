@@ -89,8 +89,11 @@ public abstract class BaseRecordReader
                                       final long importNumericId)
             throws StorageException,
                    DaoWriteException {
-        // Verified to be valid earlier.
-        final String uuid = book.getString(DBKey.BOOK_UUID);
+        final String uuid = book.getString(DBKey.BOOK_UUID, null);
+        if (uuid == null || uuid.isEmpty()) {
+            throw new DaoWriteException(context.getString(
+                    R.string.X_error_file_must_contain_column, DBKey.BOOK_UUID));
+        }
 
         // check if the book exists in our database, and fetch it's id.
         final long databaseBookId = bookDao.getBookIdByUuid(uuid);
