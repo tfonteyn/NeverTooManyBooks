@@ -34,8 +34,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
@@ -469,26 +468,16 @@ public class BookDaoHelper {
                              "BKEY_TMP_FILE_SPEC[" + cIdx + "]=`" + fileSpec + '`');
                 }
 
+                final Cover cover = new Cover(uuid, cIdx);
                 if (fileSpec.isEmpty()) {
                     // An empty fileSpec indicates we need to delete the cover
-                    book.getPersistedCoverFile(cIdx).ifPresent(FileUtils::delete);
-                    // Delete from the cache. And yes, we also delete the ones
-                    // where != index, but we don't care; it's a cache.
-                    if (ImageUtils.isImageCachingEnabled()) {
-                        ServiceLocator.getInstance().getCoverCacheDao().delete(uuid);
-                    }
+                    cover.delete();
                 } else {
                     // Rename the temp file to the uuid permanent file name
-                    book.persistCover(new File(fileSpec), cIdx);
+                    cover.persist(new File(fileSpec));
                 }
 
                 book.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
-            } else {
-                // If the key is NOT present, we don't need to do anything!
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                    Logger.d(TAG, "storeCovers",
-                             "BKEY_TMP_FILE_SPEC[" + cIdx + "]=<not present>");
-                }
             }
         }
     }
