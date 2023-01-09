@@ -344,7 +344,7 @@ public class CalibreContentServerWriter
         }
 
         if (doCovers) {
-            final Optional<File> coverFile = localBook.getCoverFile(0);
+            final Optional<File> coverFile = localBook.getCover(0);
             if (coverFile.isPresent()) {
                 final File file = coverFile.get();
                 final byte[] bFile = new byte[(int) file.length()];
