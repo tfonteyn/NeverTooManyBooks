@@ -50,6 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
+import com.hardbacknutter.nevertoomanybooks.covers.Cover;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -270,7 +272,9 @@ public class JsonRecordWriter
 
                         if (collectCoverFilenames) {
                             for (int cIdx = 0; cIdx < 2; cIdx++) {
-                                book.getPersistedCoverFile(cIdx).ifPresent(results::addCover);
+                                final String uuid = book.getString(DBKey.BOOK_UUID);
+                                new Cover(uuid, cIdx).getPersistedFile()
+                                                     .ifPresent(results::addCover);
                             }
                         }
 
