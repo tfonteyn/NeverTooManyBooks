@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.IntRange;
@@ -60,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -206,19 +206,19 @@ public class IsfdbSearchEngine
      */
     static {
         // multiple works, one author
-        TYPE_MAP.put("coll", Book.ContentType.Collection);
-        TYPE_MAP.put("COLLECTION", Book.ContentType.Collection);
+        TYPE_MAP.put("coll", BookData.ContentType.Collection);
+        TYPE_MAP.put("COLLECTION", BookData.ContentType.Collection);
 
         // multiple works, multiple authors
-        TYPE_MAP.put("anth", Book.ContentType.Anthology);
-        TYPE_MAP.put("ANTHOLOGY", Book.ContentType.Anthology);
+        TYPE_MAP.put("anth", BookData.ContentType.Anthology);
+        TYPE_MAP.put("ANTHOLOGY", BookData.ContentType.Anthology);
 
         // multiple works that have previously been published independently
-        TYPE_MAP.put("omni", Book.ContentType.Collection);
-        TYPE_MAP.put("OMNIBUS", Book.ContentType.Collection);
+        TYPE_MAP.put("omni", BookData.ContentType.Collection);
+        TYPE_MAP.put("OMNIBUS", BookData.ContentType.Collection);
 
         // we assume magazines have multiple authors; i.e. they are considered anthologies
-        TYPE_MAP.put("MAGAZINE", Book.ContentType.Anthology);
+        TYPE_MAP.put("MAGAZINE", BookData.ContentType.Anthology);
 
         // others, treated as a standard book.
         // TYPE_MAP.put("novel", Book.ContentType.Book);
@@ -260,12 +260,12 @@ public class IsfdbSearchEngine
 
     @NonNull
     @Override
-    public Bundle searchByExternalId(@NonNull final Context context,
-                                     @NonNull final String externalId,
-                                     @NonNull final boolean[] fetchCovers)
+    public BookData searchByExternalId(@NonNull final Context context,
+                                       @NonNull final String externalId,
+                                       @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final Bundle bookData = ServiceLocator.newBundle();
+        final BookData bookData = new BookData();
 
         final String url = getHostUrl() + String.format(CGI_BY_EXTERNAL_ID, externalId);
 
@@ -279,7 +279,7 @@ public class IsfdbSearchEngine
             // We use that page in all other searches.
             // However when searching by their native id, we're not visiting that page.
             // Default to English...
-            if (!bookData.containsKey(DBKey.LANGUAGE)) {
+            if (!bookData.contains(DBKey.LANGUAGE)) {
                 bookData.putString(DBKey.LANGUAGE, LANGUAGE_DEFAULT);
             }
         }
@@ -288,12 +288,12 @@ public class IsfdbSearchEngine
 
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
-                               @NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchCovers)
+    public BookData searchByIsbn(@NonNull final Context context,
+                                 @NonNull final String validIsbn,
+                                 @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final Bundle bookData = ServiceLocator.newBundle();
+        final BookData bookData = new BookData();
 
         final List<Edition> editions = fetchEditionsByIsbn(context, validIsbn);
         if (!editions.isEmpty()) {
@@ -305,19 +305,19 @@ public class IsfdbSearchEngine
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@NonNull final Context context,
-                         @Nullable final /* not supported */ String code,
-                         @Nullable final String author,
-                         @Nullable final String title,
-                         @Nullable final String publisher,
-                         @NonNull final boolean[] fetchCovers)
+    public BookData search(@NonNull final Context context,
+                           @Nullable final /* not supported */ String code,
+                           @Nullable final String author,
+                           @Nullable final String title,
+                           @Nullable final String publisher,
+                           @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
         final String url = getHostUrl() + CGI_ADV_SEARCH_PREFIX;
 
         int index = 0;
         String args = "";
-        final Bundle bookData = ServiceLocator.newBundle();
+        final BookData bookData = new BookData();
 
         try {
             if (author != null && !author.isEmpty()) {
@@ -447,7 +447,8 @@ public class IsfdbSearchEngine
     @WorkerThread
     @NonNull
     private ArrayList<TocEntry> parseToc(@NonNull final Context context,
-                                         @NonNull final Document document) {
+                                         @NonNull final Document document,
+                                         @NonNull final BookData bookData) {
 
         final boolean addSeriesFromToc = PreferenceManager.getDefaultSharedPreferences(context)
                                                           .getBoolean(PK_SERIES_FROM_TOC, false);
@@ -567,7 +568,7 @@ public class IsfdbSearchEngine
                                 }
                             }
                         }
-                        seriesList.add(series);
+                        bookData.add(series);
                     }
                 }
 
@@ -758,15 +759,26 @@ public class IsfdbSearchEngine
      * }
      * </pre>
      * <p>
-     * {@inheritDoc}
+     * Parses the downloaded {@link org.jsoup.nodes.Document}.
+     * We only parse the <strong>first book</strong> found.
+     *
+     * @param context     Current context
+     * @param document    to parse
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
+     *
+     * @throws StorageException     on storage related failures
+     * @throws CredentialsException on authentication/login failures
+     *                              This should only occur if the engine calls/relies on
+     *                              secondary sites.
      */
-    @Override
+    @WorkerThread
+    @VisibleForTesting
     public void parse(@NonNull final Context context,
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
-                      @NonNull final Bundle bookData)
+                      @NonNull final BookData bookData)
             throws StorageException, SearchException, CredentialsException {
-        super.parse(context, document, fetchCovers, bookData);
 
         final DateParser dateParser = new FullDateParser(context);
 
@@ -832,7 +844,7 @@ public class IsfdbSearchEngine
                             for (final Element a : li.select("a")) {
                                 final Author author = Author.from(a.text());
                                 // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
-                                authorList.add(author);
+                                bookData.add(author);
                             }
                             break;
                         }
@@ -885,7 +897,7 @@ public class IsfdbSearchEngine
                             for (final Element a : li.select("a")) {
                                 final Publisher publisher = Publisher.from(a.text());
                                 // publisher.setIsfDbId(stripNumber(a.attr("href"), '?'));
-                                publisherList.add(publisher);
+                                bookData.add(publisher);
                             }
                             break;
                         }
@@ -893,7 +905,7 @@ public class IsfdbSearchEngine
                             for (final Element a : li.select("a")) {
                                 final Series series = Series.from(a.text());
                                 // series.setIsfDbId(stripNumber(a.attr("href"), '?'));
-                                seriesList.add(series);
+                                bookData.add(series);
                             }
                             break;
                         }
@@ -903,6 +915,7 @@ public class IsfdbSearchEngine
                                 tmpString = nextSibling.toString().trim();
                                 // assume that if we get here,
                                 // then we added a "Pub. Series:" as last one.
+                                final List<Series> seriesList = bookData.getSeries();
                                 seriesList.get(seriesList.size() - 1).setNumber(tmpString);
                             }
                             break;
@@ -967,7 +980,7 @@ public class IsfdbSearchEngine
                                 final Author author = Author.from(a.text());
                                 author.setType(Author.TYPE_COVER_ARTIST);
                                 // author.setIsfDbId(stripNumber(a.attr("href"),'?'));
-                                authorList.add(author);
+                                bookData.add(author);
                             }
                             break;
                         }
@@ -981,7 +994,7 @@ public class IsfdbSearchEngine
                                 final Author author = Author.from(a.text());
                                 author.setType(Author.TYPE_EDITOR);
                                 // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
-                                authorList.add(author);
+                                bookData.add(author);
                             }
                             break;
                         }
@@ -1026,29 +1039,20 @@ public class IsfdbSearchEngine
 
         // post-process all found data.
 
-        final ArrayList<TocEntry> toc = parseToc(context, document);
+        final ArrayList<TocEntry> toc = parseToc(context, document, bookData);
         if (!toc.isEmpty()) {
             // We always store the toc even if there is only a single entry.
             // ISFDB provides the *original* publication year in the toc which we want to preserve.
             bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
             if (toc.size() > 1) {
                 if (TocEntry.hasMultipleAuthors(toc)) {
-                    bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Anthology.getId());
+                    bookData.putLong(DBKey.TOC_TYPE__BITMASK,
+                                     BookData.ContentType.Anthology.getId());
                 } else {
-                    bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Collection.getId());
+                    bookData.putLong(DBKey.TOC_TYPE__BITMASK,
+                                     BookData.ContentType.Collection.getId());
                 }
             }
-        }
-
-        // store accumulated ArrayList's *after* we parsed the TOC
-        if (!authorList.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
-        }
-        if (!seriesList.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
-        }
-        if (!publisherList.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
         }
 
         checkForSeriesNameInTitle(bookData);
@@ -1331,10 +1335,10 @@ public class IsfdbSearchEngine
      * So for Amazon we only get a single link which is ok as the ASIN is the same in all.
      *
      * @param elements LI elements
-     * @param bookData Bundle to update
+     * @param bookData to update
      */
     private void processExternalIdElements(@NonNull final Collection<Element> elements,
-                                           @NonNull final Bundle bookData) {
+                                           @NonNull final BookData bookData) {
         //noinspection ConstantConditions
         elements.stream()
                 .map(element -> element.select("a").first())
@@ -1415,9 +1419,9 @@ public class IsfdbSearchEngine
     // Experimenting with the REST API... to limited for full use for now.
     @VisibleForTesting
     @NonNull
-    public Bundle xmlSearchByExternalId(@NonNull final Context context,
-                                        @NonNull final String externalId,
-                                        @NonNull final boolean[] fetchCovers)
+    public BookData xmlSearchByExternalId(@NonNull final Context context,
+                                          @NonNull final String externalId,
+                                          @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException {
 
         // getpub_by_internal_ID.cgi
@@ -1432,11 +1436,11 @@ public class IsfdbSearchEngine
         //  else:
         //    return 0
         final String url = getHostUrl() + String.format(REST_BY_EXTERNAL_ID, externalId);
-        final List<Bundle> bookData = fetchPublications(context, url, fetchCovers, 1);
-        if (bookData.isEmpty()) {
-            return ServiceLocator.newBundle();
+        final List<BookData> publicationsList = fetchPublications(context, url, fetchCovers, 1);
+        if (publicationsList.isEmpty()) {
+            return new BookData();
         } else {
-            return bookData.get(0);
+            return publicationsList.get(0);
         }
     }
 
@@ -1456,7 +1460,7 @@ public class IsfdbSearchEngine
     void fetchByEdition(@NonNull final Context context,
                         @NonNull final Edition edition,
                         @NonNull final boolean[] fetchCovers,
-                        @NonNull final Bundle bookData)
+                        @NonNull final BookData bookData)
             throws StorageException, SearchException, CredentialsException {
 
         final Document document = loadDocumentByEdition(context, edition);
@@ -1468,7 +1472,7 @@ public class IsfdbSearchEngine
             // We *could* during parsing force load the publication page,
             // but that's quite an overhead just to get the language.
             // Instead...
-            if (!bookData.containsKey(DBKey.LANGUAGE)) {
+            if (!bookData.contains(DBKey.LANGUAGE)) {
                 final String lang = edition.getLangIso3();
                 if (lang != null && !lang.isEmpty()) {
                     bookData.putString(DBKey.LANGUAGE, lang);
@@ -1502,11 +1506,10 @@ public class IsfdbSearchEngine
      * @throws StorageException on storage related failures
      */
     @NonNull
-    private List<Bundle> fetchPublications(@NonNull final Context context,
-                                           @NonNull final String url,
-                                           @NonNull final boolean[] fetchCovers,
-                                           @SuppressWarnings("SameParameterValue")
-                                           final int maxRecords)
+    private List<BookData> fetchPublications(@NonNull final Context context,
+                                             @NonNull final String url,
+                                             @NonNull final boolean[] fetchCovers,
+                                             @SuppressWarnings("SameParameterValue") final int maxRecords)
             throws StorageException, SearchException {
 
         futureHttpGet = createFutureGetRequest();
