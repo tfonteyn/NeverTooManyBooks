@@ -237,6 +237,7 @@ public class DataManager
             rawData.putBoolean(key, (boolean) value);
 
         } else if (value instanceof ArrayList) {
+            //URGENT: what with ArrayList<String> ... putStringArrayList(); ?
             //noinspection unchecked
             putParcelableArrayList(key, (ArrayList<Parcelable>) value);
 
@@ -460,7 +461,13 @@ public class DataManager
      */
     public void putMoney(@NonNull final String key,
                          @NonNull final Money money) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (!money.isValid()) {
+                throw new IllegalArgumentException(key);
+            }
+        }
         rawData.putDouble(key, money.doubleValue());
+        // Sanity check; when we get here the currency should always be valid
         if (money.getCurrency() != null) {
             rawData.putString(key + DBKey.CURRENCY_SUFFIX, money.getCurrencyCode());
         }
