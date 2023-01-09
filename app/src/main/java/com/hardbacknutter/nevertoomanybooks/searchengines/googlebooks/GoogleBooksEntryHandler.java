@@ -24,6 +24,7 @@ import android.util.Log;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
+import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 import org.xml.sax.Attributes;
@@ -304,18 +306,26 @@ class GoogleBooksEntryHandler
                     throw new SAXException(XML_PRICE + ", attributes: " + attributes);
             }
         } else if (XML_MONEY.equalsIgnoreCase(localName)) {
-
             if (inSuggestedRetailPriceTag) {
+                final String currencyCode = attributes.getValue("", "currencyCode");
+                final String amountStr = attributes.getValue("", "amount");
+
+                double amount = -1;
                 try {
-                    final double amount = Double.parseDouble(attributes.getValue("", "amount"));
-                    bookData.putDouble(DBKey.PRICE_LISTED, amount);
-
-                    final String currencyCode = attributes.getValue("", "currencyCode");
-                    bookData.putString(DBKey.PRICE_LISTED_CURRENCY, currencyCode);
-
+                    amount = Double.parseDouble(amountStr);
                 } catch (@NonNull final NumberFormatException ignore) {
                     // ignore
                 }
+
+                if (amount >= 0) {
+                    // parsing was ok, store it
+                    bookData.putMoney(DBKey.PRICE_LISTED, new Money(amount, currencyCode));
+                } else {
+                    // Parsing the amount failed, store as-is
+                    // This should normally never happen... flw
+                    bookData.putString(DBKey.PRICE_LISTED, amountStr + ' ' + currencyCode);
+                }
+
                 inSuggestedRetailPriceTag = false;
 
             } else if (inRetailPriceTag) {
