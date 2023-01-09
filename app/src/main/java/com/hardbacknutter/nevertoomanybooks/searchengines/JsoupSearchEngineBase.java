@@ -20,36 +20,21 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
-import android.os.Bundle;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 import org.jsoup.nodes.Document;
 
 public abstract class JsoupSearchEngineBase
         extends SearchEngineBase {
-
-    /** accumulate all Authors for this book. */
-    protected final ArrayList<Author> authorList = new ArrayList<>();
-    /** accumulate all Series for this book. */
-    protected final ArrayList<Series> seriesList = new ArrayList<>();
-    /** accumulate all Publishers for this book. */
-    protected final ArrayList<Publisher> publisherList = new ArrayList<>();
 
     /** Responsible for loading and parsing the web page. */
     @NonNull
@@ -100,42 +85,6 @@ public abstract class JsoupSearchEngineBase
         } catch (@NonNull final IOException e) {
             throw new SearchException(getName(context), e);
         }
-    }
-
-    /**
-     * Parses the downloaded {@link org.jsoup.nodes.Document}.
-     * We only parse the <strong>first book</strong> found.
-     * <p>
-     * Implementations <strong>must</strong> call this super first
-     * to ensure cached data is purged.
-     *
-     * @param context     Current context
-     * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param bookData    Bundle to update
-     *
-     * @throws StorageException     on storage related failures
-     * @throws CredentialsException on authentication/login failures
-     *                              This should only occur if the engine calls/relies on
-     *                              secondary sites.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    @WorkerThread
-    @CallSuper
-    public void parse(@NonNull final Context context,
-                      @NonNull final Document document,
-                      @NonNull final boolean[] fetchCovers,
-                      @NonNull final Bundle bookData)
-            throws StorageException, SearchException, CredentialsException {
-        // yes, instead of forcing child classes to call this super,
-        // we could make them call a 'clear()' method instead.
-        // But this way is more future oriented... maybe we'll need/can share more logic/data
-        // between children... or change our mind later on.
-
-        authorList.clear();
-        seriesList.clear();
-        publisherList.clear();
     }
 
     @Override
