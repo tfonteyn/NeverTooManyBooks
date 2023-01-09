@@ -421,7 +421,7 @@ public class CalibreContentServerReader
                         final Book book = Book.from(databaseBookId);
                         // Should always be Non Null
                         final LocalDateTime localDate = dateParser.parse(
-                                book.getString(DBKey.DATE_LAST_UPDATED__UTC));
+                                book.getString(DBKey.DATE_LAST_UPDATED__UTC, null));
                         // Should not be null, but paranoia
                         final LocalDateTime remoteDate = dateParser.parse(
                                 calibreBook.getString(CalibreBook.LAST_MODIFIED));
