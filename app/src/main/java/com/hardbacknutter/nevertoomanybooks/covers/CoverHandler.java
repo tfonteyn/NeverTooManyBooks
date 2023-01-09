@@ -204,7 +204,7 @@ public class CoverHandler {
 
     public void onBindView(@NonNull final ImageView view) {
         // dev warning: in NO circumstances keep a reference to the view!
-        final Optional<File> file = bookSupplier.get().getCoverFile(cIdx);
+        final Optional<File> file = bookSupplier.get().getCover(cIdx);
         if (file.isPresent()) {
             imageLoader.fromFile(view, file.get(), null);
             view.setBackground(null);
@@ -219,8 +219,7 @@ public class CoverHandler {
         // dev warning: in NO circumstances keep a reference to the view!
         view.setOnClickListener(v -> {
             // Allow zooming by clicking on the image;
-            bookSupplier.get()
-                        .getCoverFile(cIdx)
+            bookSupplier.get().getCover(cIdx)
                         .ifPresent(file -> ZoomedImageDialogFragment.launch(fm, file));
         });
 
@@ -239,7 +238,7 @@ public class CoverHandler {
         final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
                 .inflate(R.menu.image);
 
-        final Optional<File> uuidCoverFile = bookSupplier.get().getCoverFile(cIdx);
+        final Optional<File> uuidCoverFile = bookSupplier.get().getCover(cIdx);
         if (uuidCoverFile.isPresent()) {
             if (BuildConfig.DEBUG /* always */) {
                 // show the size of the image in the title bar
