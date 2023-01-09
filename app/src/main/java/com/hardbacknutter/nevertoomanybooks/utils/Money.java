@@ -145,7 +145,10 @@ public class Money
     public Money(@NonNull final Locale locale,
                  @NonNull final CharSequence priceWithCurrency) {
 
-        parse(locale, priceWithCurrency);
+        if (!parse(locale, priceWithCurrency)) {
+            currency = null;
+            value = null;
+        }
     }
 
     protected Money(@NonNull final Parcel in) {
