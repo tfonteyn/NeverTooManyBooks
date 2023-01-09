@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.kbnl;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
@@ -30,13 +29,13 @@ import androidx.annotation.Nullable;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.ArrayList;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -102,13 +101,18 @@ public class KbNlSearchEngine
      */
     private static final String BOOK_URL = "/cbs/DB=%1$s/SET=%2$s/TTL=1/%3$s";
 
+    /** Fallback only, we should always extract it from the url. */
+    private static final String DEFAULT_DB_VERSION = "2.37";
+    /** Fallback only, we should always extract it from the url. */
+    private static final String DEFAULT_SET_NUMBER = "1";
+
     @Nullable
     private FutureHttpGet<Boolean> futureHttpGet;
 
     @NonNull
-    private String dbVersion = "2.37";
+    private String dbVersion = DEFAULT_DB_VERSION;
     @NonNull
-    private String setNr = "1";
+    private String setNr = DEFAULT_SET_NUMBER;
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -133,9 +137,9 @@ public class KbNlSearchEngine
     }
 
     @NonNull
-    public Bundle searchByIsbn(@NonNull final Context context,
-                               @NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchCovers)
+    public BookData searchByIsbn(@NonNull final Context context,
+                                 @NonNull final String validIsbn,
+                                 @NonNull final boolean[] fetchCovers)
             throws StorageException,
                    SearchException,
                    CredentialsException {
@@ -147,7 +151,7 @@ public class KbNlSearchEngine
             throw new SearchException(getName(context), e);
         }
 
-        final Bundle bookData = ServiceLocator.newBundle();
+        final BookData bookData = new BookData();
 
         futureHttpGet = createFutureGetRequest();
 
@@ -184,7 +188,7 @@ public class KbNlSearchEngine
             final String show = bookData.getString(KbNlHandlerBase.BKEY_SHOW_URL);
             if (show != null && !show.isEmpty()) {
                 url = getHostUrl() + String.format(BOOK_URL, dbVersion, setNr, show);
-                bookData.clear();
+                bookData.clearData();
 
                 futureHttpGet.get(url, request -> {
                     try (BufferedInputStream bis = new BufferedInputStream(
@@ -226,9 +230,11 @@ public class KbNlSearchEngine
         return bookData;
     }
 
-    private void updateSessionVariables(@NonNull final Bundle bookData) {
-        dbVersion = bookData.getString(KbNlHandlerBase.BKEY_DB_VERSION);
-        setNr = bookData.getString(KbNlHandlerBase.BKEY_SET_NUMBER);
+    private void updateSessionVariables(@NonNull final BookData bookData) {
+        //noinspection ConstantConditions
+        dbVersion = bookData.getString(KbNlHandlerBase.BKEY_DB_VERSION, DEFAULT_DB_VERSION);
+        //noinspection ConstantConditions
+        setNr = bookData.getString(KbNlHandlerBase.BKEY_SET_NUMBER, DEFAULT_SET_NUMBER);
     }
 
     /**
