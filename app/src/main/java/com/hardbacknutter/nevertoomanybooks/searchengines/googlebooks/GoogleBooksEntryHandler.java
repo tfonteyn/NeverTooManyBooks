@@ -19,29 +19,27 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks;
 
-import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * 2019-11: this needs scrapping. See {@link GoogleBooksSearchEngine} class doc.
@@ -220,14 +218,7 @@ class GoogleBooksEntryHandler
     private final boolean[] fetchCovers;
     /** Bundle to save results in. */
     @NonNull
-    private final Bundle bookData;
-
-    /** accumulate all authors for this book. */
-    @NonNull
-    private final ArrayList<Author> authorList = new ArrayList<>();
-    /** accumulate all Publishers for this book. */
-    @NonNull
-    private final ArrayList<Publisher> publisherList = new ArrayList<>();
+    private final BookData bookData;
 
     /** XML content. */
     @SuppressWarnings("StringBufferField")
@@ -251,25 +242,12 @@ class GoogleBooksEntryHandler
      */
     GoogleBooksEntryHandler(@NonNull final GoogleBooksSearchEngine searchEngine,
                             @NonNull final boolean[] fetchCovers,
-                            @NonNull final Bundle bookData,
+                            @NonNull final BookData bookData,
                             @NonNull final Locale locale) {
         this.searchEngine = searchEngine;
         this.fetchCovers = fetchCovers;
         this.bookData = bookData;
         this.locale = locale;
-    }
-
-    /**
-     * Store the accumulated data in the results.
-     */
-    @Override
-    public void endDocument() {
-        if (!authorList.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
-        }
-        if (!publisherList.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
-        }
     }
 
     /**
@@ -385,11 +363,11 @@ class GoogleBooksEntryHandler
                 break;
 
             case XML_AUTHOR:
-                authorList.add(Author.from(builder.toString()));
+                bookData.add(Author.from(builder.toString()));
                 break;
 
             case XML_PUBLISHER:
-                publisherList.add(Publisher.from(builder.toString()));
+                bookData.add(Publisher.from(builder.toString()));
                 break;
 
             case XML_DATE_PUBLISHED:
@@ -458,7 +436,7 @@ class GoogleBooksEntryHandler
      */
     private void addIfNotPresent(@NonNull final String key,
                                  @NonNull final String value) {
-        final String test = bookData.getString(key);
+        final String test = bookData.getString(key, null);
         if (test == null || test.isEmpty()) {
             bookData.putString(key, value);
         }
