@@ -651,6 +651,7 @@
     <string name="vldt_boolean_expected_for_x">“%1$s” için bir ikili (bool) değer gerekli (0,1,t,f,true,false)</string>
     <string name="vldt_date_expected_for_x">“%1$s” için bir tarih gerekli</string>
     <string name="vldt_failure">Doğrulama hatası.</string>
+    <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">“%1$s” için bir tamsayı değeri gerekli</string>
     <string name="vldt_non_blank_required">boş olmayan bir değer gerekli</string>
     <string name="vldt_non_blank_required_for_x">“%1$s” için boş olmayan bir değer gerekli</string>

@@ -287,6 +287,9 @@
     <!-- Dialog title for validation messages. -->
     <string name="vldt_failure">Validation failure</string>
 
+    <!-- param 1: number 1..; param 2: the error message. -->
+    <string name="vldt_list_message">(%1$d) %2$s</string>
+
     <!-- generic type errors; e.g. the user entered text in a date field. -->
     <string name="vldt_integer_expected_for_x">Expected an integer value for “%1$s”</string>
     <string name="vldt_real_expected_for_x">Expected a real number for “%1$s”</string>

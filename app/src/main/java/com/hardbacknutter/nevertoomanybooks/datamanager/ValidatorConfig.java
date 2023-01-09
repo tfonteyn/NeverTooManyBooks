@@ -131,7 +131,8 @@ public class ValidatorConfig {
             int i = 0;
             for (final ValidatorException e : validationExceptions) {
                 msg.append(context.getString(R.string.vldt_list_message,
-                                             ++i, e.getUserMessage(context)));
+                                             ++i, e.getUserMessage(context)))
+                   .append('\n');
             }
             return msg.toString();
         }

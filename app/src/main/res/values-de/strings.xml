@@ -649,6 +649,7 @@
     <string name="vldt_boolean_expected_for_x">Es wird ein boolescher Wert (0,1,t,f,true,false) für „%1$s“ erwartet</string>
     <string name="vldt_date_expected_for_x">Es wird ein Datum für „%1$s“ erwartet</string>
     <string name="vldt_failure">Validierungsfehler.</string>
+    <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">Es wird ein Integer-Wert für „%1$s“ erwartet</string>
     <string name="vldt_non_blank_required">Es ist ein Wert erforderlich</string>
     <string name="vldt_non_blank_required_for_x">Es ist ein Wert für „%1$s“ erforderlich</string>

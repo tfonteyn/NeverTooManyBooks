@@ -646,6 +646,7 @@
     <string name="vldt_boolean_expected_for_x">Očekávána pravdivostní hodnota (0,1,t,f,true,false) pro „%1$s“</string>
     <string name="vldt_date_expected_for_x">Očekáváno datum pro „%1$s“</string>
     <string name="vldt_failure">Selhání ověření.</string>
+    <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">Očekávána číselná hodnota pro „%1$s“</string>
     <string name="vldt_non_blank_required">Neprázdná hodnota vyžadována</string>
     <string name="vldt_non_blank_required_for_x">Neprázdná hodnota vyžadována pro „%1$s“</string>

@@ -647,6 +647,7 @@
     <string name="vldt_boolean_expected_for_x">Введите логическое да-нет значение (0,1,t,f,true,false) for «%1$s»</string>
     <string name="vldt_date_expected_for_x">Введите дату: «%1$s»</string>
     <string name="vldt_failure">Ошибка проверки.</string>
+    <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">Введите целое значение: «%1$s»</string>
     <string name="vldt_non_blank_required">Требуется не пустое значение</string>
     <string name="vldt_non_blank_required_for_x">Требуется не пустое значение для: «%1$s»</string>

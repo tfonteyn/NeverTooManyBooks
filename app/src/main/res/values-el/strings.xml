@@ -649,6 +649,7 @@
     <string name="vldt_boolean_expected_for_x">Αναμένεται boolean τιμή (0,1,t,f,true,false) για «%1$s»</string>
     <string name="vldt_date_expected_for_x">Αναμένεται ημερομηνία για «%1$s»</string>
     <string name="vldt_failure">Αποτυχία επικύρωσης.</string>
+    <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">Αναμένεται ακέραια τιμή για «%1$s»</string>
     <string name="vldt_non_blank_required">Απαιτείται μη κενή τιμή</string>
     <string name="vldt_non_blank_required_for_x">Απαιτείται μη κενή τιμή για «%1$s»</string>

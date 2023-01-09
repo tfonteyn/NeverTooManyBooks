@@ -651,6 +651,7 @@
     <string name="vldt_boolean_expected_for_x">Valeur booléenne (0,1,t,f,true,false) attendue pour «%1$s»</string>
     <string name="vldt_date_expected_for_x">Date attendue pour «%1$s»</string>
     <string name="vldt_failure">Échec de validation.</string>
+    <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">Valeur entière attendue pour «%1$s»</string>
     <string name="vldt_non_blank_required">Valeur non vide attendue</string>
     <string name="vldt_non_blank_required_for_x">Valeur non vide attendue pour «%1$s»</string>

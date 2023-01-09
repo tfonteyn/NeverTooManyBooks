@@ -649,6 +649,7 @@
     <string name="vldt_boolean_expected_for_x">«%1$s» debe ser (0,1,t,f,true,false)</string>
     <string name="vldt_date_expected_for_x">«%1$s» debe ser una fecha</string>
     <string name="vldt_failure">Fallo de validación.</string>
+    <string name="vldt_list_message">(%1$d) %2$s</string>
     <string name="vldt_integer_expected_for_x">«%1$s» debe ser un entero</string>
     <string name="vldt_non_blank_required">no puede estar en blanco</string>
     <string name="vldt_non_blank_required_for_x">«%1$s» no puede estar en blanco</string>
