@@ -136,11 +136,11 @@ public class BookCoder {
 
     private void decodeCalibreData(@NonNull final Book /* in/out */ book) {
         // we need to convert the string id to the row id.
-        final String stringId = book.getString(DBKey.CALIBRE_LIBRARY_STRING_ID);
+        final String stringId = book.getString(DBKey.CALIBRE_LIBRARY_STRING_ID, null);
         // and discard the string-id
         book.remove(DBKey.CALIBRE_LIBRARY_STRING_ID);
 
-        if (!stringId.isEmpty()) {
+        if (stringId != null && !stringId.isEmpty()) {
             if (calibreLibraryStr2IdMap == null) {
                 calibreLibraryStr2IdMap = new HashMap<>();
 
@@ -171,15 +171,15 @@ public class BookCoder {
 
         if (book.contains(DBKey.BOOKSHELF_NAME)) {
             // current version
-            encodedList = book.getString(DBKey.BOOKSHELF_NAME);
+            encodedList = book.getString(DBKey.BOOKSHELF_NAME, null);
 
         } else if (book.contains(LEGACY_BOOKSHELF_1_1_x)) {
             // obsolete
-            encodedList = book.getString(LEGACY_BOOKSHELF_1_1_x);
+            encodedList = book.getString(LEGACY_BOOKSHELF_1_1_x, null);
 
         } else if (book.contains(LEGACY_BOOKSHELF_TEXT)) {
             // obsolete
-            encodedList = book.getString(LEGACY_BOOKSHELF_TEXT);
+            encodedList = book.getString(LEGACY_BOOKSHELF_TEXT, null);
         }
 
         if (encodedList != null && !encodedList.isEmpty()) {
@@ -210,11 +210,11 @@ public class BookCoder {
                                @NonNull final Book /* in/out */ book,
                                @NonNull final Locale bookLocale) {
 
-        final String encodedList = book.getString(CSV_COLUMN_AUTHORS);
+        final String encodedList = book.getString(CSV_COLUMN_AUTHORS, null);
         book.remove(CSV_COLUMN_AUTHORS);
 
         final ArrayList<Author> list;
-        if (encodedList.isEmpty()) {
+        if (encodedList == null || encodedList.isEmpty()) {
             // check for individual author (full/family/given) fields in the input
             list = new ArrayList<>();
             if (book.contains(DBKey.AUTHOR_FORMATTED)) {
@@ -269,10 +269,10 @@ public class BookCoder {
                               @NonNull final Book /* in/out */ book,
                               @NonNull final Locale bookLocale) {
 
-        final String encodedList = book.getString(CSV_COLUMN_SERIES);
+        final String encodedList = book.getString(CSV_COLUMN_SERIES, null);
         book.remove(CSV_COLUMN_SERIES);
 
-        if (encodedList.isEmpty()) {
+        if (encodedList == null || encodedList.isEmpty()) {
             // check for individual series title/number fields in the input
             if (book.contains(DBKey.SERIES_TITLE)) {
                 final String title = book.getString(DBKey.SERIES_TITLE);
@@ -310,10 +310,10 @@ public class BookCoder {
                                   @NonNull final Book /* in/out */ book,
                                   @NonNull final Locale bookLocale) {
 
-        final String encodedList = book.getString(CSV_COLUMN_PUBLISHERS);
+        final String encodedList = book.getString(CSV_COLUMN_PUBLISHERS, null);
         book.remove(CSV_COLUMN_PUBLISHERS);
 
-        if (!encodedList.isEmpty()) {
+        if (encodedList != null && !encodedList.isEmpty()) {
             final ArrayList<Publisher> list = publisherCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
                 // Force using the Book Locale, otherwise the import is far to slow.
@@ -339,10 +339,10 @@ public class BookCoder {
                            @NonNull final Book /* in/out */ book,
                            @NonNull final Locale bookLocale) {
 
-        final String encodedList = book.getString(CSV_COLUMN_TOC);
+        final String encodedList = book.getString(CSV_COLUMN_TOC, null);
         book.remove(CSV_COLUMN_TOC);
 
-        if (!encodedList.isEmpty()) {
+        if (encodedList != null && !encodedList.isEmpty()) {
             final ArrayList<TocEntry> list = tocCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
                 // Force using the Book Locale, otherwise the import is far to slow.
