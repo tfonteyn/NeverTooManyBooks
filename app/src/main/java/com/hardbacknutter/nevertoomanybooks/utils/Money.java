@@ -117,15 +117,12 @@ public class Money
     }
 
     public Money(@NonNull final BigDecimal value,
-                 @Nullable final String currency) {
+                 @NonNull final String currency) {
         this.value = value;
-
-        if (currency != null) {
-            try {
-                this.currency = Currency.getInstance(currency);
-            } catch (@NonNull final IllegalArgumentException e) {
-                // ignore
-            }
+        try {
+            this.currency = Currency.getInstance(currency);
+        } catch (@NonNull final IllegalArgumentException e) {
+            // ignore
         }
     }
 
