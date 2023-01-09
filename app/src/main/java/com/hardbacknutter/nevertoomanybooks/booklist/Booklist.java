@@ -40,13 +40,13 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 public class Booklist
         implements AutoCloseable {
@@ -589,7 +589,7 @@ public class Booklist
             while (cursor.moveToNext()) {
                 final BooklistNode node = new BooklistNode(cursor);
                 final String uuid = cursor.getString(BooklistNode.NEXT_COL);
-                final Optional<File> file = Book.getPersistedCoverFile(uuid, 0);
+                final Optional<File> file = new Cover(uuid, 0).getPersistedFile();
                 if (file.isEmpty()) {
                     // FIRST make the node visible
                     ensureNodeIsVisible(node);
