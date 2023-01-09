@@ -467,8 +467,9 @@ public class EditBookTocFragment
             }
 
             // update the book with the first publication date that was gathered from the TOC
-            final String bookFirstPublication = result.getString(DBKey.FIRST_PUBLICATION__DATE);
-            if (bookFirstPublication != null) {
+            final String bookFirstPublication =
+                    result.getString(DBKey.FIRST_PUBLICATION__DATE, null);
+            if (bookFirstPublication != null && !bookFirstPublication.isEmpty()) {
                 if (book.getString(DBKey.FIRST_PUBLICATION__DATE).isEmpty()) {
                     book.putString(DBKey.FIRST_PUBLICATION__DATE, bookFirstPublication);
                 }
@@ -598,7 +599,7 @@ public class EditBookTocFragment
 
             static void setResult(@NonNull final Fragment fragment,
                                   @NonNull final String requestKey,
-                                  @NonNull final Book.ContentType tocBitMask,
+                                  @NonNull final BookData.ContentType tocBitMask,
                                   @NonNull final ArrayList<TocEntry> tocEntries) {
                 final Bundle result = new Bundle(2);
                 result.putLong(TOC_BIT_MASK, tocBitMask.getId());
