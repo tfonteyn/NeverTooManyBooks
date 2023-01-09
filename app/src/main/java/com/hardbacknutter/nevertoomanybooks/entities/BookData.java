@@ -31,7 +31,6 @@ import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -388,24 +387,6 @@ public class BookData
      */
     public void setToc(@NonNull final List<TocEntry> tocEntries) {
         putParcelableArrayList(BKEY_TOC_LIST, new ArrayList<>(tocEntries));
-    }
-
-    /**
-     * Add a single {@link TocEntry}.
-     *
-     * @param tocEntry to add
-     */
-    public void add(@NonNull final TocEntry tocEntry) {
-        getToc().add(tocEntry);
-    }
-
-    /**
-     * Add a list of {@link TocEntry}s to the existing list.
-     *
-     * @param tocEntries to add
-     */
-    public void addAll(@NonNull final Collection<TocEntry> tocEntries) {
-        getToc().addAll(tocEntries);
     }
 
     @NonNull
