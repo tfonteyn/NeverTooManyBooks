@@ -469,6 +469,9 @@ public class DataManager
 
     /**
      * Get a {@link String} {@link ArrayList} from the collection.
+     * <p>
+     * <strong>Important: </strong>
+     * If the key is not present or {@code null}, a new list will be created/stored and returned.
      *
      * @param key Key of data object
      *
@@ -487,7 +490,21 @@ public class DataManager
     }
 
     /**
+     * Store a {@link String} {@link ArrayList} in the collection.
+     *
+     * @param key   Key of data object
+     * @param value to store
+     */
+    public void putStringArrayList(@NonNull final String key,
+                                   @NonNull final ArrayList<String> value) {
+        rawData.putStringArrayList(key, value);
+    }
+
+    /**
      * Get a {@link Parcelable} {@link ArrayList} from the collection.
+     * <p>
+     * <strong>Important: </strong>
+     * If the key is not present or {@code null}, a new list will be created/stored and returned.
      *
      * @param key Key of data object
      * @param <T> type of objects in the list
