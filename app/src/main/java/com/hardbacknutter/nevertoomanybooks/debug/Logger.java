@@ -47,7 +47,7 @@ import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
@@ -264,16 +264,16 @@ public final class Logger {
             final Bundle extras = ((Activity) fragmentOrActivity).getIntent().getExtras();
             if (extras != null) {
                 d(tag, method, "extras=" + extras);
-                if (extras.containsKey(Book.BKEY_DATA_BUNDLE)) {
-                    d(tag, method, "extras=" + extras.getBundle(Book.BKEY_DATA_BUNDLE));
+                if (extras.containsKey(BookData.BKEY_BOOK_DATA)) {
+                    d(tag, method, "extras=" + extras.getParcelable(BookData.BKEY_BOOK_DATA));
                 }
             }
         } else if (fragmentOrActivity instanceof Fragment) {
             final Bundle args = ((Fragment) fragmentOrActivity).getArguments();
             if (args != null) {
                 d(tag, method, "args=" + args);
-                if (args.containsKey(Book.BKEY_DATA_BUNDLE)) {
-                    d(tag, method, "args=" + args.getBundle(Book.BKEY_DATA_BUNDLE));
+                if (args.containsKey(BookData.BKEY_BOOK_DATA)) {
+                    d(tag, method, "args=" + args.getParcelable(BookData.BKEY_BOOK_DATA));
                 }
             }
         }
