@@ -240,7 +240,9 @@ public class SearchCoordinator
             if (waitingForIsbnOrCode) {
                 if (result != null && hasIsbn(result)) {
                     waitingForIsbnOrCode = false;
-                    // replace the search text with the (we hope) exact ISBN/code
+                    // Replace the search text with the (we hope) exact ISBN/code
+                    // Worst case, explicitly use an empty string
+                    //noinspection ConstantConditions
                     isbnSearchText = result.getString(DBKey.BOOK_ISBN, "");
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
