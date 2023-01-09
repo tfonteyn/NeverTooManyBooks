@@ -41,14 +41,6 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.datamanager.validators.BlankValidator;
-import com.hardbacknutter.nevertoomanybooks.datamanager.validators.DataCrossValidator;
-import com.hardbacknutter.nevertoomanybooks.datamanager.validators.DataValidator;
-import com.hardbacknutter.nevertoomanybooks.datamanager.validators.DoubleValidator;
-import com.hardbacknutter.nevertoomanybooks.datamanager.validators.LongValidator;
-import com.hardbacknutter.nevertoomanybooks.datamanager.validators.NonBlankValidator;
-import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
-import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
@@ -78,16 +70,6 @@ public class DataManager
 
     /** Log tag. */
     private static final String TAG = "DataManager";
-    /** DataValidators. */
-    private final Map<String, DataValidator> validatorsMap = new HashMap<>();
-    /** DataValidators. Same key as {@link #validatorsMap}; value: @StringRes. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    private final Map<String, Integer> validatorErrorIdMap = new HashMap<>();
-
-    /** A list of cross-validators to apply if all fields pass simple validation. */
-    private final Collection<DataCrossValidator> crossValidators = new ArrayList<>();
-    /** The validator exceptions caught by this object. */
-    private final Collection<ValidatorException> validationExceptions = new ArrayList<>();
 
     /** Raw data storage. */
     @NonNull
@@ -547,102 +529,11 @@ public class DataManager
         rawData.putString(key, null);
     }
 
-
-    /**
-     * Add a validator for the specified key.
-     * <p>
-     * Accepts only one validator for a key. Setting a second one will override the first.
-     *
-     * @param key             Key for the data
-     * @param validator       Validator
-     * @param errorLabelResId string resource id for a user visible message
-     */
-    protected void addValidator(@NonNull final String key,
-                                @NonNull final DataValidator validator,
-                                @StringRes final int errorLabelResId) {
-        validatorsMap.put(key, validator);
-        validatorErrorIdMap.put(key, errorLabelResId);
-    }
-
-    /**
-     * Add a cross validator.
-     *
-     * @param validator Validator
-     */
-    protected void addCrossValidator(@NonNull final DataCrossValidator validator) {
-        crossValidators.add(validator);
-    }
-
-    /**
-     * Loop through and apply validators.
-     * <p>
-     * {@link ValidatorException} are added to {@link #validationExceptions}
-     * Use {@link #getValidationExceptionMessage} for the results.
-     *
-     * @param context Current context
-     *
-     * @return {@code true} if all validation passed.
-     */
-    public boolean validate(@NonNull final Context context) {
-
-        boolean isOk = true;
-        validationExceptions.clear();
-
-        for (final Map.Entry<String, DataValidator> entry : validatorsMap.entrySet()) {
-            final String key = entry.getKey();
-            try {
-                entry.getValue()
-                     .validate(context, this, key,
-                               Objects.requireNonNull(validatorErrorIdMap.get(key), key));
-            } catch (@NonNull final ValidatorException e) {
-                validationExceptions.add(e);
-                isOk = false;
-            }
-        }
-
-        for (final DataCrossValidator crossValidator : crossValidators) {
-            try {
-                crossValidator.validate(context, this);
-            } catch (@NonNull final ValidatorException e) {
-                validationExceptions.add(e);
-                isOk = false;
-            }
-        }
-        return isOk;
-    }
-
-    /**
-     * Retrieve the text message associated with the validation exceptions (if any).
-     *
-     * @param context Current context
-     *
-     * @return a user displayable list of error messages, or {@code null} if none present
-     */
-    @Nullable
-    public String getValidationExceptionMessage(@NonNull final Context context) {
-        if (validationExceptions.isEmpty()) {
-            return null;
-
-        } else {
-            final StringBuilder msg = new StringBuilder();
-            int i = 0;
-            for (final ValidatorException e : validationExceptions) {
-                msg.append(" (").append(++i).append(") ")
-                   .append(e.getUserMessage(context))
-                   .append('\n');
-            }
-            return msg.toString();
-        }
-    }
-
     @Override
     @NonNull
     public String toString() {
         return "DataManager{"
                + "rawData=" + rawData
-               + ", validationExceptions=" + validationExceptions
-               + ", validatorsMap=" + validatorsMap
-               + ", crossValidators=" + crossValidators
                + '}';
     }
 }
