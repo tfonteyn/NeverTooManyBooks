@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -31,14 +30,14 @@ import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -99,12 +98,12 @@ public class LastDodoSearchEngine
     }
 
     @NonNull
-    public Bundle searchByExternalId(@NonNull final Context context,
-                                     @NonNull final String externalId,
-                                     @NonNull final boolean[] fetchCovers)
+    public BookData searchByExternalId(@NonNull final Context context,
+                                       @NonNull final String externalId,
+                                       @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final Bundle bookData = ServiceLocator.newBundle();
+        final BookData bookData = new BookData();
 
         final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, null);
@@ -116,12 +115,12 @@ public class LastDodoSearchEngine
 
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
-                               @NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchCovers)
+    public BookData searchByIsbn(@NonNull final Context context,
+                                 @NonNull final String validIsbn,
+                                 @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final Bundle bookData = ServiceLocator.newBundle();
+        final BookData bookData = new BookData();
 
         // This is silly...
         // 2022-05-31: searching the site with the ISBN now REQUIRES the dashes between
@@ -152,7 +151,7 @@ public class LastDodoSearchEngine
     private void parseMultiResult(@NonNull final Context context,
                                   @NonNull final Document document,
                                   @NonNull final boolean[] fetchCovers,
-                                  @NonNull final Bundle bookData)
+                                  @NonNull final BookData bookData)
             throws StorageException, SearchException, CredentialsException {
 
         // Grab the first search result, and redirect to that page
@@ -174,14 +173,28 @@ public class LastDodoSearchEngine
         }
     }
 
-    @Override
+    /**
+     * Parses the downloaded {@link org.jsoup.nodes.Document}.
+     * We only parse the <strong>first book</strong> found.
+     *
+     * @param context     Current context
+     * @param document    to parse
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
+     * @param bookData    Bundle to update
+     *
+     * @throws StorageException     on storage related failures
+     * @throws CredentialsException on authentication/login failures
+     *                              This should only occur if the engine calls/relies on
+     *                              secondary sites.
+     */
     @VisibleForTesting
+    @WorkerThread
     public void parse(@NonNull final Context context,
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
-                      @NonNull final Bundle bookData)
+                      @NonNull final BookData bookData)
             throws StorageException, SearchException, CredentialsException {
-        super.parse(context, document, fetchCovers, bookData);
 
         //noinspection NonConstantStringShouldBeStringBuffer
         String tmpSeriesNr = null;
@@ -213,7 +226,7 @@ public class LastDodoSearchEngine
                         break;
 
                     case "Serie / held":
-                        processSeries(td);
+                        processSeries(td, bookData);
                         break;
 
                     case "Reeks":
@@ -233,15 +246,15 @@ public class LastDodoSearchEngine
                         break;
 
                     case "Tekenaar": {
-                        processAuthor(td, Author.TYPE_ARTIST);
+                        processAuthor(td, Author.TYPE_ARTIST, bookData);
                         break;
                     }
                     case "Scenarist": {
-                        processAuthor(td, Author.TYPE_WRITER);
+                        processAuthor(td, Author.TYPE_WRITER, bookData);
                         break;
                     }
                     case "Uitgeverij":
-                        processPublisher(td);
+                        processPublisher(td, bookData);
                         break;
 
                     case "Jaar":
@@ -307,6 +320,7 @@ public class LastDodoSearchEngine
         // It seems the site only lists a single number, although a book can be in several
         // Series.
         if (tmpSeriesNr != null && !tmpSeriesNr.isEmpty()) {
+            final List<Series> seriesList = bookData.getSeries();
             if (seriesList.size() == 1) {
                 final Series series = seriesList.get(0);
                 series.setNumber(tmpSeriesNr);
@@ -320,37 +334,28 @@ public class LastDodoSearchEngine
         }
 
         // We DON'T store a toc with a single entry (i.e. the book title itself).
-        parseToc(sections).ifPresent(toc -> {
-            bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
+        parseToc(sections, bookData).ifPresent(toc -> {
+            bookData.addAll(toc);
             if (TocEntry.hasMultipleAuthors(toc)) {
-                bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Anthology.getId());
+                bookData.putLong(DBKey.TOC_TYPE__BITMASK, BookData.ContentType.Anthology.getId());
             } else {
-                bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Collection.getId());
+                bookData.putLong(DBKey.TOC_TYPE__BITMASK, BookData.ContentType.Collection.getId());
             }
         });
 
         // store accumulated ArrayList's *after* we parsed the TOC
-        if (!authorList.isEmpty()) {
+        if (!bookData.getAuthors().isEmpty()) {
             if (PreferenceManager.getDefaultSharedPreferences(context)
                                  .getBoolean(PK_USE_BEDETHEQUE, false)) {
                 final AuthorResolver resolver = new AuthorResolver(context, this);
-                for (final Author author : authorList) {
+                for (final Author author : bookData.getAuthors()) {
                     resolver.resolve(context, author);
                 }
             }
-            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
-        }
-
-        if (!seriesList.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
-        }
-
-        if (!publisherList.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
         }
 
         // It's extremely unlikely, but should the language be missing, add dutch.
-        if (!bookData.containsKey(DBKey.LANGUAGE)) {
+        if (!bookData.contains(DBKey.LANGUAGE)) {
             bookData.putString(DBKey.LANGUAGE, "nld");
         }
 
@@ -368,7 +373,7 @@ public class LastDodoSearchEngine
     private void parseCovers(@NonNull final Document document,
                              @Nullable final String isbn,
                              @NonNull final boolean[] fetchCovers,
-                             @NonNull final Bundle bookData)
+                             @NonNull final BookData bookData)
             throws StorageException {
         final Element images = document.getElementById("images_container");
         if (images != null) {
@@ -411,7 +416,8 @@ public class LastDodoSearchEngine
      * @return toc list with at least 2 entries
      */
     @NonNull
-    private Optional<ArrayList<TocEntry>> parseToc(@NonNull final Collection<Element> sections) {
+    private Optional<ArrayList<TocEntry>> parseToc(@NonNull final Collection<Element> sections,
+                                                   @NonNull final BookData bookData) {
 
         // section 0 was the "Catalogusgegevens"; normally section 3 is the one we need here...
         Element tocSection = null;
@@ -433,7 +439,7 @@ public class LastDodoSearchEngine
                 final Element td = divRows.selectFirst("div.value");
                 if (th != null && td != null) {
                     if ("Verhaaltitel".equals(th.text())) {
-                        toc.add(new TocEntry(authorList.get(0), td.text()));
+                        toc.add(new TocEntry(bookData.getAuthors().get(0), td.text()));
                     }
                 }
             }
@@ -509,14 +515,15 @@ public class LastDodoSearchEngine
      * @param currentAuthorType of this entry
      */
     private void processAuthor(@NonNull final Element td,
-                               @Author.Type final int currentAuthorType) {
+                               @Author.Type final int currentAuthorType,
+                               @NonNull final BookData bookData) {
 
         for (final Element a : td.select("a")) {
             final String names = a.text();
             final Author currentAuthor = Author.from(names);
             boolean add = true;
             // check if already present
-            for (final Author author : authorList) {
+            for (final Author author : bookData.getAuthors()) {
                 if (author.equals(currentAuthor)) {
                     // merge types.
                     author.addType(currentAuthorType);
@@ -527,7 +534,7 @@ public class LastDodoSearchEngine
 
             if (add) {
                 currentAuthor.setType(currentAuthorType);
-                authorList.add(currentAuthor);
+                bookData.add(currentAuthor);
             }
         }
     }
@@ -537,16 +544,17 @@ public class LastDodoSearchEngine
      *
      * @param td data td
      */
-    private void processSeries(@NonNull final Element td) {
+    private void processSeries(@NonNull final Element td,
+                               @NonNull final BookData bookData) {
         for (final Element a : td.select("a")) {
             final String name = a.text();
             final Series currentSeries = Series.from(name);
             // check if already present
-            if (seriesList.stream().anyMatch(series -> series.equals(currentSeries))) {
+            if (bookData.getSeries().stream().anyMatch(series -> series.equals(currentSeries))) {
                 return;
             }
             // just add
-            seriesList.add(currentSeries);
+            bookData.add(currentSeries);
         }
     }
 
@@ -555,22 +563,23 @@ public class LastDodoSearchEngine
      *
      * @param td data td
      */
-    private void processPublisher(@NonNull final Element td) {
+    private void processPublisher(@NonNull final Element td,
+                                  @NonNull final BookData bookData) {
         for (final Element a : td.select("a")) {
             final String name = ParseUtils.cleanText(a.text());
             final Publisher currentPublisher = Publisher.from(name);
             // check if already present
-            if (publisherList.stream().anyMatch(pub -> pub.equals(currentPublisher))) {
+            if (bookData.getPublishers().stream().anyMatch(pub -> pub.equals(currentPublisher))) {
                 return;
             }
             // just add
-            publisherList.add(currentPublisher);
+            bookData.add(currentPublisher);
         }
 
     }
 
     private void processType(@NonNull final Element td,
-                             @NonNull final Bundle bookData) {
+                             @NonNull final BookData bookData) {
         // there might be more than one; we only grab the first one here
         final Element a = td.child(0);
         bookData.putString(SiteField.TYPE, a.text());
@@ -585,7 +594,7 @@ public class LastDodoSearchEngine
      */
     private void processText(@Nullable final Element td,
                              @NonNull final String key,
-                             @NonNull final Bundle bookData) {
+                             @NonNull final BookData bookData) {
         if (td != null) {
             final String text = ParseUtils.cleanText(td.text().trim());
             if (!text.isEmpty()) {
