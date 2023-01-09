@@ -53,7 +53,7 @@ public interface DataHolder {
      * Returns {@code true} if the given key is contained in the mapping
      * of this DataHolder.
      *
-     * @param key a String key
+     * @param key Key of data object
      *
      * @return {@code true} if the key is part of the mapping, {@code false} otherwise
      */
@@ -62,7 +62,7 @@ public interface DataHolder {
     /**
      * Returns the value associated with the given key.
      *
-     * @param key a String
+     * @param key Key of data object
      *
      * @return an int value
      */
@@ -71,7 +71,7 @@ public interface DataHolder {
     /**
      * Returns the value associated with the given key.
      *
-     * @param key a String
+     * @param key Key of data object
      *
      * @return a long value
      */
@@ -80,7 +80,7 @@ public interface DataHolder {
     /**
      * Returns the value associated with the given key.
      *
-     * @param key a String
+     * @param key Key of data object
      *
      * @return a double value
      */
@@ -89,7 +89,7 @@ public interface DataHolder {
     /**
      * Returns the value associated with the given key.
      *
-     * @param key a String
+     * @param key Key of data object
      *
      * @return a float value
      */
@@ -98,7 +98,7 @@ public interface DataHolder {
     /**
      * Returns the value associated with the given key.
      *
-     * @param key a String
+     * @param key Key of data object
      *
      * @return a boolean value
      */
@@ -110,7 +110,7 @@ public interface DataHolder {
      * <p>
      * If the value was not a String, implementations <strong>must</strong> stringify it.
      *
-     * @param key a String
+     * @param key Key of data object
      *
      * @return Value of the data, can be empty, but never {@code null}
      */
@@ -126,7 +126,7 @@ public interface DataHolder {
      * <p>
      * If the value was not a String, implementations <strong>must</strong> stringify it.
      *
-     * @param key      a String
+     * @param key      Key of data object
      * @param defValue (optional) default value
      *
      * @return Value of the data, or the 'defValue'
