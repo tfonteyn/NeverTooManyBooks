@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.amazon;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
@@ -36,12 +35,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -172,13 +170,13 @@ public class AmazonSearchEngine
     }
 
     @NonNull
-    private Bundle genericSearch(@NonNull final Context context,
-                                 @NonNull final String url,
-                                 @NonNull final boolean[] fetchCovers)
+    private BookData genericSearch(@NonNull final Context context,
+                                   @NonNull final String url,
+                                   @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
         final Document document = loadDocument(context, url, null);
-        final Bundle bookData = ServiceLocator.newBundle();
+        final BookData bookData = new BookData();
         if (!isCancelled()) {
             parse(context, document, fetchCovers, bookData);
         }
@@ -188,9 +186,9 @@ public class AmazonSearchEngine
 
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
-                               @NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchCovers)
+    public BookData searchByIsbn(@NonNull final Context context,
+                                 @NonNull final String validIsbn,
+                                 @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
         // Convert an ISBN13 to ISBN10 (i.e. the ASIN)
@@ -204,9 +202,9 @@ public class AmazonSearchEngine
 
     @NonNull
     @Override
-    public Bundle searchByBarcode(@NonNull final Context context,
-                                  @NonNull final String barcode,
-                                  @NonNull final boolean[] fetchCovers)
+    public BookData searchByBarcode(@NonNull final Context context,
+                                    @NonNull final String barcode,
+                                    @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
         if (ASIN.isValidAsin(barcode)) {
@@ -216,7 +214,7 @@ public class AmazonSearchEngine
 
         } else {
             // not supported
-            return ServiceLocator.newBundle();
+            return new BookData();
         }
     }
 
@@ -240,14 +238,27 @@ public class AmazonSearchEngine
         return null;
     }
 
-    @Override
+    /**
+     * Parses the downloaded {@link org.jsoup.nodes.Document}.
+     * We only parse the <strong>first book</strong> found.
+     *
+     * @param context     Current context
+     * @param document    to parse
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
+     *
+     * @throws StorageException     on storage related failures
+     * @throws CredentialsException on authentication/login failures
+     *                              This should only occur if the engine calls/relies on
+     *                              secondary sites.
+     */
     @VisibleForTesting
+    @WorkerThread
     public void parse(@NonNull final Context context,
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
-                      @NonNull final Bundle bookData)
+                      @NonNull final BookData bookData)
             throws StorageException, SearchException, CredentialsException {
-        super.parse(context, document, fetchCovers, bookData);
 
         final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
 
@@ -271,7 +282,7 @@ public class AmazonSearchEngine
 
         parsePrice(document, bookData, siteLocale);
 
-        parseAuthors(document, siteLocale);
+        parseAuthors(document, bookData, siteLocale);
 
         if (isCancelled()) {
             return;
@@ -280,16 +291,6 @@ public class AmazonSearchEngine
         parseDetails(document, bookData, siteLocale);
 
         parseASIN(document, bookData);
-
-        if (!authorList.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
-        }
-        if (!publisherList.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
-        }
-        if (!seriesList.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
-        }
 
         checkForSeriesNameInTitle(bookData);
 
@@ -307,7 +308,7 @@ public class AmazonSearchEngine
     }
 
     private void parsePrice(@NonNull final Document document,
-                            @NonNull final Bundle bookData,
+                            @NonNull final BookData bookData,
                             @NonNull final Locale siteLocale) {
         final Element price = document.selectFirst("span.offer-price");
         if (price != null) {
@@ -322,7 +323,7 @@ public class AmazonSearchEngine
     }
 
     private void parseASIN(@NonNull final Document document,
-                           @NonNull final Bundle bookData) {
+                           @NonNull final BookData bookData) {
         // <form method="post" id="addToCart"
         //<input type="hidden" id="ASIN" name="ASIN" value="0752853694">
         final Element addToCart = document.getElementById("addToCart");
@@ -338,7 +339,7 @@ public class AmazonSearchEngine
     }
 
     private void parseDetails(@NonNull final Document document,
-                              @NonNull final Bundle bookData,
+                              @NonNull final BookData bookData,
                               @NonNull final Locale siteLocale) {
         final Elements lis = document
                 .select("div#detail_bullets_id > table > tbody > tr > td > div > ul > li");
@@ -359,7 +360,7 @@ public class AmazonSearchEngine
                     break;
 
                 case "isbn-10":
-                    if (!bookData.containsKey(DBKey.BOOK_ISBN)) {
+                    if (!bookData.contains(DBKey.BOOK_ISBN)) {
                         bookData.putString(DBKey.BOOK_ISBN, data);
                     }
                     break;
@@ -392,7 +393,7 @@ public class AmazonSearchEngine
                         final String pubName = matcher.group(1);
                         if (pubName != null) {
                             final Publisher publisher = Publisher.from(pubName.trim());
-                            publisherList.add(publisher);
+                            bookData.add(publisher);
                             publisherWasAdded = true;
                         }
 
@@ -405,14 +406,14 @@ public class AmazonSearchEngine
 
                     if (!publisherWasAdded) {
                         final Publisher publisher = Publisher.from(data);
-                        publisherList.add(publisher);
+                        bookData.add(publisher);
                     }
                     break;
                 }
 
                 case "series":
                 case "collection":
-                    seriesList.add(Series.from(data));
+                    bookData.add(Series.from(data));
                     break;
 
                 case "product dimensions":
@@ -450,6 +451,7 @@ public class AmazonSearchEngine
     }
 
     private void parseAuthors(@NonNull final Document document,
+                              @NonNull final BookData bookData,
                               @NonNull final Locale siteLocale) {
         for (final Element span : document.select("div#bylineInfo > span.author")) {
             // If an author has a popup dialog linked, then it has an id with contributorNameID
@@ -481,7 +483,7 @@ public class AmazonSearchEngine
                             author.addType(authorTypeMapper.map(siteLocale, data));
                         }
                     }
-                    authorList.add(author);
+                    bookData.add(author);
                 }
             }
         }
