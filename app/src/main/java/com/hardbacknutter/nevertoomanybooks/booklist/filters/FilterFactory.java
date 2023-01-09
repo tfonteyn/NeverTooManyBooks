@@ -29,7 +29,7 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
@@ -123,7 +123,7 @@ public final class FilterFactory {
                 return new PBitmaskFilter(
                         dbKey, R.string.lbl_edition,
                         TBL_BOOKS, DOM_BOOK_EDITION,
-                        Book.Edition::getAll);
+                        BookData.Edition::getAll);
             }
 
 
@@ -138,7 +138,7 @@ public final class FilterFactory {
                 return new PEntityListFilter<>(
                         dbKey, R.string.lbl_book_type,
                         TBL_BOOKS, DOM_BOOK_TOC_TYPE,
-                        Book.ContentType::getAll);
+                        BookData.ContentType::getAll);
             }
 
             default:
@@ -173,7 +173,7 @@ public final class FilterFactory {
             }
             case DBKey.FK_TOC_ENTRY: {
                 return FieldArrayAdapter.createEntityDropDown(
-                        context, Book.ContentType.getAll());
+                        context, BookData.ContentType.getAll());
             }
 
             default:
