@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -34,7 +33,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.CookieManager;
 import java.net.HttpCookie;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -45,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
@@ -131,12 +129,12 @@ public class BedethequeSearchEngine
 
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
-                               @NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchCovers)
+    public BookData searchByIsbn(@NonNull final Context context,
+                                 @NonNull final String validIsbn,
+                                 @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final Bundle bookData = ServiceLocator.newBundle();
+        final BookData bookData = new BookData();
 
         //The site is very "defensive". We must specify the full url and set the "Referer".
         final String url = getHostUrl() + "/search/albums?RechIdSerie=&RechIdAuteur="
@@ -175,7 +173,7 @@ public class BedethequeSearchEngine
     private void parseMultiResult(@NonNull final Context context,
                                   @NonNull final Document document,
                                   @NonNull final boolean[] fetchCovers,
-                                  @NonNull final Bundle bookData)
+                                  @NonNull final BookData bookData)
             throws StorageException, SearchException, CredentialsException {
 
         // Grab the first search result, and redirect to that page
@@ -194,14 +192,27 @@ public class BedethequeSearchEngine
         }
     }
 
-    @Override
+    /**
+     * Parses the downloaded {@link org.jsoup.nodes.Document}.
+     * We only parse the <strong>first book</strong> found.
+     *
+     * @param context     Current context
+     * @param document    to parse
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
+     *
+     * @throws StorageException     on storage related failures
+     * @throws CredentialsException on authentication/login failures
+     *                              This should only occur if the engine calls/relies on
+     *                              secondary sites.
+     */
     @VisibleForTesting
+    @WorkerThread
     public void parse(@NonNull final Context context,
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
-                      @NonNull final Bundle bookData)
+                      @NonNull final BookData bookData)
             throws StorageException, SearchException, CredentialsException {
-        super.parse(context, document, fetchCovers, bookData);
 
         final Element section = document.selectFirst(
                 "div.tab_content_liste_albums > ul.infos-albums");
@@ -217,7 +228,7 @@ public class BedethequeSearchEngine
                 if (text.isBlank() && lastAuthorType != -1) {
                     final Element span = label.nextElementSibling();
                     if (span != null) {
-                        processAuthor(context, span.text(), lastAuthorType);
+                        processAuthor(context, span.text(), lastAuthorType, bookData);
                     }
                     continue;
                 }
@@ -276,7 +287,7 @@ public class BedethequeSearchEngine
                     case "Série :": {
                         final Node textNode = label.nextSibling();
                         if (textNode != null) {
-                            seriesList.add(processSeries(bookData, textNode.toString().trim()));
+                            bookData.add(processSeries(bookData, textNode.toString().trim()));
                         }
                         break;
                     }
@@ -288,6 +299,7 @@ public class BedethequeSearchEngine
                         // seems to have BOTH "1" and "48" ... and we end up with "148"
                         // This is clearly a bug on the site... not sure what we can do about that
                         final Node textNode = label.nextSibling();
+                        final List<Series> seriesList = bookData.getSeries();
                         if (textNode != null && !seriesList.isEmpty()) {
                             seriesList.get(seriesList.size() - 1)
                                       .setNumber(textNode.toString().trim());
@@ -297,7 +309,7 @@ public class BedethequeSearchEngine
                     case "Editeur :": {
                         final Element span = label.nextElementSibling();
                         if (span != null) {
-                            publisherList.add(new Publisher(span.text()));
+                            bookData.add(new Publisher(span.text()));
                         }
                         break;
                     }
@@ -306,7 +318,7 @@ public class BedethequeSearchEngine
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_WRITER;
-                            processAuthor(context, a.text(), Author.TYPE_WRITER);
+                            processAuthor(context, a.text(), Author.TYPE_WRITER, bookData);
                         }
                         break;
                     }
@@ -314,7 +326,7 @@ public class BedethequeSearchEngine
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_ARTIST;
-                            processAuthor(context, a.text(), Author.TYPE_ARTIST);
+                            processAuthor(context, a.text(), Author.TYPE_ARTIST, bookData);
                         }
                         break;
                     }
@@ -322,7 +334,7 @@ public class BedethequeSearchEngine
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_INKING;
-                            processAuthor(context, a.text(), Author.TYPE_INKING);
+                            processAuthor(context, a.text(), Author.TYPE_INKING, bookData);
                         }
                         break;
                     }
@@ -339,7 +351,8 @@ public class BedethequeSearchEngine
                                         .substring(1, colorOrColorist.length() - 1));
                             } else {
                                 // it's a real name
-                                processAuthor(context, colorOrColorist, Author.TYPE_COLORIST);
+                                processAuthor(context, colorOrColorist, Author.TYPE_COLORIST,
+                                              bookData);
                             }
                         }
                         break;
@@ -348,7 +361,7 @@ public class BedethequeSearchEngine
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_COVER_ARTIST;
-                            processAuthor(context, a.text(), Author.TYPE_COVER_ARTIST);
+                            processAuthor(context, a.text(), Author.TYPE_COVER_ARTIST, bookData);
                         }
                         break;
                     }
@@ -356,7 +369,7 @@ public class BedethequeSearchEngine
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_FOREWORD;
-                            processAuthor(context, a.text(), Author.TYPE_FOREWORD);
+                            processAuthor(context, a.text(), Author.TYPE_FOREWORD, bookData);
                         }
                         break;
                     }
@@ -364,7 +377,7 @@ public class BedethequeSearchEngine
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_TRANSLATOR;
-                            processAuthor(context, a.text(), Author.TYPE_TRANSLATOR);
+                            processAuthor(context, a.text(), Author.TYPE_TRANSLATOR, bookData);
                         }
                         break;
                     }
@@ -372,7 +385,7 @@ public class BedethequeSearchEngine
                         final Element a = label.nextElementSibling();
                         if (a != null) {
                             lastAuthorType = Author.TYPE_CONTRIBUTOR;
-                            processAuthor(context, a.text(), Author.TYPE_CONTRIBUTOR);
+                            processAuthor(context, a.text(), Author.TYPE_CONTRIBUTOR, bookData);
                         }
                         break;
                     }
@@ -391,24 +404,15 @@ public class BedethequeSearchEngine
                 }
             }
 
-            if (!authorList.isEmpty()) {
+            if (!bookData.getAuthors().isEmpty()) {
                 final AuthorResolver resolver = new AuthorResolver(context, this);
-                for (final Author author : authorList) {
+                for (final Author author : bookData.getAuthors()) {
                     resolver.resolve(context, author);
                 }
-                bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
-            }
-
-            if (!seriesList.isEmpty()) {
-                bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
-            }
-
-            if (!publisherList.isEmpty()) {
-                bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
             }
 
             // Unless present, add the default language
-            if (!bookData.containsKey(DBKey.LANGUAGE)) {
+            if (!bookData.contains(DBKey.LANGUAGE)) {
                 bookData.putString(DBKey.LANGUAGE, "fra");
             }
 
@@ -431,7 +435,7 @@ public class BedethequeSearchEngine
      * @param softcover     {@code true} if the books is a softcover, {@code false} for hardcover
      */
     private void mapFormat(@NonNull final Context context,
-                           @NonNull final Bundle bookData,
+                           @NonNull final BookData bookData,
                            @NonNull final String currentFormat,
                            final boolean softcover) {
         if (PreferenceManager.getDefaultSharedPreferences(context)
@@ -487,7 +491,7 @@ public class BedethequeSearchEngine
      */
     @VisibleForTesting
     @NonNull
-    Series processSeries(@NonNull final Bundle bookData,
+    Series processSeries(@NonNull final BookData bookData,
                          @NonNull final String name) {
         // Series names can be formatted in a LOT of ways.
         // We're not going to try and capture each and every special format
@@ -536,7 +540,7 @@ public class BedethequeSearchEngine
 
     private void parseCovers(@NonNull final Document document,
                              @NonNull final boolean[] fetchCovers,
-                             @NonNull final Bundle bookData)
+                             @NonNull final BookData bookData)
             throws StorageException {
 
         if (fetchCovers[0]) {
@@ -554,7 +558,7 @@ public class BedethequeSearchEngine
 
     private void processCover(@Nullable final Element a,
                               final int cIdx,
-                              @NonNull final Bundle bookData)
+                              @NonNull final BookData bookData)
             throws StorageException {
         if (a != null) {
             final String url = a.attr("href");
@@ -570,7 +574,8 @@ public class BedethequeSearchEngine
 
     private void processAuthor(@NonNull final Context context,
                                @NonNull final String text,
-                               @Author.Type final int currentAuthorType) {
+                               @Author.Type final int currentAuthorType,
+                               @NonNull final BookData bookData) {
 
         // REMOVE potential "<>" as we really don't want fake html tags
         String names = text;
@@ -608,7 +613,7 @@ public class BedethequeSearchEngine
 
         boolean add = true;
         // check if already present
-        for (final Author author : authorList) {
+        for (final Author author : bookData.getAuthors()) {
             if (author.equals(currentAuthor)) {
                 // merge types.
                 author.addType(currentAuthorType);
@@ -619,7 +624,7 @@ public class BedethequeSearchEngine
 
         if (add) {
             currentAuthor.setType(currentAuthorType);
-            authorList.add(currentAuthor);
+            bookData.add(currentAuthor);
         }
     }
 }
