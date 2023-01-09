@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
@@ -29,7 +28,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
@@ -40,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
@@ -82,31 +80,24 @@ public abstract class SearchEngineBase
      *
      * @param bookData Bundle to update
      */
-    protected static void checkForSeriesNameInTitle(@NonNull final Bundle bookData) {
-        final String fullTitle = bookData.getString(DBKey.TITLE);
-        if (fullTitle != null) {
+    protected static void checkForSeriesNameInTitle(@NonNull final BookData bookData) {
+        final String fullTitle = bookData.getString(DBKey.TITLE, null);
+        if (fullTitle != null && !fullTitle.isEmpty()) {
             final Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
             if (matcher.find()) {
                 // the cleansed title
                 final String bookTitle = matcher.group(1);
-                // the series title/number
-                final String seriesTitleWithNumber = matcher.group(2);
+                if (bookTitle != null) {
+                    // the series title/number
+                    final String seriesTitleWithNumber = matcher.group(2);
 
-                if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
-                    // we'll add to, or create the Series list
-                    ArrayList<Series> seriesList =
-                            bookData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
-                    if (seriesList == null) {
-                        seriesList = new ArrayList<>();
+                    if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
+                        // add to the TOP of the list.
+                        bookData.add(0, Series.from(seriesTitleWithNumber));
+
+                        // and store cleansed book title back
+                        bookData.putString(DBKey.TITLE, bookTitle);
                     }
-
-                    // add to the TOP of the list.
-                    seriesList.add(0, Series.from(seriesTitleWithNumber));
-
-                    // store Series back
-                    bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
-                    // and store cleansed book title back
-                    bookData.putString(DBKey.TITLE, bookTitle);
                 }
             }
         }
