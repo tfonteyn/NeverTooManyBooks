@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
@@ -28,6 +27,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 
 public abstract class MapperBase
         implements Mapper {
@@ -37,9 +38,9 @@ public abstract class MapperBase
 
     @Override
     public void map(@NonNull final Context context,
-                    @NonNull final Bundle bookData) {
+                    @NonNull final BookData bookData) {
 
-        String value = bookData.getString(getKey());
+        String value = bookData.getString(getKey(), null);
         if (value != null && !value.isEmpty()) {
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             final String lcValue = value.toLowerCase(userLocale);
