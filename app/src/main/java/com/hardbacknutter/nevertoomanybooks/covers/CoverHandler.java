@@ -306,7 +306,7 @@ public class CoverHandler {
             try {
                 cropPictureLauncher.launch(new CropImageActivity.ResultContract.Input(
                         // source
-                        book.createTempCoverFile(cIdx),
+                        createTempCoverFile(book),
                         // destination
                         getTempFile()));
 
@@ -322,7 +322,7 @@ public class CoverHandler {
 
         } else if (itemId == R.id.MENU_EDIT) {
             try {
-                editPicture(book.createTempCoverFile(cIdx));
+                editPicture(createTempCoverFile(book));
 
             } catch (@NonNull final StorageException e) {
                 StandardDialogs.showError(context, e.getUserMessage(context));
@@ -347,6 +347,42 @@ public class CoverHandler {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Create a temporary cover file for the given book.
+     * If there is a permanent cover, we get a <strong>copy of that one</strong>.
+     * If there is no cover, we get a new File object with a temporary name.
+     *
+     * @return the File
+     *
+     * @throws StorageException The covers directory is not available
+     * @throws IOException      on failure to make a copy of the permanent file
+     */
+    @NonNull
+    private File createTempCoverFile(final Book book)
+            throws StorageException, IOException {
+
+        // the temp file we'll return
+        // do NOT set BKEY_TMP_FILE_SPEC on the book in this method.
+        final File coverFile = new File(CoverDir.getTemp(ServiceLocator.getAppContext()),
+                                        System.nanoTime() + ".jpg");
+
+        // If we have a permanent file, copy it into the temp location
+        final Optional<File> uuidFile = book.getCover(cIdx);
+        if (uuidFile.isPresent()) {
+            FileUtils.copy(uuidFile.get(), coverFile);
+        }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+            Logger.d("TAG", new Throwable("createTempCoverFile"),
+                     "bookId=" + book.getId()
+                     + "|cIdx=" + cIdx
+                     + "|exists=" + coverFile.exists()
+                     + "|file=" + coverFile.getAbsolutePath()
+            );
+        }
+        return coverFile;
     }
 
     @NonNull
@@ -550,7 +586,7 @@ public class CoverHandler {
     private void startRotation(final int angle) {
         final Context context = fragmentView.getContext();
         try {
-            final File file = bookSupplier.get().createTempCoverFile(cIdx);
+            final File file = createTempCoverFile(bookSupplier.get());
             showProgress();
             vm.execute(new Transformation(file).setRotation(angle), file);
 
