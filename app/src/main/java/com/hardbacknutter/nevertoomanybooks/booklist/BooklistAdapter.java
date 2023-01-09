@@ -69,6 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.FieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
@@ -80,6 +81,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
@@ -915,7 +917,7 @@ public class BooklistAdapter
          */
         private void onZoomCover(@NonNull final View coverView) {
             final String uuid = (String) coverView.getTag(R.id.TAG_THUMBNAIL_UUID);
-            Book.getPersistedCoverFile(uuid, 0).ifPresent(file -> {
+            new Cover(uuid, 0).getPersistedFile().ifPresent(file -> {
                 final FragmentActivity activity = (FragmentActivity) coverView.getContext();
                 ZoomedImageDialogFragment.launch(activity.getSupportFragmentManager(), file);
             });
@@ -948,7 +950,7 @@ public class BooklistAdapter
 
             if (use.edition) {
                 final boolean isSet = (rowData.getLong(DBKey.EDITION__BITMASK)
-                                       & Book.Edition.FIRST) != 0;
+                                       & BookData.Edition.FIRST) != 0;
                 vb.iconFirstEdition.setVisibility(isSet ? View.VISIBLE : View.GONE);
             }
 
@@ -1164,7 +1166,7 @@ public class BooklistAdapter
             }
 
             // 2. Cache did not have it, or we were not allowed to check.
-            final Optional<File> file = Book.getPersistedCoverFile(uuid, 0);
+            final Optional<File> file = new Cover(uuid, 0).getPersistedFile();
             // Check if the file exists; if it does not...
             if (file.isEmpty()) {
                 // leave the space blank, but preserve the width BASED on the coverLongestSide!
