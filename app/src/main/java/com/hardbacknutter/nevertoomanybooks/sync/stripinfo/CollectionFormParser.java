@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
@@ -34,6 +33,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -106,7 +106,7 @@ public class CollectionFormParser
      * @param root         Element to parse
      * @param externalId   website book id
      * @param collectionId website book collection-id
-     * @param destBundle   to store the results in
+     * @param bookData     to store the results in
      *
      * @throws IOException      on generic/other IO failures
      * @throws StorageException on storage related failures
@@ -115,7 +115,7 @@ public class CollectionFormParser
     public void parse(@NonNull final Element root,
                       @IntRange(from = 1) final long externalId,
                       @IntRange(from = 1) final long collectionId,
-                      @NonNull final Bundle destBundle)
+                      @NonNull final BookData bookData)
             throws IOException,
                    StorageException {
 
@@ -123,7 +123,7 @@ public class CollectionFormParser
         idRead = "stripCollectieGelezen-" + externalId;
         idWanted = "stripCollectieInWishlist-" + externalId;
 
-        parseFlags(root, destBundle);
+        parseFlags(root, bookData);
 
         final String postBody = new Uri.Builder()
                 .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
@@ -143,10 +143,10 @@ public class CollectionFormParser
                     }
                 }));
 
-        parseDetails(response, destBundle);
+        parseDetails(response, bookData);
 
         // Add as last one in case of errors thrown
-        destBundle.putLong(DBKey.STRIP_INFO_COLL_ID, collectionId);
+        bookData.putLong(DBKey.STRIP_INFO_COLL_ID, collectionId);
     }
 
     public void cancel() {
