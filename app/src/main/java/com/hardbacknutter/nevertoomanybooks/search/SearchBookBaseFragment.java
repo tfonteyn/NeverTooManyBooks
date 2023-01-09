@@ -135,11 +135,11 @@ public abstract class SearchBookBaseFragment
     private void onSearchFinished(@NonNull final LiveDataEvent<TaskResult<BookData>> message) {
         closeProgressDialog();
         message.getData().map(TaskResult::requireResult).ifPresent(result -> {
-            final String searchErrors = result.getString(SearchCoordinator.BKEY_SEARCH_ERROR);
+            final String searchErrors = result.getString(SearchCoordinator.BKEY_SEARCH_ERROR, null);
             result.remove(SearchCoordinator.BKEY_SEARCH_ERROR);
             final boolean hasBookData = !result.isEmpty();
 
-            if (searchErrors != null) {
+            if (searchErrors != null && !searchErrors.isEmpty()) {
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_baseline_warning_24)
