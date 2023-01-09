@@ -19,14 +19,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.kbnl;
 
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -53,7 +53,7 @@ abstract class KbNlHandlerBase
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s{2,}");
     /** The final output will be written to this bundle as passed in to the constructor. */
     @NonNull
-    protected final Bundle data;
+    protected final BookData data;
 
     /** XML content of a single element. */
     @SuppressWarnings("StringBufferField")
@@ -75,7 +75,7 @@ abstract class KbNlHandlerBase
     /** Are we parsing a list of records {@code true}; or a detail page {@code false}. */
     private boolean isList;
 
-    KbNlHandlerBase(@NonNull final Bundle data) {
+    KbNlHandlerBase(@NonNull final BookData data) {
         this.data = data;
     }
 
@@ -110,7 +110,7 @@ abstract class KbNlHandlerBase
             throws SAXException {
         super.startDocument();
 
-        data.clear();
+        data.clearData();
         builder.setLength(0);
         currentData.clear();
         currentLabel = null;
@@ -162,7 +162,7 @@ abstract class KbNlHandlerBase
             case PSI_TEXT:
                 inText = true;
                 // if in list-page mode, store the first reference found.
-                if (isList && inRecord && inLine && !data.containsKey(BKEY_SHOW_URL)) {
+                if (isList && inRecord && inLine && !data.contains(BKEY_SHOW_URL)) {
                     data.putString(BKEY_SHOW_URL, attributes.getValue("href"));
                 }
                 break;
