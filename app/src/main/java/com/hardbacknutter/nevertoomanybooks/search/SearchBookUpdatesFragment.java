@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -50,6 +49,7 @@ import java.util.Collection;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesSingleListContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooksOutput;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -259,7 +259,8 @@ public class SearchBookUpdatesFragment
             final BookData result = data.getResult();
             if (result != null) {
                 //noinspection ConstantConditions
-                getActivity().setResult(Activity.RESULT_OK, new Intent().putExtras(result));
+                getActivity().setResult(Activity.RESULT_OK,
+                                        UpdateBooksOutput.createResult(result));
             }
 
             //noinspection ConstantConditions
