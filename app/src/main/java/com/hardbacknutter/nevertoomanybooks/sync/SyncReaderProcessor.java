@@ -164,15 +164,17 @@ public final class SyncReaderProcessor
                         default:
                             // If it's a cover...
                             if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
+                                final String uuid = book.requireString(DBKey.BOOK_UUID);
                                 // check if it's missing or empty.
-                                final Optional<File> file = book.getPersistedCoverFile(0);
+                                final Optional<File> file = new Cover(uuid, 0).getPersistedFile();
                                 if (file.isEmpty()) {
                                     filteredMap.put(field.key, field);
                                 }
 
                             } else if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[1])) {
+                                final String uuid = book.requireString(DBKey.BOOK_UUID);
                                 // check if it's missing or empty.
-                                final Optional<File> file = book.getPersistedCoverFile(1);
+                                final Optional<File> file = new Cover(uuid, 1).getPersistedFile();
                                 if (file.isEmpty()) {
                                     filteredMap.put(field.key, field);
                                 }
