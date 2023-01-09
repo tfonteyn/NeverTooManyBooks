@@ -363,6 +363,22 @@ public class Money
         return currency != null ? currency.getCurrencyCode() : null;
     }
 
+    /**
+     * Check if this object contains valid data.
+     * <p>
+     * This should be called using the constructor which parses a "price with currency".
+     *
+     * @return {@code true} if it is
+     */
+    public boolean isValid() {
+        return currency == null && value == null;
+    }
+
+    /**
+     * Convenience method to check if the value-part is zero.
+     *
+     * @return {@code true} if it is
+     */
     public boolean isZero() {
         return Objects.requireNonNull(value).compareTo(BigDecimal.ZERO) == 0;
     }
@@ -401,7 +417,19 @@ public class Money
     @Override
     @NonNull
     public String toString() {
+        //noinspection CallToNumericToString
         return Objects.requireNonNull(value).toString();
+    }
+
+    /**
+     * DEBUG!
+     */
+    @NonNull
+    public String toDbgString() {
+        return "Money{"
+               + "currency=" + currency
+               + ", value=" + value
+               + '}';
     }
 
     /**
