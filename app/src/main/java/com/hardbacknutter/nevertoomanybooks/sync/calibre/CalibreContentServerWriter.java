@@ -228,7 +228,7 @@ public class CalibreContentServerWriter
         if (remoteTime != null) {
             // is our data newer then the server data ?
             final LocalDateTime localTime =
-                    dateParser.parse(book.getString(DBKey.DATE_LAST_UPDATED__UTC));
+                    dateParser.parse(book.getString(DBKey.DATE_LAST_UPDATED__UTC, null));
             if (localTime != null && localTime.isAfter(remoteTime)) {
                 final JSONObject identifiers = calibreBook.optJSONObject(CalibreBook.IDENTIFIERS);
                 final JSONObject changes = collectChanges(library, identifiers, book);
@@ -300,8 +300,8 @@ public class CalibreContentServerWriter
         changes.put(CalibreBook.RATING, (int) localBook.getFloat(DBKey.RATING));
 
         final JSONArray languages = new JSONArray();
-        final String language = localBook.getString(DBKey.LANGUAGE);
-        if (!language.isEmpty()) {
+        final String language = localBook.getString(DBKey.LANGUAGE, null);
+        if (language != null && !language.isEmpty()) {
             languages.put(language);
         }
         changes.put(CalibreBook.LANGUAGES_ARRAY, languages);
