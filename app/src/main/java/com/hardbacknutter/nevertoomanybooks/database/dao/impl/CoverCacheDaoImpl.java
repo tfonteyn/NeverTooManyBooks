@@ -42,13 +42,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 
 /**
@@ -170,8 +170,9 @@ public class CoverCacheDaoImpl
                            final int maxWidth,
                            final int maxHeight) {
         try {
-            final long lm = Book.getPersistedCoverFile(uuid, cIdx).map(File::lastModified)
-                                .orElse(0L);
+            final long lm = new Cover(uuid, cIdx).getPersistedFile()
+                                                 .map(File::lastModified)
+                                                 .orElse(0L);
             if (lm > 0) {
                 final String fileLastModified =
                         Instant.ofEpochMilli(lm)
