@@ -20,22 +20,19 @@
 package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 
-import java.util.ArrayList;
-
-import org.jsoup.nodes.Element;
-
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+
+import org.jsoup.nodes.Element;
 
 /**
  * The site has a concept of "I own this book" and "I have this book in my collection"
@@ -84,47 +81,41 @@ abstract class CollectionBaseParser {
 
     @AnyThread
     void parseFlags(@NonNull final Element root,
-                    @NonNull final Bundle destBundle) {
+                    @NonNull final BookData bookData) {
 
         if (jSoupHelper.getBoolean(root, idRead)) {
-            destBundle.putBoolean(DBKey.READ__BOOL, true);
+            bookData.putBoolean(DBKey.READ__BOOL, true);
         }
 
-        final ArrayList<Bookshelf> bookshelves = new ArrayList<>();
-
         if (jSoupHelper.getBoolean(root, idOwned)) {
-            destBundle.putBoolean(DBKey.STRIP_INFO_OWNED, true);
+            bookData.putBoolean(DBKey.STRIP_INFO_OWNED, true);
             if (ownedBooksBookshelf != null) {
-                bookshelves.add(ownedBooksBookshelf);
+                bookData.add(ownedBooksBookshelf);
             }
         }
 
         if (jSoupHelper.getBoolean(root, idWanted)) {
-            destBundle.putBoolean(DBKey.STRIP_INFO_WANTED, true);
+            bookData.putBoolean(DBKey.STRIP_INFO_WANTED, true);
             if (wishListBookshelf != null) {
-                bookshelves.add(wishListBookshelf);
+                bookData.add(wishListBookshelf);
             }
-        }
-
-        if (!bookshelves.isEmpty()) {
-            destBundle.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelves);
         }
     }
 
     @AnyThread
     void parseDetails(@NonNull final Element root,
-                      @NonNull final Bundle destBundle) {
+                      @NonNull final BookData bookData) {
         String tmpStr;
         int tmpInt;
 
         tmpStr = jSoupHelper.getString(root, idLocation);
         if (!tmpStr.isEmpty()) {
-            destBundle.putString(DBKey.LOCATION, tmpStr);
+            bookData.putString(DBKey.LOCATION, tmpStr);
         }
 
         tmpStr = jSoupHelper.getString(root, idNotes);
         if (!tmpStr.isEmpty()) {
-            destBundle.putString(DBKey.PERSONAL_NOTES, tmpStr);
+            bookData.putString(DBKey.PERSONAL_NOTES, tmpStr);
         }
 
         // Incoming value attribute is in the format "DD/MM/YYYY".
@@ -136,31 +127,31 @@ abstract class CollectionBaseParser {
             tmpStr = tmpStr.substring(6, 10)
                      + '-' + tmpStr.substring(3, 5)
                      + '-' + tmpStr.substring(0, 2);
-            destBundle.putString(DBKey.DATE_ACQUIRED, tmpStr);
+            bookData.putString(DBKey.DATE_ACQUIRED, tmpStr);
         }
 
         // '0' is an acceptable value that should be stored.
         final Double tmpDbl = jSoupHelper.getDoubleOrNull(root, idPricePaid);
         if (tmpDbl != null) {
-            destBundle.putDouble(DBKey.PRICE_PAID, tmpDbl);
-            destBundle.putString(DBKey.PRICE_PAID_CURRENCY, Money.EUR);
+            bookData.putDouble(DBKey.PRICE_PAID, tmpDbl);
+            bookData.putString(DBKey.PRICE_PAID_CURRENCY, Money.EUR);
         }
 
         tmpInt = jSoupHelper.getInt(root, idRating);
         if (tmpInt > 0) {
             // site is int 1..10; convert to float 0.5 .. 5 (and clamp because paranoia)
-            destBundle.putFloat(DBKey.RATING,
-                                MathUtils.clamp(((float) tmpInt) / 2, 0.5f, 5f));
+            bookData.putFloat(DBKey.RATING,
+                              MathUtils.clamp(((float) tmpInt) / 2, 0.5f, 5f));
         }
 
         tmpInt = jSoupHelper.getInt(root, idEdition);
         if (tmpInt == 1) {
-            destBundle.putLong(DBKey.EDITION__BITMASK, Book.Edition.FIRST);
+            bookData.putLong(DBKey.EDITION__BITMASK, BookData.Edition.FIRST);
         }
 
         tmpInt = jSoupHelper.getInt(root, idAmount);
         if (tmpInt > 0) {
-            destBundle.putInt(DBKey.STRIP_INFO_AMOUNT, tmpInt);
+            bookData.putInt(DBKey.STRIP_INFO_AMOUNT, tmpInt);
         }
     }
 }
