@@ -327,7 +327,8 @@ public final class SyncReaderProcessor
         final String fileSpec = bookData.getString(Book.BKEY_TMP_FILE_SPEC[cIdx], null);
         if (fileSpec != null && !fileSpec.isEmpty()) {
             try {
-                book.persistCover(new File(fileSpec), cIdx);
+                final String uuid = book.requireString(DBKey.BOOK_UUID);
+                new Cover(uuid, cIdx).persist(new File(fileSpec));
 
             } catch (@NonNull final StorageException | IOException e) {
                 // We're called in a loop, and the chance of an exception here is very low
