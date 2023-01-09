@@ -38,8 +38,8 @@ public final class DataHolderUtils {
     }
 
     public static boolean hasAuthor(@NonNull final DataHolder rowData) {
-        if (rowData.contains(Book.BKEY_AUTHOR_LIST)) {
-            final List<Author> list = rowData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        if (rowData.contains(BookData.BKEY_AUTHOR_LIST)) {
+            final List<Author> list = rowData.getParcelableArrayList(BookData.BKEY_AUTHOR_LIST);
             return !list.isEmpty();
         } else if (rowData.contains(DBKey.FK_AUTHOR)) {
             return rowData.getLong(DBKey.FK_AUTHOR) > 0;
@@ -49,8 +49,8 @@ public final class DataHolderUtils {
     }
 
     public static boolean hasSeries(@NonNull final DataHolder rowData) {
-        if (rowData.contains(Book.BKEY_SERIES_LIST)) {
-            final List<Series> list = rowData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+        if (rowData.contains(BookData.BKEY_SERIES_LIST)) {
+            final List<Series> list = rowData.getParcelableArrayList(BookData.BKEY_SERIES_LIST);
             return !list.isEmpty();
         } else if (rowData.contains(DBKey.FK_SERIES)) {
             return rowData.getLong(DBKey.FK_SERIES) > 0;
@@ -89,9 +89,9 @@ public final class DataHolderUtils {
      */
     @Nullable
     public static Author getAuthor(@NonNull final DataHolder rowData) {
-        if (rowData.contains(Book.BKEY_AUTHOR_LIST)) {
+        if (rowData.contains(BookData.BKEY_AUTHOR_LIST)) {
             // Ideally the row contains the data as a list. Simply return the first one.
-            final List<Author> list = rowData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+            final List<Author> list = rowData.getParcelableArrayList(BookData.BKEY_AUTHOR_LIST);
             return list.isEmpty() ? null : list.get(0);
 
         } else if (rowData.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
@@ -127,9 +127,9 @@ public final class DataHolderUtils {
      */
     @Nullable
     public static Series getSeries(@NonNull final DataHolder rowData) {
-        if (rowData.contains(Book.BKEY_SERIES_LIST)) {
+        if (rowData.contains(BookData.BKEY_SERIES_LIST)) {
             // Ideally the row contains the data as a list. Simply return the first one.
-            final List<Series> list = rowData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+            final List<Series> list = rowData.getParcelableArrayList(BookData.BKEY_SERIES_LIST);
             return list.isEmpty() ? null : list.get(0);
 
         } else if (rowData.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
@@ -165,9 +165,10 @@ public final class DataHolderUtils {
      */
     @Nullable
     public static Publisher getPublisher(@NonNull final DataHolder rowData) {
-        if (rowData.contains(Book.BKEY_PUBLISHER_LIST)) {
+        if (rowData.contains(BookData.BKEY_PUBLISHER_LIST)) {
             // Ideally the row contains the data as a list. Simply return the first one.
-            final List<Publisher> list = rowData.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+            final List<Publisher> list = rowData.getParcelableArrayList(
+                    BookData.BKEY_PUBLISHER_LIST);
             return list.isEmpty() ? null : list.get(0);
 
         } else if (rowData.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
@@ -203,9 +204,9 @@ public final class DataHolderUtils {
      */
     @Nullable
     public static Bookshelf getBookshelf(@NonNull final DataHolder rowData) {
-        if (rowData.contains(Book.BKEY_SERIES_LIST)) {
+        if (rowData.contains(BookData.BKEY_SERIES_LIST)) {
             // Ideally the row contains the data as a list. Simply return the first one.
-            final List<Bookshelf> list = rowData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+            final List<Bookshelf> list = rowData.getParcelableArrayList(BookData.BKEY_SERIES_LIST);
             return list.isEmpty() ? null : list.get(0);
 
         } else if (rowData.getInt(DBKey.BL_NODE_GROUP) == BooklistGroup.BOOK) {
