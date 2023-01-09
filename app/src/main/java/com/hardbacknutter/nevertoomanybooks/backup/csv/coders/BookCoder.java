@@ -218,25 +218,24 @@ public class BookCoder {
             // check for individual author (full/family/given) fields in the input
             list = new ArrayList<>();
             if (book.contains(DBKey.AUTHOR_FORMATTED)) {
-                final String name = book.getString(DBKey.AUTHOR_FORMATTED);
-                if (!name.isEmpty()) {
+                final String name = book.getString(DBKey.AUTHOR_FORMATTED, null);
+                if (name != null && !name.isEmpty()) {
                     list.add(Author.from(name));
                 }
                 book.remove(DBKey.AUTHOR_FORMATTED);
 
             } else if (book.contains(DBKey.AUTHOR_FAMILY_NAME)) {
-                final String family = book.getString(DBKey.AUTHOR_FAMILY_NAME);
-                if (!family.isEmpty()) {
-                    // given will be "" if it's not present
-                    final String given = book.getString(DBKey.AUTHOR_GIVEN_NAMES);
+                final String family = book.getString(DBKey.AUTHOR_FAMILY_NAME, null);
+                if (family != null && !family.isEmpty()) {
+                    final String given = book.getString(DBKey.AUTHOR_GIVEN_NAMES, null);
                     list.add(new Author(family, given));
                 }
                 book.remove(DBKey.AUTHOR_FAMILY_NAME);
                 book.remove(DBKey.AUTHOR_GIVEN_NAMES);
 
             } else if (book.contains(LEGACY_AUTHOR_NAME)) {
-                final String a = book.getString(LEGACY_AUTHOR_NAME);
-                if (!a.isEmpty()) {
+                final String a = book.getString(LEGACY_AUTHOR_NAME, null);
+                if (a != null && !a.isEmpty()) {
                     list.add(Author.from(a));
                 }
                 book.remove(LEGACY_AUTHOR_NAME);
@@ -275,11 +274,11 @@ public class BookCoder {
         if (encodedList == null || encodedList.isEmpty()) {
             // check for individual series title/number fields in the input
             if (book.contains(DBKey.SERIES_TITLE)) {
-                final String title = book.getString(DBKey.SERIES_TITLE);
-                if (!title.isEmpty()) {
+                final String title = book.getString(DBKey.SERIES_TITLE, null);
+                if (title != null && !title.isEmpty()) {
                     final Series series = new Series(title);
                     // number will be "" if it's not present
-                    series.setNumber(book.getString(DBKey.SERIES_BOOK_NUMBER));
+                    series.setNumber(book.getString(DBKey.SERIES_BOOK_NUMBER, null));
                     final List<Series> list = new ArrayList<>();
                     list.add(series);
                     book.setSeries(list);
