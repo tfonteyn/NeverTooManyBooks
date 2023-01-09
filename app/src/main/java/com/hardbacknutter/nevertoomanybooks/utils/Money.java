@@ -371,7 +371,7 @@ public class Money
      * @return {@code true} if it is
      */
     public boolean isValid() {
-        return currency == null && value == null;
+        return currency != null && value != null;
     }
 
     /**
