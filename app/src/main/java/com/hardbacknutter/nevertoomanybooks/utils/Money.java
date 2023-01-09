@@ -309,9 +309,9 @@ public class Money
         return false;
     }
 
-    public boolean parse(@NonNull final Locale locale,
-                         @Nullable final String currencyStr,
-                         @Nullable final String valueStr) {
+    private boolean parse(@NonNull final Locale locale,
+                          @Nullable final String currencyStr,
+                          @Nullable final String valueStr) {
 
         String currencyCode = null;
         if (currencyStr != null && !currencyStr.isEmpty()) {
