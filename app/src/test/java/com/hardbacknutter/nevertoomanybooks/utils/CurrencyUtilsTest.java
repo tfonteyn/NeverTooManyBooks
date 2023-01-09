@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,11 +22,12 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import java.math.BigDecimal;
 import java.util.Locale;
 
-import org.junit.jupiter.api.Test;
-
 import com.hardbacknutter.nevertoomanybooks.Base;
 
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class CurrencyUtilsTest
@@ -55,12 +56,13 @@ class CurrencyUtilsTest
     }
 
     @Test
-    void splitPrice100() {
-
+    void parsingMustFail() {
         final Locale locale = Locale.UK;
         final Money money;
 
+        // The Money constructor EXPECTS a price WITH currency;
         money = new Money(locale, "10.50");
+        assertFalse(money.isValid());
         assertNull(money.getCurrency());
         assertNull(money.getValue());
     }
