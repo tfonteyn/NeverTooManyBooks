@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
-import android.os.Bundle;
-
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,10 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
@@ -119,12 +116,6 @@ class IsfdbPublicationListHandler
     private static final String XML_ID_TYPE = "IDtype";
     private static final String XML_ID_VALUE = "IDvalue";
 
-    /** accumulate all Authors for this book. */
-    private final ArrayList<Author> authorList = new ArrayList<>();
-    /** accumulate all Series for this book. */
-    private final ArrayList<Series> seriesList = new ArrayList<>();
-    /** accumulate all Publishers for this book. */
-    private final ArrayList<Publisher> publisherList = new ArrayList<>();
     @NonNull
     private final IsfdbSearchEngine searchEngine;
     @NonNull
@@ -135,10 +126,10 @@ class IsfdbPublicationListHandler
     @SuppressWarnings("StringBufferField")
     private final StringBuilder builder = new StringBuilder();
     @NonNull
-    private final List<Bundle> bookDataList = new ArrayList<>();
+    private final List<BookData> bookDataList = new ArrayList<>();
     private int maxBooks;
     private boolean inPublication;
-    private Bundle publicationData;
+    private BookData publicationData;
     private boolean inAuthors;
     private boolean inCoverArtists;
     private boolean inExternalIds;
@@ -161,7 +152,7 @@ class IsfdbPublicationListHandler
     }
 
     @NonNull
-    public List<Bundle> getResult() {
+    public List<BookData> getResult() {
         return bookDataList;
     }
 
@@ -186,10 +177,7 @@ class IsfdbPublicationListHandler
         switch (qName) {
             case XML_PUBLICATION:
                 inPublication = true;
-                publicationData = ServiceLocator.newBundle();
-                authorList.clear();
-                seriesList.clear();
-                publisherList.clear();
+                publicationData = new BookData();
                 break;
 
             case XML_AUTHORS:
@@ -236,17 +224,6 @@ class IsfdbPublicationListHandler
             }
 
         } else if (XML_PUBLICATION.equals(qName)) {
-            // store accumulated ArrayList's
-            if (!authorList.isEmpty()) {
-                publicationData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
-            }
-            if (!seriesList.isEmpty()) {
-                publicationData.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
-            }
-            if (!publisherList.isEmpty()) {
-                publicationData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
-            }
-
             // ISFDB does not provide the books language in xml
             //ENHANCE: the site is adding language to the data. For now, default to English
             publicationData.putString(DBKey.LANGUAGE, "eng");
@@ -284,7 +261,7 @@ class IsfdbPublicationListHandler
                 case XML_AUTHOR: {
                     if (inAuthors) {
                         final Author author = Author.from(builder.toString());
-                        authorList.add(author);
+                        publicationData.add(author);
                     }
                     break;
                 }
@@ -304,17 +281,18 @@ class IsfdbPublicationListHandler
                 }
                 case XML_PUBLISHER: {
                     final Publisher publisher = Publisher.from(builder.toString());
-                    publisherList.add(publisher);
+                    publicationData.add(publisher);
                     break;
                 }
                 case XML_PUB_SERIES: {
                     final Series series = Series.from(builder.toString());
-                    this.seriesList.add(series);
+                    publicationData.add(series);
                     break;
                 }
                 case XML_PUB_SERIES_NUM: {
                     final String tmpString = builder.toString().trim();
                     // assume that if we get here, then we added a "PubSeries" as last one.
+                    final List<Series> seriesList = publicationData.getSeries();
                     seriesList.get(seriesList.size() - 1).setNumber(tmpString);
                     break;
                 }
@@ -340,7 +318,7 @@ class IsfdbPublicationListHandler
                 case XML_TYPE: {
                     final String tmpString = builder.toString().trim();
                     addIfNotPresent(IsfdbSearchEngine.SiteField.BOOK_TYPE, tmpString);
-                    final Book.ContentType type = IsfdbSearchEngine.TYPE_MAP.get(tmpString);
+                    final BookData.ContentType type = IsfdbSearchEngine.TYPE_MAP.get(tmpString);
                     if (type != null) {
                         publicationData.putLong(DBKey.TOC_TYPE__BITMASK, type.getId());
                     }
@@ -374,7 +352,7 @@ class IsfdbPublicationListHandler
                     if (inCoverArtists) {
                         final Author author = Author.from(builder.toString());
                         author.setType(Author.TYPE_COVER_ARTIST);
-                        authorList.add(author);
+                        publicationData.add(author);
                     }
                     break;
                 }
@@ -447,7 +425,7 @@ class IsfdbPublicationListHandler
      */
     private void addIfNotPresent(@NonNull final String key,
                                  @NonNull final String value) {
-        final String test = publicationData.getString(key);
+        final String test = publicationData.getString(key, null);
         if (test == null || test.isEmpty()) {
             publicationData.putString(key, value.trim());
         }
