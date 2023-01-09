@@ -118,7 +118,7 @@ public abstract class BaseRecordReader
                     final LocalDateTime localDate = bookDao.getLastUpdateDate(databaseBookId);
                     if (localDate != null) {
                         final LocalDateTime importDate = dateParser.parse(
-                                book.getString(DBKey.DATE_LAST_UPDATED__UTC));
+                                book.getString(DBKey.DATE_LAST_UPDATED__UTC, null));
 
                         if (importDate != null && importDate.isAfter(localDate)) {
 
@@ -161,7 +161,7 @@ public abstract class BaseRecordReader
                                                  BookDao.BookFlag.UseIdIfPresent));
             results.booksCreated++;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                Log.d(TAG, "UUID=" + book.getString(DBKey.BOOK_UUID)
+                Log.d(TAG, "UUID=" + book.getString(DBKey.BOOK_UUID, null)
                            + "|importNumericId=" + importNumericId
                            + "|INSERT|book=" + book.getId() + "|" + book.getTitle());
             }
