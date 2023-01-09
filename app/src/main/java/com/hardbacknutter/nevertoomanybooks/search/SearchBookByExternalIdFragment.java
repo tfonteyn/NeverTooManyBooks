@@ -239,7 +239,7 @@ public class SearchBookByExternalIdFragment
         // The external id field for the site should be present as we searched on one.
         // The title field, *might* be there but *might* be empty.
         // So a valid result means we either need a title, or a third field.
-        final String title = bookData.getString(DBKey.TITLE);
+        final String title = bookData.getString(DBKey.TITLE, null);
         if ((title == null || title.isEmpty()) && bookData.size() <= 2) {
             Snackbar.make(vb.externalId, R.string.warning_no_matching_book_found,
                           Snackbar.LENGTH_LONG).show();
