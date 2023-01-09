@@ -19,6 +19,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 
+import android.content.Intent;
+
+import androidx.annotation.NonNull;
+
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesViewModel;
+
 public final class UpdateBooksOutput {
 
     /** The BoB should reposition on this book. */
@@ -41,6 +49,28 @@ public final class UpdateBooksOutput {
         this.bookModified = bookModified;
         this.listModified = listModified;
         this.lastBookIdProcessed = lastBookIdProcessed;
+    }
+
+    /**
+     * Create the result which {@link UpdateSingleBookContract#parseResult(int, Intent)}
+     * and {@link UpdateBooklistContract#parseResult(int, Intent)} will receive.
+     *
+     * @param dataHolder the bundle from which we'll extract the relevant data.
+     *
+     * @return Intent
+     */
+    public static Intent createResult(@NonNull final DataHolder dataHolder) {
+        final Intent resultIntent = new Intent();
+        resultIntent.putExtra(DBKey.FK_BOOK, dataHolder.getLong(DBKey.FK_BOOK));
+
+        resultIntent.putExtra(SearchBookUpdatesViewModel.BKEY_BOOK_MODIFIED,
+                              dataHolder.getLong(SearchBookUpdatesViewModel.BKEY_BOOK_MODIFIED));
+        resultIntent.putExtra(SearchBookUpdatesViewModel.BKEY_LIST_MODIFIED,
+                              dataHolder.getBoolean(SearchBookUpdatesViewModel.BKEY_LIST_MODIFIED));
+        resultIntent.putExtra(SearchBookUpdatesViewModel.BKEY_LAST_BOOK_ID_PROCESSED,
+                              dataHolder.getLong(SearchBookUpdatesViewModel
+                                                         .BKEY_LAST_BOOK_ID_PROCESSED));
+        return resultIntent;
     }
 
     public long getRepositionToBookId() {
