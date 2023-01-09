@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -36,7 +35,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
@@ -85,12 +84,12 @@ public class GoogleBooksSearchEngine
 
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
-                               @NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchCovers)
+    public BookData searchByIsbn(@NonNull final Context context,
+                                 @NonNull final String validIsbn,
+                                 @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException {
 
-        final Bundle bookData = ServiceLocator.newBundle();
+        final BookData bookData = new BookData();
 
         // %3A  :
         final String url = getHostUrl() + "/books/feeds/volumes?q=ISBN%3A" + validIsbn;
@@ -101,15 +100,15 @@ public class GoogleBooksSearchEngine
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@NonNull final Context context,
-                         @Nullable final /* not supported */ String code,
-                         @Nullable final String author,
-                         @Nullable final String title,
-                         @Nullable final /* not supported */ String publisher,
-                         @NonNull final boolean[] fetchCovers)
+    public BookData search(@NonNull final Context context,
+                           @Nullable final /* not supported */ String code,
+                           @Nullable final String author,
+                           @Nullable final String title,
+                           @Nullable final /* not supported */ String publisher,
+                           @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException {
 
-        final Bundle bookData = ServiceLocator.newBundle();
+        final BookData bookData = new BookData();
 
         // %2B  +
         // %3A  :
@@ -138,7 +137,7 @@ public class GoogleBooksSearchEngine
     private void fetchBook(@NonNull final Context context,
                            @NonNull final String url,
                            @NonNull final boolean[] fetchCovers,
-                           @NonNull final Bundle bookData)
+                           @NonNull final BookData bookData)
             throws StorageException,
                    SearchException {
 
