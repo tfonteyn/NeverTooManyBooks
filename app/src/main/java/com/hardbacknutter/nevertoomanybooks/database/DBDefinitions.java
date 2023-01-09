@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 
 /**
  * Static definitions of database objects.
@@ -771,7 +772,7 @@ public final class DBDefinitions {
         DOM_BOOK_TOC_TYPE =
                 new Domain.Builder(DBKey.TOC_TYPE__BITMASK, SqLiteDataType.Integer)
                         .notNull()
-                        .withDefault(Book.ContentType.Book.getId())
+                        .withDefault(BookData.ContentType.Book.getId())
                         .build();
 
         /* ======================================================================================
