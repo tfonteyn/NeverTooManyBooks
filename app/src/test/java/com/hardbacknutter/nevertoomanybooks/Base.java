@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.LocaleList;
 
@@ -33,8 +32,19 @@ import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.util.Locale;
-
 import javax.xml.parsers.ParserConfigurationException;
+
+import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
+import com.hardbacknutter.nevertoomanybooks._mocks.os.ContextMock;
+import com.hardbacknutter.nevertoomanybooks._mocks.os.SharedPreferencesMock;
+import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -46,17 +56,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
 import org.xml.sax.SAXException;
-
-import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
-import com.hardbacknutter.nevertoomanybooks._mocks.os.ContextMock;
-import com.hardbacknutter.nevertoomanybooks._mocks.os.SharedPreferencesMock;
-import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -85,7 +84,7 @@ public class Base {
     @Mock
     protected LocaleList localeList;
 
-    protected Bundle rawData;
+    protected BookData bookData;
     protected Context context;
     protected SharedPreferences mockPreferences;
 
@@ -133,7 +132,7 @@ public class Base {
 
         mockPreferences = SharedPreferencesMock.create();
 
-        rawData = BundleMock.create();
+        bookData = new BookData(BundleMock.create());
 
         when(app.getApplicationContext()).thenReturn(context);
 

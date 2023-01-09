@@ -21,26 +21,24 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
-
 import javax.xml.parsers.ParserConfigurationException;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.xml.sax.SAXException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -72,42 +70,42 @@ class OpenLibrarySearchEngineTest
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
             final String response = searchEngine.readResponseStream(is);
-            searchEngine.handleResponse(context, response, new boolean[]{false, false}, rawData);
+            searchEngine.handleResponse(context, response, new boolean[]{false, false},
+                                        bookData);
         }
 
-        assertNotNull(rawData);
-        assertFalse(rawData.isEmpty());
+        assertNotNull(bookData);
+        assertFalse(bookData.isEmpty());
 
-        assertEquals("Slow reading", rawData.getString(DBKey.TITLE));
-        assertEquals("9780980200447", rawData.getString(DBKey.BOOK_ISBN));
-        assertEquals("OL22853304M", rawData.getString(DBKey.SID_OPEN_LIBRARY));
-        assertEquals("2008054742", rawData.getString(DBKey.SID_LCCN));
-        assertEquals(8071257L, rawData.getLong(DBKey.SID_LIBRARY_THING));
-        assertEquals(6383507L, rawData.getLong(DBKey.SID_GOODREADS_BOOK));
-        assertEquals("098020044X", rawData.getString(DBKey.SID_ASIN));
-        assertEquals("297222669", rawData.getString(DBKey.SID_OCLC));
+        assertEquals("Slow reading", bookData.getString(DBKey.TITLE, null));
+        assertEquals("9780980200447", bookData.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("OL22853304M", bookData.getString(DBKey.SID_OPEN_LIBRARY, null));
+        assertEquals("2008054742", bookData.getString(DBKey.SID_LCCN, null));
+        assertEquals(8071257L, bookData.getLong(DBKey.SID_LIBRARY_THING));
+        assertEquals(6383507L, bookData.getLong(DBKey.SID_GOODREADS_BOOK));
+        assertEquals("098020044X", bookData.getString(DBKey.SID_ASIN, null));
+        assertEquals("297222669", bookData.getString(DBKey.SID_OCLC, null));
 
         assertEquals("Includes bibliographical references and index.",
-                     rawData.getString(DBKey.DESCRIPTION));
-        assertEquals("92", rawData.getString(DBKey.PAGE_COUNT));
-        assertEquals("2009-03-01", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
+                     bookData.getString(DBKey.DESCRIPTION, null));
+        assertEquals("92", bookData.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("2009-03-01", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
 
 
-        final ArrayList<Publisher> allPublishers = rawData
-                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+        final List<Publisher> allPublishers = bookData.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Litwin Books", allPublishers.get(0).getName());
 
-        final ArrayList<Author> authors = rawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        final List<Author> authors = bookData.getAuthors();
         assertNotNull(authors);
         assertEquals(1, authors.size());
         assertEquals("Miedema", authors.get(0).getFamilyName());
         assertEquals("John", authors.get(0).getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
 
-        final ArrayList<TocEntry> tocs = rawData.getParcelableArrayList(Book.BKEY_TOC_LIST);
+        final List<TocEntry> tocs = bookData.getToc();
         assertNotNull(tocs);
         assertEquals(5, tocs.size());
 

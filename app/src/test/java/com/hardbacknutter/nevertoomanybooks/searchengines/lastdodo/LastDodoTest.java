@@ -28,7 +28,6 @@ import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -68,24 +67,23 @@ class LastDodoTest
         final String filename = "/lastdodo/7323911-de-37ste-parallel.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{false, false}, rawData);
+        searchEngine.parse(context, document, new boolean[]{false, false}, bookData);
         // System.out.println(rawData);
 
-        assertEquals("De 37ste parallel", rawData.getString(DBKey.TITLE));
-        assertEquals("9789463064385", rawData.getString(DBKey.BOOK_ISBN));
-        assertEquals("2018", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
-        assertEquals("48", rawData.getString(DBKey.PAGE_COUNT));
-        assertEquals("Hardcover", rawData.getString(DBKey.FORMAT));
-        assertEquals("Nederlands", rawData.getString(DBKey.LANGUAGE));
-        assertEquals("Gekleurd", rawData.getString(DBKey.COLOR));
+        assertEquals("De 37ste parallel", bookData.getString(DBKey.TITLE, null));
+        assertEquals("9789463064385", bookData.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("2018", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("48", bookData.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("Hardcover", bookData.getString(DBKey.FORMAT, null));
+        assertEquals("Nederlands", bookData.getString(DBKey.LANGUAGE, null));
+        assertEquals("Gekleurd", bookData.getString(DBKey.COLOR, null));
 
-        final ArrayList<Publisher> allPublishers = rawData
-                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+        final ArrayList<Publisher> allPublishers = bookData.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Silvester", allPublishers.get(0).getName());
 
-        final ArrayList<Series> allSeries = rawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+        final ArrayList<Series> allSeries = bookData.getSeries();
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -93,7 +91,7 @@ class LastDodoTest
         assertEquals("Hauteville House", series.getTitle());
         assertEquals("14", series.getNumber());
 
-        final ArrayList<Author> authors = rawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        final ArrayList<Author> authors = bookData.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
 

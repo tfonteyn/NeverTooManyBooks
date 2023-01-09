@@ -30,7 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -84,36 +84,36 @@ class IsfdbBookHandlerTest
 
         final Document document = loadDocument(filename, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
                                                locationHeader);
-        searchEngine.parse(context, document, new boolean[]{false, false}, rawData);
+        searchEngine.parse(context, document, new boolean[]{false, false}, bookData);
         // System.out.println(rawData);
 
-        assertEquals("Like Nothing on Earth", rawData.getString(DBKey.TITLE));
-        assertEquals(112781L, rawData.getLong(DBKey.SID_ISFDB));
+        assertEquals("Like Nothing on Earth", bookData.getString(DBKey.TITLE, null));
+        assertEquals(112781L, bookData.getLong(DBKey.SID_ISFDB));
         // On the site: "Date: 1986-10-00". Our code substitutes "00" with "01"
-        assertEquals("1986-10-01", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
-        assertEquals("0413600106", rawData.getString(DBKey.BOOK_ISBN));
-        assertEquals("9780413600103", rawData.getString(IsfdbSearchEngine.SiteField.ISBN_2));
-        assertEquals(1.95d, rawData.getDouble(DBKey.PRICE_LISTED));
-        assertEquals(Money.GBP, rawData.getString(DBKey.PRICE_LISTED_CURRENCY));
-        assertEquals("159", rawData.getString(DBKey.PAGE_COUNT));
-        assertEquals("pb", rawData.getString(DBKey.FORMAT));
-        assertEquals("COLLECTION", rawData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE));
-        assertEquals(Book.ContentType.Anthology.getId(), rawData.getLong(DBKey.TOC_TYPE__BITMASK));
+        assertEquals("1986-10-01", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("0413600106", bookData.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("9780413600103", bookData.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
+        assertEquals(1.95d, bookData.getDouble(DBKey.PRICE_LISTED));
+        assertEquals(Money.GBP, bookData.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertEquals("159", bookData.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("pb", bookData.getString(DBKey.FORMAT, null));
+        assertEquals("COLLECTION", bookData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
+        assertEquals(BookData.ContentType.Anthology.getId(),
+                     bookData.getLong(DBKey.TOC_TYPE__BITMASK));
 
-        assertEquals("13665857", rawData.getString(DBKey.SID_OCLC));
+        assertEquals("13665857", bookData.getString(DBKey.SID_OCLC, null));
 
         assertEquals("First published in Great Britain 1975 by Dobson Books Ltd." +
                      " This edition published 1986 by Methuen London Ltd. Month from Locus1",
-                     rawData.getString(DBKey.DESCRIPTION));
+                     bookData.getString(DBKey.DESCRIPTION, null));
 
-        final ArrayList<Publisher> allPublishers = rawData
-                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+        final ArrayList<Publisher> allPublishers = bookData.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Methuen", allPublishers.get(0).getName());
 
-        final ArrayList<Author> authors = rawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        final ArrayList<Author> authors = bookData.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Russell", authors.get(0).getFamilyName());
@@ -128,7 +128,7 @@ class IsfdbBookHandlerTest
 //        assertEquals("Hugi", authors.get(1).getFamilyName());
 //        assertEquals("Maurice G.", authors.get(1).getGivenNames());
 
-        final ArrayList<TocEntry> toc = rawData.getParcelableArrayList(Book.BKEY_TOC_LIST);
+        final ArrayList<TocEntry> toc = bookData.getToc();
         assertNotNull(toc);
         //7 • Allamagoosa • (1955) • short story by Eric Frank Russell
         //24 • Hobbyist • (1947) • novelette by Eric Frank Russell
@@ -157,28 +157,27 @@ class IsfdbBookHandlerTest
 
         final Document document = loadDocument(filename, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
                                                locationHeader);
-        searchEngine.parse(context, document, new boolean[]{false, false}, rawData);
+        searchEngine.parse(context, document, new boolean[]{false, false}, bookData);
         // System.out.println(rawData);
 
-        assertEquals("Mort", rawData.getString(DBKey.TITLE));
-        assertEquals(431964L, rawData.getLong(DBKey.SID_ISFDB));
-        assertEquals("2013-11-07", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
-        assertEquals("9781473200104", rawData.getString(DBKey.BOOK_ISBN));
-        assertEquals("1473200105", rawData.getString(IsfdbSearchEngine.SiteField.ISBN_2));
-        assertEquals(9.99d, rawData.getDouble(DBKey.PRICE_LISTED));
-        assertEquals(Money.GBP, rawData.getString(DBKey.PRICE_LISTED_CURRENCY));
-        assertEquals("257", rawData.getString(DBKey.PAGE_COUNT));
-        assertEquals("hc", rawData.getString(DBKey.FORMAT));
-        assertEquals("NOVEL", rawData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE));
+        assertEquals("Mort", bookData.getString(DBKey.TITLE, null));
+        assertEquals(431964L, bookData.getLong(DBKey.SID_ISFDB));
+        assertEquals("2013-11-07", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("9781473200104", bookData.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("1473200105", bookData.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
+        assertEquals(9.99d, bookData.getDouble(DBKey.PRICE_LISTED));
+        assertEquals(Money.GBP, bookData.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertEquals("257", bookData.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("hc", bookData.getString(DBKey.FORMAT, null));
+        assertEquals("NOVEL", bookData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
 
-        final ArrayList<Publisher> allPublishers = rawData
-                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+        final ArrayList<Publisher> allPublishers = bookData.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Gollancz", allPublishers.get(0).getName());
 
-        final ArrayList<Author> authors = rawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        final ArrayList<Author> authors = bookData.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Pratchett", authors.get(0).getFamilyName());
@@ -189,7 +188,7 @@ class IsfdbBookHandlerTest
         assertEquals("Joe", authors.get(1).getGivenNames());
         assertEquals(Author.TYPE_COVER_ARTIST, authors.get(1).getType());
 
-        final ArrayList<Series> series = rawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+        final ArrayList<Series> series = bookData.getSeries();
         assertNotNull(series);
         assertEquals(2, series.size());
         // Pub. Series
@@ -198,7 +197,7 @@ class IsfdbBookHandlerTest
         assertEquals("Discworld", series.get(1).getTitle());
         assertEquals("4", series.get(1).getNumber());
 
-        final ArrayList<TocEntry> toc = rawData.getParcelableArrayList(Book.BKEY_TOC_LIST);
+        final ArrayList<TocEntry> toc = bookData.getToc();
         assertNotNull(toc);
         assertEquals(1, toc.size());
         final TocEntry entry = toc.get(0);
@@ -217,30 +216,29 @@ class IsfdbBookHandlerTest
 
         final Document document = loadDocument(filename, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
                                                locationHeader);
-        searchEngine.parse(context, document, new boolean[]{false, false}, rawData);
+        searchEngine.parse(context, document, new boolean[]{false, false}, bookData);
         // System.out.println(rawData);
 
-        assertEquals("The Shepherd's Crown", rawData.getString(DBKey.TITLE));
-        assertEquals(542125L, rawData.getLong(DBKey.SID_ISFDB));
-        assertEquals("2015-09-01", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
-        assertEquals("9780062429995", rawData.getString(DBKey.BOOK_ISBN));
-        assertEquals("006242999X", rawData.getString(IsfdbSearchEngine.SiteField.ISBN_2));
-        assertEquals(11.99d, rawData.getDouble(DBKey.PRICE_LISTED));
-        assertEquals(Money.USD, rawData.getString(DBKey.PRICE_LISTED_CURRENCY));
-        assertEquals("ebook", rawData.getString(DBKey.FORMAT));
-        assertEquals("NOVEL", rawData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE));
+        assertEquals("The Shepherd's Crown", bookData.getString(DBKey.TITLE, null));
+        assertEquals(542125L, bookData.getLong(DBKey.SID_ISFDB));
+        assertEquals("2015-09-01", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("9780062429995", bookData.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("006242999X", bookData.getString(IsfdbSearchEngine.SiteField.ISBN_2, null));
+        assertEquals(11.99d, bookData.getDouble(DBKey.PRICE_LISTED));
+        assertEquals(Money.USD, bookData.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertEquals("ebook", bookData.getString(DBKey.FORMAT, null));
+        assertEquals("NOVEL", bookData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE, null));
 
-        assertEquals("2015943558", rawData.getString(DBKey.SID_LCCN));
-        assertEquals("B00W2EBY8O", rawData.getString(DBKey.SID_ASIN));
+        assertEquals("2015943558", bookData.getString(DBKey.SID_LCCN, null));
+        assertEquals("B00W2EBY8O", bookData.getString(DBKey.SID_ASIN, null));
 
-        final ArrayList<Publisher> allPublishers = rawData
-                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+        final ArrayList<Publisher> allPublishers = bookData.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Harper", allPublishers.get(0).getName());
 
-        final ArrayList<Author> authors = rawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        final ArrayList<Author> authors = bookData.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Pratchett", authors.get(0).getFamilyName());
@@ -251,13 +249,13 @@ class IsfdbBookHandlerTest
         assertEquals("Jim", authors.get(1).getGivenNames());
         assertEquals(Author.TYPE_COVER_ARTIST, authors.get(1).getType());
 
-        final ArrayList<Series> series = rawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+        final ArrayList<Series> series = bookData.getSeries();
         assertNotNull(series);
         assertEquals(1, series.size());
         assertEquals("Tiffany Aching", series.get(0).getTitle());
         assertEquals("41", series.get(0).getNumber());
 
-        final ArrayList<TocEntry> toc = rawData.getParcelableArrayList(Book.BKEY_TOC_LIST);
+        final ArrayList<TocEntry> toc = bookData.getToc();
         assertNotNull(toc);
         assertEquals(2, toc.size());
         TocEntry entry = toc.get(0);

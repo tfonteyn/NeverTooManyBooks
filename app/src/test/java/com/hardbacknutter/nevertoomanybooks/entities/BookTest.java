@@ -23,13 +23,13 @@ import androidx.annotation.NonNull;
 
 import java.util.Locale;
 
-import org.junit.jupiter.api.Test;
-
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -45,7 +45,7 @@ class BookTest
     void preprocessPrices01() {
         setLocale(Locale.US);
 
-        final Book book = new Book(rawData);
+        final Book book = new Book(bookData);
         book.putString(DBKey.LANGUAGE, "eng");
         book.putMoney(DBKey.PRICE_LISTED, new Money(1.23d, "USD"));
 
@@ -54,7 +54,7 @@ class BookTest
         // dump(book);
 
         assertEquals(1.23d, book.getDouble(DBKey.PRICE_LISTED));
-        assertEquals("USD", book.getString(DBKey.PRICE_LISTED_CURRENCY));
+        assertEquals("USD", book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
     }
 
     /** US english book, price set, currency not set. */
@@ -62,7 +62,7 @@ class BookTest
     void preprocessPrices02() {
         setLocale(Locale.US);
 
-        final Book book = new Book(rawData);
+        final Book book = new Book(bookData);
         book.putString(DBKey.LANGUAGE, "eng");
         book.putMoney(DBKey.PRICE_LISTED, new Money(0d, ""));
 
@@ -85,7 +85,7 @@ class BookTest
     void preprocessPrices03() {
         setLocale(Locale.FRANCE);
 
-        final Book book = new Book(rawData);
+        final Book book = new Book(bookData);
         book.putString(DBKey.LANGUAGE, "fra");
         // as a valid string
         book.putString(DBKey.PRICE_LISTED, "");
@@ -111,7 +111,7 @@ class BookTest
     void preprocessPrices04() {
         setLocale(Locale.FRANCE);
 
-        final Book book = new Book(rawData);
+        final Book book = new Book(bookData);
         book.putString(DBKey.LANGUAGE, "eng");
         book.putMoney(DBKey.PRICE_LISTED, new Money(Locale.ENGLISH, "EUR 45"));
 
@@ -120,13 +120,13 @@ class BookTest
         //dump(book);
 
         assertEquals(45d, book.getDouble(DBKey.PRICE_LISTED));
-        assertEquals(Money.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY));
+        assertEquals(Money.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
     }
 
     @Test
     void preprocessExternalIdsForInsert() {
 
-        final Book book = new Book(rawData);
+        final Book book = new Book(bookData);
 
         // Long: valid number
         book.put(DBKey.SID_GOODREADS_BOOK, 2L);
@@ -158,20 +158,20 @@ class BookTest
         assertFalse(book.contains(DBKey.SID_LIBRARY_THING));
         assertFalse(book.contains(DBKey.SID_STRIP_INFO));
 
-        assertEquals("test", book.getString(DBKey.BOOK_ISBN));
+        assertEquals("test", book.getString(DBKey.BOOK_ISBN, null));
         assertFalse(book.contains(DBKey.SID_OPEN_LIBRARY));
 
         bdh.processNullsAndBlanks();
         dump(book);
         // should not have any effect, so same tests:
         assertEquals(2, book.getLong(DBKey.SID_GOODREADS_BOOK));
-        assertEquals("test", book.getString(DBKey.BOOK_ISBN));
+        assertEquals("test", book.getString(DBKey.BOOK_ISBN, null));
     }
 
     @Test
     void preprocessExternalIdsForUpdate() {
 
-        final Book book = new Book(rawData);
+        final Book book = new Book(bookData);
 
         // Long: valid number
         book.put(DBKey.SID_GOODREADS_BOOK, 2L);
@@ -205,7 +205,7 @@ class BookTest
         assertNull(book.get(DBKey.SID_LIBRARY_THING));
         assertNull(book.get(DBKey.SID_STRIP_INFO));
 
-        assertEquals("test", book.getString(DBKey.BOOK_ISBN));
+        assertEquals("test", book.getString(DBKey.BOOK_ISBN, null));
         assertNull(book.get(DBKey.SID_OPEN_LIBRARY));
 
 
@@ -218,7 +218,7 @@ class BookTest
         assertNull(book.get(DBKey.SID_LIBRARY_THING));
         assertNull(book.get(DBKey.SID_STRIP_INFO));
 
-        assertEquals("test", book.getString(DBKey.BOOK_ISBN));
+        assertEquals("test", book.getString(DBKey.BOOK_ISBN, null));
         assertNull(book.get(DBKey.SID_OPEN_LIBRARY));
     }
 
@@ -238,7 +238,7 @@ class BookTest
     /** Domain: text, default "". */
     @Test
     void preprocessNullsAndBlanksForInsert() {
-        final Book book = new Book(rawData);
+        final Book book = new Book(bookData);
         book.put(DBKey.DATE_ACQUIRED, "2020-01-14");
         book.put(DBKey.READ_START__DATE, "");
         book.put(DBKey.READ_END__DATE, null);
@@ -249,10 +249,10 @@ class BookTest
         final BookDaoHelper bdh = new BookDaoHelper(context, book, true);
         bdh.processNullsAndBlanks();
 
-        assertEquals("2020-01-14", book.getString(DBKey.DATE_ACQUIRED));
+        assertEquals("2020-01-14", book.getString(DBKey.DATE_ACQUIRED, null));
 
         // text, default "". Storing an empty string is allowed.
-        assertEquals("", book.getString(DBKey.READ_START__DATE));
+        assertEquals("", book.getString(DBKey.READ_START__DATE, null));
 
         // text, default "". A null is removed.
         assertFalse(book.contains(DBKey.READ_END__DATE));
@@ -263,7 +263,7 @@ class BookTest
 
     @Test
     void preprocessNullsAndBlanksForUpdate() {
-        final Book book = new Book(rawData);
+        final Book book = new Book(bookData);
         book.put(DBKey.DATE_ACQUIRED, "2020-01-14");
         book.put(DBKey.READ_START__DATE, "");
         book.put(DBKey.READ_END__DATE, null);
@@ -274,20 +274,20 @@ class BookTest
         final BookDaoHelper bdh = new BookDaoHelper(context, book, false);
         bdh.processNullsAndBlanks();
 
-        assertEquals("2020-01-14", book.getString(DBKey.DATE_ACQUIRED));
+        assertEquals("2020-01-14", book.getString(DBKey.DATE_ACQUIRED, null));
 
         // text, default "". Storing an empty string is allowed.
-        assertEquals("", book.getString(DBKey.READ_START__DATE));
+        assertEquals("", book.getString(DBKey.READ_START__DATE, null));
 
         // text, default "". A null is replaced by the default
-        assertEquals("", book.getString(DBKey.READ_END__DATE));
+        assertEquals("", book.getString(DBKey.READ_END__DATE, null));
 
         assertEquals(12.34d, book.getDouble(DBKey.PRICE_LISTED));
         assertEquals(0d, book.getDouble(DBKey.PRICE_PAID));
     }
 
     private void dump(@NonNull final Book book) {
-        for (final String key : rawData.keySet()) {
+        for (final String key : bookData.keySet()) {
             final Object value = book.get(key);
             System.out.println(key + "=" + value);
         }

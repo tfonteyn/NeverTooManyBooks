@@ -21,11 +21,11 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 
 import java.util.Locale;
 
-import org.junit.jupiter.api.Test;
-
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.sync.FormatMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.Mapper;
+
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -37,12 +37,12 @@ class FormatMapperTest
         setLocale(Locale.UK);
         final Mapper mapper = new FormatMapper();
         final String key = mapper.getKey();
-        rawData.putString(key, "pb");
-        mapper.map(context, rawData);
-        assertEquals("Paperback", rawData.getString(key));
+        bookData.putString(key, "pb");
+        mapper.map(context, bookData);
+        assertEquals("Paperback", bookData.getString(key, null));
 
-        rawData.putString(key, "Dimensions 5x4");
-        mapper.map(context, rawData);
-        assertEquals("Dim 5x4", rawData.getString(key));
+        bookData.putString(key, "Dimensions 5x4");
+        mapper.map(context, bookData);
+        assertEquals("Dim 5x4", bookData.getString(key, null));
     }
 }

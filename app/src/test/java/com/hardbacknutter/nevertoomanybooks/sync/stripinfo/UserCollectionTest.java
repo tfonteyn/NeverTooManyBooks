@@ -19,35 +19,30 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
-import android.os.Bundle;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
-
 import javax.xml.parsers.ParserConfigurationException;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.xml.sax.SAXException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -106,31 +101,30 @@ class UserCollectionTest
             document = Jsoup.parse(is, UTF_8, locationHeader);
 
             assertNotNull(document);
-            Assertions.assertTrue(document.hasText());
+            assertTrue(document.hasText());
 
-            final Optional<List<Bundle>> oCollection =
+            final Optional<List<BookData>> oCollection =
                     uc.parseDocument(context, document, 1, logger);
             assertTrue(oCollection.isPresent());
 
-            final List<Bundle> collection = oCollection.get();
+            final List<BookData> collection = oCollection.get();
             assertEquals(3, uc.getMaxPages());
             assertNotNull(collection);
 
             assertEquals(25, collection.size());
 
-            assertEquals(24, collection
+            assertEquals(25, collection
                     .stream()
-                    .map(b -> b.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST))
-                    .filter(Objects::nonNull)
+                    .map(BookData::getBookshelves)
                     .count());
 
-            final Bundle b0 = collection.get(0);
+            final BookData b0 = collection.get(0);
             assertEquals(5435, b0.getLong(DBKey.SID_STRIP_INFO));
             assertEquals(5408, b0.getLong(DBKey.STRIP_INFO_COLL_ID));
 
             assertEquals(45f, b0.getDouble(DBKey.PRICE_PAID));
-            assertEquals("EUR", b0.getString(DBKey.PRICE_PAID_CURRENCY));
-            assertEquals("2021-03-10", b0.getString(DBKey.DATE_ACQUIRED));
+            assertEquals("EUR", b0.getString(DBKey.PRICE_PAID_CURRENCY, null));
+            assertEquals("2021-03-10", b0.getString(DBKey.DATE_ACQUIRED, null));
 
             assertEquals(1, b0.getInt(DBKey.STRIP_INFO_AMOUNT));
             assertTrue(b0.getBoolean(DBKey.STRIP_INFO_OWNED));
@@ -162,11 +156,11 @@ class UserCollectionTest
             assertNotNull(document);
             assertTrue(document.hasText());
 
-            final Optional<List<Bundle>> oCollection =
+            final Optional<List<BookData>> oCollection =
                     uc.parseDocument(context, document, 3, logger);
             assertTrue(oCollection.isPresent());
 
-            final List<Bundle> collection = oCollection.get();
+            final List<BookData> collection = oCollection.get();
             assertNotNull(collection);
             assertEquals(1, collection.size());
         }

@@ -22,13 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -72,23 +72,22 @@ public class BedethequeTest
         final String filename = "/bedetheque/BD-Fond-du-monde-Tome-6-La-grande-terre-19401.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{true, true}, rawData);
-        System.out.println(rawData);
+        searchEngine.parse(context, document, new boolean[]{true, true}, bookData);
+        System.out.println(bookData);
 
-        assertEquals("La grande terre", rawData.getString(DBKey.TITLE));
+        assertEquals("La grande terre", bookData.getString(DBKey.TITLE, null));
 
-        assertEquals("2002-10", rawData.getString(DBKey.BOOK_PUBLICATION__DATE));
-        assertEquals("Hardcover", rawData.getString(DBKey.FORMAT));
-        assertEquals("2840557428", rawData.getString(DBKey.BOOK_ISBN));
-        assertEquals("46", rawData.getString(DBKey.PAGE_COUNT));
+        assertEquals("2002-10", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("Hardcover", bookData.getString(DBKey.FORMAT, null));
+        assertEquals("2840557428", bookData.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("46", bookData.getString(DBKey.PAGE_COUNT, null));
 
-        final ArrayList<Publisher> allPublishers = rawData
-                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+        final ArrayList<Publisher> allPublishers = bookData.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Delcourt", allPublishers.get(0).getName());
 
-        final ArrayList<Series> allSeries = rawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+        final ArrayList<Series> allSeries = bookData.getSeries();
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -96,7 +95,7 @@ public class BedethequeTest
         assertEquals("Le Fond du monde", series.getTitle());
         assertEquals("6", series.getNumber());
 
-        final ArrayList<Author> authors = rawData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        final ArrayList<Author> authors = bookData.getAuthors();
         assertNotNull(authors);
         assertEquals(4, authors.size());
 
@@ -120,17 +119,19 @@ public class BedethequeTest
         assertEquals("Yves", author.getGivenNames());
         assertEquals(Author.TYPE_FOREWORD, author.getType());
 
-        ArrayList<String> coverList;
-        coverList = rawData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
+        List<String> coverList;
+        coverList = bookData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
         assertNotNull(coverList);
         assertEquals(1, coverList.size());
         String cover;
         cover = coverList.get(0);
-        assertTrue(cover.endsWith("bedetheque_2840557428_0_.jpg"));
-        coverList = rawData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
+        assertTrue(cover.endsWith(searchEngine.getEngineId().getPreferenceKey()
+                                  + "_2840557428_0_.jpg"));
+        coverList = bookData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
         assertNotNull(coverList);
         assertEquals(1, coverList.size());
         cover = coverList.get(0);
-        assertTrue(cover.endsWith("bedetheque_2840557428_1_.jpg"));
+        assertTrue(cover.endsWith(searchEngine.getEngineId().getPreferenceKey() +
+                                  "_2840557428_1_.jpg"));
     }
 }

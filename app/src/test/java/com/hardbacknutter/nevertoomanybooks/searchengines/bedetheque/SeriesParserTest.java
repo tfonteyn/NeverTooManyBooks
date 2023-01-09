@@ -84,13 +84,13 @@ public class SeriesParserTest
     void checkSeries(@NonNull final String name,
                      @NonNull final String expected,
                      @Nullable final String lang) {
-        rawData.clear();
-        final Series series = searchEngine.processSeries(rawData, name);
+        bookData.clearData();
+        final Series series = searchEngine.processSeries(bookData, name);
         assertEquals(expected, series.getTitle(), "for name=`" + name + '`');
         if (lang == null) {
-            assertFalse(rawData.containsKey(DBKey.LANGUAGE), "for name=`" + name + '`');
+            assertFalse(bookData.contains(DBKey.LANGUAGE), "for name=`" + name + '`');
         } else {
-            assertEquals(lang, rawData.getString(DBKey.LANGUAGE), "for name=`" + name + '`');
+            assertEquals(lang, bookData.getString(DBKey.LANGUAGE, null), "for name=`" + name + '`');
         }
     }
 }
