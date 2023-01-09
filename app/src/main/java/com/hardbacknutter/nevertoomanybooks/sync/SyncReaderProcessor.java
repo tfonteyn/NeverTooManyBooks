@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -43,6 +42,7 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
+import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -53,7 +53,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -145,11 +147,11 @@ public final class SyncReaderProcessor
                 case CopyIfBlank: {
                     switch (field.key) {
                         // We should never have a book without authors, but be paranoid
-                        case Book.BKEY_AUTHOR_LIST:
-                        case Book.BKEY_SERIES_LIST:
-                        case Book.BKEY_PUBLISHER_LIST:
-                        case Book.BKEY_TOC_LIST:
-                        case Book.BKEY_BOOKSHELF_LIST:
+                        case BookData.BKEY_AUTHOR_LIST:
+                        case BookData.BKEY_SERIES_LIST:
+                        case BookData.BKEY_PUBLISHER_LIST:
+                        case BookData.BKEY_TOC_LIST:
+                        case BookData.BKEY_BOOKSHELF_LIST:
                             if (book.contains(field.key)) {
                                 final ArrayList<Parcelable> list =
                                         book.getParcelableArrayList(field.key);
@@ -214,7 +216,7 @@ public final class SyncReaderProcessor
                         final long bookId,
                         @NonNull final Book book,
                         @NonNull final Map<String, SyncField> fieldsWanted,
-                        @NonNull final Bundle bookData) {
+                        @NonNull final BookData bookData) {
 
         // Filter the data to remove keys we don't care about
         final Collection<String> toRemove = new ArrayList<>();
@@ -234,7 +236,7 @@ public final class SyncReaderProcessor
         fieldsWanted
                 .values()
                 .stream()
-                .filter(field -> bookData.containsKey(field.key))
+                .filter(field -> bookData.contains(field.key))
                 .forEach(field -> {
                     // Handle thumbnail specially
                     if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
@@ -294,11 +296,11 @@ public final class SyncReaderProcessor
     private boolean hasField(@NonNull final Book book,
                              @NonNull final String key) {
         switch (key) {
-            case Book.BKEY_AUTHOR_LIST:
-            case Book.BKEY_SERIES_LIST:
-            case Book.BKEY_PUBLISHER_LIST:
-            case Book.BKEY_TOC_LIST:
-            case Book.BKEY_BOOKSHELF_LIST:
+            case BookData.BKEY_AUTHOR_LIST:
+            case BookData.BKEY_SERIES_LIST:
+            case BookData.BKEY_PUBLISHER_LIST:
+            case BookData.BKEY_TOC_LIST:
+            case BookData.BKEY_BOOKSHELF_LIST:
                 if (book.contains(key)) {
                     return !book.getParcelableArrayList(key).isEmpty();
                 }
@@ -317,7 +319,7 @@ public final class SyncReaderProcessor
     }
 
     private void processCover(@NonNull final Book book,
-                              @NonNull final Bundle bookData,
+                              @NonNull final BookData bookData,
                               @IntRange(from = 0, to = 1) final int cIdx) {
 
         final String fileSpec = bookData.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
@@ -348,11 +350,11 @@ public final class SyncReaderProcessor
     private void processList(@NonNull final Context context,
                              @NonNull final Book book,
                              @NonNull final Locale bookLocale,
-                             @NonNull final Bundle bookData,
+                             @NonNull final DataHolder bookData,
                              @NonNull final String key) {
         final ServiceLocator sl = ServiceLocator.getInstance();
         switch (key) {
-            case Book.BKEY_AUTHOR_LIST: {
+            case BookData.BKEY_AUTHOR_LIST: {
                 final ArrayList<Author> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(book.getAuthors());
@@ -361,7 +363,7 @@ public final class SyncReaderProcessor
                 }
                 break;
             }
-            case Book.BKEY_SERIES_LIST: {
+            case BookData.BKEY_SERIES_LIST: {
                 final ArrayList<Series> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(book.getSeries());
@@ -370,7 +372,7 @@ public final class SyncReaderProcessor
                 }
                 break;
             }
-            case Book.BKEY_PUBLISHER_LIST: {
+            case BookData.BKEY_PUBLISHER_LIST: {
                 final ArrayList<Publisher> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(book.getPublishers());
@@ -379,7 +381,7 @@ public final class SyncReaderProcessor
                 }
                 break;
             }
-            case Book.BKEY_TOC_LIST: {
+            case BookData.BKEY_TOC_LIST: {
                 final ArrayList<TocEntry> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(book.getToc());
@@ -388,7 +390,7 @@ public final class SyncReaderProcessor
                 }
                 break;
             }
-            case Book.BKEY_BOOKSHELF_LIST: {
+            case BookData.BKEY_BOOKSHELF_LIST: {
                 final ArrayList<Bookshelf> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(book.getBookshelves());
