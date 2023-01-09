@@ -358,8 +358,8 @@ public class SearchBookUpdatesViewModel
                     clearSearchCriteria();
                     boolean canSearch = false;
 
-                    final String isbnStr = currentBook.getString(DBKey.BOOK_ISBN);
-                    if (!isbnStr.isEmpty()) {
+                    final String isbnStr = currentBook.getString(DBKey.BOOK_ISBN, null);
+                    if (isbnStr != null && !isbnStr.isEmpty()) {
                         setIsbnSearchText(isbnStr);
                         canSearch = true;
                     }
@@ -379,8 +379,8 @@ public class SearchBookUpdatesViewModel
                     SearchEngineConfig.getAll().forEach(seConfig -> {
                         final Domain domain = seConfig.getExternalIdDomain();
                         if (domain != null) {
-                            final String value = currentBook.getString(domain.getName());
-                            if (!value.isEmpty() && !"0".equals(value)) {
+                            final String value = currentBook.getString(domain.getName(), null);
+                            if (value != null && !value.isEmpty() && !"0".equals(value)) {
                                 externalIds.put(seConfig.getEngineId(), value);
                             }
                         }
