@@ -164,6 +164,7 @@ public class BookshelfDaoImpl
             while (cursor.moveToNext()) {
                 final String dbKey = rowData.getString(DBKey.FILTER_DBKEY);
                 final String value = rowData.getString(DBKey.FILTER_VALUE, null);
+                // setPersistedValue accepts null values, but is there any point using null?
                 if (value != null) {
                     final PFilter<?> filter = FilterFactory.createFilter(dbKey);
                     if (filter != null) {
