@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
@@ -42,11 +41,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
@@ -187,12 +185,12 @@ public class OpenLibrarySearchEngine
 
     @NonNull
     @Override
-    public Bundle searchByExternalId(@NonNull final Context context,
-                                     @NonNull final String externalId,
-                                     @NonNull final boolean[] fetchCovers)
+    public BookData searchByExternalId(@NonNull final Context context,
+                                       @NonNull final String externalId,
+                                       @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException {
 
-        final Bundle bookData = ServiceLocator.newBundle();
+        final BookData bookData = new BookData();
 
         final String url = getHostUrl() + String.format(BASE_BOOK_URL, "OLID", externalId);
 
@@ -207,12 +205,12 @@ public class OpenLibrarySearchEngine
      */
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context context,
-                               @NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchCovers)
+    public BookData searchByIsbn(@NonNull final Context context,
+                                 @NonNull final String validIsbn,
+                                 @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException {
 
-        final Bundle bookData = ServiceLocator.newBundle();
+        final BookData bookData = new BookData();
 
         final String url = getHostUrl() + String.format(BASE_BOOK_URL, "ISBN", validIsbn);
 
@@ -285,7 +283,7 @@ public class OpenLibrarySearchEngine
     private void fetchBook(@NonNull final Context context,
                            @NonNull final String url,
                            @NonNull final boolean[] fetchCovers,
-                           @NonNull final Bundle bookData)
+                           @NonNull final BookData bookData)
             throws StorageException, SearchException {
 
         futureHttpGet = createFutureGetRequest();
@@ -468,7 +466,7 @@ public class OpenLibrarySearchEngine
     boolean handleResponse(@NonNull final Context context,
                            @NonNull final String response,
                            @NonNull final boolean[] fetchCovers,
-                           @NonNull final Bundle bookData)
+                           @NonNull final BookData bookData)
             throws StorageException,
                    SearchException {
 
@@ -514,7 +512,7 @@ public class OpenLibrarySearchEngine
                        @NonNull final String validIsbn,
                        @NonNull final JSONObject document,
                        @NonNull final boolean[] fetchCovers,
-                       @NonNull final Bundle bookData)
+                       @NonNull final BookData bookData)
             throws StorageException {
 
         final DateParser dateParser = new FullDateParser(context);
@@ -535,7 +533,6 @@ public class OpenLibrarySearchEngine
 
         // s = document.optString("subtitle");
 
-        final ArrayList<Author> authors = new ArrayList<>();
         a = document.optJSONArray("authors");
         if (a != null && !a.isEmpty()) {
             for (int ai = 0; ai < a.length(); ai++) {
@@ -543,13 +540,10 @@ public class OpenLibrarySearchEngine
                 if (element != null) {
                     final String name = element.optString("name");
                     if (name != null && !name.isEmpty()) {
-                        authors.add(Author.from(name));
+                        bookData.add(Author.from(name));
                     }
                 }
             }
-        }
-        if (!authors.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authors);
         }
 
         // s = jsonObject.optString("pagination");
@@ -599,22 +593,18 @@ public class OpenLibrarySearchEngine
         // always use the first author only for TOC entries.
         a = document.optJSONArray("table_of_contents");
         if (a != null && !a.isEmpty()) {
-            final ArrayList<TocEntry> toc = new ArrayList<>();
             for (int ai = 0; ai < a.length(); ai++) {
                 element = a.optJSONObject(ai);
                 if (element != null) {
                     final String title = element.optString("title");
                     if (title != null && !title.isEmpty()) {
-                        toc.add(new TocEntry(authors.get(0), title));
+                        bookData.add(new TocEntry(bookData.getAuthors().get(0), title));
                     }
                 }
             }
 
-            if (!toc.isEmpty()) {
-                bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
-                if (toc.size() > 1) {
-                    bookData.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Collection.getId());
-                }
+            if (!bookData.getToc().isEmpty()) {
+                bookData.putLong(DBKey.TOC_TYPE__BITMASK, BookData.ContentType.Collection.getId());
             }
         }
 
@@ -623,33 +613,28 @@ public class OpenLibrarySearchEngine
         }
 
         if (fetchCovers[0]) {
-            final ArrayList<String> list = parseCovers(document, validIsbn, 0);
-            if (!list.isEmpty()) {
-                bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
-            }
+            parseCovers(document, validIsbn, 0)
+                    .forEach(fileSpec -> bookData.getStringArrayList(
+                            SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]).add(fileSpec));
         }
     }
 
     private void processPublishers(@NonNull final JSONArray a,
-                                   @NonNull final Bundle bookData) {
+                                   @NonNull final BookData bookData) {
         JSONObject element;
-        final ArrayList<Publisher> publishers = new ArrayList<>();
         for (int ai = 0; ai < a.length(); ai++) {
             element = a.optJSONObject(ai);
             if (element != null) {
                 final String name = element.optString("name");
                 if (name != null && !name.isEmpty()) {
-                    publishers.add(Publisher.from(name));
+                    bookData.add(Publisher.from(name));
                 }
             }
-        }
-        if (!publishers.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publishers);
         }
     }
 
     private void processIdentifiers(@NonNull final JSONObject element,
-                                    @NonNull final Bundle bookData) {
+                                    @NonNull final BookData bookData) {
 
         JSONArray a;
 
