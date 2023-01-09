@@ -44,10 +44,9 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -113,7 +112,7 @@ public class BookDaoHelper {
 
         if (book.contains(DBKey.EDITION__BITMASK)) {
             book.putLong(DBKey.EDITION__BITMASK,
-                         book.getLong(DBKey.EDITION__BITMASK) & Book.Edition.BITMASK_ALL_BITS);
+                         book.getLong(DBKey.EDITION__BITMASK) & BookData.Edition.BITMASK_ALL_BITS);
         }
 
         // cleanup/build all price related fields
@@ -453,11 +452,6 @@ public class BookDaoHelper {
             throws StorageException, IOException {
 
         final String uuid = book.getString(DBKey.BOOK_UUID);
-
-        if (BuildConfig.DEBUG /* always */) {
-            // the UUID should always be valid here
-            SanityCheck.requireValue(uuid, "uuid");
-        }
 
         for (int cIdx = 0; cIdx < Book.BKEY_TMP_FILE_SPEC.length; cIdx++) {
             if (book.contains(Book.BKEY_TMP_FILE_SPEC[cIdx])) {
