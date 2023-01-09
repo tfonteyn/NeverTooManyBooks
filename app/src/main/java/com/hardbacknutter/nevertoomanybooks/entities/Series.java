@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * but a particular pain is the titles/series for comics.
  */
 public class Series
-        implements ParcelableEntity, Mergeable {
+        implements Parcelable, Entity, Mergeable {
 
     /** {@link Parcelable}. */
     public static final Creator<Series> CREATOR = new Creator<>() {

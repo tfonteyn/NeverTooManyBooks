@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -40,7 +41,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
-import com.hardbacknutter.nevertoomanybooks.entities.ParcelableEntity;
 
 /**
  * Replacement for the AlertDialog with checkbox setup.
@@ -120,7 +120,7 @@ public class MultiChoiceDialogFragment
         outState.putLongArray(BKEY_SELECTED, selectedItems.stream().mapToLong(o -> o).toArray());
     }
 
-    public abstract static class Launcher<T extends ParcelableEntity>
+    public abstract static class Launcher<T extends Parcelable & Entity>
             implements FragmentResultListener {
 
         private static final String SELECTED = "selected";

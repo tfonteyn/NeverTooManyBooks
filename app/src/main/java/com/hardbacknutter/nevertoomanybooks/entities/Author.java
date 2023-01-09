@@ -69,7 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * TODO: further cleanup of the {@link #getStyledName} and {@link #getStyledName} methods
  */
 public class Author
-        implements ParcelableEntity, Mergeable {
+        implements Parcelable, Entity, Mergeable {
 
     /** {@link Parcelable}. */
     public static final Creator<Author> CREATOR = new Creator<>() {

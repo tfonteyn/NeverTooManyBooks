@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
  * - a purge based on Author is already done)
  */
 public class TocEntry
-        implements ParcelableEntity, Mergeable, AuthorWork {
+        implements Parcelable, Entity, Mergeable, AuthorWork {
 
     /** {@link Parcelable}. */
     public static final Creator<TocEntry> CREATOR = new Creator<>() {

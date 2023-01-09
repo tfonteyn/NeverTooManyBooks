@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * Represents a Publisher.
  */
 public class Publisher
-        implements ParcelableEntity, Mergeable {
+        implements Parcelable, Entity, Mergeable {
 
     /** {@link Parcelable}. */
     public static final Creator<Publisher> CREATOR = new Creator<>() {

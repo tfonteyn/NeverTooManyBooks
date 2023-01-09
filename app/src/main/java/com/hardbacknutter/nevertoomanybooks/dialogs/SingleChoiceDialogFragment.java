@@ -23,6 +23,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.View;
 import android.widget.TextView;
 
@@ -46,7 +47,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
-import com.hardbacknutter.nevertoomanybooks.entities.ParcelableEntity;
 import com.hardbacknutter.nevertoomanybooks.widgets.RadioGroupRecyclerAdapter;
 
 /**
@@ -147,7 +147,7 @@ public class SingleChoiceDialogFragment
         outState.putLong(BKEY_SELECTED, selectedItem);
     }
 
-    public abstract static class Launcher<T extends ParcelableEntity>
+    public abstract static class Launcher<T extends Parcelable & Entity>
             implements FragmentResultListener {
 
         private static final String FIELD_ID = "fieldId";

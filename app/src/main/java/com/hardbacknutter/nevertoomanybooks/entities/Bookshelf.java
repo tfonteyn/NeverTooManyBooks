@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * See {@link #getStyle(Context)}.
  */
 public class Bookshelf
-        implements ParcelableEntity, Mergeable {
+        implements Parcelable, Entity, Mergeable {
 
     /** Log tag. */
     public static final String TAG = "Bookshelf";

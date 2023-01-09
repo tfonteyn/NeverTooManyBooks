@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.fields;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.view.View;
 import android.widget.Checkable;
 
@@ -36,10 +37,10 @@ import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.entities.ParcelableEntity;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
- * A {@link ChipGroup} where each {@link Chip} represents one {@link ParcelableEntity} in a list.
+ * A {@link ChipGroup} where each {@link Chip} represents one {@link Parcelable,Entity} in a list.
  * <p>
  * A {@code null} value is always handled as an empty {@link ArrayList}.
  * <p>
@@ -47,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.ParcelableEntity;
  *
  * @param <T> type of Entity (== Field) value.
  */
-public class ListChipGroupField<T extends ParcelableEntity>
+public class ListChipGroupField<T extends Parcelable & Entity>
         extends BaseField<ArrayList<T>, ChipGroup> {
 
     @NonNull
