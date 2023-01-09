@@ -396,30 +396,30 @@ public class BookDaoImpl
         // unconditional lookup of the book locale!
         final Locale bookLocale = book.getLocale(context);
 
-        if (book.contains(Book.BKEY_BOOKSHELF_LIST)) {
+        if (book.contains(BookData.BKEY_BOOKSHELF_LIST)) {
             // Bookshelves will be inserted if new, but not updated
             insertBookBookshelf(context, book.getId(), book.getBookshelves());
         }
 
-        if (book.contains(Book.BKEY_AUTHOR_LIST)) {
+        if (book.contains(BookData.BKEY_AUTHOR_LIST)) {
             final List<Author> list = book.getAuthors();
             // Authors will be inserted if new, but only updated if allowed
             insertAuthors(context, book.getId(), doUpdates, list, lookupLocale, bookLocale);
         }
 
-        if (book.contains(Book.BKEY_SERIES_LIST)) {
+        if (book.contains(BookData.BKEY_SERIES_LIST)) {
             final List<Series> list = book.getSeries();
             // Series will be inserted if new, but only updated if allowed
             insertSeries(context, book.getId(), doUpdates, list, lookupLocale, bookLocale);
         }
 
-        if (book.contains(Book.BKEY_PUBLISHER_LIST)) {
+        if (book.contains(BookData.BKEY_PUBLISHER_LIST)) {
             final List<Publisher> list = book.getPublishers();
             // Publishers will be inserted if new, but only updated if allowed
             insertPublishers(context, book.getId(), doUpdates, list, lookupLocale, bookLocale);
         }
 
-        if (book.contains(Book.BKEY_TOC_LIST)) {
+        if (book.contains(BookData.BKEY_TOC_LIST)) {
             // TOC entries are two steps away; they can exist in other books
             // Hence we will both insert new entries
             // AND update existing ones if needed.
