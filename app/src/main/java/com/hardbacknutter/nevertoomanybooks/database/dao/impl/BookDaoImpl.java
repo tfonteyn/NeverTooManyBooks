@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -63,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -343,7 +345,7 @@ public class BookDaoImpl
                 if (!uuid.isEmpty()) {
                     // Delete the covers from the file system.
                     for (int cIdx = 0; cIdx < 2; cIdx++) {
-                        Book.getPersistedCoverFile(uuid, cIdx).ifPresent(FileUtils::delete);
+                        new Cover(uuid, cIdx).getPersistedFile().ifPresent(FileUtils::delete);
                     }
                     // and from the cache. If the user flipped the cache on/off we'll
                     // not always be cleaning up correctly. It's not that important though.
