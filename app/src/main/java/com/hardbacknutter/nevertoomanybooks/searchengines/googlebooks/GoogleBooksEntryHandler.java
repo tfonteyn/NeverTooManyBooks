@@ -345,7 +345,7 @@ class GoogleBooksEntryHandler
                 String tmpIsbn = builder.toString();
                 if (tmpIsbn.indexOf("ISBN:") == 0) {
                     tmpIsbn = tmpIsbn.substring(5);
-                    final String isbnStr = bookData.getString(DBKey.BOOK_ISBN);
+                    final String isbnStr = bookData.getString(DBKey.BOOK_ISBN, null);
                     // store the 'longest' isbn
                     if (isbnStr == null || tmpIsbn.length() > isbnStr.length()) {
                         bookData.putString(DBKey.BOOK_ISBN, tmpIsbn);
