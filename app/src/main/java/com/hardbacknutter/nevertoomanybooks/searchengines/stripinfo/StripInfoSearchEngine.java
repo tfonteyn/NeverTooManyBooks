@@ -581,8 +581,9 @@ public class StripInfoSearchEngine
         if (url != null) {
             final String fileSpec = saveCover(isbn, cIdx, url);
             if (fileSpec != null && !fileSpec.isEmpty()) {
-                bookData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[cIdx])
-                        .add(fileSpec);
+                final ArrayList<String> list = new ArrayList<>();
+                list.add(fileSpec);
+                bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[cIdx], list);
             }
         }
     }

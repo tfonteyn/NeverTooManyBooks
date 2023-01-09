@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -283,11 +283,7 @@ class GoogleBooksEntryHandler
                 }
 
                 if (fileSpec != null) {
-                    ArrayList<String> list = bookData.getStringArrayList(
-                            SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
-                    if (list == null) {
-                        list = new ArrayList<>();
-                    }
+                    final ArrayList<String> list = new ArrayList<>();
                     list.add(fileSpec);
                     bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
                 }

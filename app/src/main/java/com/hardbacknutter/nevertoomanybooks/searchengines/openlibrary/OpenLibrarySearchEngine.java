@@ -621,9 +621,10 @@ public class OpenLibrarySearchEngine
         }
 
         if (fetchCovers[0]) {
-            parseCovers(document, validIsbn, 0)
-                    .forEach(fileSpec -> bookData.getStringArrayList(
-                            SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]).add(fileSpec));
+            final ArrayList<String> list = parseCovers(document, validIsbn, 0);
+            if (!list.isEmpty()) {
+                bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
+            }
         }
     }
 
