@@ -106,7 +106,7 @@ public interface DataHolder {
 
     /**
      * Returns the value associated with the given key.
-     * If the key is present, but the value was {@code null}, an empty String will be returned.
+     * If the key is not present, or the value was {@code null}, an empty String will be returned.
      * <p>
      * If the value was not a String, implementations <strong>must</strong> stringify it.
      *
@@ -122,7 +122,7 @@ public interface DataHolder {
 
     /**
      * Returns the value associated with the given key.
-     * If the key is present, but the value was {@code null}, the 'defValue' will be returned.
+     * If the key is not present, or the value was {@code null}, the 'defValue' will be returned.
      * <p>
      * If the value was not a String, implementations <strong>must</strong> stringify it.
      *
