@@ -497,7 +497,7 @@ public class StripInfoSearchEngine
 
         // We DON'T store a toc with a single entry (i.e. the book title itself).
         parseToc(context, document, bookData).ifPresent(toc -> {
-            bookData.addAll(toc);
+            bookData.setToc(toc);
             if (TocEntry.hasMultipleAuthors(toc)) {
                 bookData.putLong(DBKey.TOC_TYPE__BITMASK, BookData.ContentType.Anthology.getId());
             } else {

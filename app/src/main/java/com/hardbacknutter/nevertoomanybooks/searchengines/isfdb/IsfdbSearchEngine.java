@@ -1043,7 +1043,7 @@ public class IsfdbSearchEngine
         if (!toc.isEmpty()) {
             // We always store the toc even if there is only a single entry.
             // ISFDB provides the *original* publication year in the toc which we want to preserve.
-            bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
+            bookData.setToc(toc);
             if (toc.size() > 1) {
                 if (TocEntry.hasMultipleAuthors(toc)) {
                     bookData.putLong(DBKey.TOC_TYPE__BITMASK,

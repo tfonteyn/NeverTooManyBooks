@@ -591,20 +591,27 @@ public class OpenLibrarySearchEngine
 
 
         // always use the first author only for TOC entries.
+        final Author primAuthor = bookData.getPrimaryAuthor();
         a = document.optJSONArray("table_of_contents");
         if (a != null && !a.isEmpty()) {
+            final List<TocEntry> toc = new ArrayList<>();
             for (int ai = 0; ai < a.length(); ai++) {
                 element = a.optJSONObject(ai);
                 if (element != null) {
                     final String title = element.optString("title");
                     if (title != null && !title.isEmpty()) {
-                        bookData.add(new TocEntry(bookData.getAuthors().get(0), title));
+                        //noinspection ConstantConditions
+                        toc.add(new TocEntry(primAuthor, title));
                     }
                 }
             }
 
-            if (!bookData.getToc().isEmpty()) {
-                bookData.putLong(DBKey.TOC_TYPE__BITMASK, BookData.ContentType.Collection.getId());
+            if (!toc.isEmpty()) {
+                bookData.setToc(toc);
+                if (toc.size() > 1) {
+                    bookData.putLong(DBKey.TOC_TYPE__BITMASK,
+                                     BookData.ContentType.Collection.getId());
+                }
             }
         }
 
