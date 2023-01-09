@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.AnyThread;
@@ -37,8 +36,8 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
@@ -170,9 +169,9 @@ public class UserCollection {
     @SuppressLint("DefaultLocale")
     @WorkerThread
     @NonNull
-    Optional<List<Bundle>> fetchPage(@NonNull final Context context,
-                                     final int pageNr,
-                                     @NonNull final ProgressListener progressListener)
+    Optional<List<BookData>> fetchPage(@NonNull final Context context,
+                                       final int pageNr,
+                                       @NonNull final ProgressListener progressListener)
             throws SearchException, StorageException, IOException {
 
         if (!(pageNr == 0 || maxPages > pageNr)) {
@@ -214,10 +213,10 @@ public class UserCollection {
 
     @VisibleForTesting
     @NonNull
-    Optional<List<Bundle>> parseDocument(@NonNull final Context context,
-                                         @NonNull final Document document,
-                                         final int pageNr,
-                                         @NonNull final ProgressListener progressListener)
+    Optional<List<BookData>> parseDocument(@NonNull final Context context,
+                                           @NonNull final Document document,
+                                           final int pageNr,
+                                           @NonNull final ProgressListener progressListener)
             throws SearchException {
         final Element root = document.getElementById("collectionContent");
         if (root != null) {
@@ -247,12 +246,12 @@ public class UserCollection {
      */
     @AnyThread
     @NonNull
-    private List<Bundle> parsePage(@NonNull final Element root) {
-        final List<Bundle> collection = new ArrayList<>();
+    private List<BookData> parsePage(@NonNull final Element root) {
+        final List<BookData> collection = new ArrayList<>();
 
         // showing 'progress' here is pointless as even older devices will be fast.
         for (final Element row : root.select("div.collectionRow")) {
-            final Bundle cData = ServiceLocator.newBundle();
+            final BookData cData = new BookData();
 
             parseRow(row, cData);
             if (!cData.isEmpty()) {
@@ -264,7 +263,7 @@ public class UserCollection {
 
     @AnyThread
     private void parseRow(@NonNull final Element row,
-                          @NonNull final Bundle cData) {
+                          @NonNull final BookData cData) {
         final String idAttr = row.id();
         // sanity check, each row is normally a book.
         if (idAttr.startsWith(ROW_ID_ATTR)) {
@@ -289,7 +288,7 @@ public class UserCollection {
                 }
             } catch (@NonNull final NumberFormatException ignore) {
                 // Make sure we don't return partial data
-                cData.clear();
+                cData.clearData();
             }
         }
     }
@@ -318,7 +317,7 @@ public class UserCollection {
          */
         @AnyThread
         public void parse(@NonNull final Element root,
-                          @NonNull final Bundle destBundle,
+                          @NonNull final BookData destBundle,
                           @IntRange(from = 1) final long collectionId) {
 
             idOwned = "bezit-" + collectionId;
