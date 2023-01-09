@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBindi
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditTocEntryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -145,7 +146,7 @@ public class EditBookTocFragment
     private final ConfirmTocDialogFragment.Launcher confirmTocResultsLauncher =
             new ConfirmTocDialogFragment.Launcher() {
                 @Override
-                public void onResult(@NonNull final Book.ContentType contentType,
+                public void onResult(@NonNull final BookData.ContentType contentType,
                                      @NonNull final List<TocEntry> tocEntries) {
                     onIsfdbDataConfirmed(contentType, tocEntries);
                 }
@@ -419,7 +420,7 @@ public class EditBookTocFragment
                            final int position) {
         final Field<Long, View> typeField = vm.requireField(R.id.book_type);
         //noinspection ConstantConditions
-        final boolean isAnthology = typeField.getValue() == Book.ContentType.Anthology.getId();
+        final boolean isAnthology = typeField.getValue() == BookData.ContentType.Anthology.getId();
         editTocEntryLauncher.launch(vm.getBook(), position, tocEntry, isAnthology);
     }
 
@@ -440,9 +441,9 @@ public class EditBookTocFragment
         });
     }
 
-    private void onIsfdbBook(@NonNull final LiveDataEvent<TaskResult<Bundle>> message) {
+    private void onIsfdbBook(@NonNull final LiveDataEvent<TaskResult<BookData>> message) {
         message.getData().ifPresent(data -> {
-            final Bundle result = data.getResult();
+            final BookData result = data.getResult();
 
             if (result == null) {
                 Snackbar.make(vb.getRoot(), R.string.warning_book_not_found,
@@ -453,8 +454,8 @@ public class EditBookTocFragment
             final Book book = vm.getBook();
 
             // update the book with Series information that was gathered from the TOC
-            final List<Series> series = result.getParcelableArrayList(Book.BKEY_SERIES_LIST);
-            if (series != null && !series.isEmpty()) {
+            final List<Series> series = result.getSeries();
+            if (!series.isEmpty()) {
                 final List<Series> inBook = book.getSeries();
                 // add, weeding out duplicates
                 for (final Series s : series) {
@@ -475,14 +476,16 @@ public class EditBookTocFragment
 
             // finally the TOC itself:  display it for the user to approve
             // If there are more editions, the neutral button will allow to fetch the next one.
-            confirmTocResultsLauncher.launch(result, !isfdbEditions.isEmpty());
+            confirmTocResultsLauncher.launch(result.getToc(),
+                                             result.getLong(DBKey.TOC_TYPE__BITMASK),
+                                             !isfdbEditions.isEmpty());
         });
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private void onIsfdbDataConfirmed(@NonNull final Book.ContentType contentType,
+    private void onIsfdbDataConfirmed(@NonNull final BookData.ContentType contentType,
                                       @NonNull final Collection<TocEntry> tocEntries) {
-        if (contentType != Book.ContentType.Book) {
+        if (contentType != BookData.ContentType.Book) {
             final Field<Long, View> typeField = vm.requireField(R.id.book_type);
             typeField.setValue(contentType.getId());
         }
@@ -522,7 +525,7 @@ public class EditBookTocFragment
         /** FragmentResultListener request key to use for our response. */
         private String requestKey;
         private boolean hasOtherEditions;
-        private Book.ContentType bookTocType;
+        private BookData.ContentType bookTocType;
         private ArrayList<TocEntry> tocEntries;
 
         @Override
@@ -532,10 +535,10 @@ public class EditBookTocFragment
             final Bundle args = requireArguments();
             requestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                                 BKEY_REQUEST_KEY);
-            tocEntries = Objects.requireNonNull(args.getParcelableArrayList(Book.BKEY_TOC_LIST),
-                                                Book.BKEY_TOC_LIST);
+            tocEntries = Objects.requireNonNull(args.getParcelableArrayList(BookData.BKEY_TOC_LIST),
+                                                BookData.BKEY_TOC_LIST);
 
-            bookTocType = Book.ContentType.getType(args.getLong(DBKey.TOC_TYPE__BITMASK));
+            bookTocType = BookData.ContentType.getType(args.getLong(DBKey.TOC_TYPE__BITMASK));
             hasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS, false);
         }
 
@@ -613,17 +616,20 @@ public class EditBookTocFragment
             /**
              * Launch the dialog.
              *
-             * @param bookData         the result of the search
              * @param hasOtherEditions flag
              */
-            public void launch(@NonNull final Bundle bookData,
+            public void launch(@NonNull final ArrayList<TocEntry> toc,
+                               final long tocTypeBitmask,
                                final boolean hasOtherEditions) {
 
-                bookData.putString(BKEY_REQUEST_KEY, requestKey);
-                bookData.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
+                final Bundle args = new Bundle(4);
+                args.putParcelableArrayList(BookData.BKEY_TOC_LIST, toc);
+                args.putString(BKEY_REQUEST_KEY, requestKey);
+                args.putLong(DBKey.TOC_TYPE__BITMASK, tocTypeBitmask);
+                args.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
 
                 final DialogFragment fragment = new ConfirmTocDialogFragment();
-                fragment.setArguments(bookData);
+                fragment.setArguments(args);
                 fragment.show(fragmentManager, TAG);
             }
 
@@ -642,7 +648,7 @@ public class EditBookTocFragment
                 if (result.getBoolean(SEARCH_NEXT_EDITION)) {
                     searchNextEdition();
                 } else {
-                    onResult(Book.ContentType.getType(result.getLong(TOC_BIT_MASK)),
+                    onResult(BookData.ContentType.getType(result.getLong(TOC_BIT_MASK)),
                              Objects.requireNonNull(result.getParcelableArrayList(TOC_LIST),
                                                     TOC_LIST));
                 }
@@ -654,7 +660,7 @@ public class EditBookTocFragment
              * @param contentType bit flags
              * @param tocEntries  the list of entries
              */
-            public abstract void onResult(@NonNull Book.ContentType contentType,
+            public abstract void onResult(@NonNull BookData.ContentType contentType,
                                           @NonNull List<TocEntry> tocEntries);
 
             /**
