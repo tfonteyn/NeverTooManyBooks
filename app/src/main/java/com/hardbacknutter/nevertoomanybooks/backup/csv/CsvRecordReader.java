@@ -321,7 +321,7 @@ public class CsvRecordReader
                     final LocalDateTime localDate = bookDao.getLastUpdateDate(importNumericId);
                     if (localDate != null) {
                         final LocalDateTime importDate = dateParser.parse(
-                                book.getString(DBKey.DATE_LAST_UPDATED__UTC));
+                                book.getString(DBKey.DATE_LAST_UPDATED__UTC, null));
 
                         if (importDate != null && importDate.isAfter(localDate)) {
 
@@ -392,18 +392,18 @@ public class CsvRecordReader
 
         // Get the "book_uuid", and remove from book if null/blank
         if (book.contains(DBKey.BOOK_UUID)) {
-            uuid = book.getString(DBKey.BOOK_UUID);
-            if (uuid.isEmpty()) {
+            uuid = book.getString(DBKey.BOOK_UUID, null);
+            if (uuid == null || uuid.isEmpty()) {
                 book.remove(DBKey.BOOK_UUID);
             }
 
         } else if (book.contains("uuid")) {
             // second chance: see if we have a "uuid" column.
-            uuid = book.getString("uuid");
+            uuid = book.getString("uuid", null);
             // ALWAYS remove as we won't use this key again.
             book.remove("uuid");
             // but if we got a UUID from it, store it again, using the correct key
-            if (!uuid.isEmpty()) {
+            if (uuid != null && !uuid.isEmpty()) {
                 book.putString(DBKey.BOOK_UUID, uuid);
             }
         } else {
@@ -423,11 +423,11 @@ public class CsvRecordReader
     private long extractNumericId(@NonNull final Book book) {
         // Do we have a numeric id in the import ?
         // String: see book init, we copied all fields we find in the import file as text.
-        final String idStr = book.getString(DBKey.PK_ID);
+        final String idStr = book.getString(DBKey.PK_ID, null);
         // ALWAYS remove here to avoid type-issues further down. We'll re-add if needed.
         book.remove(DBKey.PK_ID);
 
-        if (!idStr.isEmpty()) {
+        if (idStr != null && !idStr.isEmpty()) {
             try {
                 return Long.parseLong(idStr);
             } catch (@NonNull final NumberFormatException ignore) {
