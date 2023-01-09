@@ -83,8 +83,8 @@ public class IsbnTest
         Logger.d(TAG, "", bookData.toString());
         assertNotNull(bookData);
         assertFalse(bookData.isEmpty());
-        assertEquals("Softcover", bookData.getString(DBKey.FORMAT));
-        assertEquals("anglais", bookData.getString(DBKey.LANGUAGE));
+        assertEquals("Softcover", bookData.getString(DBKey.FORMAT, null));
+        assertEquals("anglais", bookData.getString(DBKey.LANGUAGE, null));
         // this is good enough... the local junit tests do the full parse test
     }
 
