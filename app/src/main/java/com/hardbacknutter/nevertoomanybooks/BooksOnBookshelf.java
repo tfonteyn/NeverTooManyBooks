@@ -113,6 +113,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialog
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
@@ -238,7 +239,7 @@ public class BooksOnBookshelf
                     data -> vm.onBookEditFinished(data)));
 
     /** Duplicate and edit a Book. */
-    private final ActivityResultLauncher<Bundle> duplicateLauncher =
+    private final ActivityResultLauncher<BookData> duplicateLauncher =
             registerForActivityResult(new EditBookFromBundleContract(), o -> o.ifPresent(
                     data -> vm.onBookEditFinished(data)));
 
