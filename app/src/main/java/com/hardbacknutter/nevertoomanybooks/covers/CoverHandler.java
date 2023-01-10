@@ -566,7 +566,7 @@ public class CoverHandler {
                     .getIntListPref(context, Prefs.pk_camera_image_autorotate, 0);
 
             // What action (if any) should we take after we're done?
-            final NextAction action = NextAction.getLevel(context);
+            final NextAction action = NextAction.getAction(context);
 
             showProgress();
             vm.execute(new Transformation(file)
@@ -695,14 +695,14 @@ public class CoverHandler {
         }
 
         /**
-         * Get the user preferred ISBN validity level check for (by the user) editing ISBN codes.
+         * Get the user default action to take after taking a picture.
          *
          * @param context Current context
          *
-         * @return Validity level
+         * @return next action
          */
         @NonNull
-        public static NextAction getLevel(@NonNull final Context context) {
+        static NextAction getAction(@NonNull final Context context) {
 
             final int value = Prefs.getIntListPref(context, Prefs.pk_camera_image_action,
                                                    Done.value);
