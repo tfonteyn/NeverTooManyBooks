@@ -30,6 +30,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.appbar.AppBarLayout;
+
 import java.util.Objects;
 
 /**
@@ -40,6 +42,7 @@ public class FragmentHostActivity
 
     private static final String TAG = "FragmentHostActivity";
     private static final String BKEY_ACTIVITY = TAG + ":a";
+    public static final String BKEY_TOOLBAR_SCROLL_FLAGS = TAG + ":tbf";
     private static final String BKEY_FRAGMENT_CLASS = TAG + ":f";
 
     @NonNull
@@ -88,6 +91,13 @@ public class FragmentHostActivity
             toolbar.setNavigationIcon(R.drawable.ic_baseline_menu_24);
         } else {
             toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24);
+        }
+
+        final int flags = getIntent().getIntExtra(BKEY_TOOLBAR_SCROLL_FLAGS, -1);
+        if (flags >= 0) {
+            final AppBarLayout.LayoutParams lp = (AppBarLayout.LayoutParams)
+                    toolbar.getLayoutParams();
+            lp.setScrollFlags(flags);
         }
 
         toolbar.setNavigationOnClickListener(v -> {
