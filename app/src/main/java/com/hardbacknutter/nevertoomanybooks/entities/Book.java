@@ -131,7 +131,7 @@ public class Book
     private static final String TAG = "Book";
 
     /**
-     * Single front/back cover file specs.
+     * Single front/back cover file specs for handling a temporary cover during edit.
      * <p>
      * <br>type: {@code String}
      */
@@ -227,23 +227,6 @@ public class Book
         // has unsaved data, hence 'Dirty'
         book.setStage(EntityStage.Stage.Dirty);
         return book;
-    }
-
-    /**
-     * Get the cover for the given uuid. We'll attempt to find a jpg or a png.
-     * <p>
-     * Any {@link StorageException} is <strong>IGNORED</strong>
-     *
-     * @param uuid UUID of the book
-     * @param cIdx 0..n image index
-     *
-     * @return file
-     */
-    @NonNull
-    public static Optional<File> getPersistedCoverFile(@NonNull final String uuid,
-                                                       @IntRange(from = 0, to = 1) final int cIdx) {
-
-        return new Cover(uuid, cIdx).getPersistedFile();
     }
 
     @Override
@@ -352,6 +335,7 @@ public class Book
         }
     }
 
+
     /**
      * Toggle the read-status for this book.
      *
@@ -382,6 +366,9 @@ public class Book
 
     /**
      * Get the <strong>current</strong> cover file for this book.
+     * <p>
+     * Depending on the {@link #stage} this method gets a temporary cover,
+     * or the persisted cover.
      * <p>
      * Any {@link StorageException} is <strong>IGNORED</strong>
      *
@@ -422,7 +409,11 @@ public class Book
         return Optional.empty();
     }
 
-
+    /**
+     * Syntax sugar for {@link #setCover(int, File)} with a {@code null} file.
+     *
+     * @param cIdx 0..n image index
+     */
     public void removeCover(@IntRange(from = 0, to = 1) final int cIdx) {
         try {
             setCover(cIdx, null);
@@ -433,6 +424,9 @@ public class Book
 
     /**
      * Update the book cover with the given file.
+     * <p>
+     * Depending on the {@link #getStage()} this method sets a temporary cover,
+     * or persists the cover to storage.
      *
      * @param cIdx 0..n image index
      * @param file cover file or {@code null} to delete the cover
@@ -566,6 +560,7 @@ public class Book
         return validatorConfig.getValidationExceptionMessage(context);
     }
 
+
     @NonNull
     public EntityStage.Stage getStage() {
         return stage.getStage();
@@ -584,6 +579,7 @@ public class Book
     public void unlockStage() {
         stage.unlock();
     }
+
 
     public void pruneAuthors(@NonNull final Context context,
                              final boolean lookupLocale) {
