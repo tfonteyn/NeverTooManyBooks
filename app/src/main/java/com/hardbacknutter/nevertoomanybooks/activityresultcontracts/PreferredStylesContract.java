@@ -102,7 +102,7 @@ public class PreferredStylesContract
         /**
          * Get the UUID.
          *
-         * @return (Optional) a non-blank UUID
+         * @return {@link Optional} with a non-blank UUID
          */
         @NonNull
         public Optional<String> getUuid() {

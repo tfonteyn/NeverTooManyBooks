@@ -213,7 +213,11 @@ public class SearchCriteria
         }
     }
 
-    /** Not supported by FTS. */
+    /**
+     * Not supported by FTS.
+     *
+     * @return {@link Optional} with a non-blank UUID
+     */
     @NonNull
     public Optional<String> getLoanee() {
         if (loanee != null && !loanee.trim().isEmpty()) {

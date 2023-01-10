@@ -310,7 +310,7 @@ public class Book
     /**
      * Get the name of the loanee (if any).
      *
-     * @return Optional of name
+     * @return {@link Optional} with a non-blank loanee name
      */
     @NonNull
     public Optional<String> getLoanee() {

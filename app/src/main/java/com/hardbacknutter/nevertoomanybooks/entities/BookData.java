@@ -136,9 +136,9 @@ public class BookData
     }
 
     /**
-     * get the id.
+     * Get the id.
      *
-     * @return the book id.
+     * @return the book id; will be {@code 0} if this book is 'new'
      */
     public long getId() {
         return getLong(DBKey.PK_ID);
@@ -147,7 +147,7 @@ public class BookData
     /**
      * Get the <strong>unformatted</strong> title.
      *
-     * @return the title
+     * @return the title; can be empty but never {@code null}
      */
     @NonNull
     public String getTitle() {
