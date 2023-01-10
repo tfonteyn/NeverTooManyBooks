@@ -346,8 +346,8 @@ public class AuthorResolver {
                 + " OR " + CacheDbHelper.BDT_AUTHOR_RESOLVED_NAME_OB + "=?",
                 new String[]{nameOb, nameOb})) {
             if (cursor.moveToFirst()) {
-                final CursorRow data = new CursorRow(cursor);
-                return new BdtAuthor(data.getLong(CacheDbHelper.PK_ID), data);
+                final CursorRow rowData = new CursorRow(cursor);
+                return new BdtAuthor(rowData.getLong(CacheDbHelper.PK_ID), rowData);
             }
         }
         return null;
@@ -400,12 +400,12 @@ public class AuthorResolver {
         }
 
         BdtAuthor(final long id,
-                  @NonNull final DataHolder data) {
+                  @NonNull final DataHolder rowData) {
             this.id = id;
-            this.name = data.getString(CacheDbHelper.BDT_AUTHOR_NAME);
-            this.resolved = data.getBoolean(CacheDbHelper.BDT_AUTHOR_IS_RESOLVED);
-            this.resolvedName = data.getString(CacheDbHelper.BDT_AUTHOR_RESOLVED_NAME);
-            this.url = data.getString(CacheDbHelper.BDT_AUTHOR_URL);
+            this.name = rowData.getString(CacheDbHelper.BDT_AUTHOR_NAME);
+            this.resolved = rowData.getBoolean(CacheDbHelper.BDT_AUTHOR_IS_RESOLVED);
+            this.resolvedName = rowData.getString(CacheDbHelper.BDT_AUTHOR_RESOLVED_NAME);
+            this.url = rowData.getString(CacheDbHelper.BDT_AUTHOR_URL);
         }
 
         public long getId() {
