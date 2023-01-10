@@ -77,6 +77,7 @@ public abstract class BaseRecordReader
      * @param context         Current context
      * @param helper          ImportHelper for options etc...
      * @param book            to import
+     * @param uuid            the uuid as found in the import record
      * @param importNumericId (optional) the numeric id for the book as found in the import.
      *                        {@code 0} for none
      *
@@ -86,14 +87,10 @@ public abstract class BaseRecordReader
     protected void importBookWithUuid(@NonNull final Context context,
                                       @NonNull final ImportHelper helper,
                                       @NonNull final Book book,
+                                      @NonNull final String uuid,
                                       final long importNumericId)
             throws StorageException,
                    DaoWriteException {
-        final String uuid = book.getString(DBKey.BOOK_UUID, null);
-        if (uuid == null || uuid.isEmpty()) {
-            throw new DaoWriteException(context.getString(
-                    R.string.X_error_file_must_contain_column, DBKey.BOOK_UUID));
-        }
 
         // check if the book exists in our database, and fetch it's id.
         final long databaseBookId = bookDao.getBookIdByUuid(uuid);

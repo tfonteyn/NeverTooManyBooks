@@ -236,7 +236,8 @@ public class CsvRecordReader
 
                 // ALWAYS let the UUID trump the ID; we may be importing someone else's list
                 if (hasUuid) {
-                    importBookWithUuid(context, helper, book, importNumericId);
+                    final String importUuid = book.getString(DBKey.BOOK_UUID);
+                    importBookWithUuid(context, helper, book, importUuid, importNumericId);
 
                 } else if (importNumericId > 0) {
                     importBookWithId(context, helper, book, importNumericId);

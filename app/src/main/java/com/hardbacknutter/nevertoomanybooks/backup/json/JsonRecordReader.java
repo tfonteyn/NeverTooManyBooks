@@ -33,7 +33,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -455,11 +454,16 @@ public class JsonRecordReader
             }
             try {
                 final Book book = bookCoder.decode(books.getJSONObject(i));
-                Objects.requireNonNull(book.getString(DBKey.BOOK_UUID), DBKey.BOOK_UUID);
+                final String importUuid = book.getString(DBKey.BOOK_UUID, null);
+                if (importUuid == null || importUuid.isEmpty()) {
+                    throw new DaoWriteException(context.getString(
+                            R.string.error_record_must_contain_column, DBKey.BOOK_UUID));
+                }
 
                 final long importNumericId = book.getLong(DBKey.PK_ID);
                 book.remove(DBKey.PK_ID);
-                importBookWithUuid(context, helper, book, importNumericId);
+
+                importBookWithUuid(context, helper, book, importUuid, importNumericId);
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();
