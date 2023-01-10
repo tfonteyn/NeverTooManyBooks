@@ -39,6 +39,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -232,6 +233,8 @@ public abstract class BaseActivity
 
         } else if (itemId == R.id.MENU_ABOUT) {
             final Intent intent = FragmentHostActivity.createIntent(this, AboutFragment.class);
+            intent.putExtra(FragmentHostActivity.BKEY_TOOLBAR_SCROLL_FLAGS,
+                            AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL);
             startActivity(intent);
             return true;
         }
