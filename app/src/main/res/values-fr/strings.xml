@@ -46,7 +46,7 @@
     <string name="X_confirm_continue">Es-tu sur de vouloir continuer ?</string>
     <string name="X_error_authentication_failed">Authentification échouée</string>
     <string name="X_error_download_failed">Échec du téléchargement</string>
-    <string name="X_error_file_must_contain_column">Le fichier doit contenir une colonne nommée %1$s</string>
+    <string name="error_record_must_contain_column">L\'enregistrement doit contenir un champ nommé «%1$s».</string>
     <string name="X_error_network_site_has_problems">Le site Web a des problèmes.</string>
     <string name="X_error_not_available">%1$s indisponible</string>
     <string name="X_error_storage_not_accessible_s">Stockage non accessible: %1$s</string>

@@ -44,8 +44,7 @@
     <string name="X_confirm_continue">Devam etmek istediğine emin misin ?</string>
     <string name="X_error_authentication_failed">Kimlik doğrulama başarısız oldu</string>
     <string name="X_error_download_failed">Yükleme başarısız</string>
-    <string
-        name="X_error_file_must_contain_column">Dosya adı %1$s adında bir sütun içermeli</string>
+    <string name="error_record_must_contain_column">Kayıt, “%1$s” adlı bir alan içermelidir.</string>
     <string name="X_error_network_site_has_problems">Web sitesinde sorunlar var.</string>
     <string name="X_error_not_available">%1$s kullanılamıyor</string>
     <string name="X_error_storage_not_accessible_s">Depolama erişilebilir değil: %1$s</string>

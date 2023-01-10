@@ -44,7 +44,7 @@
     <string name="X_confirm_continue">Sei sicuro di voler continuare ?</string>
     <string name="X_error_authentication_failed">Autenticazione fallita</string>
     <string name="X_error_download_failed">Scaricamento fallito</string>
-    <string name="X_error_file_must_contain_column">Il file deve contenere una colonna con nome %1$s</string>
+    <string name="error_record_must_contain_column">Il record deve contenere un campo denominato %1$s.</string>
     <string name="X_error_network_site_has_problems">Il sito Web ha problemi.</string>
     <string name="X_error_not_available">%1$s non disponibile</string>
     <string name="X_error_storage_not_accessible_s">Archiviazione non accessibile: %1$s</string>

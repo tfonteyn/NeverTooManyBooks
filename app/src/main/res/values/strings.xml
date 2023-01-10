@@ -192,7 +192,7 @@
     <string name="error_file_not_recognized">The selected file is not recognized.</string>
     <!-- The user selected a file to import which *is* recognized, but cannot be imported. -->
     <string name="error_import_file_not_supported">The selected file cannot be imported.</string>
-
+    <!-- The archive we're trying to import is an unsupported version (too old or too new) -->
     <string name="error_unsupported_version_v">Unsupported version: %1$d</string>
 
     <string name="error_import_archive_invalid">The archive file is corrupt or otherwise invalid.</string>
@@ -202,11 +202,17 @@
     <!-- import failure for a specific {@link RecordType} -->
     <string name="error_import_failed_for_record">Import failed (%1$s).</string>
 
-    <!-- Displayed when a CSV import fails -->
+    <!-- CSV import fails: missing a mandatory column which can have one of the listed names -->
     <string name="error_import_csv_missing_columns_x">File must contain a column with one of the following names: %1$s</string>
+    <!-- CSV import fails: the line was not readable / could not be decoded -->
     <string name="error_import_csv_line">Unknown error in row %1$d</string>
+    <!-- CSV import fails: the line was to long to be handled (not enough memory available) -->
     <string name="error_import_csv_line_to_long">Line too long (row=%1$d, length=%2$d)</string>
+    <!-- CSV import fails: the number of columns in a line does not match the number of headers -->
     <string name="error_import_csv_column_count_mismatch">Column count mismatch in row %1$d</string>
+
+    <!-- import fails due to a record missing a mandatory column/field -->
+    <string name="error_record_must_contain_column">Record must contain a field named “%1$s”.</string>
 
     <!-- generic backup failure -->
     <string name="error_backup_failed">Backup Failed.</string>
@@ -1592,7 +1598,6 @@
     <string name="X_lbl_clear_filters">Clear filters</string>
     <string name="X_confirm_continue">Are you sure you want to continue ?</string>
     <string name="X_error_download_failed">Download failed</string>
-    <string name="X_error_file_must_contain_column">File must contain column named “%1$s”</string>
     <string name="X_error_not_available">%1$s is not available.</string>
     <string name="X_info_authorized_needed">Authorize Access</string>
     <string name="X_info_not_authorized">Not Authorized</string>
@@ -1647,7 +1652,7 @@
 
     <string name="lbl_author_pseudonym">This is a pen-name of:</string>
     <string name="err_real_author_must_be_valid">Must be blank or an existing Author</string>
-    <string name="confirm_create_real_author">“%1$s” does not exist yet. Should it be created?</string>
+    <string name="confirm_create_real_author">“%1$s” does not exist yet. Should they be created?</string>
     <string name="pt_search_resolve_authors_bedetheque">Resolve author pen-names using the Bedetheque website</string>
     <string name="pt_bedetheque_search_resolve_formats">Preserve Bedetheque (french) format naming</string>
 

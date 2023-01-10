@@ -44,7 +44,7 @@
     <string name="X_confirm_continue">Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
     <string name="X_error_authentication_failed">Η ταυτοποίηση απέτυχε</string>
     <string name="X_error_download_failed">Η λήψη απέτυχε</string>
-    <string name="X_error_file_must_contain_column">Το αρχείο πρέπει να περιέχει στήλη με όνομα %1$s</string>
+    <string name="error_record_must_contain_column">Η εγγραφή πρέπει να περιέχει ένα πεδίο με το όνομα «%1$s».</string>
     <string name="X_error_network_site_has_problems">Ο ιστότοπος έχει προβλήματα.</string>
     <string name="X_error_not_available">Το %1$s δεν είναι διαθέσιμο</string>
     <string name="X_error_storage_not_accessible_s">Δεν είναι δυνατή η αποθήκευση: %1$s</string>

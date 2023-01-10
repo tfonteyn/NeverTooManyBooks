@@ -44,7 +44,7 @@
     <string name="X_confirm_continue">Вы уверены что хотите продолжить ?</string>
     <string name="X_error_authentication_failed">Ошибка аутентификации</string>
     <string name="X_error_download_failed">Загрузка не удалась</string>
-    <string name="X_error_file_must_contain_column">В файле должен быть столбец с названием %1$s</string>
+    <string name="error_record_must_contain_column">Запись должна содержать поле с именем «%1$s».</string>
     <string name="X_error_network_site_has_problems">На сайте есть проблемы.</string>
     <string name="X_error_not_available">%1$s недоступен</string>
     <string name="X_error_storage_not_accessible_s">Хранение недоступно: %1$s</string>

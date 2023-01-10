@@ -43,7 +43,7 @@
     <string name="X_confirm_continue">Jste si jistý, že chcete pokračovat ?</string>
     <string name="X_error_authentication_failed">Ověření se nezdařilo</string>
     <string name="X_error_download_failed">Stažení se nezdařilo</string>
-    <string name="X_error_file_must_contain_column">Soubor musí obsahovat sloupec jménem %1$s</string>
+    <string name="error_record_must_contain_column">Záznam musí obsahovat pole s názvem „%1$s“.</string>
     <string name="X_error_network_site_has_problems">Web má problémy.</string>
     <string name="X_error_not_available">%1$s není k dispozici</string>
     <string name="X_error_storage_not_accessible_s">Úložiště není přístupné: %1$s</string>

@@ -42,7 +42,7 @@
     <string name="X_confirm_continue">Weet je zeker dat je door wilt gaan ?</string>
     <string name="X_error_authentication_failed">Authenticatie mislukt</string>
     <string name="X_error_download_failed">Download mislukt</string>
-    <string name="X_error_file_must_contain_column">Import bestand moet een kolom met de naam „%1$s” bevatten.</string>
+    <string name="error_record_must_contain_column">Record moet een veld met de naam „%1$s” bevatten.</string>
     <string name="X_error_network_site_has_problems">De website heeft problemen.</string>
     <string name="X_error_not_available">%1$s is niet beschikbaar</string>
     <string name="X_error_storage_not_accessible_s">Opslag niet toegankelijk: %1$s</string>

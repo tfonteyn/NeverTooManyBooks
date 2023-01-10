@@ -44,7 +44,7 @@
     <string name="X_confirm_continue">Sind Sie sicher, dass Sie fortfahren möchten ?</string>
     <string name="X_error_authentication_failed">Authentifizierung fehlgeschlagen</string>
     <string name="X_error_download_failed">Herunterladen fehlgeschlagen</string>
-    <string name="X_error_file_must_contain_column">Die Datei muss eine Spalte mit dem Namen %1$s enthalten</string>
+    <string name="error_record_must_contain_column">Der Datensatz muss ein Feld namens „%1$s“ enthalten.</string>
     <string name="X_error_network_site_has_problems">Die Website hat Probleme.</string>
     <string name="X_error_not_available">%1$s ist nicht verfügbar</string>
     <string name="X_error_storage_not_accessible_s">Speicher nicht zugänglich: %1$s</string>
