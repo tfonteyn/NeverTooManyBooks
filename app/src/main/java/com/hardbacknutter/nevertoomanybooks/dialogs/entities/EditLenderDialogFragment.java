@@ -300,7 +300,7 @@ public class EditLenderDialogFragment
             final Bundle args = new Bundle(3);
             args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putLong(DBKey.FK_BOOK, book.getId());
-            args.putString(DBKey.TITLE, book.getString(DBKey.TITLE));
+            args.putString(DBKey.TITLE, book.getTitle());
 
             final DialogFragment frag = new EditLenderDialogFragment();
             frag.setArguments(args);

@@ -360,7 +360,7 @@ public class ShowBookDetailsFragment
         //noinspection ConstantConditions
         toolbar.setTitle(Author.getLabel(getContext(), book.getAuthors()));
 
-        String bookTitle = book.getString(DBKey.TITLE);
+        String bookTitle = book.getTitle();
         if (BuildConfig.DEBUG /* always */) {
             bookTitle = "[" + book.getId() + "] " + bookTitle;
         }

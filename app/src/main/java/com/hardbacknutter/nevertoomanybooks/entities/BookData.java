@@ -460,7 +460,7 @@ public class BookData
         // BOOK_DATE_ADDED
         // DATE_LAST_UPDATED
 
-        bookData.putString(DBKey.TITLE, getString(DBKey.TITLE));
+        bookData.putString(DBKey.TITLE, getTitle());
         bookData.putString(DBKey.BOOK_ISBN, getString(DBKey.BOOK_ISBN));
 
         if (bookData.contains(BKEY_AUTHOR_LIST)) {
