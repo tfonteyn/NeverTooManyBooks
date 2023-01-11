@@ -30,7 +30,7 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * Searches a single {@link SearchEngine}.
  */
 public class SearchTask
-        extends LTask<BookData> {
+        extends LTask<Book> {
 
     /** Log tag. */
     private static final String TAG = "SearchTask";
@@ -85,7 +85,7 @@ public class SearchTask
      */
     SearchTask(final int taskId,
                @NonNull final SearchEngine searchEngine,
-               @NonNull final TaskListener<BookData> taskListener) {
+               @NonNull final TaskListener<Book> taskListener) {
         super(taskId, TAG + ' ' + searchEngine.getName(ServiceLocator.getAppContext()),
               taskListener);
 
@@ -185,7 +185,7 @@ public class SearchTask
     @NonNull
     @Override
     @WorkerThread
-    protected BookData doWork(@NonNull final Context context)
+    protected Book doWork(@NonNull final Context context)
             throws StorageException, SearchException, CredentialsException, IOException {
 
         publishProgress(1, context.getString(R.string.progress_msg_searching_site,
@@ -201,28 +201,28 @@ public class SearchTask
         // can we reach the site ?
         searchEngine.ping();
 
-        final BookData bookData;
+        final Book book;
         switch (by) {
             case ExternalId:
                 SanityCheck.requireValue(externalId, "externalId");
-                bookData = ((SearchEngine.ByExternalId) searchEngine)
+                book = ((SearchEngine.ByExternalId) searchEngine)
                         .searchByExternalId(context, externalId, fetchCovers);
                 break;
 
             case Isbn:
                 SanityCheck.requireValue(isbnStr, "isbnStr");
-                bookData = ((SearchEngine.ByIsbn) searchEngine)
+                book = ((SearchEngine.ByIsbn) searchEngine)
                         .searchByIsbn(context, isbnStr, fetchCovers);
                 break;
 
             case Barcode:
                 SanityCheck.requireValue(isbnStr, "isbnStr");
-                bookData = ((SearchEngine.ByBarcode) searchEngine)
+                book = ((SearchEngine.ByBarcode) searchEngine)
                         .searchByBarcode(context, isbnStr, fetchCovers);
                 break;
 
             case Text:
-                bookData = ((SearchEngine.ByText) searchEngine)
+                book = ((SearchEngine.ByText) searchEngine)
                         .search(context, isbnStr, author, title, publisher, fetchCovers);
                 break;
 
@@ -233,7 +233,7 @@ public class SearchTask
                                                    + " does not implement By=" + by);
         }
 
-        return bookData;
+        return book;
     }
 
     public enum By {

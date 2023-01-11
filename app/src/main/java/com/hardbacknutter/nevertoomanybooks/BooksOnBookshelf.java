@@ -70,7 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySea
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibreSyncContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookFromBundleContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
@@ -113,7 +113,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialog
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
@@ -239,8 +238,8 @@ public class BooksOnBookshelf
                     data -> vm.onBookEditFinished(data)));
 
     /** Duplicate and edit a Book. */
-    private final ActivityResultLauncher<BookData> duplicateLauncher =
-            registerForActivityResult(new EditBookFromBundleContract(), o -> o.ifPresent(
+    private final ActivityResultLauncher<Book> duplicateLauncher =
+            registerForActivityResult(new EditBookContract(), o -> o.ifPresent(
                     data -> vm.onBookEditFinished(data)));
 
     /** Update an individual Book with information from the internet. */

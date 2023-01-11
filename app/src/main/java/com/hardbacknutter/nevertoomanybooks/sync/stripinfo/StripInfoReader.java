@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
@@ -149,7 +148,7 @@ public class StripInfoReader
 
         // the wishlist
         map.put(context.getString(R.string.lbl_bookshelves),
-                new String[]{DBKey.FK_BOOKSHELF, BookData.BKEY_BOOKSHELF_LIST});
+                new String[]{DBKey.FK_BOOKSHELF, Book.BKEY_BOOKSHELF_LIST});
         map.put(context.getString(R.string.lbl_date_acquired),
                 new String[]{DBKey.DATE_ACQUIRED});
         map.put(context.getString(R.string.lbl_location),
@@ -228,8 +227,8 @@ public class StripInfoReader
                    && !searchEngine.isCancelled()) {
 
                 pageNr++;
-                final Optional<List<BookData>> page = uc.fetchPage(context, pageNr,
-                                                                   progressListener);
+                final Optional<List<Book>> page = uc.fetchPage(context, pageNr,
+                                                               progressListener);
                 if (page.isPresent()) {
                     // We're committing by page.
                     Synchronizer.SyncLock txLock = null;
@@ -269,7 +268,7 @@ public class StripInfoReader
     }
 
     private void processPage(@NonNull final Context context,
-                             @NonNull final List<BookData> page,
+                             @NonNull final List<Book> page,
                              @NonNull final ProgressListener progressListener)
             throws StorageException,
                    SearchException,
@@ -278,7 +277,7 @@ public class StripInfoReader
         final String progressMessage =
                 context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
 
-        for (final BookData colBook : page) {
+        for (final Book colBook : page) {
             if (!searchEngine.isCancelled()) {
                 final long externalId = colBook.getLong(DBKey.SID_STRIP_INFO);
                 // lookup locally using the externalId column.
@@ -331,7 +330,7 @@ public class StripInfoReader
 
     private void updateBook(@NonNull final Context context,
                             final long externalId,
-                            @NonNull final BookData colBook,
+                            @NonNull final Book colBook,
                             @NonNull final Book book)
             throws StorageException,
                    SearchException,
@@ -346,23 +345,22 @@ public class StripInfoReader
                 fieldsWanted.containsKey(Book.BKEY_TMP_FILE_SPEC[0]),
                 fieldsWanted.containsKey(Book.BKEY_TMP_FILE_SPEC[1])};
 
+        final Book dataToMerge;
         if (coversWanted[1]) {
             // The back cover is not available on the collection page
             // Do a full download.
-            final BookData bookData = searchEngine
+            dataToMerge = searchEngine
                     .searchByExternalId(context, String.valueOf(externalId), coversWanted);
-
-            // Extract the delta from the *bookData*
-            delta = syncProcessor.process(context, book.getId(), book, fieldsWanted, bookData);
         } else {
-            // we don't need the back cover, but maybe the front cover
+            dataToMerge = colBook;
+            // we don't need the back cover, but might need the front cover
             if (coversWanted[0]) {
-                downloadFrontCover(externalId, colBook);
+                downloadFrontCover(externalId, dataToMerge);
             }
-
-            // Extract the delta from the *collection* data
-            delta = syncProcessor.process(context, book.getId(), book, fieldsWanted, colBook);
         }
+
+        // Extract the delta from the dataToMerge
+        delta = syncProcessor.process(context, book.getId(), book, fieldsWanted, dataToMerge);
 
         if (delta != null) {
             bookDao.update(context, delta, Set.of(BookDao.BookFlag.RunInBatch,
@@ -384,10 +382,9 @@ public class StripInfoReader
                    CredentialsException,
                    DaoWriteException {
         // It's a new book; download it from the server and insert it into the db
-        final BookData bookData = searchEngine
+        final Book book = searchEngine
                 .searchByExternalId(context, String.valueOf(externalId), coversForNewBooks);
 
-        final Book book = Book.from(bookData);
         // sanity check, the book should always/already be on the mapped shelf.
         book.ensureBookshelf(context);
 
@@ -403,7 +400,7 @@ public class StripInfoReader
 
     @WorkerThread
     private void downloadFrontCover(@IntRange(from = 1) final long externalId,
-                                    @NonNull final BookData cData)
+                                    @NonNull final Book cData)
             throws StorageException {
         final String url = cData.getString(UserCollection.BKEY_FRONT_COVER_URL, null);
         if (url != null && !url.isEmpty()) {

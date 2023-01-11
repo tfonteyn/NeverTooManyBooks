@@ -63,7 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.sync.ColorMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.FormatMapper;
@@ -117,9 +116,9 @@ public class SearchCoordinator
 
     protected final MutableLiveData<LiveDataEvent<TaskProgress>>
             searchCoordinatorProgress = new MutableLiveData<>();
-    protected final MutableLiveData<LiveDataEvent<TaskResult<BookData>>>
+    protected final MutableLiveData<LiveDataEvent<TaskResult<Book>>>
             searchCoordinatorCancelled = new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskResult<BookData>>>
+    private final MutableLiveData<LiveDataEvent<TaskResult<Book>>>
             searchCoordinatorFinished = new MutableLiveData<>();
 
 
@@ -199,7 +198,7 @@ public class SearchCoordinator
      * @param result of a search (can be null for failed/cancelled searches)
      */
     private synchronized void onSearchTaskFinished(final int taskId,
-                                                   @Nullable final BookData result) {
+                                                   @Nullable final Book result) {
 
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
         final SearchTask searchTask;
@@ -272,15 +271,15 @@ public class SearchCoordinator
         if (stopSearching) {
             final long processTime = System.nanoTime();
 
-            final BookData bookData = accumulateResults(context);
+            final Book book = accumulateResults(context);
             final String searchErrors = accumulateErrors(context);
             if (searchErrors != null && !searchErrors.isEmpty()) {
-                bookData.putString(BKEY_SEARCH_ERROR, searchErrors);
+                book.putString(BKEY_SEARCH_ERROR, searchErrors);
             }
 
-            final LiveDataEvent<TaskResult<BookData>> message =
+            final LiveDataEvent<TaskResult<Book>> message =
                     new LiveDataEvent<>(new TaskResult<>(R.id.TASK_ID_SEARCH_COORDINATOR,
-                                                         bookData));
+                                                         book));
             if (cancelRequested.get()) {
                 searchCoordinatorCancelled.setValue(message);
             } else {
@@ -305,12 +304,12 @@ public class SearchCoordinator
      * The Bundle will (optionally) contain {@link #BKEY_SEARCH_ERROR} with a list of errors.
      */
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<BookData>>> onSearchFinished() {
+    public LiveData<LiveDataEvent<TaskResult<Book>>> onSearchFinished() {
         return searchCoordinatorFinished;
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<BookData>>> onSearchCancelled() {
+    public LiveData<LiveDataEvent<TaskResult<Book>>> onSearchCancelled() {
         return searchCoordinatorCancelled;
     }
 
@@ -387,12 +386,12 @@ public class SearchCoordinator
      * @return the accumulated book data bundle
      */
     @NonNull
-    private BookData accumulateResults(@NonNull final Context context) {
+    private Book accumulateResults(@NonNull final Context context) {
         // This list will be the actual order of the result we apply, based on the
         // actual results and the default order.
         final List<Site> sites = new ArrayList<>();
 
-        final BookData bookData = new BookData();
+        final Book book = new Book();
 
         // determine the order of the sites which should give us the most reliable data.
         if (isbn.isValid(strictIsbn)) {
@@ -442,7 +441,7 @@ public class SearchCoordinator
             sites.addAll(sitesWithoutIsbn);
             // Add the ISBN we initially searched for.
             // This avoids overwriting with a potentially different isbn from the sites
-            bookData.putString(DBKey.BOOK_ISBN, isbnSearchText);
+            book.putString(DBKey.BOOK_ISBN, isbnSearchText);
 
         } else {
             // We did not have an ISBN as a search criteria; use the default order
@@ -451,25 +450,37 @@ public class SearchCoordinator
 
         // Merge the data we have in the order as decided upon above.
         // no synchronized needed, at this point all other threads have finished.
-        resultsAccumulator.process(context, sites, searchResultsBySite, bookData);
+        resultsAccumulator.process(context, sites, searchResultsBySite, book);
 
         // If we did not get an ISBN, use the one we originally searched for.
-        final String isbnStr = bookData.getString(DBKey.BOOK_ISBN, null);
+        final String isbnStr = book.getString(DBKey.BOOK_ISBN, null);
         if (isbnStr == null || isbnStr.isEmpty()) {
-            bookData.putString(DBKey.BOOK_ISBN, isbnSearchText);
+            book.putString(DBKey.BOOK_ISBN, isbnSearchText);
         }
 
         // If we did not get a title, use the one we originally searched for.
-        final String title = bookData.getString(DBKey.TITLE, null);
+        final String title = book.getString(DBKey.TITLE, null);
         if (title == null || title.isEmpty()) {
-            bookData.putString(DBKey.TITLE, titleSearchText);
+            book.putString(DBKey.TITLE, titleSearchText);
         }
 
-        return bookData;
+        return book;
+    }
+
+    /**
+     * Check if passed Bundle contains a non-blank ISBN string. Does not check if the ISBN is valid.
+     *
+     * @param book to check
+     *
+     * @return Present/absent
+     */
+    private boolean hasIsbn(@NonNull final Book book) {
+        final String isbnStr = book.getString(DBKey.BOOK_ISBN, null);
+        return isbnStr != null && !isbnStr.isEmpty();
     }
 
     /** Listener for <strong>individual</strong> search tasks. */
-    private final TaskListener<BookData> searchTaskListener = new TaskListener<>() {
+    private final TaskListener<Book> searchTaskListener = new TaskListener<>() {
 
         @Override
         public void onProgress(@NonNull final TaskProgress message) {
@@ -488,14 +499,14 @@ public class SearchCoordinator
 
         @Override
         public void onFinished(final int taskId,
-                               @Nullable final BookData result) {
+                               @Nullable final Book result) {
             // The result MUST NOT be null
             onSearchTaskFinished(taskId, Objects.requireNonNull(result, "result"));
         }
 
         @Override
         public void onCancelled(final int taskId,
-                                @Nullable final BookData result) {
+                                @Nullable final Book result) {
             // we'll deliver what we have found up to now (includes previous searches)
             // The result MAY be null
             onSearchTaskFinished(taskId, result);
@@ -644,16 +655,18 @@ public class SearchCoordinator
         }
     }
 
-    /**
-     * Check if passed Bundle contains a non-blank ISBN string. Does not check if the ISBN is valid.
-     *
-     * @param bookData to check
-     *
-     * @return Present/absent
-     */
-    private boolean hasIsbn(@NonNull final BookData bookData) {
-        final String isbnStr = bookData.getString(DBKey.BOOK_ISBN, null);
-        return isbnStr != null && !isbnStr.isEmpty();
+    public static class WrappedTaskResult {
+
+        @Nullable
+        final SearchTask.By searchBy;
+        @Nullable
+        final Book result;
+
+        WrappedTaskResult(@Nullable final SearchTask.By searchBy,
+                          @Nullable final Book result) {
+            this.searchBy = searchBy;
+            this.result = result;
+        }
     }
 
     /**
@@ -942,17 +955,241 @@ public class SearchCoordinator
         this.baseMessage = baseMessage;
     }
 
-    public static class WrappedTaskResult {
+    private static class ResultsAccumulator {
 
-        @Nullable
-        final SearchTask.By searchBy;
-        @Nullable
-        final BookData result;
+        private static final Set<String> LIST_KEYS = Set.of(Book.BKEY_AUTHOR_LIST,
+                                                            Book.BKEY_SERIES_LIST,
+                                                            Book.BKEY_PUBLISHER_LIST,
+                                                            Book.BKEY_TOC_LIST,
+                                                            Book.BKEY_BOOKSHELF_LIST,
+                                                            BKEY_FILE_SPEC_ARRAY[0],
+                                                            BKEY_FILE_SPEC_ARRAY[1]);
 
-        WrappedTaskResult(@Nullable final SearchTask.By searchBy,
-                          @Nullable final BookData result) {
-            this.searchBy = searchBy;
-            this.result = result;
+        private final CoverFilter coverFilter = new CoverFilter();
+        @NonNull
+        private final DateParser dateParser;
+        /** Mappers to apply. */
+        private final Collection<Mapper> mappers = new ArrayList<>();
+
+        ResultsAccumulator(@NonNull final Context context) {
+            dateParser = new FullDateParser(context);
+
+            if (FormatMapper.isMappingAllowed(context)) {
+                mappers.add(new FormatMapper());
+            }
+            if (ColorMapper.isMappingAllowed(context)) {
+                mappers.add(new ColorMapper());
+            }
+        }
+
+        /**
+         * Accumulate all data from the given sites.
+         * <p>
+         * The Bundle will contain by default only String and ArrayList based data.
+         * Long etc... types will be stored as String data.
+         * <p>
+         * NEWTHINGS: if you add a new Search task that adds non-string based data,
+         * handle that here.
+         *
+         * @param context  Current context
+         * @param sites    the ordered list of sites
+         * @param book Destination bundle
+         */
+        public void process(@NonNull final Context context,
+                            @NonNull final List<Site> sites,
+                            @NonNull final Map<EngineId, WrappedTaskResult> searchResultsBySite,
+                            @NonNull final Book book) {
+            sites.stream()
+                 .map(Site::getSearchEngine)
+                 .forEach(searchEngine -> {
+                     final WrappedTaskResult siteData =
+                             searchResultsBySite.get(searchEngine.getEngineId());
+
+                     if (siteData != null && siteData.result != null
+                         && !siteData.result.isEmpty()) {
+                         final Locale siteLocale = searchEngine.getLocale(context);
+                         siteData.result.keySet().forEach(
+                                 key -> processKey(key, siteData.result, siteLocale, book));
+                     }
+                 });
+
+            // run the mappers
+            mappers.forEach(mapper -> mapper.map(context, book));
+
+            // Pick the best covers for each list (if any) and clean/delete all others.
+            coverFilter.filter(book);
+        }
+
+        private void processKey(@NonNull final String key,
+                                @NonNull final Book siteData,
+                                @NonNull final Locale siteLocale,
+                                @NonNull final Book book) {
+            if (DBKey.DATE_KEYS.contains(key)) {
+                processDate(siteLocale, key, siteData, book);
+
+            } else if (LIST_KEYS.contains(key)) {
+                processList(key, siteData, book);
+
+            } else if (DBKey.LANGUAGE.equals(key)) {
+                processLanguage(siteLocale, key, siteData, book);
+
+            } else {
+                //FIXME: doing this will for example put a LONG id in the bundle as a String.
+                // This is as-designed, but you do get an Exception in the log when the data
+                // gets to the EditBook formatters. Harmless, but not clean.
+                processString(key, siteData, book);
+            }
+        }
+
+        private void processLanguage(@NonNull final Locale siteLocale,
+                                     @NonNull final String key,
+                                     @NonNull final Book siteData,
+                                     @NonNull final Book book) {
+            String dataToAdd = siteData.getString(key, null);
+            if (dataToAdd == null || dataToAdd.trim().isEmpty()) {
+                return;
+            }
+
+            final String current = book.getString(key, null);
+            if (current == null || current.isEmpty()) {
+                if (dataToAdd.length() > 3) {
+                    // If more than 3 characters, it's likely a 'display' name of a language.
+                    dataToAdd = ServiceLocator.getInstance().getLanguages()
+                                              .getISO3FromDisplayName(siteLocale, dataToAdd);
+                    book.putString(key, dataToAdd);
+                } else {
+                    // just use it
+                    book.putString(key, dataToAdd);
+                }
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                    Log.d(TAG, "processLanguage|copied"
+                               + "|key=" + key + "|value=`" + dataToAdd + '`');
+                }
+            } else {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                    Log.d(TAG, "processLanguage|skipping|key=" + key);
+                }
+            }
+        }
+
+        /**
+         * Grabs the 'new' date and checks if it's parsable.
+         * If so, then check if the previous date was actually valid at all.
+         * if not, use new date.
+         *
+         * @param siteLocale the specific Locale of the website
+         * @param key        for the field
+         * @param siteData   Source Bundle
+         * @param book       Destination bundle
+         */
+        private void processDate(@NonNull final Locale siteLocale,
+                                 @NonNull final String key,
+                                 @NonNull final Book siteData,
+                                 @NonNull final Book book) {
+            final String dataToAdd = siteData.getString(key, null);
+            if (dataToAdd == null || dataToAdd.isEmpty()) {
+                return;
+            }
+
+            final String current = book.getString(key, null);
+            if (current == null || current.isEmpty()) {
+                // copy, even if the incoming date might not be valid.
+                // We'll deal with that later.
+                book.putString(key, dataToAdd);
+
+            } else {
+                // FIXME: there is overlap with some SearchEngines which already do a full
+                //  validity check on the dates they gather. We should avoid a double-check.
+                //
+                // Overwrite with the new date if we can parse it and
+                // if the current one was present but not valid.
+                final LocalDateTime newDate = dateParser.parse(dataToAdd, siteLocale);
+                if (newDate != null) {
+                    if (dateParser.parse(current, siteLocale) == null) {
+                        // current date was invalid, use the new one instead.
+                        // (theoretically this check was not needed, as we should not have
+                        // an invalid date stored anyhow... but paranoia rules)
+                        book.putString(key,
+                                       newDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                            Log.d(TAG, "processDate|copied"
+                                       + "|key=" + key + "|value=`" + dataToAdd + '`');
+                        }
+                    } else {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                            Log.d(TAG, "processDate|skipped|key=" + key);
+                        }
+                    }
+                }
+            }
+        }
+
+        /**
+         * Accumulate ParcelableArrayList data.
+         * Add if not present, or append.
+         *
+         * @param <T>      type of items in the ArrayList
+         * @param key      Key of data
+         * @param siteData Source Bundle
+         * @param book     Destination bundle
+         */
+        private <T extends Parcelable> void processList(@NonNull final String key,
+                                                        @NonNull final Book siteData,
+                                                        @NonNull final Book book) {
+            final ArrayList<T> dataToAdd = siteData.getParcelableArrayList(key);
+            if (dataToAdd.isEmpty()) {
+                return;
+            }
+
+            ArrayList<T> dest = book.getParcelableArrayList(key);
+            if (dest.isEmpty()) {
+                // just copy
+                dest = dataToAdd;
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                    Log.d(TAG, "processList|copied"
+                               + "|key=" + key + "|value=`" + dataToAdd + '`');
+                }
+            } else {
+                // append
+                dest.addAll(dataToAdd);
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                    Log.d(TAG, "processList|appended"
+                               + "|key=" + key + "|value=`" + dataToAdd + '`');
+                }
+            }
+            book.putParcelableArrayList(key, dest);
+        }
+
+        /**
+         * Accumulate String data.
+         * Handles other types via a .toString()
+         *
+         * @param key      Key of data
+         * @param siteData Source Bundle
+         * @param book     Destination bundle
+         */
+        private void processString(@NonNull final String key,
+                                   @NonNull final Book siteData,
+                                   @NonNull final Book book) {
+            // Fetch as Object, as engines MAY store typed data
+            final Object dataToAdd = siteData.get(key);
+            if (dataToAdd == null || dataToAdd.toString().isEmpty()) {
+                return;
+            }
+
+            final String current = book.getString(key, null);
+            if (current == null || current.isEmpty()) {
+                // just use it
+                book.putString(key, dataToAdd.toString());
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                    Log.d(TAG, "processString|copied"
+                               + "|key=" + key + "|value=`" + dataToAdd + '`');
+                }
+            } else {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                    Log.d(TAG, "processString|skipping|key=" + key);
+                }
+            }
         }
     }
 
@@ -1051,244 +1288,6 @@ public class SearchCoordinator
         }
     }
 
-    private static class ResultsAccumulator {
-
-        private static final Set<String> LIST_KEYS = Set.of(BookData.BKEY_AUTHOR_LIST,
-                                                            BookData.BKEY_SERIES_LIST,
-                                                            BookData.BKEY_PUBLISHER_LIST,
-                                                            BookData.BKEY_TOC_LIST,
-                                                            BookData.BKEY_BOOKSHELF_LIST,
-                                                            BKEY_FILE_SPEC_ARRAY[0],
-                                                            BKEY_FILE_SPEC_ARRAY[1]);
-
-        private final CoverFilter coverFilter = new CoverFilter();
-        @NonNull
-        private final DateParser dateParser;
-        /** Mappers to apply. */
-        private final Collection<Mapper> mappers = new ArrayList<>();
-
-        ResultsAccumulator(@NonNull final Context context) {
-            dateParser = new FullDateParser(context);
-
-            if (FormatMapper.isMappingAllowed(context)) {
-                mappers.add(new FormatMapper());
-            }
-            if (ColorMapper.isMappingAllowed(context)) {
-                mappers.add(new ColorMapper());
-            }
-        }
-
-        /**
-         * Accumulate all data from the given sites.
-         * <p>
-         * The Bundle will contain by default only String and ArrayList based data.
-         * Long etc... types will be stored as String data.
-         * <p>
-         * NEWTHINGS: if you add a new Search task that adds non-string based data,
-         * handle that here.
-         *
-         * @param context  Current context
-         * @param sites    the ordered list of sites
-         * @param bookData Destination bundle
-         */
-        public void process(@NonNull final Context context,
-                            @NonNull final List<Site> sites,
-                            @NonNull final Map<EngineId, WrappedTaskResult> searchResultsBySite,
-                            @NonNull final BookData bookData) {
-            sites.stream()
-                 .map(Site::getSearchEngine)
-                 .forEach(searchEngine -> {
-                     final WrappedTaskResult siteData =
-                             searchResultsBySite.get(searchEngine.getEngineId());
-
-                     if (siteData != null && siteData.result != null
-                         && !siteData.result.isEmpty()) {
-                         final Locale siteLocale = searchEngine.getLocale(context);
-                         siteData.result.keySet().forEach(
-                                 key -> processKey(key, siteData.result, siteLocale, bookData));
-                     }
-                 });
-
-            // run the mappers
-            mappers.forEach(mapper -> mapper.map(context, bookData));
-
-            // Pick the best covers for each list (if any) and clean/delete all others.
-            coverFilter.filter(bookData);
-        }
-
-        private void processKey(@NonNull final String key,
-                                @NonNull final BookData siteData,
-                                @NonNull final Locale siteLocale,
-                                @NonNull final BookData bookData) {
-            if (DBKey.DATE_KEYS.contains(key)) {
-                processDate(siteLocale, key, siteData, bookData);
-
-            } else if (LIST_KEYS.contains(key)) {
-                processList(key, siteData, bookData);
-
-            } else if (DBKey.LANGUAGE.equals(key)) {
-                processLanguage(siteLocale, key, siteData, bookData);
-
-            } else {
-                //FIXME: doing this will for example put a LONG id in the bundle as a String.
-                // This is as-designed, but you do get an Exception in the log when the data
-                // gets to the EditBook formatters. Harmless, but not clean.
-                processString(key, siteData, bookData);
-            }
-        }
-
-        private void processLanguage(@NonNull final Locale siteLocale,
-                                     @NonNull final String key,
-                                     @NonNull final BookData siteData,
-                                     @NonNull final BookData bookData) {
-            String dataToAdd = siteData.getString(key, null);
-            if (dataToAdd == null || dataToAdd.trim().isEmpty()) {
-                return;
-            }
-
-            final String current = bookData.getString(key, null);
-            if (current == null || current.isEmpty()) {
-                if (dataToAdd.length() > 3) {
-                    // If more than 3 characters, it's likely a 'display' name of a language.
-                    dataToAdd = ServiceLocator.getInstance().getLanguages()
-                                              .getISO3FromDisplayName(siteLocale, dataToAdd);
-                    bookData.putString(key, dataToAdd);
-                } else {
-                    // just use it
-                    bookData.putString(key, dataToAdd);
-                }
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "processLanguage|copied"
-                               + "|key=" + key + "|value=`" + dataToAdd + '`');
-                }
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "processLanguage|skipping|key=" + key);
-                }
-            }
-        }
-
-        /**
-         * Grabs the 'new' date and checks if it's parsable.
-         * If so, then check if the previous date was actually valid at all.
-         * if not, use new date.
-         *
-         * @param siteLocale the specific Locale of the website
-         * @param key        for the field
-         * @param siteData   Source Bundle
-         * @param bookData   Destination bundle
-         */
-        private void processDate(@NonNull final Locale siteLocale,
-                                 @NonNull final String key,
-                                 @NonNull final BookData siteData,
-                                 @NonNull final BookData bookData) {
-            final String dataToAdd = siteData.getString(key, null);
-            if (dataToAdd == null || dataToAdd.isEmpty()) {
-                return;
-            }
-
-            final String current = bookData.getString(key, null);
-            if (current == null || current.isEmpty()) {
-                // copy, even if the incoming date might not be valid.
-                // We'll deal with that later.
-                bookData.putString(key, dataToAdd);
-
-            } else {
-                // FIXME: there is overlap with some SearchEngines which already do a full
-                //  validity check on the dates they gather. We should avoid a double-check.
-                //
-                // Overwrite with the new date if we can parse it and
-                // if the current one was present but not valid.
-                final LocalDateTime newDate = dateParser.parse(dataToAdd, siteLocale);
-                if (newDate != null) {
-                    if (dateParser.parse(current, siteLocale) == null) {
-                        // current date was invalid, use the new one instead.
-                        // (theoretically this check was not needed, as we should not have
-                        // an invalid date stored anyhow... but paranoia rules)
-                        bookData.putString(key,
-                                           newDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                            Log.d(TAG, "processDate|copied"
-                                       + "|key=" + key + "|value=`" + dataToAdd + '`');
-                        }
-                    } else {
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                            Log.d(TAG, "processDate|skipped|key=" + key);
-                        }
-                    }
-                }
-            }
-        }
-
-        /**
-         * Accumulate ParcelableArrayList data.
-         * Add if not present, or append.
-         *
-         * @param <T>      type of items in the ArrayList
-         * @param key      Key of data
-         * @param siteData Source Bundle
-         * @param bookData Destination bundle
-         */
-        private <T extends Parcelable> void processList(@NonNull final String key,
-                                                        @NonNull final BookData siteData,
-                                                        @NonNull final BookData bookData) {
-            final ArrayList<T> dataToAdd = siteData.getParcelableArrayList(key);
-            if (dataToAdd == null || dataToAdd.isEmpty()) {
-                return;
-            }
-
-            ArrayList<T> dest = bookData.getParcelableArrayList(key);
-            if (dest == null || dest.isEmpty()) {
-                // just copy
-                dest = dataToAdd;
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "processList|copied"
-                               + "|key=" + key + "|value=`" + dataToAdd + '`');
-                }
-            } else {
-                // append
-                dest.addAll(dataToAdd);
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "processList|appended"
-                               + "|key=" + key + "|value=`" + dataToAdd + '`');
-                }
-            }
-            bookData.putParcelableArrayList(key, dest);
-        }
-
-        /**
-         * Accumulate String data.
-         * Handles other types via a .toString()
-         *
-         * @param key      Key of data
-         * @param siteData Source Bundle
-         * @param bookData Destination bundle
-         */
-        private void processString(@NonNull final String key,
-                                   @NonNull final BookData siteData,
-                                   @NonNull final BookData bookData) {
-            // Fetch as Object, as engines MAY store typed data
-            final Object dataToAdd = siteData.get(key);
-            if (dataToAdd == null || dataToAdd.toString().isEmpty()) {
-                return;
-            }
-
-            final String current = bookData.getString(key, null);
-            if (current == null || current.isEmpty()) {
-                // just use it
-                bookData.putString(key, dataToAdd.toString());
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "processString|copied"
-                               + "|key=" + key + "|value=`" + dataToAdd + '`');
-                }
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "processString|skipping|key=" + key);
-                }
-            }
-        }
-    }
-
     private static class CoverFilter {
 
         /**
@@ -1296,24 +1295,24 @@ public class SearchCoordinator
          * image for each index, and store those in {@link Book#BKEY_TMP_FILE_SPEC}.
          * This may result in removing ALL images if none are found suitable.
          *
-         * @param bookData to filter
+         * @param book to filter
          */
         @AnyThread
-        public void filter(@NonNull final BookData bookData) {
+        public void filter(@NonNull final Book book) {
             for (int cIdx = 0; cIdx < 2; cIdx++) {
-                if (bookData.contains(BKEY_FILE_SPEC_ARRAY[cIdx])) {
+                if (book.contains(BKEY_FILE_SPEC_ARRAY[cIdx])) {
                     final List<String> imageList =
-                            bookData.getStringArrayList(BKEY_FILE_SPEC_ARRAY[cIdx]);
+                            book.getStringArrayList(BKEY_FILE_SPEC_ARRAY[cIdx]);
 
                     if (!imageList.isEmpty()) {
                         // ALWAYS call even if we only have 1 image...
                         // We want to remove bad ones if needed.
                         final String coverName = getBestImage(imageList);
                         if (coverName != null) {
-                            bookData.putString(Book.BKEY_TMP_FILE_SPEC[cIdx], coverName);
+                            book.putString(Book.BKEY_TMP_FILE_SPEC[cIdx], coverName);
                         }
                     }
-                    bookData.remove(BKEY_FILE_SPEC_ARRAY[cIdx]);
+                    book.remove(BKEY_FILE_SPEC_ARRAY[cIdx]);
                 }
             }
         }
@@ -1369,4 +1368,6 @@ public class SearchCoordinator
             return null;
         }
     }
+
+
 }

@@ -19,17 +19,53 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 
 /**
  * State engine for the status of an entity.
  */
-public class EntityStage {
+public class EntityStage
+        implements Parcelable {
 
+    public static final Creator<EntityStage> CREATOR = new Creator<>() {
+        @Override
+        @NonNull
+        public EntityStage createFromParcel(@NonNull final Parcel in) {
+            return new EntityStage(in);
+        }
+
+        @Override
+        @NonNull
+        public EntityStage[] newArray(final int size) {
+            return new EntityStage[size];
+        }
+    };
     @NonNull
     private Stage stage = Stage.Clean;
-
     private boolean locked;
+
+    public EntityStage() {
+    }
+
+    protected EntityStage(@NonNull final Parcel in) {
+        stage = in.readParcelable(Stage.class.getClassLoader());
+        locked = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeParcelable(stage, flags);
+        dest.writeByte((byte) (locked ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
     void lock() {
         if (!locked) {
@@ -59,12 +95,38 @@ public class EntityStage {
         this.stage = stage;
     }
 
-    public enum Stage {
+    public enum Stage
+            implements Parcelable {
         /** The entity <strong>is not</strong> modified. */
         Clean,
         /** The entity <strong>can</strong> be modified, but that has not been done yet. */
         WriteAble,
         /** The entity <strong>has</strong> been modified. */
-        Dirty,
+        Dirty;
+
+        /** {@link Parcelable}. */
+        public static final Creator<Stage> CREATOR = new Creator<>() {
+            @Override
+            @NonNull
+            public Stage createFromParcel(@NonNull final Parcel in) {
+                return values()[in.readInt()];
+            }
+
+            @Override
+            @NonNull
+            public Stage[] newArray(final int size) {
+                return new Stage[size];
+            }
+        };
+
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(@NonNull final Parcel dest,
+                                  final int flags) {
+            dest.writeInt(ordinal());
+        }
     }
 }

@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.fields.BooleanIndicatorField;
@@ -209,13 +208,13 @@ public class ShowBookDetailsViewModel
         // book fields
         fields.add(new TextViewField<>(FragmentId.Main, R.id.title, DBKey.TITLE));
 
-        fields.add(new TextViewField<>(FragmentId.Main, R.id.author, BookData.BKEY_AUTHOR_LIST,
+        fields.add(new TextViewField<>(FragmentId.Main, R.id.author, Book.BKEY_AUTHOR_LIST,
                                        DBKey.FK_AUTHOR,
                                        fullDetailListFormatter)
                            .addRelatedViews(R.id.lbl_author));
 
         fields.add(
-                new TextViewField<>(FragmentId.Main, R.id.series_title, BookData.BKEY_SERIES_LIST,
+                new TextViewField<>(FragmentId.Main, R.id.series_title, Book.BKEY_SERIES_LIST,
                                     DBKey.FK_SERIES,
                                     fullDetailListFormatter)
                         .addRelatedViews(R.id.lbl_series));
@@ -241,7 +240,7 @@ public class ShowBookDetailsViewModel
         fields.add(new TextViewField<>(FragmentId.Main, R.id.color, DBKey.COLOR));
 
         fields.add(
-                new TextViewField<>(FragmentId.Main, R.id.publisher, BookData.BKEY_PUBLISHER_LIST,
+                new TextViewField<>(FragmentId.Main, R.id.publisher, Book.BKEY_PUBLISHER_LIST,
                                     DBKey.FK_PUBLISHER,
                                     normalDetailListFormatter));
 
@@ -256,8 +255,7 @@ public class ShowBookDetailsViewModel
                            .addRelatedViews(R.id.lbl_first_publication));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.edition, DBKey.EDITION__BITMASK,
-                                       new BitmaskFormatter(Details.Normal,
-                                                            BookData.Edition::getAll))
+                                       new BitmaskFormatter(Details.Normal, Book.Edition::getAll))
                            .addRelatedViews(R.id.lbl_edition));
 
         fields.add(new TextViewField<>(FragmentId.Main, R.id.print_run, DBKey.PRINT_RUN));
@@ -270,7 +268,7 @@ public class ShowBookDetailsViewModel
         // Personal fields
 
         fields.add(
-                new TextViewField<>(FragmentId.Main, R.id.bookshelves, BookData.BKEY_BOOKSHELF_LIST,
+                new TextViewField<>(FragmentId.Main, R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
                                     DBKey.FK_BOOKSHELF,
                                     normalDetailListFormatter)
                         .addRelatedViews(R.id.lbl_bookshelves));

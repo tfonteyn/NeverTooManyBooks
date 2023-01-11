@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooksO
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
@@ -247,16 +247,16 @@ public class SearchBookUpdatesFragment
         }
     }
 
-    private void onOneDone(@NonNull final LiveDataEvent<TaskResult<BookData>> message) {
+    private void onOneDone(@NonNull final LiveDataEvent<TaskResult<Book>> message) {
         //noinspection ConstantConditions
         message.getData().ifPresent(data -> vm.processOne(getContext(), data.getResult()));
     }
 
-    private void onAllDone(@NonNull final LiveDataEvent<TaskResult<BookData>> message) {
+    private void onAllDone(@NonNull final LiveDataEvent<TaskResult<Book>> message) {
         closeProgressDialog();
 
         message.getData().ifPresent(data -> {
-            final BookData result = data.getResult();
+            final Book result = data.getResult();
             if (result != null) {
                 //noinspection ConstantConditions
                 getActivity().setResult(Activity.RESULT_OK,

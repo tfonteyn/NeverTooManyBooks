@@ -81,7 +81,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
@@ -950,7 +949,7 @@ public class BooklistAdapter
 
             if (use.edition) {
                 final boolean isSet = (rowData.getLong(DBKey.EDITION__BITMASK)
-                                       & BookData.Edition.FIRST) != 0;
+                                       & Book.Edition.FIRST) != 0;
                 vb.iconFirstEdition.setVisibility(isSet ? View.VISIBLE : View.GONE);
             }
 

@@ -33,7 +33,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
@@ -247,7 +246,7 @@ public class CollectionFormUploader {
         // The site only supports numbers 1..x (and changes an empty string into a "1")
         // so we either put "1" for first-edition, or "2" for a reprint.
         final boolean isFirst = (book.getLong(
-                DBKey.EDITION__BITMASK) & BookData.Edition.FIRST) != 0;
+                DBKey.EDITION__BITMASK) & Book.Edition.FIRST) != 0;
         builder.appendQueryParameter(FF_DRUK, isFirst ? "1" : "2");
 
         // we're only supporting 1 copy and the site does not allow 0 or an empty string.

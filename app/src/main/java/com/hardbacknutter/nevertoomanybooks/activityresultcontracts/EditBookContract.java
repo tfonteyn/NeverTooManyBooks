@@ -35,20 +35,20 @@ import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookFragment;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
-public class EditBookFromBundleContract
-        extends ActivityResultContract<BookData, Optional<EditBookOutput>> {
+public class EditBookContract
+        extends ActivityResultContract<Book, Optional<EditBookOutput>> {
 
-    private static final String TAG = "EditBookFromBundle";
+    private static final String TAG = "EditBookContract";
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final BookData bookData) {
+                               @NonNull final Book book) {
         return FragmentHostActivity
                 .createIntent(context, R.layout.activity_edit_book, EditBookFragment.class)
-                .putExtra(BookData.BKEY_BOOK_DATA, bookData);
+                .putExtra(Book.BKEY_BOOK_DATA, book);
     }
 
     @Override

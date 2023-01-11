@@ -28,7 +28,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 public abstract class MapperBase
         implements Mapper {
@@ -38,9 +38,9 @@ public abstract class MapperBase
 
     @Override
     public void map(@NonNull final Context context,
-                    @NonNull final BookData bookData) {
+                    @NonNull final Book book) {
 
-        String value = bookData.getString(getKey(), null);
+        String value = book.getString(getKey(), null);
         if (value != null && !value.isEmpty()) {
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             final String lcValue = value.toLowerCase(userLocale);
@@ -55,7 +55,7 @@ public abstract class MapperBase
                         .trim();
             }
             // return either the found mapping, or the incoming value.
-            bookData.putString(getKey(), value);
+            book.putString(getKey(), value);
         }
     }
 }

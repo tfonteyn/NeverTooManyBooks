@@ -123,7 +123,7 @@ public abstract class EditBookBaseFragment
         // BUT: that new data would not be in the fragment arguments?
         //TODO: double check having book-data bundle in onResume.
         if (book.isNew()) {
-            vm.addFieldsFromBundle(getArguments());
+            vm.addFieldsFromArguments(getArguments());
         }
 
         // update the Fields for THIS fragment with their current View instances

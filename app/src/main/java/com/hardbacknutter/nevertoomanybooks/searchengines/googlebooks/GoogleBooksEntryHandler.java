@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
@@ -220,7 +220,7 @@ class GoogleBooksEntryHandler
     private final boolean[] fetchCovers;
     /** Bundle to save results in. */
     @NonNull
-    private final BookData bookData;
+    private final Book book;
 
     /** XML content. */
     @SuppressWarnings("StringBufferField")
@@ -240,15 +240,15 @@ class GoogleBooksEntryHandler
      * @param searchEngine to use
      * @param fetchCovers  Set to {@code true} if we want to get covers
      *                     The array is guaranteed to have at least one element.
-     * @param bookData     Bundle to update <em>(passed in to allow mocking)</em>
+     * @param book         Bundle to update <em>(passed in to allow mocking)</em>
      */
     GoogleBooksEntryHandler(@NonNull final GoogleBooksSearchEngine searchEngine,
                             @NonNull final boolean[] fetchCovers,
-                            @NonNull final BookData bookData,
+                            @NonNull final Book book,
                             @NonNull final Locale locale) {
         this.searchEngine = searchEngine;
         this.fetchCovers = fetchCovers;
-        this.bookData = bookData;
+        this.book = book;
         this.locale = locale;
     }
 
@@ -276,7 +276,7 @@ class GoogleBooksEntryHandler
 
                 final String fileSpec;
                 try {
-                    fileSpec = searchEngine.saveImage(url, bookData.getString(DBKey.BOOK_ISBN),
+                    fileSpec = searchEngine.saveImage(url, book.getString(DBKey.BOOK_ISBN),
                                                       0, null);
                 } catch (@NonNull final StorageException e) {
                     throw new SAXException(e);
@@ -285,7 +285,7 @@ class GoogleBooksEntryHandler
                 if (fileSpec != null) {
                     final ArrayList<String> list = new ArrayList<>();
                     list.add(fileSpec);
-                    bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
+                    book.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
                 }
             }
         } else if (XML_PRICE.equalsIgnoreCase(localName)) {
@@ -315,11 +315,11 @@ class GoogleBooksEntryHandler
 
                 if (amount >= 0) {
                     // parsing was ok, store it
-                    bookData.putMoney(DBKey.PRICE_LISTED, new Money(amount, currencyCode));
+                    book.putMoney(DBKey.PRICE_LISTED, new Money(amount, currencyCode));
                 } else {
                     // Parsing the amount failed, store as-is
                     // This should normally never happen... flw
-                    bookData.putString(DBKey.PRICE_LISTED, amountStr + ' ' + currencyCode);
+                    book.putString(DBKey.PRICE_LISTED, amountStr + ' ' + currencyCode);
                 }
 
                 inSuggestedRetailPriceTag = false;
@@ -351,10 +351,10 @@ class GoogleBooksEntryHandler
                 String tmpIsbn = builder.toString();
                 if (tmpIsbn.indexOf("ISBN:") == 0) {
                     tmpIsbn = tmpIsbn.substring(5);
-                    final String isbnStr = bookData.getString(DBKey.BOOK_ISBN, null);
+                    final String isbnStr = book.getString(DBKey.BOOK_ISBN, null);
                     // store the 'longest' isbn
                     if (isbnStr == null || tmpIsbn.length() > isbnStr.length()) {
-                        bookData.putString(DBKey.BOOK_ISBN, tmpIsbn);
+                        book.putString(DBKey.BOOK_ISBN, tmpIsbn);
                     }
                 }
                 break;
@@ -369,11 +369,11 @@ class GoogleBooksEntryHandler
                 break;
 
             case XML_AUTHOR:
-                bookData.add(Author.from(builder.toString()));
+                book.add(Author.from(builder.toString()));
                 break;
 
             case XML_PUBLISHER:
-                bookData.add(Publisher.from(builder.toString()));
+                book.add(Publisher.from(builder.toString()));
                 break;
 
             case XML_DATE_PUBLISHED:
@@ -391,12 +391,12 @@ class GoogleBooksEntryHandler
                 final String tmpFormat = builder.toString();
                 int index = tmpFormat.indexOf(" pages");
                 if (index > -1) {
-                    bookData.putString(DBKey.PAGE_COUNT,
-                                       tmpFormat.substring(0, index).trim());
+                    book.putString(DBKey.PAGE_COUNT,
+                                   tmpFormat.substring(0, index).trim());
                 } else {
                     index = tmpFormat.indexOf("Dimensions");
                     if (index > -1) {
-                        bookData.putString(DBKey.FORMAT, tmpFormat.trim());
+                        book.putString(DBKey.FORMAT, tmpFormat.trim());
                     }
                 }
                 break;
@@ -442,9 +442,9 @@ class GoogleBooksEntryHandler
      */
     private void addIfNotPresent(@NonNull final String key,
                                  @NonNull final String value) {
-        final String test = bookData.getString(key, null);
+        final String test = book.getString(key, null);
         if (test == null || test.isEmpty()) {
-            bookData.putString(key, value);
+            book.putString(key, value);
         }
     }
 }

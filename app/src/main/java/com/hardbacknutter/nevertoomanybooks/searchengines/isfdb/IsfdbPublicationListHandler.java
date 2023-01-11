@@ -30,7 +30,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
@@ -126,10 +126,10 @@ class IsfdbPublicationListHandler
     @SuppressWarnings("StringBufferField")
     private final StringBuilder builder = new StringBuilder();
     @NonNull
-    private final List<BookData> bookDataList = new ArrayList<>();
+    private final List<Book> bookList = new ArrayList<>();
     private int maxBooks;
     private boolean inPublication;
-    private BookData publicationData;
+    private Book publicationData;
     private boolean inAuthors;
     private boolean inCoverArtists;
     private boolean inExternalIds;
@@ -152,8 +152,8 @@ class IsfdbPublicationListHandler
     }
 
     @NonNull
-    public List<BookData> getResult() {
-        return bookDataList;
+    public List<Book> getResult() {
+        return bookList;
     }
 
     @Override
@@ -177,7 +177,7 @@ class IsfdbPublicationListHandler
         switch (qName) {
             case XML_PUBLICATION:
                 inPublication = true;
-                publicationData = new BookData();
+                publicationData = new Book();
                 break;
 
             case XML_AUTHORS:
@@ -229,8 +229,8 @@ class IsfdbPublicationListHandler
             publicationData.putString(DBKey.LANGUAGE, "eng");
 
             inPublication = false;
-            bookDataList.add(publicationData);
-            if (bookDataList.size() == maxBooks) {
+            bookList.add(publicationData);
+            if (bookList.size() == maxBooks) {
                 // we're done
                 throw new SAXException(new EOFException());
             }
@@ -318,7 +318,7 @@ class IsfdbPublicationListHandler
                 case XML_TYPE: {
                     final String tmpString = builder.toString().trim();
                     addIfNotPresent(IsfdbSearchEngine.SiteField.BOOK_TYPE, tmpString);
-                    final BookData.ContentType type = IsfdbSearchEngine.TYPE_MAP.get(tmpString);
+                    final Book.ContentType type = IsfdbSearchEngine.TYPE_MAP.get(tmpString);
                     if (type != null) {
                         publicationData.putLong(DBKey.TOC_TYPE__BITMASK, type.getId());
                     }

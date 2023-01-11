@@ -23,7 +23,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 public interface Mapper {
 
@@ -38,9 +38,9 @@ public interface Mapper {
     /**
      * The current value is read from the bundle, and replaced by the mapped value if found.
      *
-     * @param context  Current context
-     * @param bookData with {@link #getKey} entry to map
+     * @param context Current context
+     * @param book    with {@link #getKey} entry to map
      */
     void map(@NonNull Context context,
-             @NonNull BookData bookData);
+             @NonNull Book book);
 }

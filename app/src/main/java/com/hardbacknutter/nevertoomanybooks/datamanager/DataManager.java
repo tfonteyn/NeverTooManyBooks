@@ -89,14 +89,6 @@ public class DataManager
         this.rawData = rawData;
     }
 
-    /**
-     * Constructor for Mock tests. Loads the data <strong>without</strong> type checks.
-     */
-    @VisibleForTesting
-    protected DataManager(@NonNull final DataManager dataManager) {
-        this.rawData = dataManager.rawData;
-    }
-
     protected DataManager(@NonNull final Parcel in) {
         rawData = in.readBundle(getClass().getClassLoader());
     }

@@ -46,7 +46,7 @@ import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -314,9 +314,9 @@ public interface SearchEngine
          */
         @WorkerThread
         @NonNull
-        BookData searchByExternalId(@NonNull Context context,
-                                    @NonNull String externalId,
-                                    @NonNull boolean[] fetchCovers)
+        Book searchByExternalId(@NonNull Context context,
+                                @NonNull String externalId,
+                                @NonNull boolean[] fetchCovers)
                 throws StorageException,
                        SearchException,
                        CredentialsException;
@@ -357,9 +357,9 @@ public interface SearchEngine
          */
         @WorkerThread
         @NonNull
-        BookData searchByIsbn(@NonNull Context context,
-                              @NonNull String validIsbn,
-                              @NonNull boolean[] fetchCovers)
+        Book searchByIsbn(@NonNull Context context,
+                          @NonNull String validIsbn,
+                          @NonNull boolean[] fetchCovers)
                 throws StorageException,
                        SearchException,
                        CredentialsException;
@@ -387,9 +387,9 @@ public interface SearchEngine
          */
         @WorkerThread
         @NonNull
-        BookData searchByBarcode(@NonNull Context context,
-                                 @NonNull String barcode,
-                                 @NonNull boolean[] fetchCovers)
+        Book searchByBarcode(@NonNull Context context,
+                             @NonNull String barcode,
+                             @NonNull boolean[] fetchCovers)
                 throws StorageException,
                        SearchException,
                        CredentialsException;
@@ -426,12 +426,12 @@ public interface SearchEngine
          */
         @WorkerThread
         @NonNull
-        BookData search(@NonNull Context context,
-                        @Nullable String code,
-                        @Nullable String author,
-                        @Nullable String title,
-                        @Nullable String publisher,
-                        @NonNull boolean[] fetchCovers)
+        Book search(@NonNull Context context,
+                    @Nullable String code,
+                    @Nullable String author,
+                    @Nullable String title,
+                    @Nullable String publisher,
+                    @NonNull boolean[] fetchCovers)
                 throws StorageException,
                        SearchException,
                        CredentialsException;

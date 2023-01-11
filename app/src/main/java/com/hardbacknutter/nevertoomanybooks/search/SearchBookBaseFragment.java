@@ -45,10 +45,10 @@ import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookFromBundleContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesSingleListContract;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -61,8 +61,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 public abstract class SearchBookBaseFragment
         extends BaseFragment {
 
-    private final ActivityResultLauncher<BookData> editBookFoundLauncher = registerForActivityResult(
-            new EditBookFromBundleContract(), o -> o.ifPresent(this::onBookEditingDone));
+    private final ActivityResultLauncher<Book> editBookFoundLauncher = registerForActivityResult(
+            new EditBookContract(), o -> o.ifPresent(this::onBookEditingDone));
 
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback backPressedCallback =
@@ -132,30 +132,30 @@ public abstract class SearchBookBaseFragment
         }
     }
 
-    private void onSearchFinished(@NonNull final LiveDataEvent<TaskResult<BookData>> message) {
+    private void onSearchFinished(@NonNull final LiveDataEvent<TaskResult<Book>> message) {
         closeProgressDialog();
         message.getData().map(TaskResult::requireResult).ifPresent(result -> {
             final String searchErrors = result.getString(SearchCoordinator.BKEY_SEARCH_ERROR, null);
             result.remove(SearchCoordinator.BKEY_SEARCH_ERROR);
-            final boolean hasBookData = !result.isEmpty();
+            final boolean hasData = !result.isEmpty();
 
             if (searchErrors != null && !searchErrors.isEmpty()) {
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_baseline_warning_24)
-                        .setTitle(hasBookData ? R.string.warning_book_not_always_found
-                                              : R.string.warning_book_not_found)
+                        .setTitle(hasData ? R.string.warning_book_not_always_found
+                                          : R.string.warning_book_not_found)
                         .setMessage(searchErrors)
                         .setPositiveButton(android.R.string.ok, (d, w) -> {
                             d.dismiss();
-                            if (hasBookData) {
+                            if (hasData) {
                                 onSearchResults(result);
                             }
                         })
                         .create()
                         .show();
 
-            } else if (hasBookData) {
+            } else if (hasData) {
                 onSearchResults(result);
 
             } else {
@@ -167,7 +167,7 @@ public abstract class SearchBookBaseFragment
     }
 
     @CallSuper
-    void onSearchCancelled(@NonNull final LiveDataEvent<TaskResult<BookData>> message) {
+    void onSearchCancelled(@NonNull final LiveDataEvent<TaskResult<Book>> message) {
         closeProgressDialog();
         //noinspection ConstantConditions
         Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
@@ -211,7 +211,7 @@ public abstract class SearchBookBaseFragment
      * Start the actual search with the {@link SearchCoordinator} in the background.
      * <p>
      * This is final; override {@link #onPreSearch()} and {@link #onSearch()} as needed.
-     * The results come in {@link #onSearchResults(BookData)}.
+     * The results come in {@link #onSearchResults(Book)}.
      */
     final void startSearch() {
         // check if we have an active search, if so, quit silently.
@@ -265,10 +265,10 @@ public abstract class SearchBookBaseFragment
      * Process the search results.
      * The default implementation starts the book-edit activity.
      *
-     * @param bookData results of the search
+     * @param book results of the search
      */
-    void onSearchResults(@NonNull final BookData bookData) {
-        editBookFoundLauncher.launch(bookData);
+    void onSearchResults(@NonNull final Book book) {
+        editBookFoundLauncher.launch(book);
         onClearSearchCriteria();
     }
 

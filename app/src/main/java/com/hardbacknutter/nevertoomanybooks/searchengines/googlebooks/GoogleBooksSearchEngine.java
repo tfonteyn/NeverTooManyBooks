@@ -35,7 +35,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
@@ -84,31 +84,31 @@ public class GoogleBooksSearchEngine
 
     @NonNull
     @Override
-    public BookData searchByIsbn(@NonNull final Context context,
-                                 @NonNull final String validIsbn,
-                                 @NonNull final boolean[] fetchCovers)
+    public Book searchByIsbn(@NonNull final Context context,
+                             @NonNull final String validIsbn,
+                             @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException {
 
-        final BookData bookData = new BookData();
+        final Book book = new Book();
 
         // %3A  :
         final String url = getHostUrl() + "/books/feeds/volumes?q=ISBN%3A" + validIsbn;
-        fetchBook(context, url, fetchCovers, bookData);
-        return bookData;
+        fetchBook(context, url, fetchCovers, book);
+        return book;
     }
 
     @NonNull
     @Override
     @WorkerThread
-    public BookData search(@NonNull final Context context,
-                           @Nullable final /* not supported */ String code,
-                           @Nullable final String author,
-                           @Nullable final String title,
-                           @Nullable final /* not supported */ String publisher,
-                           @NonNull final boolean[] fetchCovers)
+    public Book search(@NonNull final Context context,
+                       @Nullable final /* not supported */ String code,
+                       @Nullable final String author,
+                       @Nullable final String title,
+                       @Nullable final /* not supported */ String publisher,
+                       @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException {
 
-        final BookData bookData = new BookData();
+        final Book book = new Book();
 
         // %2B  +
         // %3A  :
@@ -118,9 +118,9 @@ public class GoogleBooksSearchEngine
                                + "intitle%3A" + encodeSpaces(title)
                                + "%2B"
                                + "inauthor%3A" + encodeSpaces(author);
-            fetchBook(context, url, fetchCovers, bookData);
+            fetchBook(context, url, fetchCovers, book);
         }
-        return bookData;
+        return book;
     }
 
     /**
@@ -130,14 +130,14 @@ public class GoogleBooksSearchEngine
      * @param url         to fetch
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
-     * @param bookData    Bundle to update <em>(passed in to allow mocking)</em>
+     * @param book        Bundle to update <em>(passed in to allow mocking)</em>
      *
      * @throws StorageException on storage related failures
      */
     private void fetchBook(@NonNull final Context context,
                            @NonNull final String url,
                            @NonNull final boolean[] fetchCovers,
-                           @NonNull final BookData bookData)
+                           @NonNull final Book book)
             throws StorageException,
                    SearchException {
 
@@ -170,14 +170,14 @@ public class GoogleBooksSearchEngine
             if (!urlList.isEmpty()) {
                 // The entry handler takes care of an individual book ('entry')
                 final GoogleBooksEntryHandler handler = new GoogleBooksEntryHandler(
-                        this, fetchCovers, bookData, getLocale(context));
+                        this, fetchCovers, book, getLocale(context));
 
                 // only using the first one found, maybe future enhancement?
                 futureHttpGet.get(urlList.get(0), request -> {
                     try (BufferedInputStream bis = new BufferedInputStream(
                             request.getInputStream())) {
                         parser.parse(bis, handler);
-                        checkForSeriesNameInTitle(bookData);
+                        checkForSeriesNameInTitle(book);
                         return true;
                     } catch (@NonNull final IOException e) {
                         throw new UncheckedIOException(e);

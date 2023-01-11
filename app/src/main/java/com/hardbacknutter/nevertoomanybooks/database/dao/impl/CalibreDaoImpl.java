@@ -85,8 +85,11 @@ public class CalibreDaoImpl
 
         final CalibreLibraryDao libraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
         final CalibreLibrary library;
-        //reminder: do not use book.getCalibreLibrary(); that would be pointless here
+
         if (book.contains(Book.BKEY_CALIBRE_LIBRARY)) {
+            //reminder: do not use book.getCalibreLibrary();
+            // There is no point in trying to find the library when we're actively
+            // only now going to insert it.
             library = book.getParcelable(Book.BKEY_CALIBRE_LIBRARY);
 
             //noinspection ConstantConditions

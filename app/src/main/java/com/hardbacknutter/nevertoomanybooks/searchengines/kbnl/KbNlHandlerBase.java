@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -53,7 +53,7 @@ abstract class KbNlHandlerBase
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s{2,}");
     /** The final output will be written to this bundle as passed in to the constructor. */
     @NonNull
-    protected final BookData data;
+    protected final Book data;
 
     /** XML content of a single element. */
     @SuppressWarnings("StringBufferField")
@@ -75,7 +75,7 @@ abstract class KbNlHandlerBase
     /** Are we parsing a list of records {@code true}; or a detail page {@code false}. */
     private boolean isList;
 
-    KbNlHandlerBase(@NonNull final BookData data) {
+    KbNlHandlerBase(@NonNull final Book data) {
         this.data = data;
     }
 

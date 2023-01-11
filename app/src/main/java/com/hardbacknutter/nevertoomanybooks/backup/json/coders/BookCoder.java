@@ -35,7 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -128,14 +127,14 @@ public class BookCoder
 
         } else if (element instanceof ArrayList) {
             switch (key) {
-                case BookData.BKEY_AUTHOR_LIST: {
+                case Book.BKEY_AUTHOR_LIST: {
                     final List<Author> list = book.getAuthors();
                     if (!list.isEmpty()) {
                         out.put(key, authorCoder.encode(list));
                     }
                     break;
                 }
-                case BookData.BKEY_BOOKSHELF_LIST: {
+                case Book.BKEY_BOOKSHELF_LIST: {
                     final List<Bookshelf> list = book.getBookshelves();
                     if (!list.isEmpty()) {
                         // FK as it's a reference
@@ -143,21 +142,21 @@ public class BookCoder
                     }
                     break;
                 }
-                case BookData.BKEY_PUBLISHER_LIST: {
+                case Book.BKEY_PUBLISHER_LIST: {
                     final List<Publisher> list = book.getPublishers();
                     if (!list.isEmpty()) {
                         out.put(key, publisherCoder.encode(list));
                     }
                     break;
                 }
-                case BookData.BKEY_SERIES_LIST: {
+                case Book.BKEY_SERIES_LIST: {
                     final List<Series> list = book.getSeries();
                     if (!list.isEmpty()) {
                         out.put(key, seriesCoder.encode(list));
                     }
                     break;
                 }
-                case BookData.BKEY_TOC_LIST: {
+                case Book.BKEY_TOC_LIST: {
                     final List<TocEntry> list = book.getToc();
                     if (!list.isEmpty()) {
                         out.put(key, tocEntryCoder.encode(list));
@@ -190,7 +189,7 @@ public class BookCoder
         while (it.hasNext()) {
             final String key = it.next();
             switch (key) {
-                case BookData.BKEY_BOOKSHELF_LIST:
+                case Book.BKEY_BOOKSHELF_LIST:
                     // Full object
                     book.setBookshelves(bookshelfCoder.decode(data.getJSONArray(key)));
                     break;
@@ -216,19 +215,19 @@ public class BookCoder
                     break;
 
 
-                case BookData.BKEY_AUTHOR_LIST:
+                case Book.BKEY_AUTHOR_LIST:
                     book.setAuthors(authorCoder.decode(data.getJSONArray(key)));
                     break;
 
-                case BookData.BKEY_PUBLISHER_LIST:
+                case Book.BKEY_PUBLISHER_LIST:
                     book.setPublishers(publisherCoder.decode(data.getJSONArray(key)));
                     break;
 
-                case BookData.BKEY_SERIES_LIST:
+                case Book.BKEY_SERIES_LIST:
                     book.setSeries(seriesCoder.decode(data.getJSONArray(key)));
                     break;
 
-                case BookData.BKEY_TOC_LIST:
+                case Book.BKEY_TOC_LIST:
                     book.setToc(tocEntryCoder.decode(data.getJSONArray(key)));
                     break;
 

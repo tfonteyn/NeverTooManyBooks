@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
@@ -78,10 +78,10 @@ public abstract class SearchEngineBase
      * This default implementation is fine for most engines but not always needed.
      * TODO: we probably call checkForSeriesNameInTitle for sites that don't need it.
      *
-     * @param bookData Bundle to update
+     * @param book Bundle to update
      */
-    protected static void checkForSeriesNameInTitle(@NonNull final BookData bookData) {
-        final String fullTitle = bookData.getString(DBKey.TITLE, null);
+    protected static void checkForSeriesNameInTitle(@NonNull final Book book) {
+        final String fullTitle = book.getString(DBKey.TITLE, null);
         if (fullTitle != null && !fullTitle.isEmpty()) {
             final Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
             if (matcher.find()) {
@@ -93,10 +93,10 @@ public abstract class SearchEngineBase
 
                     if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
                         // add to the TOP of the list.
-                        bookData.add(0, Series.from(seriesTitleWithNumber));
+                        book.add(0, Series.from(seriesTitleWithNumber));
 
                         // and store cleansed book title back
-                        bookData.putString(DBKey.TITLE, bookTitle);
+                        book.putString(DBKey.TITLE, bookTitle);
                     }
                 }
             }

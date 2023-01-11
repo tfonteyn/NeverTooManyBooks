@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.sync.ColorMapper;
@@ -56,7 +56,7 @@ class KbNlBookHandler
      * @param data    Bundle to update <em>(passed in to allow mocking)</em>
      */
     KbNlBookHandler(@NonNull final Context context,
-                    @NonNull final BookData data) {
+                    @NonNull final Book data) {
         super(data);
         this.context = context;
     }

@@ -182,7 +182,7 @@ public class EditLenderDialogFragment
         final ContentResolver cr = getContext().getContentResolver();
         try (Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI,
                                       new String[]{ContactsContract.Contacts.LOOKUP_KEY,
-                                                   ContactsContract.Contacts.DISPLAY_NAME_PRIMARY},
+                                              ContactsContract.Contacts.DISPLAY_NAME_PRIMARY},
                                       null, null, null)) {
             if (cursor != null) {
                 while (cursor.moveToNext()) {
@@ -296,15 +296,7 @@ public class EditLenderDialogFragment
          * @param book to lend
          */
         public void launch(@NonNull final Book book) {
-
-            final Bundle args = new Bundle(3);
-            args.putString(BKEY_REQUEST_KEY, requestKey);
-            args.putLong(DBKey.FK_BOOK, book.getId());
-            args.putString(DBKey.TITLE, book.getTitle());
-
-            final DialogFragment frag = new EditLenderDialogFragment();
-            frag.setArguments(args);
-            frag.show(fragmentManager, TAG);
+            launch(book.getId(), book.getTitle());
         }
 
         /**
@@ -329,7 +321,8 @@ public class EditLenderDialogFragment
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            onResult(SanityCheck.requirePositiveValue(result.getLong(DBKey.FK_BOOK), DBKey.FK_BOOK),
+            onResult(SanityCheck.requirePositiveValue(
+                             result.getLong(DBKey.FK_BOOK), DBKey.FK_BOOK),
                      Objects.requireNonNull(result.getString(DBKey.LOANEE_NAME),
                                             DBKey.LOANEE_NAME));
         }

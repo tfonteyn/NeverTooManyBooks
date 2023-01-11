@@ -37,7 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 public class TocViewModel
@@ -78,11 +77,11 @@ public class TocViewModel
             // optional, display purpose only
             bookTitle = args.getString(DBKey.TITLE);
 
-            final ArrayList<TocEntry> tocList = args.getParcelableArrayList(BookData.BKEY_TOC_LIST);
-            Objects.requireNonNull(tocList, BookData.BKEY_TOC_LIST);
+            final ArrayList<TocEntry> tocList = args.getParcelableArrayList(Book.BKEY_TOC_LIST);
+            Objects.requireNonNull(tocList, Book.BKEY_TOC_LIST);
             works.addAll(tocList);
 
-            final List<Author> authorList = args.getParcelableArrayList(BookData.BKEY_AUTHOR_LIST);
+            final List<Author> authorList = args.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
             if (authorList != null && !authorList.isEmpty()) {
                 authors = Author.getLabel(context, authorList);
                 primaryAuthor = authorList.get(0);

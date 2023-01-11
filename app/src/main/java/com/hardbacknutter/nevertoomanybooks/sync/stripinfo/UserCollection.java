@@ -37,7 +37,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
@@ -169,9 +169,9 @@ public class UserCollection {
     @SuppressLint("DefaultLocale")
     @WorkerThread
     @NonNull
-    Optional<List<BookData>> fetchPage(@NonNull final Context context,
-                                       final int pageNr,
-                                       @NonNull final ProgressListener progressListener)
+    Optional<List<Book>> fetchPage(@NonNull final Context context,
+                                   final int pageNr,
+                                   @NonNull final ProgressListener progressListener)
             throws SearchException, StorageException, IOException {
 
         if (!(pageNr == 0 || maxPages > pageNr)) {
@@ -213,10 +213,10 @@ public class UserCollection {
 
     @VisibleForTesting
     @NonNull
-    Optional<List<BookData>> parseDocument(@NonNull final Context context,
-                                           @NonNull final Document document,
-                                           final int pageNr,
-                                           @NonNull final ProgressListener progressListener)
+    Optional<List<Book>> parseDocument(@NonNull final Context context,
+                                       @NonNull final Document document,
+                                       final int pageNr,
+                                       @NonNull final ProgressListener progressListener)
             throws SearchException {
         final Element root = document.getElementById("collectionContent");
         if (root != null) {
@@ -246,12 +246,12 @@ public class UserCollection {
      */
     @AnyThread
     @NonNull
-    private List<BookData> parsePage(@NonNull final Element root) {
-        final List<BookData> collection = new ArrayList<>();
+    private List<Book> parsePage(@NonNull final Element root) {
+        final List<Book> collection = new ArrayList<>();
 
         // showing 'progress' here is pointless as even older devices will be fast.
         for (final Element row : root.select("div.collectionRow")) {
-            final BookData cData = new BookData();
+            final Book cData = new Book();
 
             parseRow(row, cData);
             if (!cData.isEmpty()) {
@@ -263,7 +263,7 @@ public class UserCollection {
 
     @AnyThread
     private void parseRow(@NonNull final Element row,
-                          @NonNull final BookData cData) {
+                          @NonNull final Book cData) {
         final String idAttr = row.id();
         // sanity check, each row is normally a book.
         if (idAttr.startsWith(ROW_ID_ATTR)) {
@@ -312,12 +312,12 @@ public class UserCollection {
          * Parse the form ('root') and put the results into the 'destBundle'.
          *
          * @param root         Element to parse
-         * @param destBundle   to store the results in
+         * @param book         to store the results in
          * @param collectionId website book collection-id
          */
         @AnyThread
         public void parse(@NonNull final Element root,
-                          @NonNull final BookData destBundle,
+                          @NonNull final Book book,
                           @IntRange(from = 1) final long collectionId) {
 
             idOwned = "bezit-" + collectionId;
@@ -332,11 +332,11 @@ public class UserCollection {
             idPricePaid = "prijs-" + collectionId;
             idAmount = "aantal-" + collectionId;
 
-            parseFlags(root, destBundle);
-            parseDetails(root, destBundle);
+            parseFlags(root, book);
+            parseDetails(root, book);
 
             // Add as last one in case of errors thrown
-            destBundle.putLong(DBKey.STRIP_INFO_COLL_ID, collectionId);
+            book.putLong(DBKey.STRIP_INFO_COLL_ID, collectionId);
         }
     }
 }

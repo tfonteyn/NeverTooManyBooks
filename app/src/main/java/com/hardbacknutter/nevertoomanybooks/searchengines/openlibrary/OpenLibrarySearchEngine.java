@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
@@ -186,17 +186,17 @@ public class OpenLibrarySearchEngine
 
     @NonNull
     @Override
-    public BookData searchByExternalId(@NonNull final Context context,
-                                       @NonNull final String externalId,
-                                       @NonNull final boolean[] fetchCovers)
+    public Book searchByExternalId(@NonNull final Context context,
+                                   @NonNull final String externalId,
+                                   @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException {
 
-        final BookData bookData = new BookData();
+        final Book book = new Book();
 
         final String url = getHostUrl() + String.format(BASE_BOOK_URL, "OLID", externalId);
 
-        fetchBook(context, url, fetchCovers, bookData);
-        return bookData;
+        fetchBook(context, url, fetchCovers, book);
+        return book;
     }
 
     /**
@@ -206,17 +206,17 @@ public class OpenLibrarySearchEngine
      */
     @NonNull
     @Override
-    public BookData searchByIsbn(@NonNull final Context context,
-                                 @NonNull final String validIsbn,
-                                 @NonNull final boolean[] fetchCovers)
+    public Book searchByIsbn(@NonNull final Context context,
+                             @NonNull final String validIsbn,
+                             @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException {
 
-        final BookData bookData = new BookData();
+        final Book book = new Book();
 
         final String url = getHostUrl() + String.format(BASE_BOOK_URL, "ISBN", validIsbn);
 
-        fetchBook(context, url, fetchCovers, bookData);
-        return bookData;
+        fetchBook(context, url, fetchCovers, book);
+        return book;
     }
 
     /**
@@ -277,14 +277,14 @@ public class OpenLibrarySearchEngine
      * @param url         to fetch
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
-     * @param bookData    Bundle to update
+     * @param book        Bundle to update
      *
      * @throws StorageException on storage related failures
      */
     private void fetchBook(@NonNull final Context context,
                            @NonNull final String url,
                            @NonNull final boolean[] fetchCovers,
-                           @NonNull final BookData bookData)
+                           @NonNull final Book book)
             throws StorageException, SearchException {
 
         futureHttpGet = createFutureGetRequest();
@@ -301,8 +301,8 @@ public class OpenLibrarySearchEngine
                 }
             });
 
-            if (handleResponse(context, response, fetchCovers, bookData)) {
-                checkForSeriesNameInTitle(bookData);
+            if (handleResponse(context, response, fetchCovers, book)) {
+                checkForSeriesNameInTitle(book);
             }
 
         } catch (@NonNull final IOException e) {
@@ -457,7 +457,7 @@ public class OpenLibrarySearchEngine
      * @param response    the complete response; a String containing JSON
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
-     * @param bookData    Bundle to update
+     * @param book    Bundle to update
      *
      * @return {@code true} on success, {@code false} if we were cancelled.
      *
@@ -467,7 +467,7 @@ public class OpenLibrarySearchEngine
     boolean handleResponse(@NonNull final Context context,
                            @NonNull final String response,
                            @NonNull final boolean[] fetchCovers,
-                           @NonNull final BookData bookData)
+                           @NonNull final Book book)
             throws StorageException,
                    SearchException {
 
@@ -487,7 +487,7 @@ public class OpenLibrarySearchEngine
                     parse(context, data[1],
                           jsonObject.getJSONObject(topLevelKey),
                           fetchCovers,
-                          bookData);
+                          book);
                 }
             }
         } catch (@NonNull final JSONException e) {
@@ -498,14 +498,14 @@ public class OpenLibrarySearchEngine
     }
 
     /**
-     * Parse the results, and build the bookData bundle.
+     * Parse the results, and build the book.
      *
      * @param context     Current context
      * @param validIsbn   of the book
      * @param document    JSON result data
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
-     * @param bookData    Bundle to update
+     * @param book    Bundle to update
      *
      * @throws StorageException on storage related failures
      */
@@ -513,14 +513,14 @@ public class OpenLibrarySearchEngine
                        @NonNull final String validIsbn,
                        @NonNull final JSONObject document,
                        @NonNull final boolean[] fetchCovers,
-                       @NonNull final BookData bookData)
+                       @NonNull final Book book)
             throws StorageException {
 
         final DateParser dateParser = new FullDateParser(context);
 
         // store the isbn; we might override it later on though (e.g. isbn 13v10)
         // not sure if this is needed though. Need more data.
-        bookData.putString(DBKey.BOOK_ISBN, validIsbn);
+        book.putString(DBKey.BOOK_ISBN, validIsbn);
 
         JSONObject element;
         JSONArray a;
@@ -529,7 +529,7 @@ public class OpenLibrarySearchEngine
 
         s = document.optString("title");
         if (s != null && !s.isEmpty()) {
-            bookData.putString(DBKey.TITLE, s);
+            book.putString(DBKey.TITLE, s);
         }
 
         // s = document.optString("subtitle");
@@ -541,7 +541,7 @@ public class OpenLibrarySearchEngine
                 if (element != null) {
                     final String name = element.optString("name");
                     if (name != null && !name.isEmpty()) {
-                        bookData.add(Author.from(name));
+                        book.add(Author.from(name));
                     }
                 }
             }
@@ -549,30 +549,30 @@ public class OpenLibrarySearchEngine
 
         // s = jsonObject.optString("pagination");
         // if (!s.isEmpty()) {
-        //     bookData.putString(DBDefinitions.KEY_PAGES, s);
+        //     book.putString(DBDefinitions.KEY_PAGES, s);
         // } else {
         i = document.optInt("number_of_pages");
         if (i > 0) {
-            bookData.putString(DBKey.PAGE_COUNT, String.valueOf(i));
+            book.putString(DBKey.PAGE_COUNT, String.valueOf(i));
         }
         // }
 
         element = document.optJSONObject("identifiers");
         if (element != null) {
-            processIdentifiers(element, bookData);
+            processIdentifiers(element, book);
         }
 
         a = document.optJSONArray("publishers");
         if (a != null && !a.isEmpty()) {
-            processPublishers(a, bookData);
+            processPublishers(a, book);
         }
 
         s = document.optString("publish_date");
         if (s != null && !s.isEmpty()) {
             final LocalDateTime date = dateParser.parse(s, getLocale(context));
             if (date != null) {
-                bookData.putString(DBKey.BOOK_PUBLICATION__DATE,
-                                   date.format(DateTimeFormatter.ISO_LOCAL_DATE));
+                book.putString(DBKey.BOOK_PUBLICATION__DATE,
+                               date.format(DateTimeFormatter.ISO_LOCAL_DATE));
             }
         }
 
@@ -587,12 +587,12 @@ public class OpenLibrarySearchEngine
         // "notes" is a specific (set of) remarks on this particular edition of the book.
         s = document.optString("notes");
         if (s != null && !s.isEmpty()) {
-            bookData.putString(DBKey.DESCRIPTION, s);
+            book.putString(DBKey.DESCRIPTION, s);
         }
 
 
         // always use the first author only for TOC entries.
-        final Author primAuthor = bookData.getPrimaryAuthor();
+        final Author primAuthor = book.getPrimaryAuthor();
         a = document.optJSONArray("table_of_contents");
         if (a != null && !a.isEmpty()) {
             final List<TocEntry> toc = new ArrayList<>();
@@ -608,10 +608,10 @@ public class OpenLibrarySearchEngine
             }
 
             if (!toc.isEmpty()) {
-                bookData.setToc(toc);
+                book.setToc(toc);
                 if (toc.size() > 1) {
-                    bookData.putLong(DBKey.TOC_TYPE__BITMASK,
-                                     BookData.ContentType.Collection.getId());
+                    book.putLong(DBKey.TOC_TYPE__BITMASK,
+                                 Book.ContentType.Collection.getId());
                 }
             }
         }
@@ -623,67 +623,67 @@ public class OpenLibrarySearchEngine
         if (fetchCovers[0]) {
             final ArrayList<String> list = parseCovers(document, validIsbn, 0);
             if (!list.isEmpty()) {
-                bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
+                book.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
             }
         }
     }
 
     private void processPublishers(@NonNull final JSONArray a,
-                                   @NonNull final BookData bookData) {
+                                   @NonNull final Book book) {
         JSONObject element;
         for (int ai = 0; ai < a.length(); ai++) {
             element = a.optJSONObject(ai);
             if (element != null) {
                 final String name = element.optString("name");
                 if (name != null && !name.isEmpty()) {
-                    bookData.add(Publisher.from(name));
+                    book.add(Publisher.from(name));
                 }
             }
         }
     }
 
     private void processIdentifiers(@NonNull final JSONObject element,
-                                    @NonNull final BookData bookData) {
+                                    @NonNull final Book book) {
 
         JSONArray a;
 
         // see if we have a better isbn.
         a = element.optJSONArray("isbn_13");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBKey.BOOK_ISBN, a.getString(0));
+            book.putString(DBKey.BOOK_ISBN, a.getString(0));
         } else {
             a = element.optJSONArray("isbn_10");
             if (a != null && !a.isEmpty()) {
-                bookData.putString(DBKey.BOOK_ISBN, a.getString(0));
+                book.putString(DBKey.BOOK_ISBN, a.getString(0));
             }
         }
         a = element.optJSONArray("amazon");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBKey.SID_ASIN, a.getString(0));
+            book.putString(DBKey.SID_ASIN, a.getString(0));
         }
         a = element.optJSONArray("openlibrary");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBKey.SID_OPEN_LIBRARY, a.getString(0));
+            book.putString(DBKey.SID_OPEN_LIBRARY, a.getString(0));
         }
         a = element.optJSONArray("librarything");
         if (a != null && !a.isEmpty()) {
-            bookData.putLong(DBKey.SID_LIBRARY_THING, a.getLong(0));
+            book.putLong(DBKey.SID_LIBRARY_THING, a.getLong(0));
         }
         a = element.optJSONArray("goodreads");
         if (a != null && !a.isEmpty()) {
-            bookData.putLong(DBKey.SID_GOODREADS_BOOK, a.getLong(0));
+            book.putLong(DBKey.SID_GOODREADS_BOOK, a.getLong(0));
         }
         a = element.optJSONArray("google");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBKey.SID_GOOGLE, a.getString(0));
+            book.putString(DBKey.SID_GOOGLE, a.getString(0));
         }
         a = element.optJSONArray("lccn");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBKey.SID_LCCN, a.getString(0));
+            book.putString(DBKey.SID_LCCN, a.getString(0));
         }
         a = element.optJSONArray("oclc");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBKey.SID_OCLC, a.getString(0));
+            book.putString(DBKey.SID_OCLC, a.getString(0));
         }
     }
 

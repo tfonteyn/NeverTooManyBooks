@@ -53,9 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -147,11 +145,11 @@ public final class SyncReaderProcessor
                 case CopyIfBlank: {
                     switch (field.key) {
                         // We should never have a book without authors, but be paranoid
-                        case BookData.BKEY_AUTHOR_LIST:
-                        case BookData.BKEY_SERIES_LIST:
-                        case BookData.BKEY_PUBLISHER_LIST:
-                        case BookData.BKEY_TOC_LIST:
-                        case BookData.BKEY_BOOKSHELF_LIST:
+                        case Book.BKEY_AUTHOR_LIST:
+                        case Book.BKEY_SERIES_LIST:
+                        case Book.BKEY_PUBLISHER_LIST:
+                        case Book.BKEY_TOC_LIST:
+                        case Book.BKEY_BOOKSHELF_LIST:
                             if (book.contains(field.key)) {
                                 final ArrayList<Parcelable> list =
                                         book.getParcelableArrayList(field.key);
@@ -207,29 +205,29 @@ public final class SyncReaderProcessor
      *                     Must be passed separately, as 'book' can be all-new data.
      * @param book         the local book
      * @param fieldsWanted The (subset) of fields relevant to the current book.
-     * @param bookData     the data to merge with the book
+     * @param dataToMerge  the data to merge with the book
      *
      * @return a {@link Book} object with the <strong>DELTA</strong> fields that we need.
-     *         The book id will always be set.
-     *         It can be passed to {@link BookDao#update}
+     * The book id will always be set.
+     * It can be passed to {@link BookDao#update}
      */
     @Nullable
     public Book process(@NonNull final Context context,
                         final long bookId,
                         @NonNull final Book book,
                         @NonNull final Map<String, SyncField> fieldsWanted,
-                        @NonNull final BookData bookData) {
+                        @NonNull final Book dataToMerge) {
 
         // Filter the data to remove keys we don't care about
         final Collection<String> toRemove = new ArrayList<>();
-        for (final String key : bookData.keySet()) {
+        for (final String key : dataToMerge.keySet()) {
             final SyncField field = fieldsWanted.get(key);
             if (field == null || field.getAction() == SyncAction.Skip) {
                 toRemove.add(key);
             }
         }
         for (final String key : toRemove) {
-            bookData.remove(key);
+            dataToMerge.remove(key);
         }
 
         final Locale bookLocale = book.getLocale(context);
@@ -238,24 +236,24 @@ public final class SyncReaderProcessor
         fieldsWanted
                 .values()
                 .stream()
-                .filter(field -> bookData.contains(field.key))
+                .filter(field -> dataToMerge.contains(field.key))
                 .forEach(field -> {
                     // Handle thumbnail specially
                     if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
-                        processCover(book, bookData, 0);
+                        processCover(book, dataToMerge, 0);
                     } else if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[1])) {
-                        processCover(book, bookData, 1);
+                        processCover(book, dataToMerge, 1);
                     } else {
                         switch (field.getAction()) {
                             case CopyIfBlank:
                                 // remove unneeded fields from the new data
                                 if (hasField(book, field.key)) {
-                                    bookData.remove(field.key);
+                                    dataToMerge.remove(field.key);
                                 }
                                 break;
 
                             case Append:
-                                processList(context, book, bookLocale, bookData, field.key);
+                                processList(context, book, bookLocale, dataToMerge, field.key);
                                 break;
 
                             case Overwrite:
@@ -266,20 +264,20 @@ public final class SyncReaderProcessor
                 });
 
         // Commit the new data
-        if (!bookData.isEmpty()) {
+        if (!dataToMerge.isEmpty()) {
             // Get the language, if there was one requested for updating.
-            String bookLang = bookData.getString(DBKey.LANGUAGE, null);
+            String bookLang = dataToMerge.getString(DBKey.LANGUAGE, null);
             if (bookLang == null || bookLang.isEmpty()) {
                 // Otherwise add the original one.
                 bookLang = book.getString(DBKey.LANGUAGE, null);
                 if (bookLang != null && !bookLang.isEmpty()) {
-                    bookData.putString(DBKey.LANGUAGE, bookLang);
+                    dataToMerge.putString(DBKey.LANGUAGE, bookLang);
                 }
             }
 
             //IMPORTANT: note how we construct a NEW BOOK, with the DELTA-data which
             // we want to commit to the existing book.
-            final Book delta = Book.from(bookData);
+            final Book delta = Book.from(dataToMerge);
             delta.putLong(DBKey.PK_ID, bookId);
             return delta;
         }
@@ -298,11 +296,11 @@ public final class SyncReaderProcessor
     private boolean hasField(@NonNull final Book book,
                              @NonNull final String key) {
         switch (key) {
-            case BookData.BKEY_AUTHOR_LIST:
-            case BookData.BKEY_SERIES_LIST:
-            case BookData.BKEY_PUBLISHER_LIST:
-            case BookData.BKEY_TOC_LIST:
-            case BookData.BKEY_BOOKSHELF_LIST:
+            case Book.BKEY_AUTHOR_LIST:
+            case Book.BKEY_SERIES_LIST:
+            case Book.BKEY_PUBLISHER_LIST:
+            case Book.BKEY_TOC_LIST:
+            case Book.BKEY_BOOKSHELF_LIST:
                 if (book.contains(key)) {
                     return !book.getParcelableArrayList(key).isEmpty();
                 }
@@ -321,10 +319,10 @@ public final class SyncReaderProcessor
     }
 
     private void processCover(@NonNull final Book book,
-                              @NonNull final BookData bookData,
+                              @NonNull final Book dataToMerge,
                               @IntRange(from = 0, to = 1) final int cIdx) {
 
-        final String fileSpec = bookData.getString(Book.BKEY_TMP_FILE_SPEC[cIdx], null);
+        final String fileSpec = dataToMerge.getString(Book.BKEY_TMP_FILE_SPEC[cIdx], null);
         if (fileSpec != null && !fileSpec.isEmpty()) {
             try {
                 final String uuid = book.getString(DBKey.BOOK_UUID);
@@ -338,64 +336,64 @@ public final class SyncReaderProcessor
                                      + "|cIdx=" + cIdx);
             }
         }
-        bookData.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
+        dataToMerge.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
     }
 
     /**
      * Combines two ParcelableArrayList's, weeding out duplicates.
      *
-     * @param context    Current context
-     * @param book       to check
-     * @param bookLocale to use
-     * @param bookData   Bundle to update
-     * @param key        into the incoming data
+     * @param context     Current context
+     * @param book        to check
+     * @param bookLocale  to use
+     * @param dataToMerge the data to merge with the book
+     * @param key         into the incoming data
      */
     private void processList(@NonNull final Context context,
                              @NonNull final Book book,
                              @NonNull final Locale bookLocale,
-                             @NonNull final DataHolder bookData,
+                             @NonNull final Book dataToMerge,
                              @NonNull final String key) {
         final ServiceLocator sl = ServiceLocator.getInstance();
         switch (key) {
-            case BookData.BKEY_AUTHOR_LIST: {
-                final ArrayList<Author> list = bookData.getParcelableArrayList(key);
-                if (list != null && !list.isEmpty()) {
+            case Book.BKEY_AUTHOR_LIST: {
+                final ArrayList<Author> list = dataToMerge.getAuthors();
+                if (!list.isEmpty()) {
                     list.addAll(book.getAuthors());
                     final AuthorDao authorDao = sl.getAuthorDao();
                     authorDao.pruneList(context, list, false, bookLocale);
                 }
                 break;
             }
-            case BookData.BKEY_SERIES_LIST: {
-                final ArrayList<Series> list = bookData.getParcelableArrayList(key);
-                if (list != null && !list.isEmpty()) {
+            case Book.BKEY_SERIES_LIST: {
+                final ArrayList<Series> list = dataToMerge.getSeries();
+                if (!list.isEmpty()) {
                     list.addAll(book.getSeries());
                     final SeriesDao seriesDao = sl.getSeriesDao();
                     seriesDao.pruneList(context, list, false, bookLocale);
                 }
                 break;
             }
-            case BookData.BKEY_PUBLISHER_LIST: {
-                final ArrayList<Publisher> list = bookData.getParcelableArrayList(key);
-                if (list != null && !list.isEmpty()) {
+            case Book.BKEY_PUBLISHER_LIST: {
+                final ArrayList<Publisher> list = dataToMerge.getPublishers();
+                if (!list.isEmpty()) {
                     list.addAll(book.getPublishers());
                     final PublisherDao publisherDao = sl.getPublisherDao();
                     publisherDao.pruneList(context, list, false, bookLocale);
                 }
                 break;
             }
-            case BookData.BKEY_TOC_LIST: {
-                final ArrayList<TocEntry> list = bookData.getParcelableArrayList(key);
-                if (list != null && !list.isEmpty()) {
+            case Book.BKEY_TOC_LIST: {
+                final ArrayList<TocEntry> list = dataToMerge.getToc();
+                if (!list.isEmpty()) {
                     list.addAll(book.getToc());
                     final TocEntryDao tocEntryDao = sl.getTocEntryDao();
                     tocEntryDao.pruneList(context, list, false, bookLocale);
                 }
                 break;
             }
-            case BookData.BKEY_BOOKSHELF_LIST: {
-                final ArrayList<Bookshelf> list = bookData.getParcelableArrayList(key);
-                if (list != null && !list.isEmpty()) {
+            case Book.BKEY_BOOKSHELF_LIST: {
+                final ArrayList<Bookshelf> list = dataToMerge.getBookshelves();
+                if (!list.isEmpty()) {
                     list.addAll(book.getBookshelves());
                     final BookshelfDao bookshelfDao = sl.getBookshelfDao();
                     bookshelfDao.pruneList(list);

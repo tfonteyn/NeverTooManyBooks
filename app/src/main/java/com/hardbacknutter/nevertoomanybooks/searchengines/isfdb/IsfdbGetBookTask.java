@@ -27,7 +27,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * Hard coded not to fetch any images.
  */
 public class IsfdbGetBookTask
-        extends MTask<BookData> {
+        extends MTask<Book> {
 
     /** Log tag. */
     private static final String TAG = "IsfdbGetBookTask";
@@ -95,7 +95,7 @@ public class IsfdbGetBookTask
     @NonNull
     @Override
     @WorkerThread
-    protected BookData doWork(@NonNull final Context context)
+    protected Book doWork(@NonNull final Context context)
             throws StorageException, SearchException, CredentialsException {
 
         // create a new instance just for our own use
@@ -104,9 +104,9 @@ public class IsfdbGetBookTask
 
         final boolean[] fetchCovers = {false, false};
         if (edition != null) {
-            final BookData bookData = new BookData();
-            searchEngine.fetchByEdition(context, edition, fetchCovers, bookData);
-            return bookData;
+            final Book book = new Book();
+            searchEngine.fetchByEdition(context, edition, fetchCovers, book);
+            return book;
 
         } else if (isfdbId != 0) {
             return searchEngine.searchByExternalId(context, String.valueOf(isfdbId), fetchCovers);

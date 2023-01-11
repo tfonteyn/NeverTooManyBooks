@@ -59,12 +59,12 @@ public class AmazonHandler
      *      <li>&field-publisher</li>
      *      <li>&field-keywords</li>
      * </ul>
-     *
+     * <p>
      * ENHANCE: add "Find by ISBN" menu item;
      * ENHANCE: add "Find by Title+author" menu item
      *
      * @see <a href="https://www.amazon.co.uk/advanced-search/books/">
-     *         www.amazon.co.uk/advanced-search/books</a>
+     * www.amazon.co.uk/advanced-search/books</a>
      */
     private static final String ADV_SEARCH_BOOKS = "/gp/search?index=books";
 
@@ -111,26 +111,25 @@ public class AmazonHandler
         final int itemId = menuItem.getItemId();
 
         if (itemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR) {
-            final Author author = DataHolderUtils.getAuthor(rowData);
-            if (author != null) {
+            if (DataHolderUtils.hasAuthor(rowData)) {
+                final Author author = DataHolderUtils.requireAuthor(rowData);
                 startSearchActivity(context, author, null);
+                return true;
             }
-            return true;
-
         } else if (itemId == R.id.MENU_AMAZON_BOOKS_IN_SERIES) {
-            final Series series = DataHolderUtils.getSeries(rowData);
-            if (series != null) {
+            if (DataHolderUtils.hasSeries(rowData)) {
+                final Series series = DataHolderUtils.requireSeries(rowData);
                 startSearchActivity(context, null, series);
+                return true;
             }
-            return true;
-
         } else if (itemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES) {
-            final Author author = DataHolderUtils.getAuthor(rowData);
-            final Series series = DataHolderUtils.getSeries(rowData);
-            if (author != null && series != null) {
+            if (DataHolderUtils.hasAuthor(rowData)
+                && DataHolderUtils.hasSeries(rowData)) {
+                final Author author = DataHolderUtils.requireAuthor(rowData);
+                final Series series = DataHolderUtils.requireSeries(rowData);
                 startSearchActivity(context, author, series);
+                return true;
             }
-            return true;
         }
 
         return false;

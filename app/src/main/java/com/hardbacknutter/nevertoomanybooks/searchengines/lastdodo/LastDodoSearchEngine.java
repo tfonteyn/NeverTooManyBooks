@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -98,29 +98,29 @@ public class LastDodoSearchEngine
     }
 
     @NonNull
-    public BookData searchByExternalId(@NonNull final Context context,
-                                       @NonNull final String externalId,
-                                       @NonNull final boolean[] fetchCovers)
+    public Book searchByExternalId(@NonNull final Context context,
+                                   @NonNull final String externalId,
+                                   @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final BookData bookData = new BookData();
+        final Book book = new Book();
 
         final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
-            parse(context, document, fetchCovers, bookData);
+            parse(context, document, fetchCovers, book);
         }
-        return bookData;
+        return book;
     }
 
     @NonNull
     @Override
-    public BookData searchByIsbn(@NonNull final Context context,
-                                 @NonNull final String validIsbn,
-                                 @NonNull final boolean[] fetchCovers)
+    public Book searchByIsbn(@NonNull final Context context,
+                             @NonNull final String validIsbn,
+                             @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final BookData bookData = new BookData();
+        final Book book = new Book();
 
         // This is silly...
         // 2022-05-31: searching the site with the ISBN now REQUIRES the dashes between
@@ -129,9 +129,9 @@ public class LastDodoSearchEngine
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, fetchCovers, bookData);
+            parseMultiResult(context, document, fetchCovers, book);
         }
-        return bookData;
+        return book;
     }
 
     /**
@@ -142,7 +142,7 @@ public class LastDodoSearchEngine
      * @param document    to parse
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
-     * @param bookData    Bundle to update
+     * @param book        Bundle to update
      *
      * @throws CredentialsException on authentication/login failures
      * @throws StorageException     on storage related failures
@@ -151,7 +151,7 @@ public class LastDodoSearchEngine
     private void parseMultiResult(@NonNull final Context context,
                                   @NonNull final Document document,
                                   @NonNull final boolean[] fetchCovers,
-                                  @NonNull final BookData bookData)
+                                  @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
         // Grab the first search result, and redirect to that page
@@ -167,7 +167,7 @@ public class LastDodoSearchEngine
                 }
                 final Document redirected = loadDocument(context, url, null);
                 if (!isCancelled()) {
-                    parse(context, redirected, fetchCovers, bookData);
+                    parse(context, redirected, fetchCovers, book);
                 }
             }
         }
@@ -181,7 +181,7 @@ public class LastDodoSearchEngine
      * @param document    to parse
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
-     * @param bookData    Bundle to update
+     * @param book    Bundle to update
      *
      * @throws StorageException     on storage related failures
      * @throws CredentialsException on authentication/login failures
@@ -193,7 +193,7 @@ public class LastDodoSearchEngine
     public void parse(@NonNull final Context context,
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
-                      @NonNull final BookData bookData)
+                      @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
         //noinspection NonConstantStringShouldBeStringBuffer
@@ -218,19 +218,19 @@ public class LastDodoSearchEngine
 
                 switch (th.text()) {
                     case "LastDodo nummer":
-                        processText(td, DBKey.SID_LAST_DODO_NL, bookData);
+                        processText(td, DBKey.SID_LAST_DODO_NL, book);
                         break;
 
                     case "Titel":
-                        processText(td, DBKey.TITLE, bookData);
+                        processText(td, DBKey.TITLE, book);
                         break;
 
                     case "Serie / held":
-                        processSeries(td, bookData);
+                        processSeries(td, book);
                         break;
 
                     case "Reeks":
-                        processText(td.child(0), SiteField.REEKS, bookData);
+                        processText(td.child(0), SiteField.REEKS, book);
                         break;
 
                     case "Nummer in reeks":
@@ -246,31 +246,31 @@ public class LastDodoSearchEngine
                         break;
 
                     case "Tekenaar": {
-                        processAuthor(td, Author.TYPE_ARTIST, bookData);
+                        processAuthor(td, Author.TYPE_ARTIST, book);
                         break;
                     }
                     case "Scenarist": {
-                        processAuthor(td, Author.TYPE_WRITER, bookData);
+                        processAuthor(td, Author.TYPE_WRITER, book);
                         break;
                     }
                     case "Uitgeverij":
-                        processPublisher(td, bookData);
+                        processPublisher(td, book);
                         break;
 
                     case "Jaar":
-                        processText(td, DBKey.BOOK_PUBLICATION__DATE, bookData);
+                        processText(td, DBKey.BOOK_PUBLICATION__DATE, book);
                         break;
 
                     case "Cover":
-                        processText(td, DBKey.FORMAT, bookData);
+                        processText(td, DBKey.FORMAT, book);
                         break;
 
                     case "Druk":
-                        processText(td, SiteField.PRINTING, bookData);
+                        processText(td, SiteField.PRINTING, book);
                         break;
 
                     case "Inkleuring":
-                        processText(td, DBKey.COLOR, bookData);
+                        processText(td, DBKey.COLOR, book);
                         break;
 
                     case "ISBN":
@@ -278,35 +278,35 @@ public class LastDodoSearchEngine
                         if (!"Geen".equals(tmpString)) {
                             tmpString = ISBN.cleanText(tmpString);
                             if (!tmpString.isEmpty()) {
-                                bookData.putString(DBKey.BOOK_ISBN, tmpString);
+                                book.putString(DBKey.BOOK_ISBN, tmpString);
                             }
                         }
                         break;
 
                     case "Oplage":
-                        processText(td, DBKey.PRINT_RUN, bookData);
+                        processText(td, DBKey.PRINT_RUN, book);
                         break;
 
                     case "Aantal bladzijden":
-                        processText(td, DBKey.PAGE_COUNT, bookData);
+                        processText(td, DBKey.PAGE_COUNT, book);
                         break;
 
                     case "Afmetingen":
                         if (!"? x ? cm".equals(td.text())) {
-                            processText(td, SiteField.SIZE, bookData);
+                            processText(td, SiteField.SIZE, book);
                         }
                         break;
 
                     case "Taal / dialect":
-                        processText(td, DBKey.LANGUAGE, bookData);
+                        processText(td, DBKey.LANGUAGE, book);
                         break;
 
                     case "Soort":
-                        processType(td, bookData);
+                        processType(td, book);
                         break;
 
                     case "Bijzonderheden":
-                        processText(td, DBKey.DESCRIPTION, bookData);
+                        processText(td, DBKey.DESCRIPTION, book);
                         break;
 
                     default:
@@ -320,7 +320,7 @@ public class LastDodoSearchEngine
         // It seems the site only lists a single number, although a book can be in several
         // Series.
         if (tmpSeriesNr != null && !tmpSeriesNr.isEmpty()) {
-            final List<Series> seriesList = bookData.getSeries();
+            final List<Series> seriesList = book.getSeries();
             if (seriesList.size() == 1) {
                 final Series series = seriesList.get(0);
                 series.setNumber(tmpSeriesNr);
@@ -334,29 +334,29 @@ public class LastDodoSearchEngine
         }
 
         // We DON'T store a toc with a single entry (i.e. the book title itself).
-        parseToc(sections, bookData).ifPresent(toc -> {
-            bookData.setToc(toc);
+        parseToc(sections, book).ifPresent(toc -> {
+            book.setToc(toc);
             if (TocEntry.hasMultipleAuthors(toc)) {
-                bookData.putLong(DBKey.TOC_TYPE__BITMASK, BookData.ContentType.Anthology.getId());
+                book.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Anthology.getId());
             } else {
-                bookData.putLong(DBKey.TOC_TYPE__BITMASK, BookData.ContentType.Collection.getId());
+                book.putLong(DBKey.TOC_TYPE__BITMASK, Book.ContentType.Collection.getId());
             }
         });
 
         // store accumulated ArrayList's *after* we parsed the TOC
-        if (!bookData.getAuthors().isEmpty()) {
+        if (!book.getAuthors().isEmpty()) {
             if (PreferenceManager.getDefaultSharedPreferences(context)
                                  .getBoolean(PK_USE_BEDETHEQUE, false)) {
                 final AuthorResolver resolver = new AuthorResolver(context, this);
-                for (final Author author : bookData.getAuthors()) {
+                for (final Author author : book.getAuthors()) {
                     resolver.resolve(context, author);
                 }
             }
         }
 
         // It's extremely unlikely, but should the language be missing, add dutch.
-        if (!bookData.contains(DBKey.LANGUAGE)) {
-            bookData.putString(DBKey.LANGUAGE, "nld");
+        if (!book.contains(DBKey.LANGUAGE)) {
+            book.putString(DBKey.LANGUAGE, "nld");
         }
 
 
@@ -365,15 +365,15 @@ public class LastDodoSearchEngine
         }
 
         if (fetchCovers[0] || fetchCovers[1]) {
-            final String isbn = bookData.getString(DBKey.BOOK_ISBN);
-            parseCovers(document, isbn, fetchCovers, bookData);
+            final String isbn = book.getString(DBKey.BOOK_ISBN);
+            parseCovers(document, isbn, fetchCovers, book);
         }
     }
 
     private void parseCovers(@NonNull final Document document,
                              @Nullable final String isbn,
                              @NonNull final boolean[] fetchCovers,
-                             @NonNull final BookData bookData)
+                             @NonNull final Book book)
             throws StorageException {
         final Element images = document.getElementById("images_container");
         if (images != null) {
@@ -388,7 +388,7 @@ public class LastDodoSearchEngine
                     if (fileSpec != null) {
                         final ArrayList<String> list = new ArrayList<>();
                         list.add(fileSpec);
-                        bookData.putStringArrayList(
+                        book.putStringArrayList(
                                 SearchCoordinator.BKEY_FILE_SPEC_ARRAY[cIdx], list);
                     }
                 }
@@ -417,7 +417,7 @@ public class LastDodoSearchEngine
      */
     @NonNull
     private Optional<ArrayList<TocEntry>> parseToc(@NonNull final Collection<Element> sections,
-                                                   @NonNull final BookData bookData) {
+                                                   @NonNull final Book book) {
 
         // section 0 was the "Catalogusgegevens"; normally section 3 is the one we need here...
         Element tocSection = null;
@@ -439,7 +439,7 @@ public class LastDodoSearchEngine
                 final Element td = divRows.selectFirst("div.value");
                 if (th != null && td != null) {
                     if ("Verhaaltitel".equals(th.text())) {
-                        toc.add(new TocEntry(bookData.getAuthors().get(0), td.text()));
+                        toc.add(new TocEntry(book.getAuthors().get(0), td.text()));
                     }
                 }
             }
@@ -516,14 +516,14 @@ public class LastDodoSearchEngine
      */
     private void processAuthor(@NonNull final Element td,
                                @Author.Type final int currentAuthorType,
-                               @NonNull final BookData bookData) {
+                               @NonNull final Book book) {
 
         for (final Element a : td.select("a")) {
             final String names = a.text();
             final Author currentAuthor = Author.from(names);
             boolean add = true;
             // check if already present
-            for (final Author author : bookData.getAuthors()) {
+            for (final Author author : book.getAuthors()) {
                 if (author.equals(currentAuthor)) {
                     // merge types.
                     author.addType(currentAuthorType);
@@ -534,7 +534,7 @@ public class LastDodoSearchEngine
 
             if (add) {
                 currentAuthor.setType(currentAuthorType);
-                bookData.add(currentAuthor);
+                book.add(currentAuthor);
             }
         }
     }
@@ -545,16 +545,16 @@ public class LastDodoSearchEngine
      * @param td data td
      */
     private void processSeries(@NonNull final Element td,
-                               @NonNull final BookData bookData) {
+                               @NonNull final Book book) {
         for (final Element a : td.select("a")) {
             final String name = a.text();
             final Series currentSeries = Series.from(name);
             // check if already present
-            if (bookData.getSeries().stream().anyMatch(series -> series.equals(currentSeries))) {
+            if (book.getSeries().stream().anyMatch(series -> series.equals(currentSeries))) {
                 return;
             }
             // just add
-            bookData.add(currentSeries);
+            book.add(currentSeries);
         }
     }
 
@@ -564,41 +564,41 @@ public class LastDodoSearchEngine
      * @param td data td
      */
     private void processPublisher(@NonNull final Element td,
-                                  @NonNull final BookData bookData) {
+                                  @NonNull final Book book) {
         for (final Element a : td.select("a")) {
             final String name = ParseUtils.cleanText(a.text());
             final Publisher currentPublisher = Publisher.from(name);
             // check if already present
-            if (bookData.getPublishers().stream().anyMatch(pub -> pub.equals(currentPublisher))) {
+            if (book.getPublishers().stream().anyMatch(pub -> pub.equals(currentPublisher))) {
                 return;
             }
             // just add
-            bookData.add(currentPublisher);
+            book.add(currentPublisher);
         }
 
     }
 
     private void processType(@NonNull final Element td,
-                             @NonNull final BookData bookData) {
+                             @NonNull final Book book) {
         // there might be more than one; we only grab the first one here
         final Element a = td.child(0);
-        bookData.putString(SiteField.TYPE, a.text());
+        book.putString(SiteField.TYPE, a.text());
     }
 
     /**
      * Process a td which is pure text.
      *
-     * @param td       label td
-     * @param key      for this field
-     * @param bookData Bundle to update
+     * @param td   label td
+     * @param key  for this field
+     * @param book Bundle to update
      */
     private void processText(@Nullable final Element td,
                              @NonNull final String key,
-                             @NonNull final BookData bookData) {
+                             @NonNull final Book book) {
         if (td != null) {
             final String text = ParseUtils.cleanText(td.text().trim());
             if (!text.isEmpty()) {
-                bookData.putString(key, text);
+                book.putString(key, text);
             }
         }
     }

@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
@@ -201,10 +200,10 @@ public class EditBookViewModel
             listFormatterNormalDetails = new ListFormatter<>(Details.Normal, null);
 
             if (args != null) {
-                // 1. Do we have BookData? e.g. after an internet search
-                final BookData bookData = args.getParcelable(BookData.BKEY_BOOK_DATA);
-                if (bookData != null) {
-                    book = Book.from(bookData);
+                // 1. Do we have a Book? e.g. after an internet search
+                final Book bookFromArguments = args.getParcelable(Book.BKEY_BOOK_DATA);
+                if (bookFromArguments != null) {
+                    book = bookFromArguments;
                     // It should always be a new book here, but paranoia...
                     if (book.isNew()) {
                         // DATE_ACQUIRED is always used
@@ -403,14 +402,14 @@ public class EditBookViewModel
      *
      * @param args to check
      */
-    void addFieldsFromBundle(@Nullable final Bundle args) {
+    void addFieldsFromArguments(@Nullable final Bundle args) {
         if (args != null) {
-            final BookData bookData = args.getParcelable(BookData.BKEY_BOOK_DATA);
-            if (bookData != null) {
-                bookData.keySet()
-                        .stream()
-                        .filter(key -> !book.contains(key))
-                        .forEach(key -> book.put(key, bookData.get(key)));
+            final Book bookFromArguments = args.getParcelable(Book.BKEY_BOOK_DATA);
+            if (bookFromArguments != null) {
+                bookFromArguments.keySet()
+                                 .stream()
+                                 .filter(key -> !book.contains(key))
+                                 .forEach(key -> book.put(key, bookFromArguments.get(key)));
             }
         }
     }
@@ -872,14 +871,14 @@ public class EditBookViewModel
 
     private void initFieldsMain(@NonNull final FragmentId fragmentId) {
 
-        fields.add(new TextViewField<>(fragmentId, R.id.author, BookData.BKEY_AUTHOR_LIST,
+        fields.add(new TextViewField<>(fragmentId, R.id.author, Book.BKEY_AUTHOR_LIST,
                                        DBKey.FK_AUTHOR,
                                        listFormatterAutoDetails)
                            .setTextInputLayoutId(R.id.lbl_author)
                            .setValidator(field -> field.setErrorIfEmpty(
                                    errStrNonBlankRequired)));
 
-        fields.add(new TextViewField<>(fragmentId, R.id.series_title, BookData.BKEY_SERIES_LIST,
+        fields.add(new TextViewField<>(fragmentId, R.id.series_title, Book.BKEY_SERIES_LIST,
                                        DBKey.FK_SERIES,
                                        listFormatterAutoDetails)
                            .setTextInputLayoutId(R.id.lbl_series));
@@ -913,7 +912,7 @@ public class EditBookViewModel
 
         // Personal fields
 
-        fields.add(new TextViewField<>(fragmentId, R.id.bookshelves, BookData.BKEY_BOOKSHELF_LIST,
+        fields.add(new TextViewField<>(fragmentId, R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
                                        DBKey.FK_BOOKSHELF,
                                        listFormatterNormalDetails)
                            .setTextInputLayoutId(R.id.lbl_bookshelves)
@@ -931,7 +930,7 @@ public class EditBookViewModel
                                              this::getAllColors)
                            .setTextInputLayoutId(R.id.lbl_color));
 
-        fields.add(new TextViewField<>(fragmentId, R.id.publisher, BookData.BKEY_PUBLISHER_LIST,
+        fields.add(new TextViewField<>(fragmentId, R.id.publisher, Book.BKEY_PUBLISHER_LIST,
                                        DBKey.FK_PUBLISHER,
                                        listFormatterNormalDetails)
                            .setTextInputLayoutId(R.id.lbl_publisher));
@@ -1002,7 +1001,7 @@ public class EditBookViewModel
                            .setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT));
 
         fields.add(new BitmaskChipGroupField(fragmentId, R.id.edition, DBKey.EDITION__BITMASK,
-                                             BookData.Edition::getAll)
+                                             Book.Edition::getAll)
                            .addRelatedViews(R.id.lbl_edition));
     }
 
@@ -1096,7 +1095,7 @@ public class EditBookViewModel
         fields.add(new EntityListDropDownMenuField<>(fragmentId, R.id.book_type,
                                                      DBKey.TOC_TYPE__BITMASK,
                                                      context,
-                                                     BookData.ContentType.getAll())
+                                                     Book.ContentType.getAll())
                            .setTextInputLayoutId(R.id.lbl_book_type));
     }
 

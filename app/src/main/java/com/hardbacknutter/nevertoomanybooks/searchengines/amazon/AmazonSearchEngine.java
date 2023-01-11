@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.Size;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -170,25 +170,25 @@ public class AmazonSearchEngine
     }
 
     @NonNull
-    private BookData genericSearch(@NonNull final Context context,
-                                   @NonNull final String url,
-                                   @NonNull final boolean[] fetchCovers)
+    private Book genericSearch(@NonNull final Context context,
+                               @NonNull final String url,
+                               @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
         final Document document = loadDocument(context, url, null);
-        final BookData bookData = new BookData();
+        final Book book = new Book();
         if (!isCancelled()) {
-            parse(context, document, fetchCovers, bookData);
+            parse(context, document, fetchCovers, book);
         }
-        return bookData;
+        return book;
     }
 
 
     @NonNull
     @Override
-    public BookData searchByIsbn(@NonNull final Context context,
-                                 @NonNull final String validIsbn,
-                                 @NonNull final boolean[] fetchCovers)
+    public Book searchByIsbn(@NonNull final Context context,
+                             @NonNull final String validIsbn,
+                             @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
         // Convert an ISBN13 to ISBN10 (i.e. the ASIN)
@@ -202,9 +202,9 @@ public class AmazonSearchEngine
 
     @NonNull
     @Override
-    public BookData searchByBarcode(@NonNull final Context context,
-                                    @NonNull final String barcode,
-                                    @NonNull final boolean[] fetchCovers)
+    public Book searchByBarcode(@NonNull final Context context,
+                                @NonNull final String barcode,
+                                @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
         if (ASIN.isValidAsin(barcode)) {
@@ -214,7 +214,7 @@ public class AmazonSearchEngine
 
         } else {
             // not supported
-            return new BookData();
+            return new Book();
         }
     }
 
@@ -257,7 +257,7 @@ public class AmazonSearchEngine
     public void parse(@NonNull final Context context,
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
-                      @NonNull final BookData bookData)
+                      @NonNull final Book book)
             throws StorageException, SearchException, CredentialsException {
 
         final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
@@ -278,53 +278,53 @@ public class AmazonSearchEngine
         }
 
         final String title = titleElement.text().trim();
-        bookData.putString(DBKey.TITLE, title);
+        book.putString(DBKey.TITLE, title);
 
-        parsePrice(document, bookData, siteLocale);
+        parsePrice(document, book, siteLocale);
 
-        parseAuthors(document, bookData, siteLocale);
+        parseAuthors(document, book, siteLocale);
 
         if (isCancelled()) {
             return;
         }
 
-        parseDetails(document, bookData, siteLocale);
+        parseDetails(document, book, siteLocale);
 
-        parseASIN(document, bookData);
+        parseASIN(document, book);
 
-        checkForSeriesNameInTitle(bookData);
+        checkForSeriesNameInTitle(book);
 
         if (isCancelled()) {
             return;
         }
 
         if (fetchCovers[0]) {
-            final String isbn = bookData.getString(DBKey.BOOK_ISBN);
+            final String isbn = book.getString(DBKey.BOOK_ISBN);
             final ArrayList<String> list = parseCovers(document, isbn, 0);
             if (!list.isEmpty()) {
-                bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
+                book.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
             }
         }
     }
 
     private void parsePrice(@NonNull final Document document,
-                            @NonNull final BookData bookData,
+                            @NonNull final Book book,
                             @NonNull final Locale siteLocale) {
         final Element price = document.selectFirst("span.offer-price");
         if (price != null) {
             final Money money = new Money(siteLocale, price.text());
             if (money.isValid()) {
                 // parsing was ok, store it
-                bookData.putMoney(DBKey.PRICE_LISTED, money);
+                book.putMoney(DBKey.PRICE_LISTED, money);
             } else {
                 // parsing failed, store as-is
-                bookData.putString(DBKey.PRICE_LISTED, price.text());
+                book.putString(DBKey.PRICE_LISTED, price.text());
             }
         }
     }
 
     private void parseASIN(@NonNull final Document document,
-                           @NonNull final BookData bookData) {
+                           @NonNull final Book book) {
         // <form method="post" id="addToCart"
         //<input type="hidden" id="ASIN" name="ASIN" value="0752853694">
         final Element addToCart = document.getElementById("addToCart");
@@ -333,14 +333,14 @@ public class AmazonSearchEngine
             if (asinElement != null) {
                 final String asin = asinElement.attr("value");
                 if (!asin.isEmpty()) {
-                    bookData.putString(DBKey.SID_ASIN, asin);
+                    book.putString(DBKey.SID_ASIN, asin);
                 }
             }
         }
     }
 
     private void parseDetails(@NonNull final Document document,
-                              @NonNull final BookData bookData,
+                              @NonNull final Book book,
                               @NonNull final Locale siteLocale) {
         final Elements lis = document
                 .select("div#detail_bullets_id > table > tbody > tr > td > div > ul > li");
@@ -357,12 +357,12 @@ public class AmazonSearchEngine
             final String data = li.text().trim();
             switch (label.toLowerCase(siteLocale)) {
                 case "isbn-13":
-                    bookData.putString(DBKey.BOOK_ISBN, data);
+                    book.putString(DBKey.BOOK_ISBN, data);
                     break;
 
                 case "isbn-10":
-                    if (!bookData.contains(DBKey.BOOK_ISBN)) {
-                        bookData.putString(DBKey.BOOK_ISBN, data);
+                    if (!book.contains(DBKey.BOOK_ISBN)) {
+                        book.putString(DBKey.BOOK_ISBN, data);
                     }
                     break;
 
@@ -372,16 +372,16 @@ public class AmazonSearchEngine
                 case "broché":
                 case "taschenbuch":
                 case "gebundene ausgabe":
-                    bookData.putString(DBKey.FORMAT, label);
-                    bookData.putString(DBKey.PAGE_COUNT,
-                                       pagesPattern.matcher(data).replaceAll("").trim());
+                    book.putString(DBKey.FORMAT, label);
+                    book.putString(DBKey.PAGE_COUNT,
+                                   pagesPattern.matcher(data).replaceAll("").trim());
                     break;
 
                 case "language":
                 case "langue":
                 case "sprache":
                 case "taal":
-                    bookData.putString(DBKey.LANGUAGE, data);
+                    book.putString(DBKey.LANGUAGE, data);
                     break;
 
                 case "publisher":
@@ -394,27 +394,27 @@ public class AmazonSearchEngine
                         final String pubName = matcher.group(1);
                         if (pubName != null) {
                             final Publisher publisher = Publisher.from(pubName.trim());
-                            bookData.add(publisher);
+                            book.add(publisher);
                             publisherWasAdded = true;
                         }
 
                         final String pubDate = matcher.group(2);
                         if (pubDate != null) {
-                            bookData.putString(DBKey.BOOK_PUBLICATION__DATE,
-                                               pubDate.trim());
+                            book.putString(DBKey.BOOK_PUBLICATION__DATE,
+                                           pubDate.trim());
                         }
                     }
 
                     if (!publisherWasAdded) {
                         final Publisher publisher = Publisher.from(data);
-                        bookData.add(publisher);
+                        book.add(publisher);
                     }
                     break;
                 }
 
                 case "series":
                 case "collection":
-                    bookData.add(Series.from(data));
+                    book.add(Series.from(data));
                     break;
 
                 case "product dimensions":
@@ -452,7 +452,7 @@ public class AmazonSearchEngine
     }
 
     private void parseAuthors(@NonNull final Document document,
-                              @NonNull final BookData bookData,
+                              @NonNull final Book book,
                               @NonNull final Locale siteLocale) {
         for (final Element span : document.select("div#bylineInfo > span.author")) {
             // If an author has a popup dialog linked, then it has an id with contributorNameID
@@ -484,7 +484,7 @@ public class AmazonSearchEngine
                             author.addType(authorTypeMapper.map(siteLocale, data));
                         }
                     }
-                    bookData.add(author);
+                    book.add(author);
                 }
             }
         }

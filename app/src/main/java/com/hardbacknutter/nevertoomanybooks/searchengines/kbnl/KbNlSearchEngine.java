@@ -36,7 +36,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.Size;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -138,9 +138,9 @@ public class KbNlSearchEngine
     }
 
     @NonNull
-    public BookData searchByIsbn(@NonNull final Context context,
-                                 @NonNull final String validIsbn,
-                                 @NonNull final boolean[] fetchCovers)
+    public Book searchByIsbn(@NonNull final Context context,
+                             @NonNull final String validIsbn,
+                             @NonNull final boolean[] fetchCovers)
             throws StorageException,
                    SearchException,
                    CredentialsException {
@@ -152,12 +152,12 @@ public class KbNlSearchEngine
             throw new SearchException(getName(context), e);
         }
 
-        final BookData bookData = new BookData();
+        final Book book = new Book();
 
         futureHttpGet = createFutureGetRequest();
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
-        final DefaultHandler handler = new KbNlBookHandler(context, bookData);
+        final DefaultHandler handler = new KbNlBookHandler(context, book);
 
         try {
             final SAXParser parser = factory.newSAXParser();
@@ -173,7 +173,7 @@ public class KbNlSearchEngine
                 try (BufferedInputStream bis = new BufferedInputStream(
                         request.getInputStream())) {
                     parser.parse(bis, handler);
-                    updateSessionVariables(bookData);
+                    updateSessionVariables(book);
                     return true;
 
                 } catch (@NonNull final IOException e) {
@@ -186,16 +186,16 @@ public class KbNlSearchEngine
 
             // If it was a list page, fetch and parse the 1st book found;
             // If it was a book page, we're already done and can skip this step.
-            final String show = bookData.getString(KbNlHandlerBase.BKEY_SHOW_URL, null);
+            final String show = book.getString(KbNlHandlerBase.BKEY_SHOW_URL, null);
             if (show != null && !show.isEmpty()) {
                 url = getHostUrl() + String.format(BOOK_URL, dbVersion, setNr, show);
-                bookData.clearData();
+                book.clearData();
 
                 futureHttpGet.get(url, request -> {
                     try (BufferedInputStream bis = new BufferedInputStream(
                             request.getInputStream())) {
                         parser.parse(bis, handler);
-                        updateSessionVariables(bookData);
+                        updateSessionVariables(book);
                         return true;
 
                     } catch (@NonNull final IOException e) {
@@ -219,23 +219,23 @@ public class KbNlSearchEngine
         }
 
         if (isCancelled()) {
-            return bookData;
+            return book;
         }
 
         if (fetchCovers[0]) {
             final ArrayList<String> list = searchBestCoverByIsbn(context, validIsbn, 0);
             if (!list.isEmpty()) {
-                bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
+                book.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
             }
         }
-        return bookData;
+        return book;
     }
 
-    private void updateSessionVariables(@NonNull final BookData bookData) {
+    private void updateSessionVariables(@NonNull final Book book) {
         //noinspection ConstantConditions
-        dbVersion = bookData.getString(KbNlHandlerBase.BKEY_DB_VERSION, DEFAULT_DB_VERSION);
+        dbVersion = book.getString(KbNlHandlerBase.BKEY_DB_VERSION, DEFAULT_DB_VERSION);
         //noinspection ConstantConditions
-        setNr = bookData.getString(KbNlHandlerBase.BKEY_SET_NUMBER, DEFAULT_SET_NUMBER);
+        setNr = book.getString(KbNlHandlerBase.BKEY_SET_NUMBER, DEFAULT_SET_NUMBER);
     }
 
     /**

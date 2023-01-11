@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GetContentUr
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
@@ -360,7 +360,7 @@ public class SearchBookByIsbnFragment
     }
 
     @Override
-    void onSearchCancelled(@NonNull final LiveDataEvent<TaskResult<BookData>> message) {
+    void onSearchCancelled(@NonNull final LiveDataEvent<TaskResult<Book>> message) {
         super.onSearchCancelled(message);
         // Quit scan mode until the user manually starts it again
         stopScanner();
@@ -463,18 +463,18 @@ public class SearchBookByIsbnFragment
     }
 
     @Override
-    void onSearchResults(@NonNull final BookData bookData) {
+    void onSearchResults(@NonNull final Book book) {
         // A non-empty result will have a title, or at least 3 fields:
         // The isbn field should be present as we searched on one.
         // The title field, *might* be there but *might* be empty.
         // So a valid result means we either need a title, or a third field.
-        final String title = bookData.getString(DBKey.TITLE, null);
-        if ((title == null || title.isEmpty()) && bookData.size() <= 2) {
+        final String title = book.getString(DBKey.TITLE, null);
+        if ((title == null || title.isEmpty()) && book.size() <= 2) {
             vb.lblIsbn.setError(getString(R.string.warning_no_matching_book_found));
             return;
         }
         // edit book
-        super.onSearchResults(bookData);
+        super.onSearchResults(book);
     }
 
     private void updateQueueViewsVisibility() {

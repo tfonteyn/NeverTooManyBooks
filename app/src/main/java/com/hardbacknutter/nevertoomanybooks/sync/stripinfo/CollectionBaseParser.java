@@ -27,7 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
@@ -81,41 +81,41 @@ abstract class CollectionBaseParser {
 
     @AnyThread
     void parseFlags(@NonNull final Element root,
-                    @NonNull final BookData bookData) {
+                    @NonNull final Book book) {
 
         if (jSoupHelper.getBoolean(root, idRead)) {
-            bookData.putBoolean(DBKey.READ__BOOL, true);
+            book.putBoolean(DBKey.READ__BOOL, true);
         }
 
         if (jSoupHelper.getBoolean(root, idOwned)) {
-            bookData.putBoolean(DBKey.STRIP_INFO_OWNED, true);
+            book.putBoolean(DBKey.STRIP_INFO_OWNED, true);
             if (ownedBooksBookshelf != null) {
-                bookData.add(ownedBooksBookshelf);
+                book.add(ownedBooksBookshelf);
             }
         }
 
         if (jSoupHelper.getBoolean(root, idWanted)) {
-            bookData.putBoolean(DBKey.STRIP_INFO_WANTED, true);
+            book.putBoolean(DBKey.STRIP_INFO_WANTED, true);
             if (wishListBookshelf != null) {
-                bookData.add(wishListBookshelf);
+                book.add(wishListBookshelf);
             }
         }
     }
 
     @AnyThread
     void parseDetails(@NonNull final Element root,
-                      @NonNull final BookData bookData) {
+                      @NonNull final Book book) {
         String tmpStr;
         int tmpInt;
 
         tmpStr = jSoupHelper.getString(root, idLocation);
         if (!tmpStr.isEmpty()) {
-            bookData.putString(DBKey.LOCATION, tmpStr);
+            book.putString(DBKey.LOCATION, tmpStr);
         }
 
         tmpStr = jSoupHelper.getString(root, idNotes);
         if (!tmpStr.isEmpty()) {
-            bookData.putString(DBKey.PERSONAL_NOTES, tmpStr);
+            book.putString(DBKey.PERSONAL_NOTES, tmpStr);
         }
 
         // Incoming value attribute is in the format "DD/MM/YYYY".
@@ -127,31 +127,31 @@ abstract class CollectionBaseParser {
             tmpStr = tmpStr.substring(6, 10)
                      + '-' + tmpStr.substring(3, 5)
                      + '-' + tmpStr.substring(0, 2);
-            bookData.putString(DBKey.DATE_ACQUIRED, tmpStr);
+            book.putString(DBKey.DATE_ACQUIRED, tmpStr);
         }
 
         // '0' is an acceptable value that should be stored.
         final Double tmpDbl = jSoupHelper.getDoubleOrNull(root, idPricePaid);
         if (tmpDbl != null) {
-            bookData.putDouble(DBKey.PRICE_PAID, tmpDbl);
-            bookData.putString(DBKey.PRICE_PAID_CURRENCY, Money.EUR);
+            book.putDouble(DBKey.PRICE_PAID, tmpDbl);
+            book.putString(DBKey.PRICE_PAID_CURRENCY, Money.EUR);
         }
 
         tmpInt = jSoupHelper.getInt(root, idRating);
         if (tmpInt > 0) {
             // site is int 1..10; convert to float 0.5 .. 5 (and clamp because paranoia)
-            bookData.putFloat(DBKey.RATING,
-                              MathUtils.clamp(((float) tmpInt) / 2, 0.5f, 5f));
+            book.putFloat(DBKey.RATING,
+                          MathUtils.clamp(((float) tmpInt) / 2, 0.5f, 5f));
         }
 
         tmpInt = jSoupHelper.getInt(root, idEdition);
         if (tmpInt == 1) {
-            bookData.putLong(DBKey.EDITION__BITMASK, BookData.Edition.FIRST);
+            book.putLong(DBKey.EDITION__BITMASK, Book.Edition.FIRST);
         }
 
         tmpInt = jSoupHelper.getInt(root, idAmount);
         if (tmpInt > 0) {
-            bookData.putInt(DBKey.STRIP_INFO_AMOUNT, tmpInt);
+            book.putInt(DBKey.STRIP_INFO_AMOUNT, tmpInt);
         }
     }
 }

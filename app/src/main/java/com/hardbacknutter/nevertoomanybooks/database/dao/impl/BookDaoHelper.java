@@ -42,10 +42,8 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
-import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -112,7 +110,7 @@ public class BookDaoHelper {
 
         if (book.contains(DBKey.EDITION__BITMASK)) {
             book.putLong(DBKey.EDITION__BITMASK,
-                         book.getLong(DBKey.EDITION__BITMASK) & BookData.Edition.BITMASK_ALL_BITS);
+                         book.getLong(DBKey.EDITION__BITMASK) & Book.Edition.BITMASK_ALL_BITS);
         }
 
         // cleanup/build all price related fields
@@ -345,25 +343,25 @@ public class BookDaoHelper {
      *          be transformed to 0/1</li>
      * </ul>
      *
-     * @param tableInfo   destination table
-     * @param dataManager A collection with the columns to be set. May contain extra data.
-     * @param bookLocale  the Locale to use for character case manipulation
+     * @param tableInfo  destination table
+     * @param book       A collection with the columns to be set. May contain extra data.
+     * @param bookLocale the Locale to use for character case manipulation
      *
      * @return New and filtered ContentValues
      */
     @SuppressWarnings("WeakerAccess")
     @NonNull
     ContentValues filterValues(@NonNull final TableInfo tableInfo,
-                               @NonNull final DataManager dataManager,
+                               @NonNull final Book book,
                                @NonNull final Locale bookLocale) {
 
         final ContentValues cv = new ContentValues();
-        for (final String key : dataManager.keySet()) {
+        for (final String key : book.keySet()) {
             // Get column info for this column.
             final ColumnInfo columnInfo = tableInfo.getColumn(key);
             // Check if we actually have a matching column, and never update a PK.
             if (columnInfo != null && !columnInfo.isPrimaryKey()) {
-                final Object entry = dataManager.get(key);
+                final Object entry = book.get(key);
                 if (entry == null) {
                     if (columnInfo.isNullable()) {
                         cv.putNull(key);
