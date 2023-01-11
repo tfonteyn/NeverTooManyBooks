@@ -37,12 +37,12 @@ class FormatMapperTest
         setLocale(Locale.UK);
         final Mapper mapper = new FormatMapper();
         final String key = mapper.getKey();
-        bookData.putString(key, "pb");
-        mapper.map(context, bookData);
-        assertEquals("Paperback", bookData.getString(key, null));
+        book.putString(key, "pb");
+        mapper.map(context, book);
+        assertEquals("Paperback", book.getString(key, null));
 
-        bookData.putString(key, "Dimensions 5x4");
-        mapper.map(context, bookData);
-        assertEquals("Dim 5x4", bookData.getString(key, null));
+        book.putString(key, "Dimensions 5x4");
+        mapper.map(context, book);
+        assertEquals("Dim 5x4", book.getString(key, null));
     }
 }

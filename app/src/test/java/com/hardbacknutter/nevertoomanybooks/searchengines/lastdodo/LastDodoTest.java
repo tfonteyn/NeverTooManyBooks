@@ -67,23 +67,23 @@ class LastDodoTest
         final String filename = "/lastdodo/7323911-de-37ste-parallel.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{false, false}, bookData);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
         // System.out.println(rawData);
 
-        assertEquals("De 37ste parallel", bookData.getString(DBKey.TITLE, null));
-        assertEquals("9789463064385", bookData.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("2018", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("48", bookData.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("Hardcover", bookData.getString(DBKey.FORMAT, null));
-        assertEquals("Nederlands", bookData.getString(DBKey.LANGUAGE, null));
-        assertEquals("Gekleurd", bookData.getString(DBKey.COLOR, null));
+        assertEquals("De 37ste parallel", book.getString(DBKey.TITLE, null));
+        assertEquals("9789463064385", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("2018", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("48", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("Gekleurd", book.getString(DBKey.COLOR, null));
 
-        final ArrayList<Publisher> allPublishers = bookData.getPublishers();
+        final ArrayList<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Silvester", allPublishers.get(0).getName());
 
-        final ArrayList<Series> allSeries = bookData.getSeries();
+        final ArrayList<Series> allSeries = book.getSeries();
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -91,7 +91,7 @@ class LastDodoTest
         assertEquals("Hauteville House", series.getTitle());
         assertEquals("14", series.getNumber());
 
-        final ArrayList<Author> authors = bookData.getAuthors();
+        final ArrayList<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
 

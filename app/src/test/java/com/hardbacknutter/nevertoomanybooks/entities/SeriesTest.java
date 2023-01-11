@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,16 +19,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- * Test the regular expressions used by {@link Series#from}.
+ * Test the regular expressions used by {@link DataHolderUtils#requireSeries}.
  */
 class SeriesTest {
 

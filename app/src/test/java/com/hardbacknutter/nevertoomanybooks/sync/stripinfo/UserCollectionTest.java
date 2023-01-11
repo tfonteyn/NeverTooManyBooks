@@ -30,7 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -103,11 +103,11 @@ class UserCollectionTest
             assertNotNull(document);
             assertTrue(document.hasText());
 
-            final Optional<List<BookData>> oCollection =
+            final Optional<List<Book>> oCollection =
                     uc.parseDocument(context, document, 1, logger);
             assertTrue(oCollection.isPresent());
 
-            final List<BookData> collection = oCollection.get();
+            final List<Book> collection = oCollection.get();
             assertEquals(3, uc.getMaxPages());
             assertNotNull(collection);
 
@@ -115,10 +115,10 @@ class UserCollectionTest
 
             assertEquals(25, collection
                     .stream()
-                    .map(BookData::getBookshelves)
+                    .map(Book::getBookshelves)
                     .count());
 
-            final BookData b0 = collection.get(0);
+            final Book b0 = collection.get(0);
             assertEquals(5435, b0.getLong(DBKey.SID_STRIP_INFO));
             assertEquals(5408, b0.getLong(DBKey.STRIP_INFO_COLL_ID));
 
@@ -156,11 +156,11 @@ class UserCollectionTest
             assertNotNull(document);
             assertTrue(document.hasText());
 
-            final Optional<List<BookData>> oCollection =
+            final Optional<List<Book>> oCollection =
                     uc.parseDocument(context, document, 3, logger);
             assertTrue(oCollection.isPresent());
 
-            final List<BookData> collection = oCollection.get();
+            final List<Book> collection = oCollection.get();
             assertNotNull(collection);
             assertEquals(1, collection.size());
         }

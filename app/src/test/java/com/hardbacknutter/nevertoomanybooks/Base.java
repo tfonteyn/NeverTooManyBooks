@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.ContextMock;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.SharedPreferencesMock;
 import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
@@ -84,7 +84,7 @@ public class Base {
     @Mock
     protected LocaleList localeList;
 
-    protected BookData bookData;
+    protected Book book;
     protected Context context;
     protected SharedPreferences mockPreferences;
 
@@ -132,7 +132,7 @@ public class Base {
 
         mockPreferences = SharedPreferencesMock.create();
 
-        bookData = new BookData(BundleMock.create());
+        book = new Book(BundleMock.create());
 
         when(app.getApplicationContext()).thenReturn(context);
 

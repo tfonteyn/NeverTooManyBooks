@@ -69,25 +69,25 @@ class AmazonHtmlHandlerTest
         final String filename = "/amazon/0575090677.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{false, false}, bookData);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
         // System.out.println(rawData);
 
-        assertEquals("Bone Silence", bookData.getString(DBKey.TITLE, null));
-        assertEquals("978-0575090675", bookData.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("30 Jan. 2020", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("608", bookData.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("Hardcover", bookData.getString(DBKey.FORMAT, null));
-        assertEquals("English", bookData.getString(DBKey.LANGUAGE, null));
-        assertEquals(14.49d, bookData.getDouble(DBKey.PRICE_LISTED));
-        assertEquals(Money.GBP, bookData.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertEquals("Bone Silence", book.getString(DBKey.TITLE, null));
+        assertEquals("978-0575090675", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("30 Jan. 2020", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("608", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("English", book.getString(DBKey.LANGUAGE, null));
+        assertEquals(14.49d, book.getDouble(DBKey.PRICE_LISTED));
+        assertEquals(Money.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
-        final ArrayList<Publisher> allPublishers = bookData.getPublishers();
+        final ArrayList<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Gollancz", allPublishers.get(0).getName());
 
-        final ArrayList<Author> authors = bookData.getAuthors();
+        final ArrayList<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(1, authors.size());
         assertEquals("Reynolds", authors.get(0).getFamilyName());
@@ -103,24 +103,24 @@ class AmazonHtmlHandlerTest
         final String filename = "/amazon/1473210208.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{false, false}, bookData);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
         // System.out.println(rawData);
 
-        assertEquals("The Medusa Chronicles", bookData.getString(DBKey.TITLE, null));
-        assertEquals("978-1473210202", bookData.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("12 Jan. 2017", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("336", bookData.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("Paperback", bookData.getString(DBKey.FORMAT, null));
-        assertEquals("English", bookData.getString(DBKey.LANGUAGE, null));
-        assertEquals(5.84d, bookData.getDouble(DBKey.PRICE_LISTED));
-        assertEquals(Money.GBP, bookData.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+        assertEquals("The Medusa Chronicles", book.getString(DBKey.TITLE, null));
+        assertEquals("978-1473210202", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("12 Jan. 2017", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("336", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("Paperback", book.getString(DBKey.FORMAT, null));
+        assertEquals("English", book.getString(DBKey.LANGUAGE, null));
+        assertEquals(5.84d, book.getDouble(DBKey.PRICE_LISTED));
+        assertEquals(Money.GBP, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
-        final ArrayList<Publisher> allPublishers = bookData.getPublishers();
+        final ArrayList<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Gollancz", allPublishers.get(0).getName());
 
-        final ArrayList<Author> authors = bookData.getAuthors();
+        final ArrayList<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Reynolds", authors.get(0).getFamilyName());
@@ -139,21 +139,21 @@ class AmazonHtmlHandlerTest
         final String filename = "/amazon/2205057332.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{false, false}, bookData);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
         // System.out.println(rawData);
 
         assertEquals("Le retour à la terre, 1 : La vraie vie",
-                     bookData.getString(DBKey.TITLE, null));
-        assertEquals("978-2205057331", bookData.getString(DBKey.BOOK_ISBN, null));
-        assertEquals(12d, bookData.getDouble(DBKey.PRICE_LISTED));
-        assertEquals(Money.EUR, bookData.getString(DBKey.PRICE_LISTED_CURRENCY, null));
+                     book.getString(DBKey.TITLE, null));
+        assertEquals("978-2205057331", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals(12d, book.getDouble(DBKey.PRICE_LISTED));
+        assertEquals(Money.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY, null));
 
-        final ArrayList<Publisher> allPublishers = bookData.getPublishers();
+        final ArrayList<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Dargaud", allPublishers.get(0).getName());
 
-        final ArrayList<Author> authors = bookData.getAuthors();
+        final ArrayList<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Jean-Yves", authors.get(0).getFamilyName());

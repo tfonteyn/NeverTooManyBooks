@@ -71,41 +71,41 @@ class OpenLibrarySearchEngineTest
             assertNotNull(is);
             final String response = searchEngine.readResponseStream(is);
             searchEngine.handleResponse(context, response, new boolean[]{false, false},
-                                        bookData);
+                                        book);
         }
 
-        assertNotNull(bookData);
-        assertFalse(bookData.isEmpty());
+        assertNotNull(book);
+        assertFalse(book.isEmpty());
 
-        assertEquals("Slow reading", bookData.getString(DBKey.TITLE, null));
-        assertEquals("9780980200447", bookData.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("OL22853304M", bookData.getString(DBKey.SID_OPEN_LIBRARY, null));
-        assertEquals("2008054742", bookData.getString(DBKey.SID_LCCN, null));
-        assertEquals(8071257L, bookData.getLong(DBKey.SID_LIBRARY_THING));
-        assertEquals(6383507L, bookData.getLong(DBKey.SID_GOODREADS_BOOK));
-        assertEquals("098020044X", bookData.getString(DBKey.SID_ASIN, null));
-        assertEquals("297222669", bookData.getString(DBKey.SID_OCLC, null));
+        assertEquals("Slow reading", book.getString(DBKey.TITLE, null));
+        assertEquals("9780980200447", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("OL22853304M", book.getString(DBKey.SID_OPEN_LIBRARY, null));
+        assertEquals("2008054742", book.getString(DBKey.SID_LCCN, null));
+        assertEquals(8071257L, book.getLong(DBKey.SID_LIBRARY_THING));
+        assertEquals(6383507L, book.getLong(DBKey.SID_GOODREADS_BOOK));
+        assertEquals("098020044X", book.getString(DBKey.SID_ASIN, null));
+        assertEquals("297222669", book.getString(DBKey.SID_OCLC, null));
 
         assertEquals("Includes bibliographical references and index.",
-                     bookData.getString(DBKey.DESCRIPTION, null));
-        assertEquals("92", bookData.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("2009-03-01", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+                     book.getString(DBKey.DESCRIPTION, null));
+        assertEquals("92", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("2009-03-01", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
 
 
-        final List<Publisher> allPublishers = bookData.getPublishers();
+        final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Litwin Books", allPublishers.get(0).getName());
 
-        final List<Author> authors = bookData.getAuthors();
+        final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(1, authors.size());
         assertEquals("Miedema", authors.get(0).getFamilyName());
         assertEquals("John", authors.get(0).getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
 
-        final List<TocEntry> tocs = bookData.getToc();
+        final List<TocEntry> tocs = book.getToc();
         assertNotNull(tocs);
         assertEquals(5, tocs.size());
 

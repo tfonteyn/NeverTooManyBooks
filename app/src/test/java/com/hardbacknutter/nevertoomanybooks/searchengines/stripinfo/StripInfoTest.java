@@ -79,23 +79,23 @@ class StripInfoTest
         final String filename = "/stripinfo/336348_Hauteville_House_14_De_37ste_parallel.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{true, true}, bookData);
+        searchEngine.parse(context, document, new boolean[]{true, true}, book);
         // System.out.println(rawData);
 
-        assertEquals("De 37ste parallel", bookData.getString(DBKey.TITLE, null));
-        assertEquals("9789463064385", bookData.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("2018", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("48", bookData.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("Hardcover", bookData.getString(DBKey.FORMAT, null));
-        assertEquals("Nederlands", bookData.getString(DBKey.LANGUAGE, null));
-        assertEquals("Kleur", bookData.getString(DBKey.COLOR, null));
+        assertEquals("De 37ste parallel", book.getString(DBKey.TITLE, null));
+        assertEquals("9789463064385", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("2018", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("48", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("Kleur", book.getString(DBKey.COLOR, null));
 
-        final List<Publisher> allPublishers = bookData.getPublishers();
+        final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Silvester", allPublishers.get(0).getName());
 
-        final List<Series> allSeries = bookData.getSeries();
+        final List<Series> allSeries = book.getSeries();
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -103,7 +103,7 @@ class StripInfoTest
         assertEquals("Hauteville House", series.getTitle());
         assertEquals("14", series.getNumber());
 
-        final List<Author> authors = bookData.getAuthors();
+        final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(3, authors.size());
 
@@ -123,14 +123,14 @@ class StripInfoTest
         assertEquals(Author.TYPE_COLORIST, author.getType());
 
 
-        final List<String> covers = bookData.getStringArrayList(
+        final List<String> covers = book.getStringArrayList(
                 SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
         assertNotNull(covers);
         assertEquals(1, covers.size());
         assertTrue(covers.get(0).endsWith(EngineId.StripInfoBe.getPreferenceKey()
                                           + "_9789463064385_0_.jpg"));
 
-        final List<String> backCovers = bookData.getStringArrayList(
+        final List<String> backCovers = book.getStringArrayList(
                 SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
         assertNotNull(backCovers);
         assertEquals(1, backCovers.size());
@@ -149,23 +149,23 @@ class StripInfoTest
                                 + "_De_boom_van_de_twee_lentes.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{true, true}, bookData);
+        searchEngine.parse(context, document, new boolean[]{true, true}, book);
         // System.out.println(rawData);
 
-        assertEquals("De boom van de twee lentes", bookData.getString(DBKey.TITLE, null));
-        assertEquals("905581315X", bookData.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("2000", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("64", bookData.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("Softcover", bookData.getString(DBKey.FORMAT, null));
-        assertEquals("Nederlands", bookData.getString(DBKey.LANGUAGE, null));
-        assertEquals("Kleur", bookData.getString(DBKey.COLOR, null));
+        assertEquals("De boom van de twee lentes", book.getString(DBKey.TITLE, null));
+        assertEquals("905581315X", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("2000", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("64", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("Kleur", book.getString(DBKey.COLOR, null));
 
-        final ArrayList<Publisher> allPublishers = bookData.getPublishers();
+        final ArrayList<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Le Lombard", allPublishers.get(0).getName());
 
-        final ArrayList<Series> allSeries = bookData.getSeries();
+        final ArrayList<Series> allSeries = book.getSeries();
         assertNotNull(allSeries);
         assertEquals(2, allSeries.size());
 
@@ -177,7 +177,7 @@ class StripInfoTest
         assertEquals("Getekend", series.getTitle());
         assertEquals("", series.getNumber());
 
-        final ArrayList<Author> authors = bookData.getAuthors();
+        final ArrayList<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(20, authors.size());
 
@@ -192,14 +192,14 @@ class StripInfoTest
         assertEquals(Author.TYPE_ARTIST, author.getType());
         // there are more...
 
-        final List<String> covers = bookData.getStringArrayList(
+        final List<String> covers = book.getStringArrayList(
                 SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
         assertNotNull(covers);
         assertEquals(1, covers.size());
         assertTrue(covers.get(0).endsWith(EngineId.StripInfoBe.getPreferenceKey()
                                           + "_905581315X_0_.jpg"));
 
-        final List<String> backCovers = bookData.getStringArrayList(
+        final List<String> backCovers = book.getStringArrayList(
                 SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
         assertNotNull(backCovers);
         assertEquals(1, backCovers.size());
@@ -217,24 +217,24 @@ class StripInfoTest
         final String filename = "/stripinfo/181604_mat_cover.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{true, true}, bookData);
+        searchEngine.parse(context, document, new boolean[]{true, true}, book);
         // System.out.println(rawData);
 
         assertEquals("Het huis van verboden geneugten",
-                     bookData.getString(DBKey.TITLE, null));
-        assertEquals("9789085522072", bookData.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("2012", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("64", bookData.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("Hardcover", bookData.getString(DBKey.FORMAT, null));
-        assertEquals("Nederlands", bookData.getString(DBKey.LANGUAGE, null));
-        assertEquals("Kleur", bookData.getString(DBKey.COLOR, null));
+                     book.getString(DBKey.TITLE, null));
+        assertEquals("9789085522072", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("2012", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("64", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("Kleur", book.getString(DBKey.COLOR, null));
 
-        final List<Publisher> allPublishers = bookData.getPublishers();
+        final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Saga", allPublishers.get(0).getName());
 
-        final List<Series> allSeries = bookData.getSeries();
+        final List<Series> allSeries = book.getSeries();
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -243,7 +243,7 @@ class StripInfoTest
         assertEquals("1", series.getNumber());
 
 
-        final List<Author> authors = bookData.getAuthors();
+        final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
 
@@ -257,7 +257,7 @@ class StripInfoTest
         assertEquals("Jun Sik", author.getGivenNames());
         assertEquals(Author.TYPE_ARTIST, author.getType());
 
-        final List<String> covers = bookData.getStringArrayList(
+        final List<String> covers = book.getStringArrayList(
                 SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
         assertNotNull(covers);
         assertEquals(1, covers.size());
@@ -265,7 +265,7 @@ class StripInfoTest
         assertTrue(covers.get(0).endsWith(EngineId.StripInfoBe.getPreferenceKey()
                                           + "_9789085522072_0_.jpg"));
 
-        final List<String> backCovers = bookData.getStringArrayList(
+        final List<String> backCovers = book.getStringArrayList(
                 SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
         assertNotNull(backCovers);
         assertTrue(backCovers.isEmpty());
@@ -280,23 +280,23 @@ class StripInfoTest
         final String filename = "/stripinfo/316016_Johan_en_Pirrewiet_INT_5_De_integrale_5.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{false, false}, bookData);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
         // System.out.println(rawData);
 
-        assertEquals("De integrale 5", bookData.getString(DBKey.TITLE, null));
-        assertEquals("9789055819485", bookData.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("2017", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("224", bookData.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("Hardcover", bookData.getString(DBKey.FORMAT, null));
-        assertEquals("Nederlands", bookData.getString(DBKey.LANGUAGE, null));
-        assertEquals("Kleur", bookData.getString(DBKey.COLOR, null));
+        assertEquals("De integrale 5", book.getString(DBKey.TITLE, null));
+        assertEquals("9789055819485", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("2017", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("224", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("Kleur", book.getString(DBKey.COLOR, null));
 
-        final List<Publisher> allPublishers = bookData.getPublishers();
+        final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Le Lombard", allPublishers.get(0).getName());
 
-        final List<TocEntry> tocs = bookData.getToc();
+        final List<TocEntry> tocs = book.getToc();
         assertNotNull(tocs);
         assertEquals(4, tocs.size());
 
@@ -307,7 +307,7 @@ class StripInfoTest
 
         assertEquals("Culliford", tocs.get(0).getPrimaryAuthor().getFamilyName());
 
-        final List<Series> allSeries = bookData.getSeries();
+        final List<Series> allSeries = book.getSeries();
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -315,7 +315,7 @@ class StripInfoTest
         assertEquals("Johan en Pirrewiet", series.getTitle());
         assertEquals("INT 5", series.getNumber());
 
-        final List<Author> authors = bookData.getAuthors();
+        final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(6, authors.size());
 
@@ -340,22 +340,22 @@ class StripInfoTest
         final String filename = "/stripinfo/17030_Comanche_1_Red_Dust.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{false, false}, bookData);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
         // System.out.println(rawData);
 
-        assertEquals("Red Dust", bookData.getString(DBKey.TITLE, null));
-        assertEquals("1972", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("48", bookData.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("Softcover", bookData.getString(DBKey.FORMAT, null));
-        assertEquals("Nederlands", bookData.getString(DBKey.LANGUAGE, null));
-        assertEquals("Kleur", bookData.getString(DBKey.COLOR, null));
+        assertEquals("Red Dust", book.getString(DBKey.TITLE, null));
+        assertEquals("1972", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("48", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("Kleur", book.getString(DBKey.COLOR, null));
 
-        final List<Publisher> allPublishers = bookData.getPublishers();
+        final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Le Lombard", allPublishers.get(0).getName());
 
-        final List<TocEntry> tocs = bookData.getToc();
+        final List<TocEntry> tocs = book.getToc();
         assertNotNull(tocs);
         assertEquals(3, tocs.size());
 
@@ -365,7 +365,7 @@ class StripInfoTest
 
         assertEquals("Greg", tocs.get(0).getPrimaryAuthor().getFamilyName());
 
-        final List<Series> allSeries = bookData.getSeries();
+        final List<Series> allSeries = book.getSeries();
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -373,7 +373,7 @@ class StripInfoTest
         assertEquals("Comanche", series.getTitle());
         assertEquals("1", series.getNumber());
 
-        final List<Author> authors = bookData.getAuthors();
+        final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
 
@@ -397,25 +397,25 @@ class StripInfoTest
         final String filename = "/stripinfo/8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{false, false}, bookData);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book);
         // System.out.println(rawData);
 
-        assertEquals("Spoken in de grot", bookData.getString(DBKey.TITLE, null));
-        assertEquals("1977", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("Softcover", bookData.getString(DBKey.FORMAT, null));
-        assertEquals("Nederlands", bookData.getString(DBKey.LANGUAGE, null));
-        assertEquals("Kleur", bookData.getString(DBKey.COLOR, null));
+        assertEquals("Spoken in de grot", book.getString(DBKey.TITLE, null));
+        assertEquals("1977", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("Nederlands", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("Kleur", book.getString(DBKey.COLOR, null));
 
-        final List<Publisher> allPublishers = bookData.getPublishers();
+        final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Le Lombard", allPublishers.get(0).getName());
 
-        final List<TocEntry> tocs = bookData.getToc();
+        final List<TocEntry> tocs = book.getToc();
         assertNotNull(tocs);
         assertTrue(tocs.isEmpty());
 
-        final List<Series> allSeries = bookData.getSeries();
+        final List<Series> allSeries = book.getSeries();
         assertNotNull(allSeries);
         assertEquals(2, allSeries.size());
 
@@ -426,7 +426,7 @@ class StripInfoTest
         assertEquals("Favorietenreeks", series.getTitle());
         assertEquals("2.50", series.getNumber());
 
-        final List<Author> authors = bookData.getAuthors();
+        final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
 
@@ -454,29 +454,29 @@ class StripInfoTest
 
         // we've set the doc, but will redirect.. so an internet download WILL be done.
         searchEngine.processDocument(context, "9782756010830",
-                                     document, new boolean[]{false, false}, bookData);
+                                     document, new boolean[]{false, false}, book);
 
-        assertFalse(bookData.isEmpty());
-        System.out.println(bookData);
+        assertFalse(book.isEmpty());
+        System.out.println(book);
 
-        assertEquals("9782756010830", bookData.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("Le chant du pluvier", bookData.getString(DBKey.TITLE, null));
-        assertEquals("2009", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("172", bookData.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("Hardcover", bookData.getString(DBKey.FORMAT, null));
-        assertEquals("Frans", bookData.getString(DBKey.LANGUAGE, null));
-        assertEquals("Kleur", bookData.getString(DBKey.COLOR, null));
+        assertEquals("9782756010830", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("Le chant du pluvier", book.getString(DBKey.TITLE, null));
+        assertEquals("2009", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("172", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("Frans", book.getString(DBKey.LANGUAGE, null));
+        assertEquals("Kleur", book.getString(DBKey.COLOR, null));
 
-        final List<Publisher> allPublishers = bookData.getPublishers();
+        final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Delcourt", allPublishers.get(0).getName());
 
-        final List<TocEntry> tocs = bookData.getToc();
+        final List<TocEntry> tocs = book.getToc();
         assertNotNull(tocs);
         assertTrue(tocs.isEmpty());
 
-        final List<Series> allSeries = bookData.getSeries();
+        final List<Series> allSeries = book.getSeries();
         assertNotNull(allSeries);
         assertEquals(2, allSeries.size());
 
@@ -488,7 +488,7 @@ class StripInfoTest
         assertEquals("Mirages", series.getTitle());
         assertEquals("", series.getNumber());
 
-        final List<Author> authors = bookData.getAuthors();
+        final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(3, authors.size());
 
@@ -521,12 +521,12 @@ class StripInfoTest
         assertFalse(isbn.isValid(false));
         assertTrue(isbn.isType(ISBN.Type.Invalid));
 
-        bookData.clearData();
-        bookData.putString(DBKey.BOOK_ISBN, "9069692736");
-        bookData.putString(StripInfoSearchEngine.SiteField.BARCODE, "9789069692739");
-        searchEngine.processBarcode("9789069692739", bookData);
+        book.clearData();
+        book.putString(DBKey.BOOK_ISBN, "9069692736");
+        book.putString(StripInfoSearchEngine.SiteField.BARCODE, "9789069692739");
+        searchEngine.processBarcode("9789069692739", book);
 
-        assertEquals(bookData.getString(DBKey.BOOK_ISBN, "foo"), "9789069692739");
-        assertFalse(bookData.contains(StripInfoSearchEngine.SiteField.BARCODE));
+        assertEquals(book.getString(DBKey.BOOK_ISBN, "foo"), "9789069692739");
+        assertFalse(book.contains(StripInfoSearchEngine.SiteField.BARCODE));
     }
 }

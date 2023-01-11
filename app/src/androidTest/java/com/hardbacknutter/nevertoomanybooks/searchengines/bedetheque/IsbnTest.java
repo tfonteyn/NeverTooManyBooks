@@ -26,7 +26,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -78,13 +78,13 @@ public class IsbnTest
         // realAuthor=Author{id=0, familyName=`De Bevere`, givenNames=`Maurice`, complete=false,
         // type=0b0: Type{}, realAuthor=null}}],
         // publisher_list=[Publisher{id=0, name=`Cinebook`}]}]
-        final BookData bookData = ((SearchEngine.ByIsbn) searchEngine)
+        final Book book = ((SearchEngine.ByIsbn) searchEngine)
                 .searchByIsbn(context, "9781849182089", new boolean[]{false, false});
-        Logger.d(TAG, "", bookData.toString());
-        assertNotNull(bookData);
-        assertFalse(bookData.isEmpty());
-        assertEquals("Softcover", bookData.getString(DBKey.FORMAT, null));
-        assertEquals("anglais", bookData.getString(DBKey.LANGUAGE, null));
+        Logger.d(TAG, "", book.toString());
+        assertNotNull(book);
+        assertFalse(book.isEmpty());
+        assertEquals("Softcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("anglais", book.getString(DBKey.LANGUAGE, null));
         // this is good enough... the local junit tests do the full parse test
     }
 

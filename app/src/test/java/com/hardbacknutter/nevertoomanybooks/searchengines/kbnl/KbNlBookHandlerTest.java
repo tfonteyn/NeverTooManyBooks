@@ -57,7 +57,7 @@ class KbNlBookHandlerTest
         super.setup();
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
-        bookHandler = new KbNlBookHandler(context, bookData);
+        bookHandler = new KbNlBookHandler(context, book);
         saxParser = factory.newSAXParser();
     }
 
@@ -68,7 +68,7 @@ class KbNlBookHandlerTest
             saxParser.parse(in, bookHandler);
         }
 
-        assertEquals("SHW?FRST=1", bookData.getString(KbNlHandlerBase.BKEY_SHOW_URL, null));
+        assertEquals("SHW?FRST=1", book.getString(KbNlHandlerBase.BKEY_SHOW_URL, null));
     }
 
 
@@ -80,21 +80,21 @@ class KbNlBookHandlerTest
             saxParser.parse(in, bookHandler);
         }
 
-        assertEquals("De Foundation", bookData.getString(DBKey.TITLE, null));
+        assertEquals("De Foundation", book.getString(DBKey.TITLE, null));
 
-        assertEquals("1983", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("9022953351", bookData.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("geb.", bookData.getString(DBKey.FORMAT, null));
-        assertEquals("156", bookData.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("nld", bookData.getString(DBKey.LANGUAGE, null));
+        assertEquals("1983", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("9022953351", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("geb.", book.getString(DBKey.FORMAT, null));
+        assertEquals("156", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
 
-        final List<Publisher> allPublishers = bookData.getPublishers();
+        final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Bruna", allPublishers.get(0).getName());
 
-        final List<Author> authors = bookData.getAuthors();
+        final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertFalse(authors.isEmpty());
         Author expectedAuthor;
@@ -103,7 +103,7 @@ class KbNlBookHandlerTest
         expectedAuthor = new Author("Kröner", "Jack");
         assertEquals(expectedAuthor, authors.get(1));
 
-        final List<Series> series = bookData.getSeries();
+        final List<Series> series = book.getSeries();
         assertNotNull(series);
         assertFalse(series.isEmpty());
         final Series expectedSeries;
@@ -119,22 +119,22 @@ class KbNlBookHandlerTest
             saxParser.parse(in, bookHandler);
         }
 
-        assertEquals("De buitengewone reis", bookData.getString(DBKey.TITLE, null));
+        assertEquals("De buitengewone reis", book.getString(DBKey.TITLE, null));
 
-        assertEquals("2019", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("9789463731454", bookData.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("paperback", bookData.getString(DBKey.FORMAT, null));
-        assertEquals("48", bookData.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("nld", bookData.getString(DBKey.LANGUAGE, null));
+        assertEquals("2019", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("9789463731454", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("paperback", book.getString(DBKey.FORMAT, null));
+        assertEquals("48", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
 
-        final List<Publisher> allPublishers = bookData.getPublishers();
+        final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Dark Dragon Books", allPublishers.get(0).getName());
 
 
-        final List<Author> authors = bookData.getAuthors();
+        final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertFalse(authors.isEmpty());
         Author expectedAuthor;
@@ -147,7 +147,7 @@ class KbNlBookHandlerTest
         expectedAuthor = new Author("Manfré", "Mariella");
         assertEquals(expectedAuthor, authors.get(3));
 
-        final List<Series> series = bookData.getSeries();
+        final List<Series> series = book.getSeries();
         assertNotNull(series);
         assertFalse(series.isEmpty());
         final Series expectedSeries;
@@ -166,20 +166,20 @@ class KbNlBookHandlerTest
             saxParser.parse(in, bookHandler);
         }
 
-        assertEquals("De Discus valt aan", bookData.getString(DBKey.TITLE, null));
-        assertEquals("1973", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("9020612476", bookData.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("157", bookData.getString(DBKey.PAGE_COUNT, null));
-        assertEquals("nld", bookData.getString(DBKey.LANGUAGE, null));
+        assertEquals("De Discus valt aan", book.getString(DBKey.TITLE, null));
+        assertEquals("1973", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("9020612476", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("157", book.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("nld", book.getString(DBKey.LANGUAGE, null));
 
-        final List<Publisher> allPublishers = bookData.getPublishers();
+        final List<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(2, allPublishers.size());
 
         assertEquals("Kluitman", allPublishers.get(0).getName());
         assertEquals("Koninklijke Bibliotheek", allPublishers.get(1).getName());
 
-        final List<Author> authors = bookData.getAuthors();
+        final List<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(2, authors.size());
         Author expectedAuthor;
@@ -194,7 +194,7 @@ class KbNlBookHandlerTest
         assertEquals(expectedAuthor, authors.get(1));
         assertEquals(expectedAuthor.getType(), authors.get(1).getType());
 
-        final List<Series> series = bookData.getSeries();
+        final List<Series> series = book.getSeries();
         assertNotNull(series);
         assertEquals(1, series.size());
         final Series expectedSeries;

@@ -72,22 +72,22 @@ public class BedethequeTest
         final String filename = "/bedetheque/BD-Fond-du-monde-Tome-6-La-grande-terre-19401.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{true, true}, bookData);
-        System.out.println(bookData);
+        searchEngine.parse(context, document, new boolean[]{true, true}, book);
+        System.out.println(book);
 
-        assertEquals("La grande terre", bookData.getString(DBKey.TITLE, null));
+        assertEquals("La grande terre", book.getString(DBKey.TITLE, null));
 
-        assertEquals("2002-10", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
-        assertEquals("Hardcover", bookData.getString(DBKey.FORMAT, null));
-        assertEquals("2840557428", bookData.getString(DBKey.BOOK_ISBN, null));
-        assertEquals("46", bookData.getString(DBKey.PAGE_COUNT, null));
+        assertEquals("2002-10", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        assertEquals("Hardcover", book.getString(DBKey.FORMAT, null));
+        assertEquals("2840557428", book.getString(DBKey.BOOK_ISBN, null));
+        assertEquals("46", book.getString(DBKey.PAGE_COUNT, null));
 
-        final ArrayList<Publisher> allPublishers = bookData.getPublishers();
+        final ArrayList<Publisher> allPublishers = book.getPublishers();
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Delcourt", allPublishers.get(0).getName());
 
-        final ArrayList<Series> allSeries = bookData.getSeries();
+        final ArrayList<Series> allSeries = book.getSeries();
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
@@ -95,7 +95,7 @@ public class BedethequeTest
         assertEquals("Le Fond du monde", series.getTitle());
         assertEquals("6", series.getNumber());
 
-        final ArrayList<Author> authors = bookData.getAuthors();
+        final ArrayList<Author> authors = book.getAuthors();
         assertNotNull(authors);
         assertEquals(4, authors.size());
 
@@ -120,14 +120,14 @@ public class BedethequeTest
         assertEquals(Author.TYPE_FOREWORD, author.getType());
 
         List<String> coverList;
-        coverList = bookData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
+        coverList = book.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
         assertNotNull(coverList);
         assertEquals(1, coverList.size());
         String cover;
         cover = coverList.get(0);
         assertTrue(cover.endsWith(searchEngine.getEngineId().getPreferenceKey()
                                   + "_2840557428_0_.jpg"));
-        coverList = bookData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
+        coverList = book.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
         assertNotNull(coverList);
         assertEquals(1, coverList.size());
         cover = coverList.get(0);

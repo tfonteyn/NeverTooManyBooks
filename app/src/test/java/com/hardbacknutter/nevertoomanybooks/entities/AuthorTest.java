@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- * Test the regular expressions used by {@link Author#from}.
+ * Test the regular expressions used by {@link DataHolderUtils#requireAuthor}.
  */
 class AuthorTest {
 

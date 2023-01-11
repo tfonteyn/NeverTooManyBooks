@@ -27,6 +27,7 @@ import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoHelper;
+import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 import org.junit.jupiter.api.Test;
@@ -45,7 +46,6 @@ class BookTest
     void preprocessPrices01() {
         setLocale(Locale.US);
 
-        final Book book = new Book(bookData);
         book.putString(DBKey.LANGUAGE, "eng");
         book.putMoney(DBKey.PRICE_LISTED, new Money(1.23d, "USD"));
 
@@ -62,7 +62,6 @@ class BookTest
     void preprocessPrices02() {
         setLocale(Locale.US);
 
-        final Book book = new Book(bookData);
         book.putString(DBKey.LANGUAGE, "eng");
         book.putMoney(DBKey.PRICE_LISTED, new Money(0d, ""));
 
@@ -85,7 +84,6 @@ class BookTest
     void preprocessPrices03() {
         setLocale(Locale.FRANCE);
 
-        final Book book = new Book(bookData);
         book.putString(DBKey.LANGUAGE, "fra");
         // as a valid string
         book.putString(DBKey.PRICE_LISTED, "");
@@ -111,7 +109,6 @@ class BookTest
     void preprocessPrices04() {
         setLocale(Locale.FRANCE);
 
-        final Book book = new Book(bookData);
         book.putString(DBKey.LANGUAGE, "eng");
         book.putMoney(DBKey.PRICE_LISTED, new Money(Locale.ENGLISH, "EUR 45"));
 
@@ -125,8 +122,6 @@ class BookTest
 
     @Test
     void preprocessExternalIdsForInsert() {
-
-        final Book book = new Book(bookData);
 
         // Long: valid number
         book.put(DBKey.SID_GOODREADS_BOOK, 2L);
@@ -170,8 +165,6 @@ class BookTest
 
     @Test
     void preprocessExternalIdsForUpdate() {
-
-        final Book book = new Book(bookData);
 
         // Long: valid number
         book.put(DBKey.SID_GOODREADS_BOOK, 2L);
@@ -238,7 +231,6 @@ class BookTest
     /** Domain: text, default "". */
     @Test
     void preprocessNullsAndBlanksForInsert() {
-        final Book book = new Book(bookData);
         book.put(DBKey.DATE_ACQUIRED, "2020-01-14");
         book.put(DBKey.READ_START__DATE, "");
         book.put(DBKey.READ_END__DATE, null);
@@ -263,7 +255,6 @@ class BookTest
 
     @Test
     void preprocessNullsAndBlanksForUpdate() {
-        final Book book = new Book(bookData);
         book.put(DBKey.DATE_ACQUIRED, "2020-01-14");
         book.put(DBKey.READ_START__DATE, "");
         book.put(DBKey.READ_END__DATE, null);
@@ -286,9 +277,9 @@ class BookTest
         assertEquals(0d, book.getDouble(DBKey.PRICE_PAID));
     }
 
-    private void dump(@NonNull final Book book) {
-        for (final String key : bookData.keySet()) {
-            final Object value = book.get(key);
+    private void dump(@NonNull final DataManager data) {
+        for (final String key : data.keySet()) {
+            final Object value = data.get(key);
             System.out.println(key + "=" + value);
         }
     }

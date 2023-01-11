@@ -26,7 +26,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.BookData;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -71,14 +71,14 @@ public class IsbnTest
 
         // this will first hit a multi-result page, take the first book, and fetch that.
         // Run in debug for a full verification if in doubt
-        final BookData bookData = ((SearchEngine.ByIsbn) searchEngine)
+        final Book book = ((SearchEngine.ByIsbn) searchEngine)
                 .searchByIsbn(context, "9020612476", new boolean[]{false, false});
 
-        Logger.d(TAG, "", bookData.toString());
-        assertNotNull(bookData);
-        assertFalse(bookData.isEmpty());
-        assertEquals("De Discus valt aan", bookData.getString(DBKey.TITLE, null));
-        assertEquals("1973", bookData.getString(DBKey.BOOK_PUBLICATION__DATE, null));
+        Logger.d(TAG, "", book.toString());
+        assertNotNull(book);
+        assertFalse(book.isEmpty());
+        assertEquals("De Discus valt aan", book.getString(DBKey.TITLE, null));
+        assertEquals("1973", book.getString(DBKey.BOOK_PUBLICATION__DATE, null));
         // this is good enough... the local junit tests do the full parse test
     }
 
