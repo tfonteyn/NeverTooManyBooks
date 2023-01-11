@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -156,6 +157,11 @@ public class Series
 
     /** Remove any leading zeros from Series number. */
     private static final Pattern PURE_NUMERICAL_PATTERN = Pattern.compile("^\\d+$");
+
+    private static final Map<String, String> ROMAN_NUMERALS = Map.of(
+            "I", "1.", "II", "2.", "III", "3", "IV", "4.", "V", "5."
+    );
+
     /** Row ID. */
     private long id;
     /** Series title. */
@@ -303,12 +309,9 @@ public class Series
 
                     // Cover a special case were the middle group is potentially
                     // a roman numeral which should be prefixed to the number.
-                    if ("I".equals(middle)) {
-                        series.setNumber("1." + series.getNumber());
-                    } else if ("II".equals(middle)) {
-                        series.setNumber("2." + series.getNumber());
-                    } else if ("III".equals(middle)) {
-                        series.setNumber("3." + series.getNumber());
+                    final String roman = ROMAN_NUMERALS.get(middle);
+                    if (roman != null) {
+                        series.setNumber(roman + series.getNumber());
                     } else {
                         // But if it wasn't... add it back to the title including
                         // the brackets we stripped off initially.
