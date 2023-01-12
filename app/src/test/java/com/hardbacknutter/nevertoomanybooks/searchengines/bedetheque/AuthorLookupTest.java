@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 
 import java.io.IOException;
-import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
@@ -46,17 +45,6 @@ class AuthorLookupTest
             throws ParserConfigurationException, SAXException {
         super.setup();
         resolver = new AuthorResolver(context, new MockCancellable());
-    }
-
-    @Test
-    void parseList()
-            throws IOException {
-        final String locationHeader = "https://www.bedetheque.com/liste_auteurs_BD_L.html";
-        final String filename = "/bedetheque/liste_auteurs_BD_L.html";
-
-        final Document document = loadDocument(filename, UTF_8, locationHeader);
-        final List<AuthorResolver.BdtAuthor> list = resolver.parseAuthorList(document);
-        assertEquals(2585, list.size());
     }
 
     @Test

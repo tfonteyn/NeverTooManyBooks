@@ -27,8 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -39,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -121,9 +120,7 @@ public class AuthorResolver {
             // and the list-page was never fetched before,
             if (!isAuthorPageCached(c1)) {
                 // go fetch the the list-page on which the author should/could be
-                final List<BdtAuthor> list = fetchAuthorListFromSite(context, c1);
-                if (!list.isEmpty()) {
-                    storeAuthorListInCache(list);
+                if (fetchAuthorListFromSite(context, c1)) {
                     // If the author was on the list page, we should find it now.
                     bdtAuthor = findInCache(author);
                 }
@@ -232,17 +229,16 @@ public class AuthorResolver {
     }
 
     /**
-     * Fetch and store the list of author name/url from the website for the given first
+     * Fetch and parse the list of authors from the website for the given first
      * character of the name.
      *
      * @param context Current context
      * @param c1      first character of the name
      *
-     * @return list of entries
+     * @return {@code true} on success
      */
-    @NonNull
-    private List<BdtAuthor> fetchAuthorListFromSite(@NonNull final Context context,
-                                                    final char c1)
+    private boolean fetchAuthorListFromSite(@NonNull final Context context,
+                                            final char c1)
             throws SearchException, CredentialsException {
 
         // The site has 27 pages with name lists. The 26 [A-Z] + a '0' page with
@@ -257,32 +253,53 @@ public class AuthorResolver {
         if (!searchEngine.isCancelled()) {
             return parseAuthorList(document);
         }
-        return List.of();
+        return false;
     }
 
     /**
-     * Parse the downloaded document into a list of name+url.
+     * Parse and store the list of author name/url.
      *
      * @param document to parse
      *
-     * @return list of name/url pairs
+     * @return {@code true} on success
      */
-    @VisibleForTesting
-    @NonNull
-    List<BdtAuthor> parseAuthorList(@NonNull final Document document) {
-        final List<BdtAuthor> list = new ArrayList<>();
+    private boolean parseAuthorList(@NonNull final Document document) {
+        boolean atLeastOneFound = false;
 
-        final Elements all = document.select("ul.nav-liste > li > a");
-        for (final Element a : all) {
-            final String url = a.attr("href");
-            final Element span = a.firstElementChild();
-            if (span != null && span.hasClass("libelle")) {
-                final String name = span.text();
-                list.add(new BdtAuthor(name, url));
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!cacheDb.inTransaction()) {
+                txLock = cacheDb.beginTransaction(true);
+            }
+
+            try (SynchronizedStatement stmt = cacheDb.compileStatement(BdtAuthor.INSERT)) {
+                final Elements all = document.select("ul.nav-liste > li > a");
+                for (final Element a : all) {
+                    final String url = a.attr("href");
+                    final Element span = a.selectFirst("span.libelle");
+                    if (span != null) {
+                        final String name = span.text();
+                        final BdtAuthor bdtAuthor = new BdtAuthor(name, url);
+
+                        stmt.bindString(1, bdtAuthor.getName());
+                        stmt.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(),
+                                                                   seLocale));
+                        stmt.bindString(3, bdtAuthor.getUrl());
+                        stmt.executeInsert();
+
+                        atLeastOneFound = true;
+                    }
+                }
+            }
+            if (txLock != null) {
+                cacheDb.setTransactionSuccessful();
+            }
+        } finally {
+            if (txLock != null) {
+                cacheDb.endTransaction(txLock);
             }
         }
-
-        return list;
+        return atLeastOneFound;
     }
 
     private void updateAuthorInCache(@NonNull final BdtAuthor bdtAuthor) {
@@ -301,24 +318,6 @@ public class AuthorResolver {
             }
             stmt.bindLong(7, bdtAuthor.getId());
             stmt.executeUpdateDelete();
-        }
-    }
-
-    /**
-     * Store the list of author/url pairs in the cache database.
-     * <p>
-     * If the author already exists in the cache, we update the url.
-     *
-     * @param list to insert/update
-     */
-    private void storeAuthorListInCache(@NonNull final List<BdtAuthor> list) {
-        try (SynchronizedStatement stmt = cacheDb.compileStatement(BdtAuthor.INSERT)) {
-            for (final BdtAuthor bdtAuthor : list) {
-                stmt.bindString(1, bdtAuthor.getName());
-                stmt.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(), seLocale));
-                stmt.bindString(3, bdtAuthor.getUrl());
-                stmt.executeInsert();
-            }
         }
     }
 
