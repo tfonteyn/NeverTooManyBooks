@@ -237,10 +237,10 @@ public class BedethequeSearchEngine
 
                 //noinspection SwitchStatementWithoutDefaultBranch
                 switch (text) {
-                    case "Identifiant :": {
+                    case "Série :": {
                         final Node textNode = label.nextSibling();
                         if (textNode != null) {
-                            book.putString(DBKey.SID_BEDETHEQUE, textNode.toString().trim());
+                            book.add(processSeries(book, textNode.toString().trim()));
                         }
                         break;
                     }
@@ -248,47 +248,6 @@ public class BedethequeSearchEngine
                         final Node textNode = label.nextSibling();
                         if (textNode != null) {
                             book.putString(DBKey.TITLE, textNode.toString().trim());
-                        }
-                        break;
-                    }
-                    case "EAN/ISBN :": {
-                        final Element span = label.nextElementSibling();
-                        if (span != null) {
-                            book.putString(DBKey.BOOK_ISBN, span.text());
-                        }
-                        break;
-                    }
-                    case "Dépot légal :": {
-                        final Node textNode = label.nextSibling();
-                        if (textNode != null) {
-                            String date = textNode.toString().trim();
-                            if (PUB_DATE.matcher(date).matches()) {
-                                // Flip to "YYYY-MM" (or use as-is)
-                                date = date.substring(3) + "-" + date.substring(0, 2);
-                            }
-                            book.putString(DBKey.BOOK_PUBLICATION__DATE, date);
-                        }
-                        break;
-                    }
-                    case "Planches :": {
-                        final Element span = label.nextElementSibling();
-                        if (span != null) {
-                            book.putString(DBKey.PAGE_COUNT, span.text());
-                        }
-                        break;
-                    }
-                    case "Format :": {
-                        final Node textNode = label.nextSibling();
-                        if (textNode != null) {
-                            currentFormat = textNode.toString().trim();
-                            mapFormat(context, book, currentFormat, false);
-                        }
-                        break;
-                    }
-                    case "Série :": {
-                        final Node textNode = label.nextSibling();
-                        if (textNode != null) {
-                            book.add(processSeries(book, textNode.toString().trim()));
                         }
                         break;
                     }
@@ -307,13 +266,14 @@ public class BedethequeSearchEngine
                         }
                         break;
                     }
-                    case "Editeur :": {
-                        final Element span = label.nextElementSibling();
-                        if (span != null) {
-                            book.add(new Publisher(span.text()));
+                    case "Identifiant :": {
+                        final Node textNode = label.nextSibling();
+                        if (textNode != null) {
+                            book.putString(DBKey.SID_BEDETHEQUE, textNode.toString().trim());
                         }
                         break;
                     }
+
                     case "Scénario :":
                     case "Adapté de :": {
                         final Element a = label.nextElementSibling();
@@ -339,7 +299,6 @@ public class BedethequeSearchEngine
                         }
                         break;
                     }
-
                     case "Couleurs :": {
                         final Element a = label.nextElementSibling();
                         if (a != null) {
@@ -390,6 +349,48 @@ public class BedethequeSearchEngine
                         }
                         break;
                     }
+
+                    case "Dépot légal :": {
+                        final Node textNode = label.nextSibling();
+                        if (textNode != null) {
+                            String date = textNode.toString().trim();
+                            if (PUB_DATE.matcher(date).matches()) {
+                                // Flip to "YYYY-MM" (or use as-is)
+                                date = date.substring(3) + "-" + date.substring(0, 2);
+                            }
+                            book.putString(DBKey.BOOK_PUBLICATION__DATE, date);
+                        }
+                        break;
+                    }
+                    case "Editeur :": {
+                        final Element span = label.nextElementSibling();
+                        if (span != null) {
+                            book.add(new Publisher(span.text()));
+                        }
+                        break;
+                    }
+                    case "Format :": {
+                        final Node textNode = label.nextSibling();
+                        if (textNode != null) {
+                            currentFormat = textNode.toString().trim();
+                            mapFormat(context, book, currentFormat, false);
+                        }
+                        break;
+                    }
+                    case "EAN/ISBN :": {
+                        final Element span = label.nextElementSibling();
+                        if (span != null) {
+                            book.putString(DBKey.BOOK_ISBN, span.text());
+                        }
+                        break;
+                    }
+                    case "Planches :": {
+                        final Element span = label.nextElementSibling();
+                        if (span != null) {
+                            book.putString(DBKey.PAGE_COUNT, span.text());
+                        }
+                        break;
+                    }
                     case "Autres info :": {
                         if (label.nextElementSiblings()
                                  .stream()
@@ -403,6 +404,11 @@ public class BedethequeSearchEngine
                         }
                     }
                 }
+            }
+
+            final Element description = document.selectFirst("span[itemprop='description']");
+            if (description != null) {
+                book.putString(DBKey.DESCRIPTION, description.text());
             }
 
             if (!book.getAuthors().isEmpty()) {
