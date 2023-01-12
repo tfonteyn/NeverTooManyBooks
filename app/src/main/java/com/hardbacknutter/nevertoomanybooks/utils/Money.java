@@ -54,8 +54,9 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
  * Casting to a float is with loss of precision.
  * <p>
  * ENHANCE: currency fields should not use float/double.
- * https://javamoney.github.io - a wonderful library, might have issues on Android though.
- * https://www.joda.org/joda-money/ not tried, but looks small and neat.
+ * <a href="https://javamoney.github.io">JavaMoney</a>
+ * - a wonderful library, might have issues on Android though.
+ * <a href="https://www.joda.org/joda-money/">Joda Money</a> not tried, but looks small and neat.
  * <p>
  * For now, migrating to using BigDecimal and storing in the db as int?
  */

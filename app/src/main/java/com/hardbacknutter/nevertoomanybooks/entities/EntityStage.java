@@ -105,6 +105,7 @@ public class EntityStage
         Dirty;
 
         /** {@link Parcelable}. */
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         public static final Creator<Stage> CREATOR = new Creator<>() {
             @Override
             @NonNull
