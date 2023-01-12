@@ -95,8 +95,13 @@ public class Author
      */
     /** WRITER: primary or only writer. i.e. in contrast to any of the below. */
     public static final int TYPE_WRITER = 1;
-    /** WRITER: not distinguished for now. If we do, use TYPE_ORIGINAL_SCRIPT_WRITER = 1 << 1; */
-    public static final int TYPE_ORIGINAL_SCRIPT_WRITER = TYPE_WRITER;
+    /**
+     * WRITER: not distinguished for now. If we do, use TYPE_ORIGINAL_SCRIPT_WRITER = 1 << 1;
+     * <p>
+     * Dev. note: do NOT Do not set "= TYPE_WRITER" as Android Studio formatting will be
+     * [censored]
+     */
+    public static final int TYPE_ORIGINAL_SCRIPT_WRITER = 1; //
 
     /** WRITER: the foreword. */
     public static final int TYPE_FOREWORD = 1 << 2;
@@ -321,13 +326,18 @@ public class Author
      * A precaution to names like {@literal "<someName>"}.
      * The various {@link #getLabel} and {@link #getStyledName} use this method to
      * prevent html failures. It's not foolproof, but should be enough for now.
+     * <p>
+     * FIXME: prevent getting the above special name getting into the db in the first place...
      *
      * @param name to filter
      *
      * @return filtered name
      */
     private static String filterLtG(@NonNull final String name) {
-        return name.replace("<", "").replace(">", "");
+        if (name.startsWith("<") && name.endsWith(">")) {
+            return name.substring(1, name.length() - 1);
+        }
+        return name;
     }
 
     @NonNull
