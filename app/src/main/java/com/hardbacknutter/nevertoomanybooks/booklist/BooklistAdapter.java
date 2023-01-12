@@ -153,7 +153,7 @@ public class BooklistAdapter
     private Booklist booklist;
     /** provides read only access to the row data. */
     @Nullable
-    private DataHolder nodeData;
+    private DataHolder rowData;
     @Nullable
     private OnRowClickListener rowClickListener;
     @Nullable
@@ -224,7 +224,7 @@ public class BooklistAdapter
             // We should never get here... flw
             return null;
         }
-        return nodeData;
+        return rowData;
     }
 
     /**
@@ -250,11 +250,11 @@ public class BooklistAdapter
         if (booklist == null) {
             this.booklist = null;
             cursor = null;
-            nodeData = null;
+            rowData = null;
         } else {
             this.booklist = booklist;
             cursor = booklist.getNewListCursor();
-            nodeData = new CursorRow(cursor);
+            rowData = new CursorRow(cursor);
         }
         notifyDataSetChanged();
     }
@@ -264,7 +264,7 @@ public class BooklistAdapter
         if (cursor != null && cursor.moveToPosition(position)) {
             // return the rowId of the list-table
             //noinspection ConstantConditions
-            return nodeData.getLong(DBKey.PK_ID);
+            return rowData.getLong(DBKey.PK_ID);
         } else {
             return RecyclerView.NO_ID;
         }
@@ -287,7 +287,7 @@ public class BooklistAdapter
     public int getItemViewType(final int position) {
         if (cursor != null && cursor.moveToPosition(position)) {
             //noinspection ConstantConditions
-            return nodeData.getInt(DBKey.BL_NODE_GROUP);
+            return rowData.getInt(DBKey.BL_NODE_GROUP);
         } else {
             // bogus, should not happen
             return BooklistGroup.BOOK;
@@ -318,7 +318,7 @@ public class BooklistAdapter
         final View itemView = inflater.inflate(layoutId, parent, false);
 
         //noinspection ConstantConditions
-        final int level = nodeData.getInt(DBKey.BL_NODE_LEVEL);
+        final int level = rowData.getInt(DBKey.BL_NODE_LEVEL);
 
         if (groupId != BooklistGroup.BOOK) {
             // set an indentation depending on level (2..)
@@ -398,7 +398,7 @@ public class BooklistAdapter
 
         // further binding depends on the type of row (i.e. holder).
         //noinspection ConstantConditions
-        holder.onBindViewHolder(position, nodeData, style);
+        holder.onBindViewHolder(position, rowData, style);
     }
 
     /**
@@ -705,14 +705,14 @@ public class BooklistAdapter
             if (level > (style.getGroupCount())) {
                 // it's a book; use the title (no need to take the group.format round-trip).
                 //noinspection ConstantConditions
-                return nodeData.getString(DBKey.TITLE);
+                return rowData.getString(DBKey.TITLE);
 
             } else {
                 // it's a group; use the display domain as the text
                 final BooklistGroup group = style.getGroupByLevel(level);
                 final String key = group.getDisplayDomainExpression().getDomain().getName();
                 //noinspection ConstantConditions
-                return format(inflater.getContext(), group.getId(), nodeData, key);
+                return format(inflater.getContext(), group.getId(), rowData, key);
             }
         } catch (@NonNull final CursorIndexOutOfBoundsException e) {
             // Seen a number of times. No longer reproducible, but paranoia...
