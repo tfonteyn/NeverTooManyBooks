@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -340,8 +341,8 @@ public class SearchBookByIsbnFragment
 
     @Override
     @NonNull
-    protected Bundle getResultData() {
-        return vm.getResultData();
+    Intent createResultIntent() {
+        return vm.createResultIntent();
     }
 
     @Override
@@ -368,7 +369,7 @@ public class SearchBookByIsbnFragment
 
     @Override
     void onBookEditingDone(@NonNull final EditBookOutput data) {
-        super.onBookEditingDone(data);
+        vm.onBookEditingDone(data);
         if (vm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Single) {
             // scan another book until the user cancels
             startScanner();

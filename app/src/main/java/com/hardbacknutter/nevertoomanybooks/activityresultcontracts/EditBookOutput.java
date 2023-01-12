@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -44,16 +43,6 @@ public final class EditBookOutput {
         this.modified = modified;
     }
 
-    public static void toBundle(@NonNull final EditBookOutput input,
-                                @NonNull final Bundle output) {
-        output.putLong(DBKey.FK_BOOK, input.getRepositionToBookId());
-        output.putBoolean(BKEY_MODIFIED, input.isModified());
-    }
-
-    public long getRepositionToBookId() {
-        return repositionToBookId;
-    }
-
     /**
      * Create the result which {@link ActivityResultContract#parseResult(int, Intent)} will receive.
      *
@@ -70,10 +59,6 @@ public final class EditBookOutput {
                            .putExtra(BKEY_MODIFIED, modified);
     }
 
-    public boolean isModified() {
-        return modified;
-    }
-
     @NonNull
     public static EditBookOutput parseResult(@NonNull final Intent intent) {
         final long repositionToBookId =
@@ -82,6 +67,24 @@ public final class EditBookOutput {
                 intent.getBooleanExtra(BKEY_MODIFIED, false);
 
         return new EditBookOutput(repositionToBookId, modified);
+    }
+
+    /**
+     * Create the result which {@link ActivityResultContract#parseResult(int, Intent)} will receive.
+     *
+     * @return Intent
+     */
+    @NonNull
+    public Intent createResult() {
+        return createResult(repositionToBookId, modified);
+    }
+
+    public long getRepositionToBookId() {
+        return repositionToBookId;
+    }
+
+    public boolean isModified() {
+        return modified;
     }
 
 }

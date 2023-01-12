@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -51,7 +50,6 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -271,11 +269,9 @@ public class EditBookFragment
     }
 
     /** Single point of exit for this Activity. */
-    public void setResultsAndFinish() {
-        final Intent resultIntent = EditBookOutput
-                .createResult(vm.getBook().getId(), vm.isChanged());
+    private void setResultsAndFinish() {
         //noinspection ConstantConditions
-        getActivity().setResult(Activity.RESULT_OK, resultIntent);
+        getActivity().setResult(Activity.RESULT_OK, vm.createResultIntent());
         getActivity().finish();
     }
 

@@ -19,24 +19,30 @@
  */
 package com.hardbacknutter.nevertoomanybooks.search;
 
-import android.app.Activity;
-import android.os.Bundle;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 
 @SuppressWarnings("WeakerAccess")
 public class SearchBookByExternalIdViewModel
         extends ViewModel {
 
-    /** Accumulate all data that will be send in {@link Activity#setResult}. */
-    @NonNull
-    private final Bundle resultData = ServiceLocator.newBundle();
+    @Nullable
+    private EditBookOutput resultData;
 
     @NonNull
-    Bundle getResultData() {
-        return resultData;
+    Intent createResultIntent() {
+        if (resultData == null) {
+            return new Intent();
+        }
+        return resultData.createResult();
+    }
+
+    void onBookEditingDone(@NonNull final EditBookOutput data) {
+        resultData = data;
     }
 }

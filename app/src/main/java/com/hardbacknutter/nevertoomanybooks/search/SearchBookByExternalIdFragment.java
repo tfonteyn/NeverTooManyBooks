@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.search;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -40,6 +41,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.SqLiteDataType;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExternalIdBinding;
@@ -73,8 +75,13 @@ public class SearchBookByExternalIdFragment
 
     @Override
     @NonNull
-    protected Bundle getResultData() {
-        return vm.getResultData();
+    Intent createResultIntent() {
+        return vm.createResultIntent();
+    }
+
+    @Override
+    void onBookEditingDone(@NonNull final EditBookOutput data) {
+        vm.onBookEditingDone(data);
     }
 
     @Override

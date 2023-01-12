@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.search;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -67,8 +68,8 @@ public class SearchBookByTextFragment
 
     @Override
     @NonNull
-    protected Bundle getResultData() {
-        return vm.getResultData();
+    Intent createResultIntent() {
+        return vm.createResultIntent();
     }
 
     @Override
@@ -273,7 +274,7 @@ public class SearchBookByTextFragment
 
     @Override
     void onBookEditingDone(@NonNull final EditBookOutput data) {
-        super.onBookEditingDone(data);
+        vm.onBookEditingDone(data);
 
         // refresh, we could have modified/created Authors/Publishers while editing
         // (even when the edit was cancelled )

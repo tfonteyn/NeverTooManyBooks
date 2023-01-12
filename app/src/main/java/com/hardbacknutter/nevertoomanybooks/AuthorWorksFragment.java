@@ -50,7 +50,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.hardbacknutter.fastscroller.FastScroller;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -97,10 +96,8 @@ public class AuthorWorksFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    final Intent resultIntent = EditBookOutput
-                            .createResult(0, vm.isDataModified());
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                    getActivity().setResult(Activity.RESULT_OK, vm.createResultIntent());
                     getActivity().finish();
                 }
             };

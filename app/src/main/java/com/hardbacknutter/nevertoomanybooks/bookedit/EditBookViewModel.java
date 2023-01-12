@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -166,7 +167,8 @@ public class EditBookViewModel
     private ListFormatter<Entity> listFormatterNormalDetails;
     private DoubleNumberFormatter doubleNumberFormatter;
 
-    private boolean changed;
+    /** {@code true} if the book was changed and successfully saved. */
+    private boolean modified;
 
     private String errStrNonBlankRequired;
     private String errStrReadStartAfterEnd;
@@ -341,18 +343,13 @@ public class EditBookViewModel
         } else {
             ServiceLocator.getInstance().getBookDao().update(context, book);
         }
-        changed = true;
+        modified = true;
         book.setStage(EntityStage.Stage.Clean);
     }
 
-    /**
-     * Part of the fragment result data.
-     * This informs the BoB whether it should rebuild its list.
-     *
-     * @return {@code true} if the book was changed and successfully saved.
-     */
-    public boolean isChanged() {
-        return changed;
+    @NonNull
+    Intent createResultIntent() {
+        return EditBookOutput.createResult(book.getId(), modified);
     }
 
     /**

@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.search;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -48,6 +47,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
@@ -65,9 +65,6 @@ public class SearchBookByIsbnViewModel
     /** The batch mode queue. */
     private final List<ISBN> scanQueue = new ArrayList<>();
 
-    /** Accumulate all data that will be send in {@link Activity#setResult}. */
-    @NonNull
-    private final Bundle resultData = ServiceLocator.newBundle();
     private final MutableLiveData<List<ISBN>> scanQueueUpdate = new MutableLiveData<>();
     /** Database Access. */
     private BookDao bookDao;
@@ -78,9 +75,19 @@ public class SearchBookByIsbnViewModel
     /** Only start the scanner automatically upon the very first start of the fragment. */
     private boolean firstStart = true;
 
+    @Nullable
+    private EditBookOutput resultData;
+
     @NonNull
-    Bundle getResultData() {
-        return resultData;
+    Intent createResultIntent() {
+        if (resultData == null) {
+            return new Intent();
+        }
+        return resultData.createResult();
+    }
+
+    void onBookEditingDone(@NonNull final EditBookOutput data) {
+        resultData = data;
     }
 
     @Override

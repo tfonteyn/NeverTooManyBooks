@@ -19,11 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.search;
 
-import android.app.Activity;
 import android.content.Context;
-import android.os.Bundle;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
 
@@ -33,9 +33,11 @@ import java.util.HashSet;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbSearchEngine;
 
+@SuppressWarnings("WeakerAccess")
 public class SearchBookByTextViewModel
         extends ViewModel {
 
@@ -44,20 +46,29 @@ public class SearchBookByTextViewModel
      */
     @NonNull
     private final Collection<String> recentAuthorNames = new ArrayList<>();
+
     /**
      * A list of Publisher names we have already searched for in this session.
      */
     @NonNull
     private final Collection<String> recentPublisherNames = new ArrayList<>();
-    /** Accumulate all data that will be send in {@link Activity#setResult}. */
-    @NonNull
-    private final Bundle resultData = ServiceLocator.newBundle();
+
     /** Flag: allow/provide searching by publisher. */
     private Boolean usePublisher;
 
+    @Nullable
+    private EditBookOutput resultData;
+
     @NonNull
-    Bundle getResultData() {
-        return resultData;
+    Intent createResultIntent() {
+        if (resultData == null) {
+            return new Intent();
+        }
+        return resultData.createResult();
+    }
+
+    void onBookEditingDone(@NonNull final EditBookOutput data) {
+        resultData = data;
     }
 
     /**

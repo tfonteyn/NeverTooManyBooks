@@ -69,10 +69,8 @@ public abstract class SearchBookBaseFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    final Bundle output = getResultData();
-                    final Intent resultIntent = new Intent().putExtras(output);
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                    getActivity().setResult(Activity.RESULT_OK, createResultIntent());
                     getActivity().finish();
                 }
             };
@@ -93,12 +91,9 @@ public abstract class SearchBookBaseFragment
     }
 
     @NonNull
-    protected abstract Bundle getResultData();
+    abstract Intent createResultIntent();
 
-    @CallSuper
-    void onBookEditingDone(@NonNull final EditBookOutput data) {
-        EditBookOutput.toBundle(data, getResultData());
-    }
+    abstract void onBookEditingDone(@NonNull EditBookOutput data);
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

@@ -243,8 +243,9 @@ public class AuthorWorksViewModel
         }
     }
 
-    boolean isDataModified() {
-        return dataModified;
+    @NonNull
+    Intent createResultIntent() {
+        return EditBookOutput.createResult(0, dataModified);
     }
 
     void onBookEditFinished(@NonNull final EditBookOutput data) {
