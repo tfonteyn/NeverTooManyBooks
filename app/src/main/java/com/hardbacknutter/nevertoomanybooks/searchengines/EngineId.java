@@ -73,7 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSea
  *         If this step is skipped, the new site will be at the "end" of the reliability list</li>
  *
  *     <li>Configure the engine in the method {@link #registerSearchEngines()},
- *          using {@link #createConfiguration(String)}
+ *          using {@link #createConfiguration()}
  *          and {@link SearchEngineConfig.Builder} methods.
  *     </li>
  *
@@ -106,34 +106,46 @@ public enum EngineId
         implements Parcelable {
 
     /** All genres. */
-    GoogleBooks("googlebooks", R.string.site_google_books, GoogleBooksSearchEngine.class),
-
-    /** All genres. */
-    Amazon("amazon", R.string.site_amazon, AmazonSearchEngine.class),
-
-    /** All genres. */
-    LibraryThing("librarything", R.string.site_library_thing, LibraryThingSearchEngine.class),
-
-    /** All genres. */
-    Goodreads("goodreads", R.string.site_goodreads, GoodreadsSearchEngine.class),
-
-    /** Speculative Fiction only. e.g. Science-Fiction/Fantasy etc... */
-    Isfdb("isfdb", R.string.site_isfdb, IsfdbSearchEngine.class),
-
-    /** All genres. */
-    OpenLibrary("openlibrary", R.string.site_open_library, OpenLibrarySearchEngine.class),
-
-    /** Dutch language books & comics. */
-    KbNl("kbnl", R.string.site_kb_nl, KbNlSearchEngine.class),
-
-    /** Dutch language (and to some extend other languages) comics. */
-    StripInfoBe("stripinfo", R.string.site_stripinfo_be, StripInfoSearchEngine.class),
-
-    /** Dutch language (and to some extend other languages) comics. */
-    LastDodoNl("lastdodo", R.string.site_lastdodo_nl, LastDodoSearchEngine.class),
+    Amazon("amazon", R.string.site_amazon,
+           "https://www.amazon.com", AmazonSearchEngine.class),
 
     /** French language (and to some extend other languages) comics. */
-    Bedetheque("bedetheque", R.string.site_bedetheque, BedethequeSearchEngine.class);
+    Bedetheque("bedetheque", R.string.site_bedetheque,
+               "https://www.bedetheque.com", BedethequeSearchEngine.class),
+
+    /** All genres. */
+    Goodreads("goodreads", R.string.site_goodreads,
+              "https://www.goodreads.com", GoodreadsSearchEngine.class),
+
+    /** All genres. */
+    GoogleBooks("googlebooks", R.string.site_google_books,
+                "https://books.google.com", GoogleBooksSearchEngine.class),
+
+    /** Speculative Fiction only. e.g. Science-Fiction/Fantasy etc... */
+    Isfdb("isfdb", R.string.site_isfdb,
+          "https://www.isfdb.org", IsfdbSearchEngine.class),
+
+
+    /** Dutch language books & comics. */
+    KbNl("kbnl", R.string.site_kb_nl,
+         "https://webggc.oclc.org", KbNlSearchEngine.class),
+
+    /** Dutch language (and to some extend other languages) comics. */
+    LastDodoNl("lastdodo", R.string.site_lastdodo_nl,
+               "https://www.lastdodo.nl", LastDodoSearchEngine.class),
+
+    /** All genres. */
+    LibraryThing("librarything", R.string.site_library_thing,
+                 "https://www.librarything.com", LibraryThingSearchEngine.class),
+
+    /** All genres. */
+    OpenLibrary("openlibrary", R.string.site_open_library,
+                "https://openlibrary.org", OpenLibrarySearchEngine.class),
+
+    /** Dutch language (and to some extend other languages) comics. */
+    StripInfoBe("stripinfo", R.string.site_stripinfo_be,
+                "https://www.stripinfo.be", StripInfoSearchEngine.class),
+    ;
 
     // NEWTHINGS: adding a new search engine: add the engine
 
@@ -171,6 +183,9 @@ public enum EngineId
     private final String key;
     @StringRes
     private final int labelResId;
+    /** Default url. Only used when the {@link #config} is created! */
+    @NonNull
+    private final String defaultUrl;
     @NonNull
     private final Class<? extends SearchEngine> clazz;
     @Nullable
@@ -178,9 +193,11 @@ public enum EngineId
 
     EngineId(@NonNull final String key,
              @StringRes final int labelResId,
+             @NonNull final String defaultUrl,
              @NonNull final Class<? extends SearchEngine> clazz) {
         this.key = key;
         this.labelResId = labelResId;
+        this.defaultUrl = defaultUrl;
         this.clazz = clazz;
     }
 
@@ -195,20 +212,40 @@ public enum EngineId
         // The order created here is not relevant
 
         // ENHANCE: support ASIN and the ViewBookByExternalId interface
-        Amazon.createConfiguration("https://www.amazon.com")
+        Amazon.createConfiguration()
               // .setDomainKey(DBKey.SID_ASIN)
               // .setDomainViewId(R.id.site_amazon)
               // .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_AMAZON)
               .build();
 
-        Goodreads.createConfiguration("https://www.goodreads.com")
+        if (BuildConfig.ENABLE_BEDETHEQUE) {
+            Bedetheque.createConfiguration()
+                      .setLocale("fr", "FR")
+
+                      .setDomainKey(DBKey.SID_BEDETHEQUE)
+
+                      // default timeouts based on limited testing
+                      .setConnectTimeoutMs(15_000)
+                      .setReadTimeoutMs(60_000)
+                      // There are no specific usage rules but as a courtesy/precaution,
+                      // we're only going to send one request a second.
+                      .setThrottlerTimeoutMs(1_000)
+                      .build();
+        }
+
+        Goodreads.createConfiguration()
                  .setDomainKey(DBKey.SID_GOODREADS_BOOK)
                  .setDomainViewId(R.id.site_goodreads)
                  .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS,
                                   R.integer.MENU_ORDER_VIEW_BOOK_AT_GOODREADS)
                  .build();
 
-        Isfdb.createConfiguration("https://www.isfdb.org")
+        if (BuildConfig.ENABLE_GOOGLE_BOOKS) {
+            GoogleBooks.createConfiguration()
+                       .build();
+        }
+
+        Isfdb.createConfiguration()
              .setDomainKey(DBKey.SID_ISFDB)
              .setDomainViewId(R.id.site_isfdb)
              .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB,
@@ -222,43 +259,15 @@ public enum EngineId
              .setThrottlerTimeoutMs(1_000)
              .build();
 
-        OpenLibrary.createConfiguration("https://openlibrary.org")
-                   .setSupportsMultipleCoverSizes(true)
-
-                   .setDomainKey(DBKey.SID_OPEN_LIBRARY)
-                   .setDomainViewId(R.id.site_open_library)
-                   .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
-                                    R.integer.MENU_ORDER_VIEW_BOOK_AT_OPEN_LIBRARY)
-                   .build();
-
-        if (BuildConfig.ENABLE_GOOGLE_BOOKS) {
-            GoogleBooks.createConfiguration("https://books.google.com")
-                       .build();
-        }
-
-        // Alternative Edition search only!
-        if (BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
-            LibraryThing.createConfiguration("https://www.librarything.com")
-                        .setSupportsMultipleCoverSizes(true)
-
-                        .setDomainKey(DBKey.SID_LIBRARY_THING)
-                        .setDomainViewId(R.id.site_library_thing)
-                        .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
-                                         R.integer.MENU_ORDER_VIEW_BOOK_AT_LIBRARY_THING)
-                        .build();
-        }
-
-
-        // Dutch.
         if (BuildConfig.ENABLE_KB_NL) {
-            KbNl.createConfiguration("https://webggc.oclc.org")
+            KbNl.createConfiguration()
                 .setLocale("nl", "NL")
                 .setSupportsMultipleCoverSizes(true)
                 .build();
         }
-        // Dutch.
+
         if (BuildConfig.ENABLE_LAST_DODO) {
-            LastDodoNl.createConfiguration("https://www.lastdodo.nl")
+            LastDodoNl.createConfiguration()
                       .setLocale("nl", "NL")
 
                       .setPrefersIsbn10(true)
@@ -269,9 +278,30 @@ public enum EngineId
                                        R.integer.MENU_ORDER_VIEW_BOOK_AT_LAST_DODO_NL)
                       .build();
         }
-        // Dutch.
+
+        // Alternative Edition search only!
+        if (BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
+            LibraryThing.createConfiguration()
+                        .setSupportsMultipleCoverSizes(true)
+
+                        .setDomainKey(DBKey.SID_LIBRARY_THING)
+                        .setDomainViewId(R.id.site_library_thing)
+                        .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
+                                         R.integer.MENU_ORDER_VIEW_BOOK_AT_LIBRARY_THING)
+                        .build();
+        }
+
+        OpenLibrary.createConfiguration()
+                   .setSupportsMultipleCoverSizes(true)
+
+                   .setDomainKey(DBKey.SID_OPEN_LIBRARY)
+                   .setDomainViewId(R.id.site_open_library)
+                   .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
+                                    R.integer.MENU_ORDER_VIEW_BOOK_AT_OPEN_LIBRARY)
+                   .build();
+
         if (BuildConfig.ENABLE_STRIP_INFO) {
-            StripInfoBe.createConfiguration("https://www.stripinfo.be")
+            StripInfoBe.createConfiguration()
                        .setLocale("nl", "BE")
 
                        .setDomainKey(DBKey.SID_STRIP_INFO)
@@ -286,21 +316,6 @@ public enum EngineId
                        // we're only going to send one request a second.
                        .setThrottlerTimeoutMs(1_000)
                        .build();
-        }
-
-        if (BuildConfig.ENABLE_BEDETHEQUE) {
-            Bedetheque.createConfiguration("https://www.bedetheque.com")
-                      .setLocale("fr", "FR")
-
-                      .setDomainKey(DBKey.SID_BEDETHEQUE)
-
-                      // default timeouts based on limited testing
-                      .setConnectTimeoutMs(15_000)
-                      .setReadTimeoutMs(60_000)
-                      // There are no specific usage rules but as a courtesy/precaution,
-                      // we're only going to send one request a second.
-                      .setThrottlerTimeoutMs(1_000)
-                      .build();
         }
 
         // NEWTHINGS: adding a new search engine: add the search engine configuration
@@ -417,8 +432,8 @@ public enum EngineId
     }
 
     @NonNull
-    private SearchEngineConfig.Builder createConfiguration(@NonNull final String hostUrl) {
-        return new SearchEngineConfig.Builder(this, hostUrl);
+    private SearchEngineConfig.Builder createConfiguration() {
+        return new SearchEngineConfig.Builder(this, defaultUrl);
     }
 
     @NonNull
@@ -446,6 +461,17 @@ public enum EngineId
     @NonNull
     public String getName(@NonNull final Context context) {
         return context.getString(labelResId);
+    }
+
+    /**
+     * The <strong>DEFAULT</strong> url.
+     * Use {@link SearchEngineConfig#getHostUrl()} instead for all normal usage!
+     *
+     * @return default/hardcoded url for the site.
+     */
+    @NonNull
+    public String getDefaultUrl() {
+        return defaultUrl;
     }
 
     /**
