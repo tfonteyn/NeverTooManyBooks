@@ -60,7 +60,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UpgradeFailedException;
 
@@ -774,23 +776,23 @@ public class DBHelper
                               .map(i -> {
                                   switch (i) {
                                       case "1":
-                                          return "googlebooks";
+                                          return EngineId.GoogleBooks.getPreferenceKey();
                                       case "2":
-                                          return "amazon";
+                                          return EngineId.Amazon.getPreferenceKey();
                                       case "4":
-                                          return "librarything";
+                                          return EngineId.LibraryThing.getPreferenceKey();
                                       case "8":
-                                          return "goodreads";
+                                          return EngineId.Goodreads.getPreferenceKey();
                                       case "16":
-                                          return "isfdb";
+                                          return EngineId.Isfdb.getPreferenceKey();
                                       case "32":
-                                          return "openlibrary";
+                                          return EngineId.OpenLibrary.getPreferenceKey();
                                       case "64":
-                                          return "kbnl";
+                                          return EngineId.KbNl.getPreferenceKey();
                                       case "128":
-                                          return "stripinfo";
+                                          return EngineId.StripInfoBe.getPreferenceKey();
                                       case "256":
-                                          return "lastdodo";
+                                          return EngineId.LastDodoNl.getPreferenceKey();
                                       default:
                                           return "";
                                   }
@@ -807,6 +809,16 @@ public class DBHelper
             TBL_AUTHOR_PSEUDONYMS.create(db, true);
 
             TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_ESID_BEDETHEQUE);
+
+            // Editing the URL for these sites has been removed. Making sure they are correct.
+            PreferenceManager
+                    .getDefaultSharedPreferences(context)
+                    .edit()
+                    .putString(EngineId.Isfdb.getPreferenceKey() + Prefs.pk_suffix_host_url,
+                               EngineId.Isfdb.getDefaultUrl())
+                    .putString(EngineId.LibraryThing.getPreferenceKey() + Prefs.pk_suffix_host_url,
+                               EngineId.LibraryThing.getDefaultUrl())
+                    .apply();
         }
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table:
@@ -901,6 +913,6 @@ public class DBHelper
 
               .remove("fields.visibility.bookshelf")
               .remove("fields.visibility.read")
-              .commit();
+              .apply();
     }
 }

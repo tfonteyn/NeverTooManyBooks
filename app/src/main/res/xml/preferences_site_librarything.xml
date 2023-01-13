@@ -25,12 +25,13 @@
     <PreferenceCategory
         android:title="@string/site_library_thing">
 
-        <EditTextPreference
-            android:defaultValue="https://www.librarything.com"
-            android:icon="@drawable/ic_baseline_link_24"
-            android:key="librarything.host.url"
-            android:summary="@string/preference_not_set"
-            android:title="@string/lbl_website_address" />
+        <!-- Deprecated -->
+        <!--        <EditTextPreference-->
+        <!--            android:defaultValue="https://www.librarything.com"-->
+        <!--            android:icon="@drawable/ic_baseline_link_24"-->
+        <!--            android:key="librarything.host.url"-->
+        <!--            android:summary="@string/preference_not_set"-->
+        <!--            android:title="@string/lbl_website_address" />-->
 
         <SwitchPreference
             android:defaultValue="false"
