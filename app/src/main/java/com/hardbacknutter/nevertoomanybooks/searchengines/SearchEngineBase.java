@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 import android.content.Context;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -176,6 +177,7 @@ public abstract class SearchEngineBase
     //FIXME: Potentially unsafe 'if != null then cancel'
     @AnyThread
     @Override
+    @CallSuper
     public void cancel() {
         cancelRequested.set(true);
         synchronized (imageDownloader) {
