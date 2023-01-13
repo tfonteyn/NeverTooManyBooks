@@ -453,21 +453,18 @@ public class AuthorDaoImpl
             final long iId;
             try (SynchronizedStatement stmt = db.compileStatement(Sql.INSERT)) {
                 stmt.bindString(1, author.getFamilyName());
-                stmt.bindString(2, SqlEncode.orderByColumn(author.getFamilyName(), authorLocale));
+                stmt.bindString(2, SqlEncode
+                        .orderByColumn(author.getFamilyName(), authorLocale));
                 stmt.bindString(3, author.getGivenNames());
-                stmt.bindString(4, SqlEncode.orderByColumn(author.getGivenNames(), authorLocale));
+                stmt.bindString(4, SqlEncode
+                        .orderByColumn(author.getGivenNames(), authorLocale));
                 stmt.bindBoolean(5, author.isComplete());
                 iId = stmt.executeInsert();
             }
 
             if (iId > 0) {
-                final Author realAuthor = author.getRealAuthor();
-                if (realAuthor != null) {
-                    if (realAuthor.getId() == 0) {
-                        insert(context, realAuthor, bookLocale);
-                    }
-                    insertPseudonymLink(iId, realAuthor.getId());
-                }
+                insertOrUpdateRealAuthor(context, bookLocale, iId,
+                                         author.getRealAuthor());
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();
@@ -513,24 +510,18 @@ public class AuthorDaoImpl
                 stmt.bindString(4, SqlEncode
                         .orderByColumn(author.getGivenNames(), authorLocale));
                 stmt.bindBoolean(5, author.isComplete());
-                stmt.bindLong(6, author.getId());
 
+                stmt.bindLong(6, author.getId());
                 success = 0 < stmt.executeUpdateDelete();
             }
 
             if (success) {
-                final Author realAuthor = author.getRealAuthor();
-                // just delete any previous link
-                deletePseudonymLink(author.getId());
-                if (realAuthor != null) {
-                    // We do NOT need to update the actual realAuthor here, only relink.
-                    insertPseudonymLink(author.getId(), realAuthor.getId());
-                }
+                insertOrUpdateRealAuthor(context, bookLocale, author.getId(),
+                                         author.getRealAuthor());
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();
                 }
-
                 return;
             }
 
@@ -541,6 +532,23 @@ public class AuthorDaoImpl
             if (txLock != null) {
                 db.endTransaction(txLock);
             }
+        }
+    }
+
+    private void insertOrUpdateRealAuthor(@NonNull final Context context,
+                                          @NonNull final Locale bookLocale,
+                                          final long authorId,
+                                          @Nullable final Author realAuthor)
+            throws DaoWriteException {
+        // just delete any previous link
+        deletePseudonymLink(authorId);
+        if (realAuthor != null) {
+            if (realAuthor.getId() == 0) {
+                insert(context, realAuthor, bookLocale);
+            } else {
+                update(context, realAuthor, bookLocale);
+            }
+            insertPseudonymLink(authorId, realAuthor.getId());
         }
     }
 
