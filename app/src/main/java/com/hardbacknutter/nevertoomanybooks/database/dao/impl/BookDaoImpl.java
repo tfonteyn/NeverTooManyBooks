@@ -1064,20 +1064,6 @@ public class BookDaoImpl
 
     @Override
     @NonNull
-    public Pair<String, String> getBookTitleAndIsbnById(@IntRange(from = 1) final long id) {
-        try (Cursor cursor = db.rawQuery(Sql.Get.BOOK_TITLE_AND_ISBN_BY_BOOK_ID,
-                                         new String[]{String.valueOf(id)})) {
-            if (cursor.moveToFirst()) {
-                return new Pair<>(cursor.getString(0),
-                                  cursor.getString(1));
-            } else {
-                return new Pair<>(null, null);
-            }
-        }
-    }
-
-    @Override
-    @NonNull
     public ArrayList<Pair<Long, String>> getBookIdAndTitleByIsbn(@NonNull final ISBN isbn) {
         final ArrayList<Pair<Long, String>> list = new ArrayList<>();
         // if the string is ISBN-10 compatible,
@@ -1179,12 +1165,6 @@ public class BookDaoImpl
             /** Get the UUID of a {@link Book} by the Book id. */
             static final String BOOK_UUID_BY_ID =
                     SELECT_ + DBKey.BOOK_UUID + _FROM_ + TBL_BOOKS.getName()
-                    + _WHERE_ + DBKey.PK_ID + "=?";
-
-            /** Get the title and ISBN of a {@link Book} by the Book id. */
-            static final String BOOK_TITLE_AND_ISBN_BY_BOOK_ID =
-                    SELECT_ + DBKey.TITLE + ',' + DBKey.BOOK_ISBN
-                    + _FROM_ + TBL_BOOKS.getName()
                     + _WHERE_ + DBKey.PK_ID + "=?";
 
             /** Get the last-update-date for a {@link Book} by its id. */

@@ -77,7 +77,7 @@ public interface BookDao {
      */
     @IntRange(from = 1, to = Integer.MAX_VALUE)
     long insert(@NonNull Context context,
-                @NonNull Book /* in/out */ book,
+                @NonNull Book book,
                 @NonNull Set<BookFlag> flags)
             throws StorageException, DaoWriteException;
 
@@ -415,16 +415,6 @@ public interface BookDao {
      */
     @IntRange(from = 0)
     long getBookIdByUuid(@NonNull String uuid);
-
-    /**
-     * Return the book title+isbn based on the id.
-     *
-     * @param id of the book
-     *
-     * @return the title+isbn as a Pair, never {@code null} but the first/second CAN be null
-     */
-    @NonNull
-    Pair<String, String> getBookTitleAndIsbnById(@IntRange(from = 1) long id);
 
     /**
      * Get a list of book id/title's (most often just the one) for the given ISBN.
