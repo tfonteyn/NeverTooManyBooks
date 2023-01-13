@@ -272,19 +272,16 @@ public class AuthorResolver {
                 txLock = cacheDb.beginTransaction(true);
             }
 
+            final Elements all = document.select("ul.nav-liste > li > a");
             try (SynchronizedStatement stmt = cacheDb.compileStatement(BdtAuthor.INSERT)) {
-                final Elements all = document.select("ul.nav-liste > li > a");
                 for (final Element a : all) {
                     final String url = a.attr("href");
                     final Element span = a.selectFirst("span.libelle");
                     if (span != null) {
                         final String name = span.text();
-                        final BdtAuthor bdtAuthor = new BdtAuthor(name, url);
-
-                        stmt.bindString(1, bdtAuthor.getName());
-                        stmt.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(),
-                                                                   seLocale));
-                        stmt.bindString(3, bdtAuthor.getUrl());
+                        stmt.bindString(1, name);
+                        stmt.bindString(2, SqlEncode.orderByColumn(name, seLocale));
+                        stmt.bindString(3, url);
                         stmt.executeInsert();
 
                         atLeastOneFound = true;
