@@ -95,10 +95,10 @@ ext {
     acra_version = '5.9.7'
 
     // https://github.com/mockito/mockito
-    mockito_version = '4.10.0'
+    mockito_version = '4.11.0'
 
     // https://junit.org/junit5/docs/current/user-guide/#overview
-    jupiter_version = '5.9.1'
+    jupiter_version = '5.9.2'
 
     // https://developer.android.com/jetpack/androidx/releases/test
     androidx_test_core_version = '1.5.0'
