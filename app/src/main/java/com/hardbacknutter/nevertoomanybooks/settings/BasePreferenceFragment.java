@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 
 import androidx.annotation.CallSuper;
@@ -28,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -158,4 +160,19 @@ public abstract class BasePreferenceFragment
         return true;
     }
 
+    /**
+     * Initialise a field with an editable url.
+     *
+     * @param key the preference key to init
+     */
+    protected void initHostUrlPreference(@NonNull final CharSequence key) {
+        final EditTextPreference etp = findPreference(key);
+        //noinspection ConstantConditions
+        etp.setOnBindEditTextListener(editText -> {
+            editText.setInputType(InputType.TYPE_CLASS_TEXT
+                                  | InputType.TYPE_TEXT_VARIATION_URI);
+            editText.selectAll();
+        });
+        etp.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
+    }
 }

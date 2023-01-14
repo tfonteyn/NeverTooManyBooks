@@ -70,17 +70,9 @@ public class CalibrePreferencesFragment
         init(R.string.site_calibre, CalibreHandler.PK_ENABLED);
         setPreferencesFromResource(R.xml.preferences_calibre, rootKey);
 
+        initHostUrlPreference(CalibreContentServer.PK_HOST_URL);
+
         EditTextPreference etp;
-
-        etp = findPreference(CalibreContentServer.PK_HOST_URL);
-        //noinspection ConstantConditions
-        etp.setOnBindEditTextListener(editText -> {
-            editText.setInputType(InputType.TYPE_CLASS_TEXT
-                                  | InputType.TYPE_TEXT_VARIATION_URI);
-            editText.selectAll();
-        });
-        etp.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
-
 
         etp = findPreference(CalibreContentServer.PK_HOST_USER);
         //noinspection ConstantConditions

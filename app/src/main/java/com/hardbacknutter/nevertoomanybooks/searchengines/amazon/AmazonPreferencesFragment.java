@@ -25,11 +25,11 @@ import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.searchengines.BaseSearchEnginePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
 @Keep
 public class AmazonPreferencesFragment
-        extends BaseSearchEnginePreferenceFragment {
+        extends BasePreferenceFragment {
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,

@@ -25,14 +25,6 @@
     <PreferenceCategory
         android:title="@string/site_isfdb">
 
-        <!-- Deprecated -->
-        <!--        <EditTextPreference-->
-        <!--            android:defaultValue="https://www.isfdb.org"-->
-        <!--            android:icon="@drawable/ic_baseline_link_24"-->
-        <!--            android:key="isfdb.host.url"-->
-        <!--            android:summary="@string/preference_not_set"-->
-        <!--            android:title="@string/lbl_website_address" />-->
-
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_barcode"
