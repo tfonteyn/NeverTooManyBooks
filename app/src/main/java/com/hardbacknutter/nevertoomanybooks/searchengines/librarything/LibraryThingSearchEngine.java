@@ -33,13 +33,9 @@ import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
@@ -51,17 +47,21 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedSAXException;
 
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 /**
- * 2020-03-27. Started getting "APIs Temporarily disabled" for book and cover searches.
+ * LibraryThing is 40% owned by AbeBooks which is owned by Amazon.
+ * 2023-01-14: the website now publicly states the API is permanently down.
+ * There is also a captcha for login, so switching to JSoup style html scraping is out.
+ * So as far as search/sync is concerned, this site dead.
+ *
  * <a href="https://www.librarything.com/services/">LibraryThing API</a>
  * <p>
- * 2020-05-05: removed all non-functional code.
  * We can still:
  * - Search for alternative editions.
  * - View books on the site for which we previously stored a native id.
  * Keep in mind that the LT id can also be gathered from other sites (e.g. OpenLibrary)
- * <p>
- * LibraryThing is 40% owned by AbeBooks which is owned by Amazon and the API is already shut down.
  */
 public class LibraryThingSearchEngine
         extends SearchEngineBase
