@@ -232,7 +232,7 @@
             android:title="@string/pt_lending_enabled" />
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibrePreferencesFragment"
             android:icon="@drawable/ic_baseline_cloud_24"
             android:key="psk_calibre"
             android:title="@string/pt_calibre_content_server"
