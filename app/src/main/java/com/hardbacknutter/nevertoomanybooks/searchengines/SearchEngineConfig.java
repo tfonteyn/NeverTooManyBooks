@@ -43,6 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * Configuration data for a {@link SearchEngine}.
  * <p>
  * TODO: this class should/could be merged with {@link EngineId}.
+ * However... do we remove the config entirely, or do we move all fixed settings from EngineId
+ * to the config?
  *
  * @see EngineId
  * @see SearchEngine

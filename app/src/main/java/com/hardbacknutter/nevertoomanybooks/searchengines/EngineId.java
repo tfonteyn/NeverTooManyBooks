@@ -213,7 +213,7 @@ public enum EngineId
     private final String defaultUrl;
 
     @NonNull
-    private final Locale locale;
+    private final Locale defaultLocale;
 
     /** The implementation class for this engine. */
     @NonNull
@@ -227,16 +227,26 @@ public enum EngineId
     @Nullable
     private SearchEngineConfig config;
 
+    /**
+     * Constructor.
+     *
+     * @param key           The preference key / generic string identifier for this engine.
+     * @param labelResId    The user displayable name for this engine.
+     * @param defaultUrl    for the site
+     * @param defaultLocale for the site
+     * @param clazz         implementation class for this engine.
+     * @param enabled       {@code true} or a BuildConfig.ENABLE_ variable - see app/build.gradle
+     */
     EngineId(@NonNull final String key,
              @StringRes final int labelResId,
              @NonNull final String defaultUrl,
-             @NonNull final Locale locale,
+             @NonNull final Locale defaultLocale,
              @NonNull final Class<? extends SearchEngine> clazz,
              final boolean enabled) {
         this.key = key;
         this.labelResId = labelResId;
         this.defaultUrl = defaultUrl;
-        this.locale = locale;
+        this.defaultLocale = defaultLocale;
         this.clazz = clazz;
         this.enabled = enabled;
     }
@@ -245,11 +255,7 @@ public enum EngineId
      * Register all {@link SearchEngine} configurations; called during startup.
      */
     static void registerSearchEngines() {
-        // dev note: we can't use annotation scanning as resource id's are not allowed
-        // in annotations!
-        // For the BuildConfig.ENABLE_ usage: see app/build.gradle
-
-        // The order created here is not relevant
+        // The engine order here is not important
 
         // ENHANCE: support ASIN and the ViewBookByExternalId interface
         if (Amazon.isEnabled()) {
@@ -315,10 +321,7 @@ public enum EngineId
                       .build();
         }
         if (LibraryThing.isEnabled()) {
-            // Alternative Edition search only!
             LibraryThing.createConfiguration()
-                        .setSupportsMultipleCoverSizes(true)
-
                         .setDomainKey(DBKey.SID_LIBRARY_THING)
                         .setDomainViewId(R.id.site_library_thing)
                         .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
@@ -475,7 +478,7 @@ public enum EngineId
 
     @NonNull
     Locale getDefaultLocale() {
-        return locale;
+        return defaultLocale;
     }
 
     /**
@@ -534,7 +537,7 @@ public enum EngineId
                + "key='" + key + '\''
                + ", labelResId=" + ServiceLocator.getAppContext().getString(labelResId)
                + ", defaultUrl='" + defaultUrl + '\''
-               + ", locale=" + locale
+               + ", locale=" + defaultLocale
                + ", clazz=" + clazz.getName()
                + ", enabled=" + enabled
                + '}';
