@@ -132,10 +132,19 @@ public abstract class SearchEngineBase
         return config.supportsMultipleCoverSizes();
     }
 
+    /**
+     * Get the <strong>standard</strong> Locale for this engine.
+     * <p>
+     * Override to derive the locale from the host-url instead
+     *
+     * @return site locale
+     *
+     * @see #getLocale(Context, String)
+     */
     @NonNull
     @Override
     public Locale getLocale(@NonNull final Context context) {
-        return config.getLocale();
+        return config.getEngineId().getDefaultLocale();
     }
 
     /**

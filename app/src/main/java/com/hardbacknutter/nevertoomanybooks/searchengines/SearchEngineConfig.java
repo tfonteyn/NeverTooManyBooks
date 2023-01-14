@@ -29,7 +29,6 @@ import androidx.annotation.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,6 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
  * Configuration data for a {@link SearchEngine}.
+ * <p>
+ * TODO: this class should/could be merged with {@link EngineId}.
  *
  * @see EngineId
  * @see SearchEngine
@@ -51,10 +52,7 @@ public final class SearchEngineConfig {
 
     @NonNull
     private final EngineId engineId;
-    @NonNull
-    private final String hostUrl;
-    @NonNull
-    private final Locale locale;
+
     /** {@link SearchEngine.ByExternalId} only. */
     @Nullable
     private final Domain externalIdDomain;
@@ -84,8 +82,6 @@ public final class SearchEngineConfig {
      */
     private SearchEngineConfig(@NonNull final Builder builder) {
         engineId = builder.engineId;
-        hostUrl = builder.hostUrl;
-        locale = builder.locale;
 
         prefersIsbn10 = builder.prefersIsbn10;
         supportsMultipleCoverSizes = builder.supportsMultipleCoverSizes;
@@ -184,20 +180,8 @@ public final class SearchEngineConfig {
     @NonNull
     public String getHostUrl() {
         return ServiceLocator.getPreferences().getString(
-                engineId.getPreferenceKey() + Prefs.pk_suffix_host_url, hostUrl);
-    }
-
-    /**
-     * Get the <strong>standard</strong> Locale for this engine.
-     * <p>
-     * <strong>MUST NOT be called directly;
-     * instead use {@link SearchEngine#getLocale(Context)}</strong>
-     *
-     * @return site locale
-     */
-    @NonNull
-    public Locale getLocale() {
-        return locale;
+                engineId.getPreferenceKey() + Prefs.pk_suffix_host_url,
+                engineId.getDefaultUrl());
     }
 
     @Nullable
@@ -312,8 +296,6 @@ public final class SearchEngineConfig {
     public String toString() {
         return "SearchEngineConfig{"
                + "engineId=" + engineId
-               + ", hostUrl=`" + hostUrl + '`'
-               + ", locale=" + locale
                + ", externalIdDomain=" + externalIdDomain
                + ", domainViewId=" + domainViewId
                + ", domainMenuId=" + domainMenuId
@@ -333,12 +315,6 @@ public final class SearchEngineConfig {
 
         @NonNull
         private final EngineId engineId;
-
-        @NonNull
-        private final String hostUrl;
-
-        @NonNull
-        private Locale locale = Locale.US;
 
         @Nullable
         private Domain externalIdDomain;
@@ -364,23 +340,12 @@ public final class SearchEngineConfig {
         /** The DEFAULT for the engine: {@code false}. */
         private boolean prefersIsbn10;
 
-        public Builder(@NonNull final EngineId engineId,
-                       @NonNull final String hostUrl) {
+        public Builder(@NonNull final EngineId engineId) {
             this.engineId = engineId;
-            this.hostUrl = hostUrl;
         }
 
         public void build() {
             engineId.setConfig(new SearchEngineConfig(this));
-        }
-
-        @NonNull
-        Builder setLocale(@SuppressWarnings("SameParameterValue") @NonNull final String lang,
-                          @NonNull final String country) {
-            if (!lang.isEmpty() && !country.isEmpty()) {
-                locale = new Locale(lang, country.toUpperCase(Locale.ENGLISH));
-            }
-            return this;
         }
 
         @NonNull

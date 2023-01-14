@@ -29,6 +29,7 @@ import androidx.annotation.StringRes;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -101,68 +102,88 @@ public enum EngineId
         implements Parcelable {
 
     /** All genres. */
-    Amazon("amazon", R.string.site_amazon,
+    Amazon("amazon",
+           R.string.site_amazon,
            "https://www.amazon.com",
+           Locale.US,
            AmazonSearchEngine.class,
            true),
 
     /** French language (and to some extend other languages) comics. */
-    Bedetheque("bedetheque", R.string.site_bedetheque,
+    Bedetheque("bedetheque",
+               R.string.site_bedetheque,
                "https://www.bedetheque.com",
+               Locale.FRANCE,
                BedethequeSearchEngine.class,
                BuildConfig.ENABLE_BEDETHEQUE),
 
     /** All genres. */
-    Goodreads("goodreads", R.string.site_goodreads,
+    Goodreads("goodreads",
+              R.string.site_goodreads,
               "https://www.goodreads.com",
+              Locale.US,
               GoodreadsSearchEngine.class,
               true),
 
     /** All genres. */
-    GoogleBooks("googlebooks", R.string.site_google_books,
+    GoogleBooks("googlebooks",
+                R.string.site_google_books,
                 "https://books.google.com",
+                Locale.US,
                 GoogleBooksSearchEngine.class,
                 BuildConfig.ENABLE_GOOGLE_BOOKS),
 
     /** Speculative Fiction only. e.g. Science-Fiction/Fantasy etc... */
-    Isfdb("isfdb", R.string.site_isfdb,
+    Isfdb("isfdb",
+          R.string.site_isfdb,
           "https://www.isfdb.org",
+          Locale.US,
           IsfdbSearchEngine.class,
           true),
 
 
     /** Dutch language books & comics. */
-    KbNl("kbnl", R.string.site_kb_nl,
+    KbNl("kbnl",
+         R.string.site_kb_nl,
          "https://webggc.oclc.org",
+         new Locale("nl", "NL"),
          KbNlSearchEngine.class,
          BuildConfig.ENABLE_KB_NL),
 
     /** Dutch language (and to some extend other languages) comics. */
-    LastDodoNl("lastdodo", R.string.site_lastdodo_nl,
+    LastDodoNl("lastdodo",
+               R.string.site_lastdodo_nl,
                "https://www.lastdodo.nl",
+               new Locale("nl", "NL"),
                LastDodoSearchEngine.class,
                BuildConfig.ENABLE_LAST_DODO),
 
     /** All genres. */
-    LibraryThing("librarything", R.string.site_library_thing,
+    LibraryThing("librarything",
+                 R.string.site_library_thing,
                  "https://www.librarything.com",
+                 Locale.US,
                  LibraryThingSearchEngine.class,
                  BuildConfig.ENABLE_LIBRARY_THING_ALT_ED),
 
     /** All genres. */
-    OpenLibrary("openlibrary", R.string.site_open_library,
+    OpenLibrary("openlibrary",
+                R.string.site_open_library,
                 "https://openlibrary.org",
+                Locale.US,
                 OpenLibrarySearchEngine.class,
                 true),
 
     /** Dutch language (and to some extend other languages) comics. */
-    StripInfoBe("stripinfo", R.string.site_stripinfo_be,
+    StripInfoBe("stripinfo",
+                R.string.site_stripinfo_be,
                 "https://www.stripinfo.be",
+                new Locale("nl", "BE"),
                 StripInfoSearchEngine.class,
                 BuildConfig.ENABLE_STRIP_INFO),
     ;
 
-    // NEWTHINGS: adding a new search engine: add the engine
+    // NEWTHINGS: adding a new search engine: add an engine id definition
 
     /** {@link Parcelable}. */
     public static final Creator<EngineId> CREATOR = new Creator<>() {
@@ -179,27 +200,43 @@ public enum EngineId
         }
     };
 
+    /** The preference key / generic string identifier for this engine. */
     @NonNull
     private final String key;
+
+    /** The user displayable name for this engine. */
     @StringRes
     private final int labelResId;
-    /** Default url. Only used when the {@link #config} is created! */
+
+    /** Default url. */
     @NonNull
     private final String defaultUrl;
+
+    @NonNull
+    private final Locale locale;
+
+    /** The implementation class for this engine. */
     @NonNull
     private final Class<? extends SearchEngine> clazz;
+
+    /** Set at compile time from the gradle script. */
     private final boolean enabled;
+
+    // Don't add config... toPrint will recurse
+    @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private SearchEngineConfig config;
 
     EngineId(@NonNull final String key,
              @StringRes final int labelResId,
              @NonNull final String defaultUrl,
+             @NonNull final Locale locale,
              @NonNull final Class<? extends SearchEngine> clazz,
              final boolean enabled) {
         this.key = key;
         this.labelResId = labelResId;
         this.defaultUrl = defaultUrl;
+        this.locale = locale;
         this.clazz = clazz;
         this.enabled = enabled;
     }
@@ -224,8 +261,6 @@ public enum EngineId
         }
         if (Bedetheque.isEnabled()) {
             Bedetheque.createConfiguration()
-                      .setLocale("fr", "FR")
-
                       .setDomainKey(DBKey.SID_BEDETHEQUE)
 
                       // default timeouts based on limited testing
@@ -266,14 +301,11 @@ public enum EngineId
         }
         if (KbNl.isEnabled()) {
             KbNl.createConfiguration()
-                .setLocale("nl", "NL")
                 .setSupportsMultipleCoverSizes(true)
                 .build();
         }
         if (LastDodoNl.isEnabled()) {
             LastDodoNl.createConfiguration()
-                      .setLocale("nl", "NL")
-
                       .setPrefersIsbn10(true)
 
                       .setDomainKey(DBKey.SID_LAST_DODO_NL)
@@ -305,8 +337,6 @@ public enum EngineId
         }
         if (StripInfoBe.isEnabled()) {
             StripInfoBe.createConfiguration()
-                       .setLocale("nl", "BE")
-
                        .setDomainKey(DBKey.SID_STRIP_INFO)
                        .setDomainViewId(R.id.site_strip_info_be)
                        .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE,
@@ -402,7 +432,7 @@ public enum EngineId
 
     @NonNull
     private SearchEngineConfig.Builder createConfiguration() {
-        return new SearchEngineConfig.Builder(this, defaultUrl);
+        return new SearchEngineConfig.Builder(this);
     }
 
     @NonNull
@@ -439,8 +469,13 @@ public enum EngineId
      * @return default/hardcoded url for the site.
      */
     @NonNull
-    public String getDefaultUrl() {
+    String getDefaultUrl() {
         return defaultUrl;
+    }
+
+    @NonNull
+    Locale getDefaultLocale() {
+        return locale;
     }
 
     /**
@@ -490,5 +525,18 @@ public enum EngineId
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         dest.writeInt(this.ordinal());
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "EngineId{"
+               + "key='" + key + '\''
+               + ", labelResId=" + ServiceLocator.getAppContext().getString(labelResId)
+               + ", defaultUrl='" + defaultUrl + '\''
+               + ", locale=" + locale
+               + ", clazz=" + clazz.getName()
+               + ", enabled=" + enabled
+               + '}';
     }
 }
