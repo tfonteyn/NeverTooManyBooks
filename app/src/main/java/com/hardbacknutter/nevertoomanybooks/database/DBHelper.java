@@ -200,6 +200,69 @@ public class DBHelper
     }
 
     /**
+     * This method removes all keys which were declared obsolete.
+     *
+     * @param context Current context
+     */
+    public static void removeObsoleteKeys(@NonNull final Context context) {
+
+        final SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(context);
+
+        final SharedPreferences.Editor editor = prefs.edit();
+
+        prefs.getAll()
+             .keySet()
+             .stream()
+             .filter(key -> key.startsWith("style.booklist."))
+             .forEach(editor::remove);
+
+        editor.remove("tips.tip.BOOKLIST_STYLES_EDITOR")
+              .remove("tips.tip.BOOKLIST_STYLE_GROUPS")
+              .remove("tips.tip.BOOKLIST_STYLE_PROPERTIES")
+              .remove("tips.tip.booklist_style_menu")
+
+              .remove("BookList.Style.Preferred.Order")
+              .remove("bookList.style.preferred.order")
+              .remove("BookList.Style.Current")
+
+              .remove("booklist.top.rowId")
+              .remove("booklist.top.row")
+              .remove("booklist..top.row")
+              .remove("booklist.top.offset")
+              .remove("booklist..top.offset")
+
+              .remove("calibre.last.sync.date")
+              .remove("camera.id.scan.barcode")
+              .remove("compat.booklist.mode")
+              .remove("compat.image.cropper.viewlayertype")
+              .remove("edit.book.tab.authSer")
+              .remove("edit.book.tab.nativeId")
+              .remove("goodreads.enabled")
+              .remove("goodreads.showMenu")
+              .remove("goodreads.search.collect.genre")
+              .remove("goodreads.AccessToken.Token")
+              .remove("goodreads.AccessToken.Secret")
+              .remove("librarything.dev_key")
+              .remove("scanner.preferred")
+              .remove("search.form.advanced")
+              .remove("search.site.goodreads.data.enabled")
+              .remove("search.site.goodreads.covers.enabled")
+              .remove("startup.lastVersion")
+              .remove("tmp.edit.book.tab.authSer")
+              .remove("ui.messages.use")
+
+              .remove("fields.visibility.bookshelf")
+              .remove("fields.visibility.read")
+
+              // Editing the URL for these sites has been removed.
+              .remove(EngineId.Isfdb.getPreferenceKey() + Prefs.pk_suffix_host_url)
+              .remove(EngineId.LibraryThing.getPreferenceKey() + Prefs.pk_suffix_host_url)
+
+              .apply();
+    }
+
+    /**
      * Check if the collation we use is case sensitive.
      *
      * @return {@code true} if case-sensitive (i.e. up to "you" to add lower/upper calls)
@@ -809,16 +872,6 @@ public class DBHelper
             TBL_AUTHOR_PSEUDONYMS.create(db, true);
 
             TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_ESID_BEDETHEQUE);
-
-            // Editing the URL for these sites has been removed. Making sure they are correct.
-            PreferenceManager
-                    .getDefaultSharedPreferences(context)
-                    .edit()
-                    .putString(EngineId.Isfdb.getPreferenceKey() + Prefs.pk_suffix_host_url,
-                               EngineId.Isfdb.getDefaultUrl())
-                    .putString(EngineId.LibraryThing.getPreferenceKey() + Prefs.pk_suffix_host_url,
-                               EngineId.LibraryThing.getDefaultUrl())
-                    .apply();
         }
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table:
@@ -856,63 +909,5 @@ public class DBHelper
         if (sIsCollationCaseSensitive == null) {
             sIsCollationCaseSensitive = collationIsCaseSensitive(db);
         }
-    }
-
-    /**
-     * This method removes all keys which were declared obsolete.
-     *
-     * @param context Current context
-     */
-    private void removeObsoleteKeys(@NonNull final Context context) {
-
-        final SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(context);
-
-        final SharedPreferences.Editor editor = prefs.edit();
-
-        prefs.getAll()
-             .keySet()
-             .stream()
-             .filter(key -> key.startsWith("style.booklist."))
-             .forEach(editor::remove);
-
-        editor.remove("tips.tip.BOOKLIST_STYLES_EDITOR")
-              .remove("tips.tip.BOOKLIST_STYLE_GROUPS")
-              .remove("tips.tip.BOOKLIST_STYLE_PROPERTIES")
-              .remove("tips.tip.booklist_style_menu")
-
-              .remove("BookList.Style.Preferred.Order")
-              .remove("bookList.style.preferred.order")
-              .remove("BookList.Style.Current")
-
-              .remove("booklist.top.rowId")
-              .remove("booklist.top.row")
-              .remove("booklist..top.row")
-              .remove("booklist.top.offset")
-              .remove("booklist..top.offset")
-
-              .remove("calibre.last.sync.date")
-              .remove("camera.id.scan.barcode")
-              .remove("compat.booklist.mode")
-              .remove("compat.image.cropper.viewlayertype")
-              .remove("edit.book.tab.authSer")
-              .remove("edit.book.tab.nativeId")
-              .remove("goodreads.enabled")
-              .remove("goodreads.showMenu")
-              .remove("goodreads.search.collect.genre")
-              .remove("goodreads.AccessToken.Token")
-              .remove("goodreads.AccessToken.Secret")
-              .remove("librarything.dev_key")
-              .remove("scanner.preferred")
-              .remove("search.form.advanced")
-              .remove("search.site.goodreads.data.enabled")
-              .remove("search.site.goodreads.covers.enabled")
-              .remove("startup.lastVersion")
-              .remove("tmp.edit.book.tab.authSer")
-              .remove("ui.messages.use")
-
-              .remove("fields.visibility.bookshelf")
-              .remove("fields.visibility.read")
-              .apply();
     }
 }

@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.StyleCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
+import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreCustomFieldDao;
@@ -289,6 +290,8 @@ public class JsonRecordReader
             // The coder itself will set/update the values directly.
             new SharedPreferencesCoder(PreferenceManager.getDefaultSharedPreferences(context))
                     .decode(jsonRoot);
+            // Make sure obsolete keys are removed
+            DBHelper.removeObsoleteKeys(context);
             results.preferences = 1;
         }
     }
