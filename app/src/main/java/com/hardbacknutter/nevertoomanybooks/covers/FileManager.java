@@ -119,7 +119,7 @@ public class FileManager {
                                 @NonNull final Size... sizes)
             throws StorageException, CredentialsException {
 
-        final List<Site> enabledSites = Site.filterForEnabled(siteList);
+        final List<Site> enabledSites = Site.filterActive(siteList);
 
         // We will disable sites on the fly for the *current* search without
         // modifying the list by using a simple bitmask.

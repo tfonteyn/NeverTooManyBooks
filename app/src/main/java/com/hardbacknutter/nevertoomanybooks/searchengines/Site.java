@@ -33,7 +33,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminFragment;
 
 /**
  * Encapsulates a {@link SearchEngine} instance + the {@link Type}
- * and the the enabled/disabled state.
+ * and the active/deactive state.
  *
  * @see EngineId
  * @see SearchEngine
@@ -74,9 +73,14 @@ public final class Site
 
     /**
      * The (for now) only actual preference:
-     * whether this site is enabled <strong>for the list it belongs to</strong>.
+     * whether this site is active <strong>for the list it belongs to</strong>.
+     * <p>
+     * Dev. note: code uses 'active' as in the user can activate/deactivate a site,
+     * while enabled/disabled is used at compile time from the gradle script.
+     * <p>
+     * This key uses 'enabled' for backwards compatibility.
      */
-    private static final String PREF_SUFFIX_ENABLED = "enabled";
+    private static final String PREF_SUFFIX_ACTIVE = "enabled";
 
     /** SearchEngine ID. Used to (re)create {@link #searchEngine}. */
     @NonNull
@@ -86,8 +90,8 @@ public final class Site
     @NonNull
     private final Type type;
 
-    /** user preference: enable/disable this site. */
-    private boolean enabled;
+    /** user preference: active/deactivated this site. */
+    private boolean active;
 
     /** The cached search engine for a specific site. */
     @Nullable
@@ -98,15 +102,15 @@ public final class Site
      *
      * @param type     the type of Site list this Site will belong to
      * @param engineId the search engine id
-     * @param enabled  flag
+     * @param active   flag
      */
     private Site(@NonNull final Type type,
                  @NonNull final EngineId engineId,
-                 final boolean enabled) {
+                 final boolean active) {
 
         this.engineId = engineId;
         this.type = type;
-        this.enabled = enabled;
+        this.active = active;
     }
 
     /**
@@ -119,7 +123,7 @@ public final class Site
         type = from.type;
 
         // Copy the current state
-        enabled = from.enabled;
+        active = from.active;
         // don't copy the searchEngine, let it be recreated.
         searchEngine = null;
     }
@@ -134,20 +138,20 @@ public final class Site
         engineId = in.readParcelable(Type.class.getClassLoader());
         //noinspection ConstantConditions
         type = in.readParcelable(Type.class.getClassLoader());
-        enabled = in.readByte() != 0;
+        active = in.readByte() != 0;
     }
 
     /**
-     * Get the enabled sites in the <strong>given</strong> list.
+     * Get the active sites in the <strong>given</strong> list.
      *
      * @param sites to filter
      *
      * @return new list instance containing the <strong>original</strong> site objects;
-     *         filtered for being enabled. The order is the same.
+     * filtered for being active. The order is the same.
      */
     @NonNull
-    public static List<Site> filterForEnabled(@NonNull final Collection<Site> sites) {
-        return sites.stream().filter(Site::isEnabled).collect(Collectors.toList());
+    public static List<Site> filterActive(@NonNull final Collection<Site> sites) {
+        return sites.stream().filter(Site::isActive).collect(Collectors.toList());
     }
 
     /**
@@ -186,7 +190,7 @@ public final class Site
         while (!sites.isEmpty()) {
             final Site site = sites.poll();
             //noinspection ConstantConditions
-            if (site.isEnabled()) {
+            if (site.isActive()) {
                 final SearchEngine searchEngine = site.getSearchEngine();
                 if (searchEngine.promptToRegister(context, false, callerIdString, action -> {
                     switch (action) {
@@ -224,12 +228,12 @@ public final class Site
         return type;
     }
 
-    public boolean isEnabled() {
-        return enabled;
+    public boolean isActive() {
+        return active;
     }
 
-    public void setEnabled(final boolean enabled) {
-        this.enabled = enabled;
+    public void setActive(final boolean active) {
+        this.active = active;
     }
 
     @NonNull
@@ -264,11 +268,11 @@ public final class Site
     }
 
     private void loadFromPrefs(@NonNull final SharedPreferences prefs) {
-        enabled = prefs.getBoolean(getPrefPrefix() + PREF_SUFFIX_ENABLED, enabled);
+        active = prefs.getBoolean(getPrefPrefix() + PREF_SUFFIX_ACTIVE, active);
     }
 
     private void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
-        editor.putBoolean(getPrefPrefix() + PREF_SUFFIX_ENABLED, enabled);
+        editor.putBoolean(getPrefPrefix() + PREF_SUFFIX_ACTIVE, active);
     }
 
     @Override
@@ -276,7 +280,7 @@ public final class Site
                               final int flags) {
         dest.writeParcelable(engineId, flags);
         dest.writeParcelable(type, flags);
-        dest.writeByte((byte) (enabled ? 1 : 0));
+        dest.writeByte((byte) (active ? 1 : 0));
     }
 
     @Override
@@ -287,7 +291,7 @@ public final class Site
     @Override
     @NonNull
     public String toString() {
-        return "Site{" + "engineId=" + engineId + ", type=" + type + ", enabled=" + enabled
+        return "Site{" + "engineId=" + engineId + ", type=" + type + ", active=" + active
                + ", searchEngine=" + searchEngine + '}';
     }
 
@@ -443,7 +447,7 @@ public final class Site
 
         /**
          * Get a <strong>deep-copy</strong> of the list.
-         * Includes enabled <strong>AND</strong> disabled sites.
+         * Includes active <strong>AND</strong> deactivated sites.
          *
          * @return deep-copy instance of the Site list
          */
@@ -457,11 +461,14 @@ public final class Site
          * Helper for {@link EngineId#registerSites}.
          *
          * @param engineId the search engine id
-         * @param enabled  flag
+         * @param active   flag
          */
         void addSite(@NonNull final EngineId engineId,
-                     final boolean enabled) {
-            siteList.add(new Site(this, engineId, enabled));
+                     final boolean active) {
+            if (!engineId.isEnabled()) {
+                return;
+            }
+            siteList.add(new Site(this, engineId, active));
         }
 
         /**
@@ -537,7 +544,7 @@ public final class Site
             //    <boolean name="search.site.openlibrary.data.enabled" value="false" />
             //    <boolean name="search.site.stripinfo.data.enabled" value="false" />
             //
-            //  The order includes both enabled and disabled sites!
+            //  The order includes both activated and deactivated sites!
             //    <string name="search.siteOrder.alted">librarything,isfdb</string>
             //    <string name="search.siteOrder.covers">amazon,isfdb,openlibrary</string>
             //    <string name="search.siteOrder.data">isfdb,amazon,stripinfo,googlebooks,

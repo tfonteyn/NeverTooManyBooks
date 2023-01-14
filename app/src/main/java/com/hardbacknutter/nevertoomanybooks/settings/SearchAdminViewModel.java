@@ -116,7 +116,7 @@ public class SearchAdminViewModel
      */
     public boolean validate() {
         for (final ArrayList<Site> list : typeAndSites.values()) {
-            if (list.stream().noneMatch(Site::isEnabled)) {
+            if (list.stream().noneMatch(Site::isActive)) {
                 return false;
             }
         }

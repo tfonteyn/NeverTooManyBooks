@@ -136,7 +136,7 @@ public class SearchBookByTextFragment
     protected void explainSitesSupport(@Nullable final ArrayList<Site> sites) {
         if (sites != null
             && sites.stream()
-                    .filter(Site::isEnabled)
+                    .filter(Site::isActive)
                     .map(Site::getSearchEngine)
                     .anyMatch(se -> se instanceof SearchEngine.ByText)) {
             vb.btnSearch.setEnabled(true);

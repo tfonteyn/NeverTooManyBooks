@@ -23,9 +23,10 @@ import android.os.Bundle;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
+import androidx.preference.Preference;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 
 /**
  * Used/defined in xml/preferences.xml
@@ -42,28 +43,12 @@ public class SearchInternetPreferenceFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_searches, rootKey);
 
-        //noinspection ConstantConditions
-        findPreference(PSK_SEARCH_SITE_ + "googlebooks")
-                .setVisible(BuildConfig.ENABLE_GOOGLE_BOOKS);
-
-        //noinspection ConstantConditions
-        findPreference(PSK_SEARCH_SITE_ + "kbnl")
-                .setVisible(BuildConfig.ENABLE_KB_NL);
-
-        //noinspection ConstantConditions
-        findPreference(PSK_SEARCH_SITE_ + "lastdodo")
-                .setVisible(BuildConfig.ENABLE_LAST_DODO);
-
-        //noinspection ConstantConditions
-        findPreference(PSK_SEARCH_SITE_ + "stripinfo")
-                .setVisible(BuildConfig.ENABLE_STRIP_INFO);
-
-        //noinspection ConstantConditions
-        findPreference(PSK_SEARCH_SITE_ + "bedetheque")
-                .setVisible(BuildConfig.ENABLE_BEDETHEQUE);
-
-        //noinspection ConstantConditions
-        findPreference(PSK_SEARCH_SITE_ + "librarything")
-                .setVisible(BuildConfig.ENABLE_LIBRARY_THING_ALT_ED);
+        for (final EngineId engineId : EngineId.values()) {
+            final Preference preference = findPreference(
+                    PSK_SEARCH_SITE_ + engineId.getPreferenceKey());
+            if (preference != null) {
+                preference.setVisible(engineId.isEnabled());
+            }
+        }
     }
 }

@@ -916,7 +916,7 @@ public class SearchCoordinator
         }
 
         boolean atLeastOneStarted = false;
-        for (final Site site : Site.filterForEnabled(allSites)) {
+        for (final Site site : Site.filterActive(allSites)) {
             // If the site has not been searched yet, search it
             synchronized (searchResultsBySite) {
                 if (!searchResultsBySite.containsKey(site.getEngineId())) {
@@ -940,7 +940,7 @@ public class SearchCoordinator
             return false;
         }
 
-        for (final Site site : Site.filterForEnabled(allSites)) {
+        for (final Site site : Site.filterActive(allSites)) {
             // If the site has not been searched yet, search it
             synchronized (searchResultsBySite) {
                 if (!searchResultsBySite.containsKey(site.getEngineId())) {

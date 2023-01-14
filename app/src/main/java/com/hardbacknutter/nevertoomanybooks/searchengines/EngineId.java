@@ -29,7 +29,6 @@ import androidx.annotation.StringRes;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -53,19 +52,19 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSea
  * To add a new site to search, follow these steps:
  * <ol>
  *     <li>Add a string resource with the name of the site engine in:
- *          "src/main/res/values/donottranslate.xml" (look for existing entries named 'site_*')
+ *         "src/main/res/values/donottranslate.xml" (look for existing entries named 'site_*')
  *     </li>
  *
  *     <li>Implement {@link SearchEngine} to create the new engine class
- *          extending {@link SearchEngineBase} or {@link JsoupSearchEngineBase}
- *          or a similar setup.<br>
- *          There MUST be a public constructor which takes a {@link SearchEngineConfig}
- *          as its single argument. This constructor must be annotated with "@Keep"
+ *         extending {@link SearchEngineBase} or {@link JsoupSearchEngineBase}
+ *         or a similar setup.<br>
+ *         There MUST be a public constructor which takes a {@link SearchEngineConfig}
+ *         as its single argument. This constructor must be annotated with "@Keep"
  *      </li>
  *
  *     <li>Add an enum identifier in this class and give it a unique string-id,
- *          the string resource id for the name as displayed to the user
- *         and the implementation class. The string-id must be all lowercase, no-spaces.
+ *         the string resource id for the name as displayed to the user and
+ *         the implementation class. The string-id must be all lowercase, no-spaces.
  *         It will be used in preferences, database settings,...
  *     </li>
  *
@@ -73,12 +72,11 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSea
  *         If this step is skipped, the new site will be at the "end" of the reliability list</li>
  *
  *     <li>Configure the engine in the method {@link #registerSearchEngines()},
- *          using {@link #createConfiguration()}
- *          and {@link SearchEngineConfig.Builder} methods.
+ *         using {@link #createConfiguration()}
+ *         and {@link SearchEngineConfig.Builder} methods.
  *     </li>
  *
- *      <li>Add a new {@link Site} instance to the one or more list(s)
- *          in {@link #registerSites}
+ *      <li>Add a new {@link Site} instance to the one or more list(s) in {@link #registerSites}
  *      </li>
  *
  *      <li>Optional: Add a preference fragment for the user to configure the engine.
@@ -107,44 +105,64 @@ public enum EngineId
 
     /** All genres. */
     Amazon("amazon", R.string.site_amazon,
-           "https://www.amazon.com", AmazonSearchEngine.class),
+           "https://www.amazon.com",
+           AmazonSearchEngine.class,
+           true),
 
     /** French language (and to some extend other languages) comics. */
     Bedetheque("bedetheque", R.string.site_bedetheque,
-               "https://www.bedetheque.com", BedethequeSearchEngine.class),
+               "https://www.bedetheque.com",
+               BedethequeSearchEngine.class,
+               BuildConfig.ENABLE_BEDETHEQUE),
 
     /** All genres. */
     Goodreads("goodreads", R.string.site_goodreads,
-              "https://www.goodreads.com", GoodreadsSearchEngine.class),
+              "https://www.goodreads.com",
+              GoodreadsSearchEngine.class,
+              true),
 
     /** All genres. */
     GoogleBooks("googlebooks", R.string.site_google_books,
-                "https://books.google.com", GoogleBooksSearchEngine.class),
+                "https://books.google.com",
+                GoogleBooksSearchEngine.class,
+                BuildConfig.ENABLE_GOOGLE_BOOKS),
 
     /** Speculative Fiction only. e.g. Science-Fiction/Fantasy etc... */
     Isfdb("isfdb", R.string.site_isfdb,
-          "https://www.isfdb.org", IsfdbSearchEngine.class),
+          "https://www.isfdb.org",
+          IsfdbSearchEngine.class,
+          true),
 
 
     /** Dutch language books & comics. */
     KbNl("kbnl", R.string.site_kb_nl,
-         "https://webggc.oclc.org", KbNlSearchEngine.class),
+         "https://webggc.oclc.org",
+         KbNlSearchEngine.class,
+         BuildConfig.ENABLE_KB_NL),
 
     /** Dutch language (and to some extend other languages) comics. */
     LastDodoNl("lastdodo", R.string.site_lastdodo_nl,
-               "https://www.lastdodo.nl", LastDodoSearchEngine.class),
+               "https://www.lastdodo.nl",
+               LastDodoSearchEngine.class,
+               BuildConfig.ENABLE_LAST_DODO),
 
     /** All genres. */
     LibraryThing("librarything", R.string.site_library_thing,
-                 "https://www.librarything.com", LibraryThingSearchEngine.class),
+                 "https://www.librarything.com",
+                 LibraryThingSearchEngine.class,
+                 BuildConfig.ENABLE_LIBRARY_THING_ALT_ED),
 
     /** All genres. */
     OpenLibrary("openlibrary", R.string.site_open_library,
-                "https://openlibrary.org", OpenLibrarySearchEngine.class),
+                "https://openlibrary.org",
+                OpenLibrarySearchEngine.class,
+                true),
 
     /** Dutch language (and to some extend other languages) comics. */
     StripInfoBe("stripinfo", R.string.site_stripinfo_be,
-                "https://www.stripinfo.be", StripInfoSearchEngine.class),
+                "https://www.stripinfo.be",
+                StripInfoSearchEngine.class,
+                BuildConfig.ENABLE_STRIP_INFO),
     ;
 
     // NEWTHINGS: adding a new search engine: add the engine
@@ -188,17 +206,20 @@ public enum EngineId
     private final String defaultUrl;
     @NonNull
     private final Class<? extends SearchEngine> clazz;
+    private final boolean enabled;
     @Nullable
     private SearchEngineConfig config;
 
     EngineId(@NonNull final String key,
              @StringRes final int labelResId,
              @NonNull final String defaultUrl,
-             @NonNull final Class<? extends SearchEngine> clazz) {
+             @NonNull final Class<? extends SearchEngine> clazz,
+             final boolean enabled) {
         this.key = key;
         this.labelResId = labelResId;
         this.defaultUrl = defaultUrl;
         this.clazz = clazz;
+        this.enabled = enabled;
     }
 
     /**
@@ -212,13 +233,14 @@ public enum EngineId
         // The order created here is not relevant
 
         // ENHANCE: support ASIN and the ViewBookByExternalId interface
-        Amazon.createConfiguration()
-              // .setDomainKey(DBKey.SID_ASIN)
-              // .setDomainViewId(R.id.site_amazon)
-              // .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_AMAZON)
-              .build();
-
-        if (BuildConfig.ENABLE_BEDETHEQUE) {
+        if (Amazon.isEnabled()) {
+            Amazon.createConfiguration()
+                  // .setDomainKey(DBKey.SID_ASIN)
+                  // .setDomainViewId(R.id.site_amazon)
+                  // .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_AMAZON)
+                  .build();
+        }
+        if (Bedetheque.isEnabled()) {
             Bedetheque.createConfiguration()
                       .setLocale("fr", "FR")
 
@@ -232,41 +254,41 @@ public enum EngineId
                       .setThrottlerTimeoutMs(1_000)
                       .build();
         }
+        if (Goodreads.isEnabled()) {
+            Goodreads.createConfiguration()
+                     .setDomainKey(DBKey.SID_GOODREADS_BOOK)
+                     .setDomainViewId(R.id.site_goodreads)
+                     .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS,
+                                      R.integer.MENU_ORDER_VIEW_BOOK_AT_GOODREADS)
+                     .build();
+        }
 
-        Goodreads.createConfiguration()
-                 .setDomainKey(DBKey.SID_GOODREADS_BOOK)
-                 .setDomainViewId(R.id.site_goodreads)
-                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS,
-                                  R.integer.MENU_ORDER_VIEW_BOOK_AT_GOODREADS)
-                 .build();
-
-        if (BuildConfig.ENABLE_GOOGLE_BOOKS) {
+        if (GoogleBooks.isEnabled()) {
             GoogleBooks.createConfiguration()
                        .build();
         }
-
-        Isfdb.createConfiguration()
-             .setDomainKey(DBKey.SID_ISFDB)
-             .setDomainViewId(R.id.site_isfdb)
-             .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB,
-                              R.integer.MENU_ORDER_VIEW_BOOK_AT_ISFDB)
-             // default timeouts based on limited testing
-             .setConnectTimeoutMs(20_000)
-             .setReadTimeoutMs(60_000)
-             // As proposed by another user on the ISFDB wiki,
-             // we're only going to send one request a second.
-             //<a href="https://isfdb.org/wiki/index.php/ISFDB:Help_desk/archives/archive_34#Some_Downloading_Questions_and_a_Request">throttling</a>
-             .setThrottlerTimeoutMs(1_000)
-             .build();
-
-        if (BuildConfig.ENABLE_KB_NL) {
+        if (Isfdb.isEnabled()) {
+            Isfdb.createConfiguration()
+                 .setDomainKey(DBKey.SID_ISFDB)
+                 .setDomainViewId(R.id.site_isfdb)
+                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB,
+                                  R.integer.MENU_ORDER_VIEW_BOOK_AT_ISFDB)
+                 // default timeouts based on limited testing
+                 .setConnectTimeoutMs(20_000)
+                 .setReadTimeoutMs(60_000)
+                 // As proposed by another user on the ISFDB wiki,
+                 // we're only going to send one request a second.
+                 //<a href="https://isfdb.org/wiki/index.php/ISFDB:Help_desk/archives/archive_34#Some_Downloading_Questions_and_a_Request">throttling</a>
+                 .setThrottlerTimeoutMs(1_000)
+                 .build();
+        }
+        if (KbNl.isEnabled()) {
             KbNl.createConfiguration()
                 .setLocale("nl", "NL")
                 .setSupportsMultipleCoverSizes(true)
                 .build();
         }
-
-        if (BuildConfig.ENABLE_LAST_DODO) {
+        if (LastDodoNl.isEnabled()) {
             LastDodoNl.createConfiguration()
                       .setLocale("nl", "NL")
 
@@ -278,9 +300,8 @@ public enum EngineId
                                        R.integer.MENU_ORDER_VIEW_BOOK_AT_LAST_DODO_NL)
                       .build();
         }
-
-        // Alternative Edition search only!
-        if (BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
+        if (LibraryThing.isEnabled()) {
+            // Alternative Edition search only!
             LibraryThing.createConfiguration()
                         .setSupportsMultipleCoverSizes(true)
 
@@ -290,17 +311,17 @@ public enum EngineId
                                          R.integer.MENU_ORDER_VIEW_BOOK_AT_LIBRARY_THING)
                         .build();
         }
+        if (OpenLibrary.isEnabled()) {
+            OpenLibrary.createConfiguration()
+                       .setSupportsMultipleCoverSizes(true)
 
-        OpenLibrary.createConfiguration()
-                   .setSupportsMultipleCoverSizes(true)
-
-                   .setDomainKey(DBKey.SID_OPEN_LIBRARY)
-                   .setDomainViewId(R.id.site_open_library)
-                   .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
-                                    R.integer.MENU_ORDER_VIEW_BOOK_AT_OPEN_LIBRARY)
-                   .build();
-
-        if (BuildConfig.ENABLE_STRIP_INFO) {
+                       .setDomainKey(DBKey.SID_OPEN_LIBRARY)
+                       .setDomainViewId(R.id.site_open_library)
+                       .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
+                                        R.integer.MENU_ORDER_VIEW_BOOK_AT_OPEN_LIBRARY)
+                       .build();
+        }
+        if (StripInfoBe.isEnabled()) {
             StripInfoBe.createConfiguration()
                        .setLocale("nl", "BE")
 
@@ -332,17 +353,13 @@ public enum EngineId
 
         // Certain sites should only be enabled by default if the device or user set language
         // matches the site language.
-        final boolean enableIfDutch = ServiceLocator.getInstance().getLanguages()
-                                                    .isLang(context, "nld");
-        final boolean enableIfFrench = ServiceLocator.getInstance().getLanguages()
-                                                     .isLang(context, "fra");
+        final boolean activateIfDutch = ServiceLocator.getInstance().getLanguages()
+                                                      .isLang(context, "nld");
+        final boolean activateIfFrench = ServiceLocator.getInstance().getLanguages()
+                                                       .isLang(context, "fra");
 
-        //NEWTHINGS: add new search engine: add to the 3 lists as needed.
+        //NEWTHINGS: adding a new search engine: add to the list type as needed.
 
-        // yes, we could loop over the SearchEngine's, and detect their interfaces.
-        // but this gives specific enable/disable control.
-        // For the BuildConfig.ENABLE_ usage: see app/build.gradle
-        //
         // The order added here is the default order they will be used, but the user
         // can reorder the lists in preferences.
 
@@ -355,73 +372,39 @@ public enum EngineId
                 // {@link SearchEngine.ByText}
 
                 type.addSite(Amazon, true);
-
-                if (BuildConfig.ENABLE_GOOGLE_BOOKS) {
-                    type.addSite(GoogleBooks, true);
-                }
-
+                type.addSite(GoogleBooks, true);
                 type.addSite(Isfdb, true);
-
-                if (BuildConfig.ENABLE_STRIP_INFO) {
-                    type.addSite(StripInfoBe, enableIfDutch);
-                }
-                if (BuildConfig.ENABLE_LAST_DODO) {
-                    type.addSite(LastDodoNl, enableIfDutch);
-                }
-                if (BuildConfig.ENABLE_BEDETHEQUE) {
-                    type.addSite(Bedetheque, enableIfFrench);
-                }
-                if (BuildConfig.ENABLE_KB_NL) {
-                    type.addSite(KbNl, enableIfDutch);
-                }
-
-                // Disabled by default as data from this site is not very complete.
+                type.addSite(StripInfoBe, activateIfDutch);
+                type.addSite(LastDodoNl, activateIfDutch);
+                type.addSite(Bedetheque, activateIfFrench);
+                type.addSite(KbNl, activateIfDutch);
+                // Deactivated by default as data from this site is not very complete.
                 type.addSite(OpenLibrary, false);
                 break;
             }
             case Covers: {
                 // Only add sites here that implement {@link SearchEngine.CoverByIsbn}.
-
                 type.addSite(Amazon, true);
-
                 type.addSite(Isfdb, true);
-
-                if (BuildConfig.ENABLE_KB_NL) {
-                    type.addSite(KbNl, enableIfDutch);
-                }
-
-                // Disabled by default as this site lacks many covers.
+                type.addSite(KbNl, activateIfDutch);
+                // Deactivated by default as this site lacks many covers.
                 type.addSite(OpenLibrary, false);
                 break;
             }
             case AltEditions: {
                 //Only add sites here that implement {@link SearchEngine.AlternativeEditions}.
-
-                if (BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
-                    type.addSite(LibraryThing, true);
-                }
-
+                type.addSite(LibraryThing, true);
                 type.addSite(Isfdb, true);
                 break;
             }
 
             case ViewOnSite: {
-                // only add sites here that implement {@link SearchEngine.ViewBookByExternalId}.
-
-                type.addSite(Goodreads, true);
-                type.addSite(Isfdb, true);
-
-                if (BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
-                    type.addSite(LibraryThing, true);
-                }
-
-                type.addSite(OpenLibrary, true);
-
-                if (BuildConfig.ENABLE_STRIP_INFO) {
-                    type.addSite(StripInfoBe, enableIfDutch);
-                }
-                if (BuildConfig.ENABLE_LAST_DODO) {
-                    type.addSite(LastDodoNl, enableIfDutch);
+                // The order is irrelevant; just add all compliant ones
+                for (final EngineId engineId : values()) {
+                    if (engineId.isEnabled() && SearchEngine.ViewBookByExternalId.class
+                            .isAssignableFrom(engineId.clazz)) {
+                        type.addSite(engineId, true);
+                    }
                 }
                 break;
             }
@@ -429,6 +412,10 @@ public enum EngineId
             default:
                 throw new IllegalArgumentException(String.valueOf(type));
         }
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
     @NonNull

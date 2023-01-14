@@ -191,9 +191,9 @@ public class SearchOrderFragment
 
         void onItemCheckChanged(@NonNull final Holder holder) {
             final Site site = getItem(holder.getBindingAdapterPosition());
-            site.setEnabled(!site.isEnabled());
+            site.setActive(!site.isActive());
             //noinspection ConstantConditions
-            holder.checkableButton.setChecked(site.isEnabled());
+            holder.checkableButton.setChecked(site.isActive());
         }
 
         @Override
@@ -209,7 +209,7 @@ public class SearchOrderFragment
             holder.nameView.setText(site.getEngineId().getName(context));
 
             //noinspection ConstantConditions
-            holder.checkableButton.setChecked(site.isEnabled());
+            holder.checkableButton.setChecked(site.isActive());
 
             // only show the info for Data lists. Irrelevant for others.
             if (site.getType() == Site.Type.Data) {

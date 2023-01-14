@@ -87,7 +87,7 @@ public class SearchEditionsTask
             throw new NetworkUnavailableException(this.getClass().getName());
         }
 
-        for (final Site site : Site.filterForEnabled(Site.Type.AltEditions.getSites())) {
+        for (final Site site : Site.filterActive(Site.Type.AltEditions.getSites())) {
             final SearchEngine searchEngine = site.getSearchEngine();
             searchEngine.setCaller(this);
             try {
