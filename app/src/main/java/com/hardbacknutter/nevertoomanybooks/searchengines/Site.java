@@ -364,33 +364,6 @@ public final class Site
         }
 
         /**
-         * Get the data sites list, ordered by reliability.
-         * Includes enabled <strong>AND</strong> disabled sites.
-         *
-         * @return deep-copy unmodifiable List sorted by reliability of data
-         */
-        @NonNull
-        static List<Site> getDataSitesByReliability() {
-
-            final List<Site> reorderedList = new ArrayList<>();
-            final ArrayList<Site> dataSites = Data.getSites();
-
-            EngineId.DATA_RELIABILITY_ORDER.forEach(id -> dataSites
-                    .stream()
-                    .filter(site -> site.engineId == id)
-                    .findFirst()
-                    .ifPresent(reorderedList::add));
-
-            // add any data sites which are not in the 'reliability' list
-            // at the end of the new list
-            dataSites.stream()
-                     .filter(site -> !reorderedList.contains(site))
-                     .forEach(reorderedList::add);
-
-            return Collections.unmodifiableList(reorderedList);
-        }
-
-        /**
          * Create the list for <strong>this</strong> type.
          *
          * @param context Current context

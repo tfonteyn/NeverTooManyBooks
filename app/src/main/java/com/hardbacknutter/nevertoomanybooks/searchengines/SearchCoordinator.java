@@ -379,7 +379,7 @@ public class SearchCoordinator
      * <p>
      * <strong>Developer note:</strong> before you think you can simplify this method
      * by working directly with engine-id and SearchEngines... DON'T
-     * Read class docs for {@link EngineId} and {@link Site.Type#getDataSitesByReliability}.
+     * Read class docs for {@link EngineId} and {@link Site.Type}.
      *
      * @param context Current context
      *
@@ -388,16 +388,15 @@ public class SearchCoordinator
     @NonNull
     private Book accumulateResults(@NonNull final Context context) {
         // This list will be the actual order of the result we apply, based on the
-        // actual results and the default order.
+        // actual results and the site order as set by the user.
         final List<Site> sites = new ArrayList<>();
 
         final Book book = new Book();
 
-        // determine the order of the sites which should give us the most reliable data.
         if (isbn.isValid(strictIsbn)) {
             final Collection<Site> sitesWithoutIsbn = new ArrayList<>();
 
-            for (final Site site : Site.Type.getDataSitesByReliability()) {
+            for (final Site site : Site.Type.Data.getSites()) {
                 // no synchronized needed, at this point all other threads have finished.
                 if (searchResultsBySite.containsKey(site.getEngineId())) {
                     final WrappedTaskResult siteData = searchResultsBySite.get(site.getEngineId());
@@ -445,7 +444,7 @@ public class SearchCoordinator
 
         } else {
             // We did not have an ISBN as a search criteria; use the default order
-            sites.addAll(Site.Type.getDataSitesByReliability());
+            sites.addAll(Site.Type.Data.getSites());
         }
 
         // Merge the data we have in the order as decided upon above.

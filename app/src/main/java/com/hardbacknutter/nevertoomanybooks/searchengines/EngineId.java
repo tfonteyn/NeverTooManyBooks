@@ -68,9 +68,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSea
  *         It will be used in preferences, database settings,...
  *     </li>
  *
- *     <li>Add this enum identifier to {@link #DATA_RELIABILITY_ORDER}.
- *         If this step is skipped, the new site will be at the "end" of the reliability list</li>
- *
  *     <li>Configure the engine in the method {@link #registerSearchEngines()},
  *         using {@link #createConfiguration()}
  *         and {@link SearchEngineConfig.Builder} methods.
@@ -181,21 +178,6 @@ public enum EngineId
             return new EngineId[size];
         }
     };
-
-    /**
-     * The search engine ids in reliability of data order.
-     * Order is hardcoded based on experience. ENHANCE: make this user configurable
-     * NEWTHINGS: adding a new search engine: add the engine id
-     */
-    static final List<EngineId> DATA_RELIABILITY_ORDER =
-            List.of(Isfdb,
-                    StripInfoBe,
-                    Bedetheque,
-                    LastDodoNl,
-                    Amazon,
-                    GoogleBooks,
-                    KbNl,
-                    OpenLibrary);
 
     @NonNull
     private final String key;
