@@ -230,8 +230,6 @@ public class TocEntry
         author.setName(source.author.getFamilyName(), source.author.getGivenNames());
         title = source.title;
         firstPublicationDate = source.firstPublicationDate;
-        // URGENT: should we copy the bookcount field?
-        bookCount = source.bookCount;
     }
 
     @SuppressWarnings("SameReturnValue")
