@@ -237,7 +237,7 @@ public class Author
 
     /**
      * If this Author is a pseudonym, then 'realAuthorId' points to that author.
-     * When {@code 0} this IS a real author.
+     * When {@code null} this IS a real author.
      */
     @Nullable
     private Author realAuthor;
@@ -291,9 +291,9 @@ public class Author
             type = rowData.getInt(DBKey.AUTHOR_TYPE__BITMASK);
         }
 
-        if (rowData.contains(DBKey.AUTHOR_PSEUDONYM)) {
+        if (rowData.contains(DBKey.AUTHOR_REAL_AUTHOR)) {
             realAuthor = ServiceLocator.getInstance().getAuthorDao().getById(
-                    rowData.getLong(DBKey.AUTHOR_PSEUDONYM));
+                    rowData.getLong(DBKey.AUTHOR_REAL_AUTHOR));
         }
     }
 
@@ -514,17 +514,50 @@ public class Author
     }
 
     /**
-     * If this Author is a pseudonym, then this will return the real Author.
+     * If this Author is a pen-name (pseudonym), then this method returns the real Author.
      *
-     * @return real Author; or {@code null} if there is none
+     * @return the resolved real-author; or {@code null} if there is none
      */
     @Nullable
     public Author getRealAuthor() {
+        // always assume the worst; resolve here AGAIN
+        final Author before = realAuthor;
+        realAuthor = resolveRealAuthor(realAuthor);
+        if (!Objects.equals(before, realAuthor)) {
+            //URGENT: update this... or leave it for a lazy update later?
+            //ServiceLocator.getInstance().getAuthorDao().update(context, this, bookLocale);
+        }
         return realAuthor;
     }
 
-    public void setRealAuthor(@Nullable final Author realAuthor) {
-        this.realAuthor = realAuthor;
+    /**
+     * Set the real-author for this Author.
+     *
+     * @param author to use
+     *
+     * @return the resolved real-author; or {@code null} if there is none
+     */
+    @Nullable
+    public Author setRealAuthor(@Nullable final Author author) {
+        realAuthor = resolveRealAuthor(author);
+        return realAuthor;
+    }
+
+    @Nullable
+    private Author resolveRealAuthor(@Nullable final Author author) {
+        Author a = author;
+        if (a != null) {
+            // resolve any nested reference
+            while (a.getRealAuthor() != null) {
+                a = a.getRealAuthor();
+            }
+        }
+
+        // resolve 1:1 circular reference
+        if (a != null && (a.hashCodeOfNameOnly() == this.hashCodeOfNameOnly())) {
+            a = null;
+        }
+        return a;
     }
 
     @Type
