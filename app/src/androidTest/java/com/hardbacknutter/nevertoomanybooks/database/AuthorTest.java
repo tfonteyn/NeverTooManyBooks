@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
-import android.content.Context;
-
 import androidx.test.filters.MediumTest;
 
 import java.util.ArrayList;

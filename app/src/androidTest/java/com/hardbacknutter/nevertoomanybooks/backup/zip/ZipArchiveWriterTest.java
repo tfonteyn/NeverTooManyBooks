@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.zip;
 
-import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -29,9 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.EnumSet;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -48,6 +44,9 @@ import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -66,7 +65,6 @@ public class ZipArchiveWriterTest
     public void setup()
             throws DaoWriteException, StorageException {
         super.setup();
-        final Context context = serviceLocator.getLocalizedAppContext();
         bookInDb = serviceLocator.getBookDao().count();
         if (bookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
@@ -78,7 +76,6 @@ public class ZipArchiveWriterTest
     public void write()
             throws DataReaderException, DataWriterException,
                    IOException, StorageException, CredentialsException, CertificateException {
-        final Context context = serviceLocator.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + ".zip");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
@@ -114,8 +111,6 @@ public class ZipArchiveWriterTest
                       final long expectedNrOfBooks)
             throws DataReaderException, IOException,
                    StorageException, CredentialsException, CertificateException {
-
-        final Context context = serviceLocator.getLocalizedAppContext();
 
         final ImportHelper importHelper = new ImportHelper(context, uri);
         // The default, fail if the default was changed without changing this test!

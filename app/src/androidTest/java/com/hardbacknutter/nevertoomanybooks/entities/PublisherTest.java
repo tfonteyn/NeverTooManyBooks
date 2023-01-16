@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
-import android.content.Context;
 import android.os.Parcel;
 
 import androidx.test.filters.MediumTest;
@@ -65,7 +64,6 @@ public class PublisherTest
     @Test
     public void prunePublisherNames01()
             throws DaoWriteException {
-        final Context context = serviceLocator.getLocalizedAppContext();
         final Locale bookLocale = Locale.getDefault();
         final PublisherDao publisherDao = serviceLocator.getPublisherDao();
 
@@ -118,7 +116,6 @@ public class PublisherTest
     @Test
     public void prunePublisherNames02()
             throws DaoWriteException {
-        final Context context = serviceLocator.getLocalizedAppContext();
         final Locale bookLocale = Locale.getDefault();
         final PublisherDao publisherDao = serviceLocator.getPublisherDao();
 
@@ -177,7 +174,6 @@ public class PublisherTest
     @Test
     public void prunePublisherNames03()
             throws DaoWriteException {
-        final Context context = serviceLocator.getLocalizedAppContext();
         final Locale bookLocale = Locale.getDefault();
         final PublisherDao publisherDao = serviceLocator.getPublisherDao();
 

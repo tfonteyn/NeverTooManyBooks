@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.json;
 
-import android.content.Context;
 import android.net.Uri;
 
 import androidx.test.filters.MediumTest;
@@ -72,7 +71,6 @@ public class JsonArchiveWriterTest
     public void setup()
             throws DaoWriteException, StorageException {
         super.setup();
-        final Context context = serviceLocator.getLocalizedAppContext();
         bookInDb = serviceLocator.getBookDao().count();
         if (bookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
@@ -85,7 +83,6 @@ public class JsonArchiveWriterTest
             throws DataReaderException, DataWriterException,
                    IOException, StorageException, CredentialsException, CertificateException {
 
-        final Context context = serviceLocator.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + "-styles.json");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
@@ -125,7 +122,6 @@ public class JsonArchiveWriterTest
             throws DataReaderException, DataWriterException, DaoWriteException, IOException,
                    StorageException, CredentialsException, CertificateException {
 
-        final Context context = serviceLocator.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + "-books.json");
         //noinspection ResultOfMethodCallIgnored
         file.delete();

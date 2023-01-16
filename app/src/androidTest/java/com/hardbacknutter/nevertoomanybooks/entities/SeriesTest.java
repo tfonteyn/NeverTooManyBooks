@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
-import android.content.Context;
 import android.os.Parcel;
 
 import androidx.test.filters.MediumTest;
@@ -62,7 +61,6 @@ public class SeriesTest
     @Test
     public void pruneSeries01List()
             throws DaoWriteException {
-        final Context context = serviceLocator.getLocalizedAppContext();
         final Locale bookLocale = Locale.getDefault();
         final SeriesDao seriesDao = serviceLocator.getSeriesDao();
 

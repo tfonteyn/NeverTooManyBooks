@@ -25,10 +25,10 @@ import androidx.annotation.NonNull;
 
 import java.util.Optional;
 
-import org.junit.Test;
-
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistHeader;
+
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -40,7 +40,6 @@ public class UserStyleTest
 
     @Test
     public void clone01() {
-        final Context context = serviceLocator.getLocalizedAppContext();
         final StylesHelper helper = serviceLocator.getStyles();
         final Optional<Style> s1 = helper.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
         assertTrue(s1.isPresent());
