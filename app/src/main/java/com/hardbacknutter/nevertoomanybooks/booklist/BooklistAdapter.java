@@ -405,9 +405,12 @@ public class BooklistAdapter
      * Format the source string according to the BooklistGroup id.
      * <p>
      * Formatting is centralized in this method; the alternative (and theoretically 'correct')
-     * way would be to have a {@link RowViewHolder} for (at least) each 'case' branch... which
-     * is overkill.
-     * To keep it all straightforward, even the Author/Series formatting is handled here.
+     * way would be to have a {@link RowViewHolder} for each 'case' branch
+     * (and even "more" correct, for each BooklistGroup) ... which is overkill.
+     * <p>
+     * To keep it all straightforward, even when there is a dedicated
+     * BooklistGroup (e.g. Author,Series,...),
+     * we handle the formatting is here regardless.
      *
      * @param context Current context
      * @param groupId the BooklistGroup id
@@ -415,7 +418,7 @@ public class BooklistAdapter
      * @param key     the {@link DBKey} for the item to be formatted
      *
      * @return Formatted string,
-     * or original string when no special format was needed or on any failure
+     *         or original string when no special format was needed or on any failure
      */
     @NonNull
     private CharSequence format(@NonNull final Context context,
@@ -429,11 +432,12 @@ public class BooklistAdapter
             case BooklistGroup.AUTHOR: {
                 if (text.isEmpty()) {
                     return context.getString(R.string.bob_empty_author);
-                } else {
-                    final long pseudonym = rowData.getLong(DBKey.AUTHOR_PSEUDONYM);
-                    if (pseudonym != 0) {
+
+                } else if (rowData.contains(DBKey.AUTHOR_REAL_AUTHOR)) {
+                    final long realAuthorId = rowData.getLong(DBKey.AUTHOR_REAL_AUTHOR);
+                    if (realAuthorId != 0) {
                         final Author realAuthor = ServiceLocator.getInstance().getAuthorDao()
-                                                                .getById(pseudonym);
+                                                                .getById(realAuthorId);
                         if (realAuthor != null) {
                             return realAuthor.getStyledName(context, Details.Normal, style, text);
                         }
