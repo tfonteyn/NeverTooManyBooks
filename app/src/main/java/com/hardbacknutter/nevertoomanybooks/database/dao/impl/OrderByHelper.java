@@ -52,6 +52,19 @@ public final class OrderByHelper {
     /**
      * Conditionally reformat titles for <strong>use as the OrderBy column</strong>.
      * Optionally lookup/verify the actual Locale of the item.
+     * <p>
+     * URGENT: mismatch between book language and series/pub name -> wrong OB name
+     * best example: "Het beste uit Robbedoes" nr 11 which is a french book.
+     * <p>
+     * Problem cases with a book in language X with title in language X
+     * - series name is in a different language -> we use the book language,
+     *   or when doing a lookup the language of the first book in the series
+     * <p>
+     * - publisher name is in a different language as compared to the book
+     * -> we  always use the book language
+     * <p>
+     * - tocEntry title is in a different language as compared to the book
+     * -> we  always use the book language
      *
      * @param context      Current context
      * @param title        to reorder
