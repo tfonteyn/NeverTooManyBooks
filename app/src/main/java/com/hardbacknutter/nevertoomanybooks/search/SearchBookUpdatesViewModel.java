@@ -436,19 +436,19 @@ public class SearchBookUpdatesViewModel
     /**
      * Process the search-result data for one book.
      *
-     * @param context Current context
-     * @param book    results of the search
+     * @param context    Current context
+     * @param remoteBook results of the search
      *
      * @return {@code true} if a new search (for the next book) was started.
      */
     @SuppressWarnings("UnusedReturnValue")
     boolean processOne(@NonNull final Context context,
-                       @Nullable final Book book) {
+                       @Nullable final Book remoteBook) {
 
-        if (!isCancelled() && book != null && !book.isEmpty()) {
+        if (!isCancelled() && remoteBook != null && !remoteBook.isEmpty()) {
             //noinspection ConstantConditions
             final Book delta = syncProcessor.process(context, currentBookId, currentBook,
-                                                     currentFieldsWanted, book);
+                                                     currentFieldsWanted, remoteBook);
             if (delta != null) {
                 try {
                     bookDao.update(context, delta);
