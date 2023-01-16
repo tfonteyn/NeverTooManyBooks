@@ -33,6 +33,7 @@ public final class TestConstants {
 
     private static final String PREFIX = "Test";
 
+    static final String BOOKSHELF = PREFIX + "BookshelfName";
     static final String AUTHOR_FAMILY_NAME = PREFIX + "AuthorFamilyName";
     static final String AUTHOR_GIVEN_NAME = PREFIX + "AuthorGivenName";
     static final String PUBLISHER = PREFIX + "PublisherName";
@@ -42,7 +43,6 @@ public final class TestConstants {
     // sample external id values
     static final int BOOK_ISFDB_123 = 123;
     static final String BOOK_LCCN_0 = "unused0";
-    private static final String BOOKSHELF = PREFIX + "BookshelfName";
 
     private TestConstants() {
     }

@@ -24,8 +24,12 @@ import androidx.test.filters.MediumTest;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 import org.junit.Test;
 
@@ -34,27 +38,100 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Test the test database as setup by {@link BaseSetup}.
+ * a0: b0, b3
+ * a1: b0, b1, b4
+ * a2: b2, b3, b4
+ * <p>
+ * a1: t0, t1
+ * a2: t2, t3
+ * <p>
+ * b0: a0, a1 + p0
+ * b1: a1 + p1
+ * b2: a2 + p2
+ * b3: a0, a2 + p1
+ * b4: a1, a2 + p1 + p2
+ * <p>
+ * b4: t0, t1, t2, t3
+ *
+ * <p>
+ * Note we don't follow best practice by starting with a completely empty database.
+ * Instead we add 'easy-recognised' names/titles and delete those from the db when starting.
+ * Pro: easier to simultaneously do manual testing.
+ * Con: cannot test id's (but in a sense this is a 'pro' imho as id's should be unpredictable).
  */
 @MediumTest
-public class BaseSetupTest
+public class BookInsertTest
         extends BaseSetup {
 
+    /**
+     * Create a set of books with authors... and insert the whole lot.
+     */
     @Test
-    public void base() {
+    public void inserting()
+            throws DaoWriteException, StorageException {
         ArrayList<Long> bookIdList;
         ArrayList<AuthorWork> works;
 
         assertFalse(serviceLocator.isCollationCaseSensitive());
 
+        final BookDao bookDao = serviceLocator.getBookDao();
+
+        int bookIdx;
+
+        bookIdx = 0;
+        initBook(bookIdx);
+        initBookBookshelves(bookIdx, 0);
+        initBookPublishers(bookIdx, 0);
+        initBookAuthors(bookIdx, 0, 1);
+        bookId[bookIdx] = bookDao.insert(context, book[bookIdx]);
+        book[bookIdx].setStage(EntityStage.Stage.Clean);
+
+        bookIdx = 1;
+        initBook(bookIdx);
+        initBookBookshelves(bookIdx, 0);
+        initBookPublishers(bookIdx, 1);
+        initBookAuthors(bookIdx, 1);
+        bookId[bookIdx] = bookDao.insert(context, book[bookIdx]);
+        book[bookIdx].setStage(EntityStage.Stage.Clean);
+
+        bookIdx = 2;
+        initBook(bookIdx);
+        initBookBookshelves(bookIdx, 0);
+        initBookPublishers(bookIdx, 2);
+        initBookAuthors(bookIdx, 2);
+        bookId[bookIdx] = bookDao.insert(context, book[bookIdx]);
+        book[bookIdx].setStage(EntityStage.Stage.Clean);
+
+        bookIdx = 3;
+        initBook(bookIdx);
+        initBookBookshelves(bookIdx, 0);
+        initBookPublishers(bookIdx, 1, 3);
+        initBookAuthors(bookIdx, 0, 2);
+        bookId[bookIdx] = bookDao.insert(context, book[bookIdx]);
+        book[bookIdx].setStage(EntityStage.Stage.Clean);
+
+        bookIdx = 4;
+        initBook(bookIdx);
+        initBookBookshelves(bookIdx, 0);
+        initBookPublishers(bookIdx, 1, 2);
+        initBookAuthors(bookIdx, 1, 2);
+        initBookToc(bookIdx, 2, 1, 0, 3);
+        bookId[bookIdx] = bookDao.insert(context, book[bookIdx]);
+        book[bookIdx].setStage(EntityStage.Stage.Clean);
+
+
         // The objects should have been updated with their id
         assertTrue(author[0].getId() > 0);
         assertTrue(author[1].getId() > 0);
         assertTrue(author[2].getId() > 0);
+        assertEquals(0, author[3].getId());
+        assertEquals(0, author[4].getId());
 
         assertTrue(publisher[0].getId() > 0);
         assertTrue(publisher[1].getId() > 0);
         assertTrue(publisher[2].getId() > 0);
+        assertTrue(publisher[3].getId() > 0);
+        assertEquals(0, publisher[4].getId());
 
         assertEquals(book[0].getId(), bookId[0]);
         assertEquals(book[1].getId(), bookId[1]);
@@ -66,6 +143,7 @@ public class BaseSetupTest
         assertTrue(tocEntry[1].getId() > 0);
         assertTrue(tocEntry[2].getId() > 0);
         assertTrue(tocEntry[3].getId() > 0);
+        assertEquals(0, tocEntry[4].getId());
 
         final AuthorDao authorDao = serviceLocator.getAuthorDao();
         final PublisherDao publisherDao = serviceLocator.getPublisherDao();
