@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.GlobalFieldVisibility
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Style;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
@@ -888,8 +887,8 @@ public class Author
     /**
      * Equality: <strong>id, family and given-names, realAuthor</strong>.
      * <ul>
-     *   <li>'type' is on a per book basis. See {@link AuthorDao#pruneList}.</li>
-     *   <li>'isComplete' is a user setting and is ignored.</li>
+     *   <li>'type' is a book field and is ignored here.</li>
+     *   <li>'isComplete' is a user setting and is ignored here.</li>
      * </ul>
      *
      * <strong>Comparing is DIACRITIC and CASE SENSITIVE</strong>:
