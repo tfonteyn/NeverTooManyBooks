@@ -741,10 +741,10 @@ public class BookDaoImpl
 
             long position = 0;
             for (final TocEntry tocEntry : list) {
-                // Author must be handled separately; the id will already have been 'fixed'
-                // during the TocEntry.pruneList call.
+                // Author must be handled separately;
                 // Create if needed - do NOT do updates here
                 final Author author = tocEntry.getPrimaryAuthor();
+                authorDao.fixId(context, author, lookupLocale, bookLocale);
                 if (author.getId() == 0) {
                     authorDao.insert(context, author, bookLocale);
                 }
@@ -759,7 +759,7 @@ public class BookDaoImpl
                 }
 
                 if (tocEntry.getId() == 0) {
-                    stmtInsToc.bindLong(1, tocEntry.getPrimaryAuthor().getId());
+                    stmtInsToc.bindLong(1, author.getId());
                     stmtInsToc.bindString(2, tocEntry.getTitle());
                     stmtInsToc.bindString(3, SqlEncode.orderByColumn(obd.title, obd.locale));
                     stmtInsToc.bindString(4, tocEntry
