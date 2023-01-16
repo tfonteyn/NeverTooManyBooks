@@ -28,42 +28,34 @@ public class AuthorMergeHelper
     @Override
     protected boolean merge(@NonNull final Author previous,
                             @NonNull final Author current) {
-        // always combine the types
+        // always combine the types using 'OR'
         previous.setType(previous.getType() | current.getType());
 
+        final boolean canMerge = mergeRealAuthor(previous, current);
+
+        if (canMerge && current.getId() > 0) {
+            previous.setId(current.getId());
+        }
+
+        return canMerge;
+    }
+
+    private boolean mergeRealAuthor(@NonNull final Author previous,
+                                    @NonNull final Author current) {
         // If the current Author has no 'real-author' set, we're done
         if (current.getRealAuthor() == null) {
-            if (previous.getId() == 0 && current.getId() > 0) {
-                previous.setId(current.getId());
-            }
             return true;
         }
 
-        // If the previous Author has no 'real-author' set, copy the current data
+        // If the previous Author has no 'real-author' set,
+        // copy the current data to the previous one.
         if (previous.getRealAuthor() == null) {
             previous.setRealAuthor(current.getRealAuthor());
-            if (previous.getId() == 0 && current.getId() > 0) {
-                previous.setId(current.getId());
-            }
             return true;
         }
 
         // Both have a 'real-author' set,
-        // If they are the same, we're done
-        if (previous.getRealAuthor().equals(current.getRealAuthor())) {
-            if (previous.getId() == 0 && current.getId() > 0) {
-                previous.setId(current.getId());
-            }
-            return true;
-        }
-
-        // The book has two authors which have the same 'real-author'.
-        // This might be strange, but absolutely valid.
-        // The user can clean up manually if needed.
-        // While we cannot merge the actual objects, we CAN copy the id if appropriate.
-        if (previous.getId() == 0 && current.getId() > 0) {
-            previous.setId(current.getId());
-        }
-        return false;
+        // If they are the same, we're done; else we can't merge.
+        return previous.getRealAuthor().equals(current.getRealAuthor());
     }
 }

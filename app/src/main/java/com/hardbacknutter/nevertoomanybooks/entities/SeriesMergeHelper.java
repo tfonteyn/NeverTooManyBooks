@@ -28,40 +28,32 @@ public class SeriesMergeHelper
     @Override
     protected boolean merge(@NonNull final Series previous,
                             @NonNull final Series current) {
+
+        final boolean canMerge = mergeNumber(previous, current);
+
+        if (canMerge && current.getId() > 0) {
+            previous.setId(current.getId());
+        }
+
+        return canMerge;
+    }
+
+    private boolean mergeNumber(@NonNull final Series previous,
+                                @NonNull final Series current) {
         // If the current Series has no number set, we're done
         if (current.getNumber().isEmpty()) {
-            if (previous.getId() == 0 && current.getId() > 0) {
-                previous.setId(current.getId());
-            }
             return true;
         }
 
-        // If the previous Series has no number set, copy the current data
+        // If the previous Series has no number set,
+        // copy the current data to the previous one.
         if (previous.getNumber().isEmpty()) {
             previous.setNumber(current.getNumber());
-            if (previous.getId() == 0 && current.getId() > 0) {
-                previous.setId(current.getId());
-            }
             return true;
         }
 
         // Both have a number set.
-        // If they are the same, we're done
-        if (previous.getNumber().equals(current.getNumber())) {
-            if (previous.getId() == 0 && current.getId() > 0) {
-                previous.setId(current.getId());
-            }
-            return true;
-        }
-
-        // The book has two numbers in a series.
-        // This might be strange, but absolutely valid.
-        // The user can clean up manually if needed.
-        // While we cannot merge the actual objects, we CAN copy the id if appropriate.
-        if (previous.getId() == 0 && current.getId() > 0) {
-            previous.setId(current.getId());
-        }
-        // 2 different numbers, don't merge.
-        return false;
+        // If they are the same, we're done; else we can't merge.
+        return previous.getNumber().equals(current.getNumber());
     }
 }

@@ -28,38 +28,47 @@ public class TocEntryMergeHelper
     @Override
     protected boolean merge(@NonNull final TocEntry previous,
                             @NonNull final TocEntry current) {
+
+        final boolean canMerge = mergeDate(previous, current)
+                                 && mergeAuthor(previous, current);
+
+        if (canMerge && current.getId() > 0) {
+            previous.setId(current.getId());
+        }
+
+        return canMerge;
+    }
+
+    private boolean mergeDate(@NonNull final TocEntry previous,
+                              @NonNull final TocEntry current) {
         // If the current TocEntry has no date set, we're done
         if (!current.getFirstPublicationDate().isPresent()) {
-            if (previous.getId() == 0 && current.getId() > 0) {
-                previous.setId(current.getId());
-            }
             return true;
         }
 
-        // If the previous TocEntry has no date set, copy the current data
+        // If the previous TocEntry has no date set,
+        // copy the current data to the previous one.
         if (!previous.getFirstPublicationDate().isPresent()) {
             previous.setFirstPublicationDate(current.getFirstPublicationDate());
-            if (previous.getId() == 0 && current.getId() > 0) {
-                previous.setId(current.getId());
-            }
             return true;
         }
 
         // Both have a date set.
-        // If they are the same, we're done
-        if (previous.getFirstPublicationDate().equals(current.getFirstPublicationDate())) {
-            if (previous.getId() == 0 && current.getId() > 0) {
-                previous.setId(current.getId());
-            }
-            return true;
-        }
+        // If they are the same, we're done; else we can't merge.
+        return previous.getFirstPublicationDate().equals(current.getFirstPublicationDate());
+    }
 
-        // The entries have a different date.
-        // This is almost certainly invalid.
-        // We can't decide which is the 'right' one.
-        // The user will need to clean up manually - we force the current id to be 'new'
-        current.setId(0);
-        // conflicting dates, don't merge.
-        return false;
+    private boolean mergeAuthor(@NonNull final TocEntry previous,
+                                @NonNull final TocEntry current) {
+
+        final boolean canMerge = previous.getPrimaryAuthor().hashCodeOfNameOnly()
+                                 == current.getPrimaryAuthor().hashCodeOfNameOnly();
+        if (canMerge) {
+            final long currentId = current.getPrimaryAuthor().getId();
+            if (currentId > 0) {
+                previous.getPrimaryAuthor().setId(currentId);
+            }
+        }
+        return canMerge;
     }
 }

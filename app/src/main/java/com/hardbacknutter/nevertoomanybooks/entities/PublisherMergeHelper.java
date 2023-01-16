@@ -28,10 +28,11 @@ public class PublisherMergeHelper
     @Override
     protected boolean merge(@NonNull final Publisher previous,
                             @NonNull final Publisher current) {
-        // if the previous one has no id, and the current does, then we copy the id.
-        if (previous.getId() == 0 && current.getId() > 0) {
+
+        if (current.getId() > 0) {
             previous.setId(current.getId());
         }
+
         // no other attributes, so we can always merge
         return true;
     }
