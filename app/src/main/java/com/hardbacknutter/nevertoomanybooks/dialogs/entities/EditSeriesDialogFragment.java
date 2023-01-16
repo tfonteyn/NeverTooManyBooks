@@ -160,8 +160,7 @@ public class EditSeriesDialogFragment
                                     != currentEdit.hashCodeOfNameOnly();
 
         // anything actually changed ? If not, we're done.
-        if (!nameChanged
-            && series.isComplete() == currentEdit.isComplete()) {
+        if (!nameChanged && series.isComplete() == currentEdit.isComplete()) {
             return true;
         }
 
@@ -174,8 +173,8 @@ public class EditSeriesDialogFragment
         return SaveChangesHelper
                 .save(this, ServiceLocator.getInstance().getSeriesDao(),
                       series, nameChanged, bookLocale,
-                      updatedId -> RowChangedListener.setResult(
-                              this, requestKey, DBKey.FK_SERIES, updatedId),
+                      savedSeries -> RowChangedListener.setResult(
+                              this, requestKey, DBKey.FK_SERIES, savedSeries.getId()),
                       R.string.confirm_merge_series);
     }
 

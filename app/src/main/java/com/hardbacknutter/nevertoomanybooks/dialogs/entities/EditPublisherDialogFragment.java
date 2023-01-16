@@ -174,8 +174,8 @@ public class EditPublisherDialogFragment
         return SaveChangesHelper
                 .save(this, ServiceLocator.getInstance().getPublisherDao(),
                       publisher, nameChanged, bookLocale,
-                      updatedId -> RowChangedListener.setResult(
-                              this, requestKey, DBKey.FK_PUBLISHER, updatedId),
+                      savedPublisher -> RowChangedListener.setResult(
+                              this, requestKey, DBKey.FK_PUBLISHER, savedPublisher.getId()),
                       R.string.confirm_merge_publishers);
     }
 

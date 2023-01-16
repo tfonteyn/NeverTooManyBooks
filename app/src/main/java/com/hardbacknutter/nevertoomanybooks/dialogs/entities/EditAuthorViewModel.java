@@ -106,32 +106,41 @@ public class EditAuthorViewModel
      * @param bookLocale Locale to use if the item has none set
      * @param create     {@code true} if a non-existent Author should be created
      *
-     * @return {@code false} if the author does not exist and 'create' was {@code false}
+     * @return {@code true} if the 'real' Author was validated and set.
+     *         {@code false} if the real author did not exist and we were not allowed to create them
+     *         (or if creating threw an error)
      */
     public boolean validateAndSetRealAuthor(@NonNull final Context context,
                                             @NonNull final Locale bookLocale,
                                             final boolean create) {
-        // If we have a pseudonym set, it must be a valid/existing author.
-        if (currentRealAuthorName != null && !currentRealAuthorName.isBlank()) {
-            final Author tmpRealAuthor = Author.from(currentRealAuthorName);
-            final AuthorDao dao = ServiceLocator.getInstance().getAuthorDao();
-
-            dao.fixId(context, tmpRealAuthor, false, bookLocale);
-            if (tmpRealAuthor.getId() == 0) {
-                if (create) {
-                    try {
-                        dao.insert(context, tmpRealAuthor, bookLocale);
-                    } catch (@NonNull final DaoWriteException e) {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            }
-            currentEdit.setRealAuthor(tmpRealAuthor);
-        } else {
+        // no pseudonym?
+        if (currentRealAuthorName == null || currentRealAuthorName.isBlank()) {
             currentEdit.setRealAuthor(null);
+            return true;
         }
-        return true;
+
+        // If we have a pseudonym set, it must be a valid/existing author.
+        final Author tmpRealAuthor = Author.from(currentRealAuthorName);
+
+        final AuthorDao dao = ServiceLocator.getInstance().getAuthorDao();
+        final Author exiting = dao.findByName(context, tmpRealAuthor, false, bookLocale);
+
+        if (exiting != null) {
+            currentEdit.setRealAuthor(exiting);
+            return true;
+        }
+
+        if (!create) {
+            // force the caller to ask the user to try again the 2nd time allowing creating.
+            return false;
+        }
+
+        try {
+            dao.insert(context, tmpRealAuthor, bookLocale);
+            currentEdit.setRealAuthor(tmpRealAuthor);
+            return true;
+        } catch (@NonNull final DaoWriteException e) {
+            return false;
+        }
     }
 }

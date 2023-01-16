@@ -179,6 +179,9 @@ public class EditAuthorDialogFragment
         // There is no book involved here, so use the users Locale instead
         final Locale bookLocale = getResources().getConfiguration().getLocales().get(0);
 
+        final Author originalAuthor = authorVm.getAuthor();
+        final Author originalRealAuthor = originalAuthor.getRealAuthor();
+
         //noinspection ConstantConditions
         if (!authorVm.validateAndSetRealAuthor(context, bookLocale, createRealAuthorIfNeeded)) {
             new MaterialAlertDialogBuilder(context)
@@ -199,27 +202,25 @@ public class EditAuthorDialogFragment
             return false;
         }
 
-        final Author author = authorVm.getAuthor();
-        final Author realAuthor = author.getRealAuthor();
-
-        final boolean nameChanged = author.hashCodeOfNameOnly()
+        final boolean nameChanged = originalAuthor.hashCodeOfNameOnly()
                                     != currentEdit.hashCodeOfNameOnly();
 
-        // anything changed at all ? If not, we're done.
+        // anything actually changed ? If not, we're done.
         if (!nameChanged
-            && author.isComplete() == currentEdit.isComplete()
-            && Objects.equals(realAuthor, currentEdit.getRealAuthor())) {
+            && originalAuthor.isComplete() == currentEdit.isComplete()
+            && Objects.equals(originalRealAuthor, currentEdit.getRealAuthor())) {
             return true;
         }
 
         // store changes
-        author.copyFrom(currentEdit, false);
+        originalAuthor.copyFrom(currentEdit, false);
 
         return SaveChangesHelper
                 .save(this, ServiceLocator.getInstance().getAuthorDao(),
-                      author, nameChanged, bookLocale,
-                      updatedId -> RowChangedListener.setResult(
-                              this, authorVm.getRequestKey(), DBKey.FK_AUTHOR, updatedId),
+                      originalAuthor, nameChanged, bookLocale,
+                      savedAuthor -> RowChangedListener.setResult(
+                              this, authorVm.getRequestKey(),
+                              DBKey.FK_AUTHOR, savedAuthor.getId()),
                       R.string.confirm_merge_authors);
     }
 

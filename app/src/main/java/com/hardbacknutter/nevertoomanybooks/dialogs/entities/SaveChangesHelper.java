@@ -29,7 +29,6 @@ import androidx.fragment.app.DialogFragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Locale;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -40,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
-//TODO: class needs a better name
+//TODO: this is rather hacky... needs to be refactored.
 final class SaveChangesHelper {
     private static final String TAG = "SaveChangesHelper";
 
@@ -52,7 +51,7 @@ final class SaveChangesHelper {
                                            @NonNull final T item,
                                            final boolean nameChanged,
                                            @NonNull final Locale bookLocale,
-                                           @NonNull final Consumer<Long> onSuccess,
+                                           @NonNull final Consumer<T> onSuccess,
                                            @StringRes final int mergeMessageResId) {
         final Context context = fragment.requireContext();
 
@@ -61,7 +60,7 @@ final class SaveChangesHelper {
             // just update the other attributes
             try {
                 dao.update(context, item, bookLocale);
-                onSuccess.accept(item.getId());
+                onSuccess.accept(item);
                 return true;
             } catch (@NonNull final DaoWriteException e) {
                 return false;
@@ -70,8 +69,8 @@ final class SaveChangesHelper {
 
         // It's either a new one, or an existing one of which the name was changed.
         // Check if there is an another one with the same new name.
-        final long existingId = dao.find(context, item, true, bookLocale);
-        if (existingId == 0) {
+        final T existingEntity = dao.findByName(context, item, true, bookLocale);
+        if (existingEntity == null) {
             try {
                 if (item.getId() == 0) {
                     // it's an entirely new one; add it.
@@ -80,7 +79,7 @@ final class SaveChangesHelper {
                     // no-one else with the same name; so we just update this one
                     dao.update(context, item, bookLocale);
                 }
-                onSuccess.accept(item.getId());
+                onSuccess.accept(item);
                 return true;
 
             } catch (@NonNull final DaoWriteException e) {
@@ -88,16 +87,16 @@ final class SaveChangesHelper {
             }
         }
 
-        askToMerge(fragment, dao, item, onSuccess, mergeMessageResId, existingId);
+        askToMerge(fragment, dao, item, onSuccess, mergeMessageResId, existingEntity);
         return false;
     }
 
     static <T extends Entity> void askToMerge(@NonNull final DialogFragment fragment,
                                               @NonNull final MoveBooksDao<T> dao,
                                               @NonNull final T item,
-                                              @NonNull final Consumer<Long> onSuccess,
+                                              @NonNull final Consumer<T> onSuccess,
                                               final int mergeMessageResId,
-                                              final long existingId) {
+                                              @NonNull final T target) {
         final Context context = fragment.requireContext();
         // There is one with the same name; ask whether to merge the 2
         new MaterialAlertDialogBuilder(context)
@@ -108,14 +107,12 @@ final class SaveChangesHelper {
                 .setPositiveButton(R.string.action_merge, (d, w) -> {
                     fragment.dismiss();
                     try {
-                        final T target = Objects.requireNonNull(dao.getById(existingId));
-
                         // Note that we ONLY move the books. No other attributes from
                         // the source item are copied to the target item!
                         dao.moveBooks(context, item, target);
 
                         // return the item who 'lost' it's books
-                        onSuccess.accept(item.getId());
+                        onSuccess.accept(item);
                     } catch (@NonNull final DaoWriteException e) {
                         Logger.error(TAG, e);
                         StandardDialogs.showError(context, R.string.error_storage_not_writable);

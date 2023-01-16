@@ -154,16 +154,16 @@ public class EditBookshelfDialogFragment
         // Here we reject using a name which already exists IF the user meant to create a NEW shelf.
 
         // Check if there is an existing one with the same name
-        final long existingId = dao.find(bookshelf);
+        final Bookshelf existingBookshelf = dao.findByName(bookshelf);
 
         // Are we adding a new one but trying to use an existing name? -> REJECT
-        if (bookshelf.getId() == 0 && existingId != 0) {
+        if (bookshelf.getId() == 0 && existingBookshelf != null) {
             vb.lblBookshelf.setError(getString(R.string.warning_x_already_exists,
                                                getString(R.string.lbl_bookshelf)));
             return false;
         }
 
-        if (existingId == 0) {
+        if (existingBookshelf == null) {
             try {
                 // We have a unique/new name; either add or update and we're done
                 if (bookshelf.getId() == 0) {
@@ -183,9 +183,10 @@ public class EditBookshelfDialogFragment
             // There is one with the same name; ask whether to merge the 2
             SaveChangesHelper.askToMerge(
                     this, dao, bookshelf,
-                    updatedId -> Launcher.setResult(this, requestKey, updatedId),
+                    savedBookshelf -> Launcher.setResult(this, requestKey,
+                                                         savedBookshelf.getId()),
                     R.string.confirm_merge_bookshelves,
-                    existingId);
+                    existingBookshelf);
         }
         return false;
     }
