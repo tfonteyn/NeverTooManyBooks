@@ -37,6 +37,9 @@ public abstract class EntityMergeHelper<T extends Mergeable> {
     /**
      * Called from {@link #merge(Collection, Consumer)} to do the actual merging for each element
      * in the list.
+     * <p>
+     * This method is called after we determined that the "name" fields of the object are
+     * matching. This method should try to merge the non-name fields and the id if possible.
      *
      * @param previous element
      * @param current  element
@@ -46,6 +49,14 @@ public abstract class EntityMergeHelper<T extends Mergeable> {
     protected abstract boolean merge(@NonNull T previous,
                                      @NonNull T current);
 
+    /**
+     * Loop over the list and try to find and merge duplicates.
+     *
+     * @param list    to process
+     * @param idFixer a consumer which should attempt to fix the id of the object passed in
+     *
+     * @return {@code true} if the list was modified.
+     */
     public boolean merge(@NonNull final Collection<T> list,
                          @NonNull final Consumer<T> idFixer) {
 
