@@ -116,7 +116,7 @@ public class BookshelfDaoImpl
     @Nullable
     public Bookshelf findByName(@NonNull final String name) {
 
-        try (Cursor cursor = db.rawQuery(Sql.FIND, new String[]{name})) {
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{name})) {
             if (cursor.moveToFirst()) {
                 final DataHolder rowData = new CursorRow(cursor);
                 return new Bookshelf(rowData.getLong(DBKey.PK_ID), rowData);
@@ -127,12 +127,8 @@ public class BookshelfDaoImpl
     }
 
     @Override
-    public long find(@NonNull final Bookshelf bookshelf) {
-
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_ID)) {
-            stmt.bindString(1, bookshelf.getName());
-            return stmt.simpleQueryForLongOrZero();
-        }
+    public Bookshelf findByName(@NonNull final Bookshelf bookshelf) {
+        return findByName(bookshelf.getName());
     }
 
     @Override
@@ -236,8 +232,8 @@ public class BookshelfDaoImpl
 
     @Override
     public void fixId(@NonNull final Bookshelf bookshelf) {
-        final long id = find(bookshelf);
-        bookshelf.setId(id);
+        final Bookshelf found = findByName(bookshelf);
+        bookshelf.setId(found == null ? 0 : found.getId());
     }
 
     @Override
@@ -460,7 +456,7 @@ public class BookshelfDaoImpl
                 + _FROM_ + TBL_BOOKSHELF.startJoin(TBL_BOOKLIST_STYLES);
 
         /** Get a {@link Bookshelf} by its name; linked with the styles table. */
-        private static final String FIND =
+        private static final String FIND_BY_NAME =
                 SELECT_ALL
                 + _WHERE_ + TBL_BOOKSHELF.dot(DBKey.BOOKSHELF_NAME) + "=?" + _COLLATION;
 

@@ -44,9 +44,10 @@ public interface BookshelfDao
      *
      * @param bookshelf to find the id of
      *
-     * @return the id, or 0 (i.e. 'new') when not found
+     * @return the Bookshelf, or {@code null} if not found
      */
-    long find(@NonNull Bookshelf bookshelf);
+    @Nullable
+    Bookshelf findByName(@NonNull Bookshelf bookshelf);
 
     /**
      * Find a {@link Bookshelf} with the given name.
