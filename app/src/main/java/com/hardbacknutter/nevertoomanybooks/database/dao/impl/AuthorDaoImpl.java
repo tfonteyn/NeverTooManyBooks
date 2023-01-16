@@ -55,11 +55,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHOR_PSEUDONYMS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PSEUDONYM_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
 public class AuthorDaoImpl
@@ -470,8 +470,7 @@ public class AuthorDaoImpl
             }
 
             if (iId > 0) {
-                insertOrUpdateRealAuthor(context, bookLocale, iId,
-                                         author.getRealAuthor());
+                insertOrUpdateRealAuthor(context, bookLocale, author, iId);
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();
@@ -523,8 +522,7 @@ public class AuthorDaoImpl
             }
 
             if (success) {
-                insertOrUpdateRealAuthor(context, bookLocale, author.getId(),
-                                         author.getRealAuthor());
+                insertOrUpdateRealAuthor(context, bookLocale, author, author.getId());
 
                 if (txLock != null) {
                     db.setTransactionSuccessful();
@@ -542,21 +540,36 @@ public class AuthorDaoImpl
         }
     }
 
+    /**
+     * Handle the real-author storage.
+     *
+     * @param context    Current context
+     * @param bookLocale Locale to use if the item has none set
+     * @param author     the 'original' author; it's internal id will be ignored
+     *                   (in case of an insert it's 0, in case of an update its the actual id)
+     * @param authorId   the 'original' author id
+     */
     private void insertOrUpdateRealAuthor(@NonNull final Context context,
                                           @NonNull final Locale bookLocale,
-                                          final long authorId,
-                                          @Nullable final Author realAuthor)
+                                          @NonNull final Author author,
+                                          final long authorId)
             throws DaoWriteException {
-        // just delete any previous link
+        // always delete any previous link
         deletePseudonymLink(authorId);
-        if (realAuthor != null) {
-            if (realAuthor.getId() == 0) {
-                insert(context, realAuthor, bookLocale);
-            } else {
-                update(context, realAuthor, bookLocale);
-            }
-            insertPseudonymLink(authorId, realAuthor.getId());
+
+        final Author realAuthor = author.getRealAuthor();
+        if (realAuthor == null) {
+            // all done
+            return;
         }
+
+        fixId(context, realAuthor, false, bookLocale);
+        if (realAuthor.getId() == 0) {
+            insert(context, realAuthor, bookLocale);
+        } else {
+            update(context, realAuthor, bookLocale);
+        }
+        insertPseudonymLink(authorId, realAuthor.getId());
     }
 
     @Override
@@ -592,9 +605,9 @@ public class AuthorDaoImpl
         }
     }
 
-    private void deletePseudonymLink(final long authorId) {
+    private void deletePseudonymLink(final long pseudonymId) {
         try (SynchronizedStatement stmt = db.compileStatement(Sql.DELETE_PSEUDONYM_LINKS)) {
-            stmt.bindLong(1, authorId);
+            stmt.bindLong(1, pseudonymId);
             stmt.executeUpdateDelete();
         }
     }
@@ -794,8 +807,8 @@ public class AuthorDaoImpl
         /** {@link Author}, all columns. */
         private static final String SELECT_ALL =
                 SELECT_ + TBL_AUTHORS.dot("*")
-                + ',' + TBL_AUTHOR_PSEUDONYMS.dotAs(DBKey.AUTHOR_PSEUDONYM)
-                + _FROM_ + TBL_AUTHORS.ref() + TBL_AUTHORS.leftOuterJoin(TBL_AUTHOR_PSEUDONYMS);
+                + ',' + TBL_PSEUDONYM_AUTHOR.dotAs(DBKey.AUTHOR_REAL_AUTHOR)
+                + _FROM_ + TBL_AUTHORS.ref() + TBL_AUTHORS.leftOuterJoin(TBL_PSEUDONYM_AUTHOR);
 
         /** Get an {@link Author} by the Author id. */
         private static final String SELECT_BY_ID = SELECT_ALL + _WHERE_ + DBKey.PK_ID + "=?";
@@ -867,15 +880,21 @@ public class AuthorDaoImpl
         /** Purge an {@link Author} if no longer in use. */
         private static final String PURGE =
                 DELETE_FROM_ + TBL_AUTHORS.getName()
+
                 + _WHERE_ + DBKey.PK_ID + _NOT_IN_
                 + '(' + SELECT_DISTINCT_ + DBKey.FK_AUTHOR
                 + _FROM_ + TBL_BOOK_AUTHOR.getName() + ')'
+
                 + _AND_ + DBKey.PK_ID + _NOT_IN_
                 + '(' + SELECT_DISTINCT_ + DBKey.FK_AUTHOR
                 + _FROM_ + TBL_TOC_ENTRIES.getName() + ')'
+
                 + _AND_ + DBKey.PK_ID + _NOT_IN_
-                + '(' + SELECT_DISTINCT_ + DBKey.FK_AUTHOR
-                + _FROM_ + TBL_AUTHOR_PSEUDONYMS.getName() + ')';
+                + '(' + SELECT_DISTINCT_ + DBKey.AUTHOR_PSEUDONYM
+                + _FROM_ + TBL_PSEUDONYM_AUTHOR.getName() + ')'
+                + _AND_ + DBKey.PK_ID + _NOT_IN_
+                + '(' + SELECT_DISTINCT_ + DBKey.AUTHOR_REAL_AUTHOR
+                + _FROM_ + TBL_PSEUDONYM_AUTHOR.getName() + ')';
 
         /** {@link #getNames(String)} : 'Family name' in column 0. */
         private static final String SELECT_ALL_FAMILY_NAMES =
@@ -900,10 +919,11 @@ public class AuthorDaoImpl
                 + ',' + TBL_BOOK_AUTHOR.dotAs(DBKey.BOOK_AUTHOR_POSITION,
                                               DBKey.AUTHOR_TYPE__BITMASK)
 
-                + ',' + TBL_AUTHOR_PSEUDONYMS.dotAs(DBKey.AUTHOR_PSEUDONYM)
+                + ',' + TBL_PSEUDONYM_AUTHOR.dotAs(DBKey.AUTHOR_REAL_AUTHOR)
 
                 + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_AUTHORS)
-                + TBL_AUTHORS.leftOuterJoin(TBL_AUTHOR_PSEUDONYMS)
+                + TBL_AUTHORS.leftOuterJoin(TBL_PSEUDONYM_AUTHOR)
+
                 + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_BOOK) + "=?"
 
                 + _ORDER_BY_ + TBL_BOOK_AUTHOR.dot(DBKey.BOOK_AUTHOR_POSITION)
@@ -911,14 +931,14 @@ public class AuthorDaoImpl
                 + ',' + DBKey.AUTHOR_GIVEN_NAMES_OB + _COLLATION;
 
         private static final String INSERT_PSEUDONYM_LINKS =
-                INSERT_INTO_ + TBL_AUTHOR_PSEUDONYMS.getName()
-                + '(' + DBKey.FK_AUTHOR
-                + ',' + DBKey.AUTHOR_PSEUDONYM
+                INSERT_INTO_ + TBL_PSEUDONYM_AUTHOR.getName()
+                + '(' + DBKey.AUTHOR_PSEUDONYM
+                + ',' + DBKey.AUTHOR_REAL_AUTHOR
                 + ") VALUES (?,?)";
 
         private static final String DELETE_PSEUDONYM_LINKS =
-                DELETE_FROM_ + TBL_AUTHOR_PSEUDONYMS.getName()
-                + _WHERE_ + DBKey.FK_AUTHOR + "=?";
+                DELETE_FROM_ + TBL_PSEUDONYM_AUTHOR.getName()
+                + _WHERE_ + DBKey.AUTHOR_PSEUDONYM + "=?";
 
         private static final String REPOSITION =
                 SELECT_ + DBKey.FK_BOOK

@@ -134,11 +134,7 @@ public final class DBKey {
     public static final String AUTHOR_FAMILY_NAME = "family_name";
     public static final String AUTHOR_GIVEN_NAMES = "given_names";
     public static final String AUTHOR_IS_COMPLETE = "author_complete";
-    /**
-     * In some places used "both-ways";
-     * i.e. "X is a pseudonym of Y" and "Y has a pseudonym X"
-     */
-    public static final String AUTHOR_PSEUDONYM = "pseudonym";
+
 
     /** Aliases for CASE expressions. */
     public static final String AUTHOR_FORMATTED = "author_formatted";
@@ -148,6 +144,9 @@ public final class DBKey {
     public static final String AUTHOR_TYPE__BITMASK = "author_type";
     public static final String BOOK_AUTHOR_POSITION = "author_position";
 
+    /** {@link DBDefinitions#TBL_PSEUDONYM_AUTHOR} */
+    public static final String AUTHOR_PSEUDONYM = "pseudonym";
+    public static final String AUTHOR_REAL_AUTHOR = "real_author";
 
     /** {@link DBDefinitions#TBL_SERIES} {@link DBDefinitions#TBL_BOOK_SERIES} */
     public static final String SERIES_TITLE = "series_name";

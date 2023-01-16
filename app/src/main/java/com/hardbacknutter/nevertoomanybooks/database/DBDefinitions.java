@@ -83,7 +83,7 @@ public final class DBDefinitions {
      * {@link #TBL_TOC_ENTRIES},
      * <p>
      * link tables
-     * {@link #TBL_AUTHOR_PSEUDONYMS},
+     * {@link #TBL_PSEUDONYM_AUTHOR},
      * <p>
      * {@link #TBL_BOOK_BOOKSHELF},
      * {@link #TBL_BOOK_AUTHOR},
@@ -138,7 +138,7 @@ public final class DBDefinitions {
     public static final TableDefinition TBL_BOOK_TOC_ENTRIES;
 
     /** Map alternative names for Authors. */
-    public static final TableDefinition TBL_AUTHOR_PSEUDONYMS;
+    public static final TableDefinition TBL_PSEUDONYM_AUTHOR;
 
     /** User defined styles. */
     public static final TableDefinition TBL_BOOKLIST_STYLES;
@@ -210,8 +210,10 @@ public final class DBDefinitions {
     public static final Domain DOM_AUTHOR_GIVEN_NAMES_OB;
     /** {@link #TBL_AUTHORS}. */
     public static final Domain DOM_AUTHOR_IS_COMPLETE;
-    /** {@link #TBL_AUTHOR_PSEUDONYMS}. */
+    /** {@link #TBL_PSEUDONYM_AUTHOR}. */
     public static final Domain DOM_AUTHOR_PSEUDONYM;
+    public static final Domain DOM_AUTHOR_REAL_AUTHOR;
+
     /** Virtual: "FamilyName, GivenName". */
     public static final Domain DOM_AUTHOR_FORMATTED_FAMILY_FIRST;
 
@@ -476,7 +478,7 @@ public final class DBDefinitions {
 
         TBL_TOC_ENTRIES = new TableDefinition("anthology", "an");
 
-        TBL_AUTHOR_PSEUDONYMS = new TableDefinition("author_pseudonym", "ap");
+        TBL_PSEUDONYM_AUTHOR = new TableDefinition("pseudonym_author", "ap");
 
         TBL_BOOK_BOOKSHELF = new TableDefinition("book_bookshelf", "bbsh");
         TBL_BOOK_AUTHOR = new TableDefinition("book_author", "ba");
@@ -642,15 +644,21 @@ public final class DBDefinitions {
                         .withDefault(false)
                         .build();
 
-        DOM_AUTHOR_PSEUDONYM =
-                new Domain.Builder(DBKey.AUTHOR_PSEUDONYM, SqLiteDataType.Integer)
-                        .notNull()
-                        .withDefault(0)
-                        .build();
-
         DOM_AUTHOR_FORMATTED_FAMILY_FIRST =
                 new Domain.Builder(DBKey.AUTHOR_FORMATTED, SqLiteDataType.Text)
                         .notNull()
+                        .build();
+
+        DOM_AUTHOR_PSEUDONYM =
+                new Domain.Builder(DBKey.AUTHOR_PSEUDONYM, SqLiteDataType.Integer)
+                        .notNull()
+                        .references(TBL_AUTHORS, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
+                        .build();
+
+        DOM_AUTHOR_REAL_AUTHOR =
+                new Domain.Builder(DBKey.AUTHOR_REAL_AUTHOR, SqLiteDataType.Integer)
+                        .notNull()
+                        .references(TBL_AUTHORS, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
                         .build();
 
         /* ======================================================================================
@@ -1366,16 +1374,21 @@ public final class DBDefinitions {
          *  link tables
          * ====================================================================================== */
 
-        TBL_AUTHOR_PSEUDONYMS
-                /* FK_AUTHOR is a pseudonym of AUTHOR_PSEUDONYM */
-                .addDomains(DOM_FK_AUTHOR,
-                            DOM_AUTHOR_PSEUDONYM)
-                .setPrimaryKey(DOM_FK_AUTHOR, DOM_AUTHOR_PSEUDONYM)
-                .addReference(TBL_AUTHORS, DOM_FK_AUTHOR)
+        /*
+         * Link a pseudonym with the real-author.
+         * i.e. take an author from a book, query this table with
+         * book-author-id == DOM_AUTHOR_PSEUDONYM-id
+         * and retrieve the DOM_AUTHOR_REAL_AUTHOR-id as the real-author-id
+         */
+        TBL_PSEUDONYM_AUTHOR
+                .addDomains(DOM_AUTHOR_PSEUDONYM,
+                            DOM_AUTHOR_REAL_AUTHOR)
+                .setPrimaryKey(DOM_AUTHOR_PSEUDONYM)
                 .addReference(TBL_AUTHORS, DOM_AUTHOR_PSEUDONYM)
-                .addIndex(DBKey.FK_AUTHOR, true, DOM_FK_AUTHOR)
-                .addIndex(DBKey.AUTHOR_PSEUDONYM, true, DOM_AUTHOR_PSEUDONYM);
-        ALL_TABLES.put(TBL_AUTHOR_PSEUDONYMS.getName(), TBL_AUTHOR_PSEUDONYMS);
+                .addReference(TBL_AUTHORS, DOM_AUTHOR_REAL_AUTHOR)
+                .addIndex(DBKey.AUTHOR_PSEUDONYM, true, DOM_AUTHOR_PSEUDONYM)
+                .addIndex(DBKey.AUTHOR_REAL_AUTHOR, false, DOM_AUTHOR_REAL_AUTHOR);
+        ALL_TABLES.put(TBL_PSEUDONYM_AUTHOR.getName(), TBL_PSEUDONYM_AUTHOR);
 
 
         TBL_BOOK_BOOKSHELF
