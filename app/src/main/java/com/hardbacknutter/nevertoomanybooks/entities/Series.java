@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
@@ -499,10 +498,7 @@ public class Series
     public Locale getLocale(@NonNull final Context context,
                             @NonNull final Locale bookLocale) {
         //TODO: need a reliable way to cache the Locale here. i.e. store the language of a series.
-        // See also {@link #pruneList}
-        // were we use batch mode. Also: a french book belonging to a dutch series...
-        // the series title OB is wrong. For now this is partially mitigated by making
-        // entering the book language mandatory.
+        // See also {@link #pruneList} were we use batch mode.
         final String lang = ServiceLocator.getInstance().getSeriesDao().getLanguage(id);
         if (!lang.isEmpty()) {
             final Locale seriesLocale = ServiceLocator.getInstance().getAppLocale()
@@ -527,8 +523,8 @@ public class Series
     /**
      * Equality: <strong>id, title</strong>.
      * <ul>
-     *   <li>'number' is on a per book basis. See {@link SeriesDao#pruneList}.</li>
-     *   <li>'isComplete' is a user setting and is ignored.</li>
+     *   <li>'number' is a book field and is ignored here.</li>
+     *   <li>'isComplete' is a user setting and is ignored here.</li>
      * </ul>
      *
      * <strong>Comparing is DIACRITIC and CASE SENSITIVE</strong>:
