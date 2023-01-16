@@ -532,10 +532,9 @@ public class BookDaoImpl
 
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
-        // fix id's and remove duplicates
         authorDao.pruneList(context, list, lookupLocale, bookLocale);
 
-        // Just delete all current links; we'll insert them from scratch (easier positioning)
+        // Just delete all current links; we'll re-insert them for easier positioning
         deleteBookAuthorByBookId(bookId);
 
         // is there anything to insert ?
@@ -546,7 +545,9 @@ public class BookDaoImpl
         int position = 0;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.Insert.BOOK_AUTHOR)) {
             for (final Author author : list) {
-                // Always create if needed, but only update if allowed
+                authorDao.fixId(context, author, lookupLocale, bookLocale);
+
+                // create if needed - do NOT do updates unless explicitly allowed
                 if (author.getId() == 0) {
                     authorDao.insert(context, author, bookLocale);
                 } else if (doUpdates) {
@@ -596,10 +597,9 @@ public class BookDaoImpl
 
         final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
 
-        // fix id's and remove duplicates
         seriesDao.pruneList(context, list, lookupLocale, bookLocale);
 
-        // Just delete all current links; we'll insert them from scratch.
+        // Just delete all current links; we'll re-insert them for easier positioning
         deleteBookSeriesByBookId(bookId);
 
         // is there anything to insert ?
@@ -610,7 +610,9 @@ public class BookDaoImpl
         int position = 0;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.Insert.BOOK_SERIES)) {
             for (final Series series : list) {
-                // create if needed - do NOT do updates here
+                seriesDao.fixId(context, series, lookupLocale, bookLocale);
+
+                // create if needed - do NOT do updates unless explicitly allowed
                 if (series.getId() == 0) {
                     seriesDao.insert(context, series, bookLocale);
                 } else if (doUpdates) {
@@ -660,10 +662,9 @@ public class BookDaoImpl
 
         final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
 
-        // fix id's and remove duplicates
         publisherDao.pruneList(context, list, lookupLocale, bookLocale);
 
-        // Just delete all current links; we'll insert them from scratch.
+        // Just delete all current links; we'll re-insert them for easier positioning
         deleteBookPublishersByBookId(bookId);
 
         // is there anything to insert ?
@@ -674,7 +675,9 @@ public class BookDaoImpl
         int position = 0;
         try (SynchronizedStatement stmt = db.compileStatement(Sql.Insert.BOOK_PUBLISHER)) {
             for (final Publisher publisher : list) {
-                // create if needed - do NOT do updates here
+                publisherDao.fixId(context, publisher, lookupLocale, bookLocale);
+
+                // create if needed - do NOT do updates unless explicitly allowed
                 if (publisher.getId() == 0) {
                     publisherDao.insert(context, publisher, bookLocale);
                 } else if (doUpdates) {
@@ -721,11 +724,11 @@ public class BookDaoImpl
             }
         }
 
-        // fix id's and remove duplicates
         final TocEntryDao tocEntryDao = ServiceLocator.getInstance().getTocEntryDao();
+
         tocEntryDao.pruneList(context, list, lookupLocale, bookLocale);
 
-        // Just delete all current links; we'll insert them from scratch (easier positioning)
+        // Just delete all current links; we'll re-insert them for easier positioning
         deleteBookTocEntryByBookId(bookId);
 
         // is there anything to insert ?
@@ -742,7 +745,7 @@ public class BookDaoImpl
             long position = 0;
             for (final TocEntry tocEntry : list) {
                 // Author must be handled separately;
-                // Create if needed - do NOT do updates here
+                // Create if needed - NEVER do updates here
                 final Author author = tocEntry.getPrimaryAuthor();
                 authorDao.fixId(context, author, lookupLocale, bookLocale);
                 if (author.getId() == 0) {
