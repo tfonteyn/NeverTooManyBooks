@@ -84,6 +84,8 @@ public class BookCoder {
 
     @NonNull
     private final ServiceLocator serviceLocator;
+    @NonNull
+    private final Author unknownAuthor;
     @Nullable
     private Map<String, Long> calibreLibraryStr2IdMap;
 
@@ -91,6 +93,8 @@ public class BookCoder {
         serviceLocator = ServiceLocator.getInstance();
 
         bookshelfCoder = new StringList<>(new BookshelfCoder(context));
+
+        unknownAuthor = Author.createUnknownAuthor(context);
     }
 
     /**
@@ -121,9 +125,9 @@ public class BookCoder {
         final Locale bookLocale = book.getLocale(context);
 
         // Database access is strictly limited to fetching ID's for the list elements.
-        decodeAuthors(context, book, bookLocale);
-        decodeSeries(context, book, bookLocale);
-        decodePublishers(context, book, bookLocale);
+        decodeAuthors(book);
+        decodeSeries(book);
+        decodePublishers(book);
         decodeToc(context, book, bookLocale);
         decodeBookshelves(book);
         decodeCalibreData(book);
@@ -202,13 +206,9 @@ public class BookCoder {
      * Get the list of authors from whatever source is available.
      * If none found, a generic "[Unknown author]" will be used.
      *
-     * @param context    Current context
-     * @param book       the book
-     * @param bookLocale of the book, already resolved
+     * @param book the book
      */
-    private void decodeAuthors(@NonNull final Context context,
-                               @NonNull final Book /* in/out */ book,
-                               @NonNull final Locale bookLocale) {
+    private void decodeAuthors(@NonNull final Book book) {
 
         final String encodedList = book.getString(CSV_COLUMN_AUTHORS, null);
         book.remove(CSV_COLUMN_AUTHORS);
@@ -242,15 +242,11 @@ public class BookCoder {
             }
         } else {
             list = authorCoder.decodeList(encodedList);
-            if (!list.isEmpty()) {
-                // Force using the Book Locale, otherwise the import is far to slow.
-                serviceLocator.getAuthorDao().pruneList(context, list, false, bookLocale);
-            }
         }
 
         // we MUST have an author.
         if (list.isEmpty()) {
-            list.add(Author.createUnknownAuthor(context));
+            list.add(unknownAuthor);
         }
         book.setAuthors(list);
     }
@@ -260,13 +256,9 @@ public class BookCoder {
      * <p>
      * Database access is strictly limited to fetching ID's.
      *
-     * @param context    Current context
-     * @param book       the book
-     * @param bookLocale of the book, already resolved
+     * @param book the book
      */
-    private void decodeSeries(@NonNull final Context context,
-                              @NonNull final Book /* in/out */ book,
-                              @NonNull final Locale bookLocale) {
+    private void decodeSeries(@NonNull final Book book) {
 
         final String encodedList = book.getString(CSV_COLUMN_SERIES, null);
         book.remove(CSV_COLUMN_SERIES);
@@ -289,8 +281,6 @@ public class BookCoder {
         } else {
             final ArrayList<Series> list = seriesCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
-                // Force using the Book Locale, otherwise the import is far to slow.
-                serviceLocator.getSeriesDao().pruneList(context, list, false, bookLocale);
                 book.setSeries(list);
             }
         }
@@ -301,13 +291,9 @@ public class BookCoder {
      * <p>
      * Database access is strictly limited to fetching ID's.
      *
-     * @param context    Current context
-     * @param book       the book
-     * @param bookLocale of the book, already resolved
+     * @param book the book
      */
-    private void decodePublishers(@NonNull final Context context,
-                                  @NonNull final Book /* in/out */ book,
-                                  @NonNull final Locale bookLocale) {
+    private void decodePublishers(@NonNull final Book book) {
 
         final String encodedList = book.getString(CSV_COLUMN_PUBLISHERS, null);
         book.remove(CSV_COLUMN_PUBLISHERS);
@@ -315,8 +301,6 @@ public class BookCoder {
         if (encodedList != null && !encodedList.isEmpty()) {
             final ArrayList<Publisher> list = publisherCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
-                // Force using the Book Locale, otherwise the import is far to slow.
-                serviceLocator.getPublisherDao().pruneList(context, list, false, bookLocale);
                 book.setPublishers(list);
             }
         }
