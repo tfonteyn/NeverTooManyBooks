@@ -39,7 +39,7 @@ public class AuthorMergeHelper
             return true;
         }
 
-        // If the current Author has no 'real-author' set, copy the current data
+        // If the previous Author has no 'real-author' set, copy the current data
         if (previous.getRealAuthor() == null) {
             previous.setRealAuthor(current.getRealAuthor());
             if (previous.getId() == 0 && current.getId() > 0) {
