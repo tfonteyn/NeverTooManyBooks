@@ -51,7 +51,7 @@ public class AuthorCoder
             out.put(DBKey.AUTHOR_TYPE__BITMASK, author.getType());
         }
         if (author.getRealAuthor() != null) {
-            out.put(DBKey.AUTHOR_PSEUDONYM, encode(author.getRealAuthor()));
+            out.put(DBKey.AUTHOR_REAL_AUTHOR, encode(author.getRealAuthor()));
         }
 
         return out;
@@ -80,8 +80,8 @@ public class AuthorCoder
             author.setType(data.getInt("type"));
         }
 
-        if (data.has(DBKey.AUTHOR_PSEUDONYM)) {
-            author.setRealAuthor(decode(data.getJSONObject(DBKey.AUTHOR_PSEUDONYM)));
+        if (data.has(DBKey.AUTHOR_REAL_AUTHOR)) {
+            author.setRealAuthor(decode(data.getJSONObject(DBKey.AUTHOR_REAL_AUTHOR)));
         }
         return author;
     }
