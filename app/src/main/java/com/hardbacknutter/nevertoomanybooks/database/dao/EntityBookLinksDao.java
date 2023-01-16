@@ -24,6 +24,7 @@ import android.content.Context;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,7 +47,7 @@ public interface EntityBookLinksDao<T extends Entity>
      * <p>
      * <strong>IMPORTANT:</strong> the query can return more than one row if the
      * given-name of the author is empty. e.g. "Asimov" and "Asimov"+"Isaac"
-     * We only return the id of the  <strong>first row found</strong>.
+     * We only return the <strong>first entity found</strong>.
      *
      * @param context      Current context
      * @param item         to find the id of
@@ -55,13 +56,13 @@ public interface EntityBookLinksDao<T extends Entity>
      *                     during for example an import.
      * @param bookLocale   Locale to use if the item has none set
      *
-     * @return the id, or 0 (i.e. 'new') when not found
+     * @return the {@link T}, or {@code null} if not found
      */
-    @IntRange(from = 0)
-    long find(@NonNull Context context,
-              @NonNull T item,
-              boolean lookupLocale,
-              @NonNull Locale bookLocale);
+    @Nullable
+    T findByName(@NonNull Context context,
+                 @NonNull T item,
+                 boolean lookupLocale,
+                 @NonNull Locale bookLocale);
 
     /**
      * Find a {@link T} by using the <strong>name</strong> fields.

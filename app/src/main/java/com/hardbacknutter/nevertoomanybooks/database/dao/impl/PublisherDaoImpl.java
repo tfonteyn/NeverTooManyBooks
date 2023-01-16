@@ -83,10 +83,11 @@ public class PublisherDaoImpl
     }
 
     @Override
-    public long find(@NonNull final Context context,
-                     @NonNull final Publisher publisher,
-                     final boolean lookupLocale,
-                     @NonNull final Locale bookLocale) {
+    @Nullable
+    public Publisher findByName(@NonNull final Context context,
+                                @NonNull final Publisher publisher,
+                                final boolean lookupLocale,
+                                @NonNull final Locale bookLocale) {
 
         final OrderByHelper.OrderByData obd;
         if (lookupLocale) {
@@ -97,10 +98,15 @@ public class PublisherDaoImpl
                                                   bookLocale, null);
         }
 
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_ID)) {
-            stmt.bindString(1, SqlEncode.orderByColumn(publisher.getName(), obd.locale));
-            stmt.bindString(2, SqlEncode.orderByColumn(obd.title, obd.locale));
-            return stmt.simpleQueryForLongOrZero();
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
+                SqlEncode.orderByColumn(publisher.getName(), obd.locale),
+                SqlEncode.orderByColumn(obd.title, obd.locale)})) {
+            if (cursor.moveToFirst()) {
+                final CursorRow rowData = new CursorRow(cursor);
+                return new Publisher(rowData.getLong(DBKey.PK_ID), rowData);
+            } else {
+                return null;
+            }
         }
     }
 
@@ -211,8 +217,8 @@ public class PublisherDaoImpl
                       @NonNull final Publisher publisher,
                       final boolean lookupLocale,
                       @NonNull final Locale bookLocale) {
-        final long id = find(context, publisher, lookupLocale, bookLocale);
-        publisher.setId(id);
+        final Publisher found = findByName(context, publisher, lookupLocale, bookLocale);
+        publisher.setId(found == null ? 0 : found.getId());
     }
 
     @Override
@@ -448,13 +454,12 @@ public class PublisherDaoImpl
                 + ',' + TBL_PUBLISHERS.dot(DBKey.PUBLISHER_NAME_OB) + _COLLATION;
 
         /**
-         * Get the id of a {@link Publisher} by name.
+         * Find a {@link Publisher} by name.
          * The lookup is by EQUALITY and CASE-SENSITIVE.
          * Searches PUBLISHER_NAME_OB on both "The Publisher" and "Publisher, The"
          */
-        private static final String FIND_ID =
-                SELECT_ + DBKey.PK_ID
-                + _FROM_ + TBL_PUBLISHERS.getName()
+        private static final String FIND_BY_NAME =
+                SELECT_ALL
                 + _WHERE_ + DBKey.PUBLISHER_NAME_OB + "=?" + _COLLATION
                 + _OR_ + DBKey.PUBLISHER_NAME_OB + "=?" + _COLLATION;
 

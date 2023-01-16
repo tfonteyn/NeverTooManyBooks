@@ -84,10 +84,11 @@ public class SeriesDaoImpl
     }
 
     @Override
-    public long find(@NonNull final Context context,
-                     @NonNull final Series series,
-                     final boolean lookupLocale,
-                     @NonNull final Locale bookLocale) {
+    @Nullable
+    public Series findByName(@NonNull final Context context,
+                             @NonNull final Series series,
+                             final boolean lookupLocale,
+                             @NonNull final Locale bookLocale) {
 
         final OrderByHelper.OrderByData obd;
         if (lookupLocale) {
@@ -98,10 +99,15 @@ public class SeriesDaoImpl
                                                   bookLocale, null);
         }
 
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_ID)) {
-            stmt.bindString(1, SqlEncode.orderByColumn(series.getTitle(), obd.locale));
-            stmt.bindString(2, SqlEncode.orderByColumn(obd.title, obd.locale));
-            return stmt.simpleQueryForLongOrZero();
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
+                SqlEncode.orderByColumn(series.getTitle(), obd.locale),
+                SqlEncode.orderByColumn(obd.title, obd.locale)})) {
+            if (cursor.moveToFirst()) {
+                final CursorRow rowData = new CursorRow(cursor);
+                return new Series(rowData.getLong(DBKey.PK_ID), rowData);
+            } else {
+                return null;
+            }
         }
     }
 
@@ -254,8 +260,8 @@ public class SeriesDaoImpl
                       @NonNull final Series series,
                       final boolean lookupLocale,
                       @NonNull final Locale bookLocale) {
-        final long id = find(context, series, lookupLocale, bookLocale);
-        series.setId(id);
+        final Series found = findByName(context, series, lookupLocale, bookLocale);
+        series.setId(found == null ? 0 : found.getId());
     }
 
     @Override
@@ -494,12 +500,12 @@ public class SeriesDaoImpl
                 + ',' + TBL_SERIES.dot(DBKey.SERIES_TITLE_OB) + _COLLATION;
 
         /**
-         * Get the id of a {@link Series} by Title.
+         * Find a {@link Series} by Title.
          * The lookup is by EQUALITY and CASE-SENSITIVE.
          * Searches SERIES_TITLE_OB on both "The Title" and "Title, The"
          */
-        private static final String FIND_ID =
-                SELECT_ + DBKey.PK_ID + _FROM_ + TBL_SERIES.getName()
+        private static final String FIND_BY_NAME =
+                SELECT_ALL
                 + _WHERE_ + DBKey.SERIES_TITLE_OB + "=?" + _COLLATION
                 + _OR_ + DBKey.SERIES_TITLE_OB + "=?" + _COLLATION;
 

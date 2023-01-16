@@ -138,10 +138,11 @@ public class AuthorDaoImpl
     }
 
     @Override
-    public long find(@NonNull final Context context,
-                     @NonNull final Author author,
-                     final boolean lookupLocale,
-                     @NonNull final Locale bookLocale) {
+    @Nullable
+    public Author findByName(@NonNull final Context context,
+                             @NonNull final Author author,
+                             final boolean lookupLocale,
+                             @NonNull final Locale bookLocale) {
 
         final Locale authorLocale;
         if (lookupLocale) {
@@ -150,10 +151,15 @@ public class AuthorDaoImpl
             authorLocale = bookLocale;
         }
 
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.FIND_ID)) {
-            stmt.bindString(1, SqlEncode.orderByColumn(author.getFamilyName(), authorLocale));
-            stmt.bindString(2, SqlEncode.orderByColumn(author.getGivenNames(), authorLocale));
-            return stmt.simpleQueryForLongOrZero();
+        try (Cursor cursor = db.rawQuery(Sql.FIND_BY_NAME, new String[]{
+                SqlEncode.orderByColumn(author.getFamilyName(), authorLocale),
+                SqlEncode.orderByColumn(author.getGivenNames(), authorLocale)})) {
+            if (cursor.moveToFirst()) {
+                final CursorRow rowData = new CursorRow(cursor);
+                return new Author(rowData.getLong(DBKey.PK_ID), rowData);
+            } else {
+                return null;
+            }
         }
     }
 
@@ -400,11 +406,12 @@ public class AuthorDaoImpl
                       @NonNull final Author author,
                       final boolean lookupLocale,
                       @NonNull final Locale bookLocale) {
-        final long id = find(context, author, lookupLocale, bookLocale);
-        author.setId(id);
-        if (author.getRealAuthor() != null) {
-            //URGENT: protect against recursion going haywire
-            fixId(context, author.getRealAuthor(), lookupLocale, bookLocale);
+        final Author found = findByName(context, author, lookupLocale, bookLocale);
+        author.setId(found == null ? 0 : found.getId());
+
+        final Author realAuthor = author.getRealAuthor();
+        if (realAuthor != null) {
+            fixId(context, realAuthor, lookupLocale, bookLocale);
         }
     }
 
@@ -818,13 +825,11 @@ public class AuthorDaoImpl
         private static final String COUNT_ALL = SELECT_COUNT_FROM_ + TBL_AUTHORS.getName();
 
         /**
-         * Get the id of a {@link Author} by name.
+         * Find a {@link Author} by name.
          * The lookup is by EQUALITY and CASE-SENSITIVE.
-         * Can return more than one row if the AUTHOR_GIVEN_NAMES_OB is empty.
          */
-        private static final String FIND_ID =
-                SELECT_ + DBKey.PK_ID
-                + _FROM_ + TBL_AUTHORS.getName()
+        private static final String FIND_BY_NAME =
+                SELECT_ALL
                 + _WHERE_ + DBKey.AUTHOR_FAMILY_NAME_OB + "=?" + _COLLATION
                 + _AND_ + DBKey.AUTHOR_GIVEN_NAMES_OB + "=?" + _COLLATION;
 
