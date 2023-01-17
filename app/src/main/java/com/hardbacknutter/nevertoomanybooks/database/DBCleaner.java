@@ -58,6 +58,15 @@ public class DBCleaner {
     /** Log tag. */
     private static final String TAG = "DBCleaner";
 
+    private static final String SELECT_ = "SELECT ";
+    private static final String SELECT_DISTINCT_ = "SELECT DISTINCT ";
+    private static final String _FROM_ = " FROM ";
+    private static final String _WHERE_ = " WHERE ";
+    private static final String _IS_NULL = " IS NULL";
+    private static final String UPDATE_ = "UPDATE ";
+    private static final String _SET_ = " SET ";
+    private static final String DELETE_FROM_ = "DELETE FROM ";
+
     /** Database Access. */
     @NonNull
     private final SynchronizedDb db;
@@ -76,7 +85,7 @@ public class DBCleaner {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         // do a mass update of any languages not yet converted to ISO 639-2 codes
-        languages(context, userLocale);
+        languages(userLocale);
 
         // make sure there are no 'T' separators in datetime fields
         datetimeFormat();
@@ -106,11 +115,8 @@ public class DBCleaner {
     /**
      * Do a bulk update of any languages not yet converted to ISO codes.
      * Special entries are left untouched; example "Dutch+French" a bilingual edition.
-     *
-     * @param context Current context
      */
-    public void languages(@NonNull final Context context,
-                          @NonNull final Locale userLocale) {
+    public void languages(@NonNull final Locale userLocale) {
 
         final LanguageDao languageDao = serviceLocator.getLanguageDao();
         final Languages langHelper = serviceLocator.getLanguages();
@@ -144,11 +150,11 @@ public class DBCleaner {
      * See package-info docs for
      * {@link FullDateParser}
      */
-    public void datetimeFormat() {
+    private void datetimeFormat() {
         final String[] columns = {
                 DBKey.DATE_LAST_UPDATED__UTC,
                 DBKey.DATE_ADDED__UTC,
-                };
+        };
 
         final Pattern T = Pattern.compile("T");
 
@@ -156,9 +162,9 @@ public class DBCleaner {
 
         for (final String key : columns) {
             try (Cursor cursor = db.rawQuery(
-                    "SELECT " + DBKey.PK_ID + ',' + key
-                    + " FROM " + DBDefinitions.TBL_BOOKS.getName()
-                    + " WHERE " + key + " LIKE '%T%'", null)) {
+                    SELECT_ + DBKey.PK_ID + ',' + key
+                    + _FROM_ + DBDefinitions.TBL_BOOKS.getName()
+                    + _WHERE_ + key + " LIKE '%T%'", null)) {
                 while (cursor.moveToNext()) {
                     rows.add(new Pair<>(cursor.getLong(0), cursor.getString(1)));
                 }
@@ -170,8 +176,8 @@ public class DBCleaner {
                          + "|rows.size()=" + rows.size());
             }
             try (SynchronizedStatement stmt = db.compileStatement(
-                    "UPDATE " + DBDefinitions.TBL_BOOKS.getName()
-                    + " SET " + key + "=? WHERE " + DBKey.PK_ID + "=?")) {
+                    UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
+                    + _SET_ + key + "=?" + _WHERE_ + DBKey.PK_ID + "=?")) {
 
                 for (final Pair<Long, String> row : rows) {
                     stmt.bindString(1, T.matcher(row.second).replaceFirst(" "));
@@ -194,12 +200,13 @@ public class DBCleaner {
                       .forEach(bookshelf -> bookshelf.validateStyle(context));
     }
 
+
     /**
      * Validates all boolean columns to contain '0' or '1'.
      *
      * @param tables list of tables
      */
-    public void booleanColumns(@NonNull final TableDefinition... tables) {
+    private void booleanColumns(@NonNull final TableDefinition... tables) {
         for (final TableDefinition table : tables) {
             table.getDomains()
                  .stream()
@@ -220,12 +227,12 @@ public class DBCleaner {
             Log.d(TAG, "booleanCleanup|table=" + table + "|column=" + column);
         }
 
-        final String select = "SELECT DISTINCT " + column + " FROM " + table
-                              + " WHERE " + column + " NOT IN ('0','1')";
+        final String select = SELECT_DISTINCT_ + column + _FROM_ + table
+                              + _WHERE_ + column + " NOT IN ('0','1')";
         toLog("booleanCleanup", select);
 
-        final String update = "UPDATE " + table + " SET " + column + "=?"
-                              + " WHERE lower(" + column + ") IN ";
+        final String update = UPDATE_ + table + _SET_ + column + "=?"
+                              + _WHERE_ + "LOWER(" + column + ") IN ";
         String sql;
         sql = update + "('true','t','yes')";
         try (SynchronizedStatement stmt = db.compileStatement(sql)) {
@@ -257,15 +264,15 @@ public class DBCleaner {
      *
      * @param dryRun {@code true} to run the update.
      */
-    public void bookBookshelf(final boolean dryRun) {
-        final String select = "SELECT DISTINCT " + DBKey.FK_BOOK
-                              + " FROM " + DBDefinitions.TBL_BOOK_BOOKSHELF
-                              + " WHERE " + DBKey.FK_BOOKSHELF + " IS NULL";
+    private void bookBookshelf(@SuppressWarnings("SameParameterValue") final boolean dryRun) {
+        final String select = SELECT_DISTINCT_ + DBKey.FK_BOOK
+                              + _FROM_ + DBDefinitions.TBL_BOOK_BOOKSHELF
+                              + _WHERE_ + DBKey.FK_BOOKSHELF + _IS_NULL;
 
         toLog("bookBookshelf|ENTER", select);
         if (!dryRun) {
-            final String sql = "DELETE " + DBDefinitions.TBL_BOOK_BOOKSHELF
-                               + " WHERE " + DBKey.FK_BOOKSHELF + " IS NULL";
+            final String sql = DELETE_FROM_ + DBDefinitions.TBL_BOOK_BOOKSHELF
+                               + _WHERE_ + DBKey.FK_BOOKSHELF + _IS_NULL;
             try (SynchronizedStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
@@ -282,15 +289,16 @@ public class DBCleaner {
      * @param column to check
      * @param dryRun {@code true} to run the update.
      */
+    @SuppressWarnings("unused")
     public void nullString2empty(@NonNull final String table,
                                  @NonNull final String column,
                                  final boolean dryRun) {
         final String select =
-                "SELECT DISTINCT " + column + " FROM " + table + " WHERE " + column + " IS NULL";
+                SELECT_DISTINCT_ + column + _FROM_ + table + _WHERE_ + column + _IS_NULL;
         toLog("nullString2empty|ENTER", select);
         if (!dryRun) {
             final String sql =
-                    "UPDATE " + table + " SET " + column + "=''" + " WHERE " + column + " IS NULL";
+                    UPDATE_ + table + _SET_ + column + "=''" + _WHERE_ + column + _IS_NULL;
             try (SynchronizedStatement stmt = db.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
