@@ -1379,6 +1379,9 @@ public final class DBDefinitions {
          * i.e. take an author from a book, query this table with
          * book-author-id == DOM_AUTHOR_PSEUDONYM-id
          * and retrieve the DOM_AUTHOR_REAL_AUTHOR-id as the real-author-id
+         *
+         * Dev. note: instead of DOM_AUTHOR_REAL_AUTHOR we could have used FK_AUTHOR...
+         * but having a dedicated one saves us from special 'as'-ing and DomainExpression handling.
          */
         TBL_PSEUDONYM_AUTHOR
                 .addDomains(DOM_AUTHOR_PSEUDONYM,
