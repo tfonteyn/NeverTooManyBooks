@@ -524,11 +524,18 @@ public final class FileUtils {
 
     @NonNull
     public static String getMimeTypeFromExtension(@NonNull final String fileExt) {
-        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExt);
-        if (mimeType == null) {
-            // shouldn't be needed, ... flw
-            mimeType = "application/" + fileExt;
+        final String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExt);
+        if (mimeType != null) {
+            return mimeType;
         }
-        return mimeType;
+
+        if ("db".equals(fileExt)) {
+            // https://www.iana.org/assignments/media-types/application/vnd.sqlite3
+            // application/x-sqlite3 is deprecated
+            return "application/vnd.sqlite3";
+        }
+
+        // fallback
+        return "application/" + fileExt;
     }
 }
