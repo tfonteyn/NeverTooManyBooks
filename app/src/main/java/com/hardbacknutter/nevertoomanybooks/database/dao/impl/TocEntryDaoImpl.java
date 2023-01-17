@@ -268,7 +268,8 @@ public class TocEntryDaoImpl
         private static final String SELECT_BOOK_TITLES_BY_TOC_ENTRY_ID =
                 SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID,
                                           DBKey.TITLE,
-                                          DBKey.LANGUAGE)
+                                          DBKey.LANGUAGE,
+                                          DBKey.FIRST_PUBLICATION__DATE)
                 + _FROM_ + TBL_BOOK_TOC_ENTRIES.startJoin(TBL_BOOKS)
                 + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_TOC_ENTRY) + "=?"
                 + _ORDER_BY_ + TBL_BOOKS.dot(DBKey.TITLE_OB);
