@@ -30,8 +30,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.util.Objects;
-
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNavigatorDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -146,7 +144,10 @@ public class ShowBookPagerViewModel
      * @param position new 'current' position
      */
     void setPageSelected(final int position) {
-        Objects.requireNonNull(navHelper);
-        currentBookId.setValue(navHelper.getBookIdAtRow(position + 1));
+        if (navHelper != null) {
+            currentBookId.setValue(navHelper.getBookIdAtRow(position + 1));
+        } else {
+            currentBookId.setValue(initialBookId);
+        }
     }
 }
