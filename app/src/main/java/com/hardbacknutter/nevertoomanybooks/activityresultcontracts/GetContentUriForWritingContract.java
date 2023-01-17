@@ -83,8 +83,16 @@ public class GetContentUriForWritingContract
 
         public Input(@NonNull final String mimeType,
                      @NonNull final String fileName) {
+
             this.mimeType = mimeType;
-            this.fileName = fileName;
+
+            // Stupid hack.... for reasons unknown Android does not the SQLite mimetype...
+            if ("application/vnd.sqlite3".equals(mimeType)
+                && !fileName.contains(".")) {
+                this.fileName = fileName + ".db";
+            } else {
+                this.fileName = fileName;
+            }
         }
     }
 }
