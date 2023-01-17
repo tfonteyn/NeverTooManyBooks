@@ -234,14 +234,20 @@ public class LastDodoSearchEngine
                         break;
 
                     case "Nummer in reeks":
-                        tmpSeriesNr = td.text().trim();
+                        tmpSeriesNr = td.text();
                         break;
 
                     case "Nummertoevoeging":
-                        tmpString = td.text().trim();
+                        tmpString = td.text();
                         if (!tmpString.isEmpty()) {
-                            //noinspection StringConcatenationInLoop
-                            tmpSeriesNr += '|' + tmpString;
+                            // this entry (number-suffix) can exist without a previous
+                            // number field.
+                            if (tmpSeriesNr == null || tmpSeriesNr.isEmpty()) {
+                                tmpSeriesNr = tmpString;
+                            } else {
+                                //noinspection StringConcatenationInLoop
+                                tmpSeriesNr += '|' + tmpString;
+                            }
                         }
                         break;
 
@@ -596,7 +602,7 @@ public class LastDodoSearchEngine
                              @NonNull final String key,
                              @NonNull final Book book) {
         if (td != null) {
-            final String text = ParseUtils.cleanText(td.text().trim());
+            final String text = ParseUtils.cleanText(td.text());
             if (!text.isEmpty()) {
                 book.putString(key, text);
             }
