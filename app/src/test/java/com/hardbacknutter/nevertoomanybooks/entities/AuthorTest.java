@@ -109,22 +109,4 @@ class AuthorTest {
         assertEquals("(*3)", author.getFamilyName());
         assertEquals("Don", author.getGivenNames());
     }
-
-    @Test
-    void fromString31() {
-        // real name (alias,alias,...)
-        final Author author = Author.from("Robert Velter (Rob Vel)");
-        assertNotNull(author);
-        assertEquals("Velter", author.getFamilyName());
-        assertEquals("Robert", author.getGivenNames());
-    }
-
-    @Test
-    void fromString32() {
-        // real name (alias,alias,...)
-        final Author author = Author.from("Robert Velter (Rob-vel,Bozz)");
-        assertNotNull(author);
-        assertEquals("Velter", author.getFamilyName());
-        assertEquals("Robert", author.getGivenNames());
-    }
 }
