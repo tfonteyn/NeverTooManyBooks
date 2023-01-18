@@ -185,8 +185,8 @@ android {
             returnDefaultValues = false
             all {
                 reports {
-                    junitXml.enabled = true
-                    html.enabled = false
+                    junitXml.getRequired().set(true)
+                    html.getRequired().set(false)
                 }
             }
         }
