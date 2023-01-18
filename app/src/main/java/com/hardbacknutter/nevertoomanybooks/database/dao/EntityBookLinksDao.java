@@ -226,4 +226,9 @@ public interface EntityBookLinksDao<T extends Entity>
                       @NonNull Collection<T> list,
                       boolean lookupLocale,
                       @NonNull Locale bookLocale);
+
+    /**
+     * Delete orphaned records.
+     */
+    void purge();
 }

@@ -46,9 +46,4 @@ public interface PublisherDao
      */
     @NonNull
     Cursor fetchAll();
-
-    /**
-     * Delete orphaned records.
-     */
-    void purge();
 }

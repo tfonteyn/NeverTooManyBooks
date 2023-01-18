@@ -105,11 +105,6 @@ public interface AuthorDao
     boolean setComplete(long authorId,
                         boolean isComplete);
 
-    /**
-     * Delete orphaned records.
-     */
-    void purge();
-
     @StringDef({
             DBKey.TITLE_OB,
             DBKey.FIRST_PUBLICATION__DATE

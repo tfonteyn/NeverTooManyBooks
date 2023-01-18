@@ -68,9 +68,4 @@ public interface SeriesDao
      */
     boolean setComplete(long seriesId,
                         boolean isComplete);
-
-    /**
-     * Delete orphaned records.
-     */
-    void purge();
 }
