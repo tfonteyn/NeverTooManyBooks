@@ -156,4 +156,9 @@ public interface TocEntryDao {
      * @return the number of books processed
      */
     int fixPositions(@NonNull Context context);
+
+    /**
+     * Delete orphaned records.
+     */
+    void purge();
 }

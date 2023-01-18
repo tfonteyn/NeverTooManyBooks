@@ -240,6 +240,13 @@ public class TocEntryDaoImpl
         return bookIds.size();
     }
 
+    @Override
+    public void purge() {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.PURGE)) {
+            stmt.executeUpdateDelete();
+        }
+    }
+
     static final class Sql {
 
         static final String INSERT =
@@ -317,6 +324,13 @@ public class TocEntryDaoImpl
         /** Delete a {@link TocEntry}. */
         private static final String DELETE_BY_ID =
                 DELETE_FROM_ + TBL_TOC_ENTRIES.getName() + _WHERE_ + DBKey.PK_ID + "=?";
+
+        /** Purge a {@link TocEntry} if no longer in use. */
+        private static final String PURGE =
+                DELETE_FROM_ + TBL_TOC_ENTRIES.getName()
+                + _WHERE_ + DBKey.PK_ID + _NOT_IN_
+                + '(' + SELECT_DISTINCT_ + DBKey.FK_TOC_ENTRY
+                + _FROM_ + TBL_BOOK_TOC_ENTRIES.getName() + ')';
 
         private static final String REPOSITION =
                 SELECT_ + DBKey.FK_BOOK
