@@ -34,6 +34,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
+import androidx.core.util.Pair;
 import androidx.preference.PreferenceManager;
 
 import java.io.File;
@@ -647,6 +648,21 @@ public class DBHelper
             }
         }
 
+        // this is nasty....  onUpgrade always gets executed in a transaction,
+        // and deleting an index inside a transaction does not become 'activated'
+        // until the transaction is done.
+        //
+        // We need to drop this particular index due to it having been wrongfully created 'unique'.
+        // This MUST be done BEFORE we do anything else (and luckily upgrades 15..22
+        // are not conflicting). Even if any of the further upgrades cause a fail,
+        // deleting this index is what we want.
+        if (oldVersion >= 15 && oldVersion < 23) {
+            db.setTransactionSuccessful();
+            db.endTransaction();
+            db.execSQL("DROP INDEX anthology_IDX_pk_3");
+            db.beginTransaction();
+        }
+
         if (oldVersion < 15) {
             throw new UpgradeFailedException(
                     context.getString(R.string.error_upgrade_not_supported, "2.0.0"));
@@ -869,8 +885,16 @@ public class DBHelper
             db.execSQL("DELETE FROM " + TBL_BOOKLIST_STYLES.getName() + " WHERE _id=-2");
         }
         if (oldVersion < 23) {
-            TBL_PSEUDONYM_AUTHOR.create(db, true);
+            // Up to version 22 we had a bug in how we'd store TOC entries which could create
+            // duplicate authors. Fixed in 23 but we need to do a clean up during upgrade.
+            removeDuplicateAuthors_v23(db);
+            // as a result of the author cleanup, we now might have duplicate toc entries,
+            // same algorithm to clean those up
+            removeDuplicateTocEntries_v23(db);
 
+            // Add pen-name support
+            TBL_PSEUDONYM_AUTHOR.create(db, true);
+            // new search-engine added
             TBL_BOOKS.alterTableAddColumns(db, DBDefinitions.DOM_ESID_BEDETHEQUE);
         }
 
@@ -908,6 +932,159 @@ public class DBHelper
     private void initCollation(@NonNull final SQLiteDatabase db) {
         if (sIsCollationCaseSensitive == null) {
             sIsCollationCaseSensitive = collationIsCaseSensitive(db);
+        }
+    }
+
+
+    private void removeDuplicateAuthors_v23(@NonNull final SQLiteDatabase db) {
+
+        // find the names for duplicate author; i.e. identical family and given names.
+        final List<Pair<String, String>> authors = new ArrayList<>();
+        try (Cursor cursor = db.rawQuery(
+                "SELECT " + DBKey.AUTHOR_FAMILY_NAME + ',' + DBKey.AUTHOR_GIVEN_NAMES
+                + " FROM " + TBL_AUTHORS.getName()
+                + " GROUP BY " + DBKey.AUTHOR_FAMILY_NAME + ',' + DBKey.AUTHOR_GIVEN_NAMES
+                + " HAVING COUNT(" + DBKey.PK_ID + ")>1", null)) {
+            while (cursor.moveToNext()) {
+                authors.add(new Pair<>(cursor.getString(0), cursor.getString(1)));
+            }
+        }
+        if (authors.isEmpty()) {
+            return;
+        }
+
+        // use the family and given names to find the id's for each duplication
+        final List<List<Long>> authorDuplicates = new ArrayList<>();
+        for (final Pair<String, String> a : authors) {
+            try (Cursor cursor = db.rawQuery(
+                    "SELECT " + DBKey.PK_ID + " FROM " + TBL_AUTHORS.getName()
+                    + " WHERE " + DBKey.AUTHOR_FAMILY_NAME + "=?"
+                    + " AND " + DBKey.AUTHOR_GIVEN_NAMES + "=?",
+                    new String[]{a.first, a.second})) {
+                final List<Long> ids = new ArrayList<>();
+                while (cursor.moveToNext()) {
+                    ids.add(cursor.getLong(0));
+                }
+                if (ids.size() > 1) {
+                    authorDuplicates.add(ids);
+                }
+            }
+        }
+        if (authorDuplicates.isEmpty()) {
+            return;
+        }
+
+        // for each duplicate author, weed out the duplicates and delete them
+        for (final List<Long> idList : authorDuplicates) {
+            final long keep = idList.get(0);
+            final List<Long> others = idList.subList(1, idList.size());
+
+            final String ids = others.stream()
+                                     .map(String::valueOf)
+                                     .collect(Collectors.joining(","));
+
+            int rowCount;
+            String sql;
+
+            sql = "UPDATE " + TBL_BOOK_AUTHOR.getName() + " SET " + DBKey.FK_AUTHOR + "=" + keep
+                  + " WHERE " + DBKey.FK_AUTHOR + " IN (" + ids + ')';
+            try (SQLiteStatement stmt = db.compileStatement(sql)) {
+                rowCount = stmt.executeUpdateDelete();
+            } catch (@NonNull final Exception e) {
+                Logger.e(TAG, e, "Update TBL_BOOK_AUTHOR: keep=" + keep + ", ids=" + ids);
+                throw e;
+            }
+            Logger.w(TAG, "Update TBL_BOOK_AUTHOR: rowCount=" + rowCount);
+
+            sql = "UPDATE " + TBL_TOC_ENTRIES.getName() + " SET " + DBKey.FK_AUTHOR + "=" + keep
+                  + " WHERE " + DBKey.FK_AUTHOR + " IN (" + ids + ')';
+            try (SQLiteStatement stmt = db.compileStatement(sql)) {
+                rowCount = stmt.executeUpdateDelete();
+            } catch (@NonNull final Exception e) {
+                Logger.e(TAG, e, "Update TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
+                throw e;
+            }
+            Logger.w(TAG, "Update TBL_TOC_ENTRIES: rowCount=" + rowCount);
+
+            sql = "DELETE FROM " + TBL_AUTHORS.getName()
+                  + " WHERE " + DBKey.PK_ID + " IN (" + ids + ')';
+            try (SQLiteStatement stmt = db.compileStatement(sql)) {
+                rowCount = stmt.executeUpdateDelete();
+            } catch (@NonNull final Exception e) {
+                Logger.e(TAG, e, "Delete TBL_AUTHORS: ids=" + ids);
+                throw e;
+            }
+            Logger.w(TAG, "Delete TBL_AUTHORS: rowCount=" + rowCount);
+        }
+    }
+
+    private void removeDuplicateTocEntries_v23(@NonNull final SQLiteDatabase db) {
+        // find the duplicate tocs; i.e. identical author and title.
+        final List<Pair<Long, String>> entries = new ArrayList<>();
+        try (Cursor cursor = db.rawQuery(
+                "SELECT " + DBKey.FK_AUTHOR + ',' + DBKey.TITLE
+                + " FROM " + TBL_TOC_ENTRIES
+                + " GROUP BY " + DBKey.FK_AUTHOR + ',' + DBKey.TITLE
+                + " HAVING COUNT(" + DBKey.PK_ID + ")>1", null)) {
+            while (cursor.moveToNext()) {
+                entries.add(new Pair<>(cursor.getLong(0), cursor.getString(1)));
+            }
+        }
+        if (entries.isEmpty()) {
+            return;
+        }
+
+        // use the author and title to find the id's for each duplication
+        final List<List<Long>> entryDuplicates = new ArrayList<>();
+        for (final Pair<Long, String> toc : entries) {
+            try (Cursor cursor = db.rawQuery(
+                    "SELECT " + DBKey.PK_ID + " FROM " + TBL_TOC_ENTRIES
+                    + " WHERE " + DBKey.FK_AUTHOR + "=?"
+                    + " AND " + DBKey.TITLE + "=?",
+                    new String[]{String.valueOf(toc.first), toc.second})) {
+                final List<Long> ids = new ArrayList<>();
+                while (cursor.moveToNext()) {
+                    ids.add(cursor.getLong(0));
+                }
+                if (ids.size() > 1) {
+                    entryDuplicates.add(ids);
+                }
+            }
+        }
+        if (entryDuplicates.isEmpty()) {
+            return;
+        }
+
+        // for each duplicate toc entry, weed out the duplicates and delete them
+        for (final List<Long> idList : entryDuplicates) {
+            final long keep = idList.get(0);
+            final List<Long> others = idList.subList(1, idList.size());
+
+            final String ids = others.stream()
+                                     .map(String::valueOf)
+                                     .collect(Collectors.joining(","));
+
+            int rowCount;
+            String sql;
+
+            sql = "UPDATE " + TBL_BOOK_TOC_ENTRIES + " SET " + DBKey.FK_TOC_ENTRY + "=" + keep
+                  + " WHERE " + DBKey.FK_TOC_ENTRY + " IN (" + ids + ')';
+            try (SQLiteStatement stmt = db.compileStatement(sql)) {
+                rowCount = stmt.executeUpdateDelete();
+            } catch (@NonNull final Exception e) {
+                Logger.e(TAG, e, "Update TBL_BOOK_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
+                throw e;
+            }
+            Logger.w(TAG, "Update TBL_BOOK_TOC_ENTRIES: rowCount=" + rowCount);
+
+            sql = "DELETE FROM " + TBL_TOC_ENTRIES + " WHERE " + DBKey.PK_ID + " IN (" + ids + ')';
+            try (SQLiteStatement stmt = db.compileStatement(sql)) {
+                rowCount = stmt.executeUpdateDelete();
+            } catch (@NonNull final Exception e) {
+                Logger.e(TAG, e, "Delete TBL_TOC_ENTRIES: keep=" + keep + ", ids=" + ids);
+                throw e;
+            }
+            Logger.w(TAG, "Delete TBL_TOC_ENTRIES: rowCount=" + rowCount);
         }
     }
 }
