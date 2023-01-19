@@ -78,6 +78,14 @@ class AuthorTest {
     }
 
     @Test
+    void fromString12() {
+        final Author author = Author.from("Charles Emerson Winchester (The Third one)");
+        assertNotNull(author);
+        assertEquals("Winchester (The Third one)", author.getFamilyName());
+        assertEquals("Charles Emerson", author.getGivenNames());
+    }
+
+    @Test
     void fromString20() {
         final Author author = Author.from("Charles Emerson Winchester III");
         assertNotNull(author);
@@ -106,7 +114,43 @@ class AuthorTest {
         // yes, there REALLY is a book with an author named like this...
         final Author author = Author.from("Don (*3)");
         assertNotNull(author);
+        assertEquals("Don (*3)", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
+    }
+
+    @Test
+    void fromString31() {
+        // yes, there REALLY is a book with an author named like this...
+        final Author author = Author.from("(*3), Don");
+        assertNotNull(author);
         assertEquals("(*3)", author.getFamilyName());
         assertEquals("Don", author.getGivenNames());
+    }
+
+    @Test
+    void fromString40() {
+        // real name (alias,alias,...)
+        final Author author = Author.from("Robert Velter (Rob Vel)");
+        assertNotNull(author);
+        assertEquals("Velter (Rob Vel)", author.getFamilyName());
+        assertEquals("Robert", author.getGivenNames());
+    }
+
+    @Test
+    void fromString41() {
+        // real name (alias,alias,...)
+        final Author author = Author.from("Robert Velter (Rob-vel,Bozz)");
+        assertNotNull(author);
+        assertEquals("Velter (Rob-vel,Bozz)", author.getFamilyName());
+        assertEquals("Robert", author.getGivenNames());
+    }
+
+    @Test
+    void fromString42() {
+        // real name (alias,alias,...)
+        final Author author = Author.from("Robert Velter Jr. (Rob-vel,Bozz)");
+        assertNotNull(author);
+        assertEquals("Velter Jr. (Rob-vel,Bozz)", author.getFamilyName());
+        assertEquals("Robert", author.getGivenNames());
     }
 }

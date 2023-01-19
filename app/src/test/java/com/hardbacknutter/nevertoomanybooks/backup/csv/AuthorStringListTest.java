@@ -88,8 +88,8 @@ class AuthorStringListTest {
         assertFalse(author.isComplete());
 
         author = decoded.get(3);
-        assertEquals("Wade", author.getFamilyName());
-        assertEquals("(ps Jack Vance)", author.getGivenNames());
+        assertEquals("Wade (ps Jack Vance)", author.getFamilyName());
+        assertEquals("", author.getGivenNames());
         assertFalse(author.isComplete());
 
         author = decoded.get(4);
