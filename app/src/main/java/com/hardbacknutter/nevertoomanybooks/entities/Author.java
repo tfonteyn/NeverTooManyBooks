@@ -91,8 +91,9 @@ public class Author
      * {@link DBDefinitions#DOM_BOOK_AUTHOR_TYPE_BITMASK}.
      * NEWTHINGS: author type: add a bit flag
      * Never change the bit value!
+     * <p>
+     * WRITER: primary or only writer. i.e. in contrast to any of the below.
      */
-    /** WRITER: primary or only writer. i.e. in contrast to any of the below. */
     public static final int TYPE_WRITER = 1;
     /**
      * WRITER: not distinguished for now. If we do, use TYPE_ORIGINAL_SCRIPT_WRITER = 1 << 1;
@@ -615,12 +616,7 @@ public class Author
     @Nullable
     public Author getRealAuthor() {
         // always assume the worst; resolve here AGAIN
-        final Author before = realAuthor;
         realAuthor = resolveRealAuthor(realAuthor);
-        if (!Objects.equals(before, realAuthor)) {
-            //URGENT: update this... or leave it for a lazy update later?
-            //ServiceLocator.getInstance().getAuthorDao().update(context, this, bookLocale);
-        }
         return realAuthor;
     }
 
