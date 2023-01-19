@@ -517,11 +517,11 @@ public class LastDodoSearchEngine
     /**
      * Found an Author.
      *
-     * @param td                data td
-     * @param currentAuthorType of this entry
+     * @param td   data td
+     * @param type of this entry
      */
     private void processAuthor(@NonNull final Element td,
-                               @Author.Type final int currentAuthorType,
+                               @Author.Type final int type,
                                @NonNull final Book book) {
 
         for (final Element a : td.select("a")) {
@@ -532,14 +532,14 @@ public class LastDodoSearchEngine
             for (final Author author : book.getAuthors()) {
                 if (author.equals(currentAuthor)) {
                     // merge types.
-                    author.addType(currentAuthorType);
+                    author.addType(type);
                     add = false;
                     // keep looping
                 }
             }
 
             if (add) {
-                currentAuthor.setType(currentAuthorType);
+                currentAuthor.setType(type);
                 book.add(currentAuthor);
             }
         }
