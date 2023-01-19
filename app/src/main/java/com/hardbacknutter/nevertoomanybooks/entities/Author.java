@@ -170,8 +170,6 @@ public class Author
     /**
      * Handles recognition of a limited set of special prefixes to a family name.
      * <p>
-     * ENHANCE: author middle name; needs internationalisation ?
-     * <p>
      * Ursula Le Guin
      * Marianne De Pierres
      * A. E. Van Vogt
