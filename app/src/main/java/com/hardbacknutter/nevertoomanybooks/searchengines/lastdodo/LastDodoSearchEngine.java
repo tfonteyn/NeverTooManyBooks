@@ -174,6 +174,158 @@ public class LastDodoSearchEngine
     }
 
     /**
+     * ENHANCE: This method is functional, but not used for now.
+     * <p>
+     *     // We can strip the pseudonyms but can't really use them:
+     *     // The problem is that the website lists the real-author name
+     *     // as the actual book author instead of the pseudonym as stated ON the book.
+     *     // e.g. consider a book "Robbedoes; by Rob-Vel"
+     *     // will have the author as "Velter, Robert (Rob-Vel,Bozz)"
+     *     // and we are simply not able to determine what to use.
+     *     // i.e. we should use "Rob-Vel" as the author,
+     *     // and set "Robert Velter" as the realAuthor.
+     * <p>
+     * <p>
+     * Parse a name with potential pseudonyms.
+     * <p>
+     * 1. "Robert Velter (Rob-vel,Bozz)"
+     * 2. "Robert Velter (Rob Vel)"
+     * 3. "Ange (1/2)"
+     * 4. "Don (*3)"
+     * <p>
+     * 1+2: The () part are pseudonyms.
+     * 3: there are 2 people with the same name "Ange"; 1/2 and 2/2 makes the distinction.
+     * 4: presumably there are 3 Don's?
+     * <p>
+     * Assumption is that if the part between brackets starts with a alpha char,
+     * then we assume that part to be a csv list of pseudonyms.
+     * We decode the part before the brackets as a normal name.
+     * <p>
+     * In the case of a non-alpha, we will take the entire "(...)" part as the last name.
+     * This is obviously not the best, but backwards compatible with what we did before.
+     * <p>
+     * See {@link Author#from(String)} for more notes on brackets.
+     *
+     * @param name to parse
+     *
+     * @return an array with [0] being the real-author-name;
+     *         and optional [1..] with the pseudonyms found.
+     *         The array is guaranteed to be length >= 1.
+     */
+    @VisibleForTesting
+    @NonNull
+    public static String[] parseAuthorNames(@NonNull final String name) {
+        String uName = ParseUtils.unEscape(name);
+        final Matcher brackets = REAL_NAME_BRACKET_ALIAS_BRACKET.matcher(uName);
+        if (brackets.find()) {
+            String group = brackets.group(1);
+            if (group != null) {
+                uName = group.strip();
+            }
+            int len = 1;
+            String[] pseudonyms = null;
+
+            if (brackets.groupCount() > 1) {
+                group = brackets.group(2);
+                if (group != null) {
+                    pseudonyms = group.strip().split(",");
+                    len += pseudonyms.length;
+                }
+            }
+
+            final String[] names = new String[len];
+            names[0] = uName;
+            if (pseudonyms != null) {
+                System.arraycopy(pseudonyms, 0, names, 1, len - 1);
+            }
+            return names;
+        } else {
+            return new String[]{uName};
+        }
+    }
+
+    private void parseCovers(@NonNull final Document document,
+                             @Nullable final String isbn,
+                             @NonNull final boolean[] fetchCovers,
+                             @NonNull final Book book)
+            throws StorageException {
+        final Element images = document.getElementById("images_container");
+        if (images != null) {
+            final Elements aas = images.select("a");
+            for (int cIdx = 0; cIdx < 2; cIdx++) {
+                if (isCancelled()) {
+                    return;
+                }
+                if (fetchCovers[cIdx] && aas.size() > cIdx) {
+                    final String url = aas.get(cIdx).attr("href");
+                    final String fileSpec = saveImage(url, isbn, cIdx, null);
+                    if (fileSpec != null) {
+                        final ArrayList<String> list = new ArrayList<>();
+                        list.add(fileSpec);
+                        book.putStringArrayList(
+                                SearchCoordinator.BKEY_FILE_SPEC_ARRAY[cIdx], list);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Extract the (optional) table of content from the header.
+     * <p>
+     * <strong>Note:</strong> should only be called <strong>AFTER</strong> we have processed
+     * the authors as we use the first Author of the book for all TOCEntries.
+     * <p>
+     * This is likely not correct, but the alternative is to store each entry in a TOC
+     * as an individual book, and declare a Book TOC as a list of books.
+     * i.o.w. the database structure would need to become
+     * table: titles (book and toc-entry titles) each entry referencing 1..n authors.
+     * table: books, with a primary title, and a list of secondary titles (i.e the toc).
+     * (All of which referencing the 'titles' table)
+     * <p>
+     * This is not practical in the scope of this application.
+     *
+     * @param sections to parse
+     *
+     * @return toc list with at least 2 entries
+     */
+    @NonNull
+    private Optional<ArrayList<TocEntry>> parseToc(@NonNull final Collection<Element> sections,
+                                                   @NonNull final Book book) {
+
+        // section 0 was the "Catalogusgegevens"; normally section 3 is the one we need here...
+        Element tocSection = null;
+        for (final Element section : sections) {
+            final Element sectionTitle = section.selectFirst("h2.section-title");
+            if (sectionTitle != null) {
+                if ("Verhalen in dit album".equals(sectionTitle.text())) {
+                    tocSection = section;
+                    break;
+                }
+            }
+        }
+
+
+        if (tocSection != null) {
+            final ArrayList<TocEntry> toc = new ArrayList<>();
+            for (final Element divRows : tocSection.select("div.row-information")) {
+                final Element th = divRows.selectFirst("div.label");
+                final Element td = divRows.selectFirst("div.value");
+                if (th != null && td != null) {
+                    if ("Verhaaltitel".equals(th.text())) {
+                        toc.add(new TocEntry(book.getAuthors().get(0), td.text()));
+                    }
+                }
+            }
+
+            if (toc.size() > 1) {
+                return Optional.of(toc);
+            }
+        }
+        return Optional.empty();
+    }
+
+    /**
      * Parses the downloaded {@link org.jsoup.nodes.Document}.
      * We only parse the <strong>first book</strong> found.
      *
@@ -181,7 +333,7 @@ public class LastDodoSearchEngine
      * @param document    to parse
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
-     * @param book    Bundle to update
+     * @param book        Bundle to update
      *
      * @throws StorageException     on storage related failures
      * @throws CredentialsException on authentication/login failures
@@ -373,144 +525,6 @@ public class LastDodoSearchEngine
         if (fetchCovers[0] || fetchCovers[1]) {
             final String isbn = book.getString(DBKey.BOOK_ISBN);
             parseCovers(document, isbn, fetchCovers, book);
-        }
-    }
-
-    private void parseCovers(@NonNull final Document document,
-                             @Nullable final String isbn,
-                             @NonNull final boolean[] fetchCovers,
-                             @NonNull final Book book)
-            throws StorageException {
-        final Element images = document.getElementById("images_container");
-        if (images != null) {
-            final Elements aas = images.select("a");
-            for (int cIdx = 0; cIdx < 2; cIdx++) {
-                if (isCancelled()) {
-                    return;
-                }
-                if (fetchCovers[cIdx] && aas.size() > cIdx) {
-                    final String url = aas.get(cIdx).attr("href");
-                    final String fileSpec = saveImage(url, isbn, cIdx, null);
-                    if (fileSpec != null) {
-                        final ArrayList<String> list = new ArrayList<>();
-                        list.add(fileSpec);
-                        book.putStringArrayList(
-                                SearchCoordinator.BKEY_FILE_SPEC_ARRAY[cIdx], list);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Extract the (optional) table of content from the header.
-     * <p>
-     * <strong>Note:</strong> should only be called <strong>AFTER</strong> we have processed
-     * the authors as we use the first Author of the book for all TOCEntries.
-     * <p>
-     * This is likely not correct, but the alternative is to store each entry in a TOC
-     * as an individual book, and declare a Book TOC as a list of books.
-     * i.o.w. the database structure would need to become
-     * table: titles (book and toc-entry titles) each entry referencing 1..n authors.
-     * table: books, with a primary title, and a list of secondary titles (i.e the toc).
-     * (All of which referencing the 'titles' table)
-     * <p>
-     * This is not practical in the scope of this application.
-     *
-     * @param sections to parse
-     *
-     * @return toc list with at least 2 entries
-     */
-    @NonNull
-    private Optional<ArrayList<TocEntry>> parseToc(@NonNull final Collection<Element> sections,
-                                                   @NonNull final Book book) {
-
-        // section 0 was the "Catalogusgegevens"; normally section 3 is the one we need here...
-        Element tocSection = null;
-        for (final Element section : sections) {
-            final Element sectionTitle = section.selectFirst("h2.section-title");
-            if (sectionTitle != null) {
-                if ("Verhalen in dit album".equals(sectionTitle.text())) {
-                    tocSection = section;
-                    break;
-                }
-            }
-        }
-
-
-        if (tocSection != null) {
-            final ArrayList<TocEntry> toc = new ArrayList<>();
-            for (final Element divRows : tocSection.select("div.row-information")) {
-                final Element th = divRows.selectFirst("div.label");
-                final Element td = divRows.selectFirst("div.value");
-                if (th != null && td != null) {
-                    if ("Verhaaltitel".equals(th.text())) {
-                        toc.add(new TocEntry(book.getAuthors().get(0), td.text()));
-                    }
-                }
-            }
-
-            if (toc.size() > 1) {
-                return Optional.of(toc);
-            }
-        }
-        return Optional.empty();
-    }
-
-    /**
-     * Parse a name with potential pseudonyms.
-     * <p>
-     * 1. "Robert Velter (Rob-vel,Bozz)"
-     * 2. "Robert Velter (Rob Vel)"
-     * 3. "Ange (1/2)"
-     * 4. "Don (*3)"
-     * <p>
-     * 1+2: The () part are pseudonyms.
-     * 3: there are 2 people with the same name "Ange"; 1/2 and 2/2 makes the distinction.
-     * 4: presumably there are 3 Don's?
-     * <p>
-     * Assumption is that if the part between brackets starts with a alpha char,
-     * then those are pseudonyms, while the part before the brackets is the real name.
-     * This is handled here.
-     * <p>
-     * In the case of a non-alpha, we will take the entire "(...)" part as the last name.
-     * This is obviously not the best, but backwards compatible with what we did before.
-     *
-     * @param name to parse
-     *
-     * @return an array with [0] being the real-author-name;
-     * and optional [1..] with the pseudonyms found.
-     * The array is guaranteed to be length >= 1.
-     */
-    @VisibleForTesting
-    @NonNull
-    public static String[] parseAuthorNames(@NonNull final String name) {
-        String uName = ParseUtils.unEscape(name);
-        final Matcher brackets = REAL_NAME_BRACKET_ALIAS_BRACKET.matcher(uName);
-        if (brackets.find()) {
-            String group = brackets.group(1);
-            if (group != null) {
-                uName = group.strip();
-            }
-            int len = 1;
-            String[] pseudonyms = null;
-
-            if (brackets.groupCount() > 1) {
-                group = brackets.group(2);
-                if (group != null) {
-                    pseudonyms = group.strip().split(",");
-                    len += pseudonyms.length;
-                }
-            }
-
-            final String[] names = new String[len];
-            names[0] = uName;
-            if (pseudonyms != null) {
-                System.arraycopy(pseudonyms, 0, names, 1, len - 1);
-            }
-            return names;
-        } else {
-            return new String[]{uName};
         }
     }
 
