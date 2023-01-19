@@ -145,7 +145,7 @@ public class Author
      * Any: indicate that this name entry is a pseudonym.
      *
      * @deprecated as a flag, this is useless.
-     * (I think this flag is a legacy from when we had goodreads integration)
+     *         (I think this flag is a legacy from when we had goodreads integration)
      */
     @Deprecated
     public static final int TYPE_PSEUDONYM = 1 << 16;
@@ -167,6 +167,8 @@ public class Author
     private static final Map<Integer, Integer> TYPES = new LinkedHashMap<>();
 
     /**
+     * Handles recognition of a limited set of special prefixes to a family name.
+     * <p>
      * ENHANCE: author middle name; needs internationalisation ?
      * <p>
      * Ursula Le Guin
@@ -177,8 +179,11 @@ public class Author
     private static final Pattern FAMILY_NAME_PREFIX_PATTERN =
             Pattern.compile("(le|de|van|von)",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
     /**
-     * j/s lower or upper case
+     * Handles recognition of a (typical american?) name suffix.
+     * <p>
+     * First character "j" and "s" can be lower or upper case.
      * <p>
      * Foo Bar Jr.
      * Foo Bar Jr
@@ -198,6 +203,34 @@ public class Author
      */
     private static final Pattern FAMILY_NAME_SUFFIX_PATTERN =
             Pattern.compile("jr\\.|jr|junior|sr\\.|sr|senior|II|III",
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+    /**
+     * Handles recognition of a trailing bracket section.
+     * <p>
+     * 1. "Robert Velter (Rob-vel,Bozz)"
+     * 2. "Robert Velter (Rob Vel)"
+     * 3. "Ange (1/2)"
+     * 4. "Don (*3)"
+     * above examples are from the lastdodo site (see the search-engine for lastdodo
+     * for more comments on handling these).
+     * <p>
+     * 1+2: The () part are pseudonyms.
+     * 3: there are 2 people with the same name "Ange"; 1/2 and 2/2 makes the distinction.
+     * 4: presumably there are 3 Don's?
+     * <p>
+     * For backwards compatibility, we also handle "(*3), Don",
+     * i.e. in older versions we treated above 4 as having a given name == "Don"
+     * and a family name "(*3)". We must make sure that those are decoded as before.
+     * <p>
+     * There is no automated way to determine whether to use the name or the pseudonym(s)
+     * to create the Author as we cannot know what the book is published under.
+     * <p>
+     * Hence, for now, we stick with decoding the whole text, and then sticking
+     * the bracket section back on behind the family name.
+     */
+    private static final Pattern NAME_BRACKET_TEXT_BRACKET_TEXT =
+            Pattern.compile("(.*)\\((.*)\\)(.*)",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /*
@@ -339,6 +372,20 @@ public class Author
         return name;
     }
 
+    private static Author createWithBrackets(@NonNull final String familyName,
+                                             @Nullable final String givenNames,
+                                             @Nullable final String bracketSection) {
+        if (bracketSection == null || bracketSection.isEmpty()) {
+            return new Author(familyName, givenNames);
+
+        } else if (familyName.isEmpty()) {
+            return new Author("(" + bracketSection + ")", givenNames);
+
+        } else {
+            return new Author(familyName + " (" + bracketSection + ")", givenNames);
+        }
+    }
+
     @NonNull
     public static Author createUnknownAuthor(@NonNull final Context context) {
         final String unknownAuthor = context.getString(R.string.unknown_author);
@@ -347,9 +394,11 @@ public class Author
 
     /**
      * Parse a string into a family/given name pair.
+     * <p>
      * If the string contains a comma (and the part after it is not a recognised suffix)
      * then the string is assumed to be in the format of "family, given-names"
      * All other formats are decoded as complete as possible.
+     * Also see {@link #NAME_BRACKET_TEXT_BRACKET_TEXT} on how brackets are handled.
      * <p>
      * Recognised pre/suffixes: see {@link #FAMILY_NAME_PREFIX_PATTERN}
      * and {@link #FAMILY_NAME_SUFFIX_PATTERN}
@@ -369,17 +418,61 @@ public class Author
     public static Author from(@NonNull final String name) {
         String uName = ParseUtils.unEscape(name);
 
-        // take into account that there can be escaped commas....
-        // do we really need this except when reading from a backup ?
+        // First step, check for a trailing bracket section.
+        String bracketSection = null;
+        final Matcher brackets = NAME_BRACKET_TEXT_BRACKET_TEXT.matcher(uName);
+        if (brackets.find()) {
+            // Grab he full string before the brackets for further decoding as the name
+            String group = brackets.group(1);
+            if (group != null) {
+                uName = group.strip();
+            }
+            // If we did find a brackets parts, preserve it for later concatenation.
+            if (brackets.groupCount() > 1) {
+                group = brackets.group(2);
+                if (group != null) {
+                    group = group.strip();
+                    if (!group.isEmpty()) {
+                        bracketSection = group;
+                    }
+                }
+            }
+            // If there is another piece of text after the brackets parts
+            if (brackets.groupCount() > 2) {
+                group = brackets.group(3);
+                if (group != null) {
+                    group = group.strip();
+                    if (!group.isEmpty()) {
+                        //noinspection ConstantConditions
+                        if (uName.isEmpty()
+                            && bracketSection != null && !bracketSection.isEmpty()
+                            && group.startsWith(", ")) {
+                            // assume it's the format "(blah), name" and decode
+                            // BACKWARDS compatible:
+                            return new Author("(" + bracketSection + ")",
+                                              group.substring(2));
+                        } else {
+                            // this is far to complicated to make sense...
+                            // Just concat with the name part
+                            uName += " " + group;
+                        }
+                    }
+                }
+            }
+        }
+
+        // check for commas
         final List<String> tmp = StringList.newInstance().decode(uName, ',', true);
         if (tmp.size() > 1) {
             final Matcher suffixMatcher = FAMILY_NAME_SUFFIX_PATTERN.matcher(tmp.get(1));
             if (suffixMatcher.find()) {
+                // GivenNames FamilyName, suffix
                 // concatenate without the comma. Further processing will take care of the suffix.
                 uName = tmp.get(0) + ' ' + tmp.get(1);
             } else {
-                // not a suffix, assume the names are already formatted.
-                return new Author(tmp.get(0), tmp.get(1));
+                // FamilyName, GivenNames
+                // no suffix, assume the names are already formatted.
+                return createWithBrackets(tmp.get(0), tmp.get(1), bracketSection);
             }
         }
 
@@ -387,9 +480,9 @@ public class Author
         // two easy cases
         switch (names.length) {
             case 1:
-                return new Author(names[0], "");
+                return createWithBrackets(names[0], "", bracketSection);
             case 2:
-                return new Author(names[1], names[0]);
+                return createWithBrackets(names[1], names[0], bracketSection);
             default:
                 break;
         }
@@ -424,7 +517,9 @@ public class Author
             buildGivenNames.append(names[i]).append(' ');
         }
 
-        return new Author(buildFamilyName.toString(), buildGivenNames.toString());
+
+        return createWithBrackets(buildFamilyName.toString(), buildGivenNames.toString(),
+                                  bracketSection);
     }
 
     /**
