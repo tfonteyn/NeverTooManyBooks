@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -53,9 +54,6 @@ import org.xml.sax.helpers.DefaultHandler;
 /**
  * <a href="https://www.kb.nl/">Koninklijke Bibliotheek (KB), Nederland.</a>
  * <a href="https://www.kb.nl/">Royal Library, The Netherlands.</a>
- * <p>
- * ENHANCE: implement the new KB url/page
- * make sure to add KbNlBookHandler#cancel()
  */
 public class KbNlSearchEngine
         extends SearchEngineBase
@@ -162,48 +160,17 @@ public class KbNlSearchEngine
         try {
             final SAXParser parser = factory.newSAXParser();
 
-            // Don't follow redirects, so we get the XML instead of the rendered page
-            //futureHttpGet.setInstanceFollowRedirects(false);
-
-            // do the actual search.
+            // Do the search... we'll either get a parsed list-page back, or the parsed book page.
             String url = getHostUrl() + String.format(SEARCH_URL, dbVersion, setNr, validIsbn);
-            futureHttpGet.get(url, request -> {
-                // We'll either get a parsed list-page back,
-                // or the parsed book page.
-                try (BufferedInputStream bis = new BufferedInputStream(
-                        request.getInputStream())) {
-                    parser.parse(bis, handler);
-                    updateSessionVariables(book);
-                    return true;
-
-                } catch (@NonNull final IOException e) {
-                    throw new UncheckedIOException(e);
-                } catch (@NonNull final SAXException e) {
-                    throw new UncheckedSAXException(e);
-                }
-            });
-
+            futureHttpGet.get(url, request -> processRequest(request, handler, parser, book));
 
             // If it was a list page, fetch and parse the 1st book found;
             // If it was a book page, we're already done and can skip this step.
             final String show = book.getString(KbNlHandlerBase.BKEY_SHOW_URL, null);
             if (show != null && !show.isEmpty()) {
-                url = getHostUrl() + String.format(BOOK_URL, dbVersion, setNr, show);
                 book.clearData();
-
-                futureHttpGet.get(url, request -> {
-                    try (BufferedInputStream bis = new BufferedInputStream(
-                            request.getInputStream())) {
-                        parser.parse(bis, handler);
-                        updateSessionVariables(book);
-                        return true;
-
-                    } catch (@NonNull final IOException e) {
-                        throw new UncheckedIOException(e);
-                    } catch (@NonNull final SAXException e) {
-                        throw new UncheckedSAXException(e);
-                    }
-                });
+                url = getHostUrl() + String.format(BOOK_URL, dbVersion, setNr, show);
+                futureHttpGet.get(url, request -> processRequest(request, handler, parser, book));
             }
         } catch (@NonNull final SAXException e) {
             // unwrap SAXException using getException() !
@@ -231,11 +198,24 @@ public class KbNlSearchEngine
         return book;
     }
 
-    private void updateSessionVariables(@NonNull final Book book) {
-        //noinspection ConstantConditions
-        dbVersion = book.getString(KbNlHandlerBase.BKEY_DB_VERSION, DEFAULT_DB_VERSION);
-        //noinspection ConstantConditions
-        setNr = book.getString(KbNlHandlerBase.BKEY_SET_NUMBER, DEFAULT_SET_NUMBER);
+    private boolean processRequest(@NonNull final HttpURLConnection request,
+                                   @NonNull final DefaultHandler handler,
+                                   @NonNull final SAXParser parser,
+                                   @NonNull final Book book) {
+
+        try (BufferedInputStream bis = new BufferedInputStream(request.getInputStream())) {
+            parser.parse(bis, handler);
+            //noinspection ConstantConditions
+            dbVersion = book.getString(KbNlHandlerBase.BKEY_DB_VERSION, DEFAULT_DB_VERSION);
+            //noinspection ConstantConditions
+            setNr = book.getString(KbNlHandlerBase.BKEY_SET_NUMBER, DEFAULT_SET_NUMBER);
+            return true;
+
+        } catch (@NonNull final IOException e) {
+            throw new UncheckedIOException(e);
+        } catch (@NonNull final SAXException e) {
+            throw new UncheckedSAXException(e);
+        }
     }
 
     /**
