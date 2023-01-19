@@ -1363,10 +1363,7 @@ public final class DBDefinitions {
                 .setPrimaryKey(DOM_PK_ID)
                 .addReference(TBL_AUTHORS, DOM_FK_AUTHOR)
                 .addIndex(DBKey.FK_AUTHOR, false, DOM_FK_AUTHOR)
-                .addIndex(DBKey.TITLE_OB, false, DOM_TITLE_OB)
-                .addIndex("pk", true,
-                          DOM_FK_AUTHOR,
-                          DOM_TITLE_OB);
+                .addIndex(DBKey.TITLE_OB, false, DOM_TITLE_OB);
         ALL_TABLES.put(TBL_TOC_ENTRIES.getName(), TBL_TOC_ENTRIES);
 
 
