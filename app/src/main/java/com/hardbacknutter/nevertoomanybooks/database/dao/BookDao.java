@@ -62,6 +62,9 @@ public interface BookDao {
     @SuppressWarnings("UnusedReturnValue")
     boolean touch(@NonNull Book book);
 
+    @SuppressWarnings("UnusedReturnValue")
+    boolean touch(@IntRange(from = 1) long bookId);
+
     /**
      * Create a new Book using the details provided.
      *

@@ -73,14 +73,6 @@ abstract class BaseDaoImpl {
     static final String _OR_ = " OR ";
     static final String _NOT_IN_ = " NOT IN ";
 
-    /**
-     * Update a single Book's DATE_LAST_UPDATED__UTC to 'now'.
-     */
-    private static final String TOUCH =
-            UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
-            + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
-            + _WHERE_ + DBKey.PK_ID + "=?";
-
     /** Log tag. */
     private static final String TAG = "BaseDaoImpl";
 
@@ -115,45 +107,6 @@ abstract class BaseDaoImpl {
             sj.add("?");
         }
         return sj.toString();
-    }
-
-    /**
-     * By exception in the base DAO to allow all dao instances to
-     * update the 'last updated' of the given book.
-     * This method should only be called from places where only the book id is available.
-     * If the full Book is available, use {@link #touch(Book)} instead.
-     *
-     * @param bookId to update
-     *
-     * @return {@code true} on success
-     */
-    boolean touchBook(@IntRange(from = 1) final long bookId) {
-        try (SynchronizedStatement stmt = db.compileStatement(TOUCH)) {
-            stmt.bindLong(1, bookId);
-            return 0 < stmt.executeUpdateDelete();
-        }
-    }
-
-    /**
-     * By exception in the base DAO to allow all dao instances to
-     * update the 'last updated' of the given book.
-     * If successful, the book itself will also be updated with
-     * the current date-time (which will be very slightly 'later' then what we store).
-     *
-     * @param book to update
-     *
-     * @return {@code true} on success
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    public boolean touch(@NonNull final Book book) {
-        if (touchBook(book.getId())) {
-            book.putString(DBKey.DATE_LAST_UPDATED__UTC,
-                           SqlEncode.date(LocalDateTime.now(ZoneOffset.UTC)));
-            return true;
-
-        } else {
-            return false;
-        }
     }
 
     /**

@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
@@ -77,7 +78,7 @@ public class LoaneeDaoImpl
                              @Nullable final String loanee) {
         final boolean success = setLoaneeInternal(bookId, loanee);
         if (success) {
-            touchBook(bookId);
+            ServiceLocator.getInstance().getBookDao().touch(bookId);
         }
         return success;
     }
@@ -87,7 +88,7 @@ public class LoaneeDaoImpl
                              @Nullable final String loanee) {
         final boolean success = setLoaneeInternal(book.getId(), loanee);
         if (success) {
-            touch(book);
+            ServiceLocator.getInstance().getBookDao().touch(book);
         }
         return success;
     }

@@ -127,6 +127,45 @@ public class BookDaoImpl
         dateParser = new ISODateParser();
     }
 
+    /**
+     * Update the 'last updated' of the given book.
+     * <p>
+     * This method should only be called from places where only the book id is available.
+     * If the full Book is available, use {@link #touch(Book)} instead.
+     *
+     * @param bookId to update
+     *
+     * @return {@code true} on success
+     */
+    public boolean touch(@IntRange(from = 1) final long bookId) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.Update.TOUCH)) {
+            stmt.bindLong(1, bookId);
+            return 0 < stmt.executeUpdateDelete();
+        }
+    }
+
+    /**
+     * Update the 'last updated' of the given book.
+     * <p>
+     * If successful, the book itself will also be updated with
+     * the current date-time (which will be very slightly 'later' then what we store).
+     *
+     * @param book to update
+     *
+     * @return {@code true} on success
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public boolean touch(@NonNull final Book book) {
+        if (touch(book.getId())) {
+            book.putString(DBKey.DATE_LAST_UPDATED__UTC,
+                           SqlEncode.date(LocalDateTime.now(ZoneOffset.UTC)));
+            return true;
+
+        } else {
+            return false;
+        }
+    }
+
     @Override
     @IntRange(from = 1, to = Integer.MAX_VALUE)
     public long insert(@NonNull final Context context,
@@ -1327,6 +1366,13 @@ public class BookDaoImpl
                     + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
                     + ',' + DBKey.READ__BOOL + "=?"
                     + ',' + DBKey.READ_END__DATE + "=?"
+                    + _WHERE_ + DBKey.PK_ID + "=?";
+            /**
+             * Update a single Book's DATE_LAST_UPDATED__UTC to 'now'.
+             */
+            static final String TOUCH =
+                    UPDATE_ + TBL_BOOKS.getName()
+                    + _SET_ + DBKey.DATE_LAST_UPDATED__UTC + "=current_timestamp"
                     + _WHERE_ + DBKey.PK_ID + "=?";
 
             private Update() {
