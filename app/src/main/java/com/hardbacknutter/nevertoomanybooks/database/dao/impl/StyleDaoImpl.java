@@ -28,6 +28,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -113,9 +114,12 @@ public class StyleDaoImpl
                    + ',' + DBKey.STYLE_LIST_HEADER
                    + ',' + DBKey.STYLE_DETAILS_SHOW_FIELDS
                    + ',' + DBKey.STYLE_LIST_SHOW_FIELDS
-                   + ")")
-           .append(values(16 + Style.UnderEach.values().length));
+                   + ") VALUES (");
 
+        // 7 + underEach + 9
+        final int v = 16 + Style.UnderEach.values().length;
+
+        tmp.append(String.join(",", Collections.nCopies(v, "?"))).append(")");
 
         INSERT_STYLE = tmp.toString();
     }

@@ -45,7 +45,7 @@ public class StripInfoDaoImpl
             + ',' + DBKey.STRIP_INFO_WANTED
             + ',' + DBKey.STRIP_INFO_AMOUNT
             + ',' + DBKey.STRIP_INFO_LAST_SYNC_DATE__UTC
-            + ")" + values(7);
+            + ") VALUES (?,?,?,?, ?,?,?)";
 
     /**
      * Constructor.

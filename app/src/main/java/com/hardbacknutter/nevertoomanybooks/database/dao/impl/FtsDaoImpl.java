@@ -75,7 +75,7 @@ public class FtsDaoImpl
             + ',' + DBKey.FTS_TOC_ENTRY_TITLE
 
             + ',' + DBKey.FTS_BOOK_ID
-            + ")" + values(11);
+            + ") VALUES (?,?,?,?, ?,?,?,?, ?,?,?)";
 
     /**
      * The full UPDATE statement.

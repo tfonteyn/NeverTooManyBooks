@@ -21,23 +21,14 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.database.Cursor;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 abstract class BaseDaoImpl {
 
@@ -91,22 +82,6 @@ abstract class BaseDaoImpl {
         }
 
         db = ServiceLocator.getInstance().getDb();
-    }
-
-    /**
-     * Create the VALUES clause with 'count' number of '?'.
-     *
-     * @param count number of '?'
-     *
-     * @return a full " VALUES(?,...)" clause
-     */
-    @NonNull
-    public static String values(final int count) {
-        final StringJoiner sj = new StringJoiner(",", " VALUES (", ")");
-        for (int i = 0; i < count; i++) {
-            sj.add("?");
-        }
-        return sj.toString();
     }
 
     /**
