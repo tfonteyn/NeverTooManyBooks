@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
-import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -32,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -376,10 +374,6 @@ public class PublisherDaoImpl
 
         final ArrayList<Long> bookIds = getColumnAsLongArrayList(Sql.REPOSITION);
         if (!bookIds.isEmpty()) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "repositionPublishers|" + TBL_BOOK_PUBLISHER.getName()
-                           + ", rows=" + bookIds.size());
-            }
             // ENHANCE: we really should fetch each book individually
             final Locale bookLocale = context.getResources().getConfiguration().getLocales().get(0);
             final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
@@ -404,9 +398,6 @@ public class PublisherDaoImpl
             } finally {
                 if (txLock != null) {
                     db.endTransaction(txLock);
-                }
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.w(TAG, "repositionPublishers|done");
                 }
             }
         }
