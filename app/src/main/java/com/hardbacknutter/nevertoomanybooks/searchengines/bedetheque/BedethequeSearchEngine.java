@@ -414,7 +414,7 @@ public class BedethequeSearchEngine
             if (!book.getAuthors().isEmpty()) {
                 final AuthorResolver resolver = new AuthorResolver(context, this);
                 for (final Author author : book.getAuthors()) {
-                    resolver.resolve(context, author);
+                    resolver.resolve(author);
                 }
             }
 

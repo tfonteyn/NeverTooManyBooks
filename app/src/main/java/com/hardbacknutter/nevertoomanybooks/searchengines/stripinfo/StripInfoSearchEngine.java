@@ -512,7 +512,7 @@ public class StripInfoSearchEngine
                                  .getBoolean(PK_USE_BEDETHEQUE, false)) {
                 final AuthorResolver resolver = new AuthorResolver(context, this);
                 for (final Author author : book.getAuthors()) {
-                    resolver.resolve(context, author);
+                    resolver.resolve(author);
                 }
             }
         }
