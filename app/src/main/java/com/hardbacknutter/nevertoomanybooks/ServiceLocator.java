@@ -89,7 +89,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.notifier.Notifier;
 import com.hardbacknutter.nevertoomanybooks.utils.notifier.NotifierImpl;
 
-@SuppressWarnings("unused")
 public final class ServiceLocator {
 
     /**
@@ -111,23 +110,20 @@ public final class ServiceLocator {
     @NonNull
     private final Context appContext;
 
-    /** NOT an interface. Cannot be injected. */
+    /** TODO: allow this to be injected. */
     @Nullable
     private DBHelper dbHelper;
 
-    /** NOT an interface. Cannot be injected. */
+    /** TODO: allow this to be injected. */
     @Nullable
     private CacheDbHelper cacheDbHelper;
 
-    /** NOT an interface. Cannot be injected. The underlying {@link StyleDao} can be injected. */
     @Nullable
     private StylesHelper stylesHelper;
 
-    /** NOT an interface. Cannot be injected. The underlying {@link LanguageDao} can be injected. */
     @Nullable
     private Languages languages;
 
-    /** NOT an interface but CAN be injected for testing. */
     @Nullable
     private CookieManager cookieManager;
 
@@ -135,7 +131,6 @@ public final class ServiceLocator {
     @NonNull
     private Supplier<Bundle> bundleSupplier = Bundle::new;
 
-    /** Interfaces. */
     @Nullable
     private AppLocale appLocale;
 
@@ -470,11 +465,6 @@ public final class ServiceLocator {
         return authorDao;
     }
 
-    @VisibleForTesting
-    public void setAuthorDao(@Nullable final AuthorDao dao) {
-        authorDao = dao;
-    }
-
     @NonNull
     public BedethequeCacheDao getBedethequeCacheDao() {
         synchronized (this) {
@@ -510,11 +500,6 @@ public final class ServiceLocator {
         return bookshelfDao;
     }
 
-    @VisibleForTesting
-    public void setBookshelfDao(@Nullable final BookshelfDao dao) {
-        bookshelfDao = dao;
-    }
-
     @NonNull
     public CalibreDao getCalibreDao() {
         synchronized (this) {
@@ -525,12 +510,6 @@ public final class ServiceLocator {
         return calibreDao;
     }
 
-    @VisibleForTesting
-    public void setCalibreDao(@Nullable final CalibreDao dao) {
-        calibreDao = dao;
-    }
-
-
     @NonNull
     public CalibreLibraryDao getCalibreLibraryDao() {
         synchronized (this) {
@@ -539,11 +518,6 @@ public final class ServiceLocator {
             }
         }
         return calibreLibraryDao;
-    }
-
-    @VisibleForTesting
-    public void setCalibreLibraryDao(@Nullable final CalibreLibraryDao dao) {
-        calibreLibraryDao = dao;
     }
 
     @NonNull
@@ -556,11 +530,6 @@ public final class ServiceLocator {
         return calibreCustomFieldDao;
     }
 
-    @VisibleForTesting
-    public void setCalibreCustomFieldDao(@Nullable final CalibreCustomFieldDao dao) {
-        calibreCustomFieldDao = dao;
-    }
-
     @NonNull
     public ColorDao getColorDao() {
         synchronized (this) {
@@ -569,11 +538,6 @@ public final class ServiceLocator {
             }
         }
         return colorDao;
-    }
-
-    @VisibleForTesting
-    public void setColorDao(@Nullable final ColorDao dao) {
-        colorDao = dao;
     }
 
     @NonNull
@@ -586,11 +550,6 @@ public final class ServiceLocator {
         return formatDao;
     }
 
-    @VisibleForTesting
-    public void setFormatDao(@Nullable final FormatDao dao) {
-        formatDao = dao;
-    }
-
     @NonNull
     public FtsDao getFtsDao() {
         synchronized (this) {
@@ -601,12 +560,6 @@ public final class ServiceLocator {
         return ftsDao;
     }
 
-    @VisibleForTesting
-    public void setFtsDao(@Nullable final FtsDao dao) {
-        ftsDao = dao;
-    }
-
-
     @NonNull
     public GenreDao getGenreDao() {
         synchronized (this) {
@@ -615,11 +568,6 @@ public final class ServiceLocator {
             }
         }
         return genreDao;
-    }
-
-    @VisibleForTesting
-    public void setGenreDao(@Nullable final GenreDao dao) {
-        genreDao = dao;
     }
 
     @NonNull
@@ -632,11 +580,6 @@ public final class ServiceLocator {
         return languageDao;
     }
 
-    @VisibleForTesting
-    public void setLanguageDao(@Nullable final LanguageDao dao) {
-        languageDao = dao;
-    }
-
     @NonNull
     public LoaneeDao getLoaneeDao() {
         synchronized (this) {
@@ -645,11 +588,6 @@ public final class ServiceLocator {
             }
         }
         return loaneeDao;
-    }
-
-    @VisibleForTesting
-    public void setLoaneeDao(@Nullable final LoaneeDao dao) {
-        loaneeDao = dao;
     }
 
     @NonNull
@@ -662,11 +600,6 @@ public final class ServiceLocator {
         return locationDao;
     }
 
-    @VisibleForTesting
-    public void setLocationDao(@Nullable final LocationDao dao) {
-        locationDao = dao;
-    }
-
     @NonNull
     public MaintenanceDao getMaintenanceDao() {
         synchronized (this) {
@@ -675,11 +608,6 @@ public final class ServiceLocator {
             }
         }
         return maintenanceDao;
-    }
-
-    @VisibleForTesting
-    public void setMaintenanceDao(@Nullable final MaintenanceDao dao) {
-        maintenanceDao = dao;
     }
 
     @NonNull
@@ -692,11 +620,6 @@ public final class ServiceLocator {
         return publisherDao;
     }
 
-    @VisibleForTesting
-    public void setPublisherDao(@Nullable final PublisherDao dao) {
-        publisherDao = dao;
-    }
-
     @NonNull
     public SeriesDao getSeriesDao() {
         synchronized (this) {
@@ -707,11 +630,6 @@ public final class ServiceLocator {
         return seriesDao;
     }
 
-    @VisibleForTesting
-    public void setSeriesDao(@Nullable final SeriesDao dao) {
-        seriesDao = dao;
-    }
-
     @NonNull
     public StripInfoDao getStripInfoDao() {
         synchronized (this) {
@@ -720,11 +638,6 @@ public final class ServiceLocator {
             }
         }
         return stripInfoDao;
-    }
-
-    @VisibleForTesting
-    public void setStripInfoDao(@Nullable final StripInfoDao dao) {
-        stripInfoDao = dao;
     }
 
     /**
@@ -742,11 +655,6 @@ public final class ServiceLocator {
         return styleDao;
     }
 
-    @VisibleForTesting
-    public void setStyleDao(@Nullable final StyleDao dao) {
-        styleDao = dao;
-    }
-
     @NonNull
     public TocEntryDao getTocEntryDao() {
         synchronized (this) {
@@ -757,11 +665,6 @@ public final class ServiceLocator {
         return tocEntryDao;
     }
 
-    @VisibleForTesting
-    public void setTocEntryDao(@Nullable final TocEntryDao dao) {
-        tocEntryDao = dao;
-    }
-
     @NonNull
     public CoverCacheDao getCoverCacheDao() {
         synchronized (this) {
@@ -770,9 +673,5 @@ public final class ServiceLocator {
             }
         }
         return coverCacheDao;
-    }
-
-    public void setCoverCacheDao(@Nullable final CoverCacheDao dao) {
-        coverCacheDao = dao;
     }
 }
