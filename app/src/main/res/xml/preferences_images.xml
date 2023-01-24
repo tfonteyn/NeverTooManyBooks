@@ -70,7 +70,7 @@
 
         <Preference
             android:dependency="image.cache.resized"
-            android:icon="@drawable/ic_baseline_remove_24"
+            android:icon="@drawable/ic_baseline_delete_24"
             android:key="psk_purge_image_cache"
             android:title="@string/option_purge_image_cache"
             />
