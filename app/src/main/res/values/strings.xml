@@ -1326,6 +1326,7 @@
 
     <!-- Clear the cached images -->
     <string name="option_purge_image_cache">Clear image cache</string>
+    <string name="option_purge_bedetheque_authors_cache">Clear Bedetheque Authors cache</string>
     <string name="option_rebuild_fts">Rebuild FTS</string>
     <string name="option_rebuild_index">Rebuild index</string>
     <string name="info_rebuild_scheduled">Rebuild scheduled</string>

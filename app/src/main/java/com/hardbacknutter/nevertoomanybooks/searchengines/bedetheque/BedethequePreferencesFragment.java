@@ -22,18 +22,64 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.Preference;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
 public class BedethequePreferencesFragment
         extends BasePreferenceFragment {
+
+    private static final String PSK_CLEAR_AUTHOR_CACHE = "bedetheque.cache.authors.clear";
+    private int authorCacheCount = -1;
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_bedetheque, rootKey);
+
+        final Preference purgeCache = findPreference(PSK_CLEAR_AUTHOR_CACHE);
+        //noinspection ConstantConditions
+        setPurgeCacheSummary(purgeCache);
+
+        purgeCache.setOnPreferenceClickListener(p -> {
+            if (authorCacheCount > 0) {
+                //noinspection ConstantConditions
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setMessage(R.string.option_purge_bedetheque_authors_cache)
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(android.R.string.ok, (d, w) -> {
+                            ServiceLocator.getInstance().getBedethequeCacheDao().purgeCache();
+                            setPurgeCacheSummary(p);
+                        })
+                        .create()
+                        .show();
+            }
+            return true;
+        });
+    }
+
+    private void setPurgeCacheSummary(@NonNull final Preference preference) {
+        if (preference.isEnabled()) {
+            authorCacheCount = ServiceLocator.getInstance().getBedethequeCacheDao().count();
+            final String number;
+            if (authorCacheCount > 0) {
+                number = String.valueOf(authorCacheCount);
+            } else {
+                number = getString(R.string.none);
+            }
+            preference.setSummary(getString(R.string.name_colon_value,
+                                            getString(R.string.lbl_authors), number));
+        } else {
+            authorCacheCount = -1;
+            preference.setSummary("");
+        }
     }
 }
