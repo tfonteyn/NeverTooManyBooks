@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
@@ -122,8 +123,8 @@ public class BookDaoImpl
     /**
      * Constructor.
      */
-    public BookDaoImpl() {
-        super(TAG);
+    public BookDaoImpl(@NonNull final SynchronizedDb db) {
+        super(db, TAG);
         dateParser = new ISODateParser();
     }
 

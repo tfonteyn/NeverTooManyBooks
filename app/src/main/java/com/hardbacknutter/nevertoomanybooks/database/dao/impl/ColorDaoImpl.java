@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,8 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
+import androidx.annotation.NonNull;
+
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.ColorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 
 public class ColorDaoImpl
         extends InlineStringDaoImpl
@@ -32,7 +35,7 @@ public class ColorDaoImpl
     /**
      * Constructor.
      */
-    public ColorDaoImpl() {
-        super(TAG, DBKey.COLOR);
+    public ColorDaoImpl(@NonNull final SynchronizedDb db) {
+        super(db, TAG, DBKey.COLOR);
     }
 }

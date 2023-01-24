@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -67,8 +68,8 @@ public class TocEntryDaoImpl
     /**
      * Constructor.
      */
-    public TocEntryDaoImpl() {
-        super(TAG);
+    public TocEntryDaoImpl(@NonNull final SynchronizedDb db) {
+        super(db, TAG);
     }
 
     @Override

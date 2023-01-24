@@ -26,6 +26,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -50,8 +51,8 @@ public class StripInfoDaoImpl
     /**
      * Constructor.
      */
-    public StripInfoDaoImpl() {
-        super(TAG);
+    public StripInfoDaoImpl(@NonNull final SynchronizedDb db) {
+        super(db, TAG);
     }
 
     @Override

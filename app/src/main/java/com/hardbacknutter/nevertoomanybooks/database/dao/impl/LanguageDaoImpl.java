@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 public class LanguageDaoImpl
@@ -51,8 +52,8 @@ public class LanguageDaoImpl
     /**
      * Constructor.
      */
-    public LanguageDaoImpl() {
-        super(TAG, DBKey.LANGUAGE);
+    public LanguageDaoImpl(@NonNull final SynchronizedDb db) {
+        super(db, TAG, DBKey.LANGUAGE);
     }
 
     /**

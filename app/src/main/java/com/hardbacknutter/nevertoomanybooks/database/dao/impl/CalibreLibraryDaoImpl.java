@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -140,8 +141,8 @@ public class CalibreLibraryDaoImpl
     /**
      * Constructor.
      */
-    public CalibreLibraryDaoImpl() {
-        super(TAG);
+    public CalibreLibraryDaoImpl(@NonNull final SynchronizedDb db) {
+        super(db, TAG);
     }
 
     @Override

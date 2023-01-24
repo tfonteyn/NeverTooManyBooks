@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
@@ -163,8 +164,8 @@ public class FtsDaoImpl
     /**
      * Constructor.
      */
-    public FtsDaoImpl() {
-        super(TAG);
+    public FtsDaoImpl(@NonNull final SynchronizedDb db) {
+        super(db, TAG);
     }
 
     /**

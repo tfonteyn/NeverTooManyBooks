@@ -28,6 +28,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -54,8 +55,8 @@ public class CalibreDaoImpl
     /**
      * Constructor.
      */
-    public CalibreDaoImpl() {
-        super(TAG);
+    public CalibreDaoImpl(@NonNull final SynchronizedDb db) {
+        super(db, TAG);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,8 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
+import androidx.annotation.NonNull;
+
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.GenreDao;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 
 public class GenreDaoImpl
         extends InlineStringDaoImpl
@@ -32,7 +35,7 @@ public class GenreDaoImpl
     /**
      * Constructor.
      */
-    public GenreDaoImpl() {
-        super(TAG, DBKey.GENRE);
+    public GenreDaoImpl(@NonNull final SynchronizedDb db) {
+        super(db, TAG, DBKey.GENRE);
     }
 }

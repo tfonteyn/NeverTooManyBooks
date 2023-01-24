@@ -41,7 +41,6 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.Cover;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
@@ -101,8 +100,8 @@ public class CoverCacheDaoImpl
     /**
      * Constructor.
      */
-    public CoverCacheDaoImpl() {
-        db = ServiceLocator.getInstance().getCacheDb();
+    public CoverCacheDaoImpl(@NonNull final SynchronizedDb db) {
+        this.db = db;
     }
 
     /**

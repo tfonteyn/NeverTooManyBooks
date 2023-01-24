@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreCustomFieldDao;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
@@ -71,8 +72,8 @@ public class CalibreCustomFieldDaoImpl
     /**
      * Constructor.
      */
-    public CalibreCustomFieldDaoImpl() {
-        super(TAG);
+    public CalibreCustomFieldDaoImpl(@NonNull final SynchronizedDb db) {
+        super(db, TAG);
     }
 
     /**

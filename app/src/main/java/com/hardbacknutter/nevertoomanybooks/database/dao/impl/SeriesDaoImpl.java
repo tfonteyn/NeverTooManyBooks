@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -65,8 +66,8 @@ public class SeriesDaoImpl
     /**
      * Constructor.
      */
-    public SeriesDaoImpl() {
-        super(TAG);
+    public SeriesDaoImpl(@NonNull final SynchronizedDb db) {
+        super(db, TAG);
     }
 
     @Override

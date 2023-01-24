@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -65,8 +66,8 @@ public class BookshelfDaoImpl
     /**
      * Constructor.
      */
-    public BookshelfDaoImpl() {
-        super(TAG);
+    public BookshelfDaoImpl(@NonNull final SynchronizedDb db) {
+        super(db, TAG);
     }
 
     /**

@@ -27,6 +27,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.InlineStringDao;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 
 public abstract class InlineStringDaoImpl
@@ -46,9 +47,10 @@ public abstract class InlineStringDaoImpl
      *
      * @param logTag of this DAO for logging.
      */
-    InlineStringDaoImpl(@NonNull final String logTag,
+    InlineStringDaoImpl(@NonNull final SynchronizedDb db,
+                        @NonNull final String logTag,
                         @NonNull final String key) {
-        super(logTag);
+        super(db, logTag);
 
         sqlSelectAll = SELECT_DISTINCT_ + key
                        + _FROM_ + DBDefinitions.TBL_BOOKS.getName()

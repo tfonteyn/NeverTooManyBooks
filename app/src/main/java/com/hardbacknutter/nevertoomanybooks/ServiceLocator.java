@@ -460,7 +460,7 @@ public final class ServiceLocator {
     public AuthorDao getAuthorDao() {
         synchronized (this) {
             if (authorDao == null) {
-                authorDao = new AuthorDaoImpl();
+                authorDao = new AuthorDaoImpl(getDb());
             }
         }
         return authorDao;
@@ -475,7 +475,7 @@ public final class ServiceLocator {
     public BookDao getBookDao() {
         synchronized (this) {
             if (bookDao == null) {
-                bookDao = new BookDaoImpl();
+                bookDao = new BookDaoImpl(getDb());
             }
         }
         return bookDao;
@@ -490,7 +490,7 @@ public final class ServiceLocator {
     public BookshelfDao getBookshelfDao() {
         synchronized (this) {
             if (bookshelfDao == null) {
-                bookshelfDao = new BookshelfDaoImpl();
+                bookshelfDao = new BookshelfDaoImpl(getDb());
             }
         }
         return bookshelfDao;
@@ -505,7 +505,7 @@ public final class ServiceLocator {
     public CalibreDao getCalibreDao() {
         synchronized (this) {
             if (calibreDao == null) {
-                calibreDao = new CalibreDaoImpl();
+                calibreDao = new CalibreDaoImpl(getDb());
             }
         }
         return calibreDao;
@@ -521,7 +521,7 @@ public final class ServiceLocator {
     public CalibreLibraryDao getCalibreLibraryDao() {
         synchronized (this) {
             if (calibreLibraryDao == null) {
-                calibreLibraryDao = new CalibreLibraryDaoImpl();
+                calibreLibraryDao = new CalibreLibraryDaoImpl(getDb());
             }
         }
         return calibreLibraryDao;
@@ -536,7 +536,7 @@ public final class ServiceLocator {
     public CalibreCustomFieldDao getCalibreCustomFieldDao() {
         synchronized (this) {
             if (calibreCustomFieldDao == null) {
-                calibreCustomFieldDao = new CalibreCustomFieldDaoImpl();
+                calibreCustomFieldDao = new CalibreCustomFieldDaoImpl(getDb());
             }
         }
         return calibreCustomFieldDao;
@@ -551,7 +551,7 @@ public final class ServiceLocator {
     public ColorDao getColorDao() {
         synchronized (this) {
             if (colorDao == null) {
-                colorDao = new ColorDaoImpl();
+                colorDao = new ColorDaoImpl(getDb());
             }
         }
         return colorDao;
@@ -566,7 +566,7 @@ public final class ServiceLocator {
     public FormatDao getFormatDao() {
         synchronized (this) {
             if (formatDao == null) {
-                formatDao = new FormatDaoImpl();
+                formatDao = new FormatDaoImpl(getDb());
             }
         }
         return formatDao;
@@ -581,7 +581,7 @@ public final class ServiceLocator {
     public FtsDao getFtsDao() {
         synchronized (this) {
             if (ftsDao == null) {
-                ftsDao = new FtsDaoImpl();
+                ftsDao = new FtsDaoImpl(getDb());
             }
         }
         return ftsDao;
@@ -597,7 +597,7 @@ public final class ServiceLocator {
     public GenreDao getGenreDao() {
         synchronized (this) {
             if (genreDao == null) {
-                genreDao = new GenreDaoImpl();
+                genreDao = new GenreDaoImpl(getDb());
             }
         }
         return genreDao;
@@ -612,7 +612,7 @@ public final class ServiceLocator {
     public LanguageDao getLanguageDao() {
         synchronized (this) {
             if (languageDao == null) {
-                languageDao = new LanguageDaoImpl();
+                languageDao = new LanguageDaoImpl(getDb());
             }
         }
         return languageDao;
@@ -627,7 +627,7 @@ public final class ServiceLocator {
     public LoaneeDao getLoaneeDao() {
         synchronized (this) {
             if (loaneeDao == null) {
-                loaneeDao = new LoaneeDaoImpl();
+                loaneeDao = new LoaneeDaoImpl(getDb());
             }
         }
         return loaneeDao;
@@ -642,7 +642,7 @@ public final class ServiceLocator {
     public LocationDao getLocationDao() {
         synchronized (this) {
             if (locationDao == null) {
-                locationDao = new LocationDaoImpl();
+                locationDao = new LocationDaoImpl(getDb());
             }
         }
         return locationDao;
@@ -657,7 +657,7 @@ public final class ServiceLocator {
     public MaintenanceDao getMaintenanceDao() {
         synchronized (this) {
             if (maintenanceDao == null) {
-                maintenanceDao = new MaintenanceDaoImpl();
+                maintenanceDao = new MaintenanceDaoImpl(getDb());
             }
         }
         return maintenanceDao;
@@ -672,7 +672,7 @@ public final class ServiceLocator {
     public PublisherDao getPublisherDao() {
         synchronized (this) {
             if (publisherDao == null) {
-                publisherDao = new PublisherDaoImpl();
+                publisherDao = new PublisherDaoImpl(getDb());
             }
         }
         return publisherDao;
@@ -687,7 +687,7 @@ public final class ServiceLocator {
     public SeriesDao getSeriesDao() {
         synchronized (this) {
             if (seriesDao == null) {
-                seriesDao = new SeriesDaoImpl();
+                seriesDao = new SeriesDaoImpl(getDb());
             }
         }
         return seriesDao;
@@ -702,7 +702,7 @@ public final class ServiceLocator {
     public StripInfoDao getStripInfoDao() {
         synchronized (this) {
             if (stripInfoDao == null) {
-                stripInfoDao = new StripInfoDaoImpl();
+                stripInfoDao = new StripInfoDaoImpl(getDb());
             }
         }
         return stripInfoDao;
@@ -722,7 +722,7 @@ public final class ServiceLocator {
     public StyleDao getStyleDao() {
         synchronized (this) {
             if (styleDao == null) {
-                styleDao = new StyleDaoImpl();
+                styleDao = new StyleDaoImpl(getDb());
             }
         }
         return styleDao;
@@ -737,7 +737,7 @@ public final class ServiceLocator {
     public TocEntryDao getTocEntryDao() {
         synchronized (this) {
             if (tocEntryDao == null) {
-                tocEntryDao = new TocEntryDaoImpl();
+                tocEntryDao = new TocEntryDaoImpl(getDb());
             }
         }
         return tocEntryDao;
@@ -752,7 +752,7 @@ public final class ServiceLocator {
     public CoverCacheDao getCoverCacheDao() {
         synchronized (this) {
             if (coverCacheDao == null) {
-                coverCacheDao = new CoverCacheDaoImpl();
+                coverCacheDao = new CoverCacheDaoImpl(getCacheDb());
             }
         }
         return coverCacheDao;

@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -75,8 +76,8 @@ public class AuthorDaoImpl
     /**
      * Constructor.
      */
-    public AuthorDaoImpl() {
-        super(TAG);
+    public AuthorDaoImpl(@NonNull final SynchronizedDb db) {
+        super(db, TAG);
     }
 
     /**

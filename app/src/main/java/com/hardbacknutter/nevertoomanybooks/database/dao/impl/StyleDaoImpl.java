@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StyleDao;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -127,8 +128,8 @@ public class StyleDaoImpl
     /**
      * Constructor.
      */
-    public StyleDaoImpl() {
-        super(TAG);
+    public StyleDaoImpl(@NonNull final SynchronizedDb db) {
+        super(db, TAG);
     }
 
     /**
