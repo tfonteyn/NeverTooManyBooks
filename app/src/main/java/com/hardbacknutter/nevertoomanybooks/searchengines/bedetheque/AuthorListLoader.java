@@ -27,13 +27,12 @@ import androidx.annotation.NonNull;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BedethequeCacheDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 import org.jsoup.nodes.Document;
@@ -54,32 +53,6 @@ class AuthorListLoader {
         this.context = context;
         this.searchEngine = searchEngine;
         locale = searchEngine.getLocale(context);
-    }
-
-    /**
-     * Take the first character from the given name and normalize it to [0A-Z]
-     * for use with the other class methods.
-     *
-     * @param name to use
-     *
-     * @return [0A-Z] of the first character
-     */
-    char firstChar(@NonNull final CharSequence name) {
-        final char c1 = ParseUtils.toAscii(String.valueOf(name.charAt(0)))
-                                  .toUpperCase(locale)
-                                  .charAt(0);
-        return Character.isAlphabetic(c1) ? c1 : '0';
-    }
-
-
-    boolean isAuthorPageCached(final char c1) {
-        final SynchronizedDb cacheDb = ServiceLocator.getInstance().getCacheDb();
-        try (SynchronizedStatement stmt = cacheDb.compileStatement(
-                "SELECT DISTINCT 1 FROM " + CacheDbHelper.TBL_BDT_AUTHORS
-                + " WHERE " + CacheDbHelper.BDT_AUTHOR_NAME + " LIKE ?")) {
-            stmt.bindString(1, c1 + "%");
-            return stmt.simpleQueryForLongOrZero() != 0;
-        }
     }
 
     /**
@@ -122,7 +95,9 @@ class AuthorListLoader {
             }
 
             final Elements all = document.select("ul.nav-liste > li > a");
-            try (SynchronizedStatement stmt = cacheDb.compileStatement(BdtAuthor.INSERT)) {
+            // URGENT: this should be in the DAO
+            try (SynchronizedStatement stmt = cacheDb.compileStatement(
+                    BedethequeCacheDaoImpl.Sql.INSERT)) {
                 for (final Element a : all) {
                     final String url = a.attr("href");
                     final Element span = a.selectFirst("span.libelle");

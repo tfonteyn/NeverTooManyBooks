@@ -24,16 +24,24 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.select.Elements;
 
 /**
  * Connects to the Bedetheque website to resolve author pseudonyms.
@@ -78,6 +86,21 @@ public class AuthorResolver {
     }
 
     /**
+     * Take the first character from the given name and normalize it to [0A-Z]
+     * for use with the other class methods.
+     *
+     * @param name to use
+     *
+     * @return [0A-Z] of the first character
+     */
+    private char firstChar(@NonNull final CharSequence name) {
+        final char c1 = ParseUtils.toAscii(String.valueOf(name.charAt(0)))
+                                  .toUpperCase(locale)
+                                  .charAt(0);
+        return Character.isAlphabetic(c1) ? c1 : '0';
+    }
+
+    /**
      * Update the given {@link Author} with any missing diacritics and resolve pen-names.
      *
      * @param author to lookup
@@ -96,29 +119,41 @@ public class AuthorResolver {
             return false;
         }
 
+        final String name = author.getFormattedName(false);
+
+        final BedethequeCacheDao cacheDao = ServiceLocator.getInstance().getBedethequeCacheDao();
         // Check if we have the author in the cache
-        final BdtAuthor bdtAuthor = new BdtAuthor(context, searchEngine, author);
-        boolean found = bdtAuthor.findInCache();
-        if (!found) {
+        BdtAuthor bdtAuthor = cacheDao.findByName(name, locale);
+        if (bdtAuthor == null) {
             // If not resolved / not found,
             final AuthorListLoader pageLoader = new AuthorListLoader(context, searchEngine);
-            final char c1 = pageLoader.firstChar(author.getFamilyName());
+            final char c1 = firstChar(author.getFamilyName());
             // and the list-page was never fetched before,
             // URGENT: we need to add a "purge cache" option on the preference fragment
-            if (!pageLoader.isAuthorPageCached(c1)) {
+            if (!cacheDao.isAuthorPageCached(c1)) {
                 // go fetch the the list-page on which the author should/could be
                 if (pageLoader.fetch(c1)) {
                     // If the author was on the list page, we should find it in the cache now.
-                    found = bdtAuthor.findInCache();
+                    bdtAuthor = cacheDao.findByName(name, locale);
                 }
             }
         }
 
-        // If the author is not resolved, try fetch the author details page
-        if (!found && !bdtAuthor.lookup()) {
-            // Not found at all.
+        // If the author is still not found in the cache, give up
+        if (bdtAuthor == null) {
             return false;
         }
+
+        // we have it in the cache, check if it's fully resolved
+        if (!bdtAuthor.isResolved()) {
+            if (!lookup(bdtAuthor)) {
+                // The website list page had it, but there is no details page.
+                // We should never get here... flw
+                return false;
+            }
+        }
+
+        // it should now be resolved.
 
         final String resolvedName = bdtAuthor.getResolvedName();
         // If the author does not use a pen-name, we're done.
@@ -141,5 +176,90 @@ public class AuthorResolver {
         }
 
         return true;
+    }
+
+
+    /**
+     * Lookup the author on the website.
+     * If successful, it will have been updated in the cache database.
+     *
+     * @param bdtAuthor to lookup
+     *
+     * @return {@code true} on success
+     */
+    private boolean lookup(@NonNull final BdtAuthor bdtAuthor)
+            throws SearchException, CredentialsException {
+        final String url = bdtAuthor.getUrl();
+        if (url == null || url.isEmpty()) {
+            return false;
+        }
+
+        final Document document = searchEngine.loadDocument(context, url, null);
+        if (!searchEngine.isCancelled()) {
+            if (parseAuthor(document, bdtAuthor)) {
+                ServiceLocator.getInstance().getBedethequeCacheDao()
+                              .update(bdtAuthor, locale);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Parse the downloaded document and update the given {@link BdtAuthor} if possible.
+     *
+     * @param document  to parse
+     * @param bdtAuthor to update
+     *
+     * @return {@code true} on success
+     */
+    @VisibleForTesting
+    boolean parseAuthor(@NonNull final Document document,
+                        @NonNull final BdtAuthor bdtAuthor) {
+
+        final Element info = document.selectFirst("div.auteur-infos ul.auteur-info");
+        if (info != null) {
+            final Elements labels = info.getElementsByTag("label");
+            String familyName = "";
+            String givenName = "";
+            String penName = "";
+
+            for (final Element label : labels) {
+                //noinspection SwitchStatementWithoutDefaultBranch
+                switch (label.text()) {
+                    case "Nom :": {
+                        final Element span = label.nextElementSibling();
+                        if (span != null) {
+                            familyName = span.text();
+                        }
+                        break;
+                    }
+                    case "Prénom :": {
+                        final Element span = label.nextElementSibling();
+                        if (span != null) {
+                            givenName = span.text();
+                        }
+                        break;
+                    }
+                    case "Pseudo :": {
+                        final Node textNode = label.nextSibling();
+                        if (textNode != null) {
+                            penName = textNode.toString();
+                        }
+                        break;
+                    }
+                }
+            }
+
+            // sanity check
+            if (!familyName.isEmpty()) {
+                bdtAuthor.setResolvedName(
+                        familyName + (givenName.isBlank() ? "" : ", " + givenName));
+                return true;
+            }
+        }
+
+        bdtAuthor.setResolvedName(null);
+        return false;
     }
 }
