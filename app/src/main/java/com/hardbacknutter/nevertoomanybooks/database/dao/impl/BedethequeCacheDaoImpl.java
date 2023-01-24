@@ -27,7 +27,6 @@ import androidx.annotation.Nullable;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
@@ -69,8 +68,7 @@ public class BedethequeCacheDaoImpl
 
         final String resolvedName = bdtAuthor.getResolvedName();
 
-        final SynchronizedDb cacheDb = ServiceLocator.getInstance().getCacheDb();
-        try (SynchronizedStatement stmt = cacheDb.compileStatement(Sql.UPDATE)) {
+        try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
             stmt.bindString(1, bdtAuthor.getName());
             stmt.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(), locale));
             stmt.bindString(3, bdtAuthor.getUrl());
