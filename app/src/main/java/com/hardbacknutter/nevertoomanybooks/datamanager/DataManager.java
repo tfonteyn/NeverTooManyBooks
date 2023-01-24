@@ -204,8 +204,6 @@ public class DataManager
 
     /**
      * Store a Object value. The object will be cast to one of the supported types.
-     * <p>
-     * An ArrayList is only supported with Parcelable content.
      *
      * @param key   Key of data object
      * @param value to store
@@ -214,9 +212,15 @@ public class DataManager
      */
     public void put(@NonNull final String key,
                     @Nullable final Object value) {
+        // This code is a subset of Bundle#putObject(String, Object)
+        // which is not part of the public API.
 
-        if (value instanceof String) {
-            rawData.putString(key, (String) value);
+        if (value instanceof Money) {
+            // special handling
+            putMoney(key, (Money) value);
+
+        } else if (value instanceof CharSequence) {
+            rawData.putCharSequence(key, (CharSequence) value);
         } else if (value instanceof Integer) {
             rawData.putInt(key, (int) value);
         } else if (value instanceof Long) {
@@ -228,13 +232,13 @@ public class DataManager
         } else if (value instanceof Boolean) {
             rawData.putBoolean(key, (boolean) value);
 
+        } else if (value instanceof Parcelable) {
+            rawData.putParcelable(key, (Parcelable) value);
+        } else if (value instanceof Parcelable[]) {
+            rawData.putParcelableArray(key, (Parcelable[]) value);
         } else if (value instanceof ArrayList) {
-            //URGENT: what with ArrayList<String> ... putStringArrayList(); ?
-            //noinspection unchecked
-            putParcelableArrayList(key, (ArrayList<Parcelable>) value);
-
-        } else if (value instanceof Money) {
-            putMoney(key, (Money) value);
+            //noinspection unchecked,rawtypes
+            rawData.putParcelableArrayList(key, (ArrayList) value);
 
         } else if (value instanceof Serializable) {
             putSerializable(key, (Serializable) value);
