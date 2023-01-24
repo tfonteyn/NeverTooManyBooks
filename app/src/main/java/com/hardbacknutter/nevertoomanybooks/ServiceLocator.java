@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.StylesHelper;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreCustomFieldDao;
@@ -60,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StyleDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BedethequeCacheDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookshelfDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreCustomFieldDaoImpl;
@@ -142,6 +144,8 @@ public final class ServiceLocator {
 
     @Nullable
     private AuthorDao authorDao;
+    @Nullable
+    private BedethequeCacheDao bedethequeCacheDao;
     @Nullable
     private BookDao bookDao;
     @Nullable
@@ -469,6 +473,16 @@ public final class ServiceLocator {
     @VisibleForTesting
     public void setAuthorDao(@Nullable final AuthorDao dao) {
         authorDao = dao;
+    }
+
+    @NonNull
+    public BedethequeCacheDao getBedethequeCacheDao() {
+        synchronized (this) {
+            if (bedethequeCacheDao == null) {
+                bedethequeCacheDao = new BedethequeCacheDaoImpl(getCacheDb());
+            }
+        }
+        return bedethequeCacheDao;
     }
 
     @NonNull
