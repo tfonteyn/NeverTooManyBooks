@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 
-import android.content.Context;
-
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -41,8 +39,6 @@ import org.junit.Test;
 public class AuthorTest
         extends BaseDBTest {
 
-    private Context context;
-
     private AuthorResolver resolver;
 
     @Before
@@ -50,8 +46,7 @@ public class AuthorTest
             throws DaoWriteException, StorageException {
         super.setup();
 
-        context = serviceLocator.getLocalizedAppContext();
-        resolver = new AuthorResolver(context, new FakeCancellable());
+        resolver = new AuthorResolver(context, new NotCancellable());
 
         serviceLocator.getCacheDb().execSQL("DELETE FROM " + CacheDbHelper.TBL_BDT_AUTHORS);
     }
@@ -65,7 +60,7 @@ public class AuthorTest
         final Author realAuthor;
 
         author = new Author("Leloup", "Roger");
-        lookup = resolver.resolve(context, author);
+        lookup = resolver.resolve(author);
         // no pen-name
         Assert.assertFalse(lookup);
         Assert.assertEquals("Leloup", author.getFamilyName());
@@ -83,7 +78,7 @@ public class AuthorTest
         final Author realAuthor;
 
         author = new Author("Jije", "");
-        lookup = resolver.resolve(context, author);
+        lookup = resolver.resolve(author);
         Assert.assertTrue(lookup);
         Assert.assertEquals("Jijé", author.getFamilyName());
         realAuthor = author.getRealAuthor();
@@ -102,7 +97,7 @@ public class AuthorTest
         final Author realAuthor;
 
         author = new Author("61Chi", "");
-        lookup = resolver.resolve(context, author);
+        lookup = resolver.resolve(author);
         Assert.assertTrue(lookup);
         Assert.assertEquals("61Chi", author.getFamilyName());
         realAuthor = author.getRealAuthor();
@@ -121,14 +116,14 @@ public class AuthorTest
         final Author realAuthor;
 
         author = new Author("<Indéterminé>", "");
-        lookup = resolver.resolve(context, author);
+        lookup = resolver.resolve(author);
         Assert.assertFalse(lookup);
         Assert.assertEquals("<Indéterminé>", author.getFamilyName());
         realAuthor = author.getRealAuthor();
         Assert.assertNull(realAuthor);
     }
 
-    private static class FakeCancellable
+    private static class NotCancellable
             implements Cancellable {
         @Override
         public void cancel() {
