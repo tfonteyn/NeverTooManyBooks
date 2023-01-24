@@ -25,8 +25,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
-import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
-import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,15 +40,14 @@ class AuthorParseTest
 
     private static final String UTF_8 = "UTF-8";
 
-    private BedethequeSearchEngine searchEngine;
+    private AuthorResolver resolver;
 
     @BeforeEach
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
-        searchEngine = (BedethequeSearchEngine) Site.Type.Data
-                .getSite(EngineId.Bedetheque).getSearchEngine();
-        searchEngine.setCaller(new MockCancellable());
+
+        resolver = new AuthorResolver(context, new MockCancellable());
     }
 
     @Test
@@ -58,11 +55,10 @@ class AuthorParseTest
             throws IOException {
         final String locationHeader = "https://www.bedetheque.com/auteur-96-BD-Leloup-Roger.html";
         final String filename = "/bedetheque/auteur-96-BD-Leloup-Roger.html";
-        final BdtAuthor bdtAuthor =
-                new BdtAuthor(context, searchEngine, "Leloup, Roger", locationHeader);
+        final BdtAuthor bdtAuthor = new BdtAuthor("Leloup, Roger", locationHeader);
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        final boolean modified = bdtAuthor.parseAuthor(document);
+        final boolean modified = resolver.parseAuthor(document, bdtAuthor);
         assertTrue(modified);
         assertEquals("Leloup, Roger", bdtAuthor.getName());
         assertTrue(bdtAuthor.isResolved());
@@ -74,11 +70,10 @@ class AuthorParseTest
             throws IOException {
         final String locationHeader = "https://www.bedetheque.com/auteur-97-BD-Leo.html";
         final String filename = "/bedetheque/auteur-97-BD-Leo.html";
-        final BdtAuthor bdtAuthor =
-                new BdtAuthor(context, searchEngine, "Leo", locationHeader);
+        final BdtAuthor bdtAuthor = new BdtAuthor("Leo", locationHeader);
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        final boolean modified = bdtAuthor.parseAuthor(document);
+        final boolean modified = resolver.parseAuthor(document, bdtAuthor);
         assertTrue(modified);
         assertEquals("Leo", bdtAuthor.getName());
         assertTrue(bdtAuthor.isResolved());

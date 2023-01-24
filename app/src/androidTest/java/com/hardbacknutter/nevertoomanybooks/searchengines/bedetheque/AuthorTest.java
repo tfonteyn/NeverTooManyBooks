@@ -21,7 +21,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -48,7 +48,7 @@ public class AuthorTest
 
         resolver = new AuthorResolver(context, new NotCancellable());
 
-        serviceLocator.getCacheDb().execSQL("DELETE FROM " + CacheDbHelper.TBL_BDT_AUTHORS);
+        ServiceLocator.getInstance().getBedethequeCacheDao().purgeCache();
     }
 
     @Test
@@ -77,6 +77,23 @@ public class AuthorTest
         final Author author;
         final Author realAuthor;
 
+        author = new Author("<Indéterminé>", "");
+        lookup = resolver.resolve(author);
+        // no pen-name
+        Assert.assertFalse(lookup);
+        Assert.assertEquals("<Indéterminé>", author.getFamilyName());
+        realAuthor = author.getRealAuthor();
+        Assert.assertNull(realAuthor);
+    }
+
+    @Test
+    public void lookup10()
+            throws SearchException, CredentialsException {
+
+        final boolean lookup;
+        final Author author;
+        final Author realAuthor;
+
         author = new Author("Jije", "");
         lookup = resolver.resolve(author);
         Assert.assertTrue(lookup);
@@ -89,7 +106,7 @@ public class AuthorTest
     }
 
     @Test
-    public void lookup03()
+    public void lookup11()
             throws SearchException, CredentialsException {
 
         final boolean lookup;
@@ -107,21 +124,7 @@ public class AuthorTest
         Assert.assertNull(realAuthor.getRealAuthor());
     }
 
-    @Test
-    public void lookup04()
-            throws SearchException, CredentialsException {
 
-        final boolean lookup;
-        final Author author;
-        final Author realAuthor;
-
-        author = new Author("<Indéterminé>", "");
-        lookup = resolver.resolve(author);
-        Assert.assertFalse(lookup);
-        Assert.assertEquals("<Indéterminé>", author.getFamilyName());
-        realAuthor = author.getRealAuthor();
-        Assert.assertNull(realAuthor);
-    }
 
     private static class NotCancellable
             implements Cancellable {
