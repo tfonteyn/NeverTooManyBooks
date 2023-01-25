@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -50,12 +51,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class BedethequeTest
         extends JSoupBase {
 
-    // Resolving requires database access which we don't mock for now
-    private static final boolean RESOLVE_AUTHORS = false;
-
     private static final String UTF_8 = "UTF-8";
 
     private BedethequeSearchEngine searchEngine;
+
+    private AuthorResolver mockAuthorResolver;
 
     @BeforeEach
     public void setup()
@@ -75,7 +75,7 @@ public class BedethequeTest
         final String filename = "/bedetheque/BD-Fond-du-monde-Tome-6-La-grande-terre-19401.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{true, true}, book, RESOLVE_AUTHORS);
+        searchEngine.parse(context, document, new boolean[]{true, true}, book, mockAuthorResolver);
         System.out.println(book);
 
         assertEquals("La grande terre", book.getString(DBKey.TITLE, null));

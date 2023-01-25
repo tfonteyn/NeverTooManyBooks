@@ -103,6 +103,11 @@ public class BedethequeSearchEngine
     }
 
     @NonNull
+    private AuthorResolver getAuthorResolver(@NonNull final Context context) {
+        return new BedethequeAuthorResolver(context, this);
+    }
+
+    @NonNull
     private String requireCookieNameValueString(@NonNull final Context context)
             throws SearchException {
         if (csrfCookie == null || csrfCookie.hasExpired()) {
@@ -187,8 +192,7 @@ public class BedethequeSearchEngine
                 if (!url.isBlank()) {
                     final Document redirected = loadDocument(context, url, extraRequestProperties);
                     if (!isCancelled()) {
-                        // always resolve authors
-                        parse(context, redirected, fetchCovers, book, true);
+                        parse(context, redirected, fetchCovers, book, getAuthorResolver(context));
                     }
                 }
             }
@@ -203,7 +207,7 @@ public class BedethequeSearchEngine
      * @param document       to parse
      * @param fetchCovers    Set to {@code true} if we want to get covers
      *                       The array is guaranteed to have at least one element.
-     * @param resolveAuthors flag; whether to try and resolve author pen-names
+     * @param authorResolver (optional) {@link AuthorResolver} to use
      *
      * @throws StorageException     on storage related failures
      * @throws CredentialsException on authentication/login failures
@@ -216,7 +220,7 @@ public class BedethequeSearchEngine
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Book book,
-                      final boolean resolveAuthors)
+                      @Nullable final AuthorResolver authorResolver)
             throws StorageException, SearchException, CredentialsException {
 
         final Element section = document.selectFirst(
@@ -415,10 +419,9 @@ public class BedethequeSearchEngine
                 book.putString(DBKey.DESCRIPTION, description.text());
             }
 
-            if (!book.getAuthors().isEmpty() && resolveAuthors) {
-                final AuthorResolver resolver = new BedethequeAuthorResolver(context, this);
+            if (!book.getAuthors().isEmpty() && authorResolver != null) {
                 for (final Author author : book.getAuthors()) {
-                    resolver.resolve(author);
+                    authorResolver.resolve(author);
                 }
             }
 

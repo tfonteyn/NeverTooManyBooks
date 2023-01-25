@@ -163,9 +163,14 @@ public class LastDodoSearchEngine
         }
     }
 
-    private static boolean isResolveAuthors(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_USE_BEDETHEQUE, false);
+    @Nullable
+    private AuthorResolver getAuthorResolver(@NonNull final Context context) {
+        if (PreferenceManager.getDefaultSharedPreferences(context)
+                             .getBoolean(PK_USE_BEDETHEQUE, false)) {
+            return new BedethequeAuthorResolver(context, this);
+        } else {
+            return null;
+        }
     }
 
     @NonNull
@@ -185,7 +190,7 @@ public class LastDodoSearchEngine
         final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
-            parse(context, document, fetchCovers, book, isResolveAuthors(context));
+            parse(context, document, fetchCovers, book, getAuthorResolver(context));
         }
         return book;
     }
@@ -244,7 +249,7 @@ public class LastDodoSearchEngine
                 }
                 final Document redirected = loadDocument(context, url, null);
                 if (!isCancelled()) {
-                    parse(context, redirected, fetchCovers, book, isResolveAuthors(context));
+                    parse(context, redirected, fetchCovers, book, getAuthorResolver(context));
                 }
             }
         }
@@ -340,7 +345,7 @@ public class LastDodoSearchEngine
      * @param fetchCovers    Set to {@code true} if we want to get covers
      *                       The array is guaranteed to have at least one element.
      * @param book           Bundle to update
-     * @param resolveAuthors flag; whether to try and resolve author pen-names
+     * @param authorResolver (optional) {@link AuthorResolver} to use
      *
      * @throws StorageException     on storage related failures
      * @throws CredentialsException on authentication/login failures
@@ -353,7 +358,7 @@ public class LastDodoSearchEngine
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Book book,
-                      final boolean resolveAuthors)
+                      @Nullable final AuthorResolver authorResolver)
             throws StorageException, SearchException, CredentialsException {
 
         //noinspection NonConstantStringShouldBeStringBuffer
@@ -509,10 +514,9 @@ public class LastDodoSearchEngine
             }
         });
 
-        if (!book.getAuthors().isEmpty() && resolveAuthors) {
-            final AuthorResolver resolver = new BedethequeAuthorResolver(context, this);
+        if (!book.getAuthors().isEmpty() && authorResolver != null) {
             for (final Author author : book.getAuthors()) {
-                resolver.resolve(author);
+                authorResolver.resolve(author);
             }
         }
 
