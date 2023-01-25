@@ -20,8 +20,6 @@
 
 package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 
-import android.content.Context;
-
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -50,7 +48,6 @@ public class IsbnTest
 
     private static final String TAG = "IsbnTest";
 
-    private Context context;
 
     private SearchEngine searchEngine;
 
@@ -58,8 +55,6 @@ public class IsbnTest
     public void setup()
             throws DaoWriteException, StorageException {
         super.setup();
-
-        context = serviceLocator.getLocalizedAppContext();
 
         searchEngine = Site.Type.Data.getSite(EngineId.Bedetheque).getSearchEngine();
         searchEngine.setCaller(new MockCancellable());
