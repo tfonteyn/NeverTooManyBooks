@@ -21,18 +21,23 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Locale;
+import java.util.function.Supplier;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque.BdtAuthor;
 
@@ -41,6 +46,8 @@ public class BedethequeCacheDaoImpl
         implements BedethequeCacheDao {
 
     private static final String TAG = "BedethequeCacheDaoImpl";
+    private static final String ERROR_INSERT_FROM = "Insert from\n";
+    private static final String ERROR_UPDATE_FROM = "Update from\n";
 
     public BedethequeCacheDaoImpl(@NonNull final SynchronizedDb db) {
         super(db, TAG);
@@ -63,25 +70,89 @@ public class BedethequeCacheDaoImpl
     }
 
     @Override
+    public boolean insert(@NonNull final Locale locale,
+                          @NonNull final Supplier<BdtAuthor> recordSupplier)
+            throws DaoWriteException {
+
+        BdtAuthor bdtAuthor = null;
+
+        final SynchronizedDb cacheDb = ServiceLocator.getInstance().getCacheDb();
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!cacheDb.inTransaction()) {
+                txLock = cacheDb.beginTransaction(true);
+            }
+
+            long id = 0;
+            try (SynchronizedStatement stmt = cacheDb.compileStatement(Sql.INSERT)) {
+                while ((bdtAuthor = recordSupplier.get()) != null) {
+                    stmt.bindString(1, bdtAuthor.getName());
+                    stmt.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(), locale));
+                    stmt.bindString(3, bdtAuthor.getUrl());
+                    id = stmt.executeInsert();
+                    if (id > 0) {
+                        bdtAuthor.setId(id);
+                    } else {
+                        throw new DaoWriteException(ERROR_INSERT_FROM + bdtAuthor);
+                    }
+                }
+            }
+            if (txLock != null) {
+                cacheDb.setTransactionSuccessful();
+            }
+            return id > 0;
+
+        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+            throw new DaoWriteException(ERROR_INSERT_FROM + bdtAuthor, e);
+        } finally {
+            if (txLock != null) {
+                cacheDb.endTransaction(txLock);
+            }
+        }
+    }
+
+    @Override
     public void update(@NonNull final BdtAuthor bdtAuthor,
-                       @NonNull final Locale locale) {
+                       @NonNull final Locale locale)
+            throws DaoWriteException {
 
         final String resolvedName = bdtAuthor.getResolvedName();
 
-        try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
-            stmt.bindString(1, bdtAuthor.getName());
-            stmt.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(), locale));
-            stmt.bindString(3, bdtAuthor.getUrl());
-            stmt.bindBoolean(4, bdtAuthor.isResolved());
-            if (resolvedName == null || resolvedName.equals(bdtAuthor.getName())) {
-                stmt.bindNull(5);
-                stmt.bindNull(6);
-            } else {
-                stmt.bindString(5, resolvedName);
-                stmt.bindString(6, SqlEncode.orderByColumn(resolvedName, locale));
+        Synchronizer.SyncLock txLock = null;
+        try {
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
             }
-            stmt.bindLong(7, bdtAuthor.getId());
-            stmt.executeUpdateDelete();
+
+            final boolean success;
+            try (SynchronizedStatement stmt = db.compileStatement(Sql.UPDATE)) {
+                stmt.bindString(1, bdtAuthor.getName());
+                stmt.bindString(2, SqlEncode.orderByColumn(bdtAuthor.getName(), locale));
+                stmt.bindString(3, bdtAuthor.getUrl());
+                stmt.bindBoolean(4, bdtAuthor.isResolved());
+                if (resolvedName == null || resolvedName.equals(bdtAuthor.getName())) {
+                    stmt.bindNull(5);
+                    stmt.bindNull(6);
+                } else {
+                    stmt.bindString(5, resolvedName);
+                    stmt.bindString(6, SqlEncode.orderByColumn(resolvedName, locale));
+                }
+                stmt.bindLong(7, bdtAuthor.getId());
+                success = 0 < stmt.executeUpdateDelete();
+            }
+            if (success) {
+                if (txLock != null) {
+                    db.setTransactionSuccessful();
+                }
+                return;
+            }
+            throw new DaoWriteException(ERROR_UPDATE_FROM + bdtAuthor);
+        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
+            throw new DaoWriteException(ERROR_UPDATE_FROM + bdtAuthor, e);
+        } finally {
+            if (txLock != null) {
+                db.endTransaction(txLock);
+            }
         }
     }
 
@@ -94,7 +165,7 @@ public class BedethequeCacheDaoImpl
     }
 
     @Override
-    public int count() {
+    public int countAuthors() {
         try (SynchronizedStatement stmt = db.compileStatement(
                 SELECT_COUNT_FROM_ + CacheDbHelper.TBL_BDT_AUTHORS.getName())) {
             return (int) stmt.simpleQueryForLongOrZero();
@@ -102,13 +173,13 @@ public class BedethequeCacheDaoImpl
     }
 
     @Override
-    public void purgeCache() {
+    public void clearCache() {
         db.execSQL(DELETE_FROM_ + CacheDbHelper.TBL_BDT_AUTHORS.getName());
     }
 
-    public static final class Sql {
+    private static final class Sql {
 
-        public static final String INSERT =
+        static final String INSERT =
                 INSERT_INTO_ + CacheDbHelper.TBL_BDT_AUTHORS.getName()
                 + '(' + CacheDbHelper.BDT_AUTHOR_NAME
                 + ',' + CacheDbHelper.BDT_AUTHOR_NAME_OB
@@ -139,8 +210,5 @@ public class BedethequeCacheDaoImpl
                 + ',' + CacheDbHelper.BDT_AUTHOR_RESOLVED_NAME + "=?"
                 + ',' + CacheDbHelper.BDT_AUTHOR_RESOLVED_NAME_OB + "=?"
                 + _WHERE_ + CacheDbHelper.PK_ID + "=?";
-
-        private Sql() {
-        }
     }
 }
