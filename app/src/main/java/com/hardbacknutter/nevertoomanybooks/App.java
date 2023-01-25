@@ -30,6 +30,10 @@ import androidx.annotation.NonNull;
 import java.io.File;
 import java.io.IOException;
 
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
+import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
+
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.config.CoreConfigurationBuilder;
@@ -37,11 +41,6 @@ import org.acra.config.DialogConfigurationBuilder;
 import org.acra.config.MailSenderConfigurationBuilder;
 import org.acra.data.StringFormat;
 import org.acra.file.Directory;
-
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
-import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
 public class App
         extends Application {
@@ -108,7 +107,6 @@ public class App
             });
 
             ServiceLocator.create(getApplicationContext());
-            SearchEngineConfig.createRegistry(getApplicationContext());
 
             NightMode.apply(this);
         }

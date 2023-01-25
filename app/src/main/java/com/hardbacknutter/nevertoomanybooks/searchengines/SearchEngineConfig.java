@@ -102,7 +102,11 @@ public final class SearchEngineConfig {
         }
     }
 
-    // Called during startup from the App class + from test code
+    /**
+     * Called by {@link ServiceLocator#create(Context)}.
+     *
+     * @param context <strong>Application</strong> or <strong>test</strong> context.
+     */
     public static void createRegistry(@NonNull final Context context) {
         synchronized (SearchEngineConfig.class) {
             EngineId.registerSearchEngines();

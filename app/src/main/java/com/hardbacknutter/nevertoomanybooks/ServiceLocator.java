@@ -83,6 +83,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
@@ -199,6 +200,7 @@ public final class ServiceLocator {
         synchronized (ServiceLocator.class) {
             if (sInstance == null) {
                 sInstance = new ServiceLocator(context);
+
                 File dir = getLogDir();
                 if (!dir.exists()) {
                     //noinspection ResultOfMethodCallIgnored
@@ -210,6 +212,8 @@ public final class ServiceLocator {
                     //noinspection ResultOfMethodCallIgnored
                     dir.mkdirs();
                 }
+
+                SearchEngineConfig.createRegistry(context);
             }
         }
     }
