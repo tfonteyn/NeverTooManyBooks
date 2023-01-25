@@ -31,6 +31,8 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
@@ -49,6 +51,8 @@ import org.jsoup.select.Elements;
  * Aside of Bedetheque itself, this class is also used by StripInfo and LastDodo.
  */
 public class AuthorResolver {
+
+    private static final String TAG = "AuthorResolver";
 
     @NonNull
     private final Context context;
@@ -129,7 +133,6 @@ public class AuthorResolver {
             final AuthorListLoader pageLoader = new AuthorListLoader(context, searchEngine);
             final char c1 = firstChar(author.getFamilyName());
             // and the list-page was never fetched before,
-            // URGENT: we need to add a "purge cache" option on the preference fragment
             if (!cacheDao.isAuthorPageCached(c1)) {
                 // go fetch the the list-page on which the author should/could be
                 if (pageLoader.fetch(c1)) {
@@ -197,9 +200,14 @@ public class AuthorResolver {
         final Document document = searchEngine.loadDocument(context, url, null);
         if (!searchEngine.isCancelled()) {
             if (parseAuthor(document, bdtAuthor)) {
-                ServiceLocator.getInstance().getBedethequeCacheDao()
-                              .update(bdtAuthor, locale);
-                return true;
+                try {
+                    ServiceLocator.getInstance().getBedethequeCacheDao()
+                                  .update(bdtAuthor, locale);
+                    return true;
+                } catch (@NonNull final DaoWriteException e) {
+                    // log, but ignore - should never happen unless disk full
+                    Logger.error(TAG, e, "");
+                }
             }
         }
         return false;
