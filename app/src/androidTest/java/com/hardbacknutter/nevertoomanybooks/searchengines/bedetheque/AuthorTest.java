@@ -48,7 +48,7 @@ public class AuthorTest
 
         resolver = new AuthorResolver(context, new NotCancellable());
 
-        ServiceLocator.getInstance().getBedethequeCacheDao().purgeCache();
+        ServiceLocator.getInstance().getBedethequeCacheDao().clearCache();
     }
 
     @Test
