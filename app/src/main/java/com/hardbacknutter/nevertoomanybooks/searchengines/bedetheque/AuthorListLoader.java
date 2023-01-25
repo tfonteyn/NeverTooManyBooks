@@ -24,20 +24,16 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import java.util.Iterator;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
-import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BedethequeCacheDaoImpl;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 class AuthorListLoader {
 
@@ -85,41 +81,25 @@ class AuthorListLoader {
      * @return {@code true} on success
      */
     private boolean parseAuthorList(@NonNull final Document document) {
-        boolean atLeastOneFound = false;
 
-        final SynchronizedDb cacheDb = ServiceLocator.getInstance().getCacheDb();
-        Synchronizer.SyncLock txLock = null;
+        final Iterator<Element> iterator = document.select("ul.nav-liste > li > a")
+                                                   .iterator();
+
         try {
-            if (!cacheDb.inTransaction()) {
-                txLock = cacheDb.beginTransaction(true);
-            }
-
-            final Elements all = document.select("ul.nav-liste > li > a");
-            // URGENT: this should be in the DAO
-            try (SynchronizedStatement stmt = cacheDb.compileStatement(
-                    BedethequeCacheDaoImpl.Sql.INSERT)) {
-                for (final Element a : all) {
+            return ServiceLocator.getInstance().getBedethequeCacheDao().insert(locale, () -> {
+                if (iterator.hasNext()) {
+                    final Element a = iterator.next();
                     final String url = a.attr("href");
                     final Element span = a.selectFirst("span.libelle");
                     if (span != null) {
                         final String name = span.text();
-                        stmt.bindString(1, name);
-                        stmt.bindString(2, SqlEncode.orderByColumn(name, locale));
-                        stmt.bindString(3, url);
-                        stmt.executeInsert();
-
-                        atLeastOneFound = true;
+                        return new BdtAuthor(name, url);
                     }
                 }
-            }
-            if (txLock != null) {
-                cacheDb.setTransactionSuccessful();
-            }
-        } finally {
-            if (txLock != null) {
-                cacheDb.endTransaction(txLock);
-            }
+                return null;
+            });
+        } catch (@NonNull final DaoWriteException e) {
+            return false;
         }
-        return atLeastOneFound;
     }
 }
