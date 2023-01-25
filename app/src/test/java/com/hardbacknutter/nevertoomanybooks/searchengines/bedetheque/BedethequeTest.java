@@ -50,6 +50,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class BedethequeTest
         extends JSoupBase {
 
+    // Resolving requires database access which we don't mock for now
+    private static final boolean RESOLVE_AUTHORS = false;
+
     private static final String UTF_8 = "UTF-8";
 
     private BedethequeSearchEngine searchEngine;
@@ -72,7 +75,7 @@ public class BedethequeTest
         final String filename = "/bedetheque/BD-Fond-du-monde-Tome-6-La-grande-terre-19401.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{true, true}, book);
+        searchEngine.parse(context, document, new boolean[]{true, true}, book, RESOLVE_AUTHORS);
         System.out.println(book);
 
         assertEquals("La grande terre", book.getString(DBKey.TITLE, null));

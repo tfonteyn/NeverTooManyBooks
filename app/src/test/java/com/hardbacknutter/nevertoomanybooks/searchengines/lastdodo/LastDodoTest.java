@@ -47,6 +47,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class LastDodoTest
         extends JSoupBase {
 
+    // Resolving requires database access which we don't mock for now
+    private static final boolean RESOLVE_AUTHORS = false;
+
     private static final String UTF_8 = "UTF-8";
     private LastDodoSearchEngine searchEngine;
 
@@ -67,7 +70,7 @@ class LastDodoTest
         final String filename = "/lastdodo/7323911-de-37ste-parallel.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book, RESOLVE_AUTHORS);
         // System.out.println(rawData);
 
         assertEquals("De 37ste parallel", book.getString(DBKey.TITLE, null));

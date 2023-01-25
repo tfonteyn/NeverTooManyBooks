@@ -58,6 +58,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class StripInfoTest
         extends JSoupBase {
 
+    // Resolving requires database access which we don't mock for now
+    private static final boolean RESOLVE_AUTHORS = false;
+
     private static final String UTF_8 = "UTF-8";
     private StripInfoSearchEngine searchEngine;
 
@@ -79,7 +82,7 @@ class StripInfoTest
         final String filename = "/stripinfo/336348_Hauteville_House_14_De_37ste_parallel.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{true, true}, book);
+        searchEngine.parse(context, document, new boolean[]{true, true}, book, RESOLVE_AUTHORS);
         // System.out.println(rawData);
 
         assertEquals("De 37ste parallel", book.getString(DBKey.TITLE, null));
@@ -149,7 +152,7 @@ class StripInfoTest
                                 + "_De_boom_van_de_twee_lentes.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{true, true}, book);
+        searchEngine.parse(context, document, new boolean[]{true, true}, book, RESOLVE_AUTHORS);
         // System.out.println(rawData);
 
         assertEquals("De boom van de twee lentes", book.getString(DBKey.TITLE, null));
@@ -217,7 +220,7 @@ class StripInfoTest
         final String filename = "/stripinfo/181604_mat_cover.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{true, true}, book);
+        searchEngine.parse(context, document, new boolean[]{true, true}, book, RESOLVE_AUTHORS);
         // System.out.println(rawData);
 
         assertEquals("Het huis van verboden geneugten",
@@ -280,7 +283,7 @@ class StripInfoTest
         final String filename = "/stripinfo/316016_Johan_en_Pirrewiet_INT_5_De_integrale_5.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book, RESOLVE_AUTHORS);
         // System.out.println(rawData);
 
         assertEquals("De integrale 5", book.getString(DBKey.TITLE, null));
@@ -340,7 +343,7 @@ class StripInfoTest
         final String filename = "/stripinfo/17030_Comanche_1_Red_Dust.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book, RESOLVE_AUTHORS);
         // System.out.println(rawData);
 
         assertEquals("Red Dust", book.getString(DBKey.TITLE, null));
@@ -397,7 +400,7 @@ class StripInfoTest
         final String filename = "/stripinfo/8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot.html";
 
         final Document document = loadDocument(filename, UTF_8, locationHeader);
-        searchEngine.parse(context, document, new boolean[]{false, false}, book);
+        searchEngine.parse(context, document, new boolean[]{false, false}, book, RESOLVE_AUTHORS);
         // System.out.println(rawData);
 
         assertEquals("Spoken in de grot", book.getString(DBKey.TITLE, null));
