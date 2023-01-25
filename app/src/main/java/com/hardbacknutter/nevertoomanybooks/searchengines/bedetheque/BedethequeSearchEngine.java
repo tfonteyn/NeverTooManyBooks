@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -415,7 +416,7 @@ public class BedethequeSearchEngine
             }
 
             if (!book.getAuthors().isEmpty() && resolveAuthors) {
-                final AuthorResolver resolver = new AuthorResolver(context, this);
+                final AuthorResolver resolver = new BedethequeAuthorResolver(context, this);
                 for (final Author author : book.getAuthors()) {
                     resolver.resolve(author);
                 }

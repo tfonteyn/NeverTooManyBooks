@@ -24,6 +24,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -46,7 +47,7 @@ public class AuthorTest
             throws DaoWriteException, StorageException {
         super.setup();
 
-        resolver = new AuthorResolver(context, new NotCancellable());
+        resolver = new BedethequeAuthorResolver(context, new NotCancellable());
 
         ServiceLocator.getInstance().getBedethequeCacheDao().clearCache();
     }

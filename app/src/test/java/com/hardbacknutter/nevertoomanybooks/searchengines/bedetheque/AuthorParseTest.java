@@ -40,14 +40,14 @@ class AuthorParseTest
 
     private static final String UTF_8 = "UTF-8";
 
-    private AuthorResolver resolver;
+    private BedethequeAuthorResolver resolver;
 
     @BeforeEach
     public void setup()
             throws ParserConfigurationException, SAXException {
         super.setup();
 
-        resolver = new AuthorResolver(context, new MockCancellable());
+        resolver = new BedethequeAuthorResolver(context, new MockCancellable());
     }
 
     @Test

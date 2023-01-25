@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BedethequeCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.searchengines.AuthorResolver;
 import com.hardbacknutter.nevertoomanybooks.searchengines.EngineId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
@@ -50,9 +51,10 @@ import org.jsoup.select.Elements;
  * <p>
  * Aside of Bedetheque itself, this class is also used by StripInfo and LastDodo.
  */
-public class AuthorResolver {
+public class BedethequeAuthorResolver
+        implements AuthorResolver {
 
-    private static final String TAG = "AuthorResolver";
+    private static final String TAG = "BedethequeAuthorResolver";
 
     @NonNull
     private final Context context;
@@ -67,8 +69,8 @@ public class AuthorResolver {
      * @param context      Current context
      * @param searchEngine the engine
      */
-    AuthorResolver(@NonNull final Context context,
-                   @NonNull final BedethequeSearchEngine searchEngine) {
+    BedethequeAuthorResolver(@NonNull final Context context,
+                             @NonNull final BedethequeSearchEngine searchEngine) {
         this.context = context;
         this.searchEngine = searchEngine;
         locale = searchEngine.getLocale(context);
@@ -81,8 +83,8 @@ public class AuthorResolver {
      * @param caller  a {@link Cancellable} which can forward requests
      *                to the (internal) {@link BedethequeSearchEngine}
      */
-    public AuthorResolver(@NonNull final Context context,
-                          @Nullable final Cancellable caller) {
+    public BedethequeAuthorResolver(@NonNull final Context context,
+                                    @Nullable final Cancellable caller) {
         this.context = context;
         searchEngine = (BedethequeSearchEngine) EngineId.Bedetheque.createSearchEngine();
         searchEngine.setCaller(caller);
@@ -111,6 +113,7 @@ public class AuthorResolver {
      *
      * @return {@code true} if the {@link Author} was modified; {@code false} otherwise
      */
+    @Override
     public boolean resolve(@NonNull final Author author)
             throws SearchException, CredentialsException {
 
