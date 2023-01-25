@@ -22,19 +22,17 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.bedetheque;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import com.hardbacknutter.nevertoomanybooks.database.CacheDbHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 public class BdtAuthor {
 
-    private long id;
     @NonNull
     private final String name;
     @Nullable
     private final String url;
-
+    private long id;
     private boolean resolved;
     @Nullable
     private String resolvedName;
@@ -48,7 +46,6 @@ public class BdtAuthor {
         this.url = rowData.getString(CacheDbHelper.BDT_AUTHOR_URL, null);
     }
 
-    @VisibleForTesting
     BdtAuthor(@NonNull final String name,
               @NonNull final String url) {
         this.name = name;
@@ -57,6 +54,10 @@ public class BdtAuthor {
 
     public long getId() {
         return id;
+    }
+
+    public void setId(final long id) {
+        this.id = id;
     }
 
     @NonNull
@@ -91,5 +92,17 @@ public class BdtAuthor {
     void setResolvedName(@Nullable final String resolvedName) {
         this.resolved = resolvedName != null;
         this.resolvedName = resolvedName;
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "BdtAuthor{"
+               + "id=" + id
+               + ", name='" + name + '\''
+               + ", url='" + url + '\''
+               + ", resolved=" + resolved
+               + ", resolvedName='" + resolvedName + '\''
+               + '}';
     }
 }
