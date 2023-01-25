@@ -143,6 +143,11 @@ public class StripInfoSearchEngine
         super(config);
     }
 
+    private static boolean isResolveAuthors(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(PK_USE_BEDETHEQUE, false);
+    }
+
     @NonNull
     @Override
     public String createBrowserUrl(@NonNull final String externalId) {
@@ -206,7 +211,7 @@ public class StripInfoSearchEngine
         final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url, null);
         if (!isCancelled()) {
-            parse(context, document, fetchCovers, book);
+            parse(context, document, fetchCovers, book, isResolveAuthors(context));
         }
         return book;
     }
@@ -243,7 +248,7 @@ public class StripInfoSearchEngine
         if (isMultiResult(document)) {
             parseMultiResult(context, document, fetchCovers, book);
         } else {
-            parse(context, document, fetchCovers, book);
+            parse(context, document, fetchCovers, book, isResolveAuthors(context));
         }
 
         // Finally, try and replace potential invalid ISBN numbers
@@ -299,7 +304,7 @@ public class StripInfoSearchEngine
                 if (!isCancelled()) {
                     // prevent looping.
                     if (!isMultiResult(redirected)) {
-                        parse(context, redirected, fetchCovers, book);
+                        parse(context, redirected, fetchCovers, book, isResolveAuthors(context));
                     }
                 }
                 return;
@@ -323,11 +328,12 @@ public class StripInfoSearchEngine
      * Parses the downloaded {@link org.jsoup.nodes.Document}.
      * We only parse the <strong>first book</strong> found.
      *
-     * @param context     Current context
-     * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book    Bundle to update
+     * @param context        Current context
+     * @param document       to parse
+     * @param fetchCovers    Set to {@code true} if we want to get covers
+     *                       The array is guaranteed to have at least one element.
+     * @param book           Bundle to update
+     * @param resolveAuthors flag; whether to try and resolve author pen-names
      *
      * @throws StorageException     on storage related failures
      * @throws CredentialsException on authentication/login failures
@@ -339,7 +345,8 @@ public class StripInfoSearchEngine
     public void parse(@NonNull final Context context,
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
-                      @NonNull final Book book)
+                      @NonNull final Book book,
+                      final boolean resolveAuthors)
             throws StorageException, SearchException, CredentialsException {
 
         // extracted from the page header.
@@ -505,15 +512,10 @@ public class StripInfoSearchEngine
             }
         });
 
-        // store accumulated ArrayList's *after* we parsed the TOC
-
-        if (!book.getAuthors().isEmpty()) {
-            if (PreferenceManager.getDefaultSharedPreferences(context)
-                                 .getBoolean(PK_USE_BEDETHEQUE, false)) {
-                final AuthorResolver resolver = new AuthorResolver(context, this);
-                for (final Author author : book.getAuthors()) {
-                    resolver.resolve(author);
-                }
+        if (!book.getAuthors().isEmpty() && resolveAuthors) {
+            final AuthorResolver resolver = new AuthorResolver(context, this);
+            for (final Author author : book.getAuthors()) {
+                resolver.resolve(author);
             }
         }
 

@@ -186,7 +186,8 @@ public class BedethequeSearchEngine
                 if (!url.isBlank()) {
                     final Document redirected = loadDocument(context, url, extraRequestProperties);
                     if (!isCancelled()) {
-                        parse(context, redirected, fetchCovers, book);
+                        // always resolve authors
+                        parse(context, redirected, fetchCovers, book, true);
                     }
                 }
             }
@@ -197,10 +198,11 @@ public class BedethequeSearchEngine
      * Parses the downloaded {@link org.jsoup.nodes.Document}.
      * We only parse the <strong>first book</strong> found.
      *
-     * @param context     Current context
-     * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
+     * @param context        Current context
+     * @param document       to parse
+     * @param fetchCovers    Set to {@code true} if we want to get covers
+     *                       The array is guaranteed to have at least one element.
+     * @param resolveAuthors flag; whether to try and resolve author pen-names
      *
      * @throws StorageException     on storage related failures
      * @throws CredentialsException on authentication/login failures
@@ -212,7 +214,8 @@ public class BedethequeSearchEngine
     public void parse(@NonNull final Context context,
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
-                      @NonNull final Book book)
+                      @NonNull final Book book,
+                      final boolean resolveAuthors)
             throws StorageException, SearchException, CredentialsException {
 
         final Element section = document.selectFirst(
@@ -411,7 +414,7 @@ public class BedethequeSearchEngine
                 book.putString(DBKey.DESCRIPTION, description.text());
             }
 
-            if (!book.getAuthors().isEmpty()) {
+            if (!book.getAuthors().isEmpty() && resolveAuthors) {
                 final AuthorResolver resolver = new AuthorResolver(context, this);
                 for (final Author author : book.getAuthors()) {
                     resolver.resolve(author);

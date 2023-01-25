@@ -91,88 +91,6 @@ public class LastDodoSearchEngine
         super(config);
     }
 
-    @NonNull
-    @Override
-    public String createBrowserUrl(@NonNull final String externalId) {
-        return getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
-    }
-
-    @NonNull
-    public Book searchByExternalId(@NonNull final Context context,
-                                   @NonNull final String externalId,
-                                   @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException, CredentialsException {
-
-        final Book book = new Book();
-
-        final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
-        final Document document = loadDocument(context, url, null);
-        if (!isCancelled()) {
-            parse(context, document, fetchCovers, book);
-        }
-        return book;
-    }
-
-    @NonNull
-    @Override
-    public Book searchByIsbn(@NonNull final Context context,
-                             @NonNull final String validIsbn,
-                             @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException, CredentialsException {
-
-        final Book book = new Book();
-
-        // This is silly...
-        // 2022-05-31: searching the site with the ISBN now REQUIRES the dashes between
-        // the digits.
-        final String url = getHostUrl() + String.format(BY_ISBN, ISBN.formatIsbn(validIsbn));
-        final Document document = loadDocument(context, url, null);
-        if (!isCancelled()) {
-            // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(context, document, fetchCovers, book);
-        }
-        return book;
-    }
-
-    /**
-     * A multi result page was returned. Try and parse it.
-     * The <strong>first book</strong> link will be extracted and retrieved.
-     *
-     * @param context     Current context
-     * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
-     *
-     * @throws CredentialsException on authentication/login failures
-     * @throws StorageException     on storage related failures
-     */
-    @WorkerThread
-    private void parseMultiResult(@NonNull final Context context,
-                                  @NonNull final Document document,
-                                  @NonNull final boolean[] fetchCovers,
-                                  @NonNull final Book book)
-            throws StorageException, SearchException, CredentialsException {
-
-        // Grab the first search result, and redirect to that page
-        final Element section = document.selectFirst("div.card-body");
-        // it will be null if there were no results.
-        if (section != null) {
-            final Element urlElement = section.selectFirst("a");
-            if (urlElement != null) {
-                String url = urlElement.attr("href");
-                // sanity check - it normally does NOT have the protocol/site part
-                if (url.startsWith("/")) {
-                    url = getHostUrl() + url;
-                }
-                final Document redirected = loadDocument(context, url, null);
-                if (!isCancelled()) {
-                    parse(context, redirected, fetchCovers, book);
-                }
-            }
-        }
-    }
-
     /**
      * ENHANCE: This method is functional, but not used for now.
      * <p>
@@ -241,6 +159,93 @@ public class LastDodoSearchEngine
             return names;
         } else {
             return new String[]{uName};
+        }
+    }
+
+    private static boolean isResolveAuthors(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(PK_USE_BEDETHEQUE, false);
+    }
+
+    @NonNull
+    @Override
+    public String createBrowserUrl(@NonNull final String externalId) {
+        return getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
+    }
+
+    @NonNull
+    public Book searchByExternalId(@NonNull final Context context,
+                                   @NonNull final String externalId,
+                                   @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException, CredentialsException {
+
+        final Book book = new Book();
+
+        final String url = getHostUrl() + String.format(BY_EXTERNAL_ID, externalId);
+        final Document document = loadDocument(context, url, null);
+        if (!isCancelled()) {
+            parse(context, document, fetchCovers, book, isResolveAuthors(context));
+        }
+        return book;
+    }
+
+    @NonNull
+    @Override
+    public Book searchByIsbn(@NonNull final Context context,
+                             @NonNull final String validIsbn,
+                             @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException, CredentialsException {
+
+        final Book book = new Book();
+
+        // This is silly...
+        // 2022-05-31: searching the site with the ISBN now REQUIRES the dashes between
+        // the digits.
+        final String url = getHostUrl() + String.format(BY_ISBN, ISBN.formatIsbn(validIsbn));
+        final Document document = loadDocument(context, url, null);
+        if (!isCancelled()) {
+            // it's ALWAYS multi-result, even if only one result is returned.
+            parseMultiResult(context, document, fetchCovers, book);
+        }
+        return book;
+    }
+
+    /**
+     * A multi result page was returned. Try and parse it.
+     * The <strong>first book</strong> link will be extracted and retrieved.
+     *
+     * @param context     Current context
+     * @param document    to parse
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
+     * @param book        Bundle to update
+     *
+     * @throws CredentialsException on authentication/login failures
+     * @throws StorageException     on storage related failures
+     */
+    @WorkerThread
+    private void parseMultiResult(@NonNull final Context context,
+                                  @NonNull final Document document,
+                                  @NonNull final boolean[] fetchCovers,
+                                  @NonNull final Book book)
+            throws StorageException, SearchException, CredentialsException {
+
+        // Grab the first search result, and redirect to that page
+        final Element section = document.selectFirst("div.card-body");
+        // it will be null if there were no results.
+        if (section != null) {
+            final Element urlElement = section.selectFirst("a");
+            if (urlElement != null) {
+                String url = urlElement.attr("href");
+                // sanity check - it normally does NOT have the protocol/site part
+                if (url.startsWith("/")) {
+                    url = getHostUrl() + url;
+                }
+                final Document redirected = loadDocument(context, url, null);
+                if (!isCancelled()) {
+                    parse(context, redirected, fetchCovers, book, isResolveAuthors(context));
+                }
+            }
         }
     }
 
@@ -329,11 +334,12 @@ public class LastDodoSearchEngine
      * Parses the downloaded {@link org.jsoup.nodes.Document}.
      * We only parse the <strong>first book</strong> found.
      *
-     * @param context     Current context
-     * @param document    to parse
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     *                    The array is guaranteed to have at least one element.
-     * @param book        Bundle to update
+     * @param context        Current context
+     * @param document       to parse
+     * @param fetchCovers    Set to {@code true} if we want to get covers
+     *                       The array is guaranteed to have at least one element.
+     * @param book           Bundle to update
+     * @param resolveAuthors flag; whether to try and resolve author pen-names
      *
      * @throws StorageException     on storage related failures
      * @throws CredentialsException on authentication/login failures
@@ -345,7 +351,8 @@ public class LastDodoSearchEngine
     public void parse(@NonNull final Context context,
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
-                      @NonNull final Book book)
+                      @NonNull final Book book,
+                      final boolean resolveAuthors)
             throws StorageException, SearchException, CredentialsException {
 
         //noinspection NonConstantStringShouldBeStringBuffer
@@ -501,14 +508,10 @@ public class LastDodoSearchEngine
             }
         });
 
-        // store accumulated ArrayList's *after* we parsed the TOC
-        if (!book.getAuthors().isEmpty()) {
-            if (PreferenceManager.getDefaultSharedPreferences(context)
-                                 .getBoolean(PK_USE_BEDETHEQUE, false)) {
-                final AuthorResolver resolver = new AuthorResolver(context, this);
-                for (final Author author : book.getAuthors()) {
-                    resolver.resolve(author);
-                }
+        if (!book.getAuthors().isEmpty() && resolveAuthors) {
+            final AuthorResolver resolver = new AuthorResolver(context, this);
+            for (final Author author : book.getAuthors()) {
+                resolver.resolve(author);
             }
         }
 
