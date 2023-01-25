@@ -56,7 +56,7 @@ public class BedethequePreferencesFragment
                         .setMessage(R.string.option_purge_bedetheque_authors_cache)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                         .setPositiveButton(android.R.string.ok, (d, w) -> {
-                            ServiceLocator.getInstance().getBedethequeCacheDao().purgeCache();
+                            ServiceLocator.getInstance().getBedethequeCacheDao().clearCache();
                             setPurgeCacheSummary(p);
                         })
                         .create()
@@ -68,7 +68,7 @@ public class BedethequePreferencesFragment
 
     private void setPurgeCacheSummary(@NonNull final Preference preference) {
         if (preference.isEnabled()) {
-            authorCacheCount = ServiceLocator.getInstance().getBedethequeCacheDao().count();
+            authorCacheCount = ServiceLocator.getInstance().getBedethequeCacheDao().countAuthors();
             final String number;
             if (authorCacheCount > 0) {
                 number = String.valueOf(authorCacheCount);
