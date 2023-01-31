@@ -250,11 +250,14 @@ public abstract class ArchiveReaderAbstract
             case 4:
             case 3:
             case 2:
+            case 1:
                 // The reader is flexible enough to detect the different versions for now.
+                // Important: testing with v2 and up is exhaustive.
+                // v1 was the old BC format but reading books and covers from it SHOULD work fine.
+                // The v1 prefs and styles are simply ignored.
                 readV2(context, metaData, progressListener);
                 break;
 
-            case 1:
             default:
                 throw new DataReaderException(context.getString(
                         R.string.error_unsupported_version_v, archiveVersion));
