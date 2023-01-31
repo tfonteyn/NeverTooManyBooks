@@ -62,8 +62,14 @@ public class ImportViewModel
 
     @Override
     public boolean isReadyToGo() {
-        return importHelper != null
-               && importHelper.getMetaData().isPresent()
-               && !importHelper.getRecordTypes().isEmpty();
+        if (importHelper == null) {
+            // duh...
+            return false;
+        }
+        if (importHelper.getRecordTypes().isEmpty()) {
+            // nothing to do
+            return false;
+        }
+        return importHelper.getMetaData().isPresent();
     }
 }
