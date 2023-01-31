@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.xml;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,6 +46,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
@@ -82,6 +85,7 @@ public class XmlRecordReader
 
     private static final String ERROR_UNABLE_TO_PROCESS_XML_RECORD = "Unable to process XML ";
 
+    private static final String TAG = "XmlRecordReader";
     @Nullable
     private final Locale userLocale;
 
@@ -146,7 +150,13 @@ public class XmlRecordReader
                    IOException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
-        final DefaultHandler handler = new XmlFilterHandler(buildFilters(accessor));
+        final XmlFilter rootFilter = new XmlFilter();
+        // Allow reading BookCatalogue archive data.
+        buildLegacyFilters(rootFilter, accessor);
+        // Current version filters
+        buildFilters(rootFilter, accessor);
+
+        final DefaultHandler handler = new XmlFilterHandler(rootFilter);
 
         try {
             // Don't close this stream
@@ -173,15 +183,14 @@ public class XmlRecordReader
         }
     }
 
-    @NonNull
-    private XmlFilter buildFilters(@NonNull final EntityReader<String> accessor) {
+    private void buildFilters(@NonNull final XmlFilter rootFilter,
+                              @NonNull final EntityReader<String> accessor) {
         final String listRootElement = accessor.getRootTag();
         final String rootElement = accessor.getElementTag();
 
         // used to read in Set/List data
         final Collection<String> currentStringList = new ArrayList<>();
 
-        final XmlFilter rootFilter = new XmlFilter();
         // A new element under the root
         rootFilter.addFilter(listRootElement, rootElement)
                   .setStartAction(elementContext -> {
@@ -374,8 +383,71 @@ public class XmlRecordReader
         // List<Integer>. The ints are attribute based.
         rootFilter.addFilter(listRootElement, rootElement, XmlUtils.TAG_LIST, XmlUtils.TAG_INT)
                   .setStartAction(startElementInCollection);
+    }
 
-        return rootFilter;
+    /**
+     * Creates an XmlFilter that can read BookCatalogue Info and Preferences XML format.
+     * <p>
+     * This legacy format was flat, had a fixed tag name ('item') and used an attribute 'type'.
+     * indicating int,string,...
+     */
+    private void buildLegacyFilters(@NonNull final XmlFilter rootFilter,
+                                    @NonNull final EntityReader<String> accessor) {
+
+        rootFilter.addFilter("collection", "item")
+                  .setStartAction(elementContext -> {
+
+                      currentTag = new TagInfo(elementContext);
+
+                      if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
+                          Log.d(TAG, "buildLegacyFilters|StartAction"
+                                     + "|localName=" + elementContext.getLocalName()
+                                     + "|currentTag=" + currentTag);
+                      }
+                  })
+                  .setEndAction(elementContext -> {
+                      if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
+                          Log.d(TAG, "buildLegacyFilters|EndAction"
+                                     + "|localName=" + elementContext.getLocalName()
+                                     + "|currentTag=" + currentTag);
+                      }
+                      try {
+                          final String body = elementContext.getBody();
+                          switch (currentTag.type) {
+                              case "Int":
+                                  accessor.putInt(currentTag.name, Integer.parseInt(body));
+                                  break;
+                              case "Long":
+                                  accessor.putLong(currentTag.name, Long.parseLong(body));
+                                  break;
+                              case "Flt":
+                                  // no Locales
+                                  accessor.putFloat(currentTag.name, Float.parseFloat(body));
+                                  break;
+                              case "Dbl":
+                                  // no Locales
+                                  accessor.putDouble(currentTag.name, Double.parseDouble(body));
+                                  break;
+                              case "Str":
+                                  accessor.putString(currentTag.name, body);
+                                  break;
+                              case "Bool":
+                                  accessor.putBoolean(currentTag.name, Boolean.parseBoolean(body));
+                                  break;
+                              case "Serial":
+                                  accessor.putSerializable(currentTag.name,
+                                                           Base64.decode(body, Base64.DEFAULT));
+                                  break;
+
+                              default:
+                                  throw new IllegalArgumentException(currentTag.type);
+                          }
+
+                      } catch (@NonNull final NumberFormatException e) {
+                          throw new RuntimeException(
+                                  "ERROR_UNABLE_TO_PROCESS_XML_ENTITY" + currentTag, e);
+                      }
+                  });
     }
 
     /**
@@ -500,13 +572,22 @@ public class XmlRecordReader
 
         /**
          * Constructor.
+         * <p>
+         * <strong>Important:</strong> a tag called "item" will trigger BookCatalogue parsing:
+         * the 'type' attribute will be read and be used as the tag-name.
          *
          * @param elementContext of the XML tag
          */
         TagInfo(@NonNull final ElementContext elementContext) {
-            type = elementContext.getLocalName();
             attrs = elementContext.getAttributes();
 
+            final String tmpType = elementContext.getLocalName();
+            if ("item".equals(tmpType)) {
+                // BookCatalogue used a fixed tag "item", with the type as an attribute
+                type = attrs.getValue("type");
+            } else {
+                type = tmpType;
+            }
             name = attrs.getValue(XmlUtils.ATTR_NAME);
             value = attrs.getValue(XmlUtils.ATTR_VALUE);
 
