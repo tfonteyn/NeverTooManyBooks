@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
 import android.content.Context;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -44,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
@@ -66,6 +68,16 @@ public class CsvArchiveReader
      */
     public CsvArchiveReader(@NonNull final ImportHelper helper) {
         importHelper = helper;
+    }
+
+    @NonNull
+    @Override
+    public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context)
+            throws DataReaderException, CredentialsException, StorageException, IOException {
+        // return an minimal but valid object
+        final Bundle bundle = ServiceLocator.newBundle();
+        bundle.putInt(ArchiveMetaData.INFO_ARCHIVER_VERSION, 0);
+        return Optional.of(new ArchiveMetaData(bundle));
     }
 
     @NonNull
