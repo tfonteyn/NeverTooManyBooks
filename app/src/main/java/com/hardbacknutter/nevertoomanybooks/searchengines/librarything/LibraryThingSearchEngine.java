@@ -54,8 +54,8 @@ import org.xml.sax.helpers.DefaultHandler;
  * LibraryThing is 40% owned by AbeBooks which is owned by Amazon.
  * 2023-01-14: the website now publicly states the API is permanently down.
  * There is also a captcha for login, so switching to JSoup style html scraping is out.
- * So as far as search/sync is concerned, this site dead.
- *
+ * So as far as search/sync is concerned, this site is dead.
+ * <p>
  * <a href="https://www.librarything.com/services/">LibraryThing API</a>
  * <p>
  * We can still:
