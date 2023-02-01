@@ -360,86 +360,82 @@ public class BookDaoHelper {
 
         final ContentValues cv = new ContentValues();
         for (final String key : book.keySet()) {
-            // Get column info for this column.
-            final ColumnInfo columnInfo = tableInfo.getColumn(key);
-            // Check if we actually have a matching column, and never update a PK.
-            if (columnInfo != null && !columnInfo.isPrimaryKey()) {
-                final Object entry = book.get(key);
-                if (entry == null) {
-                    if (columnInfo.isNullable()) {
-                        cv.putNull(key);
+            // We've seen empty keys in old BC imports - this is likely due to a csv column
+            // not being properly escaped, i.e. the data itself containing a comma.
+            // Not much we can do about that, so skip if encountered.
+            if (!key.isEmpty()) {
+                // Get column info for this column.
+                final ColumnInfo columnInfo = tableInfo.getColumn(key);
+                // Check if we actually have a matching column, and never update a PK.
+                if (columnInfo != null && !columnInfo.isPrimaryKey()) {
+                    final Object entry = book.get(key);
+                    if (entry == null) {
+                        if (columnInfo.isNullable()) {
+                            cv.putNull(key);
+                        } else {
+                            throw new IllegalArgumentException(
+                                    "NULL on a non-nullable column|key=" + key);
+                        }
                     } else {
-                        throw new IllegalArgumentException(
-                                "NULL on a non-nullable column|key=" + key);
-                    }
-                } else {
-                    final String columnName = columnInfo.getName();
-                    switch (columnInfo.getCursorFieldType()) {
-                        case Cursor.FIELD_TYPE_STRING: {
-                            if (entry instanceof String) {
-                                cv.put(columnName, (String) entry);
-                            } else {
-                                cv.put(columnName, entry.toString());
-                            }
-                            break;
-                        }
-                        case Cursor.FIELD_TYPE_INTEGER: {
-                            if (entry instanceof Boolean) {
-                                cv.put(columnName, (Boolean) entry ? 1 : 0);
-
-                            } else if (entry instanceof Integer) {
-                                cv.put(columnName, (Integer) entry);
-
-                            } else if (entry instanceof Long) {
-                                cv.put(columnName, (Long) entry);
-
-                            } else {
-                                final String s = entry.toString().toLowerCase(bookLocale);
-                                if (s.isEmpty()) {
-                                    // Theoretically we should only get here during an import,
-                                    // where everything is handled as a String.
-                                    cv.put(columnName, "");
+                        final String columnName = columnInfo.getName();
+                        switch (columnInfo.getCursorFieldType()) {
+                            case Cursor.FIELD_TYPE_STRING: {
+                                if (entry instanceof String) {
+                                    cv.put(columnName, (String) entry);
                                 } else {
-                                    // Use the full parser so we can detect boolean values
-                                    cv.put(columnName, ParseUtils.toInt(s));
+                                    cv.put(columnName, entry.toString());
                                 }
+                                break;
                             }
-                            break;
-                        }
-                        case Cursor.FIELD_TYPE_FLOAT: {
-                            if (entry instanceof Number) {
-                                cv.put(columnName, ((Number) entry).doubleValue());
-
-                            } else {
-                                final String stringValue = entry.toString().trim();
-                                if (stringValue.isEmpty()) {
-                                    // Theoretically we should only get here during an import,
-                                    // where everything is handled as a String.
-                                    cv.put(columnName, "");
+                            case Cursor.FIELD_TYPE_INTEGER: {
+                                if (entry instanceof Boolean) {
+                                    cv.put(columnName, (Boolean) entry ? 1 : 0);
                                 } else {
-                                    // Sqlite does not care about float/double,
-                                    // Using double covers float as well.
-                                    cv.put(columnName,
-                                           ParseUtils.toDouble(stringValue, bookLocale));
+                                    try {
+                                        cv.put(columnName, ParseUtils.toInt(entry));
+                                    } catch (@NonNull final NumberFormatException e) {
+                                        // We do NOT want to fail at this point.
+                                        // Log, but skip this field.
+                                        Logger.warn(TAG, e.getMessage(),
+                                                    "columnName(int)=" + columnName,
+                                                    "entry=" + entry,
+                                                    "book=" + book);
+                                    }
                                 }
+                                break;
                             }
-                            break;
-                        }
-                        case Cursor.FIELD_TYPE_BLOB: {
-                            if (entry instanceof byte[]) {
-                                cv.put(columnName, (byte[]) entry);
-                            } else {
-                                throw new IllegalArgumentException(
-                                        "non-null Blob but not a byte[] ?"
-                                        + "|columnName=" + columnName
-                                        + "|key=" + key);
+                            case Cursor.FIELD_TYPE_FLOAT: {
+                                try {
+                                    cv.put(columnName, ParseUtils.toDouble(entry, bookLocale));
+                                } catch (@NonNull final NumberFormatException e) {
+                                    // We do NOT want to fail at this point.
+                                    // Although the conclusion cannot be 100%, we're
+                                    // very likely looking at a "list price" field coming
+                                    // from an import which cannot be parsed.
+                                    // Log, but skip this field.
+                                    Logger.warn(TAG, e.getMessage(),
+                                                "columnName(float)=" + columnName,
+                                                "entry=" + entry,
+                                                "book=" + book);
+                                }
+                                break;
                             }
-                            break;
+                            case Cursor.FIELD_TYPE_BLOB: {
+                                if (entry instanceof byte[]) {
+                                    cv.put(columnName, (byte[]) entry);
+                                } else {
+                                    throw new IllegalArgumentException(
+                                            "non-null Blob but not a byte[] ?"
+                                            + "|columnName(blob)=" + columnName
+                                            + "|key=" + key);
+                                }
+                                break;
+                            }
+                            case Cursor.FIELD_TYPE_NULL:
+                            default:
+                                // ignore
+                                break;
                         }
-                        case Cursor.FIELD_TYPE_NULL:
-                        default:
-                            // ignore
-                            break;
                     }
                 }
             }
