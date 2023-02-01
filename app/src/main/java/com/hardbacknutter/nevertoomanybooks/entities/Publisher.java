@@ -26,11 +26,11 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * Represents a Publisher.
@@ -173,9 +173,10 @@ public class Publisher
         return bookLocale;
     }
 
+    @NonNull
     @Override
-    public int hashCodeOfNameOnly() {
-        return Objects.hash(ParseUtils.toAscii(name));
+    public List<String> getNameFields() {
+        return List.of(name);
     }
 
     @Override

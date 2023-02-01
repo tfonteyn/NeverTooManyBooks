@@ -387,17 +387,16 @@ public class AuthorDaoImpl
         }
 
         final AuthorMergeHelper mergeHelper = new AuthorMergeHelper();
-        return mergeHelper.merge(list,
+        return mergeHelper.merge(context, list,
                                  current -> {
-                                     final Locale locale;
                                      if (lookupLocale) {
-                                         locale = current.getLocale(context, bookLocale);
+                                         return current.getLocale(context, bookLocale);
                                      } else {
-                                         locale = bookLocale;
+                                         return bookLocale;
                                      }
-                                     // Don't lookup the locale a 2nd time.
-                                     fixId(context, current, false, locale);
-                                 });
+                                 },
+                                 // Don't lookup the locale a 2nd time.
+                                 (current, locale) -> fixId(context, current, false, locale));
     }
 
     @Override

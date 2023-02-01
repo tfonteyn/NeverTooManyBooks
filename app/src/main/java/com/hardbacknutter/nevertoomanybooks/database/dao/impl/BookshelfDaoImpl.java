@@ -32,6 +32,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.FilterFactory;
@@ -222,13 +223,16 @@ public class BookshelfDaoImpl
     }
 
     @Override
-    public boolean pruneList(@NonNull final Collection<Bookshelf> list) {
+    public boolean pruneList(@NonNull final Context context,
+                             @NonNull final Collection<Bookshelf> list) {
         if (list.isEmpty()) {
             return false;
         }
-
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final BookshelfMergeHelper mergeHelper = new BookshelfMergeHelper();
-        return mergeHelper.merge(list, this::fixId);
+        return mergeHelper.merge(context, list,
+                                 current -> userLocale,
+                                 (current, locale) -> fixId(current));
     }
 
     @Override

@@ -20,14 +20,21 @@
 
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
+
+import java.util.Locale;
 
 public class PublisherMergeHelper
         extends EntityMergeHelper<Publisher> {
 
     @Override
-    protected boolean merge(@NonNull final Publisher previous,
-                            @NonNull final Publisher current) {
+    protected boolean merge(@NonNull final Context context,
+                            @NonNull final Publisher previous,
+                            @NonNull final Locale previousLocale,
+                            @NonNull final Publisher current,
+                            @NonNull final Locale CurrentLocale) {
 
         if (current.getId() > 0) {
             previous.setId(current.getId());

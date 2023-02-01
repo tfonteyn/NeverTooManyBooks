@@ -642,7 +642,7 @@ public class Author
         }
 
         // resolve 1:1 circular reference
-        if (a != null && (a.hashCodeOfNameOnly() == this.hashCodeOfNameOnly())) {
+        if (a != null && (a.isSameName(this))) {
             a = null;
         }
         return a;
@@ -963,9 +963,10 @@ public class Author
         return 0;
     }
 
+    @NonNull
     @Override
-    public int hashCodeOfNameOnly() {
-        return Objects.hash(ParseUtils.toAscii(familyName), ParseUtils.toAscii(givenNames));
+    public List<String> getNameFields() {
+        return List.of(familyName, givenNames);
     }
 
     @Override

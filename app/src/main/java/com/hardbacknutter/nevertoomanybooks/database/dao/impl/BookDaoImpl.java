@@ -514,7 +514,7 @@ public class BookDaoImpl
         final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
         // fix id's and remove duplicates; shelves don't use a Locale, hence no lookup done.
-        bookshelfDao.pruneList(list);
+        bookshelfDao.pruneList(context, list);
 
         // Just delete all current links; we'll insert them from scratch.
         deleteBookBookshelfByBookId(bookId);

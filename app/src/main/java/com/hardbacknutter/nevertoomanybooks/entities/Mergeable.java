@@ -19,20 +19,81 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import androidx.annotation.NonNull;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+
+
 interface Mergeable {
+
+    /**
+     * Create a hash on the {@link #getNameFields()} of the given Mergeable.
+     * <p>
+     * Uses the ascii version of the names.
+     *
+     * @param x to hash
+     *
+     * @return hash
+     */
+    static int createNameHash(@NonNull final Mergeable x) {
+        return Objects.hash(
+                x.getNameFields()
+                 .stream()
+                 .map(ParseUtils::toAscii)
+                 .collect(Collectors.toList()));
+    }
+
+    /**
+     * Create a hash on the {@link #getNameFields()} of the given Mergeable.
+     * <p>
+     * Uses the ascii version of the names converted to an "ORDER BY" value.
+     *
+     * @param x to hash
+     *
+     * @return hash
+     */
+    static int createNameHash(@NonNull final Mergeable x,
+                              @NonNull final Locale locale) {
+        return Objects.hash(
+                x.getNameFields()
+                 .stream()
+                 .map(name -> SqlEncode.orderByColumn(name, locale))
+                 .collect(Collectors.toList()));
+    }
 
     long getId();
 
     void setId(long id);
 
     /**
-     * Diacritic neutral version of {@link Object#hashCode()}.
+     * Get a list of names which represent this object.
      * <p>
-     * Implementations must <strong>only</strong> use their "name" fields,
-     * and then only after preprocessing them with
-     * {@link com.hardbacknutter.nevertoomanybooks.utils.ParseUtils#toAscii(CharSequence)}
+     * Examples: Publisher: the name;  Author: the family AND given-names
      *
-     * @return hashcode
+     * @return list
      */
-    int hashCodeOfNameOnly();
+    @NonNull
+    List<String> getNameFields();
+
+    /**
+     * Convenience method to compare two Mergeable's.
+     */
+    default boolean isSameName(@NonNull final Mergeable that) {
+        return createNameHash(this) == createNameHash(that);
+    }
+
+    /**
+     * Convenience method to compare two Mergeable's.
+     */
+    default boolean isSameName(@NonNull final Locale locale,
+                               @NonNull final Mergeable that,
+                               @NonNull final Locale thatLocale) {
+        return createNameHash(this, locale) == createNameHash(that, thatLocale);
+    }
 }

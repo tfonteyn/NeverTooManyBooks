@@ -27,13 +27,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
@@ -329,9 +329,13 @@ public class TocEntry
         return bookLocale;
     }
 
+    @NonNull
     @Override
-    public int hashCodeOfNameOnly() {
-        return Objects.hash(ParseUtils.toAscii(title), author.hashCodeOfNameOnly());
+    public List<String> getNameFields() {
+        final List<String> all = new ArrayList<>();
+        all.add(title);
+        all.addAll(author.getNameFields());
+        return all;
     }
 
     @Override

@@ -26,6 +26,7 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -510,9 +511,10 @@ public class Series
         return bookLocale;
     }
 
+    @NonNull
     @Override
-    public int hashCodeOfNameOnly() {
-        return Objects.hash(ParseUtils.toAscii(title));
+    public List<String> getNameFields() {
+        return List.of(title);
     }
 
     @Override

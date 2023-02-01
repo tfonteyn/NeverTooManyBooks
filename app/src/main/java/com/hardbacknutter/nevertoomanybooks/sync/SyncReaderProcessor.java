@@ -389,7 +389,7 @@ public final class SyncReaderProcessor
                 if (!list.isEmpty()) {
                     list.addAll(localeBook.getBookshelves());
                     final BookshelfDao bookshelfDao = sl.getBookshelfDao();
-                    bookshelfDao.pruneList(list);
+                    bookshelfDao.pruneList(context, list);
                 }
                 break;
             }

@@ -129,7 +129,7 @@ public class BookCoder {
         decodeSeries(book);
         decodePublishers(book);
         decodeToc(context, book, bookLocale);
-        decodeBookshelves(book);
+        decodeBookshelves(context, book);
         decodeCalibreData(book);
 
         //FIXME: implement full parsing/formatting of incoming dates for validity
@@ -167,9 +167,11 @@ public class BookCoder {
      * Process the bookshelves.
      * Database access is strictly limited to fetching ID's.
      *
-     * @param book the book
+     * @param context Current context
+     * @param book    the book
      */
-    private void decodeBookshelves(@NonNull final Book /* in/out */ book) {
+    private void decodeBookshelves(@NonNull final Context context,
+                                   @NonNull final Book /* in/out */ book) {
 
         String encodedList = null;
 
@@ -189,7 +191,7 @@ public class BookCoder {
         if (encodedList != null && !encodedList.isEmpty()) {
             final ArrayList<Bookshelf> bookshelves = bookshelfCoder.decodeList(encodedList);
             if (!bookshelves.isEmpty()) {
-                serviceLocator.getBookshelfDao().pruneList(bookshelves);
+                serviceLocator.getBookshelfDao().pruneList(context, bookshelves);
                 book.setBookshelves(bookshelves);
             }
         }

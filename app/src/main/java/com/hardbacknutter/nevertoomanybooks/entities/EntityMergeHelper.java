@@ -19,13 +19,17 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public abstract class EntityMergeHelper<T extends Mergeable> {
 
@@ -35,39 +39,50 @@ public abstract class EntityMergeHelper<T extends Mergeable> {
     private final Map<Integer, T> hashCodes = new HashMap<>();
 
     /**
-     * Called from {@link #merge(Collection, Consumer)} to do the actual merging for each element
-     * in the list.
+     * Called from {@link #merge(Context, Collection, Function, BiConsumer)}
+     * to do the actual merging for each element in the list.
      * <p>
      * This method is called after we determined that the "name" fields of the object are
      * matching. This method should try to merge the non-name fields and the id if possible.
      *
+     * @param context  Current context
      * @param previous element
      * @param current  element
      *
      * @return {@code true} if the list was modified in any way
      */
-    protected abstract boolean merge(@NonNull T previous,
-                                     @NonNull T current);
+    protected abstract boolean merge(@NonNull final Context context,
+                                     @NonNull T previous,
+                                     @NonNull final Locale previousLocale,
+                                     @NonNull T current,
+                                     @NonNull final Locale CurrentLocale);
 
     /**
      * Loop over the list and try to find and merge duplicates.
      *
-     * @param list    to process
-     * @param idFixer a consumer which should attempt to fix the id of the object passed in
+     * @param context        Current context
+     * @param list           to process
+     * @param localeProvider Locale to use if the item has none set
+     * @param idFixer        a consumer which should attempt to fix the id of
+     *                       the object passed in
      *
      * @return {@code true} if the list was modified.
      */
-    public boolean merge(@NonNull final Collection<T> list,
-                         @NonNull final Consumer<T> idFixer) {
+    public boolean merge(@NonNull final Context context,
+                         @NonNull final Collection<T> list,
+                         @NonNull final Function<T, Locale> localeProvider,
+                         @NonNull final BiConsumer<T, Locale> idFixer) {
 
         boolean listModified = false;
         final Iterator<T> iterator = list.iterator();
         while (iterator.hasNext()) {
             final T current = iterator.next();
-            idFixer.accept(current);
+            final Locale currentLocale = localeProvider.apply(current);
+
+            idFixer.accept(current, currentLocale);
 
             final long id = current.getId();
-            final int hash = current.hashCodeOfNameOnly();
+            final int hash = Mergeable.createNameHash(current, currentLocale);
 
             // Check if there is a previous occurrence, either by id, or by value (hash)
             T previous = null;
@@ -88,7 +103,9 @@ public abstract class EntityMergeHelper<T extends Mergeable> {
             } else {
                 // There is a previous one with the same "name" as the current one.
                 // Try merging the "non-name" attributes from the current into the previous.
-                if (merge(previous, current)) {
+                final Locale previousLocale = localeProvider.apply(previous);
+
+                if (merge(context, previous, previousLocale, current, currentLocale)) {
                     // merged successfully, remove the current, we're keeping the previous one.
                     iterator.remove();
 

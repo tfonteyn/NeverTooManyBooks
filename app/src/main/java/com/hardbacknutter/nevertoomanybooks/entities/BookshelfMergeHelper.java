@@ -20,14 +20,21 @@
 
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
+
+import java.util.Locale;
 
 public class BookshelfMergeHelper
         extends EntityMergeHelper<Bookshelf> {
 
     @Override
-    protected boolean merge(@NonNull final Bookshelf previous,
-                            @NonNull final Bookshelf current) {
+    protected boolean merge(@NonNull final Context context,
+                            @NonNull final Bookshelf previous,
+                            @NonNull final Locale previousLocale,
+                            @NonNull final Bookshelf current,
+                            @NonNull final Locale CurrentLocale) {
 
         if (current.getId() > 0) {
             previous.setId(current.getId());

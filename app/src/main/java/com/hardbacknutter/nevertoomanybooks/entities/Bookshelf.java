@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * Represents a Bookshelf.
@@ -465,12 +464,11 @@ public class Bookshelf
         return id == ALL_BOOKS;
     }
 
-
+    @NonNull
     @Override
-    public int hashCodeOfNameOnly() {
-        return Objects.hash(ParseUtils.toAscii(name));
+    public List<String> getNameFields() {
+        return List.of(name);
     }
-
 
     /**
      * Equality: <strong>id, name</strong>.

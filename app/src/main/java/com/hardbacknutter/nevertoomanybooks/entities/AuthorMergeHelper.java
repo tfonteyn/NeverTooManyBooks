@@ -20,14 +20,21 @@
 
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
+
+import java.util.Locale;
 
 public class AuthorMergeHelper
         extends EntityMergeHelper<Author> {
 
     @Override
-    protected boolean merge(@NonNull final Author previous,
-                            @NonNull final Author current) {
+    protected boolean merge(@NonNull final Context context,
+                            @NonNull final Author previous,
+                            @NonNull final Locale previousLocale,
+                            @NonNull final Author current,
+                            @NonNull final Locale CurrentLocale) {
         // always combine the types using 'OR'
         previous.setType(previous.getType() | current.getType());
 

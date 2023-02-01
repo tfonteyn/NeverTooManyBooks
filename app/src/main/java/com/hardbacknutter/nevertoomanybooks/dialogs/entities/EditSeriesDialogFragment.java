@@ -156,8 +156,7 @@ public class EditSeriesDialogFragment
             return false;
         }
 
-        final boolean nameChanged = series.hashCodeOfNameOnly()
-                                    != currentEdit.hashCodeOfNameOnly();
+        final boolean nameChanged = !series.isSameName(currentEdit);
 
         // anything actually changed ? If not, we're done.
         if (!nameChanged && series.isComplete() == currentEdit.isComplete()) {

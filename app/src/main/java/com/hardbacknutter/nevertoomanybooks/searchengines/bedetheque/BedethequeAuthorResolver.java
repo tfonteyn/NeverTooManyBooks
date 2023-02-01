@@ -176,7 +176,7 @@ public class BedethequeAuthorResolver
         // While resolving, the name of the bdtAuthor CAN be overwritten.
         // Check that it still MATCHES the original author name
         final Author penAuthor = Author.from(bdtAuthor.getName());
-        if (penAuthor.hashCodeOfNameOnly() == author.hashCodeOfNameOnly()) {
+        if (penAuthor.isSameName(author)) {
             // It does, we now overwrite the original name; this will correct any diacritics
             author.setName(penAuthor.getFamilyName(), penAuthor.getGivenNames());
         }

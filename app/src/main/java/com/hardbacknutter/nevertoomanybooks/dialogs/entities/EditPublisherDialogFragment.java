@@ -157,8 +157,7 @@ public class EditPublisherDialogFragment
             return false;
         }
 
-        final boolean nameChanged = publisher.hashCodeOfNameOnly()
-                                    != currentEdit.hashCodeOfNameOnly();
+        final boolean nameChanged = !publisher.isSameName(currentEdit);
 
         // anything actually changed ? If not, we're done.
         if (nameChanged) {

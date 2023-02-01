@@ -20,14 +20,21 @@
 
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
+
+import java.util.Locale;
 
 public class SeriesMergeHelper
         extends EntityMergeHelper<Series> {
 
     @Override
-    protected boolean merge(@NonNull final Series previous,
-                            @NonNull final Series current) {
+    protected boolean merge(@NonNull final Context context,
+                            @NonNull final Series previous,
+                            @NonNull final Locale previousLocale,
+                            @NonNull final Series current,
+                            @NonNull final Locale CurrentLocale) {
 
         final boolean canMerge = mergeNumber(previous, current);
 

@@ -20,17 +20,25 @@
 
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
+
+import java.util.Locale;
 
 public class TocEntryMergeHelper
         extends EntityMergeHelper<TocEntry> {
 
     @Override
-    protected boolean merge(@NonNull final TocEntry previous,
-                            @NonNull final TocEntry current) {
+    protected boolean merge(@NonNull final Context context,
+                            @NonNull final TocEntry previous,
+                            @NonNull final Locale previousLocale,
+                            @NonNull final TocEntry current,
+                            @NonNull final Locale CurrentLocale) {
 
         final boolean canMerge = mergeDate(previous, current)
-                                 && mergeAuthor(previous, current);
+                                 && mergeAuthor(previous, previousLocale,
+                                                current, CurrentLocale);
 
         if (canMerge && current.getId() > 0) {
             previous.setId(current.getId());
@@ -59,14 +67,19 @@ public class TocEntryMergeHelper
     }
 
     private boolean mergeAuthor(@NonNull final TocEntry previous,
-                                @NonNull final TocEntry current) {
+                                @NonNull final Locale previousLocale,
+                                @NonNull final TocEntry current,
+                                @NonNull final Locale currentLocale) {
 
-        final boolean canMerge = previous.getPrimaryAuthor().hashCodeOfNameOnly()
-                                 == current.getPrimaryAuthor().hashCodeOfNameOnly();
+        final Author previousAuthor = previous.getPrimaryAuthor();
+        final Author currentAuthor = current.getPrimaryAuthor();
+        final boolean canMerge = previousAuthor
+                .isSameName(previousLocale, currentAuthor, currentLocale);
+
         if (canMerge) {
-            final long currentId = current.getPrimaryAuthor().getId();
+            final long currentId = currentAuthor.getId();
             if (currentId > 0) {
-                previous.getPrimaryAuthor().setId(currentId);
+                previousAuthor.setId(currentId);
             }
         }
         return canMerge;

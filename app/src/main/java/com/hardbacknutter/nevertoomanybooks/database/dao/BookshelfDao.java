@@ -91,11 +91,13 @@ public interface BookshelfDao
     /**
      * Passed a list of Objects, remove duplicates. We keep the first occurrence.
      *
-     * @param list List to clean up
+     * @param context Current context
+     * @param list    List to clean up
      *
      * @return {@code true} if the list was modified.
      */
-    boolean pruneList(@NonNull Collection<Bookshelf> list);
+    boolean pruneList(@NonNull final Context context,
+                      @NonNull Collection<Bookshelf> list);
 
     /**
      * Tries to find the item in the database using all or some of its fields (except the id).

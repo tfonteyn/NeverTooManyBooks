@@ -202,8 +202,7 @@ public class EditAuthorDialogFragment
             return false;
         }
 
-        final boolean nameChanged = originalAuthor.hashCodeOfNameOnly()
-                                    != currentEdit.hashCodeOfNameOnly();
+        final boolean nameChanged = !originalAuthor.isSameName(currentEdit);
 
         // anything actually changed ? If not, we're done.
         if (!nameChanged
