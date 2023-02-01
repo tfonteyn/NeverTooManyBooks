@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
  * To be clear: parsing works fine; it's just the user not able to input the
  * right decimal/thousand separators for their Locale.
  */
+@SuppressWarnings("WeakerAccess")
 public final class ParseUtils {
 
     /** log error string. */
@@ -196,6 +197,25 @@ public final class ParseUtils {
     }
 
     /**
+     * Fast-parse a string for being zero.
+     *
+     * @param stringValue to check
+     *
+     * @return {@code true} if the value was a zero in some form or another
+     */
+    public static boolean isZero(@Nullable final String stringValue) {
+        if (stringValue == null) {
+            return true;
+        }
+        final String s = stringValue.trim();
+        return s.isEmpty()
+               || "0".equals(s)
+               || "0.0".equals(s)
+               // Comma as decimal separator.
+               || "0,0".equals(s);
+    }
+
+    /**
      * Translate the passed Object to a {@code long} value.
      *
      * @param source Object to convert
@@ -215,7 +235,7 @@ public final class ParseUtils {
 
         } else {
             final String stringValue = source.toString().trim();
-            if (stringValue.isEmpty()) {
+            if (isZero(stringValue)) {
                 return 0;
             } else {
                 try {
@@ -248,7 +268,7 @@ public final class ParseUtils {
 
         } else {
             final String stringValue = source.toString().trim();
-            if (stringValue.isEmpty()) {
+            if (isZero(stringValue)) {
                 return 0;
             } else {
                 try {
@@ -283,7 +303,7 @@ public final class ParseUtils {
 
         } else {
             final String stringValue = source.toString().trim();
-            if (stringValue.isEmpty()) {
+            if (isZero(stringValue)) {
                 return 0f;
             }
             try {
@@ -317,7 +337,7 @@ public final class ParseUtils {
 
         } else {
             final String stringValue = source.toString().trim();
-            if (stringValue.isEmpty()) {
+            if (isZero(stringValue)) {
                 return 0;
             } else {
                 try {
@@ -329,6 +349,7 @@ public final class ParseUtils {
             }
         }
     }
+
 
     /**
      * Translate the passed Object to a boolean value.
@@ -425,7 +446,7 @@ public final class ParseUtils {
                                    @Nullable final Locale sourceLocale)
             throws NumberFormatException {
 
-        if (source == null || source.trim().isEmpty()) {
+        if (isZero(source)) {
             return 0f;
         }
 
@@ -467,7 +488,7 @@ public final class ParseUtils {
                                      @Nullable final Locale sourceLocale)
             throws NumberFormatException {
 
-        if (source == null || source.trim().isEmpty()) {
+        if (isZero(source)) {
             return 0d;
         }
 
