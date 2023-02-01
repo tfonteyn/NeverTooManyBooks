@@ -135,25 +135,28 @@ public class BookDaoHelper {
      */
     @VisibleForTesting
     public void processPrice(@NonNull final String key) {
-
-        final String currencyKey = key + DBKey.CURRENCY_SUFFIX;
-        if (book.contains(key) && !book.contains(currencyKey)) {
-            // Handle a price without a currency.
-            // We presume the user bought the book in their own currency.
-            // Try to parse the string using their own Locale
-            final Money money = new Money(bookLocale, book.getString(key));
-            // If the currency could be decoded, store the Money back into the book
-            if (money.isValid()) {
-                book.putMoney(key, money);
-                return;
+        try {
+            final String currencyKey = key + DBKey.CURRENCY_SUFFIX;
+            if (book.contains(key) && !book.contains(currencyKey)) {
+                // Handle a price without a currency.
+                // We presume the user bought the book in their own currency.
+                // Try to parse the string using their own Locale
+                final Money money = new Money(bookLocale, book.getString(key));
+                // If the currency could be decoded, store the Money back into the book
+                if (money.isValid()) {
+                    book.putMoney(key, money);
+                    return;
+                }
+                // else just leave the original text in the book
             }
-            // else just leave the original text in the book
-        }
 
-        // Either way, make sure currency strings are uppercase
-        if (book.contains(currencyKey)) {
-            book.putString(currencyKey, book.getString(currencyKey)
-                                            .toUpperCase(Locale.ENGLISH));
+            // Either way, make sure currency strings are uppercase
+            if (book.contains(currencyKey)) {
+                book.putString(currencyKey, book.getString(currencyKey)
+                                                .toUpperCase(Locale.ENGLISH));
+            }
+        } catch (@NonNull final NumberFormatException e) {
+            // just leave the original text in the book
         }
     }
 
