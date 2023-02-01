@@ -419,7 +419,8 @@ public class BookDaoHelper {
                                 } else {
                                     // Sqlite does not care about float/double,
                                     // Using double covers float as well.
-                                    cv.put(columnName, Double.parseDouble(stringValue));
+                                    cv.put(columnName,
+                                           ParseUtils.toDouble(stringValue, bookLocale));
                                 }
                             }
                             break;
