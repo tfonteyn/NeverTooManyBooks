@@ -43,13 +43,14 @@ NEW:
 
 FIXES:
 - merging author etc... updated and made more robust
+- importing badly formatted list-price fields no longer skips the book, but just skips the price field.
 - fixed filter name mismatches.
 - string duplicates cleanup effort.
 - potential memory leaks fixed: register/unregister calls matched
 
 REMOVED:
 - all CSV and XML exports are removed. It was increasingly difficult to keep them updated.
-  Use JSON instead.
+  Use JSON instead. A simplified CSV export is planned in a future version.
 - TAR import is removed. This allowed the removal of the Apache library for tar.
   Repack any tar archive as a zip and import the zip.
 
