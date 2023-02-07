@@ -173,6 +173,8 @@ public class SettingsFragment
         findPreference(Prefs.pk_edit_book_isbn_checks).setSummaryProvider(listSummaryProvider);
         //noinspection ConstantConditions
         findPreference(Prefs.pk_booklist_rebuild_state).setSummaryProvider(listSummaryProvider);
+        //noinspection ConstantConditions
+        findPreference(Prefs.pk_booklist_context_menu).setSummaryProvider(listSummaryProvider);
 
 
         //noinspection ConstantConditions

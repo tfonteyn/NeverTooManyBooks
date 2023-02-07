@@ -59,6 +59,7 @@ public final class Prefs {
     public static final String pk_storage_volume = "storage.volume.index";
 
     public static final String pk_booklist_rebuild_state = "booklist.rebuild.state";
+    public static final String pk_booklist_context_menu = "booklist.context.menu";
     public static final String pk_booklist_fastscroller_overlay = "booklist.fastscroller.overlay";
 
     public static final String pk_edit_book_isbn_checks = "edit.book.isbn.checks";
