@@ -724,6 +724,44 @@ public class BooklistAdapter
         return null;
     }
 
+    @NonNull
+    public String getConditionDescriptions(final int condition) {
+        return conditionDescriptions[condition];
+    }
+
+    @NonNull
+    public Locale getUserLocale() {
+        return userLocale;
+    }
+
+    @NonNull
+    public ShowContextMenu getContextMenuMode() {
+        return contextMenuMode;
+    }
+
+    public boolean isEmbeddedMode() {
+        return embeddedMode;
+    }
+
+    /**
+     * Get the longest side for a cover may have.
+     *
+     * @return pixels
+     */
+    @Dimension
+    public int getCoverLongestSide() {
+        return coverLongestSide;
+    }
+
+    /**
+     * Whether to use the covers DAO caching.
+     *
+     * @return flag
+     */
+    public boolean isImageCachingEnabled() {
+        return imageCachingEnabled;
+    }
+
     public void setRowClickListener(@Nullable final OnRowClickListener listener) {
         this.rowClickListener = listener;
     }
@@ -843,7 +881,7 @@ public class BooklistAdapter
                     }
                 });
 
-                switch (adapter.contextMenuMode) {
+                switch (adapter.getContextMenuMode()) {
                     case Button: {
                         btnRowMenu.setVisibility(View.VISIBLE);
                         break;
@@ -851,7 +889,7 @@ public class BooklistAdapter
                     case ButtonIfSpace: {
                         final WindowSizeClass size = WindowSizeClass.getWidth(
                                 btnRowMenu.getContext());
-                        final boolean hasSpace = !adapter.embeddedMode &&
+                        final boolean hasSpace = !adapter.isEmbeddedMode() &&
                                                  (size == WindowSizeClass.MEDIUM
                                                   || size == WindowSizeClass.EXPANDED);
                         if (hasSpace) {
@@ -931,8 +969,8 @@ public class BooklistAdapter
                 vb.coverImage0.setOnClickListener(this::onZoomCover);
 
                 imageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
-                                                  adapter.coverLongestSide,
-                                                  adapter.coverLongestSide);
+                                                  adapter.getCoverLongestSide(),
+                                                  adapter.getCoverLongestSide());
             } else {
                 // hide it if not in use.
                 vb.coverImage0.setVisibility(View.GONE);
@@ -1056,7 +1094,7 @@ public class BooklistAdapter
             if (use.condition) {
                 final int condition = rowData.getInt(DBKey.BOOK_CONDITION);
                 if (condition > 0) {
-                    showOrHide(vb.condition, adapter.conditionDescriptions[condition]);
+                    showOrHide(vb.condition, adapter.getConditionDescriptions(condition));
                 } else {
                     // Hide "Unknown" condition
                     vb.condition.setVisibility(View.GONE);
@@ -1158,7 +1196,7 @@ public class BooklistAdapter
             String date = null;
             if (usePubDate) {
                 final String dateStr = rowData.getString(DBKey.BOOK_PUBLICATION__DATE);
-                date = new PartialDate(dateStr).toDisplay(adapter.userLocale, dateStr);
+                date = new PartialDate(dateStr).toDisplay(adapter.getUserLocale(), dateStr);
             }
 
             if (text != null && !text.isBlank() && date != null && !date.isBlank()) {
@@ -1202,12 +1240,12 @@ public class BooklistAdapter
             final Context context = vb.coverImage0.getContext();
 
             // 1. If caching is used, and we don't have cache building happening, check it.
-            if (adapter.imageCachingEnabled) {
+            if (adapter.isImageCachingEnabled()) {
                 final CoverCacheDao coverCacheDao = ServiceLocator.getInstance().getCoverCacheDao();
                 if (!coverCacheDao.isBusy()) {
                     final Bitmap bitmap = coverCacheDao.getCover(context, uuid, 0,
-                                                                 adapter.coverLongestSide,
-                                                                 adapter.coverLongestSide);
+                                                                 adapter.getCoverLongestSide(),
+                                                                 adapter.getCoverLongestSide());
 
                     if (bitmap != null) {
                         //noinspection ConstantConditions
@@ -1223,7 +1261,7 @@ public class BooklistAdapter
             if (file.isEmpty()) {
                 // leave the space blank, but preserve the width BASED on the coverLongestSide!
                 final ViewGroup.LayoutParams lp = vb.coverImage0.getLayoutParams();
-                lp.width = (int) (adapter.coverLongestSide * HW_RATIO);
+                lp.width = (int) (adapter.getCoverLongestSide() * HW_RATIO);
                 lp.height = 0;
                 vb.coverImage0.setLayoutParams(lp);
                 vb.coverImage0.setImageDrawable(null);
@@ -1231,7 +1269,7 @@ public class BooklistAdapter
             }
 
             // Once we get here, we know the file is valid
-            if (adapter.imageCachingEnabled) {
+            if (adapter.isImageCachingEnabled()) {
                 // 1. Gets the image from the file system and display it.
                 // 2. Start a subsequent task to send it to the cache.
                 //noinspection ConstantConditions
@@ -1239,8 +1277,8 @@ public class BooklistAdapter
                     if (bitmap != null) {
                         ServiceLocator.getInstance().getCoverCacheDao().saveCover(
                                 uuid, 0, bitmap,
-                                adapter.coverLongestSide,
-                                adapter.coverLongestSide);
+                                adapter.getCoverLongestSide(),
+                                adapter.getCoverLongestSide());
                     }
                 });
             } else {
