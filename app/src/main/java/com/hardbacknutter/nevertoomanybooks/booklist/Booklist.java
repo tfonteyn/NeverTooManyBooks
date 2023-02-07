@@ -585,7 +585,8 @@ public class Booklist
                 String.valueOf(BooklistGroup.BOOK),
                 String.valueOf(rowId)})) {
 
-
+            // TODO: checking for covers is slow - we should store a flag with the book
+            // indicating it has a front/back cover.
             while (cursor.moveToNext()) {
                 final BooklistNode node = new BooklistNode(cursor);
                 final String uuid = cursor.getString(BooklistNode.NEXT_COL);
