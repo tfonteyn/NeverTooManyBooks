@@ -55,5 +55,4 @@
     <dimen name="btn_open_toc_height">@dimen/wrap_content</dimen>
     <dimen name="btn_open_toc_text_size">14sp</dimen>
 
-    <dimen name="scrollbar_padding">10dp</dimen>
 </resources>

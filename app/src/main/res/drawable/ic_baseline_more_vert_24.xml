@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ @Copyright 2018-2022 HardBackNutter
   ~ @License GNU General Public License
@@ -19,19 +18,8 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!--
-    Screens 'just' larger than the Pixel2.
-
-    Pixel2 - 5.0" (1080 x 1920) - 420dpi - sw411dp
-    port: w411dp h659dp
-    land: w683dp h387dp
--->
-<resources>
-    <dimen name="progress_margin_top">200dp</dimen>
-
-    <dimen name="til_fixed_width_personal_name">360dp</dimen>
-    <dimen name="cbx_fixed_width_author_type">160dp</dimen>
-
-    <dimen name="scrollbar_padding">10dp</dimen>
-
-</resources>
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp"
+        android:height="24dp" android:autoMirrored="true"
+        android:tint="#000000" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="@android:color/white" android:pathData="M12,8c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM12,10c-1.1,0 -2,0.9 -2,2s0.9,2 2,2 2,-0.9 2,-2 -0.9,-2 -2,-2zM12,16c-1.1,0 -2,0.9 -2,2s0.9,2 2,2 2,-0.9 2,-2 -0.9,-2 -2,-2z" />
+</vector>

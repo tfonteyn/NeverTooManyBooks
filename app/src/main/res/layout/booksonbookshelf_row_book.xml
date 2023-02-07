@@ -19,259 +19,279 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<com.google.android.material.card.MaterialCardView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/BoB.Group.Book"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     >
 
-    <!-- id "card_frame" used by the positioning debug view! -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/card_frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card"
+        style="@style/BoB.Group.Book"
+        android:layout_width="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_row_menu"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         >
 
-        <ImageView
-            android:id="@id/cover_image_0"
-            style="@style/CoverImage.List"
-            android:layout_width="@dimen/cover_scale_2_width"
-            android:layout_height="@dimen/cover_scale_2_height"
-            app:layout_constraintEnd_toStartOf="@id/col1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ContentDescription"
-            tools:src="@sample/covers"
-            />
+        <!-- id "card_frame" used by the positioning debug view! -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/card_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
 
-        <!-- Used instead of a barrier:
-             - Allow adding the positioning debug View underneath the cover view
-               even if the cover is hidden. Relies on id "col1" !
-             - Also avoids adding margins to all fields.
-               or to alternatively needed to manipulate padding on the cover view.
-             - Allowed us to remove the old extra ConstraintLayout (2022-09-07)
-            -->
-        <Space
-            android:id="@+id/col1"
-            android:layout_width="@dimen/field_margin_start"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/cover_image_0"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+            <ImageView
+                android:id="@id/cover_image_0"
+                style="@style/CoverImage.List"
+                android:layout_width="@dimen/cover_scale_2_width"
+                android:layout_height="@dimen/cover_scale_2_height"
+                app:layout_constraintEnd_toStartOf="@id/col1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription"
+                tools:src="@sample/covers"
+                />
+
+            <!-- Used instead of a barrier:
+                 - Allow adding the positioning debug View underneath the cover view
+                   even if the cover is hidden. Relies on id "col1" !
+                 - Also avoids adding margins to all fields.
+                   or to alternatively needed to manipulate padding on the cover view.
+                 - Allowed us to remove the old extra ConstraintLayout (2022-09-07)
+                -->
+            <Space
+                android:id="@+id/col1"
+                android:layout_width="@dimen/field_margin_start"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/cover_image_0"
+                app:layout_constraintTop_toTopOf="parent"
+                />
 
 
-        <TextView
-            android:id="@+id/series_num_long"
-            style="@style/BoB.Group.Book.SeriesNum"
-            android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
-            app:layout_constraintStart_toEndOf="@id/col1"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="SelectableText"
-            tools:text="series_num_long"
-            tools:visibility="visible"
-            />
+            <TextView
+                android:id="@+id/series_num_long"
+                style="@style/BoB.Group.Book.SeriesNum"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
+                app:layout_constraintStart_toEndOf="@id/col1"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="SelectableText"
+                tools:text="series_num_long"
+                tools:visibility="visible"
+                />
 
-        <TextView
-            android:id="@+id/series_num"
-            style="@style/BoB.Group.Book.SeriesNum.Inline"
-            android:visibility="gone"
-            app:layout_constraintBaseline_toBaselineOf="@id/title"
-            app:layout_constraintEnd_toStartOf="@id/title"
-            app:layout_constraintStart_toEndOf="@id/col1"
-            tools:ignore="SelectableText"
-            tools:text="###"
-            tools:visibility="visible"
-            />
+            <TextView
+                android:id="@+id/series_num"
+                style="@style/BoB.Group.Book.SeriesNum.Inline"
+                android:visibility="gone"
+                app:layout_constraintBaseline_toBaselineOf="@id/title"
+                app:layout_constraintEnd_toStartOf="@id/title"
+                app:layout_constraintStart_toEndOf="@id/col1"
+                tools:ignore="SelectableText"
+                tools:text="###"
+                tools:visibility="visible"
+                />
 
-        <TextView
-            android:id="@+id/title"
-            style="@style/BoB.Group.Book.Title"
-            app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
-            app:layout_constraintStart_toEndOf="@id/series_num"
-            app:layout_constraintTop_toBottomOf="@id/series_num_long"
-            tools:ignore="SelectableText"
-            tools:text="@sample/data.json/book/title"
-            />
+            <TextView
+                android:id="@+id/title"
+                style="@style/BoB.Group.Book.Title"
+                app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
+                app:layout_constraintStart_toEndOf="@id/series_num"
+                app:layout_constraintTop_toBottomOf="@id/series_num_long"
+                tools:ignore="SelectableText"
+                tools:text="@sample/data.json/book/title"
+                />
 
-        <TextView
-            android:id="@+id/series_title"
-            style="@style/BoB.Group.Book.SeriesTitle"
-            android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
-            app:layout_constraintStart_toEndOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            app:layout_constraintVertical_bias="0"
-            app:layout_constraintVertical_chainStyle="packed"
-            tools:ignore="SelectableText"
-            tools:text="series_title"
-            tools:visibility="visible"
-            />
+            <TextView
+                android:id="@+id/series_title"
+                style="@style/BoB.Group.Book.SeriesTitle"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
+                app:layout_constraintStart_toEndOf="@id/col1"
+                app:layout_constraintTop_toBottomOf="@id/title"
+                app:layout_constraintVertical_bias="0"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:ignore="SelectableText"
+                tools:text="series_title"
+                tools:visibility="visible"
+                />
 
-        <RatingBar
-            android:id="@+id/rating"
-            style="@style/BoB.Group.Book.RatingBar"
-            android:layout_width="0dp"
-            android:visibility="gone"
-            app:layout_constraintStart_toEndOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/series_title"
-            tools:visibility="visible"
-            />
+            <RatingBar
+                android:id="@+id/rating"
+                style="@style/BoB.Group.Book.RatingBar"
+                android:layout_width="0dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toEndOf="@id/col1"
+                app:layout_constraintTop_toBottomOf="@id/series_title"
+                tools:visibility="visible"
+                />
 
-        <TextView
-            android:id="@+id/author"
-            style="@style/BoB.Group.Book.Text"
-            android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
-            app:layout_constraintStart_toEndOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/rating"
-            tools:ignore="SelectableText"
-            tools:text="@sample/data.json/author/full_name"
-            tools:visibility="visible"
-            />
+            <TextView
+                android:id="@+id/author"
+                style="@style/BoB.Group.Book.Text"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
+                app:layout_constraintStart_toEndOf="@id/col1"
+                app:layout_constraintTop_toBottomOf="@id/rating"
+                tools:ignore="SelectableText"
+                tools:text="@sample/data.json/author/full_name"
+                tools:visibility="visible"
+                />
 
-        <TextView
-            android:id="@+id/isbn"
-            style="@style/BoB.Group.Book.Text"
-            android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
-            app:layout_constraintStart_toEndOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/author"
-            tools:ignore="SelectableText"
-            tools:text="@sample/data.json/isbn/d13"
-            tools:visibility="visible"
-            />
+            <TextView
+                android:id="@+id/isbn"
+                style="@style/BoB.Group.Book.Text"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
+                app:layout_constraintStart_toEndOf="@id/col1"
+                app:layout_constraintTop_toBottomOf="@id/author"
+                tools:ignore="SelectableText"
+                tools:text="@sample/data.json/isbn/d13"
+                tools:visibility="visible"
+                />
 
-        <TextView
-            android:id="@+id/publisher"
-            style="@style/BoB.Group.Book.Text"
-            android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
-            app:layout_constraintStart_toEndOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/isbn"
-            tools:ignore="SelectableText"
-            tools:text="@sample/data.json/publisher/name"
-            tools:visibility="visible"
-            />
+            <TextView
+                android:id="@+id/publisher"
+                style="@style/BoB.Group.Book.Text"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
+                app:layout_constraintStart_toEndOf="@id/col1"
+                app:layout_constraintTop_toBottomOf="@id/isbn"
+                tools:ignore="SelectableText"
+                tools:text="@sample/data.json/publisher/name"
+                tools:visibility="visible"
+                />
 
-        <TextView
-            android:id="@+id/language"
-            style="@style/BoB.Group.Book.Text"
-            android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
-            app:layout_constraintStart_toEndOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/publisher"
-            tools:ignore="SelectableText"
-            tools:text="@sample/data.json/language/name"
-            tools:visibility="visible"
-            />
+            <TextView
+                android:id="@+id/language"
+                style="@style/BoB.Group.Book.Text"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
+                app:layout_constraintStart_toEndOf="@id/col1"
+                app:layout_constraintTop_toBottomOf="@id/publisher"
+                tools:ignore="SelectableText"
+                tools:text="@sample/data.json/language/name"
+                tools:visibility="visible"
+                />
 
-        <TextView
-            android:id="@+id/format"
-            style="@style/BoB.Group.Book.Text"
-            android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
-            app:layout_constraintStart_toEndOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/language"
-            tools:ignore="SelectableText"
-            tools:text="@sample/data.json/format/name"
-            tools:visibility="visible"
-            />
+            <TextView
+                android:id="@+id/format"
+                style="@style/BoB.Group.Book.Text"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
+                app:layout_constraintStart_toEndOf="@id/col1"
+                app:layout_constraintTop_toBottomOf="@id/language"
+                tools:ignore="SelectableText"
+                tools:text="@sample/data.json/format/name"
+                tools:visibility="visible"
+                />
 
-        <TextView
-            android:id="@+id/condition"
-            style="@style/BoB.Group.Book.Text"
-            android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
-            app:layout_constraintStart_toEndOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/format"
-            tools:ignore="SelectableText"
-            tools:text="@sample/data.json/condition/name"
-            tools:visibility="visible"
-            />
+            <TextView
+                android:id="@+id/condition"
+                style="@style/BoB.Group.Book.Text"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
+                app:layout_constraintStart_toEndOf="@id/col1"
+                app:layout_constraintTop_toBottomOf="@id/format"
+                tools:ignore="SelectableText"
+                tools:text="@sample/data.json/condition/name"
+                tools:visibility="visible"
+                />
 
-        <TextView
-            android:id="@+id/location"
-            style="@style/BoB.Group.Book.Text"
-            android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
-            app:layout_constraintStart_toEndOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/condition"
-            tools:ignore="SelectableText"
-            tools:text="@sample/data.json/location/name"
-            tools:visibility="visible"
-            />
+            <TextView
+                android:id="@+id/location"
+                style="@style/BoB.Group.Book.Text"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
+                app:layout_constraintStart_toEndOf="@id/col1"
+                app:layout_constraintTop_toBottomOf="@id/condition"
+                tools:ignore="SelectableText"
+                tools:text="@sample/data.json/location/name"
+                tools:visibility="visible"
+                />
 
-        <TextView
-            android:id="@+id/shelves"
-            style="@style/BoB.Group.Book.Text"
-            android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
-            app:layout_constraintStart_toEndOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/location"
-            tools:ignore="SelectableText"
-            tools:text="@sample/data.json/shelves/name"
-            tools:visibility="visible"
-            />
+            <TextView
+                android:id="@+id/shelves"
+                style="@style/BoB.Group.Book.Text"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
+                app:layout_constraintStart_toEndOf="@id/col1"
+                app:layout_constraintTop_toBottomOf="@id/location"
+                tools:ignore="SelectableText"
+                tools:text="@sample/data.json/shelves/name"
+                tools:visibility="visible"
+                />
 
-        <Space
-            android:id="@+id/icon_sidebar"
-            android:layout_width="@dimen/field_margin_end"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/icon_barrier"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+            <Space
+                android:id="@+id/icon_sidebar"
+                android:layout_width="@dimen/field_margin_end"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/icon_barrier"
+                app:layout_constraintTop_toTopOf="parent"
+                />
 
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/icon_barrier"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="start"
-            app:constraint_referenced_ids="icon_read,icon_first_edition,icon_signed,icon_lend_out"
-            />
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/icon_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="start"
+                app:constraint_referenced_ids="icon_read,icon_first_edition,icon_signed,icon_lend_out"
+                />
 
-        <ImageView
-            android:id="@+id/icon_read"
-            style="@style/Flag.Read"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ContentDescription"
-            tools:visibility="visible"
-            />
+            <ImageView
+                android:id="@+id/icon_read"
+                style="@style/Flag.Read"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription"
+                tools:visibility="visible"
+                />
 
-        <ImageView
-            android:id="@+id/icon_first_edition"
-            style="@style/Flag.FirstEdition"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/icon_read"
-            tools:ignore="ContentDescription"
-            tools:visibility="visible"
-            />
+            <ImageView
+                android:id="@+id/icon_first_edition"
+                style="@style/Flag.FirstEdition"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/icon_read"
+                tools:ignore="ContentDescription"
+                tools:visibility="visible"
+                />
 
-        <ImageView
-            android:id="@+id/icon_signed"
-            style="@style/Flag.Signed"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/icon_first_edition"
-            tools:ignore="ContentDescription"
-            tools:visibility="visible"
-            />
+            <ImageView
+                android:id="@+id/icon_signed"
+                style="@style/Flag.Signed"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/icon_first_edition"
+                tools:ignore="ContentDescription"
+                tools:visibility="visible"
+                />
 
-        <ImageView
-            android:id="@+id/icon_lend_out"
-            style="@style/Flag.LendOut"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/icon_signed"
-            tools:ignore="ContentDescription"
-            tools:visibility="visible"
-            />
+            <ImageView
+                android:id="@+id/icon_lend_out"
+                style="@style/Flag.LendOut"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/icon_signed"
+                tools:ignore="ContentDescription"
+                tools:visibility="visible"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</com.google.android.material.card.MaterialCardView>
+    <Button
+        android:id="@+id/btn_row_menu"
+        style="@style/Button.More"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/card"
+        tools:visibility="visible"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -174,17 +174,6 @@
 
     <PreferenceCategory
         android:title="@string/pc_bob">
-        <!-- edit the global defaults for styles.
-        WORK IN PROGRESS, HAS ISSUES, CRASHES due to not passing 'extras' with the tag name
-        implement 'onPreferenceStartFragment'
-        -->
-        <!--  <Preference-->
-        <!--  android:icon="@drawable/ic_details"-->
-        <!--  android:key="psk_styles"-->
-        <!--  android:title="@string/lbl_styles"-->
-        <!--  android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment -->
-        <!--  />-->
-
         <!-- the state of the list when starting the app. -->
         <!-- default Booklist.PREF_REBUILD_SAVED_STATE == 0 -->
         <ListPreference
@@ -194,6 +183,14 @@
             android:icon="@drawable/ic_baseline_view_list_24"
             android:key="booklist.rebuild.state"
             android:title="@string/pt_bob_list_rebuild_state" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/pe_bob_row_menu"
+            android:entryValues="@array/pv_bob_row_menu"
+            android:icon="@drawable/ic_baseline_view_list_24"
+            android:key="booklist.context.menu"
+            android:title="@string/pt_bob_row_menu" />
 
         <ListPreference
             android:defaultValue="3"

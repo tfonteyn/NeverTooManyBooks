@@ -1295,6 +1295,12 @@
     <string name="pe_bob_list_rebuild_state_expanded">Always start expanded</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Always start collapsed</string>
 
+    <!-- ListPreference: context menu on a row in the booklist. -->
+    <string name="pt_bob_row_menu">Row context menu</string>
+    <string name="pe_bob_row_menu_button">Always show a button.</string>
+    <string name="pe_bob_row_menu_button_when_space">Show a button if there is space, otherwise use long-click.</string>
+    <string name="pe_bob_row_menu_long_click">Always use long-click.</string>
+
     <!-- ListPreference: the popup bubble displayed while scrolling through a booklist. -->
     <string name="pt_fast_scroller_overlay">Text bubble while scrolling.</string>
     <string name="pe_fast_scroller_overlay_none" translatable="false">@string/none</string>

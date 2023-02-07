@@ -138,6 +138,18 @@
         <item>2</item>
     </string-array>
 
+    <string-array name="pe_bob_row_menu">
+        <item>@string/pe_bob_row_menu_button</item>
+        <item>@string/pe_bob_row_menu_button_when_space</item>
+        <item>@string/pe_bob_row_menu_long_click</item>
+    </string-array>
+    <string-array name="pv_bob_row_menu">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+
     <!-- ListPreference - fastscroller text overlay. -->
     <string-array name="pe_fastscroller_overlay">
         <item>@string/pe_fast_scroller_overlay_dynamic</item>

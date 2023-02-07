@@ -215,6 +215,15 @@
         <item name="android:src">@drawable/ic_baseline_help_outline_24</item>
     </style>
 
+    <style name="Button.More" parent="Widget.Material3.Button.IconButton.Outlined">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="icon">@drawable/ic_baseline_more_vert_24</item>
+        <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
+        <item name="android:scaleX">0.75</item>
+        <item name="android:scaleY">0.75</item>
+    </style>
+
     <!-- *************************************************************************************** -->
 
     <!-- A button which will take the user to an external website. -->
