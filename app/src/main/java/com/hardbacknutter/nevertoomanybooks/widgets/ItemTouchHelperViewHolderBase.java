@@ -87,7 +87,7 @@ public abstract class ItemTouchHelperViewHolderBase
         dragHandleView = itemView.findViewById(R.id.ROW_GRABBER_ICON);
 
         itemDraggedBackgroundColor = AttrUtils.getColorInt(
-                itemView.getContext(), androidx.appcompat.R.attr.colorPrimary);
+                itemView.getContext(), com.google.android.material.R.attr.colorPrimary);
     }
 
     @Override
