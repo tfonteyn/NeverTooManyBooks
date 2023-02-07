@@ -183,8 +183,8 @@
     <dimen name="bob_group_level_padding_start">8dp</dimen>
     <!-- padding between the compound drawable and the text on the group levels. -->
     <dimen name="bob_group_level_bullet_padding">4dp</dimen>
-    <!-- size (width == height) to use for the compound drawable on the group levels. -->
-    <array name="bob_group_level_generic_string_drawable_size">
+    <!-- size (width == height) to use for the bullet drawable on the group levels. -->
+    <array name="bob_group_level_bullet_size">
         <item>0dp</item>
         <item>10dp</item>
         <item>6dp</item>

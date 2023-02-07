@@ -42,7 +42,6 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import androidx.annotation.ArrayRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Dimension;
 import androidx.annotation.IntRange;
@@ -815,6 +814,10 @@ public class BooklistAdapter
                     itemView.findViewById(R.id.ROW_ONCLICK_TARGET), itemView);
         }
 
+        static int getLevelMultiplier(@IntRange(from = 1) final int level) {
+            return MathUtils.clamp(level - 1, 0, 2);
+        }
+
         // test for the listener inside the lambda, this allows changing it if needed
         void setOnClickListener(@Nullable final OnRowClickListener listener) {
             onClickTargetView.setOnClickListener(v -> {
@@ -1316,6 +1319,7 @@ public class BooklistAdapter
         /**
          * Constructor.
          *
+         * @param adapter  the hosting adapter
          * @param itemView the view specific for this holder
          * @param group    the group this holder represents
          */
@@ -1383,11 +1387,11 @@ public class BooklistAdapter
             final Context context = textView.getContext();
 
             textView.setTextAppearance(AttrUtils.getResId(
-                    context, TEXT_APP_ATTR[MathUtils.clamp(level - 1, 0, 2)]));
+                    context, TEXT_APP_ATTR[getLevelMultiplier(level)]));
 
             textView.setTypeface(null, Typeface.BOLD);
 
-            drawLevelPrefixIcon(context, level);
+            drawBullet(context, level);
         }
 
         /**
@@ -1397,11 +1401,17 @@ public class BooklistAdapter
          * @param context Current context
          * @param level   the level in the Booklist tree
          */
-        private void drawLevelPrefixIcon(@NonNull final Context context,
-                                         @IntRange(from = 1) final int level) {
+        private void drawBullet(@NonNull final Context context,
+                                @IntRange(from = 1) final int level) {
             final Resources res = context.getResources();
-            final int size = getPixelSize(
-                    res, level, R.array.bob_group_level_generic_string_drawable_size);
+            final int size;
+            final TypedArray ta = res.obtainTypedArray(R.array.bob_group_level_bullet_size);
+            try {
+                size = ta.getDimensionPixelSize(getLevelMultiplier(level), 0);
+            } finally {
+                ta.recycle();
+            }
+
             if (size > 0) {
                 @SuppressLint("UseCompatLoadingForDrawables")
                 final Drawable bullet = context.getDrawable(R.drawable.ic_baseline_lens_24);
@@ -1409,18 +1419,6 @@ public class BooklistAdapter
                 textView.setCompoundDrawablePadding(
                         res.getDimensionPixelSize(R.dimen.bob_group_level_bullet_padding));
                 textView.setCompoundDrawablesRelative(bullet, null, null, null);
-            }
-        }
-
-        @Dimension
-        static int getPixelSize(@NonNull final Resources res,
-                                @IntRange(from = 1) final int level,
-                                @ArrayRes final int type) {
-            final TypedArray ta = res.obtainTypedArray(type);
-            try {
-                return ta.getDimensionPixelSize(MathUtils.clamp(level - 1, 0, 2), 0);
-            } finally {
-                ta.recycle();
             }
         }
 
