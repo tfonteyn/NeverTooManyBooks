@@ -1523,29 +1523,18 @@ public class BooksOnBookshelf
 
         if (keys != null && Arrays.asList(keys).contains(DBKey.READ__BOOL)) {
             Objects.requireNonNull(book);
-            updateListPositions(vm.onBookRead(book.getId(), book.getBoolean(DBKey.READ__BOOL)));
+            //noinspection ConstantConditions
+            adapter.requery(vm.onBookRead(book.getId(), book.getBoolean(DBKey.READ__BOOL)));
 
         } else if (keys != null && Arrays.asList(keys).contains(DBKey.LOANEE_NAME)) {
             Objects.requireNonNull(book);
-            updateListPositions(vm.onBookLend(book.getId(), book.getLoanee().orElse(null)));
+            //noinspection ConstantConditions
+            adapter.requery(vm.onBookLend(book.getId(), book.getLoanee().orElse(null)));
 
         } else {
             // ENHANCE: update the modified row without a rebuild.
             saveListPosition();
             buildBookList();
-        }
-    }
-
-    /**
-     * Refresh the list data for the given positions only.
-     *
-     * @param positions to update
-     */
-    private void updateListPositions(@NonNull final int[] positions) {
-        //noinspection ConstantConditions
-        adapter.requery();
-        for (final int pos : positions) {
-            adapter.notifyItemChanged(pos);
         }
     }
 
@@ -1613,11 +1602,10 @@ public class BooksOnBookshelf
                   new Throwable());
         }
 
-        adapter = new BooklistAdapter(this, hasEmbeddedDetailsFrame());
+        adapter = new BooklistAdapter(this, vm.getStyle(this));
         adapter.setRowClickListener(this::onRowClicked);
-        adapter.setRowLongClickListener(this::onCreateContextMenu);
+        adapter.setRowLongClickListener(this::onCreateContextMenu, hasEmbeddedDetailsFrame());
 
-        adapter.setStyle(this, vm.getStyle(this));
         adapter.setBooklist(vm.getBooklist());
 
         // Combine the adapters for the list header and the actual list
@@ -1655,6 +1643,7 @@ public class BooksOnBookshelf
     }
 
     private boolean hasEmbeddedDetailsFrame() {
+        //TODO: use better criteria to decide on embedded details frame
         return WindowSizeClass.isScreenWidthExpanded(this);
     }
 
