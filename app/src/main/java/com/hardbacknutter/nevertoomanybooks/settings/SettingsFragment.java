@@ -414,7 +414,7 @@ public class SettingsFragment
         if (preference.getSharedPreferences().getBoolean(schedulerKey, false)) {
             attr = R.attr.appPreferenceAlertColor;
         } else {
-            attr = androidx.appcompat.R.attr.colorControlNormal;
+            attr = com.google.android.material.R.attr.colorControlNormal;
         }
 
         //noinspection ConstantConditions
