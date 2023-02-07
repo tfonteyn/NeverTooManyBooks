@@ -62,7 +62,7 @@
         <Button
             android:id="@+id/btn_purge_blns"
             style="@style/Button.Menu"
-            android:text="@string/lbl_purge_blns"
+            android:text="@string/info_purge_blns_all"
             app:icon="@drawable/ic_baseline_remove_24"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

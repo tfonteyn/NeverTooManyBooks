@@ -129,6 +129,8 @@
     <string name="book_color_support_color">Δίχρωμος</string>
     <string name="book_color_black_and_white">γραπτώς</string>
     <string name="book_format_audiobook">Ακουστικό βιβλίο</string>
+    <string name="book_format_comic">βιβλίο κόμικ</string>
+    <string name="book_format_other">Αλλα</string>
     <string name="book_format_digest">Kleines</string>
     <string name="book_format_dimensions">Διαστάσεις</string>
     <string name="book_format_ebook">eBook</string>
@@ -478,6 +480,7 @@
     <string name="option_import">εισάγω</string>
     <string name="option_lend_out_book">Δανεισμός βιβλίου…</string>
     <string name="option_lend_return_book">Το δανεισμένο βιβλίο είναι πίσω</string>
+    <string name="option_purge_bedetheque_authors_cache">Διαγράψτε την κρυφή μνήμη του Bedetheque Authors</string>
     <string name="option_rebuild_fts">Ανακατασκευή FTS</string>
     <string name="option_rebuild_index">Αναδημιουργία ευρετηρίου</string>
     <string name="option_set_complete">Ορίστε να «ολοκληρώσετε»</string>
@@ -559,6 +562,10 @@
     <string name="pt_collect_series_info_from_toc">Συλλέξτε τις πληροφορίες σειράς από τον πίνακα περιεχομένων</string>
     <string name="pt_cropper_frame_is_whole_image">Η προεπιλεγμένη περικοπή πλαισίου είναι ολόκληρη η εικόνα</string>
     <string name="pt_edit_book_isbn_checks">Έλεγχοι εγκυρότητας ISBN</string>
+    <string name="pt_bob_row_menu">Μενού περιβάλλοντος σειράς.</string>
+    <string name="pe_bob_row_menu_button">Να εμφανίζεται πάντα ένα κουμπί.</string>
+    <string name="pe_bob_row_menu_button_when_space">Εμφάνιση ενός κουμπιού εάν υπάρχει χώρος, διαφορετικά χρησιμοποιήστε παρατεταμένο κλικ.</string>
+    <string name="pe_bob_row_menu_long_click">Να χρησιμοποιείτε πάντα παρατεταμένο κλικ.</string>
     <string name="pt_fast_scroller_overlay">Φούσκα κειμένου κατά την κύλιση</string>
     <string name="pt_line_spacing">Διάστιχο</string>
     <string name="pt_maintenance">Συντήρηση</string>
@@ -698,4 +705,16 @@
     <string name="lbl_group_1st_char_series_title">1ος χαρακτήρας του τίτλου της σειράς</string>
     <string name="lbl_group_1st_char_publisher_name">1ος χαρακτήρας του ονόματος του εκδότη</string>
     <string name="lbl_group_1st_char_book_title">1ος χαρακτήρας του τίτλου του βιβλίου</string>
+    <string name="lbl_author_pseudonym">Αυτό είναι ένα ψευδώνυμο του:</string>
+    <string name="err_real_author_must_be_valid">Πρέπει να είναι κενό ή υπάρχων Συγγραφέας.</string>
+    <string name="confirm_create_real_author">Το \"%1$s\" δεν υπάρχει ακόμα. Πρέπει να δημιουργηθούν;</string>
+    <string name="pt_search_resolve_authors_bedetheque">Επιλύστε τα ψευδώνυμα των συγγραφέων χρησιμοποιώντας τον ιστότοπο Bedetheque</string>
+    <string name="pt_bedetheque_search_resolve_formats">Διατηρήστε την ονομασία Bedetheque (γαλλική).</string>
+    <string name="confirm_no_missing_covers_search_from_top">Όλα τα βιβλία κάτω από αυτή τη σειρά έχουν εξώφυλλα. Ψάξτε ξανά από την κορυφή;</string>
+    <string name="info_all_books_have_covers">Όλα τα βιβλία σε αυτό το ράφι έχουν εξώφυλλα.</string>
+    <string name="book_format_hardcover_oblong">σκληρό βιβλίο - επίμηκες</string>
+    <string name="book_format_softcover_oblong">μαλακό κάλυμμα - επίμηκες</string>
+    <string name="lbl_purge_blns">Διαγράψτε την κατάσταση του κόμβου</string>
+    <string name="info_purge_blns_all">Διαγράψτε την κατάσταση του κόμβου από όλες τις λίστες</string>
+    <string name="info_purge_blns_item_name">Διαγραφή της κατάστασης κόμβου του %1$s \"%2$s\";</string>
 </resources>

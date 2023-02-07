@@ -129,6 +129,8 @@
     <string name="book_color_support_color">Bicolore</string>
     <string name="book_color_black_and_white">in bianco e nero</string>
     <string name="book_format_audiobook">Audiolibro</string>
+    <string name="book_format_comic">fumetto</string>
+    <string name="book_format_other">Altro</string>
     <string name="book_format_digest">Piccolo</string>
     <string name="book_format_dimensions">Dimensioni</string>
     <string name="book_format_ebook">eBook</string>
@@ -478,6 +480,7 @@
     <string name="option_import">Importa</string>
     <string name="option_lend_out_book">Presta libro…</string>
     <string name="option_lend_return_book">Il libro preso in prestito è tornato</string>
+    <string name="option_purge_bedetheque_authors_cache">Svuota la cache degli autori di Bedetheque</string>
     <string name="option_rebuild_fts">Ricrea FTS</string>
     <string name="option_rebuild_index">Ricostruisci indice</string>
     <string name="option_set_complete">Contrassegna come completo</string>
@@ -559,6 +562,10 @@
     <string name="pt_collect_series_info_from_toc">Raccogli informazioni sulla serie da TOC</string>
     <string name="pt_cropper_frame_is_whole_image">Area di ritaglio predefinita uguale all\'intera immagine</string>
     <string name="pt_edit_book_isbn_checks">Controlli di validità del codice ISBN</string>
+    <string name="pt_bob_row_menu">Menu contestuale riga.</string>
+    <string name="pe_bob_row_menu_button">Mostra sempre un pulsante.</string>
+    <string name="pe_bob_row_menu_button_when_space">Mostra un pulsante se c\'è spazio, altrimenti usa il clic lungo.</string>
+    <string name="pe_bob_row_menu_long_click">Usa sempre il clic lungo.</string>
     <string name="pt_fast_scroller_overlay">Bolla di testo durante lo scorrimento</string>
     <string name="pt_line_spacing">Interlinea</string>
     <string name="pt_maintenance">Συντήρηση</string>
@@ -698,4 +705,16 @@
     <string name="lbl_group_1st_char_series_title">1° personaggio del titolo della serie</string>
     <string name="lbl_group_1st_char_publisher_name">1° carattere del nome dell\'editore</string>
     <string name="lbl_group_1st_char_book_title">1° carattere del titolo del libro</string>
+    <string name="lbl_author_pseudonym">Questo è uno pseudonimo di:</string>
+    <string name="err_real_author_must_be_valid">Deve essere vuoto o deve essere un autore esistente.</string>
+    <string name="confirm_create_real_author">“%1$s” non esiste ancora. Devono essere creati?</string>
+    <string name="pt_search_resolve_authors_bedetheque">Risolvi gli pseudonimi degli autori utilizzando il sito Web di Bedetheque</string>
+    <string name="pt_bedetheque_search_resolve_formats">Conserva la denominazione del formato Bedetheque (francese).</string>
+    <string name="confirm_no_missing_covers_search_from_top">Tutti i libri sotto questa riga hanno copertine. Cercare di nuovo dall\'alto?</string>
+    <string name="info_all_books_have_covers">Tutti i libri su questa libreria hanno copertine.</string>
+    <string name="book_format_hardcover_oblong">Rilegato - oblunga</string>
+    <string name="book_format_softcover_oblong">Copertina morbida - oblunga</string>
+    <string name="lbl_purge_blns">Cancella lo stato del nodo</string>
+    <string name="info_purge_blns_all">Cancella lo stato del nodo da tutti gli elenchi</string>
+    <string name="info_purge_blns_item_name">Cancellare lo stato del nodo di %1$s \"%2$s\"?</string>
 </resources>

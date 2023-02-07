@@ -131,6 +131,8 @@
     <string name="book_color_support_color">Bicolore</string>
     <string name="book_color_black_and_white">en noir et blanc</string>
     <string name="book_format_audiobook">Livre audio</string>
+    <string name="book_format_comic">BD</string>
+    <string name="book_format_other">Autre</string>
     <string name="book_format_digest">Petit</string>
     <string name="book_format_dimensions">Dimensions</string>
     <string name="book_format_ebook">eBook</string>
@@ -480,6 +482,7 @@
     <string name="option_import">Importer</string>
     <string name="option_lend_out_book">Prêter le livre…</string>
     <string name="option_lend_return_book">Le livre emprunté est de retour</string>
+    <string name="option_purge_bedetheque_authors_cache">Preserve Bedetheque (french) format naming</string>
     <string name="option_rebuild_fts">Re-construire FTS</string>
     <string name="option_rebuild_index">Reconstruire l\'index</string>
     <string name="option_set_complete">Marquer comme complet</string>
@@ -561,6 +564,10 @@
     <string name="pt_collect_series_info_from_toc">Recueillir des informations sur la série de la table des matières</string>
     <string name="pt_cropper_frame_is_whole_image">Le cadre par défaut de l\'image à recadrer sera l\'image complète</string>
     <string name="pt_edit_book_isbn_checks">Vérifications de validité ISBN</string>
+    <string name="pt_bob_row_menu">Menu contextuel de ligne.</string>
+    <string name="pe_bob_row_menu_button">Toujours afficher un bouton.</string>
+    <string name="pe_bob_row_menu_button_when_space">Afficher un bouton s\'il y a de l\'espace, sinon utiliser un clic long.</string>
+    <string name="pe_bob_row_menu_long_click">Utilisez toujours le clic long.</string>
     <string name="pt_fast_scroller_overlay">Bulle de texte lors du défilement</string>
     <string name="pt_line_spacing">Interligne</string>
     <string name="pt_maintenance">Entretien</string>
@@ -700,5 +707,17 @@
     <string name="lbl_group_1st_char_publisher_name">1er caractère du nom de l\'éditeur</string>
     <string name="lbl_group_1st_char_book_title">1er caractère du titre du livre</string>
     <string name="debug_select_items">Sélectionnez ce que vous souhaitez inclure</string>
+    <string name="lbl_author_pseudonym">C\'est un pseudonyme de :</string>
+    <string name="err_real_author_must_be_valid">Doit être vide ou un auteur existant.</string>
+    <string name="confirm_create_real_author">\"%1$s\" n\'existe pas encore. Faut-il les créer ?</string>
+    <string name="pt_search_resolve_authors_bedetheque">Résoudre les pseudonymes des auteurs à l\'aide du site Web Bedetheque</string>
+    <string name="pt_bedetheque_search_resolve_formats">Conserver la dénomination au format Bedetheque</string>
+    <string name="confirm_no_missing_covers_search_from_top">Tous les livres en dessous de cette rangée ont des couvertures. Rechercher à nouveau à partir du haut ?</string>
+    <string name="info_all_books_have_covers">Tous les livres de cette bibliothèque ont des couvertures.</string>
+    <string name="book_format_hardcover_oblong">Relié - oblongue</string>
+    <string name="book_format_softcover_oblong">Broché - oblongue</string>
+    <string name="lbl_purge_blns">Effacer l\'état du nœud</string>
+    <string name="info_purge_blns_all">Effacer l\'état du nœud de toutes les listes</string>
+    <string name="info_purge_blns_item_name">Effacer l\'état du nœud de %1$s \"%2$s\" ?</string>
 
 </resources>

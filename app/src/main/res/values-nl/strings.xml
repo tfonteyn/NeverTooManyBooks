@@ -127,6 +127,8 @@
     <string name="book_color_support_color">Tweekleurig</string>
     <string name="book_color_black_and_white">Ongekleurd</string>
     <string name="book_format_audiobook">Luisterboek</string>
+    <string name="book_format_comic">Strip</string>
+    <string name="book_format_other">Ander</string>
     <string name="book_format_digest">Klein</string>
     <string name="book_format_dimensions">Afmetingen</string>
     <string name="book_format_ebook">E-boek</string>
@@ -477,6 +479,7 @@
     <string name="option_import">Importeren</string>
     <string name="option_lend_out_book">Boek uitlenen…</string>
     <string name="option_lend_return_book">Uitgeleend boek is terug</string>
+    <string name="option_purge_bedetheque_authors_cache">Wis de cache van Bedetheque Authors</string>
     <string name="option_rebuild_fts">FTS opnieuw opbouwen</string>
     <string name="option_rebuild_index">Index opnieuw opbouwen</string>
     <string name="option_set_complete">Markeer als volledig</string>
@@ -558,6 +561,10 @@
     <string name="pt_collect_series_info_from_toc">Verzamel reeks-informatie van de inhouds tabel</string>
     <string name="pt_cropper_frame_is_whole_image">Standaard kader voor bijsnijden is hele afbeelding</string>
     <string name="pt_edit_book_isbn_checks">ISBN geldigheidscontroles</string>
+    <string name="pt_bob_row_menu">Context-menu van een lijn</string>
+    <string name="pe_bob_row_menu_button">Laat altijd een knop zien.</string>
+    <string name="pe_bob_row_menu_button_when_space">Toon een knop als er ruimte is, gebruik anders lang klikken.</string>
+    <string name="pe_bob_row_menu_long_click">Gebruik altijd een lange klik.</string>
     <string name="pt_fast_scroller_overlay">Tekstballon tijdens het scrollen</string>
     <string name="pt_line_spacing">Regelafstand</string>
     <string name="pt_maintenance">Onderhoud</string>
@@ -696,4 +703,16 @@
     <string name="lbl_group_1st_char_series_title">1e karakter van de serietitel</string>
     <string name="lbl_group_1st_char_publisher_name">1e karakter van de uitgeversnaam</string>
     <string name="lbl_group_1st_char_book_title">1e karakter van de boektitel</string>
+    <string name="lbl_author_pseudonym">Dit is een pseudoniem van:</string>
+    <string name="err_real_author_must_be_valid">Moet leeg zijn of een bestaande auteur zijn.</string>
+    <string name="confirm_create_real_author">\"%1$s\" bestaat nog niet. Moeten ze worden gemaakt?</string>
+    <string name="pt_search_resolve_authors_bedetheque">Los auteursnamen op met behulp van de Bedetheque-website</string>
+    <string name="pt_bedetheque_search_resolve_formats">Behoud Bedetheque (Frans) naamgeving</string>
+    <string name="confirm_no_missing_covers_search_from_top">Alle boeken onder deze rij hebben omslagen. Opnieuw zoeken vanaf de top?</string>
+    <string name="info_all_books_have_covers">Alle boeken op deze boekenplank hebben omslagen.</string>
+    <string name="book_format_hardcover_oblong">Hardcover - oblong</string>
+    <string name="book_format_softcover_oblong">Softcover - oblong</string>
+    <string name="lbl_purge_blns">Wis de node status</string>
+    <string name="info_purge_blns_all">Wis de node status van alle lijsten</string>
+    <string name="info_purge_blns_item_name">Wis de node status van %1$s \"%2$s\" ?</string>
 </resources>
