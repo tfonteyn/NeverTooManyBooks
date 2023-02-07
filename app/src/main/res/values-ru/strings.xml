@@ -129,6 +129,8 @@
     <string name="book_color_support_color">двухцветных</string>
     <string name="book_color_black_and_white">рисунок пером</string>
     <string name="book_format_audiobook">Аудиокнига</string>
+    <string name="book_format_comic">комикс</string>
+    <string name="book_format_other">Другой</string>
     <string name="book_format_digest">Малый</string>
     <string name="book_format_dimensions">размеры</string>
     <string name="book_format_ebook">электронная книга</string>
@@ -478,6 +480,7 @@
     <string name="option_import">Импортировать</string>
     <string name="option_lend_out_book">Одолжить книгу…</string>
     <string name="option_lend_return_book">Заимствованная книга возвращается</string>
+    <string name="option_purge_bedetheque_authors_cache">Очистить кэш авторов Bedetheque</string>
     <string name="option_rebuild_fts">Переобрать FTS</string>
     <string name="option_rebuild_index">Перестроить индекс</string>
     <string name="option_set_complete">Отметка завершена</string>
@@ -559,6 +562,10 @@
     <string name="pt_collect_series_info_from_toc">Собрать информацию серии из оглавления</string>
     <string name="pt_cropper_frame_is_whole_image">Рамка по умолчанию: всё изображение</string>
     <string name="pt_edit_book_isbn_checks">ISBN проверки достоверности</string>
+    <string name="pt_bob_row_menu">Контекстное меню строки.</string>
+    <string name="pe_bob_row_menu_button">Всегда показывать кнопку.</string>
+    <string name="pe_bob_row_menu_button_when_space">Покажите кнопку, если есть место, в противном случае используйте долгий щелчок.</string>
+    <string name="pe_bob_row_menu_long_click">Всегда используйте длинный щелчок.</string>
     <string name="pt_fast_scroller_overlay">Текстовая всплывающая подсказка при прокрутке</string>
     <string name="pt_line_spacing">Межстрочный интервал</string>
     <string name="pt_maintenance">обслуживание</string>
@@ -696,5 +703,17 @@
     <string name="lbl_group_1st_char_publisher_name">1-й символ имени издателя</string>
     <string name="lbl_group_1st_char_book_title">1-й символ названия книги</string>
     <string name="debug_select_items">Выберите, что вы хотите включить</string>
+    <string name="lbl_author_pseudonym">Это псевдоним:</string>
+    <string name="err_real_author_must_be_valid">Должно быть пустым или существующим автором.</string>
+    <string name="confirm_create_real_author">«%1$s» еще не существует. Должны ли они быть созданы?</string>
+    <string name="pt_search_resolve_authors_bedetheque">Разрешить авторские псевдонимы с помощью веб-сайта Bedetheque</string>
+    <string name="pt_bedetheque_search_resolve_formats">Сохранить название формата Bedetheque (французский)</string>
+    <string name="confirm_no_missing_covers_search_from_top">Все книги ниже этого ряда имеют обложки. Искать снова сверху?</string>
+    <string name="info_all_books_have_covers">У всех книг на этой полке есть обложки.</string>
+    <string name="book_format_hardcover_oblong">Твердая обложка - продолговатый</string>
+    <string name="book_format_softcover_oblong">Мягкое покрытие - продолговатый</string>
+    <string name="lbl_purge_blns">Очистить состояние узла</string>
+    <string name="info_purge_blns_all">Очистить состояние узла из всех списков</string>
+    <string name="info_purge_blns_item_name">Очистить состояние узла %1$s \"%2$s\"?</string>
 
 </resources>

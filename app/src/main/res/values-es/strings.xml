@@ -129,10 +129,12 @@
     <string name="book_color_support_color">Bicolor</string>
     <string name="book_color_black_and_white">en blanco y negro</string>
     <string name="book_format_audiobook">Audio libro</string>
+    <string name="book_format_comic">Tebeo</string>
+    <string name="book_format_other">Otro</string>
     <string name="book_format_digest">Pequeño</string>
     <string name="book_format_dimensions">Dimensiones</string>
     <string name="book_format_ebook">Libro electronico</string>
-    <string name="book_format_hardcover">Rústica cosida</string>
+    <string name="book_format_hardcover">Tapa dura</string>
     <string name="book_format_paperback">Rústica fresada</string>
     <string name="book_format_paperback_large">Rústica PUR</string>
     <string name="book_format_softcover">Tapa blanda</string>
@@ -478,6 +480,7 @@
     <string name="option_import">Importar</string>
     <string name="option_lend_out_book">Prestar libro…</string>
     <string name="option_lend_return_book">El libro prestado esta de vuelta</string>
+    <string name="option_purge_bedetheque_authors_cache">Borrar caché de autores de Bedetheque</string>
     <string name="option_rebuild_fts">Reconstruir FTS</string>
     <string name="option_rebuild_index">Reconstruir índice</string>
     <string name="option_set_complete">Marcar como completo</string>
@@ -559,6 +562,10 @@
     <string name="pt_collect_series_info_from_toc">Recopilar información de la serie de TOC</string>
     <string name="pt_cropper_frame_is_whole_image">Por defecto, la imagen se guarda completa</string>
     <string name="pt_edit_book_isbn_checks">Comprobaciones de validez de ISBN</string>
+    <string name="pt_bob_row_menu">Menú contextual de fila.</string>
+    <string name="pe_bob_row_menu_button">Mostrar siempre un botón.</string>
+    <string name="pe_bob_row_menu_button_when_space">Muestre un botón si hay espacio, de lo contrario, haga clic largo.</string>
+    <string name="pe_bob_row_menu_long_click">Utilice siempre el clic largo.</string>
     <string name="pt_fast_scroller_overlay">Burbuja de texto mientras se desplaza</string>
     <string name="pt_line_spacing">Espaciado entre líneas</string>
     <string name="pt_maintenance">Mantenimiento</string>
@@ -698,4 +705,16 @@
     <string name="lbl_group_1st_char_series_title">1er carácter del título de la serie</string>
     <string name="lbl_group_1st_char_publisher_name">1er carácter del nombre del editor</string>
     <string name="lbl_group_1st_char_book_title">1er carácter del título del libro</string>
+    <string name="lbl_author_pseudonym">Este es un seudónimo de:</string>
+    <string name="err_real_author_must_be_valid">Debe estar en blanco o ser un autor existente.</string>
+    <string name="confirm_create_real_author">\"%1$s\" aún no existe. ¿Deberían crearse?</string>
+    <string name="pt_search_resolve_authors_bedetheque">Resuelva los seudónimos de los autores utilizando el sitio web Bedetheque</string>
+    <string name="pt_bedetheque_search_resolve_formats">Preservar la nomenclatura en formato Bedetheque (francés)</string>
+    <string name="confirm_no_missing_covers_search_from_top">Todos los libros debajo de esta fila tienen cubiertas. ¿Buscar de nuevo desde la parte superior?</string>
+    <string name="info_all_books_have_covers">Todos los libros de esta estantería tienen cubiertas.</string>
+    <string name="book_format_hardcover_oblong">Tapa dura - rectangular</string>
+    <string name="book_format_softcover_oblong">Tapa blanda - rectangular</string>
+    <string name="lbl_purge_blns">Borrar el estado del nodo</string>
+    <string name="info_purge_blns_all">Borrar el estado del nodo de todas las listas</string>
+    <string name="info_purge_blns_item_name">¿Borrar el estado del nodo de %1$s \"%2$s\"?</string>
 </resources>

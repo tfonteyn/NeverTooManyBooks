@@ -492,8 +492,8 @@
     <!-- book format - A Softcover is not necessarily a paperback - mostly used by comics -->
     <string name="book_format_softcover">Softcover</string>
     <!-- -book format - oblong, landscape, A l'italienne -->
-    <string name="book_format_hardcover_oblong">Hardcover Oblong</string>
-    <string name="book_format_softcover_oblong">Softcover Oblong</string>
+    <string name="book_format_hardcover_oblong">Hardcover - Oblong</string>
+    <string name="book_format_softcover_oblong">Softcover - Oblong</string>
     <string name="book_format_comic">Comic</string>
     <string name="book_format_other">Other</string>
 
@@ -1648,11 +1648,14 @@
     <!-- ========== likely to change still. -->
     <!-- ####################################################################################### -->
 
-    <!-- Internal cleanup of Booklist node states... collapsed/expanded etc... need proper name -->
-    <string name="lbl_purge_blns">Purge BLNS</string>
-    <string name="info_purge_blns_all">Purge all BLNS</string>
-    <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
-    <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
+    <!-- Dialog title - Internal cleanup of Booklist node states... collapsed/expanded etc. -->
+    <string name="lbl_purge_blns">Clear the node state</string>
+    <!-- Maintenance menu - clear all the stored node status's everywhere. -->
+    <string name="info_purge_blns_all">Clear the node state for all lists</string>
+    <!-- Clear the status for a single type. e.g. a style, a shelf, ...
+        param 1: type of item; param 2: item name.
+         e.g.: "Clear the node status for Bookshelf “ToRead” -->
+    <string name="info_purge_blns_item_name">Clear the node state for %1$s “%2$s” ?</string>
 
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Wishlist mapped bookshelf</string>
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>

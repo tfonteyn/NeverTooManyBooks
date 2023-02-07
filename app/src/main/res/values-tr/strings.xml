@@ -130,6 +130,8 @@
     <string name="book_color_support_color">çok renkli</string>
     <string name="book_color_black_and_white">siyah ve beyaz</string>
     <string name="book_format_audiobook">Sesli kitap</string>
+    <string name="book_format_comic">çizgi roman</string>
+    <string name="book_format_other">Diğer</string>
     <string name="book_format_digest">Küçük</string>
     <string name="book_format_dimensions">Boyutlar</string>
     <string name="book_format_ebook">E-kitap</string>
@@ -481,6 +483,7 @@
     <string name="option_import">Ithal etmek</string>
     <string name="option_lend_out_book">Kitabı ödünç ver…</string>
     <string name="option_lend_return_book">Ödünç alınan kitap geri döndü</string>
+    <string name="option_purge_bedetheque_authors_cache">Bedetheque Yazar önbelleğini temizle</string>
     <string name="option_rebuild_fts">FTS\'yi yeniden yapıla</string>
     <string name="option_rebuild_index">Dizini yeniden oluştur</string>
     <string name="option_set_complete">“Tamamla” olarak ayarla</string>
@@ -562,6 +565,10 @@
     <string name="pt_collect_series_info_from_toc">Seri bilgilerini içindekiler tablosundan toplayın</string>
     <string name="pt_cropper_frame_is_whole_image">Öntanımlı kırpma alanı bütün görseldir</string>
     <string name="pt_edit_book_isbn_checks">ISBN geçerlilik kontrolleri</string>
+    <string name="pt_bob_row_menu">Satır bağlam menüsü.</string>
+    <string name="pe_bob_row_menu_button">Her zaman bir düğme göster.</string>
+    <string name="pe_bob_row_menu_button_when_space">Boşluk varsa bir düğme gösterin, aksi takdirde uzun tıklamayı kullanın.</string>
+    <string name="pe_bob_row_menu_long_click">Her zaman uzun tıklamayı kullanın.</string>
     <string name="pt_fast_scroller_overlay">Kaydırma sırasında metin balonu</string>
     <string name="pt_line_spacing">Satır aralığı</string>
     <string name="pt_maintenance">Bakım</string>
@@ -699,4 +706,16 @@
     <string name="lbl_group_1st_char_series_title">Seri başlığının 1. karakteri</string>
     <string name="lbl_group_1st_char_publisher_name">Yayıncı adının 1. karakteri</string>
     <string name="lbl_group_1st_char_book_title">Kitap başlığının 1. karakteri</string>
+    <string name="lbl_author_pseudonym">Bu, takma adıdır:</string>
+    <string name="err_real_author_must_be_valid">Boş veya mevcut bir Yazar olmalıdır.</string>
+    <string name="confirm_create_real_author">\"%1$s\" henüz mevcut değil. Yaratılmalılar mı?</string>
+    <string name="pt_search_resolve_authors_bedetheque">Bedetheque web sitesini kullanarak yazar takma adlarını çözün</string>
+    <string name="pt_bedetheque_search_resolve_formats">Bedetheque (Fransızca) biçim adlandırmasını koru</string>
+    <string name="confirm_no_missing_covers_search_from_top">Bu sıranın altındaki tüm kitapların kapakları vardır. Baştan tekrar aransın mı?</string>
+    <string name="info_all_books_have_covers">Bu kitaplıktaki tüm kitapların kapakları vardır.</string>
+    <string name="book_format_hardcover_oblong">Ciltli / dikdörtgen</string>
+    <string name="book_format_softcover_oblong">Yumuşak kapak / dikdörtgen</string>
+    <string name="lbl_purge_blns">Düğüm durumunu temizle</string>
+    <string name="info_purge_blns_all">Düğüm durumunu tüm listelerden temizle</string>
+    <string name="info_purge_blns_item_name">%1$s \"%2$s\" düğüm durumu temizlensin mi?</string>
 </resources>

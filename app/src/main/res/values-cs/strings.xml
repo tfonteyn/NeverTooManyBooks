@@ -128,6 +128,8 @@
     <string name="book_color_support_color">Dvoubarevné</string>
     <string name="book_color_black_and_white">černobílý</string>
     <string name="book_format_audiobook">Audio kniha</string>
+    <string name="book_format_comic">komiks</string>
+    <string name="book_format_other">jiný</string>
     <string name="book_format_digest">Malý</string>
     <string name="book_format_dimensions">Rozměry</string>
     <string name="book_format_ebook">ebook</string>
@@ -477,6 +479,7 @@
     <string name="option_import">Importovat</string>
     <string name="option_lend_out_book">Půjčit knihu…</string>
     <string name="option_lend_return_book">Vypůjčená kniha je zpět</string>
+    <string name="option_purge_bedetheque_authors_cache">Vymažte mezipaměť autorů Bedetheque</string>
     <string name="option_rebuild_fts">Obnovit FTS</string>
     <string name="option_rebuild_index">Znovu vytvořit index</string>
     <string name="option_set_complete">Nastavit na „kompletní“</string>
@@ -558,6 +561,10 @@
     <string name="pt_collect_series_info_from_toc">Sbírejte informace o sériích z obsahu</string>
     <string name="pt_cropper_frame_is_whole_image">Výchozí rámeček oříznutí je celý obraz</string>
     <string name="pt_edit_book_isbn_checks">Kontroly platnosti ISBN</string>
+    <string name="pt_bob_row_menu">Kontextová nabídka řádku.</string>
+    <string name="pe_bob_row_menu_button">Vždy ukažte tlačítko.</string>
+    <string name="pe_bob_row_menu_button_when_space">Zobrazit tlačítko, pokud je místo, jinak použijte dlouhé kliknutí.</string>
+    <string name="pe_bob_row_menu_long_click">Vždy používejte dlouhé kliknutí.</string>
     <string name="pt_fast_scroller_overlay">Textová bublina při posouvání</string>
     <string name="pt_line_spacing">Řádkování</string>
     <string name="pt_maintenance">Údržba</string>
@@ -695,4 +702,16 @@
     <string name="lbl_group_1st_char_series_title">1. postava názvu seriálu</string>
     <string name="lbl_group_1st_char_publisher_name">1. znak jména vydavatele</string>
     <string name="lbl_group_1st_char_book_title">1. znak názvu knihy</string>
+    <string name="lbl_author_pseudonym">Toto je pseudonym:</string>
+    <string name="err_real_author_must_be_valid">Musí být prázdné nebo existující Autor.</string>
+    <string name="confirm_create_real_author">„%1$s“ zatím neexistuje. Měly by být vytvořeny?</string>
+    <string name="pt_search_resolve_authors_bedetheque">Vyřešte pseudonymy autorů pomocí webových stránek Bedetheque</string>
+    <string name="pt_bedetheque_search_resolve_formats">Zachovat pojmenování ve formátu Bedetheque (francouzský).</string>
+    <string name="confirm_no_missing_covers_search_from_top">Všechny knihy pod tímto řádkem mají obálky. Hledat znovu shora?</string>
+    <string name="info_all_books_have_covers">Všechny knihy na této poličce mají obálky.</string>
+    <string name="book_format_hardcover_oblong">Tvrdý obal - podlouhlý</string>
+    <string name="book_format_softcover_oblong">Měkká vazba - podlouhlý</string>
+    <string name="lbl_purge_blns">Vymažte stav uzlu</string>
+    <string name="info_purge_blns_all">Vymažte stav uzlu ze všech seznamů</string>
+    <string name="info_purge_blns_item_name">Vymazat stav uzlu %1$s „%2$s“?</string>
 </resources>
