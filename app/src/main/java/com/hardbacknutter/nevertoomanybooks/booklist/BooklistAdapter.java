@@ -1387,17 +1387,28 @@ public class BooklistAdapter
 
             textView.setTypeface(null, Typeface.BOLD);
 
-            final Resources res = context.getResources();
+            drawLevelPrefixIcon(context, level);
+        }
 
-            final int drawableSize = getPixelSize(
+        /**
+         * Optionally draw a bullet before the text on a level.
+         * The size of the bullet depends on the level.
+         *
+         * @param context Current context
+         * @param level   the level in the Booklist tree
+         */
+        private void drawLevelPrefixIcon(@NonNull final Context context,
+                                         @IntRange(from = 1) final int level) {
+            final Resources res = context.getResources();
+            final int size = getPixelSize(
                     res, level, R.array.bob_group_level_generic_string_drawable_size);
-            if (drawableSize > 0) {
+            if (size > 0) {
                 @SuppressLint("UseCompatLoadingForDrawables")
-                final Drawable drawable = context.getDrawable(R.drawable.ic_baseline_lens_24);
-                drawable.setBounds(0, 0, drawableSize, drawableSize);
+                final Drawable bullet = context.getDrawable(R.drawable.ic_baseline_lens_24);
+                bullet.setBounds(0, 0, size, size);
                 textView.setCompoundDrawablePadding(
                         res.getDimensionPixelSize(R.dimen.bob_group_level_bullet_padding));
-                textView.setCompoundDrawablesRelative(drawable, null, null, null);
+                textView.setCompoundDrawablesRelative(bullet, null, null, null);
             }
         }
 
@@ -1468,7 +1479,7 @@ public class BooklistAdapter
          * @param group    the group this holder represents
          */
         AuthorHolder(@NonNull final BooklistAdapter adapter,
-                     final int level,
+                     @IntRange(from = 1) final int level,
                      @NonNull final View itemView,
                      @NonNull final BooklistGroup group) {
             super(adapter, level, itemView, group);
@@ -1504,7 +1515,7 @@ public class BooklistAdapter
          * @param group    the group this holder represents
          */
         SeriesHolder(@NonNull final BooklistAdapter adapter,
-                     final int level,
+                     @IntRange(from = 1) final int level,
                      @NonNull final View itemView,
                      @NonNull final BooklistGroup group) {
             super(adapter, level, itemView, group);
