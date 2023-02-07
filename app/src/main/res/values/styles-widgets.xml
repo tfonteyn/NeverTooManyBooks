@@ -115,8 +115,10 @@
     </style>
 
     <style name="ThemeOverlay.App.Switch" parent="">
-        <!-- checked -->
+        <!-- track checked state. -->
         <item name="colorPrimary">?attr/colorSecondary</item>
+        <!-- thumb unchecked state. -->
+        <item name="colorOutline">?attr/colorOnSurfaceVariant</item>
     </style>
 
     <style name="ThemeOverlay.App.MaterialAlertDialog"
