@@ -100,9 +100,7 @@ public class Cover {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
             Logger.d(TAG, new Throwable("getPersistedFile"),
-                     "uuid=" + uuid
-                     + "|cIdx=" + cIdx
-                     + "|file=" + (coverFile == null ? "null" : coverFile.getAbsolutePath())
+                     this + "|file=" + (coverFile == null ? "null" : coverFile.getAbsolutePath())
             );
         }
 
@@ -144,5 +142,14 @@ public class Cover {
         if (ImageUtils.isImageCachingEnabled()) {
             ServiceLocator.getInstance().getCoverCacheDao().delete(uuid);
         }
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "Cover{"
+               + "uuid='" + uuid + '\''
+               + ", cIdx=" + cIdx
+               + '}';
     }
 }
