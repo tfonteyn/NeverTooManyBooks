@@ -54,6 +54,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.security.cert.CertificateException;
 import java.text.SimpleDateFormat;
@@ -63,6 +64,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.fastscroller.FastScroller;
@@ -1008,11 +1010,7 @@ public class BooksOnBookshelf
 
         if (itemId == R.id.MENU_NEXT_MISSING_COVER) {
             final long nodeRowId = rowData.getLong(DBKey.BL_LIST_VIEW_NODE_ROW_ID);
-            vm.getNextBookWithoutCover(nodeRowId).ifPresent(node -> {
-                final List<BooklistNode> list = new ArrayList<>();
-                list.add(node);
-                displayList(list);
-            });
+            searchMissingCover(nodeRowId);
             return true;
 
         } else if (itemId == R.id.MENU_LEVEL_EXPAND) {
@@ -1261,6 +1259,25 @@ public class BooksOnBookshelf
             return true;
         }
         return false;
+    }
+
+    private void searchMissingCover(final long nodeRowId) {
+        final Optional<BooklistNode> oNode = vm.getNextBookWithoutCover(nodeRowId);
+        if (oNode.isPresent()) {
+            final List<BooklistNode> list = new ArrayList<>();
+            list.add(oNode.get());
+            displayList(list);
+        } else {
+            if (nodeRowId > 1) {
+                Snackbar.make(vb.getRoot(), R.string.confirm_no_missing_covers_search_from_top,
+                              Snackbar.LENGTH_LONG)
+                        .setAction(R.string.action_search, v -> searchMissingCover(0))
+                        .show();
+            } else {
+                Snackbar.make(vb.getRoot(), R.string.info_all_books_have_covers,
+                              Snackbar.LENGTH_LONG).show();
+            }
+        }
     }
 
     @SuppressLint("Range")
