@@ -1,5 +1,5 @@
 /*
- * @Copyright 2018-2021 HardBackNutter
+ * @Copyright 2018-2022 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,6 +34,8 @@ import androidx.annotation.Nullable;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 /**
  * FieldFormatter for HTML fields.
@@ -133,6 +135,9 @@ public class HtmlFormatter<T>
     public void apply(@Nullable final T rawValue,
                       @NonNull final TextView view) {
 
+        final int color = AttrUtils
+                .getColorInt(view.getContext(), com.google.android.material.R.attr.colorSecondary);
+        view.setLinkTextColor(color);
         view.setText(linkify(format(view.getContext(), rawValue)));
 
         if (enableLinks && !view.hasOnClickListeners()) {
