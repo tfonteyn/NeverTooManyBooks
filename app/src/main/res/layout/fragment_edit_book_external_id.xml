@@ -175,13 +175,14 @@
 
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/btn_auto_update_allowed"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/section_margin_top"
             android:checked="true"
             android:text="@string/option_auto_updates"
             app:layout_constraintStart_toStartOf="@id/barrier_ext_id"
             app:layout_constraintTop_toBottomOf="@id/barrier_ext_id"
+            app:layout_constraintEnd_toEndOf="parent"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
